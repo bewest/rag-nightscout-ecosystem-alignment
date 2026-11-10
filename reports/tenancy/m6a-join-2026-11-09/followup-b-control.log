@@ -1,0 +1,17 @@
+### baseline 80f00394e4b1612a8d1cf6613d34b8f89147911e (4 IPC-consuming unit files)
+  53 passing (340ms)
+### control: Map lookup keyed off a path no factory registers (table.get(req.url + '/x'))
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+    1) keeps durable unfinished operation until response finish
+    2) detects prematurely released IPC lifetime and passes restored source
+    3) private handler uses fixed owned operations and bounded bodies without network listeners
+    4) reproduces actual raw ObjectId and matches actual private HTTP handler JSON without stripping the ID
+  49 passing (342ms)
+  4 failing
+  1) Private IPC lifetime extends through actual response completion
+  2) Private IPC lifetime extends through actual response completion
+  3) explicit realtime preview source contracts
+  4) actual canonical profile reply wire boundary
+restored: porcelain=0
+  53 passing (368ms)
+### head after control 80f00394e4b1612a8d1cf6613d34b8f89147911e

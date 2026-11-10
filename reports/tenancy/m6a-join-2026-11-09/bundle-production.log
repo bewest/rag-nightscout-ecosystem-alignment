@@ -1,0 +1,15 @@
+head 80f00394e4b1612a8d1cf6613d34b8f89147911e start 2026-11-09T22:02:39Z
+  app (1.06 MiB)
+      js/bundle.app.js
+
+WARNING in webpack performance recommendations: 
+You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
+For more info visit https://webpack.js.org/guides/code-splitting/
+
+webpack 5.110.3 compiled with 3 warnings in 6855 ms
+
+> nightscout@16.0.0 post-generate-keys
+> node bin/generateRandomString.js >node_modules/.cache/_ns_cache/randomString
+
+bundle exit=0 end 2026-11-09T22:02:46Z
+porcelain=0

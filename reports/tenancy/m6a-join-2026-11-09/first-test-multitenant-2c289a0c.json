@@ -1,0 +1,125 @@
+{
+  "id": "539ba4ca89fa",
+  "startedAt": "2026-11-10T00:56:32.204Z",
+  "suites": [
+    "tests/tenant-insertion-upgrade.integration.test.js",
+    "tests/tenant-insertion-readiness.integration.test.js",
+    "tests/owner-configuration.integration.test.js",
+    "tests/owner-preview.integration.test.js",
+    "tests/tenant-socket-order-capability.integration.test.js",
+    "tests/tenant-socket-data-forwarding.integration.test.js",
+    "tests/postgres-connection.test.js",
+    "tests/entries-importer-postgres.integration.test.js",
+    "tests/postgres-entries-read.test.js",
+    "tests/postgres-entries-write.test.js",
+    "tests/api3.entries-crud.http.test.js",
+    "tests/tenant-rest-entries.integration.test.js",
+    "tests/tenant-rest-identifier-race.integration.test.js",
+    "tests/tenant-rest-identity-differential.integration.test.js",
+    "tests/tenant-frame-concurrency.integration.test.js",
+    "tests/tenant-durable-replay.integration.test.js",
+    "tests/tenant-projection-evaluator.integration.test.js",
+    "tests/tenant-current-state-recovery-proof.integration.test.js",
+    "tests/tenant-alarm-state.integration.test.js",
+    "tests/tenant-notifications.integration.test.js",
+    "tests/evaluator-consumers.integration.test.js",
+    "tests/tenant-operations.integration.test.js",
+    "tests/tenant-commit-clock-port.integration.test.js",
+    "tests/tenant-commit-clock-http.integration.test.js",
+    "tests/multitenant-preview-replicas.integration.test.js",
+    "tests/tenant-rest-derived.integration.test.js",
+    "tests/tenant-rest-treatments.integration.test.js",
+    "tests/tenant-rest-context.integration.test.js",
+    "tests/tenant-rest-device-activity.integration.test.js",
+    "tests/tenant-rest-profile-food.integration.test.js",
+    "tests/tenant-rest-settings-differential.integration.test.js",
+    "tests/postgres-migrations.integration.test.js",
+    "tests/mongodb-migrations.integration.test.js",
+    "tests/postgres-secrets.integration.test.js",
+    "tests/vault-secrets.integration.test.js",
+    "tests/tenant-runtime-vault.integration.test.js",
+    "tests/tenant-entries-http.integration.test.js",
+    "tests/tenant-credential-http.integration.test.js",
+    "tests/tenant-authorization-postgres.integration.test.js",
+    "tests/subject-management-http.integration.test.js",
+    "tests/subject-admin-postgres.integration.test.js",
+    "tests/owner-subject-policy.integration.test.js",
+    "tests/tenant-rest-authority-review.test.js",
+    "tests/storage-port-contract.integration.test.js",
+    "tests/tenant-frame-acquisition.integration.test.js",
+    "tests/tenant-rest-client-replay.integration.test.js",
+    "tests/multitenant-preview-process.integration.test.js"
+  ],
+  "created": [
+    {
+      "kind": "postgres",
+      "id": "deadfa64cf6f08958713c289ecb583f5568673d4dc41cfd80d1aaab7aabb35b0",
+      "volumes": [
+        "7290258c5f38f93a18ea15e2ef9ebbd7d5f6aa10338f6de1eb8442946a9bc399"
+      ],
+      "image": "postgres:16"
+    },
+    {
+      "kind": "mongo",
+      "id": "8b5deac071601d6383f741a0e968f80720f92d4ff2cb657ba166a338efab378d",
+      "volumes": [
+        "6fea81a337e02ca823119487fe7dbec0a1fdb6383e39726ce17bcefaac1cd078",
+        "531edbd3daadc2b36f77530a6cff9203f7056b63f2325903d81b6fdc9afb99f3"
+      ],
+      "image": "mongo:8.0"
+    },
+    {
+      "kind": "vault",
+      "id": "e8d7556187d89209b55692f1fd74a2377a57247d11bbe45761c2d210d7dfba01",
+      "volumes": [
+        "93983d27acb351c4498a6e7936fa6a1a463d9b5ea45761165e731a068b4a57b3",
+        "705b25369851ec46d4a3b938eea9c9cd895d8e357c61d0254f7f70e7d6f054d8"
+      ],
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2"
+    }
+  ],
+  "removed": [
+    {
+      "kind": "vault",
+      "id": "e8d7556187d89209b55692f1fd74a2377a57247d11bbe45761c2d210d7dfba01",
+      "volumes": [
+        "93983d27acb351c4498a6e7936fa6a1a463d9b5ea45761165e731a068b4a57b3",
+        "705b25369851ec46d4a3b938eea9c9cd895d8e357c61d0254f7f70e7d6f054d8"
+      ],
+      "verifiedAbsent": true
+    },
+    {
+      "kind": "mongo",
+      "id": "8b5deac071601d6383f741a0e968f80720f92d4ff2cb657ba166a338efab378d",
+      "volumes": [
+        "6fea81a337e02ca823119487fe7dbec0a1fdb6383e39726ce17bcefaac1cd078",
+        "531edbd3daadc2b36f77530a6cff9203f7056b63f2325903d81b6fdc9afb99f3"
+      ],
+      "verifiedAbsent": true
+    },
+    {
+      "kind": "postgres",
+      "id": "deadfa64cf6f08958713c289ecb583f5568673d4dc41cfd80d1aaab7aabb35b0",
+      "volumes": [
+        "7290258c5f38f93a18ea15e2ef9ebbd7d5f6aa10338f6de1eb8442946a9bc399"
+      ],
+      "verifiedAbsent": true
+    }
+  ],
+  "env": {
+    "NS_TEST_POSTGRES_ADMIN_URI": "disposable",
+    "CUSTOMCONNSTR_mongo": "disposable",
+    "NS_PROFILE_FOOD_VAULT_ADDRESS": "disposable",
+    "NS_SETTINGS_VAULT_ADDRESS": "disposable"
+  },
+  "result": {
+    "status": 8,
+    "signal": null,
+    "passing": 496,
+    "pending": 1,
+    "failing": 5
+  },
+  "finishedAt": "2026-11-10T01:00:35.427Z",
+  "remaining": [],
+  "status": 1
+}

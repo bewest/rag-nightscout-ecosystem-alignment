@@ -1,0 +1,1636 @@
+head 80f00394e4b1612a8d1cf6613d34b8f89147911e start 2026-11-09T22:03:04Z bundle=production budget files: tests/page-bundle-budget.test.js 
+=== unit budget file
+  9 passing (176ms)
+=== dom tier
+# dom: 19 test files
+
+
+  AGP report values and gaps
+    [32m✔[39m bins and groups readings by the profile timezone rather than the host (39ms)
+    [32m✔[39m clears the previous report when the next result is empty
+    [32m✔[39m keeps numerical statistics consistent in mg/dl
+    [32m✔[39m keeps summary chart ranges aligned with TIR when report targets change in mg/dl
+    [32m✔[39m keeps numerical statistics consistent in mmol
+    [32m✔[39m keeps summary chart ranges aligned with TIR when report targets change in mmol
+    [32m✔[39m leaves missing AGP intervals empty and splits the daily trace
+    [32m✔[39m selects the latest 28 daily profiles regardless of the report sort option (65ms)
+
+  boluscalc quick-pick chooser rebuilds from the food data at open
+    [32m✔[39m starts empty, because it is constructed before any food has arrived
+    [32m✔[39m offers the quick picks that arrived after construction when the drawer opens
+    [32m✔[39m follows a change to the food data between two openings
+    [32m✔[39m resolves the quick pick it names after the rebuild, with plain foods in the collection (BF-35)
+    [32m✔[39m keeps hidden quick picks out of the rebuilt chooser, in either spelling
+    [32m✔[39m does not offer a quick pick hidden since the last opening
+    [32m✔[39m opens with nothing selected, whatever was selected before
+    [32m✔[39m binds the change handler once, however often the drawer opens
+
+  boluscalc quick-pick chooser
+    [32m✔[39m offers only quick picks, not every food in the database
+    [32m✔[39m resolves the quick pick it names, with a plain food in the collection
+    [32m✔[39m resolves the last quick pick rather than throwing
+    [32m✔[39m leaves hidden quick picks out of the chooser, in either spelling
+    [32m✔[39m orders the chooser by position numerically, whichever type it was stored as
+    [32m✔[39m copes with an empty or absent food collection
+
+  lib/food/quickpick
+    isTrue
+      [32m✔[39m accepts both spellings of true and nothing else
+    isHidden
+      [32m✔[39m treats an absent flag as not hidden
+    positionOf
+      [32m✔[39m reads a position out of either type, and sorts an unusable one last
+    selectable
+      [32m✔[39m is empty for no input rather than throwing
+      [32m✔[39m does not mutate the array it was given
+
+  client alarm handlers with no reading loaded
+Headless init
+Entering setup 0
+Setting up benv 3
+Nightscout bundle ready
+Bundle loaded 39
+HTML set 97
+Benv expose 111
+Error: Could not load link: "http://localhost/css/help-tooltips.css"
+    at onErrorWrapped (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/per-document-resource-loader.js:38:19)
+    at Object.check (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/resource-queue.js:72:23)
+    at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/resource-queue.js:124:14
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) Error: secure-jsdom: network access blocked (http://localhost/css/help-tooltips.css)
+    at NoNetworkLoader.fetch (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/secure-jsdom.js:23:27)
+    at PerDocumentResourceLoader.fetch (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/per-document-resource-loader.js:17:42)
+    at fetchStylesheetInternal (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/helpers/stylesheets.js:87:18)
+    at exports.fetchStylesheet (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/helpers/stylesheets.js:11:10)
+    at fetchAndProcess (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/HTMLLinkElement-impl.js:94:3)
+    at maybeFetchAndProcess (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/HTMLLinkElement-impl.js:73:3)
+    at HTMLLinkElementImpl._attach (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/HTMLLinkElement-impl.js:31:5)
+    at HTMLBodyElementImpl._insert (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:836:14)
+    at HTMLBodyElementImpl._preInsert (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:757:10)
+    at HTMLBodyElementImpl._append (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:863:17)
+    at HTMLBodyElementImpl.appendChild (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:599:17)
+    at HTMLBodyElement.appendChild (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/generated/Node.js:411:60)
+    at HTMLBodyElement.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:542695)
+    at Xe (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:541107)
+    at k.fn.init.append (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:542596)
+    at k.fn.init.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:543689)
+    at ee (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:524493)
+    at k.fn.init.html (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:543366)
+    at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/headless.js:46:22
+    at Object.setup (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/benv-shim.js:86:17)
+    at Function.init [as setup] (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/headless.js:23:10)
+    at Context.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/client.alarm-no-reading.test.js:86:14)
+    at callFnAsync (file:///home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runnable.js:390:23)
+    at Hook.run (file:///home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runnable.js:332:9)
+    at next (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runner.cjs:619:10)
+    at Immediate.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runner.cjs:702:5)
+    at process.processImmediate (node:internal/timers:484:21)
+    1) "before each" hook for "a page that has received no data at all takes an urgent alarm without throwing"
+language is en
+Application appears to be online
+Client connected to server.
+Authorizing socket
+    2) "after each" hook for "a page that has received no data at all takes an urgent alarm without throwing"
+
+  client alarm snooze when the server ignores the ack
+Headless init
+Entering setup 0
+Setting up benv 3
+Nightscout bundle ready
+Bundle loaded 15
+HTML set 49
+Benv expose 49
+Error: Could not load link: "http://localhost/css/help-tooltips.css"
+    at onErrorWrapped (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/per-document-resource-loader.js:38:19)
+    at Object.check (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/resource-queue.js:72:23)
+    at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/resource-queue.js:124:14
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) Error: secure-jsdom: network access blocked (http://localhost/css/help-tooltips.css)
+    at NoNetworkLoader.fetch (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/secure-jsdom.js:23:27)
+    at PerDocumentResourceLoader.fetch (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/browser/resources/per-document-resource-loader.js:17:42)
+    at fetchStylesheetInternal (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/helpers/stylesheets.js:87:18)
+    at exports.fetchStylesheet (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/helpers/stylesheets.js:11:10)
+    at fetchAndProcess (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/HTMLLinkElement-impl.js:94:3)
+    at maybeFetchAndProcess (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/HTMLLinkElement-impl.js:73:3)
+    at HTMLLinkElementImpl._attach (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/HTMLLinkElement-impl.js:31:5)
+    at HTMLBodyElementImpl._insert (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:836:14)
+    at HTMLBodyElementImpl._preInsert (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:757:10)
+    at HTMLBodyElementImpl._append (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:863:17)
+    at HTMLBodyElementImpl.appendChild (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/nodes/Node-impl.js:599:17)
+    at HTMLBodyElement.appendChild (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/jsdom/lib/jsdom/living/generated/Node.js:411:60)
+    at HTMLBodyElement.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:542695)
+    at Xe (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:541107)
+    at k.fn.init.append (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:542596)
+    at k.fn.init.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:543689)
+    at ee (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:524493)
+    at k.fn.init.html (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/.cache/_ns_cache/public/js/bundle.app.js:2:543366)
+    at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/headless.js:46:22
+    at Object.setup (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/benv-shim.js:86:17)
+    at Function.init [as setup] (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/headless.js:23:10)
+    at Context.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/client.alarm-snooze.test.js:67:14)
+    at callFnAsync (file:///home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runnable.js:390:23)
+    at Hook.run (file:///home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runnable.js:332:9)
+    at next (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runner.cjs:619:10)
+    at Immediate.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/node_modules/mocha/lib/runner.cjs:702:5)
+    at process.processImmediate (node:internal/timers:484:21)
+    3) "before each" hook for "keeps an urgent alarm quiet for the snooze chosen on the page"
+language is en
+Application appears to be online
+Client connected to server.
+Authorizing socket
+
+  renderer treatment tooltip BG units
+    display units differ from the record units
+      [32m✔[39m mmol display, mg/dl profile: a careportal BG of 5 mmol shows 5
+      [32m✔[39m mg/dl display, mmol profile: a careportal BG of 90 mg/dl shows 90
+      [32m✔[39m mmol display, mmol profile: a record stored as 90 mg/dl shows 5
+    controls
+      [32m✔[39m mmol display, mmol profile: 5 mmol shows 5
+      [32m✔[39m mg/dl display, mg/dl profile: 90 mg/dl shows 90
+      [32m✔[39m mmol display, mg/dl profile: 90 mg/dl is converted to 5
+      [32m✔[39m BG Check dot, mmol display, mg/dl profile: 5 mmol shows 5
+    a record without units is taken to be in the profile units
+      [32m✔[39m mmol display, mg/dl profile: 90 is converted to 5
+      [32m✔[39m mg/dl display, mmol profile: 5 is converted to 90
+      [32m✔[39m mmol display, mmol profile: 5 shows 5
+    units spellings
+      [32m✔[39m mmol display, mmol profile: a record stored as 90 mg/dL shows 5
+      [32m✔[39m mg/dl display, mg/dl profile: a record stored as 5 mmol/L shows 90
+      [32m✔[39m mmol display, mg/dl profile: a record stored as 5 mmol/L shows 5
+      [32m✔[39m mg/dl display, mmol profile: a record stored as 90 mg/dL shows 90
+
+  clock menu links carry the page token (#7377)
+    [32m✔[39m adds the token to every clock link when the page was opened with one
+    [32m✔[39m URL-encodes the token, once
+    [32m✔[39m does not encode an already-encoded token twice
+    [32m✔[39m adds nothing when the page address has no token
+
+  clock says when it is refused (#7377)
+    the properties fetch
+      [32m✔[39m shows the message on a 401
+      [32m✔[39m shows nothing new on other failures
+    the status script
+      [32m✔[39m shows the message when the status script is refused with 401 (209ms)
+      [32m✔[39m shows nothing when the failure is not a 401 (217ms)
+
+  clock with a saved API secret the site refuses (BF-223)
+    the properties fetch
+      [32m✔[39m loads with a valid token and removes the refused saved hash
+      [32m✔[39m without a token, removes the refused saved hash and says so
+      [32m✔[39m keeps a saved hash the site accepts, sent in preference to the token
+      [32m✔[39m still refuses an invalid token, once, after removing the refused saved hash
+    the status script
+      [32m✔[39m asks again with the token after a refused saved hash, and removes it (307ms)
+      [32m✔[39m without a token, asks again with nothing and reports the removal (317ms)
+      [32m✔[39m keeps a saved hash the site accepts (316ms)
+
+  clock configurator link keeps the token, encoded (#7377)
+    [32m✔[39m carries the page token on the link to the configured clock (169ms)
+    [32m✔[39m encodes the token and the face, so neither can change the link (172ms)
+    [32m✔[39m adds nothing when the page has no token (171ms)
+
+  editor navigation authorization
+    [32m✔[39m retains only the URL token across profile tool links in modern
+    [32m✔[39m retains only the URL token across profile tool links in colors
+    [32m✔[39m retains only the URL token across food tool links in modern
+    [32m✔[39m retains only the URL token across food tool links in colors
+    [32m✔[39m retains only the URL token across admin tool links in modern
+    [32m✔[39m retains only the URL token across admin tool links in colors
+    [32m✔[39m retains only the URL token across report tool links in modern
+    [32m✔[39m retains only the URL token across report tool links in colors
+    [32m✔[39m leaves tool URLs unchanged without a nonempty token: 
+    [32m✔[39m leaves tool URLs unchanged without a nonempty token: ?debug=true
+    [32m✔[39m leaves tool URLs unchanged without a nonempty token: ?token=
+
+  toolbar tooltips after theme selection
+    [32m✔[39m initializes the replacement modern toolbar with touch=false (44ms)
+    [32m✔[39m initializes the replacement modern toolbar with touch=true (38ms)
+    [32m✔[39m initializes the replacement colors toolbar with touch=false (40ms)
+    [32m✔[39m initializes the replacement colors toolbar with touch=true (40ms)
+
+  food editor: touch scrolling (#8192)
+    [32m✔[39m draws the food rows and quick picks with jQuery UI's drag handles
+    [32m✔[39m lets a swipe that starts on a food row scroll the list, or the page sideways (73ms)
+    [32m✔[39m lets a swipe that starts on a quick pick scroll the page either way (71ms)
+    [32m✔[39m retains touch scrolling on food rows and quick picks in the modern theme (69ms)
+    [32m✔[39m control: a drag handle outside the food editor keeps jQuery UI's touch-action: none
+
+  glucosedistribution report
+GVI 1.09 GVIIdeal 1441.8130946832187 GVITotal 1570.089257261219 GVIIdeal_Time 1435
+glucoseMean 129 tirMultiplier 0 PGS 140.61
+GVI 1.09 GVIIdeal 1441.8130946832187 GVITotal 1570.089257261219 GVIIdeal_Time 1435
+glucoseMean 129 tirMultiplier 0 PGS 140.61
+GVI 1.09 GVIIdeal 1382.1088958544476 GVITotal 1510.089257261219 GVIIdeal_Time 1375
+glucoseMean 132 tirMultiplier 0 PGS 143.88
+GVI 1.09 GVIIdeal 1441.8130946832187 GVITotal 1570.089257261219 GVIIdeal_Time 1435
+glucoseMean 129 tirMultiplier 0 PGS 140.61
+    [32m✔[39m updates the pentagon when hours and distribution ranges change (103ms)
+GVI 1.03 GVIIdeal 1435.7370929247456 GVITotal 1476.2709412050372 GVIIdeal_Time 1435
+glucoseMean 99 tirMultiplier 0.997 PGS 0.31
+    [32m✔[39m does not give the first low reading extra weight in a full day
+GVI 1.1 GVIIdeal 1442.8184223941694 GVITotal 1580.0833101980363 GVIIdeal_Time 1435
+glucoseMean 100 tirMultiplier 0.997 PGS 0.33
+    [32m✔[39m does not give the first high reading extra weight in a full day
+GVI NaN GVIIdeal 0 GVITotal 0 GVIIdeal_Time 0
+glucoseMean NaN tirMultiplier 1 PGS NaN
+    [32m✔[39m displays higher bands first and keeps Overall last
+GVI 1 GVIIdeal 20.396078054371138 GVITotal 20.396078054371138 GVIIdeal_Time 20
+glucoseMean 101 tirMultiplier 1 PGS 0
+    [32m✔[39m still includes an interpolated sample for a missing five-minute reading
+GVI 1 GVIIdeal 56.089214649520635 GVITotal 56.08921464952064 GVIIdeal_Time 55
+glucoseMean 117 tirMultiplier 1 PGS 0
+    [32m✔[39m includes the first selected interval when earlier hours are excluded
+GVI 1 GVIIdeal 56.089214649520635 GVITotal 56.08921464952064 GVIIdeal_Time 55
+glucoseMean 213 tirMultiplier 0 PGS 213
+    [32m✔[39m selects hours in the profile time zone America/Los_Angeles, not the machine zone
+GVI 1 GVIIdeal 56.089214649520635 GVITotal 56.08921464952064 GVIIdeal_Time 55
+glucoseMean 249 tirMultiplier 0 PGS 249
+    [32m✔[39m selects hours in the profile time zone Pacific/Auckland, not the machine zone
+GVI 1 GVIIdeal 56.089214649520635 GVITotal 56.08921464952064 GVIIdeal_Time 55
+glucoseMean 105 tirMultiplier 1 PGS 0
+    [32m✔[39m counts each statsrecord once when readings arrive every 5 minutes
+GVI NaN GVIIdeal 0 GVITotal 0 GVIIdeal_Time 0
+glucoseMean NaN tirMultiplier 1 PGS NaN
+    [32m✔[39m counts a single statsrecord once
+
+  Loopalyzer report glucose chart
+    [32m✔[39m plots the issue #6236 readings at their expected times
+    [32m✔[39m plots a genuine missing sample as a gap at its actual time
+    [32m✔[39m keeps the plotted midnight samples unchanged when adjacent days are selected (66ms)
+    [32m✔[39m does not plot a next-day sample in the previous day's missing final interval (50ms)
+    DST transition days (#8156)
+      [32m✔[39m renders all charts when viewed on 23-hour and 25-hour DST days (72ms)
+      [32m✔[39m uses a midnight-to-midnight axis when the viewer timezone skips midnight
+      [32m✔[39m aligns calculated curves and markers at 08:00:00 on 2026-03-29 in Europe/Oslo
+      [32m✔[39m aligns uploaded status and prediction values at 08:00:00 on 2026-03-29 in Europe/Oslo
+      [32m✔[39m aligns calculated curves and markers at 08:00:00 on 2026-10-25 in Europe/Oslo
+      [32m✔[39m aligns uploaded status and prediction values at 08:00:00 on 2026-10-25 in Europe/Oslo
+      [32m✔[39m aligns calculated curves and markers at 23:30:00 on 2026-03-29 in Europe/Oslo
+      [32m✔[39m aligns uploaded status and prediction values at 23:30:00 on 2026-03-29 in Europe/Oslo
+      [32m✔[39m aligns calculated curves and markers at 23:30:00 on 2026-10-25 in Europe/Oslo
+      [32m✔[39m aligns uploaded status and prediction values at 23:30:00 on 2026-10-25 in Europe/Oslo
+      [32m✔[39m aligns calculated curves and markers at 08:00:00 on 2026-10-04 in Australia/Lord_Howe
+      [32m✔[39m aligns uploaded status and prediction values at 08:00:00 on 2026-10-04 in Australia/Lord_Howe
+      [32m✔[39m aligns calculated curves and markers at 23:30:00 on 2026-04-05 in Australia/Lord_Howe
+      [32m✔[39m aligns uploaded status and prediction values at 23:30:00 on 2026-04-05 in Australia/Lord_Howe
+      [32m✔[39m aligns calculated curves and markers at 01:00:00 on 2026-09-06 in America/Santiago
+      [32m✔[39m aligns uploaded status and prediction values at 01:00:00 on 2026-09-06 in America/Santiago
+      [32m✔[39m aligns calculated curves and markers at 08:00:00 on 2026-09-06 in America/Santiago
+      [32m✔[39m aligns uploaded status and prediction values at 08:00:00 on 2026-09-06 in America/Santiago
+      [32m✔[39m aligns calculated curves and markers at 23:30:00 on 2026-09-06 in America/Santiago
+      [32m✔[39m aligns uploaded status and prediction values at 23:30:00 on 2026-09-06 in America/Santiago
+      [32m✔[39m keeps skipped clock times empty even when uploaded values interpolate across the jump
+      [32m✔[39m keeps the earliest available repeated-hour value for uploaded and calculated curves (46ms)
+      [32m✔[39m aligns equal-clock meals when time-shifting a DST day together with an ordinary day (51ms)
+      [32m✔[39m shifts markers and curves together even when the average clock time is skipped by DST (54ms)
+      [32m✔[39m retains series data when selected days include 23-hour and 25-hour DST transitions (88ms)
+
+  modern side panels
+    [32m✔[39m preserves notification content, escaping and empty/unauthorized states in modern
+    [32m✔[39m preserves notification content, escaping and empty/unauthorized states in classic
+    [32m✔[39m cancels interrupted slides, keeps reopened panels visible and hides only after closing finishes
+    [32m✔[39m uses immediate controls for classic themes
+    [32m✔[39m uses immediate controls for reduced motion
+
+  modern report navigation
+    [32m✔[39m supports keyboard selection through existing handlers without resetting filters or duplicating listeners
+
+  daily insulin and carbohydrate summaries
+    [32m✔[39m shows the actual insulin split and makes the carbs comparison explicit
+    [32m✔[39m handles zero and single-category insulin without NaN percentages
+    [32m✔[39m does not turn unavailable totals into a misleading zero or full ring
+
+  opt-in modern dashboard
+    [32m✔[39m adds one settings header while preserving settings values and Save handlers
+    [32m✔[39m keeps Care Portal Close separate from Submit and retains unsaved fields
+    [32m✔[39m does not observe a missing chart when a modern editor loads
+    [32m✔[39m renders one working profile editor shell and honours a browser override from modern
+    [32m✔[39m renders one working profile editor shell and honours a browser override from colors
+    [32m✔[39m renders one working food editor shell and honours a browser override from modern
+    [32m✔[39m renders one working food editor shell and honours a browser override from colors
+    [32m✔[39m renders one working admin editor shell and honours a browser override from modern
+    [32m✔[39m renders one working admin editor shell and honours a browser override from colors
+    [32m✔[39m renders one working report editor shell and honours a browser override from modern
+    [32m✔[39m renders one working report editor shell and honours a browser override from colors
+    [32m✔[39m preserves authentication submission, retry focus and remember-device opt-in with modern
+    [32m✔[39m preserves authentication submission, retry focus and remember-device opt-in with colors
+    [32m✔[39m shows existing toolbar tooltips below their buttons and inside both viewport edges
+    [32m✔[39m keeps the default theme and layout unchanged
+    [32m✔[39m accepts THEME=modern without changing thresholds or alarm settings
+    [32m✔[39m renders the default main screen with one copy of every existing control
+    [32m✔[39m renders the modern main screen with one copy of every existing control
+    [32m✔[39m honours the existing saved browser theme preference
+    [32m✔[39m keeps drawer and notification controls working after the dashboard is replaced
+    [32m✔[39m selects the matching layout before binding client events when modern is overridden
+    [32m✔[39m selects the matching layout before binding client events when colors is overridden
+
+  Glucose pentagon report
+    [32m✔[39m renders a labelled SVG, a numerical score and five accessible values
+    [32m✔[39m changes display units without changing the score or polygon
+    [32m✔[39m clears a prior score when data or coverage becomes insufficient
+    [32m✔[39m explains insufficient observed time even with 100% elapsed coverage
+    [32m✔[39m explains when overlapping or missing readings cannot be distinguished
+    [32m✔[39m explains conflicting simultaneous glucose values
+    [32m✔[39m withholds full-day metrics when hours are filtered and restores them
+    [32m✔[39m marks values beyond the chart scale without clipping the numeric score
+    [32m✔[39m registers every report state in Crowdin and renders translations as Unicode text
+
+  profile-derived browser sinks
+    [32m✔[39m keeps care portal profile option values exact while rendering names as text
+    [32m✔[39m keeps bolus calculator profile option values exact while rendering names as text
+    [32m✔[39m renders profile report names and values as text
+    [32m✔[39m renders loopalyzer profile names and range times as text
+    [32m✔[39m keeps treatment editor profile option values exact while rendering names as text
+LOADING CLIENT INIT
+Done initeditor()
+    [32m✔[39m keeps profile editor option values exact while rendering names as text
+
+  Profile editor loading and incomplete values
+LOADING CLIENT INIT
+Done initeditor()
+    [32m✔[39m reports that defaults are in use when no record is stored
+LOADING CLIENT INIT
+Done initeditor()
+    [32m✔[39m keeps editing and submission disabled until the fetch succeeds
+LOADING CLIENT INIT
+    [32m✔[39m keeps the editor disabled without inventing a profile after a failed fetch
+LOADING CLIENT INIT
+Done initeditor()
+    [32m✔[39m refuses to save while a clinical field is still empty
+LOADING CLIENT INIT
+Done initeditor()
+saving profile
+    [32m✔[39m saves normally once every field carries a value
+LOADING CLIENT INIT
+Done initeditor()
+saving profile
+    [32m✔[39m preserves fetched values and allows saving an existing profile
+
+  Unnamed profile editor
+LOADING CLIENT INIT
+Done initeditor()
+    [32m✔[39m loads the unnamed selection and correct values without writing
+LOADING CLIENT INIT
+Done initeditor()
+saving profile
+    [32m✔[39m preserves the empty key and settings when saved unchanged
+LOADING CLIENT INIT
+Done initeditor()
+saving profile
+    [32m✔[39m renames explicitly without overwriting an existing profile
+LOADING CLIENT INIT
+Done initeditor()
+saving profile
+    [32m✔[39m does not turn a named profile into a blank name
+LOADING CLIENT INIT
+Done initeditor()
+    [32m✔[39m keeps both raw profiles in the Profile report
+LOADING CLIENT INIT
+Done initeditor()
+    [32m✔[39m requires explicit selection for a dangling default pointer
+
+  day-to-day report: events with a duration
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 1 msecs
+    [32m✔[39m smooths sensor readings without joining raw values, fingersticks or missing intervals
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 0 msecs
+    [32m✔[39m shows the original reading and time on hover in mg/dl
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 0 msecs
+    [32m✔[39m shows the original reading and time on hover in mmol
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 0 msecs
+    [32m✔[39m tracks the nearest reading from empty plot space in mg/dl
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 0 msecs
+    [32m✔[39m tracks the nearest reading from empty plot space in mmol
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 9 msecs
+    [32m✔[39m keeps modern basal rates on their own axis and retains exact treatment amounts and totals
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 2 msecs
+    [32m✔[39m combines glucose, basal and all nearby treatments in mg/dl
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 3 msecs
+    [32m✔[39m combines glucose, basal and all nearby treatments in mmol
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 1 msecs
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 0 msecs
+    [32m✔[39m selects the new basal rate at a rate boundary and displays suspension as zero
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 1 msecs
+    [32m✔[39m shows treatments and basal when the day has no sensor readings
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 2 msecs
+    [32m✔[39m keeps tooltip height fixed while following horizontal pointer movement
+DAY2DAY sorteddaystoshow [ '2025-01-01' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 1 msecs
+    [32m✔[39m keeps the first reading selectable at the rounded plot boundary
+DAY2DAY sorteddaystoshow [ '2025-01-01', '2025-01-02' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 0 msecs
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-02 1 msecs
+    [32m✔[39m draws an event that crosses midnight on both days, clipped to each day
+DAY2DAY sorteddaystoshow [ '2025-01-02' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-02 1 msecs
+    [32m✔[39m draws every band type on a day shown alone when the event began the day before
+DAY2DAY sorteddaystoshow [ '2025-01-01', '2025-01-02' ]
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-01 0 msecs
+Device COB status available:  false
+Device IOB status available:  false
+Rendering 2025-01-02 1 msecs
+    [32m✔[39m leaves same-day events unchanged and carries over only what is drawn as a band
+
+
+[TIMING STATS] Total: 193 tests, Avg: 32ms, Slow: 0
+
+  191 passing (6s)
+  3 failing
+
+  1) client alarm handlers with no reading loaded
+       "before each" hook for "a page that has received no data at all takes an urgent alarm without throwing":
+     TypeError: Cannot read properties of undefined (reading 'alarmHigh')
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/client.alarm-no-reading.test.js:109:36
+      at Array.map (<anonymous>)
+      at Context.<anonymous> (tests/client.alarm-no-reading.test.js:108:89)
+      at process.processImmediate (node:internal/timers:484:21)
+
+  2) client alarm handlers with no reading loaded
+       "after each" hook for "a page that has received no data at all takes an urgent alarm without throwing":
+     TypeError: Cannot read properties of undefined (reading 'forEach')
+      at Context.<anonymous> (tests/client.alarm-no-reading.test.js:114:24)
+      at process.processImmediate (node:internal/timers:484:21)
+
+  3) client alarm snooze when the server ignores the ack
+       "before each" hook for "keeps an urgent alarm quiet for the snooze chosen on the page":
+     TypeError: client.dataUpdate is not a function
+      at Context.<anonymous> (tests/client.alarm-snooze.test.js:87:12)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+
+TEST_EXECUTION: no test body completed in tests/client.alarm-no-reading.test.js
+TEST_EXECUTION: no test body completed in tests/client.alarm-snooze.test.js
+dom exit=5
+=== dependency tier
+  368 passing (9s)
+  2 pending
+=== browser tier
+
+> nightscout@16.0.0 test:browser
+> node scripts/test-tiers.js run browser
+
+# browser: 41 test files
+
+
+Browser fixture: chromium 153.0.8010.12
+  admin actions in a real browser
+    cleanstatusdb
+      ✔ action[0]: counts devicestatus records on init then reports removal on code() (217ms)
+      ✔ action[1]: renders day-input on init then deletes on code() (180ms)
+    futureitems
+      ✔ action[0]: lists future treatments then reports removal on code() (1095ms)
+      ✔ action[0]: renders stored treatment fields as literal text (164ms)
+      ✔ action[1]: lists future entries then reports removal on code() (183ms)
+    cleantreatmentsdb
+      ✔ action[0]: renders day-input on init then deletes on code() (173ms)
+    cleanentriesdb
+      ✔ action[0]: renders day-input on init then deletes on code() (161ms)
+    daterangedelete admin plugin (TZ aware)
+      ✔ should verify that queries respect America/New_York timezone (244ms)
+      ✔ should delete matching records from all collections with timezone-aware bounds (194ms)
+      ✔ previews the 23-hour New York daylight-saving day with exact bounds (256ms)
+      ✔ previews the 25-hour New York daylight-saving day with exact bounds (248ms)
+      ✔ sends no deletion request when the native confirmation is cancelled (186ms)
+      ✔ should reject unexpected collection values (243ms)
+
+  Authorization editor dialogs
+    ✔ roles: cancel/Escape restore focus; repeated saves preserve exact normalized payloads (993ms)
+    ✔ roles: a successful write closes even if the following list refresh fails (475ms)
+    ✔ roles: failed POST saves retain the visible draft and allow retry twice (612ms)
+    ✔ roles: failed PUT saves retain the visible draft and allow retry twice (639ms)
+    ✔ subjects: cancel/Escape restore focus; repeated saves preserve exact normalized payloads (972ms)
+    ✔ subjects: a successful write closes even if the following list refresh fails (456ms)
+    ✔ subjects: failed POST saves retain the visible draft and allow retry twice (581ms)
+    ✔ subjects: failed PUT saves retain the visible draft and allow retry twice (583ms)
+
+  Webpack image and CSS update contracts
+    ✔ loads the unchanged toolbar image URL from the production application CSS (177ms)
+    ✔ loads every bundled Ubuntu and Open Sans face without external requests (105ms)
+    ✔ uses WOFF fallbacks when WOFF2 is unavailable (101ms)
+    ✔ renders multilingual characters and clock emoji with production font styles (175ms)
+    ✔ preserves the static stylesheet cascade for index (323ms)
+    ✔ preserves the static stylesheet cascade for adminindex (173ms)
+    ✔ preserves the static stylesheet cascade for profileindex (209ms)
+    ✔ preserves the static stylesheet cascade for foodindex (189ms)
+    ✔ preserves the static stylesheet cascade for reportindex (231ms)
+    ✔ applies two real CSS hot updates while preserving the development image URL and page state (901ms)
+
+  Built page entries in a real browser
+    ✔ loads only the shared client and app exports (125ms)
+    ✔ loads only the shared client and reports exports (137ms)
+    ✔ loads only the shared client and admin exports (136ms)
+    ✔ loads only the shared client and profile exports (130ms)
+    ✔ loads only the shared client and food exports (134ms)
+
+  Browser event bus contracts
+    ✔ preserves heartbeat payloads and stops old timers across two replacement cycles (192ms)
+    ✔ preserves listener order, once/removal and handled/unhandled errors twice (176ms)
+
+  careportal in a real browser
+    ✔ open careportal, and enter a treatment (458ms)
+    ✔ saves a Temporary Target on an mmol site once converted, without a hidden glucose value (454ms)
+    ✔ uses local timezone date, not UTC, when saving an other-time treatment (8304) 2024-10-25T23:00:00-05:00 (427ms)
+    ✔ uses local timezone date, not UTC, when saving an other-time treatment (8304) 2024-10-26T01:00:00+03:00 (483ms)
+    ✔ reopens the bolus food picker, rejects zero portions and retains independent selections twice (811ms)
+    ✔ uses local timezone date, not UTC, when saving a boluscalc other-time treatment (456ms)
+    ✔ calculates with a mg/dl profile on a mg/dl display (261ms)
+    ✔ uses historical mg/dl units on a mg/dl display after a units change (266ms)
+    ✔ calculates with a mg/dl profile on a mmol display (212ms)
+    ✔ uses historical mg/dl units on a mmol display after a units change (232ms)
+    ✔ calculates with a mmol profile on a mg/dl display (232ms)
+    ✔ uses historical mmol units on a mg/dl display after a units change (217ms)
+    ✔ calculates with a mmol profile on a mmol display (234ms)
+    ✔ uses historical mmol units on a mmol display after a units change (216ms)
+    ✔ uses the Default profile chosen in the bolus calculator (215ms)
+    ✔ uses the Other profile chosen in the bolus calculator (217ms)
+    ✔ shows the actionable failure and preserves the form for Temporary Override (378ms)
+    ✔ shows the actionable failure and preserves the form for Temporary Override Cancel (404ms)
+    ✔ shows the actionable failure and preserves the form for Remote Carbs Entry (378ms)
+    ✔ shows the actionable failure and preserves the form for Remote Bolus Entry (369ms)
+    ✔ keeps an empty error response from being treated as success for Temporary Override (351ms)
+    ✔ keeps an empty error response from being treated as success for Temporary Override Cancel (381ms)
+    ✔ keeps an empty error response from being treated as success for Remote Carbs Entry (384ms)
+    ✔ keeps an empty error response from being treated as success for Remote Bolus Entry (387ms)
+    ✔ shows a fallback for an unusable error body: undefined (421ms)
+    ✔ shows a fallback for an unusable error body: {} (401ms)
+    ✔ shows a fallback for an unusable error body: "   \n  " (408ms)
+    ✔ explains uncertain delivery after a connection failure and preserves the bolus form (409ms)
+    ✔ explains uncertain delivery after a timeout and preserves the carbs form (1414ms)
+    ✔ explains HTTP 401 authorization failures with body "" (376ms)
+    ✔ explains HTTP 401 authorization failures with body "{\"status\":401,\"message\":\"Unauthorized\"}" (413ms)
+    ✔ explains HTTP 403 authorization failures with body "" (415ms)
+    ✔ explains HTTP 403 authorization failures with body "{\"status\":403,\"message\":\"Unauthorized\"}" (383ms)
+    ✔ closes the form after a successful Loop remote command without an error alert (439ms)
+
+  D3 chart interaction compatibility in a real browser
+    ✔ preserves glucose/forecast positions and hover data in mg/dl (204ms)
+    ✔ preserves glucose/forecast positions and hover data in mmol (182ms)
+    ✔ centers, clamps and moves the context brush repeatedly using mouse (215ms)
+    ✔ drags the selected context window using mouse (211ms)
+    ✔ drags the context window back to now after the chart was drawn before layout, using mouse (223ms)
+    ✔ centers, clamps and moves the context brush repeatedly using touch (214ms)
+    ✔ drags the selected context window using touch (180ms)
+    ✔ drags the context window back to now after the chart was drawn before layout, using touch (200ms)
+    ✔ keeps treatments read-only when editing is disabled (173ms)
+    ✔ moves a treatment by touch and restores the chart on cancel (217ms)
+    ✔ clamps a treatment dragged past the right edge to the time at the edge of the chart (186ms)
+    ✔ clamps a treatment dragged past the left and bottom edges into the drop areas there (194ms)
+    ✔ preserves duration treatment geometry and hover details (182ms)
+    ✔ preserves profile switch hover details and literal text (171ms)
+    ✔ Move emits the correct treatment operation only when confirmed=true (191ms)
+    ✔ Move emits the correct treatment operation only when confirmed=false (200ms)
+    ✔ Remove emits the correct treatment operation only when confirmed=true (204ms)
+    ✔ Remove emits the correct treatment operation only when confirmed=false (195ms)
+    ✔ Remove carbs emits the correct treatment operation only when confirmed=true (208ms)
+    ✔ Remove carbs emits the correct treatment operation only when confirmed=false (195ms)
+    ✔ Remove insulin emits the correct treatment operation only when confirmed=true (200ms)
+    ✔ Remove insulin emits the correct treatment operation only when confirmed=false (221ms)
+    ✔ Move carbs emits the correct treatment operation only when confirmed=true (191ms)
+    ✔ Move carbs emits the correct treatment operation only when confirmed=false (201ms)
+    ✔ Move insulin emits the correct treatment operation only when confirmed=true (191ms)
+    ✔ Move insulin emits the correct treatment operation only when confirmed=false (196ms)
+
+  clock client in a real browser
+    ✔ BF-160: the clock designer opens the clock in a new tab, not a window named with quotes (56ms)
+    ✔ constructs every supported face component with bounded numeric sizing (101ms)
+    ✔ does not interpret face configuration as markup, classes, or styles (89ms)
+    ✔ should render browser mmol preference when server units are mg/dl (92ms)
+    ✔ should render browser mg/dl preference when server units are mmol (90ms)
+    ✔ should use server-scaled values when browser and server units match (94ms)
+    low and falling emoji
+      ✔ shows concern at 74 with direction FortyFiveDown (95ms)
+      ✔ shows concern at 74 with direction SingleDown (92ms)
+      ✔ shows concern at 74 with direction DoubleDown (94ms)
+      ✔ shows concern at 74 with direction TripleDown (93ms)
+      ✔ shows concern at 74 with direction down (87ms)
+      ✔ shows concern at 74 with direction slightdown (96ms)
+      ✔ preserves the existing face without a falling trend: Flat (94ms)
+      ✔ preserves the existing face without a falling trend: SingleUp (91ms)
+      ✔ preserves the existing face without a falling trend: NONE (92ms)
+      ✔ preserves the existing face without a falling trend: NOT COMPUTABLE (96ms)
+      ✔ preserves the existing face without a falling trend: undefined (93ms)
+      ✔ uses the configured lower target and its boundary (277ms)
+      ✔ preserves existing low-value faces (278ms)
+      ✔ uses mg/dL internally when displaying mmol/L (94ms)
+      ✔ keeps stale data ahead of the trend warning (90ms)
+      ✔ uses the same normalized direction for the arrow (93ms)
+    low and falling emoji
+      ✔ shows concern at 74 with a falling direction (125ms)
+      ✔ preserves the existing face without a falling trend (121ms)
+      ✔ uses the configured lower target and its boundary (104ms)
+      ✔ preserves the existing low-value faces (108ms)
+      ✔ uses mg/dL internally when the browser displays mmol/L (95ms)
+      ✔ keeps stale data ahead of the trend warning (102ms)
+      ✔ uses the same normalized direction for the arrow (85ms)
+    when the data fetch fails
+      ✔ turns the bgclock face stale when fetches fail after the last reading (8147ms)
+      ✔ turns the clock-color face stale when fetches fail after the last reading (8234ms)
+      ✔ keeps the age text moving on a face that always shows it (4164ms)
+      ✔ draws nothing and does not throw when no fetch has succeeded yet (1441ms)
+      ✔ control: fetches that succeed with the same reading turn it stale (8249ms)
+
+  Production D3 surface
+    ✔ preserves color parsing and interpolation in the shipped bundle (148ms)
+    ✔ retains selection transition and interruption across two cycles (198ms)
+    ✔ preserves local day boundaries and time scales in America/Los_Angeles (134ms)
+    ✔ preserves local day boundaries and time scales in Europe/London (128ms)
+    ✔ preserves local day boundaries and time scales in UTC (127ms)
+
+  Dashboard seconds clock
+    ✔ ticks only the clock and persists the setting in default at 12 hours (2394ms)
+    ✔ ticks only the clock and persists the setting in default at 24 hours (2378ms)
+    ✔ ticks only the clock and persists the setting in modern at 12 hours (2865ms)
+    ✔ ticks only the clock and persists the setting in modern at 24 hours (2859ms)
+
+  dev integration browser regressions
+    ✔ parses valueless query parameters without corrupting access tokens (160ms)
+    ✔ preserves profile loading and save safeguards: empty (170ms)
+    ✔ preserves profile loading and save safeguards: pending (176ms)
+    ✔ preserves profile loading and save safeguards: failed (156ms)
+    ✔ preserves profile loading and save safeguards: unset (195ms)
+    ✔ preserves profile loading and save safeguards: save (175ms)
+    ✔ preserves profile loading and save safeguards: existing (172ms)
+    ✔ preserves quick-pick record identity and ordering: filter (144ms)
+    ✔ preserves quick-pick record identity and ordering: first (148ms)
+    ✔ preserves quick-pick record identity and ordering: last (150ms)
+    ✔ preserves quick-pick record identity and ordering: hidden (150ms)
+    ✔ preserves quick-pick record identity and ordering: order (147ms)
+    ✔ preserves quick-pick record identity and ordering: empty (154ms)
+    ✔ keeps zero-height chart geometry nonnegative and recovers after layout (154ms)
+    ✔ switches native and custom pill tooltips without retaining handlers (154ms)
+
+  DOMPurify reference in a real browser
+    ✔ removes mixed-case XML handlers even when a form shadows attribute removal (57ms)
+    ✔ removes executable markup from event handlers on repeated calls (58ms)
+    ✔ removes executable markup from encoded script URL on repeated calls (60ms)
+    ✔ removes executable markup from nested templates on repeated calls (57ms)
+    ✔ removes executable markup from template script on repeated calls (56ms)
+    ✔ removes executable markup from template URL on repeated calls (52ms)
+    ✔ removes executable markup from declarative template on repeated calls (55ms)
+    ✔ removes executable markup from MathML integration point on repeated calls (60ms)
+    ✔ removes executable markup from SVG integration point on repeated calls (55ms)
+    ✔ preserves visible note text: "Fish & Chips" (51ms)
+    ✔ preserves visible note text: "Hypo: BG <70 needed sugar" (53ms)
+    ✔ preserves visible note text: "Glucose >200; 5.5 mmol/L" (57ms)
+    ✔ preserves visible note text: "Café 💉\nBolus 2U" (54ms)
+    ✔ preserves safe formatting and nested template content (54ms)
+    ✔ preserves SVG pointer-events while stripping event handlers (54ms)
+    ✔ preserves SVG vector-effect while stripping event handlers (57ms)
+
+  Drawer size after a window resize (UI-DRAWER-RESIZE)
+    ✔ default #drawer keeps the size of a fresh open when the window grows taller (412ms)
+    ✔ default #drawer keeps the size of a fresh open when the window grows from a short full-window drawer (413ms)
+    ✔ default #drawer keeps the size of a fresh open when the window shrinks to a short full-window drawer (402ms)
+    ✔ default #drawer is closed or sized for the new window when the window grows from 390px to 1440px (330ms)
+    ✔ default #drawer is closed or sized for the new window when the window shrinks from 1440px to 390px (336ms)
+    ✔ default #adminNotifiesDrawer keeps the size of a fresh open when the window grows taller (358ms)
+    ✔ default #adminNotifiesDrawer keeps the size of a fresh open when the window grows from a short full-window drawer (406ms)
+    ✔ default #adminNotifiesDrawer keeps the size of a fresh open when the window shrinks to a short full-window drawer (347ms)
+    ✔ default #adminNotifiesDrawer is closed or sized for the new window when the window grows from 390px to 1440px (325ms)
+    ✔ default #adminNotifiesDrawer is closed or sized for the new window when the window shrinks from 1440px to 390px (340ms)
+    ✔ modern #drawer keeps the size of a fresh open when the window grows taller (1087ms)
+    ✔ modern #drawer keeps the size of a fresh open when the window grows from a short full-window drawer (1128ms)
+    ✔ modern #drawer keeps the size of a fresh open when the window shrinks to a short full-window drawer (1120ms)
+    ✔ modern #drawer is closed or sized for the new window when the window grows from 390px to 1440px (801ms)
+    ✔ modern #drawer is closed or sized for the new window when the window shrinks from 1440px to 390px (775ms)
+    ✔ modern #adminNotifiesDrawer keeps the size of a fresh open when the window grows taller (1038ms)
+    ✔ modern #adminNotifiesDrawer keeps the size of a fresh open when the window grows from a short full-window drawer (1048ms)
+    ✔ modern #adminNotifiesDrawer keeps the size of a fresh open when the window shrinks to a short full-window drawer (1114ms)
+    ✔ modern #adminNotifiesDrawer is closed or sized for the new window when the window grows from 390px to 1440px (769ms)
+    ✔ modern #adminNotifiesDrawer is closed or sized for the new window when the window shrinks from 1440px to 390px (800ms)
+
+  Food editor widget interactions
+    ✔ drags foods, edits portions and sends reordered updates twice without reloads (2406ms)
+    ✔ drags foods, edits portions and sends reordered updates twice with reloads (2792ms)
+
+  hashauth in a real browser
+    ✔ reports Unauthorized in inlineCode when not authenticated (135ms)
+    ✔ reports Admin authorized when authenticated (138ms)
+    ✔ renders authorization subject names as inert text (125ms)
+    ✔ stores sha1 in localStorage when storeapisecret=true, then clears on remove (135ms)
+    ✔ stores and removes authentication across two complete cycles (143ms)
+    ✔ restores saved authentication after two page reloads (264ms)
+    ✔ does not store sha1 when storeapisecret=false (135ms)
+    ✔ alerts on short API secret (140ms)
+    ✔ hashes via JS fallback when subtle crypto and TextEncoder are absent (135ms)
+
+  Actual server security headers in browser frames
+Redirecting http traffic to https because INSECURE_USE_HTTP= false
+Enabled SECURE_HSTS_HEADER (HTTP Strict Transport Security)
+    ✔ preserves cross-origin embedding and inline controls with CSP off twice (354ms)
+Enabled SECURE_CSP (Content Security Policy header). Enforcing.
+Redirecting http traffic to https because INSECURE_USE_HTTP= false
+Enabled SECURE_HSTS_HEADER (HTTP Strict Transport Security)
+    ✔ preserves cross-origin embedding and inline controls with CSP enforced twice (310ms)
+Enabled SECURE_CSP (Content Security Policy header). Not enforcing. Report only.
+Redirecting http traffic to https because INSECURE_USE_HTTP= false
+Enabled SECURE_HSTS_HEADER (HTTP Strict Transport Security)
+    ✔ preserves cross-origin embedding and inline controls with CSP report-only twice (357ms)
+
+  Help tooltips on the application page
+    ✔ opens and dismisses translated drawer help with mg/dl keyboard (413ms)
+    ✔ opens and dismisses translated drawer help with mg/dl touch (805ms)
+    ✔ opens and dismisses translated drawer help with mmol keyboard (409ms)
+    ✔ opens and dismisses translated drawer help with mmol touch (808ms)
+
+  Native help tooltip candidate
+    ✔ shows on keyboard focus, preserves description and dismisses on Escape twice (80ms)
+    ✔ renders translated titles as text and follows hover onto the tooltip (214ms)
+    ✔ supports touch drawer taps, repeated dismissal and keeps toolbar activation intact (454ms)
+    ✔ dismisses a tooltip click regardless of reported pointer type twice (260ms)
+    ✔ keeps keyboard-focused help visible through native scrolling twice (156ms)
+    ✔ avoids repeating a help label as its description and preserves existing descriptions twice (101ms)
+    ✔ makes drawer help keyboard-operable with a translated accessible name (87ms)
+    ✔ fits a narrow viewport, flips above a low trigger and dismisses on resize (137ms)
+    ✔ initializes once, restores descriptions on destroy and can initialize again (105ms)
+
+  Browser fixture isolation
+    ✔ blocks fetch, XHR, subresources, redirects and WebSockets outside the fixture twice (98ms)
+    ✔ uses fresh storage and blocks service workers across two lifecycles (71ms)
+    ✔ closes every page and context after a test failure twice (99ms)
+
+  Selected jQuery UI widgets and themes
+    ✔ ui-darkness: keeps padded buttons, focus and dialog drag/resize through two openings (1140ms)
+    ✔ ui-lightness: keeps padded buttons, focus and dialog drag/resize through two openings (1167ms)
+
+  legacy reports in a real browser
+Report idle after 898 ms
+Report idle after 775 ms
+Report idle after 797 ms
+Report idle after 787 ms
+Report idle after 212 ms
+Report idle after 225 ms
+Report idle after 216 ms
+Report idle after 206 ms
+Report idle after 212 ms
+    ✔ should produce some html (8332ms)
+    ✔ renders and updates the glucose pentagon in the Distribution report (676ms)
+    ✔ wraps translated pentagon labels and preserves report content in print (835ms)
+Report idle after 178 ms
+Report idle after 55 ms
+    ✔ should produce week to week report (789ms)
+Report idle after 63 ms
+    1) renders empty report periods repeatedly in mg/dl
+Report idle after 276 ms
+    2) preserves plotted report data and finite axes in mg/dl over repeated renders
+Report idle after 51 ms
+    3) renders empty report periods repeatedly in mmol
+Report idle after 281 ms
+    4) preserves plotted report data and finite axes in mmol over repeated renders
+
+  Notification state in the production browser bundle
+    ✔ preserves active acknowledgements and retires queued and late work over two lifecycles (467ms)
+
+  Actual page entries with development hot middleware
+    ✔ applies two updates to each page entry and shared app without reloading or dropping page exports (12635ms)
+    ✔ recovers from repeated compile errors without losing an unsaved draft or reloading (4089ms)
+
+  Page download failure recovery
+    ✔ recovers app from two failed bundle downloads with keyboard reload (350ms)
+    ✔ recovers reports from two failed bundle downloads with keyboard reload (412ms)
+    ✔ recovers admin from two failed bundle downloads with keyboard reload (439ms)
+    ✔ recovers profile from two failed bundle downloads with keyboard reload (432ms)
+    ✔ recovers food from two failed bundle downloads with keyboard reload (421ms)
+    ✔ stops dependent initialization when /bundle/js/bundle.app.js cannot download (77ms)
+    ✔ stops dependent initialization when /socket.io/socket.io.js cannot download (137ms)
+    ✔ stops dependent initialization when /first.js cannot download (137ms)
+    ✔ stops dependent initialization when /second.js cannot download (141ms)
+
+  Populated application page budgets
+    ✔ initializes populated app and bounds retained V8 heap where available (287ms)
+    ✔ initializes populated reports and bounds retained V8 heap where available (786ms)
+    ✔ initializes populated admin and bounds retained V8 heap where available (246ms)
+    ✔ initializes populated profile and bounds retained V8 heap where available (291ms)
+    ✔ initializes populated food and bounds retained V8 heap where available (308ms)
+
+  Complete page template startup
+    ✔ boots app with stored authentication and reconnects twice (2418ms)
+    ✔ boots reports with stored authentication and reconnects twice (1748ms)
+    ✔ boots admin with stored authentication and reconnects twice (2328ms)
+    ✔ boots profile with stored authentication and reconnects twice (2835ms)
+    ✔ boots food with stored authentication and reconnects twice (2368ms)
+    ✔ boots app with the authentication dialog and reconnects twice (2396ms)
+    ✔ boots reports with the authentication dialog and reconnects twice (3217ms)
+    ✔ boots admin with the authentication dialog and reconnects twice (2963ms)
+    ✔ boots profile with the authentication dialog and reconnects twice (2434ms)
+    ✔ boots food with the authentication dialog and reconnects twice (2305ms)
+    ✔ recovers app after two loading startup responses (323ms)
+    ✔ recovers reports after two loading startup responses (427ms)
+    ✔ recovers admin after two loading startup responses (302ms)
+    ✔ recovers profile after two loading startup responses (311ms)
+    ✔ recovers food after two loading startup responses (292ms)
+    ✔ recovers app after two offline startup responses (299ms)
+    ✔ recovers reports after two offline startup responses (386ms)
+    ✔ recovers admin after two offline startup responses (311ms)
+    ✔ recovers profile after two offline startup responses (299ms)
+    ✔ recovers food after two offline startup responses (267ms)
+    ✔ recovers the actual app page after two failed bundle downloads (598ms)
+    ✔ recovers the actual reports page after two failed bundle downloads (755ms)
+    ✔ recovers the actual admin page after two failed bundle downloads (547ms)
+    ✔ recovers the actual profile page after two failed bundle downloads (572ms)
+    ✔ recovers the actual food page after two failed bundle downloads (536ms)
+    ✔ retries a failed initial food fetch on reconnect without duplicating later save actions (2857ms)
+    ✔ opens each page from the dashboard and returns through its close link (2519ms)
+    ✔ boots every page from cached bundles and retires the old cache on upgrade (3275ms)
+
+  pluginbase in a real browser
+    ✔ updatePillText creates a pill in the matching container (145ms)
+    ✔ renders tooltip labels and values as text inside owned markup (154ms)
+    ✔ keeps one handler per event and only the latest tooltip data after repeated updates (163ms)
+    ✔ does not hide another pill tooltip when an inactive pill loses its info (158ms)
+    ✔ titles a pill with its translated plugin label so the acronym is explained (164ms)
+    ✔ does not also set a title when the pill has its own tooltip (163ms)
+    ✔ falls back to the plugin name when a plugin carries no label (147ms)
+    ✔ switches between a native title and the custom tooltip as pill data changes (156ms)
+
+  Unnamed profile editor in a real browser
+    ✔ loads the unnamed selection and correct values without writing (244ms)
+    ✔ preserves the empty key and settings over repeated unchanged saves (332ms)
+    ✔ renames explicitly without overwriting an existing profile (301ms)
+    ✔ does not turn a named profile into a blank name (299ms)
+    ✔ keeps both raw profiles in the Profile report (219ms)
+    ✔ requires explicit selection for a dangling default pointer (231ms)
+
+  main page redirect to the Profile Editor in a real browser
+    ✔ keeps the page token on the way to the Profile Editor (219ms)
+    ✔ adds nothing when the page was opened without a token (230ms)
+
+  profile and settings components in a real browser
+    profile-derived browser sinks
+      ✔ keeps care portal profile option values exact while rendering names as text (213ms)
+      ✔ keeps bolus calculator profile option values exact while rendering names as text (223ms)
+      ✔ renders profile report names and values as text (200ms)
+      ✔ renders loopalyzer profile names and range times as text (187ms)
+      ✔ keeps treatment editor profile option values exact while rendering names as text (242ms)
+      ✔ keeps profile editor option values exact while rendering names as text (269ms)
+    browser settings
+      ✔ sorts bolus render-over options numerically in descending order (204ms)
+
+  report SGV loading and Daily Stats in a real browser
+    ✔ uses original 59-second CGM samples in the pentagon while preserving existing report filtering (480ms)
+    ✔ withholds the pentagon when the loaded data contain conflicting simultaneous readings (367ms)
+    ✔ collapses exact duplicate uploads in the pentagon without changing other reports (375ms)
+    ✔ withholds the pentagon when near-duplicate uploads from one source are ambiguous (356ms)
+    ✔ preserves percentile values and hourly tables with D3 percentile whiskers (mg/dl) (412ms)
+    ✔ keeps twelve-hour holes visible in the percentile lines and bands (mg/dl) (328ms)
+    ✔ uses the retained dense readings in charts and statistics (mg/dl) (291ms)
+    ✔ uses the retained five-minute readings in charts and statistics (mg/dl) (305ms)
+    ✔ retains quartiles across the 23-hour DST day (mg/dl) (385ms)
+    ✔ retains quartiles across the 25-hour DST day (mg/dl) (373ms)
+    ✔ calculates estimated A1c before rounding glucose for display (mg/dl) (303ms)
+    ✔ keeps daily A1c totals separate across an empty day and cached re-renders (mg/dl) (371ms)
+    ✔ preserves percentile values and hourly tables with D3 percentile whiskers (mmol) (426ms)
+    ✔ keeps twelve-hour holes visible in the percentile lines and bands (mmol) (379ms)
+    ✔ uses the retained dense readings in charts and statistics (mmol) (306ms)
+    ✔ uses the retained five-minute readings in charts and statistics (mmol) (323ms)
+    ✔ retains quartiles across the 23-hour DST day (mmol) (408ms)
+    ✔ retains quartiles across the 25-hour DST day (mmol) (420ms)
+    ✔ calculates estimated A1c before rounding glucose for display (mmol) (301ms)
+    ✔ keeps daily A1c totals separate across an empty day and cached re-renders (mmol) (417ms)
+    automatic initial report
+      ✔ loads seven profile-calendar days without Show and leaves the range alone on reconnect (543ms)
+      ✔ does not overwrite a range edited while the initial profile is loading (636ms)
+    report page reconnect initialization
+      ✔ builds and wires the default report GUI only for the first authorized connection (281ms)
+      ✔ builds and wires the modern report GUI only for the first authorized connection (264ms)
+      ✔ makes plugin HTML and styles idempotent while preserving tab selection (195ms)
+
+  sanitizer corpus in a real browser
+    ✔ production sanitizer keeps disabled SVG, form and raw-text parser features inert (42ms)
+    sanitizer-differential: behavior comparison
+      plain note [plain-note]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      mathy note (>200 mg/dL) [mathy-note]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (58ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [mathy-note]:
+    production             -> "BG was >200 mg/dL after run"
+    dompurify              -> "BG was >200 mg/dL after run"
+    xss                    -> "BG was &gt;200 mg/dL after run"
+    sanitize-html-strict   -> "BG was &gt;200 mg/dL after run"
+        ✔ produce a documented divergence record
+      note with < 70 [less-than]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (51ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [less-than]:
+    production             -> "Hypo: BG < 70 needed sugar"
+    dompurify              -> "Hypo: BG &lt; 70 needed sugar"
+    xss                    -> "Hypo: BG "
+    sanitize-html-strict   -> "Hypo: BG &lt; 70 needed sugar"
+        ✔ produce a documented divergence record
+      ampersand in note [amp-note]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [amp-note]:
+    production             -> "Carbs & protein meal"
+    dompurify              -> "Carbs & protein meal"
+    xss                    -> "Carbs & protein meal"
+    sanitize-html-strict   -> "Carbs &amp; protein meal"
+        ✔ produce a documented divergence record
+      unicode/emoji [unicode]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (57ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      mmol/L decimal [mmol]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (51ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      multiline notes [multiline]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      eventType enum [enum-bolus]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      device uri [device-uri]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (54ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      classic script tag [xss-script-tag]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (52ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      img onerror handler [xss-img-onerror]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-img-onerror]:
+    production             -> "<img src=\"x\" />"
+    dompurify              -> "<img src=\"x\">"
+    xss                    -> ""
+    sanitize-html-strict   -> ""
+        ✔ produce a documented divergence record
+      svg onload handler [xss-svg-onload]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (54ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-svg-onload]:
+    production             -> ""
+    dompurify              -> "<svg></svg>"
+    xss                    -> ""
+    sanitize-html-strict   -> ""
+        ✔ produce a documented divergence record
+      anchor with javascript: url [xss-anchor-jsurl]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-anchor-jsurl]:
+    production             -> "<a>click</a>"
+    dompurify              -> "<a>click</a>"
+    xss                    -> "click"
+    sanitize-html-strict   -> "click"
+        ✔ produce a documented divergence record
+      iframe javascript: src [xss-iframe-src]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (54ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      mixed-case ScRiPt tag [xss-mixed-case]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (51ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      entity-encoded payload [xss-html-entities]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      malformed tag [xss-malformed]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (58ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-malformed]:
+    production             -> "<img src=\"x\" />"
+    dompurify              -> "<img src=\"x\">"
+    xss                    -> ""
+    sanitize-html-strict   -> ""
+        ✔ produce a documented divergence record
+      style with expression [xss-style-expr]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (54ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-style-expr]:
+    production             -> "<div>x</div>"
+    dompurify              -> "<div style=\"background:url(javascript:alert(1))\">x</div>"
+    xss                    -> "x"
+    sanitize-html-strict   -> "x"
+        ✔ produce a documented divergence record
+      data: uri with script [xss-data-uri]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (67ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-data-uri]:
+    production             -> "<a>x</a>"
+    dompurify              -> "<a>x</a>"
+    xss                    -> "x"
+    sanitize-html-strict   -> "x"
+        ✔ produce a documented divergence record
+      vbscript: url [xss-vbscript]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-vbscript]:
+    production             -> "<a>x</a>"
+    dompurify              -> "<a>x</a>"
+    xss                    -> "x"
+    sanitize-html-strict   -> "x"
+        ✔ produce a documented divergence record
+      mXSS via noscript [xss-mxss-noscript]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-mxss-noscript]:
+    production             -> "<p></p>"
+    dompurify              -> "<p></p>"
+    xss                    -> ""
+    sanitize-html-strict   -> ""
+        ✔ produce a documented divergence record
+      svg foreignObject [xss-svg-namespace]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (55ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-svg-namespace]:
+    production             -> ""
+    dompurify              -> "<svg></svg>"
+    xss                    -> ""
+    sanitize-html-strict   -> ""
+        ✔ produce a documented divergence record
+      form formaction [xss-form-action]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [xss-form-action]:
+    production             -> "go"
+    dompurify              -> "<button>go</button>"
+    xss                    -> "go"
+    sanitize-html-strict   -> "go"
+        ✔ produce a documented divergence record
+      meta refresh javascript [xss-meta-refresh]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (56ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      empty string [empty]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (54ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      whitespace only [whitespace]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      long benign text [long-text]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (52ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      embedded null byte [null-byte]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+        ✔ produce a documented divergence record
+      unclosed tag soup [tag-soup]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (53ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [tag-soup]:
+    production             -> "&lt;&lt;&lt;&gt;&gt;&gt;&lt; br&gt;&lt;&lt;&gt;&lt;"
+    dompurify              -> "&lt;&lt;&lt;&gt;&gt;&gt;&lt; br&gt;&lt;&lt;&gt;&lt;"
+    xss                    -> "&lt;&lt;&gt;&gt;&lt;&lt;"
+    sanitize-html-strict   -> "&lt;&lt;&lt;&gt;&gt;&gt;&lt; br&gt;&lt;&lt;&gt;&lt;"
+        ✔ produce a documented divergence record
+      mixed quotes in note [nested-quotes]
+        ✔ production: must neutralize
+        ✔ dompurify: must neutralize (51ms)
+        ✔ xss: must neutralize
+        ✔ sanitize-html-strict: must neutralize
+  divergence [nested-quotes]:
+    production             -> "She said \"hello\" & he said 'hi'"
+    dompurify              -> "She said \"hello\" & he said 'hi'"
+    xss                    -> "She said \"hello\" & he said 'hi'"
+    sanitize-html-strict   -> "She said \"hello\" &amp; he said 'hi'"
+        ✔ produce a documented divergence record
+
+=== sanitizer-differential summary ===
+┌─────────┬─────────────────────┬────────────────┬───────────────┬─────────┬──────────────────────────┬───────────────┐
+│ (index) │ id                  │ production_len │ dompurify_len │ xss_len │ sanitize-html-strict_len │ equiv_classes │
+├─────────┼─────────────────────┼────────────────┼───────────────┼─────────┼──────────────────────────┼───────────────┤
+│ 0       │ 'plain-note'        │ 30             │ 30            │ 30      │ 30                       │ 1             │
+│ 1       │ 'mathy-note'        │ 27             │ 27            │ 30      │ 30                       │ 2             │
+│ 2       │ 'less-than'         │ 26             │ 29            │ 9       │ 29                       │ 3             │
+│ 3       │ 'amp-note'          │ 20             │ 20            │ 20      │ 24                       │ 2             │
+│ 4       │ 'unicode'           │ 15             │ 15            │ 15      │ 15                       │ 1             │
+│ 5       │ 'mmol'              │ 21             │ 21            │ 21      │ 21                       │ 1             │
+│ 6       │ 'multiline'         │ 28             │ 28            │ 28      │ 28                       │ 1             │
+│ 7       │ 'enum-bolus'        │ 10             │ 10            │ 10      │ 10                       │ 1             │
+│ 8       │ 'device-uri'        │ 18             │ 18            │ 18      │ 18                       │ 1             │
+│ 9       │ 'xss-script-tag'    │ 0              │ 0             │ 0       │ 0                        │ 1             │
+│ 10      │ 'xss-img-onerror'   │ 15             │ 13            │ 0       │ 0                        │ 3             │
+│ 11      │ 'xss-svg-onload'    │ 0              │ 11            │ 0       │ 0                        │ 2             │
+│ 12      │ 'xss-anchor-jsurl'  │ 12             │ 12            │ 5       │ 5                        │ 2             │
+│ 13      │ 'xss-iframe-src'    │ 0              │ 0             │ 0       │ 0                        │ 1             │
+│ 14      │ 'xss-mixed-case'    │ 0              │ 0             │ 0       │ 0                        │ 1             │
+│ 15      │ 'xss-html-entities' │ 37             │ 37            │ 37      │ 37                       │ 1             │
+│ 16      │ 'xss-malformed'     │ 15             │ 13            │ 0       │ 0                        │ 3             │
+│ 17      │ 'xss-style-expr'    │ 12             │ 56            │ 1       │ 1                        │ 3             │
+│ 18      │ 'xss-data-uri'      │ 8              │ 8             │ 1       │ 1                        │ 2             │
+│ 19      │ 'xss-vbscript'      │ 8              │ 8             │ 1       │ 1                        │ 2             │
+│ 20      │ 'xss-mxss-noscript' │ 7              │ 7             │ 0       │ 0                        │ 2             │
+│ 21      │ 'xss-svg-namespace' │ 0              │ 11            │ 0       │ 0                        │ 2             │
+│ 22      │ 'xss-form-action'   │ 2              │ 19            │ 2       │ 2                        │ 2             │
+│ 23      │ 'xss-meta-refresh'  │ 0              │ 0             │ 0       │ 0                        │ 1             │
+│ 24      │ 'empty'             │ 0              │ 0             │ 0       │ 0                        │ 1             │
+│ 25      │ 'whitespace'        │ 7              │ 7             │ 7       │ 7                        │ 1             │
+│ 26      │ 'long-text'         │ 2000           │ 2000          │ 2000    │ 2000                     │ 1             │
+│ 27      │ 'null-byte'         │ 8              │ 8             │ 8       │ 8                        │ 1             │
+│ 28      │ 'tag-soup'          │ 51             │ 51            │ 24      │ 51                       │ 2             │
+│ 29      │ 'nested-quotes'     │ 31             │ 31            │ 31      │ 35                       │ 2             │
+└─────────┴─────────────────────┴────────────────┴───────────────┴─────────┴──────────────────────────┴───────────────┘
+Measured corpus: 30, divergent: 15, incomplete: 0
+
+    sanitizer-differential: render-path safety (post-EJS-escape)
+      ✔ [production] [plain-note] EJS-escaped output is inert
+      ✔ [dompurify] [plain-note] EJS-escaped output is inert (52ms)
+      ✔ [xss] [plain-note] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [plain-note] EJS-escaped output is inert
+      ✔ [production] [mathy-note] EJS-escaped output is inert
+      ✔ [dompurify] [mathy-note] EJS-escaped output is inert (53ms)
+      ✔ [xss] [mathy-note] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [mathy-note] EJS-escaped output is inert
+      ✔ [production] [less-than] EJS-escaped output is inert
+      ✔ [dompurify] [less-than] EJS-escaped output is inert (55ms)
+      ✔ [xss] [less-than] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [less-than] EJS-escaped output is inert
+      ✔ [production] [amp-note] EJS-escaped output is inert
+      ✔ [dompurify] [amp-note] EJS-escaped output is inert (53ms)
+      ✔ [xss] [amp-note] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [amp-note] EJS-escaped output is inert
+      ✔ [production] [unicode] EJS-escaped output is inert
+      ✔ [dompurify] [unicode] EJS-escaped output is inert (54ms)
+      ✔ [xss] [unicode] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [unicode] EJS-escaped output is inert
+      ✔ [production] [mmol] EJS-escaped output is inert
+      ✔ [dompurify] [mmol] EJS-escaped output is inert (52ms)
+      ✔ [xss] [mmol] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [mmol] EJS-escaped output is inert
+      ✔ [production] [multiline] EJS-escaped output is inert
+      ✔ [dompurify] [multiline] EJS-escaped output is inert (54ms)
+      ✔ [xss] [multiline] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [multiline] EJS-escaped output is inert
+      ✔ [production] [enum-bolus] EJS-escaped output is inert
+      ✔ [dompurify] [enum-bolus] EJS-escaped output is inert (53ms)
+      ✔ [xss] [enum-bolus] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [enum-bolus] EJS-escaped output is inert
+      ✔ [production] [device-uri] EJS-escaped output is inert
+      ✔ [dompurify] [device-uri] EJS-escaped output is inert (58ms)
+      ✔ [xss] [device-uri] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [device-uri] EJS-escaped output is inert
+      ✔ [production] [xss-script-tag] EJS-escaped output is inert
+      ✔ [dompurify] [xss-script-tag] EJS-escaped output is inert (55ms)
+      ✔ [xss] [xss-script-tag] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-script-tag] EJS-escaped output is inert
+      ✔ [production] [xss-img-onerror] EJS-escaped output is inert
+      ✔ [dompurify] [xss-img-onerror] EJS-escaped output is inert (66ms)
+      ✔ [xss] [xss-img-onerror] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-img-onerror] EJS-escaped output is inert
+      ✔ [production] [xss-svg-onload] EJS-escaped output is inert
+      ✔ [dompurify] [xss-svg-onload] EJS-escaped output is inert (54ms)
+      ✔ [xss] [xss-svg-onload] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-svg-onload] EJS-escaped output is inert
+      ✔ [production] [xss-anchor-jsurl] EJS-escaped output is inert
+      ✔ [dompurify] [xss-anchor-jsurl] EJS-escaped output is inert (58ms)
+      ✔ [xss] [xss-anchor-jsurl] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-anchor-jsurl] EJS-escaped output is inert
+      ✔ [production] [xss-iframe-src] EJS-escaped output is inert
+      ✔ [dompurify] [xss-iframe-src] EJS-escaped output is inert (54ms)
+      ✔ [xss] [xss-iframe-src] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-iframe-src] EJS-escaped output is inert
+      ✔ [production] [xss-mixed-case] EJS-escaped output is inert
+      ✔ [dompurify] [xss-mixed-case] EJS-escaped output is inert (52ms)
+      ✔ [xss] [xss-mixed-case] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-mixed-case] EJS-escaped output is inert
+      ✔ [production] [xss-html-entities] EJS-escaped output is inert
+      ✔ [dompurify] [xss-html-entities] EJS-escaped output is inert (52ms)
+      ✔ [xss] [xss-html-entities] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-html-entities] EJS-escaped output is inert
+      ✔ [production] [xss-malformed] EJS-escaped output is inert
+      ✔ [dompurify] [xss-malformed] EJS-escaped output is inert (57ms)
+      ✔ [xss] [xss-malformed] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-malformed] EJS-escaped output is inert
+      ✔ [production] [xss-style-expr] EJS-escaped output is inert
+      ✔ [dompurify] [xss-style-expr] EJS-escaped output is inert (54ms)
+      ✔ [xss] [xss-style-expr] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-style-expr] EJS-escaped output is inert
+      ✔ [production] [xss-data-uri] EJS-escaped output is inert
+      ✔ [dompurify] [xss-data-uri] EJS-escaped output is inert (56ms)
+      ✔ [xss] [xss-data-uri] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-data-uri] EJS-escaped output is inert
+      ✔ [production] [xss-vbscript] EJS-escaped output is inert
+      ✔ [dompurify] [xss-vbscript] EJS-escaped output is inert (56ms)
+      ✔ [xss] [xss-vbscript] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-vbscript] EJS-escaped output is inert
+      ✔ [production] [xss-mxss-noscript] EJS-escaped output is inert
+      ✔ [dompurify] [xss-mxss-noscript] EJS-escaped output is inert (53ms)
+      ✔ [xss] [xss-mxss-noscript] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-mxss-noscript] EJS-escaped output is inert
+      ✔ [production] [xss-svg-namespace] EJS-escaped output is inert
+      ✔ [dompurify] [xss-svg-namespace] EJS-escaped output is inert (53ms)
+      ✔ [xss] [xss-svg-namespace] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-svg-namespace] EJS-escaped output is inert
+      ✔ [production] [xss-form-action] EJS-escaped output is inert
+      ✔ [dompurify] [xss-form-action] EJS-escaped output is inert (53ms)
+      ✔ [xss] [xss-form-action] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-form-action] EJS-escaped output is inert
+      ✔ [production] [xss-meta-refresh] EJS-escaped output is inert
+      ✔ [dompurify] [xss-meta-refresh] EJS-escaped output is inert (54ms)
+      ✔ [xss] [xss-meta-refresh] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [xss-meta-refresh] EJS-escaped output is inert
+      ✔ [production] [empty] EJS-escaped output is inert
+      ✔ [dompurify] [empty] EJS-escaped output is inert (54ms)
+      ✔ [xss] [empty] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [empty] EJS-escaped output is inert
+      ✔ [production] [whitespace] EJS-escaped output is inert
+      ✔ [dompurify] [whitespace] EJS-escaped output is inert (53ms)
+      ✔ [xss] [whitespace] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [whitespace] EJS-escaped output is inert
+      ✔ [production] [long-text] EJS-escaped output is inert
+      ✔ [dompurify] [long-text] EJS-escaped output is inert (52ms)
+      ✔ [xss] [long-text] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [long-text] EJS-escaped output is inert
+      ✔ [production] [null-byte] EJS-escaped output is inert
+      ✔ [dompurify] [null-byte] EJS-escaped output is inert (52ms)
+      ✔ [xss] [null-byte] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [null-byte] EJS-escaped output is inert
+      ✔ [production] [tag-soup] EJS-escaped output is inert
+      ✔ [dompurify] [tag-soup] EJS-escaped output is inert (53ms)
+      ✔ [xss] [tag-soup] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [tag-soup] EJS-escaped output is inert
+      ✔ [production] [nested-quotes] EJS-escaped output is inert
+      ✔ [dompurify] [nested-quotes] EJS-escaped output is inert (53ms)
+      ✔ [xss] [nested-quotes] EJS-escaped output is inert
+      ✔ [sanitize-html-strict] [nested-quotes] EJS-escaped output is inert
+    sanitizer-differential: jQuery .text() equivalence
+      ✔ [plain-note] raw input rendered via textContent is inert
+      ✔ [mathy-note] raw input rendered via textContent is inert
+      ✔ [less-than] raw input rendered via textContent is inert
+      ✔ [amp-note] raw input rendered via textContent is inert
+      ✔ [unicode] raw input rendered via textContent is inert
+      ✔ [mmol] raw input rendered via textContent is inert
+      ✔ [multiline] raw input rendered via textContent is inert
+      ✔ [enum-bolus] raw input rendered via textContent is inert
+      ✔ [device-uri] raw input rendered via textContent is inert
+      ✔ [xss-script-tag] raw input rendered via textContent is inert
+      ✔ [xss-img-onerror] raw input rendered via textContent is inert
+      ✔ [xss-svg-onload] raw input rendered via textContent is inert
+      ✔ [xss-anchor-jsurl] raw input rendered via textContent is inert
+      ✔ [xss-iframe-src] raw input rendered via textContent is inert
+      ✔ [xss-mixed-case] raw input rendered via textContent is inert
+      ✔ [xss-html-entities] raw input rendered via textContent is inert
+      ✔ [xss-malformed] raw input rendered via textContent is inert
+      ✔ [xss-style-expr] raw input rendered via textContent is inert
+      ✔ [xss-data-uri] raw input rendered via textContent is inert
+      ✔ [xss-vbscript] raw input rendered via textContent is inert
+      ✔ [xss-mxss-noscript] raw input rendered via textContent is inert
+      ✔ [xss-svg-namespace] raw input rendered via textContent is inert
+      ✔ [xss-form-action] raw input rendered via textContent is inert
+      ✔ [xss-meta-refresh] raw input rendered via textContent is inert
+      ✔ [empty] raw input rendered via textContent is inert
+      ✔ [whitespace] raw input rendered via textContent is inert
+      ✔ [long-text] raw input rendered via textContent is inert
+      ✔ [null-byte] raw input rendered via textContent is inert
+      ✔ [tag-soup] raw input rendered via textContent is inert
+      ✔ [nested-quotes] raw input rendered via textContent is inert
+
+  server alarms on the main page in a real browser
+    ✔ presents an urgent pump alarm on a page with no reading, and not a glucose alarm (336ms)
+    ✔ presents a pump warning on a page with no reading (218ms)
+    ✔ control: presents the same urgent pump alarm on a page with an in-range reading (unchanged) (304ms)
+
+  Service worker in a real browser
+    ✔ does not prefetch page code and serves a visited page asset during network failure (89ms)
+    ✔ activates an updated worker while an uncached polling request remains open (88ms)
+    ✔ bypasses an older worker for new version URLs and retires old cached code after update (108ms)
+
+  Served Socket.IO client in a real browser
+    ✔ preserves updates, large messages and binary acknowledgements across two reconnects over polling (160ms)
+    ✔ preserves updates, large messages and binary acknowledgements across two reconnects over websocket (151ms)
+    ✔ preserves updates, large messages and binary acknowledgements across two reconnects over upgrade (537ms)
+    ✔ automatically reconnects and resumes updates after two network drops without duplicate peers (141ms)
+
+  Client startup retry contracts
+    5) waits five seconds and preserves the page callback after repeated loading responses
+    6) waits five seconds and preserves the page callback after repeated offline responses
+    7) retries immediately after authentication and preserves callbacks across two cycles
+
+  status bootstrap credentials in the production browser bundle
+    ✔ keeps anonymous credentials out of the status URL (139ms)
+    ✔ keeps in-memory API secret credentials out of the status URL (130ms)
+    ✔ keeps stored API secret credentials out of the status URL (140ms)
+    ✔ keeps shared subject token credentials out of the status URL (137ms)
+    ✔ keeps shared JWT credentials out of the status URL (136ms)
+    ✔ keeps existing JWT session credentials out of the status URL (143ms)
+    ✔ keeps stored secret with a shared link credentials out of the status URL (142ms)
+
+  a saved API secret the site refuses
+    ✔ loads a valid token link and removes the refused saved hash (138ms)
+    ✔ without a token, removes the refused saved hash and says so in the sign-in dialog (157ms)
+    ✔ still refuses an invalid token after removing the refused saved hash (155ms)
+    ✔ keeps a saved hash the site accepts, and sends it in preference to the link token (138ms)
+    ✔ shows no refused-secret notice when nothing was saved (151ms)
+
+  Browser storage persisted-data contract
+    ✔ keeps authentication tokens readable by the raw clock API across writes (42ms)
+    ✔ reads old raw, JSON, missing and malformed values without rewriting them (42ms)
+    ✔ serializes settings and report objects without retaining caller references (41ms)
+    ✔ removes a key repeatedly without disturbing neighboring settings (42ms)
+    ✔ preserves empty, numeric, unicode and object-prototype key names (41ms)
+    ✔ preserves dotted-key nesting in existing stored objects (41ms)
+    ✔ keeps local and session data separate (44ms)
+    ✔ returns null for unavailable persistence without falling back to cookies (42ms)
+    ✔ handles storage that is readable but has no writable quota at startup (44ms)
+    ✔ retains bulk, nested and selected-key operations on the public export (45ms)
+    ✔ retains explicit JSON mode and boolean presence/emptiness distinctions (43ms)
+    ✔ retains isolated namespaces, enumeration and clear/reinitialize behavior (44ms)
+
+  stored-data browser output encoding in a real browser
+    ✔ renders legacy treatment report fields as literal text (187ms)
+    ✔ keeps modern treatment details safe, complete and filterable (252ms)
+    ✔ filters treatment report rows without retaining empty day headings (234ms)
+    ✔ renders admin notification fields as literal text (224ms)
+    ✔ encodes legacy treatment glucose in the chart tooltip (202ms)
+    ✔ renders stored annotations as literal text in chart tooltips (190ms)
+    ✔ renders stored annotations as literal SVG text in the day-to-day report (191ms)
+    ✔ builds food quick-pick options without parsing their labels (178ms)
+    ✔ builds profile-derived Care Portal reason options without parsing them (174ms)
+
+  Interactive API documentation
+Enabled SECURE_CSP (Content Security Policy header). Enforcing.
+Security settings: INSECURE_USE_HTTP= true , SECURE_HSTS_HEADER= false
+    ✔ renders and executes owned read-only requests from /api-docs/ twice (2406ms)
+    ✔ renders and executes owned read-only requests from /api3-docs/ twice (1995ms)
+    ✔ keeps mobile authorization controls visible and keyboard-operable for both schemas (1309ms)
+
+  Updated timezone rules in the production browser bundle
+    ✔ formats transition boundaries and subsequent dates for Africa/Casablanca (241ms)
+    ✔ formats transition boundaries and subsequent dates for Africa/El_Aaiun (250ms)
+    ✔ formats transition boundaries and subsequent dates for America/Edmonton (242ms)
+    ✔ formats transition boundaries and subsequent dates for America/Yellowknife (234ms)
+    ✔ formats transition boundaries and subsequent dates for Canada/Mountain (239ms)
+    ✔ formats transition boundaries and subsequent dates for America/Vancouver (231ms)
+    ✔ formats transition boundaries and subsequent dates for Canada/Pacific (237ms)
+    ✔ formats transition boundaries and subsequent dates for Europe/Chisinau (242ms)
+    ✔ formats transition boundaries and subsequent dates for Europe/Tiraspol (243ms)
+
+
+  677 passing (4m)
+  7 failing
+
+  1) legacy reports in a real browser
+       renders empty report periods repeatedly in mg/dl:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Failed to load resource: the server responded with a status of 404 (Not Found)'
++ ]
+- []
+
+      + expected - actual
+
+      -[
+      -  "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      -]
+      +[]
+      
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/legacy-reports.test.js:464:18
+      at async withPage.timezoneId (tests/browser/legacy-reports.test.js:121:7)
+      at async exports.withPage (tests/browser/fixture.js:94:20)
+      at async withReports (tests/browser/legacy-reports.test.js:66:5)
+      at async Context.<anonymous> (tests/browser/legacy-reports.test.js:450:7)
+
+  2) legacy reports in a real browser
+       preserves plotted report data and finite axes in mg/dl over repeated renders:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Failed to load resource: the server responded with a status of 404 (Not Found)'
++ ]
+- []
+
+      + expected - actual
+
+      -[
+      -  "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      -]
+      +[]
+      
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/legacy-reports.test.js:545:18
+      at async withPage.timezoneId (tests/browser/legacy-reports.test.js:121:7)
+      at async exports.withPage (tests/browser/fixture.js:94:20)
+      at async withReports (tests/browser/legacy-reports.test.js:66:5)
+      at async Context.<anonymous> (tests/browser/legacy-reports.test.js:471:7)
+
+  3) legacy reports in a real browser
+       renders empty report periods repeatedly in mmol:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Failed to load resource: the server responded with a status of 404 (Not Found)'
++ ]
+- []
+
+      + expected - actual
+
+      -[
+      -  "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      -]
+      +[]
+      
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/legacy-reports.test.js:464:18
+      at async withPage.timezoneId (tests/browser/legacy-reports.test.js:121:7)
+      at async exports.withPage (tests/browser/fixture.js:94:20)
+      at async withReports (tests/browser/legacy-reports.test.js:66:5)
+      at async Context.<anonymous> (tests/browser/legacy-reports.test.js:450:7)
+
+  4) legacy reports in a real browser
+       preserves plotted report data and finite axes in mmol over repeated renders:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Failed to load resource: the server responded with a status of 404 (Not Found)'
++ ]
+- []
+
+      + expected - actual
+
+      -[
+      -  "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      -]
+      +[]
+      
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/legacy-reports.test.js:545:18
+      at async withPage.timezoneId (tests/browser/legacy-reports.test.js:121:7)
+      at async exports.withPage (tests/browser/fixture.js:94:20)
+      at async withReports (tests/browser/legacy-reports.test.js:66:5)
+      at async Context.<anonymous> (tests/browser/legacy-reports.test.js:471:7)
+
+  5) Client startup retry contracts
+       waits five seconds and preserves the page callback after repeated loading responses:
+
+      AssertionError [ERR_ASSERTION]: The first failure must not retry immediately
+
+0 !== 1
+
+      + expected - actual
+
+      -0
+      +1
+      
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/startup-retries.test.js:96:18
+      at runNextTicks (node:internal/process/task_queues:64:5)
+      at process.processImmediate (node:internal/timers:452:9)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17)
+      at async /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/startup-retries.test.js:52:7
+      at async exports.withPage (tests/browser/fixture.js:94:20)
+      at async withStartup (tests/browser/startup-retries.test.js:28:5)
+      at async Context.<anonymous> (tests/browser/startup-retries.test.js:89:7)
+
+  6) Client startup retry contracts
+       waits five seconds and preserves the page callback after repeated offline responses:
+
+      AssertionError [ERR_ASSERTION]: The first failure must not retry immediately
+
+0 !== 1
+
+      + expected - actual
+
+      -0
+      +1
+      
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/startup-retries.test.js:96:18
+      at runNextTicks (node:internal/process/task_queues:64:5)
+      at process.processImmediate (node:internal/timers:452:9)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17)
+      at async /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/startup-retries.test.js:52:7
+      at async exports.withPage (tests/browser/fixture.js:94:20)
+      at async withStartup (tests/browser/startup-retries.test.js:28:5)
+      at async Context.<anonymous> (tests/browser/startup-retries.test.js:89:7)
+
+  7) Client startup retry contracts
+       retries immediately after authentication and preserves callbacks across two cycles:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+      + expected - actual
+
+      -0
+      +1
+      
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/startup-retries.test.js:113:16
+      at runNextTicks (node:internal/process/task_queues:64:5)
+      at process.processImmediate (node:internal/timers:452:9)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17)
+      at async /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/browser/startup-retries.test.js:52:7
+      at async exports.withPage (tests/browser/fixture.js:94:20)
+      at async withStartup (tests/browser/startup-retries.test.js:28:5)
+      at async Context.<anonymous> (tests/browser/startup-retries.test.js:108:5)
+
+
+
+browser exit=7 end 2026-11-09T22:07:10Z

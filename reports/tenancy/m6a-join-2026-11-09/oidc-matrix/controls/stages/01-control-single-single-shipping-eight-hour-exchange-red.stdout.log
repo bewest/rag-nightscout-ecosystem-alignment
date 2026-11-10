@@ -1,0 +1,19 @@
+{"event":"owned-listener","pid":1295552,"host":"127.0.0.1","port":42649}
+{"event":"owned-listener","pid":1295552,"host":"127.0.0.1","port":45847}
+{"event":"owned-mongo-collection","name":"human_http_native_d35a7bed71a1cc71","uuid":"476b8379e0b444eabd342b9d96e15288"}
+Failed-authentication throttling is keyed on the client address as resolved through TRUST_PROXY=false.
+Reloading auth data
+Roles listed
+{"event":"owned-listener","pid":1295552,"host":"127.0.0.1","port":46457}
+Failed-authentication throttling is keyed on the client address as resolved through TRUST_PROXY=false.
+Reloading auth data
+Roles listed
+{"event":"owned-listener","pid":1295552,"host":"127.0.0.1","port":33039}
+{"event":"owned-extension-custody","stage":"mongo-http","resources":{"classification":"native-Mongo-single-production-legacy-HTTP-default-off","configuration":"singleCompatibility:{apiSecretEnv,jwtKeyEnv}; explicit HUMAN_SESSION_MONGO_URL and HUMAN_SESSION_MONGO_DB","pool":{"maxPoolSize":4,"minPoolSize":0,"maxConnecting":1},"collections":[{"name":"sc_3b14ed32e23de1bf_entries","uuid":"fbaa803a5ab6429bb7b04f888dedfeab"},{"name":"sc_3b14ed32e23de1bf_roles","uuid":"df43236917d24220a680aa51e3131208"},{"name":"sc_3b14ed32e23de1bf_subjects","uuid":"0dbaf22dabf5452393f756223d386025"}],"listeners":2,"ownedUnrefProductionSweepTimers":2,"policy":"shipping single AUTH_DEFAULT_ROLES=readable; root retains shipping wildcard authority","dependencies":["lib/authorization/index.js","lib/authorization/storage.js","lib/authorization/endpoints.js","lib/server/enclave.js","lib/server/entries.js","lib/api/entries/index.js","lib/server/storage-reads.js","lib/api3/storage/mongoCollection/index.js","lib/human-session/runtime.js","lib/settings.js"],"nativeExecution":"run by tests/native/oidc-matrix/run.sh (disposable harness)","existingAuthorityCollection":"human_http_native_d35a7bed71a1cc71"}}
+Reloading auth data
+Roles listed
+Reloading auth data
+Roles listed
+Reloading auth data
+Roles listed
+{"cleanup":"closed","listeners":4}

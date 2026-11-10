@@ -1,0 +1,15 @@
+gate: oidc-native RECORDED-EVIDENCE (no fresh native execution): reports/tenancy/m6a-join-2026-11-09/oidc-matrix-final/summary.json
+  ok   sourceCommit is a 40-hex sha: 74036ba6e3572f6774fbc94ae2dc41b31922d2b7
+  ok   vault-single: PASS 193ms, families 1/1
+  ok   vault-multi: PASS 190ms, families 1/1
+  ok   mongo-sessions: PASS 408ms, families 1/1
+  ok   pg-sessions: PASS 445ms, families 1/1
+  ok   mongo-http: PASS 1627ms, families 4/4
+  ok   owner-consumer: PASS 2636ms, families 10/10
+  ok   owner-authority: PASS 2488ms, families 11/11
+  ok   owner-browser: PASS 4074ms, families 10/10
+  ok   owner-compatibility: PASS 1981ms, families 6/6
+  ok   no unknown stage ids
+  ok   mutant controls red-then-green: 3 of 3 (single:single-shipping-eight-hour-exchange, browser:csrf, consumer:consumer-current-data-authority-bypass)
+  ok   postgres, mongo and vault images recorded by digest
+  13 checked, 0 failing

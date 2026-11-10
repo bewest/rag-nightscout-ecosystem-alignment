@@ -1,0 +1,13 @@
+ed2 scratch ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364 start 2026-11-09T22:07:37Z
+
+added 868 packages in 15s
+npm ci exit=0
+> nightscout@16.0.0 post-generate-keys
+> node bin/generateRandomString.js >node_modules/.cache/_ns_cache/randomString
+
+bundle exit=0
+=== dom files
+  14 passing (804ms)
+=== browser files
+  11 passing (17s)
+end 2026-11-09T22:08:18Z

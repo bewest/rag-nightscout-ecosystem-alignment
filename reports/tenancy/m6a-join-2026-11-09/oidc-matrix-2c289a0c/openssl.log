@@ -1,0 +1,9 @@
+2026-11-10T00:47:39Z + openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes -days 2 -subj /CN=oidc-matrix synthetic CA -keyout /tmp/oidc-matrix-yCGLkB7K/tls/ca.key -out /tmp/oidc-matrix-yCGLkB7K/tls/ca.crt
+-----
+2026-11-10T00:47:39Z + openssl req -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes -subj /CN=vault -keyout /tmp/oidc-matrix-yCGLkB7K/tls/vault-server.key -out /tmp/oidc-matrix-yCGLkB7K/tls/vault-server.csr
+-----
+2026-11-10T00:47:39Z + openssl x509 -req -in /tmp/oidc-matrix-yCGLkB7K/tls/vault-server.csr -CA /tmp/oidc-matrix-yCGLkB7K/tls/ca.crt -CAkey /tmp/oidc-matrix-yCGLkB7K/tls/ca.key -CAcreateserial -out /tmp/oidc-matrix-yCGLkB7K/tls/vault-server.crt -days 2 -extfile /tmp/oidc-matrix-yCGLkB7K/tls/san.ext
+Certificate request self-signature ok
+subject=CN = vault
+2026-11-10T00:47:39Z + openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes -days 2 -subj /CN=oidc-matrix fixture -addext subjectAltName=IP:127.0.0.1,DNS:localhost -keyout /tmp/oidc-matrix-yCGLkB7K/tls/fixture.key -out /tmp/oidc-matrix-yCGLkB7K/tls/fixture.crt
+-----

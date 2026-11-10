@@ -1,0 +1,28 @@
+{"event":"owned-listener","pid":1464438,"host":"127.0.0.1","port":39007}
+{"event":"owned-listener","pid":1464438,"host":"127.0.0.1","port":33975}
+{"event":"owned-mongo-collection","name":"human_http_native_d341f9282fc15c25","uuid":"c1cfd347755b48678c21b331b7c8180c"}
+Failed-authentication throttling is keyed on the client address as resolved through TRUST_PROXY=false.
+Reloading auth data
+Roles listed
+{"event":"owned-listener","pid":1464438,"host":"127.0.0.1","port":33661}
+Failed-authentication throttling is keyed on the client address as resolved through TRUST_PROXY=false.
+Reloading auth data
+Roles listed
+{"event":"owned-listener","pid":1464438,"host":"127.0.0.1","port":35839}
+{"event":"owned-extension-custody","stage":"mongo-http","resources":{"classification":"native-Mongo-single-production-legacy-HTTP-default-off","configuration":"singleCompatibility:{apiSecretEnv,jwtKeyEnv}; explicit HUMAN_SESSION_MONGO_URL and HUMAN_SESSION_MONGO_DB","pool":{"maxPoolSize":4,"minPoolSize":0,"maxConnecting":1},"collections":[{"name":"sc_040530629090e1ba_entries","uuid":"4aad0e7d03da4debacaaace16df4a58c"},{"name":"sc_040530629090e1ba_roles","uuid":"cc66da4b149f45408f34c36376350e40"},{"name":"sc_040530629090e1ba_subjects","uuid":"dc6cfbc602db4dbea3c1bb3f499dd22c"}],"listeners":2,"ownedUnrefProductionSweepTimers":2,"policy":"shipping single AUTH_DEFAULT_ROLES=readable; root retains shipping wildcard authority","dependencies":["lib/authorization/index.js","lib/authorization/storage.js","lib/authorization/endpoints.js","lib/server/enclave.js","lib/server/entries.js","lib/api/entries/index.js","lib/server/storage-reads.js","lib/api3/storage/mongoCollection/index.js","lib/human-session/runtime.js","lib/settings.js"],"nativeExecution":"run by tests/native/oidc-matrix/run.sh (disposable harness)","existingAuthorityCollection":"human_http_native_d341f9282fc15c25"}}
+Reloading auth data
+Roles listed
+Reloading auth data
+Roles listed
+Reloading auth data
+Roles listed
+Reloading auth data
+Roles listed
+Reloading auth data
+Roles listed
+Reloading auth data
+Roles listed
+{"event":"owned-browser","pid":1464549,"host":"127.0.0.1","port":33777}
+{"cleanup":"closed","listeners":5}
+{"kind":"actual-https-synthetic-provider","stage":"mongo-http","persistence":"mongo","accessSigning":"configured-transit","assertions":47,"owner":{"classification":"native-Mongo-single-production-legacy-HTTP-default-off","families":{"defaultOffSingle":true,"singleLegacyCompatibility":true},"observations":{"rawRoot":true,"subjectRaw":true,"subjectEightHourExchange":true,"subjectJWT":true,"separateHumanPurposes":true,"anonymousShippingReadable":true,"removedSubjectHeaderAndJWTRefused":true,"removedRawQueryUsesAnonymousDefault":true,"nativeClinicalUnchanged":true,"actualRuntimeSingleOff":true}},"browser":"actual-chromium-cookie-and-bearer-https","verdict":"pass"}
+{"event":"matrix-stage-complete","stage":"mongo-http","persistence":"mongo","signing":"configured-transit","native":true,"completed":true,"families":{"mongoSignedHttps":true,"singleBrowserLifecycle":true,"defaultOffSingle":true,"singleLegacyCompatibility":true}}

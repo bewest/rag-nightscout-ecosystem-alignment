@@ -1,0 +1,18 @@
+head 80f00394e4b1612a8d1cf6613d34b8f89147911e start 2026-11-09T21:53:41Z
+  modules by path css ./static/css/*.css (exportType: style) 126 bytes
+    css ./static/css/drawer.css (exportType: style) 42 bytes [built] [code generated]
+    + 2 modules
+modules by path ./bundle/*.js 3.21 KiB
+  ./bundle/bundle.source.js 1.33 KiB [built] [code generated]
+  ./bundle/bundle.clocks.source.js 199 bytes [built] [code generated]
+  ./bundle/bundle.food.source.js 182 bytes [built] [code generated]
+  + 3 modules
+./static/images/logo2.png 1.62 KiB (asset) 42 bytes (asset-url) [built] [code generated]
+crypto (ignored) 15 bytes [built] [code generated]
+webpack 5.110.3 compiled successfully in 1900 ms
+
+> nightscout@16.0.0 post-generate-keys
+> node bin/generateRandomString.js >node_modules/.cache/_ns_cache/randomString
+
+bundle-dev exit=0 end 2026-11-09T21:53:43Z
+0

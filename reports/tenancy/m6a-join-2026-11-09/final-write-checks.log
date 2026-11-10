@@ -1,0 +1,4 @@
+Write intent: 13 enrolled module(s) write only through write(intent); 3 read(s) by identifier-match
+check-write-intent exit=0
+Write boundary: all 9 adapter entry points and canonical socket delegation checked
+check-write-boundary exit=0

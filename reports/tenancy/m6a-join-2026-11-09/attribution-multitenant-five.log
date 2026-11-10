@@ -1,0 +1,32 @@
+tree 521c35e05621f4a77a1dda030a4e4a9bde5f7fd9 2026-11-10T01:01:14Z
+  1) explicit owner configuration CLI composition
+     AssertionError [ERR_ASSERTION]: configuration worker exited before readiness
+  2) explicit headless owner executable composition
+     AssertionError [ERR_ASSERTION]: owner preview did not bind; nightscout multitenant: could not start: preview startup failed
+  3) secrets persistence (disposable PostgreSQL)
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  4) separate subject management HTTP (disposable PostgreSQL)
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  5) bounded subject administration (disposable PostgreSQL)
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+TEST_EXECUTION: no test body completed in tests/owner-configuration.integration.test.js
+TEST_EXECUTION: no test body completed in tests/owner-preview.integration.test.js
+TEST_EXECUTION: no test body completed in tests/postgres-secrets.integration.test.js
+# multitenant: mocha exited 8 (21 passing, 0 pending, 5 failing)
+tree 3b09131e9c33bd765a58e6a25ce48c1fb8edd372 2026-11-10T01:01:28Z
+  1) explicit owner configuration CLI composition
+     AssertionError [ERR_ASSERTION]: configuration worker exited before readiness
+  2) explicit headless owner executable composition
+     AssertionError [ERR_ASSERTION]: owner preview did not bind; nightscout multitenant: could not start: preview startup failed
+  3) secrets persistence (disposable PostgreSQL)
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  4) separate subject management HTTP (disposable PostgreSQL)
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  5) bounded subject administration (disposable PostgreSQL)
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+TEST_EXECUTION: no test body completed in tests/owner-configuration.integration.test.js
+TEST_EXECUTION: no test body completed in tests/owner-preview.integration.test.js
+TEST_EXECUTION: no test body completed in tests/postgres-secrets.integration.test.js
+# multitenant: mocha exited 8 (21 passing, 0 pending, 5 failing)
+tree ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364 2026-11-10T01:01:48Z
+# multitenant: 62 passing, 0 pending, 0 failing   (ed2ced00, rerun at 2026-11-10T01:04:17Z; the first ed2 invocation's grep filter matched no line because the success summary has no 'mocha' prefix)

@@ -1,0 +1,48 @@
+### baseline 80f00394e4b1612a8d1cf6613d34b8f89147911e
+  15 passing (283ms)
+### ablation 1: cache the sink at reader construction (readFileSync once, no per-call read)
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+      1) reads the sink at every signing call so a rewritten token is used by the next issuance without a restart
+      2) fails issuance closed when the sink is missing or empty and never falls back to an environment token
+      3) reads the sink at every call so a rewritten token is used by the next operation without a restart
+      4) fails the operation closed when the sink is missing or empty and never falls back to an environment token
+    5) reads the sink at every call so a rewritten token is used by the next operation without a restart
+    6) fails the operation closed when the sink is missing or empty and never falls back to an environment token
+  9 passing (280ms)
+  6 failing
+  1) Vault credential source for human access signing and owner credential issuance: tokenEnv or tokenFile
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+      + expected - actual
+  2) Vault credential source for human access signing and owner credential issuance: tokenEnv or tokenFile
+     Error: ENOENT: no such file or directory, open '/tmp/ns-token-sources-XdqXDa/absent-human-token'
+  3) Vault credential source for human access signing and owner credential issuance: tokenEnv or tokenFile
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+      + expected - actual
+  4) Vault credential source for human access signing and owner credential issuance: tokenEnv or tokenFile
+     Error: ENOENT: no such file or directory, open '/tmp/ns-token-sources-XdqXDa/absent-owner-token'
+  5) preview Vault credential source: tokenEnv or tokenFile
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+      + expected - actual
+  6) preview Vault credential source: tokenEnv or tokenFile
+     Error: invalid preview tenant, provider or ingress configuration
+restored: porcelain=0
+  15 passing (272ms)
+### ablation 2: fall back to the environment token when the sink is unreadable (each of the three sites)
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+      1) fails issuance closed when the sink is missing or empty and never falls back to an environment token
+      2) fails the operation closed when the sink is missing or empty and never falls back to an environment token
+    3) fails the operation closed when the sink is missing or empty and never falls back to an environment token
+  12 passing (276ms)
+  3 failing
+  1) Vault credential source for human access signing and owner credential issuance: tokenEnv or tokenFile
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+  2) Vault credential source for human access signing and owner credential issuance: tokenEnv or tokenFile
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+  3) preview Vault credential source: tokenEnv or tokenFile
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+restored: porcelain=0
+  15 passing (277ms)
+### head after controls 80f00394e4b1612a8d1cf6613d34b8f89147911e

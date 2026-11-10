@@ -1,0 +1,267 @@
+head 74036ba6e3572f6774fbc94ae2dc41b31922d2b7
+
+> nightscout@16.0.0 test:affected
+> node scripts/test-select.js affected --depth 4 --run --since 2c289a0c
+
+# changed in merge-base with 2c289a0c (2c289a0c) and the work tree: 7 files
+# implicated tests: 5 of 606; by hops: 0:4 1:1
+# integration: 5 test files
+
+
+  00 Production Safety Check
+API_SECRET has 159 bits of entropy
+++++++++++++++++++++++++++++++
+Nightscout Executing startBoot
+++++++++++++++++++++++++++++++
+Executing checkEnv
+Executing augmentSettings
+Executing checkSettings
+Checking settings
+Executing setupStorage
+Setting up new connection to MongoDB with pool options: { maxPoolSize: 5, minPoolSize: 1, maxIdleTimeMS: 10000 }
+Successfully established connection to MongoDB
+Mongo user role seems ok: []
+Mongo Storage system ready
+Executing setupAuthorization
+SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so while TRUST_PROXY is unset this delay does NOT protect against guessing passwords or tokens. To key it on the real client address, set TRUST_PROXY to the IP address(es) or CIDR range(s) of the proxy in front of Nightscout, or to false if clients connect directly. Until then, restrict access at your proxy or hosting provider.
+ensuring index for: auth_roles.name
+ensuring index for: auth_subjects.name
+Reloading auth data
+Roles listed
+Executing setupInternals
+Pushover was NOT configured
+Executing ensureIndexes
+Ensuring indexes
+ensuring index for: entries.date
+ensuring index for: entries.type
+ensuring index for: entries.sgv
+ensuring index for: entries.mbg
+ensuring index for: entries.sysTime
+ensuring index for: entries.dateString
+ensuring index for: entries.identifier
+ensuring index for: entries.{"type":1,"date":-1,"dateString":1}
+ensuring index for: entries.{"date":-1,"identifier":-1,"created_at":-1}
+ensuring index for: entries.srvModified
+ensuring index for: entries.isValid
+ensuring index for: treatments.created_at
+ensuring index for: treatments.eventType
+ensuring index for: treatments.insulin
+ensuring index for: treatments.carbs
+ensuring index for: treatments.glucose
+ensuring index for: treatments.enteredBy
+ensuring index for: treatments.boluscalc.foods._id
+ensuring index for: treatments.notes
+ensuring index for: treatments.NSCLIENT_ID
+ensuring index for: treatments.percent
+ensuring index for: treatments.absolute
+ensuring index for: treatments.duration
+ensuring index for: treatments.identifier
+ensuring index for: treatments.{"eventType":1,"duration":1,"created_at":1}
+ensuring index for: treatments.{"eventType":1,"created_at":-1,"identifier":-1,"date":-1}
+ensuring index for: treatments.srvModified
+ensuring index for: treatments.isValid
+ensuring index for: devicestatus.created_at
+ensuring index for: devicestatus.NSCLIENT_ID
+ensuring index for: devicestatus.{"created_at":-1,"identifier":-1,"date":-1}
+ensuring index for: devicestatus.identifier
+ensuring index for: devicestatus.srvModified
+ensuring index for: devicestatus.isValid
+ensuring index for: profile.startDate
+ensuring index for: profile.created_at
+ensuring index for: profile.NSCLIENT_ID
+ensuring index for: profile.{"startDate":-1,"_id":-1}
+ensuring index for: profile.identifier
+ensuring index for: profile.srvModified
+ensuring index for: profile.isValid
+ensuring index for: food.type
+ensuring index for: food.position
+ensuring index for: food.hidden
+ensuring index for: food.identifier
+ensuring index for: food.srvModified
+ensuring index for: food.isValid
+ensuring index for: activity.created_at
+ensuring index for: settings.identifier
+ensuring index for: settings.srvModified
+ensuring index for: settings.isValid
+Executing ensureIdentifierIndex
+Executing setupListeners
+Executing setupConnect
+Skipping disabled nightscout-connect
+Executing finishBoot
+[SAFETY] ✅ Database has 0 entries (threshold: 100)
+[SAFETY] ✅ Database name "testdb" looks like a test database
+[SAFETY] ✅ All production safety checks passed
+    [32m✔[39m should verify database is safe for destructive tests
+[SAFETY] Database name: testdb
+    [32m✔[39m should have extracted correct database name
+
+  explicit headless owner executable composition [pending opt-in: NS_OWNER_PREVIEW_TEST=1 with disposable NS_TEST_POSTGRES_ADMIN_URI]
+    - commits an own-tenant update through the actual CLI listener and stable configured actor
+    - refuses root/data/wrong-purpose/foreign/unknown-key credentials without persistent effects
+    - observes current credential/session/key/tenant revocation on the next operation across two independent workers
+    - retains transactional operator ceiling and current actor delegation fences
+    - refuses missing schema or unsafe reader privileges before binding the owner listener
+    - keeps management routes off the actual data app and commits an owner revocation through the owner listener
+    - uses separate actual API and owner listeners in one CLI process with real PostgreSQL and Vault
+    - sanitizes an exact-owned reader SQL refusal as 503 without mutation and recovers after restoration
+    - closes actual CLI listeners and storage cleanly on SIGTERM
+
+  secrets persistence (disposable PostgreSQL) [pending opt-in: NS_SECRETS_POSTGRES_DOCKER_TEST=1]
+    - stores immutable tenant-local ciphertext and preserves it across independent adapter instances
+    - enforces persistent current subject authority across workers, conflicts, floors and outages
+    - persists typed display settings, provenance, version conflicts and whole rollback refusal
+    - fences cross-worker settings and grant writes and rollback against stored policy generations
+    - serializes competing inserts to exactly one immutable reference
+    - commits audit before provider work even when an unrelated caller transaction rolls back
+    - refuses extra audit fields instead of persisting secret payloads
+    - enforces RLS against omitted predicates, unbound reads and foreign-tenant inserts
+    - makes audit append-only and unreadable to the application role
+    - uses a separate ciphertext-only maintenance role with compare-and-swap protection
+    - refuses unsafe startup roles and missing schemas without migrating
+    - red control: disabling actual RLS exposes foreign rows to omitted-predicate SQL
+    - fails before decryption when the audit insert is refused
+    - survives a database restart and preserves committed audit/reference records
+    - restores ciphertext, audit and required Vault key versions from synthetic backups
+    - persists real Vault ciphertext and retries scoped rewrap across races, failures and SIGKILL
+
+  bounded subject administration (disposable PostgreSQL) [pending opt-in: NS_SUBJECT_ADMIN_POSTGRES_DOCKER_TEST=1]
+    - appends metadata/audit without changing applied migration bytes or inventing historical timestamps
+    - atomically renames stable identity and credential prefix while preserving omitted notes/time and foreign state
+    - revokes omitted roles for the same earlier raw and JWT credentials on the next operation across workers
+    - deletes credential metadata and authority together and denies the same earlier credential on both workers
+    - refuses unknown and foreign-only roles, absent subjects and incomplete metadata without partial writes
+    - preserves explicit empty notes, supplied creation time and exact known role assignment
+    - rolls back rename, role links, credential prefix and deletion when final audit insertion fails
+    - serializes concurrent subject replacements without mixing a name with another write prefix or grants
+    - refuses serving credentials as writer and prevents raw serving-role mutations of every authority table
+    - enforces tenant RLS on writer credentials and rejects disabled RLS at adapter startup
+
+  separate subject management HTTP (disposable PostgreSQL) [pending opt-in: NS_SUBJECT_MANAGEMENT_HTTP_DOCKER_TEST=1]
+    - requires explicit composition dependencies before returning the dormant Express app
+    - renames via shipping verb/body identity, preserves metadata and keeps the earlier JWT usable
+    - revokes omitted roles on the next protected HTTP operation using the same earlier token
+    - deletes through HTTP and refuses the same JWT on independent serving pools without deleting a foreign twin
+    - uses authenticated matching tenant identity and rejects missing, duplicate, wrong-plane and cross-tenant credentials
+    - rejects malformed encoded paths before authentication without misclassifying callback failures
+    - sanitizes prefixed and plain resolver outages as unavailable before any authentication or write
+    - refuses body identity injection, derived tokens, malformed metadata and unavailable management authority without writes
+    - bounds JSON and media types and reports unsupported methods/paths with protective response headers
+    - preserves known-role-only and metadata refusal mappings without partial changes
+    - clears notes explicitly, accepts creation time and serializes concurrent HTTP replacement/deletion
+    - rolls back final-audit persistence failure and sanitizes the backend failure response
+    - leaves management routes absent from both independent data apps and performs no network egress
+
+  explicit owner configuration CLI composition [pending opt-in: NS_OWNER_CONFIGURATION_DOCKER_TEST=1]
+    - requires first-class configure for GET despite data wildcard and subject can_update
+    - persists typed CAS/history through two actual workers with exactly one same-version winner
+    - rolls back as a new version and refuses whole rollback under current operator pin
+    - enforces current configure revoke with the same JWT on the next operation in another worker
+    - fences revoke committed after initial authorization before the settings mutation transaction
+    - fences operator generation changed after captured policy before settings mutation
+    - next actual DATA status in another worker consumes committed owner settings with B unchanged
+    - keeps held presentation response and concurrent tenants bound to their operation-local environment
+    - display reader outage refuses presentation but preserves authorized raw uploads and exact SGV/date
+    - cold boots DATA with unsafe or unavailable display role while raw upload/exchange and lazy recovery remain independent
+    - keeps DATA owner404 and OWNER DATA/operator404 with independent state unchanged
+    - restricts settings writer to sentinel fencing and display identity to current presentation reads
+    - refuses unsafe policy grants and disabled configuration RLS before any listener bind
+    - closes both real listeners and records zero serving DDL statements on shutdown
+
+  Clean MONGO after tests
+API_SECRET has 159 bits of entropy
+++++++++++++++++++++++++++++++
+Nightscout Executing startBoot
+++++++++++++++++++++++++++++++
+Executing checkEnv
+Executing augmentSettings
+Executing checkSettings
+Checking settings
+Executing setupStorage
+Reusing MongoDB connection handler
+Mongo Storage system ready
+Executing setupAuthorization
+SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so while TRUST_PROXY is unset this delay does NOT protect against guessing passwords or tokens. To key it on the real client address, set TRUST_PROXY to the IP address(es) or CIDR range(s) of the proxy in front of Nightscout, or to false if clients connect directly. Until then, restrict access at your proxy or hosting provider.
+ensuring index for: auth_roles.name
+ensuring index for: auth_subjects.name
+Reloading auth data
+Roles listed
+Executing setupInternals
+Pushover was NOT configured
+Executing ensureIndexes
+Ensuring indexes
+ensuring index for: entries.date
+ensuring index for: entries.type
+ensuring index for: entries.sgv
+ensuring index for: entries.mbg
+ensuring index for: entries.sysTime
+ensuring index for: entries.dateString
+ensuring index for: entries.identifier
+ensuring index for: entries.{"type":1,"date":-1,"dateString":1}
+ensuring index for: entries.{"date":-1,"identifier":-1,"created_at":-1}
+ensuring index for: entries.srvModified
+ensuring index for: entries.isValid
+ensuring index for: treatments.created_at
+ensuring index for: treatments.eventType
+ensuring index for: treatments.insulin
+ensuring index for: treatments.carbs
+ensuring index for: treatments.glucose
+ensuring index for: treatments.enteredBy
+ensuring index for: treatments.boluscalc.foods._id
+ensuring index for: treatments.notes
+ensuring index for: treatments.NSCLIENT_ID
+ensuring index for: treatments.percent
+ensuring index for: treatments.absolute
+ensuring index for: treatments.duration
+ensuring index for: treatments.identifier
+ensuring index for: treatments.{"eventType":1,"duration":1,"created_at":1}
+ensuring index for: treatments.{"eventType":1,"created_at":-1,"identifier":-1,"date":-1}
+ensuring index for: treatments.srvModified
+ensuring index for: treatments.isValid
+ensuring index for: devicestatus.created_at
+ensuring index for: devicestatus.NSCLIENT_ID
+ensuring index for: devicestatus.{"created_at":-1,"identifier":-1,"date":-1}
+ensuring index for: devicestatus.identifier
+ensuring index for: devicestatus.srvModified
+ensuring index for: devicestatus.isValid
+ensuring index for: profile.startDate
+ensuring index for: profile.created_at
+ensuring index for: profile.NSCLIENT_ID
+ensuring index for: profile.{"startDate":-1,"_id":-1}
+ensuring index for: profile.identifier
+ensuring index for: profile.srvModified
+ensuring index for: profile.isValid
+ensuring index for: food.type
+ensuring index for: food.position
+ensuring index for: food.hidden
+ensuring index for: food.identifier
+ensuring index for: food.srvModified
+ensuring index for: food.isValid
+ensuring index for: activity.created_at
+ensuring index for: settings.identifier
+ensuring index for: settings.srvModified
+ensuring index for: settings.isValid
+Executing ensureIdentifierIndex
+Executing setupListeners
+Executing setupConnect
+Skipping disabled nightscout-connect
+Executing finishBoot
+API KEY present, enabling API
+enabling feature: careportal
+enabling feature: api
+    [32m✔[39m wipe treatment data
+    [32m✔[39m wipe entries data
+    [32m✔[39m wipe devicestatus data
+
+
+[TIMING STATS] Total: 5 tests, Avg: 2ms, Slow: 0
+
+  5 passing (179ms)
+  62 pending
+
+test:affected exit=0
+
+> nightscout@16.0.0 test:tiers
+> node scripts/test-tiers.js check
+
+# 606 test files, 8 tiers: ok
+test:tiers exit=0

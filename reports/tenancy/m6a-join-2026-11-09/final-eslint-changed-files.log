@@ -1,0 +1,135 @@
+head 74036ba6e3572f6774fbc94ae2dc41b31922d2b7 files 126
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/lib/secrets/vault-token-source.js
+  23:21  warning  Found readFile from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/lib/server/app.js
+   13:7   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   15:7   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   17:7   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  213:21  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  324:23  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  325:23  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/lib/server/realtime/ipc.js
+   16:51   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+   18:7    warning  Found realpathSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   62:9    warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+   68:9    warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+   86:16   warning  Found existsSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   87:23   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+   88:85   warning  Found unlinkSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   90:24   warning  Found existsSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   91:23   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+   92:101  warning  Found unlinkSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   99:19   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  100:5    warning  Found chmodSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  105:5    warning  Found linkSync from package "node:fs" with non literal argument at index 0,1    security/detect-non-literal-fs-filename
+  105:67   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  116:20   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/lib/server/serve/evaluator-config.js
+  103:20  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  105:21  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/lib/server/serve/owner-preview-config.js
+  87:18  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  88:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/lib/server/serve/preview-config.js
+  51:18  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  53:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/lib/server/tenant-app/data-access.js
+  80:11  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+  80:55  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/fixtures/owner-configuration.js
+  124:5   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  159:30  warning  Found readFileSync from package "node:fs" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  179:29  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  180:20  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/human-access-config.test.js
+  25:23  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/human-session-http-native.js
+  138:22  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  138:74  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/human-session-instrument.test.js
+  198:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/human-session-lifecycle.test.js
+  6:37  warning  Found non-literal argument in require  security/detect-non-literal-require
+  7:56  warning  Found non-literal argument in require  security/detect-non-literal-require
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/native/oidc-matrix/owner-extension.cjs
+  31:8  warning  Found existsSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/native/oidc-matrix/redact.cjs
+  5:28  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/native/oidc-matrix/run.cjs
+   41:99  warning  Found appendFileSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+   75:3   warning  Found mkdirSync from package "node:fs" with non literal argument at index 0          security/detect-non-literal-fs-filename
+  124:5   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  130:22  warning  Found readFileSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  145:94  warning  Found readFileSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  177:5   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  183:52  warning  Found readFileSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  183:96  warning  Found readFileSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  197:25  warning  Found createWriteStream from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  197:74  warning  Found createWriteStream from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  204:31  warning  Found readFileSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  206:7   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  206:85  warning  Found readFileSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  241:9   warning  Found mkdirSync from package "node:fs" with non literal argument at index 0          security/detect-non-literal-fs-filename
+  243:14  warning  Found existsSync from package "node:fs" with non literal argument at index 0         security/detect-non-literal-fs-filename
+  243:36  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  245:9   warning  Found symlinkSync from package "node:fs" with non literal argument at index 0,1      security/detect-non-literal-fs-filename
+  246:71  warning  Found readFileSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  247:9   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  269:5   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  271:5   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/native/oidc-matrix/stage.cjs
+  36:29  warning  Found readFileSync from package "node:fs" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  88:3   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  97:3   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/native/oidc-matrix/transit-profile.cjs
+  7:29  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/owner-configuration-persistence.test.js
+   20:18  warning  Found readFileSync from package "node:fs" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  203:72  warning  Found readFileSync from package "node:fs" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  357:7   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  365:54  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/owner-preview.integration.test.js
+   52:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  150:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  230:9  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/preview-vault-token-file.test.js
+   22:5  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   84:5  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   89:5  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  102:5  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  108:5  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6a-join-20261109/tests/vault-token-file-sources.test.js
+   60:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   89:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   92:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  102:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  105:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  143:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  147:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  160:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  166:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+✖ 88 problems (0 errors, 88 warnings)
+
+eslint exit=0
