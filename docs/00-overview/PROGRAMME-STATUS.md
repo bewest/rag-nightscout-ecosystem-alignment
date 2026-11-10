@@ -5,7 +5,8 @@
 proposed for Nightscout Foundation stewardship.
 Prose revised 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and
 `official/master` `92d08342` (tag `15.0.8`); the remedial horizon and the register paragraph
-2026-10-21, against `official/master` `c6a0d8ed` (tag `v15.0.9`). The tables are generated from
+2026-10-21, against `official/master` `c6a0d8ed` (tag `v15.0.9`); the multitenant paragraph
+2026-11-10. The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
 This page answers "where is the work, and what is it waiting for" across the three
@@ -87,15 +88,24 @@ retains the M0–M4 baseline; [R73](../30-design/remedial/rc-16.0.0-integration-
 accepts the functional M5 reference on one host at its recorded local source.
 The [published operation-window reference](../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
 adds bounded tenant-local restore, shared-role restart with another tenant suspended,
-and cold Compose/UI/client acceptance. M6 remains blocked; local shared OIDC/owner
-source still needs signed native acceptance. The [deployment guide](../30-design/tenancy/deployment-and-rig-testing.md)
+and cold Compose/UI/client acceptance. M6 is split into M6a–M6d and M7
+([decision](../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)).
+Draft PR #8898 carries the M6a owner/OIDC and internal service API work and the M6b
+join, each with a joined acceptance record
+([M6a](../../reports/tenancy/m6a-join-2026-11-09/README.md),
+[M6b](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md));
+no M6 milestone is promoted. M7 production readiness is measured, not declared:
+[runtime topology](../30-design/tenancy/runtime-topology.md),
+[endpoint/API scaling](../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md)
+and [realtime sharding](../30-design/tenancy/realtime-sharding-plan.md) hold the plans.
+The [deployment guide](../30-design/tenancy/deployment-and-rig-testing.md)
 explains deployment models and shared fault domains. The [release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md)
 own the current published head and remote verification for draft PR #8898.
 Local acceptance does not imply remote publication, dev merge or operator release. The
 [architecture comparison](../30-design/tenancy/single-and-multitenant-architecture.md)
 lists what it holds and which record governs each module.
 Decisions D1–D23 live in the
-[execution plan](../30-design/tenancy/multitenancy-decisions.md),
+[tenancy decisions reference](../30-design/tenancy/multitenancy-decisions.md),
 with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md)
 and the [durable event delivery contract](../30-design/tenancy/durable-event-delivery-contract-2026-11-06.md) (B7).
 Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is

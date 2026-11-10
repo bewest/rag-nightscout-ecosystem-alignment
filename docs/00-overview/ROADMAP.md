@@ -4,7 +4,7 @@
 status](PROGRAMME-STATUS.md); leads to [work waiting on a person](NEEDS-A-HUMAN.md). Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
 2026-10-25 against cgm-remote-monitor `official/master` `c6a0d8ed` (tags `v15.0.9`, `15.0.9`) and
-`official/dev` `eb72a1d3` (16.0.0, cut 1 merged as #8828); other prose dated 2026-10-08 against `dev` `fade2299` and `master`
+`official/dev` `eb72a1d3` (16.0.0, cut 1 merged as #8828); §3 prose 2026-11-10; other prose dated 2026-10-08 against `dev` `fade2299` and `master`
 `92d08342` (tag `15.0.8`). The two order tables are generated from `queue/work-queue.yaml`, and
 `make views-check` fails when they drift.*
 
@@ -14,7 +14,7 @@ live in these places, and this page links to them:
 | what | where it is decided |
 |---|---|
 | the release train and each release's number | [versioning policy §8.3](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md#83-the-release-train) |
-| tenancy decisions D1–D22 and the tenancy task definitions | [multitenancy execution plan](../30-design/tenancy/multitenancy-decisions.md) |
+| tenancy decisions D1–D23 | [tenancy decisions reference](../30-design/tenancy/multitenancy-decisions.md) |
 | defect facts, and what ships to operators today | [backfix register](../30-design/remedial/nightscout-backfix-register.md) |
 | each item's state, gate and blockers | `queue/work-queue.yaml`; `make queue-status` measures it |
 
@@ -164,8 +164,14 @@ is recorded separately in the
 The [published one-host reference](../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
 now includes cold Compose/UI/restore/client acceptance; native shared-role restart
 and the functional M5 runtime retain their exact source scope. This evidence can
-inform component and recovery decisions. M6 identity/owner admission, operating
-bounds and deployment trust remain open; multi-host failover has no acceptance.
+inform component and recovery decisions. M6 is split into M6a–M6d and M7
+([decision](../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)):
+the M6a and M6b joined candidates have acceptance records on draft #8898
+([M6a](../../reports/tenancy/m6a-join-2026-11-09/README.md),
+[M6b](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)), with
+no milestone promoted. Deployment trust (M6c) and the M7 bench, scale, evaluator
+partition, realtime sharding and Android items follow, in the order the generated
+table gives; multi-host failover has no acceptance.
 Use the [deployment models and fault domains](../30-design/tenancy/deployment-and-rig-testing.md)
 to distinguish these boundaries. Tenant-local suppression and controlled notification
 handoff are measured; live provider/device delivery remains separately gated by

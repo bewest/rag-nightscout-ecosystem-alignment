@@ -5,7 +5,7 @@
 advances anything — a person has to push, decide, or review. Prose revised
 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` (the `RT-0` section 2026-10-21,
 against `official/master` `c6a0d8ed`, tag `v15.0.9`) and nightscout-connect
-`official/main` `4dde1ec` (tag `v0.1.0`); tables generated.*
+`official/main` `4dde1ec` (tag `v0.1.0`); the multitenant section 2026-11-10 against draft #8898 `b70ad83f`; tables generated.*
 
 This page lists only the items whose claimed state means **the next move belongs to
 a person**, grouped by the kind of person, so that "what is blocked on me" is one
@@ -139,14 +139,15 @@ BF-72: an unauthenticated query can occupy the database for minutes. It is live 
 disposition; the details are held outside this public repository while the defect is live on the
 shipping release, under the disclosure rule ([DOCUMENT-CONTROL §3.8](DOCUMENT-CONTROL.md#38-external-and-restricted-documents)).
 
-### `MT-OIDC-NATIVE`, `MT-M6A-JOIN`, `MT-BENCH-BASELINE` — the multitenant preview on #8898
+### `MT-M6B-JOIN`, `MT-ENDPOINT-TRANSPORT` — the multitenant preview on #8898
 
-Draft #8898 is `ed2ced00` (read 2026-11-09), open and mergeable; checks on that head are
-16 success, 3 skipped and 1 failure (CodeQL). The CodeQL failure is one new alert on the
-private IPC dispatch, a bounded own-property lookup that `MT-M6A-JOIN` restructures or
-dismisses with justification; a second alert is on code identical to `official/dev`.
+Draft #8898 is `b70ad83f` (read from GitHub 2026-11-10, 20:54 UTC), open; 17 checks pass
+and 3 are skipped, CodeQL and the multitenant opt-in corpus among the passes. That head
+carries the M6a owner/OIDC and internal service API candidate and the M6b join; its
+frozen-head acceptance is the
+[M6b record](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md).
 The preview is dormant and opt-in; taking it out of draft, review and merge are the
-maintainer's actions once M6a closes.
+maintainer's actions.
 
 On 2026-11-09 the maintainer split M6 into M6a–M6d and M7, moved the deployment tree to
 `nightscout-deploy`, chose a Vault Agent sidecar over a hand-written service-login
@@ -155,14 +156,16 @@ adapter, and retired the agent-invented grant ceremony in favour of a disposable
 
 What still needs a person:
 
-- **Nothing for the OIDC native run.** `MT-OIDC-NATIVE` runs when the harness lands; no
-  grant, reservation or attestation is required from the maintainer.
-- **Nothing for the operating envelope either.** On 2026-11-09 the maintainer made M7
-  measured, not declared: `MT-BENCH-BASELINE`, `MT-BENCH-CONTRAST` and `MT-SCALE-UNBOUND`
-  produce the numbers; limits follow.
+- **A configuration shape for a shared component listener.** Listener composition is
+  reproduced and joined; production wiring of several contracts on one listener needs the
+  maintainer to choose how it is configured (`MT-ENDPOINT-TRANSPORT`,
+  [plan](../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md)).
 - **The operator activity/resource policy** question stays open in the
   [decision index](../30-design/tenancy/m5-m6-decision-list.md#human-policy-review).
 - **Repository home and licence** for `nightscout-deploy` (deploy-companion note, item 8).
+- **Nothing for the operating envelope.** On 2026-11-09 the maintainer made M7
+  measured, not declared: `MT-BENCH-BASELINE`, `MT-BENCH-CONTRAST` and `MT-SCALE-UNBOUND`
+  produce the numbers; limits follow.
 
 ### `BFQ-09`, `A7A-7` — `unsettled`, which is not the same as open
 
