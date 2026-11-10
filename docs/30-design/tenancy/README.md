@@ -111,8 +111,8 @@ These retain distinct evidence or alternatives; they are not current work instru
 | [Owner configuration census](tenant-owner-config-surface-2026-09-15.md) | Historical census/DDL; later [dev census](../../60-research/tenancy/t30-census-dev-2026-10-27.md), config candidate and owner authority have separate scopes. |
 | [Configuration/delegation questions](nightscout-configuration-and-delegation-2026-09-10.md), [control-plane reconciliation](nightscout-control-plane-reconciliation-2026-09-11.md) | Historical analysis and supersession map; not a replacement backlog. |
 | [Ordering translation](nightscout-seam-ordering-translation.md) | Old-seam proposal; current ports, write contract and backend measurements govern admission. |
-| [Earlier open-decision note](multitenant-open-decisions-2026-11-06.md), [owner lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md) | Historical questions, source surveys and alternatives. Start with the current decision list; draft recommendations are not adopted policy. |
-| [M0–M3 promotion review](milestone-promotion-review-2026-11-06.md), [M4 client dispatch](m4-client-binary-lab-packet-2026-11-06.md) | Read-derived gap review and lab hypotheses. Later integration records own actual acceptance. |
+| [Earlier open-decision note](../../archive/tenancy/multitenant-open-decisions-2026-11-06.md), [owner lifecycle packet](../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.md) | Historical questions, source surveys and alternatives. Start with the current decision list; draft recommendations are not adopted policy. |
+| [M0–M3 promotion review](../../archive/tenancy/milestone-promotion-review-2026-11-06.md), [M4 client dispatch](m4-client-binary-lab-packet-2026-11-06.md) | Read-derived gap review and lab hypotheses. Later integration records own actual acceptance. |
 
 ## Keeping this path useful
 

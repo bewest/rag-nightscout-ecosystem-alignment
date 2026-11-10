@@ -262,7 +262,7 @@ contracts; future schema upload does not waive current compatibility testing.
 
 ## Multitenant promotion bars (2026-11-06)
 
-Decided in the open-decisions discussion ([note](../../docs/30-design/tenancy/multitenant-open-decisions-2026-11-06.md)).
+Decided in the open-decisions discussion ([note](../../docs/archive/tenancy/multitenant-open-decisions-2026-11-06.md)).
 
 | decision | who, when | queue | as it stands |
 |---|---|---|---|

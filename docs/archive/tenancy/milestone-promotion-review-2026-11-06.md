@@ -1,13 +1,17 @@
 # Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
 
+*Retained record, archived 2026-11-10 from alignment
+`c53105eeeb04225910e3c6871629fed5c7b78853`. The captured text below preserves
+its read-derived M0–M3 gap review against R24–R55. Accepted M0–M5 criteria are recorded in the [delivery dashboard](../../30-design/tenancy/multitenant-delivery-dashboard.md) and the [integration record](../../30-design/remedial/rc-16.0.0-integration-record.md). Do not act on its “next” or open questions.*
+
 *What this is: a **read-derived review**, batch B4 of the
-[integration batching plan](multitenant-integration-batching-plan-2026-11-06.md).
+[integration batching plan](../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md).
 It maps every criterion in the "Acceptance before promotion" column of the
-[roadmap's section 4 table](multitenant-delivery-roadmap.md#milestones-and-continuous-integration)
+[roadmap's section 4 table](../../30-design/tenancy/multitenant-delivery-roadmap.md#milestones-and-continuous-integration)
 for M0, M1, M2 and M3 to the evidence in the
-[RC 16.0.0 integration record](../remedial/rc-16.0.0-integration-record.md)
+[RC 16.0.0 integration record](../../30-design/remedial/rc-16.0.0-integration-record.md)
 entries R24–R55 and the
-[dashboard's accepted-slices table](multitenant-delivery-dashboard.md#accepted-slices-and-integration-handoff).
+[dashboard's accepted-slices table](../../30-design/tenancy/multitenant-delivery-dashboard.md#accepted-slices-and-integration-handoff).
 Anchored on alignment `main` `c57589e9b553af0dafdcce49d96b3ad4b448a30c`, read
 at the start of the review. **This document promotes nothing.** No campaign was
 run for it; every count and commit below is quoted from the record text, and a

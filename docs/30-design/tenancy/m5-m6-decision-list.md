@@ -87,10 +87,10 @@ The following topic is open; it does not reopen the settled choices above.
 |---|---|---|
 | Operator activity/resource policy vs recovery admission (multitenant) | [Tenant-admission review](tenant-admission-and-activity.md) records the proposed separation of desired activity, claim-bound maintenance state and observed health. Decide inactive behavior per serving/ingest/evaluator/connector capability, transition authority and how it composes with existing pause/suspend semantics. Source `operation-window.js:87–91` checks maintenance phase; `evaluator-runtime.js:101,152–154` iterates configured tenants. The proposal is read-derived; no new policy/schema or full inactive-resource behavior is accepted. | Endpoint transport and fixed-roster APIs preserve existing admission/drain/invalidation. Existing owner/OIDC and lifecycle work can proceed within adopted contracts. Policy-specific consumer/schema changes wait for a bounded decision. |
 
-The [owner lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md)
+The [owner lifecycle packet](../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.md)
 retains source surveys and alternatives; its recommended grace periods, invitation
 lifetimes and self-service operations are not approved defaults. The [earlier
-open-decision note](multitenant-open-decisions-2026-11-06.md) preserves already
+open-decision note](../../archive/tenancy/multitenant-open-decisions-2026-11-06.md) preserves already
 answered A questions, not the current backlog.
 
 The [counter and restore options analysis](counter-and-restore-options.md)

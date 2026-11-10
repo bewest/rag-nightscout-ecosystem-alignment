@@ -193,7 +193,7 @@ Suspend is total blackout, including ingest; pause blocks UI/reads while ingest
 continues. Delete requires suspend, not pause. On suspension, disconnect sockets
 and show last data visibly stale using existing staleness vocabulary; silent
 frozen charts are not sufficient. Destructive lifecycle preconditions, export
-coverage and key retention now live in the [owner-lifecycle packet](owner-lifecycle-decision-packet-2026-11-06.md)
+coverage and key retention now live in the [owner-lifecycle packet](../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.md)
 and [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06).
 Do not infer current deletion behavior from the original seam's admin prototype.
 Shared-role startup follows the adopted [tenant-local startup admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission).

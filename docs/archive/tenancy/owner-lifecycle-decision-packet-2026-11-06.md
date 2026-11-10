@@ -1,5 +1,9 @@
 # Owner session and issuer lifecycle: the decision packet (2026-11-06)
 
+*Retained record, archived 2026-11-10 from alignment
+`c53105eeeb04225910e3c6871629fed5c7b78853`. The captured text below preserves
+its source survey, alternatives and draft recommendations for the owner-plane questions. The adopted answers are rows in [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md); [owner authority](../../30-design/tenancy/owner-authority.md) owns the current rules and the [M5/M6 decision list](../../30-design/tenancy/m5-m6-decision-list.md) indexes them. Its recommended defaults are not adopted policy. Do not act on its “next” or open questions.*
+
 *What this is: a **draft decision packet for maintainer review** (contributor-facing), read-derived
 unless a row says otherwise, written 2026-11-06 by session `-8c` under the batching plan's §5
 assignment. It lets the maintainer decide the five owner-plane questions that the
@@ -10,7 +14,7 @@ in `releases/cgm-remote-monitor-16.0.0/decisions.md`, after which this packet po
 was written; no gate was run. Companion: [the five critical-path decisions](multitenant-open-decisions-2026-11-06.md),
 whose items 1 and 2 now have maintainer decisions, linked below rather than re-asked.*
 
-**Current reading path:** use the [M5/M6 decision list](m5-m6-decision-list.md). This packet preserves source surveys and alternatives; later canonical decisions govern preview scope.
+**Current reading path:** use the [M5/M6 decision list](../../30-design/tenancy/m5-m6-decision-list.md). This packet preserves source surveys and alternatives; later canonical decisions govern preview scope.
 
 **Anchors, read from `git` at the moment of writing.**
 
@@ -344,7 +348,7 @@ reader selection, rollout preflight or opt-in mode recommended here.
 intersection and controls; R63 measured preserved subject-token uploads and an incompatible
 root-carrier refusal under selection, against a successful unselected reference. Those records
 explain the withdrawal; they are not acceptance of a current mode. Their measurements remain in
-[the integration record](../remedial/rc-16.0.0-integration-record.md)
+[the integration record](../../30-design/remedial/rc-16.0.0-integration-record.md)
 (R62/R63); this correction does not rewrite them. Local source candidate `e2a760bc` removes the
 reader-only factory/options, joins/intersections and reader-only cases. That is source removal,
 not a new client execution result.

@@ -1,5 +1,9 @@
 # Multitenant: the five decisions on the critical path (2026-11-06)
 
+*Retained record, archived 2026-11-10 from alignment
+`c53105eeeb04225910e3c6871629fed5c7b78853`. The captured text below preserves
+its five critical-path questions as asked. Each item has a recorded decision or deferral in [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06), and the [M5/M6 decision list](../../30-design/tenancy/m5-m6-decision-list.md) is the current index. Do not act on its “next” or open questions.*
+
 *What this is: a decision note for the maintainer (contributor-facing), written 2026-11-06
 against alignment `main` `2efaa3a89` and the published candidate `83582e87` on draft PR #8898
 (the owner/evaluator candidate `4cd95d06` is in its comprehensive campaign). Each item names
@@ -8,7 +12,7 @@ what is only read, and whether it is single- or multitenant. A decision taken he
 recorded as one row in `releases/cgm-remote-monitor-16.0.0/decisions.md`; this note then
 points at it. One topic per section; recommendations are given because they were asked for.*
 
-**Current reading path:** use the [M5/M6 decision list](m5-m6-decision-list.md). This note preserves the earlier questions; it is not the remaining-decision checklist.
+**Current reading path:** use the [M5/M6 decision list](../../30-design/tenancy/m5-m6-decision-list.md). This note preserves the earlier questions; it is not the remaining-decision checklist.
 
 **Decided 2026-11-06 after this note was written:** items 2, 3 and 4 are decided as recommended and recorded as rows in decisions.md (section "Multitenant promotion bars"). Item 1 is decided differently from the recommendation: the clamping mode is **dropped** as a backward-compatibility break (decisions.md row of 2026-11-06); a tenant's api-secret must get 200 on its own tenant resource, and only backward-compatible solutions are wanted. The section below is kept as the record of the question as asked. Item 5's lifecycle packet is published: [owner session and issuer lifecycle decision packet](owner-lifecycle-decision-packet-2026-11-06.md).
 
@@ -187,7 +191,7 @@ pending, and it is the one an operator would ask for first.
 ## 6. Added 2026-11-07: five lifecycle decision lines from R69 (pointer)
 
 The tenant export/import/deletion early proof
-([R69](../remedial/rc-16.0.0-integration-record.md#r69---tenant-export-import-and-two-phase-deletion-early-proof-on-fd827e35-2026-11-07))
+([R69](../../30-design/remedial/rc-16.0.0-integration-record.md#r69---tenant-export-import-and-two-phase-deletion-early-proof-on-fd827e35-2026-11-07))
 records five decision lines for the maintainer in its lane README (`lib/tenant-lifecycle/README.md`
 on `codex/tenant-export-delete-20261106`) and the
 [lab README](../../../tools/lab/tenant-export-delete/README.md): Vault key destruction and
