@@ -38,7 +38,7 @@ from Transit, `HUMAN_SESSION_UNAVAILABLE` from the access signer) and never fall
 environment. `lib/secrets/vault-access-signing.js` already passes `{signal}` to `getToken` and
 collapses any throw into `HUMAN_SESSION_UNAVAILABLE`, so it is unchanged. The brief's "three
 getToken sites" are therefore two loader edits plus one consumer confirmed as already conforming.
-Docs (`docs/architecture/multitenant-api-preview.md`) still show `tokenEnv` only; the tokenFile
+The core preview guide (`multitenant-api-preview.md` in cgm-remote-monitor's architecture docs) still show `tokenEnv` only; the tokenFile
 branch did not document `tokenFile` either; left for the coordinator.
 
 New test `tests/vault-token-file-sources.test.js` (unit tier): 10 passing. Together with the
