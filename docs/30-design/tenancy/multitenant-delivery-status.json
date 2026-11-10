@@ -742,7 +742,7 @@
       "work": "MT-M6A-JOIN",
       "stage": "local-accepted",
       "commit": "74036ba6",
-      "evidence": "../../../reports/tenancy/m6a-join-2026-11-09/README.md",
+      "evidence": "../../../reports/tenancy/m6a-join-2026-11-09/README.md#10-final-verification",
       "result": "Reproduced 2026-11-09: OIDC matrix 9/9 with 3/3 controls; test:all 0 failing; browser 686/0; multitenant corpus 537/1/0; prcheck exit 0. Fast-forward of the PR branch; push awaits two maintainer decisions."
     }
   ],
