@@ -30,15 +30,19 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 17 items
+### Maintainer &mdash; 20 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
 | `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | #8888 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
+| `MT-KEY-RETENTION` | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal | &mdash; |
 | `MT-M6A-JOIN` | `in-flight-upstream` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | &mdash; |
+| `MT-M6B-JOIN` | `in-flight-upstream` | Join M6b ownership/retention, single-site OIDC provisioning, listener compositio | &mdash; |
 | `MT-OIDC-NATIVE` | `in-flight-upstream` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | &mdash; |
+| `MT-OIDC-SINGLE-PROVISION` | `in-flight-upstream` | Single-site OIDC: declarative identity-to-role list and a role for signed-in str | &mdash; |
+| `MT-OWNERSHIP-OPS` | `in-flight-upstream` | M6b: operator-assisted ownership add, transfer and recovery | &mdash; |
 | `MT-VAULT-TOKEN-FILE` | `in-flight-upstream` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -49,7 +53,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `DEPLOY-VAULT-AGENT` | `ready-to-push` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | &mdash; |
-| `MT-M6B-JOIN` | `ready-to-push` | Join M6b ownership/retention, single-site OIDC provisioning, listener compositio | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item

@@ -33,9 +33,12 @@ repository.
 | [`LOOP-UPSTREAM-CARB-EDIT`](loop-upstream-carb-edit.md) | &mdash; | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cache (raised with the Loop maintainers) |
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |
+| [`MT-KEY-RETENTION`](mt-key-retention-codex-key-retention-20261110.md) | &mdash; | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal |
 | [`MT-M6A-JOIN`](mt-m6a-join-codex-m6a-join-20261109.md) | &mdash; | `in-flight-upstream` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign |
-| [`MT-M6B-JOIN`](mt-m6b-join-codex-m6b-join-20261110.md) | &mdash; | `ready-to-push` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 |
+| [`MT-M6B-JOIN`](mt-m6b-join-codex-m6b-join-20261110.md) | &mdash; | `in-flight-upstream` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 |
 | [`MT-OIDC-NATIVE`](mt-oidc-native-codex-oidc-native-harness-20261109.md) | &mdash; | `in-flight-upstream` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness |
+| [`MT-OIDC-SINGLE-PROVISION`](mt-oidc-single-provision-codex-oidc-single-provision-20261110.md) | &mdash; | `in-flight-upstream` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers |
+| [`MT-OWNERSHIP-OPS`](mt-ownership-ops-codex-ownership-ops-20261110.md) | &mdash; | `in-flight-upstream` | M6b: operator-assisted ownership add, transfer and recovery |
 | [`MT-VAULT-TOKEN-FILE`](mt-vault-token-file-codex-vault-token-file-20261109.md) | &mdash; | `in-flight-upstream` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) |
 | [`WS-LAB`](ws-lab-main.md) | &mdash; | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) |
 

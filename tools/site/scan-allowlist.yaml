@@ -84,3 +84,6 @@ allow:
     kind: payload
     reason: "Lists the retro-load event name among changed client surfaces; no request."
 
+  - path: reports/tenancy/oidc-single-provision-2026-11-10/README.md
+    kind: email
+    reason: "Synthetic address on the reserved .test domain in an OIDC_IDENTITIES configuration example; no real person."

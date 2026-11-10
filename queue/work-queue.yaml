@@ -25782,6 +25782,8 @@ items:
       response whose media type only starts with application/json is now refused by the
       client. Finding: on shutdown close() drops in-flight connections before handlers
       finish, consistent with the no-retry contract; a decision for the replica/drain owner.
+      2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment
+      and the shared-listener configuration shape remain.
   - id: MT-API-FIXED-ROSTER
     title: "Independent API scaling with a fixed restore participant roster"
     parcel: tenancy
@@ -25977,7 +25979,7 @@ items:
     branch: codex/m6b-join-20261110
     worktree: externals/work/crm-m6b-join-20261110
     base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Frozen candidate b70ad83f: dc795bd1 plus merges of codeql-150 (7b30a6f2),
       listener-composition (d69b873a with docs 3a534e89/692bd507), key-retention
@@ -26019,6 +26021,9 @@ items:
       2026-11-10: lanes MT-KEY-RETENTION, MT-OWNERSHIP-OPS, MT-OIDC-SINGLE-PROVISION and the
       listener-composition part of MT-ENDPOINT-TRANSPORT ship through this push. Lane unit
       ablations were run in the lanes, not repeated on the joined head.
+      2026-11-10 (read from GitHub at 21:0xZ): maintainer pushed b70ad83f to #8898; all 16 CI jobs
+      green including CodeQL and the multitenant opt-in corpus; no open code-scanning alerts on the
+      PR (150 fixed).
   - id: MT-OIDC-SINGLE-PROVISION
     title: "Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers"
     parcel: tenancy
@@ -26026,7 +26031,7 @@ items:
     branch: codex/oidc-single-provision-20261110
     worktree: externals/work/crm-oidc-single-provision-20261110
     base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
-    state: in-progress
+    state: in-flight-upstream
     blast_radius: >
       Single-site OIDC (ENABLE includes oidc, lib/human-session/runtime.js:8) today maps a
       signed-in person only through principal rows inside the <prefix>human_authority
@@ -26075,6 +26080,7 @@ items:
       optional for single-site, refused in multitenant; principals bind to an auth subject and read current
       roles per operation (stored permissionGroups ignored); OIDC_IDENTITIES[_FILE] keyed on issuer+subject or
       issuer-verified email; OIDC_FALLBACK_ROLES for unlisted people. Maintainer 2026-11-10: the list is authoritative at each start (decision single-site-oidc-list-authoritative). Joined into MT-M6B-JOIN.
+      2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
   - id: MT-OWNERSHIP-OPS
     title: "M6b: operator-assisted ownership add, transfer and recovery"
     parcel: tenancy
@@ -26082,7 +26088,7 @@ items:
     branch: codex/ownership-ops-20261110
     worktree: externals/work/crm-ownership-ops-20261110
     base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
-    state: in-progress
+    state: in-flight-upstream
     blast_radius: >
       Headless operator API on the private plane: add co-owner, transfer, recover.
       Tenant-bound, audited; concurrent changes cannot orphan a tenant or silently
@@ -26114,6 +26120,7 @@ items:
       yet composed into the admin role and no operator identity in deploy/multitenant/config.js. Read-derived:
       subject-admin remove() can delete the last owner subject; legacy subject-admin writers without
       ownerPolicy do not serialize with ownership changes. Joined into MT-M6B-JOIN.
+      2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
   - id: MT-KEY-RETENTION
     title: "M6b: 30-day retained-key destruction and after-window refusal"
     parcel: tenancy
@@ -26121,7 +26128,7 @@ items:
     branch: codex/key-retention-20261110
     worktree: externals/work/crm-key-retention-20261110
     base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
-    state: in-progress
+    state: in-flight-upstream
     blast_radius: >
       Deletion ceremony tail: the export artifact must hold every ciphertext/key
       reference before secret/audit rows are removed; keys retained 30 days; an
@@ -26155,6 +26162,7 @@ items:
       tables, so every ceremony call refused on a fully migrated namespace (LIFECYCLE_RELATION_UNADMITTED,
       reproduced natively; never released). Joined into MT-M6B-JOIN. Open for the maintainer: early destroy
       refused by design; export-file expiry not automated.
+      2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
   - id: MT-VAULT-TOKEN-FILE
     title: "M6c: read the Vault token from a sink file per call (Vault Agent compatibility)"
     parcel: tenancy

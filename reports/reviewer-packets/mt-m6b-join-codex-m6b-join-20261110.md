@@ -21,7 +21,7 @@ composition and CodeQL 150 into #8898**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/m6b-join-20261110` |
 | base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-M6B-JOIN` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-M6B-JOIN` is the measurement |
 | semver | `minor` |
 | register entries | `BF-228` |
 
@@ -87,7 +87,10 @@ Coordinator-owned join. Push of the accepted head and taking #8898 out of
 draft remain the maintainer's. 2026-11-10: lanes MT-KEY-RETENTION, MT-
 OWNERSHIP-OPS, MT-OIDC-SINGLE-PROVISION and the listener-composition part of
 MT-ENDPOINT-TRANSPORT ship through this push. Lane unit ablations were run in
-the lanes, not repeated on the joined head.
+the lanes, not repeated on the joined head. 2026-11-10 (read from GitHub at
+21:0xZ): maintainer pushed b70ad83f to #8898; all 16 CI jobs green including
+CodeQL and the multitenant opt-in corpus; no open code-scanning alerts on the
+PR (150 fixed).
 
 ---
 

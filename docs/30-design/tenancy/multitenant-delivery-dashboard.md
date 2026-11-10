@@ -99,10 +99,10 @@ flowchart LR
   MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>done"]
   MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>in-progress"]
   MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>not-started"]
-  MT-KEY-RETENTION["MT-KEY-RETENTION<br/>in-progress"]
+  MT-KEY-RETENTION["MT-KEY-RETENTION<br/>in-flight-upstream"]
   MT-M6A-JOIN["MT-M6A-JOIN<br/>in-flight-upstream"]
   MT-OIDC-NATIVE["MT-OIDC-NATIVE<br/>in-flight-upstream"]
-  MT-OWNERSHIP-OPS["MT-OWNERSHIP-OPS<br/>in-progress"]
+  MT-OWNERSHIP-OPS["MT-OWNERSHIP-OPS<br/>in-flight-upstream"]
   MT-REALTIME-SHARDING["MT-REALTIME-SHARDING<br/>not-started"]
   MT-RUNTIME-PLAN["MT-RUNTIME-PLAN<br/>closed"]
   MT-SCALE-UNBOUND["MT-SCALE-UNBOUND<br/>not-started"]
@@ -175,8 +175,8 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="t30-tenant-admin"></a>**T30-TENANT-ADMIN**: closed | Closed 2026-11-09 as superseded; accepted scope on draft #8898 | T30-WIRING (closed) | Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item. |
 | <a id="mt-oidc-native"></a>**MT-OIDC-NATIVE**: in-flight-upstream | M6a / matrix 9/9 on the joined candidates | None recorded | Rerun tests/native/oidc-matrix/run.sh on each new joined head. |
 | <a id="mt-m6a-join"></a>**MT-M6A-JOIN**: in-flight-upstream | M6a / dc795bd1 on #8898, CI green (release contents 2026-11-10) | MT-OIDC-NATIVE (in-flight-upstream) | Carried forward by MT-M6B-JOIN at b70ad83f. |
-| <a id="mt-ownership-ops"></a>**MT-OWNERSHIP-OPS**: in-progress | M6b / reproduced in lane, joined at b70ad83f | MT-M6A-JOIN (in-flight-upstream) | Start the operation in a serving role and add the operator identity to deploy config; last-owner subject removal and legacy subject-admin serialization are read-derived findings to close. |
-| <a id="mt-key-retention"></a>**MT-KEY-RETENTION**: in-progress | M6b / reproduced in lane, joined at b70ad83f (BF-228 fixed) | MT-M6A-JOIN (in-flight-upstream) | Production key custodian and Vault policy; export-file expiry is not automated. |
+| <a id="mt-ownership-ops"></a>**MT-OWNERSHIP-OPS**: in-flight-upstream | M6b / reproduced in lane, joined at b70ad83f | MT-M6A-JOIN (in-flight-upstream) | Start the operation in a serving role and add the operator identity to deploy config; last-owner subject removal and legacy subject-admin serialization are read-derived findings to close. |
+| <a id="mt-key-retention"></a>**MT-KEY-RETENTION**: in-flight-upstream | M6b / reproduced in lane, joined at b70ad83f (BF-228 fixed) | MT-M6A-JOIN (in-flight-upstream) | Production key custodian and Vault policy; export-file expiry is not automated. |
 | <a id="mt-vault-token-file"></a>**MT-VAULT-TOKEN-FILE**: in-flight-upstream | M6c / core: in dc795bd1 on #8898 | None recorded | Ships with the #8898 bundle. |
 | <a id="deploy-vault-agent"></a>**DEPLOY-VAULT-AGENT**: ready-to-push | M6c / nightscout-deploy main cda38265: overlay landed, smoke measured | MT-VAULT-TOKEN-FILE (in-flight-upstream) | Decided: one AppRole per deployment. Replace the policy union with a path glob; measure re-auth after token_max_ttl and seal/unseal. |
 | <a id="deploy-idp-profile"></a>**DEPLOY-IDP-PROFILE**: not-started | M6c / nightscout-deploy | MT-M6A-JOIN (in-flight-upstream) | Authentik provider profile over HTTPS with synthetic people; login/renewal/logout/outage against the owner HTTP routes; Kratos fallback profile only if the Authentik proof fails. |
