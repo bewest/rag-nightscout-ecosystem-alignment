@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 391 |
+| items | 396 |
 | runnable gates | 444 |
-| explicit `no-gate:` markers | 400 |
+| explicit `no-gate:` markers | 405 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 844 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 405 of the 849 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 84 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-ROOT-ADMIN-PARITY, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `not-started` | 89 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, DEPLOY-TREE-HOME, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
 | `in-progress` | 18 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-ADMIN-ROLE-OWNERSHIP, MT-OWNER-LAST-GUARD |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 91 items
+`parcel: tenancy` &mdash; 96 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8454,6 +8454,11 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-flight-upstream` | `codex/ownership-ops-20261110` | minor | 1 run |
 | `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity | `in-progress` | `codex/ownership-role-20261110` | n/a | 1 run |
 | `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `not-started` | `codex/ownership-role-20261110` | n/a | 0 run + 1 no-gate |
+| `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-progress` | `codex/m6b-followups-20261110` | n/a | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-flight-upstream` | `codex/key-retention-20261110` | minor | 1 run |
 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | `codex/vault-token-file-20261109` | minor | 1 run |
@@ -10923,6 +10928,151 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
 **Notes.** Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10).
+
+### `MT-INTERNAL-LISTENER` &mdash; Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-ENDPOINT-TRANSPORT` |
+
+**Blast radius.** Replace per-contract socketPathEnv/endpoint config (internal-api/endpoint- config.js and its three callers) with serve.internal host/port/socket plus NS_SERVE_INTERNAL_* overrides; peers get NS_*_INTERNAL_URL; transport close() waits for in-flight responses up to a deadline.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; not started; gate is the Compose internal-api run with real config, plus a held-call shutdown test whose caller receives the response; controls: early-drop close, a contract moved by config, network default
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decisions internal-listener-ory-pattern and internal-listener-graceful- shutdown (2026-11-10).
+
+### `MT-ACTIVITY-ELIGIBILITY` &mdash; Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-M6B-JOIN` |
+
+**Blast radius.** Evaluator (and future connector workers) build work lists from tenants eligible under pause/suspend instead of configured presence (evaluator- runtime.js:101,152); owner-API pause verb with audit; restore/restart preserve state.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; not started; gate per the focused acceptance in tenant-admission-and-activity.md; controls: schedule from configured presence, restore re-enables, evaluator runs while paused
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner- facing text says alarms stop while paused.
+
+### `MT-EXPORT-EXPIRY` &mdash; Key destruction removes the export artifact file in the same audited step
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-M6B-JOIN` |
+
+**Blast radius.** Tenant lifecycle key destruction (key-retention custodian) also deletes tenant-artifact-<digest>; one audit entry.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; not started; gate is a native run: destroy after window removes the file and audits it; controls: file left behind, removal before window
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decision key-destruction-removes-export (2026-11-10).
+
+### `MT-ADMIN-LIFECYCLE-FIT` &mdash; Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/ownership-role-20261110` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-ADMIN-ROLE-OWNERSHIP` |
+
+**Blast radius.** operation-cohort.js assertComplete (grant-checked exemption), ownership operations phase check, listeners.js plane rule.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; not started; gate: restore succeeds with the admin role connected; ownership add on a suspended tenant refuses; admin and api on one address with different ports start; controls: identity granted a clinical table must be refused by the census, same port must refuse
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decisions restore-census-and-ownership-phase and admin-plane-same-address- different-port (2026-11-10).
+
+### `DEPLOY-TREE-HOME` &mdash; Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `nightscout-deploy` |
+| branch | `main` |
+| base | `main@cda3826` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-M6B-JOIN` |
+
+**Blast radius.** nightscout-deploy README rewritten for operators (what runs, how, pinned core commit; stubs say not started); #8898 drops or shrinks deploy/multitenant to the fixture its tests boot; port e6f6e248 grants as an overlay.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; not started; gate: deploy repo identity check against the pinned core commit and the Compose demo passes from nightscout-deploy; core native/CI tests pass with only the fixture
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decisions deploy-tree-home-now and deploy-repo-readme (2026-11-10).
 
 ### `MT-OWNER-LAST-GUARD` &mdash; M6b follow-up: refuse revoking the last usable owner's subject (BF-229)
 

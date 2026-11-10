@@ -26176,6 +26176,111 @@ items:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10).
+  - id: MT-INTERNAL-LISTENER
+    title: "Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: not-started
+    blast_radius: >
+      Replace per-contract socketPathEnv/endpoint config (internal-api/endpoint-config.js and its three callers) with serve.internal host/port/socket plus NS_SERVE_INTERNAL_* overrides; peers get NS_*_INTERNAL_URL; transport close() waits for in-flight responses up to a deadline.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: "not started; gate is the Compose internal-api run with real config, plus a held-call shutdown test whose caller receives the response; controls: early-drop close, a contract moved by config, network default"
+    blocks_on: [MT-ENDPOINT-TRANSPORT]
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decisions internal-listener-ory-pattern and internal-listener-graceful-shutdown (2026-11-10).
+  - id: MT-ACTIVITY-ELIGIBILITY
+    title: "Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: not-started
+    blast_radius: >
+      Evaluator (and future connector workers) build work lists from tenants eligible under pause/suspend instead of configured presence (evaluator-runtime.js:101,152); owner-API pause verb with audit; restore/restart preserve state.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: "not started; gate per the focused acceptance in tenant-admission-and-activity.md; controls: schedule from configured presence, restore re-enables, evaluator runs while paused"
+    blocks_on: [MT-M6B-JOIN]
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner-facing text says alarms stop while paused.
+  - id: MT-EXPORT-EXPIRY
+    title: "Key destruction removes the export artifact file in the same audited step"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: not-started
+    blast_radius: >
+      Tenant lifecycle key destruction (key-retention custodian) also deletes tenant-artifact-<digest>; one audit entry.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: "not started; gate is a native run: destroy after window removes the file and audits it; controls: file left behind, removal before window"
+    blocks_on: [MT-M6B-JOIN]
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decision key-destruction-removes-export (2026-11-10).
+  - id: MT-ADMIN-LIFECYCLE-FIT
+    title: "Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/ownership-role-20261110
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: not-started
+    blast_radius: >
+      operation-cohort.js assertComplete (grant-checked exemption), ownership operations phase check, listeners.js plane rule.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: "not started; gate: restore succeeds with the admin role connected; ownership add on a suspended tenant refuses; admin and api on one address with different ports start; controls: identity granted a clinical table must be refused by the census, same port must refuse"
+    blocks_on: [MT-ADMIN-ROLE-OWNERSHIP]
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decisions restore-census-and-ownership-phase and admin-plane-same-address-different-port (2026-11-10).
+  - id: DEPLOY-TREE-HOME
+    title: "Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README"
+    parcel: tenancy
+    repo: nightscout-deploy
+    branch: main
+    base: main@cda3826
+    state: not-started
+    blast_radius: >
+      nightscout-deploy README rewritten for operators (what runs, how, pinned core commit; stubs say not started); #8898 drops or shrinks deploy/multitenant to the fixture its tests boot; port e6f6e248 grants as an overlay.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: "not started; gate: deploy repo identity check against the pinned core commit and the Compose demo passes from nightscout-deploy; core native/CI tests pass with only the fixture"
+    blocks_on: [MT-M6B-JOIN]
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decisions deploy-tree-home-now and deploy-repo-readme (2026-11-10).
   - id: MT-OWNER-LAST-GUARD
     title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
     parcel: tenancy
