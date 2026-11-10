@@ -26292,6 +26292,70 @@ items:
       The contrast is the argument for the deployment model; keep it numeric and
       synthetic. Never import a prior provider's tenant counts or incident figures.
 
+  - id: MT-REALTIME-SHARDING
+    title: "M7: realtime tenant sharding, controlled ownership moves and recovery"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/realtime-sharding
+    base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
+    state: not-started
+    blast_radius: >
+      Proposed fixed-roster tenant-sharded realtime: stable logical assignment
+      independent of worker/evaluator counts, consumer and alarm routing using
+      one admitted placement generation, owner/incarnation admission, checkpoint
+      continuity, cohort tenant-subset coverage, controlled moves and inspection.
+      Preserve public polling/WebSocket/namespace, credential/write/ACK semantics.
+      Evaluation and delivery remain logical components; co-location is allowed
+      but requires resource/failure coupling acceptance, not identical pool counts.
+    review: maintainer; architecture, compatibility, isolation and operations review
+    operator_visible: >
+      Planned optional realtime worker placement across tenant groups. A worker
+      move disconnects affected sessions, which must reconnect and resynchronize.
+      Current-state recovery is distinct from alarm-event replay; a successful
+      handoff is not confirmation that a device received the notification.
+    semver: minor
+    semver_reason: >
+      Opt-in placement and coordinated internal routing/coverage contracts; no
+      silent public-client protocol migration or new default deployment.
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED until implemented. Native one-worker compatibility and two
+          real-owner coverage: stable shard mapping, edge/alarm route agreement,
+          polling and namespace affinity, wrong-owner refusal, durable checkpoint
+          continuity and complete per-tenant maintenance census with old/draining
+          owners. Controlled move/rollback must establish old-owner exclusion,
+          preserve uncertain/late handoff attempt identity and B progress; unknown
+          live partitions refuse speculative takeover. Controls: accept wrong
+          assignment, reset checkpoint/consumer, activate on route/lease alone,
+          omit a draining owner, or synthesize notification success. Inspect
+          independent client/store outcomes. Idle/all-suspended assignments,
+          selected co-location profile and hot-shard/reconnect pressure require
+          explicit observed-state and finite resource oracles. No implicit durable
+          viewer replay, exactly-once delivery, automatic partition failover or
+          connection-sharded hot-tenant acceptance.
+    blocks_on:
+      - MT-ENDPOINT-TRANSPORT
+    evidence:
+      - docs/30-design/tenancy/realtime-sharding-plan.md
+      - docs/30-design/tenancy/runtime-topology.md
+      - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
+    notes: >
+      2026-11-10 planning proposal; no application branch or implementation created.
+      Prototype against the incorporated dc795bd1 foundation while shared private
+      listener/operational composition joins. Fixed logical shards and explicit
+      mapping revisions avoid remapping every tenant merely because process count
+      changes. A tenant remains bounded by one owner; larger single-tenant fanout
+      is a separate measured extension. First scope uses controlled fixed-roster
+      moves and confirmed termination/effective fencing, not a lease-only promise
+      of exclusive output. Current cohort tenant-set equality, frozen boot tenant
+      lists and process-wide consumer identity need explicit migration; do not
+      weaken census or reset durable state to make a prototype pass. Direct
+      application calls retain existing authority; no mandatory broker, gateway,
+      service-authentication redesign or discovery product. Design remains a
+      proposal; the shard count/hash, stronger alarm replay guarantee and automated
+      partition takeover are not adopted by creating this work item.
+
   - id: MT-SCALE-UNBOUND
     title: "M7: prove each component scales horizontally or vertically as intended, with no hidden binding"
     parcel: tenancy
@@ -26321,6 +26385,7 @@ items:
     blocks_on:
       - MT-BENCH-BASELINE
       - MT-API-FIXED-ROSTER
+      - MT-REALTIME-SHARDING
     evidence:
       - docs/30-design/tenancy/runtime-topology.md
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
@@ -26331,7 +26396,9 @@ items:
       Read-derived at dc795bd1: realtime protocol current-authority calls occur
       inside recipient fanout loops. Measure request amplification, latency,
       outage/recovery and healthy-tenant effects before changing caching or
-      revocation semantics. Listener composition and a metrics route are not
+      revocation semantics. Realtime horizontal measurement consumes the sharding
+      correctness capability; vertical baselines can run before it. Listener
+      composition and a metrics route are not
       themselves evidence of capacity or fault tolerance.
 
   - id: MT-EVALUATOR-PARTITION

@@ -36,6 +36,11 @@ operational APIs, remote binding and multi-API acceptance still needed. Kubernet
 proof and Jsonnet remain deployment work; evaluator partitioning is separately
 queued M7 work.
 
+The [realtime sharding and recovery proposal](realtime-sharding-plan.md) owns the
+separate tenant-placement capability and compares evaluator/realtime co-location
+with independent pools. Neither extra processes nor process merging alone supply
+assignment, notification delivery or failover correctness.
+
 For REST-module/process placement and operator inactivity versus recovery, read
 the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
 and [tenant-admission review](tenant-admission-and-activity.md). The latter is an

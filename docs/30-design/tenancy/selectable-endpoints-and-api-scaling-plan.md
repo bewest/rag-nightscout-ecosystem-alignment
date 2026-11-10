@@ -180,8 +180,9 @@ consensus service is required for the API capability.
 
 Evaluator and realtime replication remain separate semantics. `MT-EVALUATOR-PARTITION`
 carries the adopted optional member-count/ordinal and pool-membership contract;
-the default remains one workload owner. Realtime scale-out still needs delivery
-ownership/fanout and polling-affinity proof. Neither is a reason to split REST
+the default remains one workload owner. Realtime scale-out is scoped by the separate
+[sharding/composition proposal](realtime-sharding-plan.md), which owns placement,
+checkpoint and subset-aware maintenance changes and their acceptance. Neither is a reason to split REST
 version adapters into separate services or to block the already accepted foundation.
 
 ## Measurement and documentation boundaries

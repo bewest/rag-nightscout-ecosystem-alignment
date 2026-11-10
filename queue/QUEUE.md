@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 386 |
+| items | 387 |
 | runnable gates | 435 |
-| explicit `no-gate:` markers | 403 |
+| explicit `no-gate:` markers | 404 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 403 of the 838 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 404 of the 839 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 86 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `not-started` | 87 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
 | `in-progress` | 16 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 3 | WS-LAB, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 86 items
+`parcel: tenancy` &mdash; 87 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8459,6 +8459,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `not-started` | `codex/realtime-sharding` | minor | 0 run + 1 no-gate |
 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table | `not-started` | `codex/evaluator-partition` | minor | 0 run + 1 no-gate |
 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
@@ -11055,6 +11056,37 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** The contrast is the argument for the deployment model; keep it numeric and synthetic. Never import a prior provider's tenant counts or incident figures.
 
+### `MT-REALTIME-SHARDING` &mdash; M7: realtime tenant sharding, controlled ownership moves and recovery
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/realtime-sharding` |
+| base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
+| worktree | `-` |
+| semver | `minor` |
+| review | maintainer; architecture, compatibility, isolation and operations review |
+| blocks on | `MT-ENDPOINT-TRANSPORT` |
+
+**Blast radius.** Proposed fixed-roster tenant-sharded realtime: stable logical assignment independent of worker/evaluator counts, consumer and alarm routing using one admitted placement generation, owner/incarnation admission, checkpoint continuity, cohort tenant-subset coverage, controlled moves and inspection. Preserve public polling/WebSocket/namespace, credential/write/ACK semantics. Evaluation and delivery remain logical components; co-location is allowed but requires resource/failure coupling acceptance, not identical pool counts.
+
+**What an operator sees.** Planned optional realtime worker placement across tenant groups. A worker move disconnects affected sessions, which must reconnect and resynchronize. Current-state recovery is distinct from alarm-event replay; a successful handoff is not confirmation that a device received the notification.
+
+**Why `minor`.** Opt-in placement and coordinated internal routing/coverage contracts; no silent public-client protocol migration or new default deployment.
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until implemented. Native one-worker compatibility and two real-owner coverage: stable shard mapping, edge/alarm route agreement, polling and namespace affinity, wrong-owner refusal, durable checkpoint continuity and complete per-tenant maintenance census with old/draining owners. Controlled move/rollback must establish old-owner exclusion, preserve uncertain/late handoff attempt identity and B progress; unknown live partitions refuse speculative takeover. Controls: accept wrong assignment, reset checkpoint/consumer, activate on route/lease alone, omit a draining owner, or synthesize notification success. Inspect independent client/store outcomes. Idle/all-suspended assignments, selected co-location profile and hot-shard/reconnect pressure require explicit observed-state and finite resource oracles. No implicit durable viewer replay, exactly-once delivery, automatic partition failover or connection-sharded hot-tenant acceptance.
+
+**Evidence.**
+
+- `docs/30-design/tenancy/realtime-sharding-plan.md`
+- `docs/30-design/tenancy/runtime-topology.md`
+- `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
+
+**Notes.** 2026-11-10 planning proposal; no application branch or implementation created. Prototype against the incorporated dc795bd1 foundation while shared private listener/operational composition joins. Fixed logical shards and explicit mapping revisions avoid remapping every tenant merely because process count changes. A tenant remains bounded by one owner; larger single-tenant fanout is a separate measured extension. First scope uses controlled fixed-roster moves and confirmed termination/effective fencing, not a lease-only promise of exclusive output. Current cohort tenant-set equality, frozen boot tenant lists and process-wide consumer identity need explicit migration; do not weaken census or reset durable state to make a prototype pass. Direct application calls retain existing authority; no mandatory broker, gateway, service- authentication redesign or discovery product. Design remains a proposal; the shard count/hash, stronger alarm replay guarantee and automated partition takeover are not adopted by creating this work item.
+
 ### `MT-SCALE-UNBOUND` &mdash; M7: prove each component scales horizontally or vertically as intended, with no hidden binding
 
 | | |
@@ -11066,7 +11098,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer; architecture review |
-| blocks on | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER` |
+| blocks on | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING` |
 
 **Blast radius.** Under the baseline workload: API replicas 1 -> 2 -> 4 behind the edge (throughput must rise near-linearly until PG saturates; restore still addresses every instance), realtime vertical then horizontal with connection affinity measured, evaluator vertical (single owner by design: show cycle time scales with CPU and record where partitioning would be needed), PostgreSQL vertical and connection pool bounds, Vault Agent per host. Any shared singleton, lock, cache or file that caps a component's scaling is a finding with file:line. Consumes MT-ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER.
 
@@ -11083,7 +11115,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
-**Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read-derived at dc795bd1: realtime protocol current-authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
+**Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read-derived at dc795bd1: realtime protocol current-authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Realtime horizontal measurement consumes the sharding correctness capability; vertical baselines can run before it. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
 
 ### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a pool-membership table
 

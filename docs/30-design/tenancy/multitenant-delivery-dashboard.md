@@ -70,7 +70,7 @@ flowchart LR
 | **M6b: Lifecycle and keys** | not-started | M6a, [MT-OWNERSHIP-OPS](#mt-ownership-ops), [MT-KEY-RETENTION](#mt-key-retention) | Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Export/delete source exists (2026-11-06); ownership operations and key destruction are not implemented. |
 | **M6c: Deployment trust (nightscout-deploy)** | in-progress | M6a, [MT-VAULT-TOKEN-FILE](#mt-vault-token-file), [DEPLOY-VAULT-AGENT](#deploy-vault-agent), [DEPLOY-IDP-PROFILE](#deploy-idp-profile), [DEPLOY-TRUST-PROBES](#deploy-trust-probes) | Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Compose tree imported to nightscout-deploy 2026-11-09; everything else not started. |
 | **M6d: Connector sync** | not-started | M6a, [MT-CONNECTOR-SYNC](#mt-connector-sync) | nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. No recorded acceptance. |
-| **M7: Production readiness** | not-started | M6a, M6b, M6c, M6d, [MT-BENCH-BASELINE](#mt-bench-baseline), [MT-BENCH-CONTRAST](#mt-bench-contrast), [MT-SCALE-UNBOUND](#mt-scale-unbound), [MT-EVALUATOR-PARTITION](#mt-evaluator-partition), [MT-ANDROID-LAB](#mt-android-lab), [MT-ENDPOINT-TRANSPORT](#mt-endpoint-transport), [MT-API-FIXED-ROSTER](#mt-api-fixed-roster), [DEPLOY-K8S-BINDING](#deploy-k8s-binding) | Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Evaluator partitioning by member count and ordinal with a pool-membership table (decision 2026-11-09); Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha. |
+| **M7: Production readiness** | not-started | M6a, M6b, M6c, M6d, [MT-BENCH-BASELINE](#mt-bench-baseline), [MT-BENCH-CONTRAST](#mt-bench-contrast), [MT-SCALE-UNBOUND](#mt-scale-unbound), [MT-EVALUATOR-PARTITION](#mt-evaluator-partition), [MT-REALTIME-SHARDING](#mt-realtime-sharding), [MT-ANDROID-LAB](#mt-android-lab), [MT-ENDPOINT-TRANSPORT](#mt-endpoint-transport), [MT-API-FIXED-ROSTER](#mt-api-fixed-roster), [DEPLOY-K8S-BINDING](#deploy-k8s-binding) | Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Evaluator partitioning by member count and ordinal with a pool-membership table (decision 2026-11-09); Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha. |
 
 ## Parallel lanes and next gates
 
@@ -103,6 +103,7 @@ flowchart LR
   MT-M6A-JOIN["MT-M6A-JOIN<br/>in-flight-upstream"]
   MT-OIDC-NATIVE["MT-OIDC-NATIVE<br/>in-flight-upstream"]
   MT-OWNERSHIP-OPS["MT-OWNERSHIP-OPS<br/>not-started"]
+  MT-REALTIME-SHARDING["MT-REALTIME-SHARDING<br/>not-started"]
   MT-RUNTIME-PLAN["MT-RUNTIME-PLAN<br/>closed"]
   MT-SCALE-UNBOUND["MT-SCALE-UNBOUND<br/>not-started"]
   MT-SECRETS-CONTRACT["MT-SECRETS-CONTRACT<br/>closed"]
@@ -134,8 +135,10 @@ flowchart LR
   MT-M6A-JOIN --> MT-KEY-RETENTION
   MT-OIDC-NATIVE --> MT-M6A-JOIN
   MT-M6A-JOIN --> MT-OWNERSHIP-OPS
+  MT-ENDPOINT-TRANSPORT --> MT-REALTIME-SHARDING
   MT-BENCH-BASELINE --> MT-SCALE-UNBOUND
   MT-API-FIXED-ROSTER --> MT-SCALE-UNBOUND
+  MT-REALTIME-SHARDING --> MT-SCALE-UNBOUND
   ST-WRITES --> ST-VIEWS-PROFILE
   T30-WIRING --> T30-TENANT-ADMIN
   TEN-RESOLVE --> T30-WIRING
@@ -183,7 +186,8 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="deploy-k8s-binding"></a>**DEPLOY-K8S-BINDING**: not-started | M7 / nightscout-deploy | DEPLOY-TRUST-PROBES (not-started) | One Pod per cohort, private socket volume, no-overlap update; binding equivalence table. |
 | <a id="mt-bench-baseline"></a>**MT-BENCH-BASELINE**: not-started | M7 / measurement | MT-M6A-JOIN (in-flight-upstream) | k6 or autocannon driving pinned client shapes at 1/10/50/200 tenants with one hot tenant on the Compose reference; p50/p95/p99, socket fanout, evaluator cycle, pool/lock waits, CPU/RSS per role, disk per tenant-day, reconnect recovery. Independent stored-count oracle. Numbers are the deliverable. |
 | <a id="mt-bench-contrast"></a>**MT-BENCH-CONTRAST**: not-started | M7 / measurement | MT-BENCH-BASELINE (not-started) | Same workload against N single-tenant Mongo processes and the per-site process model; resource per tenant, latency, startup/restore time, operator steps per tenant, side by side. |
-| <a id="mt-scale-unbound"></a>**MT-SCALE-UNBOUND**: not-started | M7 / architecture proof | MT-BENCH-BASELINE (not-started), MT-API-FIXED-ROSTER (not-started) | API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; consumes endpoint transport and fixed roster. |
+| <a id="mt-scale-unbound"></a>**MT-SCALE-UNBOUND**: not-started | M7 / architecture proof | MT-BENCH-BASELINE (not-started), MT-API-FIXED-ROSTER (not-started), MT-REALTIME-SHARDING (not-started) | API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; horizontal realtime consumes endpoint transport and realtime sharding correctness, API scale consumes fixed roster; vertical baselines remain independent. |
+| <a id="mt-realtime-sharding"></a>**MT-REALTIME-SHARDING**: not-started | M7 / realtime placement and recovery | MT-ENDPOINT-TRANSPORT (in-progress) | Evaluate stable logical tenant shards with explicit edge/alarm mapping, owner incarnations, checkpoint continuity, subset-aware maintenance and controlled moves/rollback. Preserve separate evaluator/delivery responsibilities with optional measured co-location; no lease-only HA or implied alarm replay. |
 | <a id="mt-evaluator-partition"></a>**MT-EVALUATOR-PARTITION**: not-started | M7 / evaluator scaling | MT-BENCH-BASELINE (not-started) | Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control. |
 
 ## Accepted slices and integration handoff

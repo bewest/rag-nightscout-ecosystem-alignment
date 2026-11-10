@@ -89,8 +89,9 @@ a deployment choice; a new socket is not required merely because a module is nam
 
 The target also shows two equivalent REST replicas behind a service destination,
 with directly addressable private instance endpoints for maintenance. It is not
-an accepted multihost or Kubernetes deployment. Realtime replication needs its
-own connection-affinity/fanout qualification. Evaluator partitioning is separately
+an accepted multihost or Kubernetes deployment. Realtime tenant placement and recovery have their own
+[sharding proposal](realtime-sharding-plan.md); the two-API fixture shown here
+retains one realtime process and does not establish realtime scale-out. Evaluator partitioning is separately
 adopted/queued under `MT-EVALUATOR-PARTITION`; the current reference remains one
 active owner. A replica count is not a workload-assignment rule.
 
@@ -149,7 +150,9 @@ incorporated in `dc795bd1` from these remaining changes:
    deployment integration, not a new authentication prerequisite.
 3. Fixed-roster API service/instance addressing and native concurrency,
    all-instance restore, replacement and uncertainty acceptance.
-4. Measured scaling/fanout costs and separately scoped evaluator partitioning.
+4. [Realtime sharding and recovery](realtime-sharding-plan.md), including a
+   measured co-location option, stable assignment and complete owner coverage.
+5. Measured scaling/fanout costs and separately scoped evaluator partitioning.
 
 No milestone promotion, default enablement or production admission follows from
 this reconciliation. Historical captures remain unchanged; stale living prose
