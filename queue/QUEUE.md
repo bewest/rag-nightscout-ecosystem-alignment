@@ -10774,6 +10774,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-m6b-join-20261110` |
 | semver | `minor` |
 | review | maintainer; security review of ownership, key destruction and identity provisioning |
+| register | `BF-228` |
 | blocks on | `MT-M6A-JOIN` |
 
 **Blast radius.** Frozen candidate 3545236d: dc795bd1 plus merges of codeql-150 (7b30a6f2), listener-composition (d69b873a with docs 3a534e89/692bd507), key-retention (ed46cc43), ownership-ops (6ee8fb04), oidc-single-provision (4b81f59d), and two join repairs: 665119fb pins the four ownership paths in the public-port isolation test, 3545236d registers the provisioning test in the integration tier.
@@ -10823,7 +10824,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Design points to settle in the lane: key the list on issuer + provider subject, and accept email only when the same issuer marks it verified (emails can be reassigned). Single-site OIDC currently also needs a Vault Transit signer (OIDC_ACCESS_CONFIG vault block is required), a heavy dependency for one site; a local signing-key option belongs in the same lane. 2026-11-09 (read-derived, 0fc5abf9): the single-site Mongo store keeps a permissionGroups snapshot on each principal (lib/human-session/mongo.js:70-73), so roles edited in the admin UI do not govern a signed-in person; the PostgreSQL path joins current subject roles. The only signer is Vault Transit (access-config.js:73); the access tokens are Ed25519, which node:crypto signs locally. Proposed shape: config inline in an env value or by a *_FILE path (as LOOP_APNS_KEY carries a key inline); single-site signs with a local Ed25519 key and derives issuer, audiences and kid; a principal binds to an existing auth subject and takes that subject's current roles; the env/file list seeds those bindings at boot the way default roles are seeded, with the database as the home. 2026-11-10 (reproduced in lane): 4b81f59d on dc795bd1. OIDC_ACCESS_CONFIG inline or _FILE (both refuse); single-site local Ed25519 signer (OIDC_ACCESS_SIGNING_KEY[_FILE]) with HKDF-derived purpose keys, Vault optional for single-site, refused in multitenant; principals bind to an auth subject and read current roles per operation (stored permissionGroups ignored); OIDC_IDENTITIES[_FILE] keyed on issuer+subject or issuer-verified email; OIDC_FALLBACK_ROLES for unlisted people. Needs a maintainer decision: the list is authoritative at each start (removes unlisted list-managed bindings; admin-UI edits to list subjects last until restart) versus add-only. Joined into MT-M6B-JOIN.
+**Notes.** Design points to settle in the lane: key the list on issuer + provider subject, and accept email only when the same issuer marks it verified (emails can be reassigned). Single-site OIDC currently also needs a Vault Transit signer (OIDC_ACCESS_CONFIG vault block is required), a heavy dependency for one site; a local signing-key option belongs in the same lane. 2026-11-09 (read-derived, 0fc5abf9): the single-site Mongo store keeps a permissionGroups snapshot on each principal (lib/human-session/mongo.js:70-73), so roles edited in the admin UI do not govern a signed-in person; the PostgreSQL path joins current subject roles. The only signer is Vault Transit (access-config.js:73); the access tokens are Ed25519, which node:crypto signs locally. Proposed shape: config inline in an env value or by a *_FILE path (as LOOP_APNS_KEY carries a key inline); single-site signs with a local Ed25519 key and derives issuer, audiences and kid; a principal binds to an existing auth subject and takes that subject's current roles; the env/file list seeds those bindings at boot the way default roles are seeded, with the database as the home. 2026-11-10 (reproduced in lane): 4b81f59d on dc795bd1. OIDC_ACCESS_CONFIG inline or _FILE (both refuse); single-site local Ed25519 signer (OIDC_ACCESS_SIGNING_KEY[_FILE]) with HKDF-derived purpose keys, Vault optional for single-site, refused in multitenant; principals bind to an auth subject and read current roles per operation (stored permissionGroups ignored); OIDC_IDENTITIES[_FILE] keyed on issuer+subject or issuer-verified email; OIDC_FALLBACK_ROLES for unlisted people. Maintainer 2026-11-10: the list is authoritative at each start (decision single-site-oidc-list- authoritative). Joined into MT-M6B-JOIN.
 
 ### `MT-OWNERSHIP-OPS` &mdash; M6b: operator-assisted ownership add, transfer and recovery
 
@@ -10866,6 +10867,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-key-retention-20261110` |
 | semver | `minor` |
 | review | maintainer |
+| register | `BF-228` |
 | blocks on | `MT-M6A-JOIN` |
 
 **Blast radius.** Deletion ceremony tail: the export artifact must hold every ciphertext/key reference before secret/audit rows are removed; keys retained 30 days; an operator destroy; restore refused after the window.

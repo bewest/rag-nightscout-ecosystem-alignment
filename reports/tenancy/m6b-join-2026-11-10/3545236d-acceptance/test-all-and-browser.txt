@@ -1,0 +1,41 @@
+head 3545236d0c8f298d90d192591c78765ad65f63b3 start 2026-11-10T20:04:13Z
+bundle exit 0
+test:all start 2026-11-10T20:04:21Z
+# unit: 234 test files
+  3106 passing (57s)
+# dom: 19 test files
+  205 passing (7s)
+# dependency: 32 test files
+  368 passing (10s)
+  2 pending
+# core: 26 test files
+  319 passing (898ms)
+# harness: 10 test files
+  99 passing (6s)
+# integration: 250 test files
+  3624 passing (2m)
+  547 pending
+  2 failing
+# stress: 1 test files
+  18 passing (1s)
+test:all exit 2
+test:browser start 2026-11-10T20:07:50Z
+# browser: 42 test files
+  686 passing (4m)
+test:browser exit 0
+end 2026-11-10T20:11:38Z
+  2 failing
+
+  1) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       "before each" hook for "binds issuer + provider subject to a local subject holding the listed roles":
+     TypeError: Cannot read properties of undefined (reading 'collection')
+      at collection (tests/human-session-provision.test.js:43:45)
+      at Context.<anonymous> (tests/human-session-provision.test.js:45:72)
+      at process.processImmediate (node:internal/timers:484:21)
+
+  2) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       "after all" hook in "single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)":
+     TypeError: Cannot read properties of undefined (reading 'collection')
+      at collection (tests/human-session-provision.test.js:43:45)
+      at Context.<anonymous> (tests/human-session-provision.test.js:51:72)
+      at process.processImmediate (node:internal/timers:484:21)

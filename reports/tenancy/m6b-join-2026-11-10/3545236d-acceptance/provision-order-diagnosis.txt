@@ -1,0 +1,33 @@
+head 3545236d0c8f298d90d192591c78765ad65f63b3 2026-11-10T20:11:55Z
+== A: provision file alone (iso db)
+  24 passing (1s)
+== B: headless-test-server then provision (tier order)
+API_SECRET has 248 bits of entropy
+  11 passing (775ms)
+  2 failing
+     TypeError: Cannot read properties of undefined (reading 'collection')
+     TypeError: Cannot read properties of undefined (reading 'collection')
+== C: provision boot errors when API_SECRET is absent (env -u API_SECRET, file alone)
+2:API_SECRET=<redacted>
+== proposed repair (temporary, not committed):
+diff --git a/tests/human-session-provision.test.js b/tests/human-session-provision.test.js
+index e53f6b34..f267b168 100644
+--- a/tests/human-session-provision.test.js
++++ b/tests/human-session-provision.test.js
+@@ -34,6 +34,9 @@ describe('single-site OIDC identity list, fallback role and current subject role
+   let clock = Math.floor(Date.now() / 1000), pem;
+ 
+   before(function (done) {
++    // lib/server/env.js takes API_SECRET out of process.env when it reads it,
++    // so a file run after another has none; set one, as the API v3 fixture does.
++    process.env.API_SECRET = randomBytes(24).toString('hex');
+     process.env.MONGO_AUTHENTICATION_COLLECTIONS_PREFIX = PREFIX;
+     self.env = require('../lib/server/env')();
+     delete process.env.MONGO_AUTHENTICATION_COLLECTIONS_PREFIX;
+== D: headless-test-server then provision, with repair
+  30 passing (2s)
+== E: full integration tier, with repair (my.test.env -> 27717/testdb)
+integration exit 0
+  3643 passing (3m)
+  547 pending
+restored; porcelain=0

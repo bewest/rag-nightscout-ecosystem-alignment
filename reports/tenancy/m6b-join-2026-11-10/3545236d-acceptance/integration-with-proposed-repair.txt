@@ -1,0 +1,8 @@
+# integration: 250 test files
+      SIGTERM to exit: 13 ms, code 0
+    [32m✔[39m stops on SIGTERM within 5 s with exit code 0, nothing left open (641ms)
+    [32m✔[39m exits 78 for listener settings it cannot use, before booting anything (229ms)
+    [32m✔[39m `nightscout single` closes and exits 0 on SIGTERM (820ms)
+    [32m✔[39m `node lib/server/server.js` closes and exits 0 on SIGTERM (791ms)
+  3643 passing (3m)
+  547 pending

@@ -25960,7 +25960,7 @@ items:
       after a tenant is deleted; destroying retained keys cannot be undone.
     semver: minor
     semver_reason: opt-in features on the dormant multitenant preview branch
-    register: []
+    register: [BF-228]
     gates:
       - no-gate: >
           UNMEASURED until the full campaign on 3545236d completes (all tiers, browser,
@@ -26032,9 +26032,7 @@ items:
       single-site local Ed25519 signer (OIDC_ACCESS_SIGNING_KEY[_FILE]) with HKDF-derived purpose keys, Vault
       optional for single-site, refused in multitenant; principals bind to an auth subject and read current
       roles per operation (stored permissionGroups ignored); OIDC_IDENTITIES[_FILE] keyed on issuer+subject or
-      issuer-verified email; OIDC_FALLBACK_ROLES for unlisted people. Needs a maintainer decision: the list is
-      authoritative at each start (removes unlisted list-managed bindings; admin-UI edits to list subjects
-      last until restart) versus add-only. Joined into MT-M6B-JOIN.
+      issuer-verified email; OIDC_FALLBACK_ROLES for unlisted people. Maintainer 2026-11-10: the list is authoritative at each start (decision single-site-oidc-list-authoritative). Joined into MT-M6B-JOIN.
   - id: MT-OWNERSHIP-OPS
     title: "M6b: operator-assisted ownership add, transfer and recovery"
     parcel: tenancy
@@ -26092,7 +26090,7 @@ items:
       30 days; after that the keys are destroyed and the data cannot be recovered.
     semver: minor
     semver_reason: lifecycle completion on the preview
-    register: []
+    register: [BF-228]
     gates:
       - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-lifecycle.test.js
         cwd: externals/work/crm-m6b-join-20261110

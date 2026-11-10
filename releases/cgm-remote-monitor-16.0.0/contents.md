@@ -2147,3 +2147,12 @@ Local lane detail: `externals/work/HANDOFF-internal-service-api-2026-11-09.md`.
 | MT-M6B-JOIN | Frozen candidate `3545236d` on `codex/m6b-join-20261110`: `dc795bd1` + the five lanes above + repairs `665119fb` (ownership paths pinned in the public-port isolation test, which failed 2 on the first merge) and `3545236d` (provisioning test registered in the integration tier). Focused 213 passing; tier check ok (614 files); lint 0 errors. | Full acceptance campaign in progress; push is the maintainer's after it. |
 
 Lane detail: `externals/work/HANDOFF-{listener-composition,key-retention,ownership-ops,oidc-single-provision,connector-sync}-20261110.md`.
+
+
+### Update — maintainer decisions on the M6b candidate; acceptance repair (2026-11-10)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| MT-OIDC-SINGLE-PROVISION | Maintainer chose the authoritative list: [single-site-oidc-list-authoritative](decisions.md#single-site-oidc-list-authoritative). | — |
+| BF-228 | The deletion-ceremony ledger defect found by MT-KEY-RETENTION is filed as [BF-228](../../docs/30-design/remedial/nightscout-backfix-register.md) in the pre-release findings (preview branch only; fixed on the lane, joined). | Reaches #8898 with the M6b candidate push. |
+| MT-M6B-JOIN | **Measured, stopped:** acceptance on `3545236d` gave unit 3106, dom 205, dependency 368/2, core 319, harness 99, stress 18, browser 686, all 0 failing; integration 3624/547 pending/**2 failing**, both in `tests/human-session-provision.test.js`. Cause: `lib/server/env.js` removes `API_SECRET` from `process.env` once read (the BF-27 mechanism), so in the shared integration-tier process the file booted after `tests/headless-test-server.test.js` with no secret and never connected. Repair `b70ad83f` sets a fresh secret before boot (tier order: 30 passing with it, 11 passing / 2 failing without it). [Stopped run](../../reports/tenancy/m6b-join-2026-11-10/3545236d-acceptance/README.md) | Full campaign re-running on `b70ad83f`; the corpus, OIDC matrix, lane native instruments and prcheck were not reached on `3545236d`. |
