@@ -1,8 +1,8 @@
 {
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-10",
   "integration": "workspace/multitenant-20261102 (draft PR #8898)",
-  "observed_tip": "ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364",
-  "integration_note": "Published draft #8898 carries the accepted ed2 one-host reference (cold bootstrap/UI/sockets, tenant-local restore with forward history and B continuity, pinned clients, full regression). On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moves to a Vault Agent sidecar, and native acceptance runs through a disposable harness instead of a grant ceremony (release decisions, 2026-11-09). PR #8898 head ed2ced00 CI: 16 success, 3 skipped, 1 CodeQL failure (one new alert in the private IPC dispatch; a second alert is on code identical to official/dev). Shared OIDC/owner native acceptance remains UNMEASURED. No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
+  "observed_tip": "b70ad83fa4cdaeb7e6023137a05bd811d7db606a",
+  "integration_note": "Draft #8898 carries the accepted ed2 one-host reference, the M6a owner/OIDC and internal service API candidate (dc795bd1) and the M6b join: listener composition, key retention, ownership operations, single-site OIDC provisioning and the CodeQL 150 fix. Read from GitHub 2026-11-10 20:54 UTC: head b70ad83f, open draft, 17 checks pass and 3 skipped (CodeQL and the multitenant opt-in corpus included). The frozen-head acceptance is reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md. On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moved to a Vault Agent sidecar and native acceptance runs through a disposable harness (release decisions, 2026-11-09). No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
   "milestones": [
     {
       "id": "M0",
@@ -90,12 +90,12 @@
         "MT-OIDC-NATIVE",
         "MT-M6A-JOIN"
       ],
-      "gate": "Nine-stage native matrix (Vault single/multi, Mongo/PG sessions, Mongo HTTPS, owner consumer/authority/browser/compatibility) passes on the frozen combined candidate c0a67b69 through the disposable harness with red controls; then the joined candidate passes full, default-browser, enabled-corpus, pinned-client and prcheck on #8898. Source complete; native result UNMEASURED."
+      "gate": "Nine-stage native matrix (Vault single/multi, Mongo/PG sessions, Mongo HTTPS, owner consumer/authority/browser/compatibility) passes on the frozen candidate through the disposable harness with red controls; then the joined candidate passes full, default-browser, enabled-corpus, pinned-client and prcheck on #8898. Recorded: matrix 9/9 with 3/3 controls on the dc795bd1 and b70ad83f joined candidates (reports/tenancy/m6a-join-2026-11-09, reports/tenancy/m6b-join-2026-11-10). Real identity-provider interoperability is synthetic only; no promotion recorded."
     },
     {
       "id": "M6b",
       "title": "Lifecycle and keys",
-      "state": "not-started",
+      "state": "in-progress",
       "requires": [
         "M6a"
       ],
@@ -103,7 +103,7 @@
         "MT-OWNERSHIP-OPS",
         "MT-KEY-RETENTION"
       ],
-      "gate": "Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Export/delete source exists (2026-11-06); ownership operations and key destruction are not implemented."
+      "gate": "Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Both capabilities are in the b70ad83f joined acceptance (reports/tenancy/m6b-join-2026-11-10). Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; no promotion recorded."
     },
     {
       "id": "M6c",
@@ -118,19 +118,19 @@
         "DEPLOY-IDP-PROFILE",
         "DEPLOY-TRUST-PROBES"
       ],
-      "gate": "Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Compose tree imported to nightscout-deploy 2026-11-09; everything else not started."
+      "gate": "Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Vault Agent overlay and core tokenFile are measured (reports/tenancy/vault-agent-2026-11-09); the identity-provider profile and trust probes are not started."
     },
     {
       "id": "M6d",
       "title": "Connector sync",
-      "state": "not-started",
+      "state": "in-progress",
       "requires": [
         "M6a"
       ],
       "work": [
         "MT-CONNECTOR-SYNC"
       ],
-      "gate": "nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. No recorded acceptance."
+      "gate": "nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. Docker lab measured (reports/tenancy/connector-sync-2026-11-10): other collections, cadence, token refresh, owner-surface revocation and real ingress remain UNMEASURED; no promotion recorded."
     },
     {
       "id": "M7",
@@ -159,8 +159,8 @@
   "work": [
     {
       "id": "MT-ENDPOINT-TRANSPORT",
-      "lane": "Queued / no runtime implementation",
-      "next": "Settle normalized private endpoint/trust contract, implement actual UDS/HTTP(S) consuming paths and native parity/restore controls. Plan is selectable-endpoints-and-api-scaling-plan.md; runtime gates UNMEASURED. No Kubernetes proof/Jsonnet or new discovery service."
+      "lane": "M7 / listener composition reproduced in lane (reports/tenancy/listener-composition-2026-11-10), joined at b70ad83f",
+      "next": "Remaining work in selectable-endpoints-and-api-scaling-plan.md: a configuration shape for a shared component listener (maintainer), operational interfaces, remote binding and real api/realtime/evaluator roles over Compose. No Kubernetes proof/Jsonnet or new discovery service."
     },
     {
       "id": "MT-API-FIXED-ROSTER",
@@ -239,28 +239,28 @@
     },
     {
       "id": "MT-OIDC-NATIVE",
-      "lane": "M6a / harness lane: RUN, all nine PASS (local branch)",
-      "next": "Hand the harness branch codex/oidc-native-harness-20261109 (c0a67b69 + probe fix + harness) to MT-M6A-JOIN. Rerun with tests/native/oidc-matrix/run.sh on the joined head."
+      "lane": "M6a / matrix 9/9 on the joined candidates",
+      "next": "Rerun tests/native/oidc-matrix/run.sh on each new joined head."
     },
     {
       "id": "MT-M6A-JOIN",
-      "lane": "M6a / joined head 74036ba6 verified, local",
-      "next": "Maintainer decides opt-in OIDC browser discovery and permitted owner DELETE, then pushes the fast-forward; CodeQL on the IPC Map change measured by CI."
+      "lane": "M6a / dc795bd1 on #8898, CI green (release contents 2026-11-10)",
+      "next": "Carried forward by MT-M6B-JOIN at b70ad83f."
     },
     {
       "id": "MT-OWNERSHIP-OPS",
-      "lane": "M6b",
-      "next": "Operator-assisted add/transfer/recovery on the headless operator API; concurrent-change and unauthorized controls; audit rows."
+      "lane": "M6b / reproduced in lane, joined at b70ad83f",
+      "next": "Start the operation in a serving role and add the operator identity to deploy config; last-owner subject removal and legacy subject-admin serialization are read-derived findings to close."
     },
     {
       "id": "MT-KEY-RETENTION",
-      "lane": "M6b",
-      "next": "30-day retention after delete; operator destroy; after-window refusal; artifact holds every ciphertext/key reference before secret/audit rows are removed."
+      "lane": "M6b / reproduced in lane, joined at b70ad83f (BF-228 fixed)",
+      "next": "Production key custodian and Vault policy; export-file expiry is not automated."
     },
     {
       "id": "MT-VAULT-TOKEN-FILE",
-      "lane": "M6c / core: fixed on local branch (5 unit, 2 ablations red)",
-      "next": "Join with MT-M6A-JOIN; apply the same shape to the three OIDC-branch getToken sites."
+      "lane": "M6c / core: in dc795bd1 on #8898",
+      "next": "Ships with the #8898 bundle."
     },
     {
       "id": "DEPLOY-VAULT-AGENT",
@@ -279,8 +279,8 @@
     },
     {
       "id": "MT-CONNECTOR-SYNC",
-      "lane": "M6d",
-      "next": "nightscout-connect outbound pull from a tenant with a pre-issued reader; stored/history oracle; revocation control."
+      "lane": "M6d / Docker lab measured (reports/tenancy/connector-sync-2026-11-10)",
+      "next": "Other collections, long-running cadence, token refresh, owner-surface revocation, real ingress and the lock-pinned connector commit remain UNMEASURED."
     },
     {
       "id": "MT-ANDROID-LAB",
