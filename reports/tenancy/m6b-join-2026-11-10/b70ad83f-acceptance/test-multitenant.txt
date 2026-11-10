@@ -1,0 +1,9 @@
+head b70ad83fa4cdaeb7e6023137a05bd811d7db606a start 2026-11-10T20:24:07Z
+# multitenant: running 49 suites
+  550 passing (5m)
+  1 pending
+# multitenant: removed vault 4735a4777d6c16c5cb9238589ef1bd6c7d1bad41ad6d29a7f3936b044c212c1d, container and volumes verified absent
+# multitenant: removed postgres e6884f9c4d66cbdb145b4b51ee3d4a82f54b5f8820aabf38e481e52cb505cf8f, container and volumes verified absent
+# multitenant: every container and volume this run created is verified absent
+test-multitenant exit 0
+end 2026-11-10T20:29:10Z

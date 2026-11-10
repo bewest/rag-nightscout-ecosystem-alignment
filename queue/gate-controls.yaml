@@ -3285,3 +3285,11 @@ controls:
     proves: >
       The recorded run has no FAIL line and a zero-failure summary; the fixture with the
       revoke control marked FAIL and a one-failure summary exits 1.
+
+  - gate: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/oidc-matrix/summary.json
+    control: node tools/queue/gates/oidc-native-recorded.js tools/queue/gates/_oidc-native-recorded/missing-stage.json
+    positive-control: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/oidc-matrix/summary.json
+    control-kind: static
+    proves: >
+      The b70ad83f record validates; the fixture without owner-browser fails. The run also
+      recorded this gate failing on the same record before its controls were merged (0 of 0).

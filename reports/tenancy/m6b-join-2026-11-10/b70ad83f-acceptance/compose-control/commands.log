@@ -1,0 +1,7 @@
+2026-11-10T20:30:02Z project=ns-lc-20261110t203002z-2572052 source=/tmp/ns-lc-eSj2oxk0/src control=blanket-window head=b70ad83fa4cdaeb7e6023137a05bd811d7db606a dirty=0
+2026-11-10T20:30:02Z + docker compose -p ns-lc-20261110t203002z-2572052 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml up -d api realtime evaluator tenant-admin
+2026-11-10T20:30:03Z + docker compose -p ns-lc-20261110t203002z-2572052 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml run --rm driver node tests/native/internal-api-compose/driver.cjs scenario
+2026-11-10T20:30:05Z + docker compose -p ns-lc-20261110t203002z-2572052 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml down -v --remove-orphans
+2026-11-10T20:30:05Z containers remaining for project ns-lc-20261110t203002z-2572052: 0
+2026-11-10T20:30:05Z networks remaining for project ns-lc-20261110t203002z-2572052: 0
+2026-11-10T20:30:05Z exit 1

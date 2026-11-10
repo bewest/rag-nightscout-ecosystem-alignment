@@ -1,0 +1,121 @@
+head b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+$ npm run lint
+
+> nightscout@16.0.0 lint
+> eslint lib
+
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/api/entries/index.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/cli/commands/healthcheck.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/cli/commands/migrate.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/cli/index.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/middleware/express-extension-to-accept.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/migrations/catalogue.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/secrets/vault-token-source.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/app.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/client-ip.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/enclave.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/env.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/internal-api/transport.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/query.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/realtime/contract.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/serve/evaluator-config.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/serve/owner-preview-config.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/serve/preview-config.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/tenant-app/data-access.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/tenant-app/derived-frame.js
+
+✖ 49 problems (0 errors, 49 warnings)
+
+lint exit 0
+files changed since dc795bd1: 47
+lib/authorization/storage.js
+lib/human-session/access-config.js
+lib/human-session/engine.js
+lib/human-session/identity-list.js
+lib/human-session/local-signing.js
+lib/human-session/mongo.js
+lib/human-session/private-setting.js
+lib/human-session/provider.js
+lib/human-session/provision.js
+lib/human-session/runtime.js
+lib/human-session/subject-roles.js
+lib/secrets/vault-transit-custodian.js
+lib/server/bootevent.js
+lib/server/internal-api/clients.js
+lib/server/internal-api/contracts/index.js
+lib/server/internal-api/transport.js
+lib/server/serve/operation-cohort.js
+lib/tenant-lifecycle/ceremony.js
+lib/tenant-lifecycle/index.js
+lib/tenant-lifecycle/key-retention.js
+lib/tenant-lifecycle/logical-restore.js
+lib/tenant-ownership/component.js
+lib/tenant-ownership/postgres.js
+lib/tenant-ownership/service.js
+scripts/test-multitenant.js
+tests/authorization-reload-boundary.test.js
+tests/fixtures/human-native-stores.js
+tests/fixtures/human-stream-authority.js
+tests/fixtures/logical-restore-protocol.js
+tests/fixtures/tenant-deployment-data.js
+tests/human-session-lifecycle.test.js
+tests/human-session-mongo-native.js
+tests/human-session-provider.test.js
+tests/human-session-provision.test.js
+tests/internal-api-composition.test.js
+tests/internal-api-contracts.test.js
+tests/internal-api-transport.test.js
+tests/native/internal-api-compose/blanket-control.cjs
+tests/native/internal-api-compose/component.cjs
+tests/native/internal-api-compose/driver.cjs
+tests/subject-admin-postgres.integration.test.js
+tests/tenant-deployment-operations.test.js
+tests/tenant-key-retention.integration.test.js
+tests/tenant-lifecycle.test.js
+tests/tenant-logical-restore.test.js
+tests/tenant-ownership-postgres.integration.test.js
+tests/tenant-ownership.test.js
+$ npx eslint <files>
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/lib/server/internal-api/transport.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/scripts/test-multitenant.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/human-session-lifecycle.test.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/internal-api-composition.test.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/internal-api-transport.test.js
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/blanket-control.cjs
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/component.cjs
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/driver.cjs
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/tenant-ownership-postgres.integration.test.js
+
+✖ 39 problems (0 errors, 39 warnings)
+
+eslint exit 0
+$ git diff --check dc795bd1 HEAD
+diff-check exit 0

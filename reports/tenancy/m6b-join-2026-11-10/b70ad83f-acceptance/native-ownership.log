@@ -1,0 +1,37 @@
+head b70ad83fa4cdaeb7e6023137a05bd811d7db606a start 2026-11-10T20:29:53Z
+
+
+  operator-assisted tenant ownership (disposable PostgreSQL, private service)
+    ✔ refuses an operator store whose identity can delete or rewrite authority rows (46ms)
+    ✔ adds a co-owner atomically with an applied audit record, and audits refused adds without ownership effect (55ms)
+    ✔ transfers ownership so the previous owner loses owner-plane authority and the new owner gains it
+    ✔ recovers an orphaned tenant to one named owner without returning or logging any credential (69ms)
+    ✔ race control: two concurrent transfers from one owner, exactly one wins and both attempts are audited (66ms)
+    ✔ foreign-authority control: an operator bound to tenant B acting on tenant A has no effect in either tenant (44ms)
+    ✔ serves the operations over the private internal service on UDS and internal HTTP with schema-checked results (46ms)
+
+  tenant ownership operations (source)
+    ✔ accepts only identifiers and permission strings; credential-bearing or extra fields refuse before any store call
+    ✔ requires current operator authority naming exactly the requested tenant, plane and actor
+    ✔ every applied plan leaves at least one owner and changes only what the operator named
+    ✔ service handlers require the owned transport token, map denials without owners and use the fixed operator identity
+    ✔ tenant-set authority allows only its listed tenants and its own operator identity
+
+  Internal service API contracts
+    ✔ fixes service ownership, names, wire paths and immutable versioned descriptors
+    ✔ accepts socket authority wire values and refuses unknown envelope, credential and permission fields
+    ✔ preserves canonical mutation payloads while rejecting unsupported event/namespace combinations and extra envelope fields
+    ✔ fixes ownership operation identifiers and refuses credential-bearing or ambiguous ownership wire values
+    ✔ preserves extensible notification payloads and fixes the handoff response without claiming device delivery
+    ✔ requires complete lifecycle identities and exact invalidation acknowledgements
+    ✔ fails unsupported schema vocabulary and exercises the implemented JSON Schema subset
+    ✔ ablation: the unknown-field guard goes red when additional-property rejection is removed
+
+
+[TIMING STATS] Total: 20 tests, Avg: 24ms, Slow: 0
+
+  20 passing (2s)
+
+ownership exit 0
+leftover ns-own containers: 0
+end 2026-11-10T20:29:56Z

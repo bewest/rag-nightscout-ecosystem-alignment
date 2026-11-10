@@ -1,0 +1,22 @@
+head b70ad83fa4cdaeb7e6023137a05bd811d7db606a start 2026-11-10T20:29:10Z
+2026-11-10T20:29:14.390Z attempt 01-vault-single PASS in 196ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:14.624Z attempt 02-vault-multi PASS in 196ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:15.070Z attempt 03-mongo-sessions PASS in 413ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:15.545Z attempt 04-pg-sessions PASS in 449ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:17.266Z attempt 05-mongo-http PASS in 1689ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:19.895Z attempt 06-owner-consumer PASS in 2597ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:22.319Z attempt 07-owner-authority PASS in 2393ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:26.132Z attempt 08-owner-browser PASS in 3783ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:28.168Z attempt 09-owner-compatibility PASS in 2004ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:28Z exit 0
+matrix exit 0
+2026-11-10T20:29:32.739Z attempt 01-control-single-single-shipping-eight-hour-exchange-red FAIL in 560ms error=ERR_ASSERTION shipping single subject JWT lifetime is eight hours
+2026-11-10T20:29:34.509Z attempt 02-control-single-single-shipping-eight-hour-exchange-restored PASS in 1697ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:35.856Z attempt 03-control-browser-csrf-red FAIL in 1230ms error=ERR_ASSERTION owner transport status oracle
+2026-11-10T20:29:39.877Z attempt 04-control-browser-csrf-restored PASS in 3989ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:42.451Z attempt 05-control-consumer-consumer-current-data-authority-bypass-red FAIL in 2442ms error=ERR_ASSERTION next DATA operation must read current role authority leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:45.122Z attempt 06-control-consumer-consumer-current-data-authority-bypass-restored PASS in 2638ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-10T20:29:46Z exit 0
+controls exit 0
+end 2026-11-10T20:29:46Z
+merged 3 controls from b70ad83fa4cdaeb7e6023137a05bd811d7db606a

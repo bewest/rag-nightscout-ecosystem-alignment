@@ -1,0 +1,25 @@
+head b70ad83fa4cdaeb7e6023137a05bd811d7db606a start 2026-11-10T20:16:23Z
+bundle exit 0
+test:all start 2026-11-10T20:16:31Z
+# unit: 234 test files
+  3106 passing (57s)
+# dom: 19 test files
+  205 passing (7s)
+# dependency: 32 test files
+  368 passing (10s)
+  2 pending
+# core: 26 test files
+  319 passing (802ms)
+# harness: 10 test files
+  99 passing (5s)
+# integration: 250 test files
+  3643 passing (2m)
+  547 pending
+# stress: 1 test files
+  18 passing (1s)
+test:all exit 0
+test:browser start 2026-11-10T20:20:04Z
+# browser: 42 test files
+  686 passing (4m)
+test:browser exit 0
+end 2026-11-10T20:23:54Z

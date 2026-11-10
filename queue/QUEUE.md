@@ -32,19 +32,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 387 |
-| runnable gates | 439 |
-| explicit `no-gate:` markers | 400 |
+| runnable gates | 440 |
+| explicit `no-gate:` markers | 399 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 839 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 399 of the 839 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 19 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION |
+| `in-progress` | 18 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
+| `ready-to-push` | 3 | WS-LAB, MT-M6B-JOIN, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 7 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-VAULT-TOKEN-FILE |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
@@ -8449,7 +8449,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | `codex/oidc-native-harness-20261109` | n/a | 1 run |
 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `codex/m6a-join-20261109` | minor | 1 run |
-| `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 | `in-progress` | `codex/m6b-join-20261110` | minor | 0 run + 1 no-gate |
+| `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 | `ready-to-push` | `codex/m6b-join-20261110` | minor | 1 run |
 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers | `in-progress` | `codex/oidc-single-provision-20261110` | minor | 1 run |
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-progress` | `codex/ownership-ops-20261110` | minor | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-progress` | `codex/key-retention-20261110` | minor | 1 run |
@@ -10767,7 +10767,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/m6b-join-20261110` |
 | base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
@@ -10777,7 +10777,7 @@ alarm-readiness items, and the seam branch refresh.
 | register | `BF-228` |
 | blocks on | `MT-M6A-JOIN` |
 
-**Blast radius.** Frozen candidate 3545236d: dc795bd1 plus merges of codeql-150 (7b30a6f2), listener-composition (d69b873a with docs 3a534e89/692bd507), key-retention (ed46cc43), ownership-ops (6ee8fb04), oidc-single-provision (4b81f59d), and two join repairs: 665119fb pins the four ownership paths in the public-port isolation test, 3545236d registers the provisioning test in the integration tier.
+**Blast radius.** Frozen candidate b70ad83f: dc795bd1 plus merges of codeql-150 (7b30a6f2), listener-composition (d69b873a with docs 3a534e89/692bd507), key-retention (ed46cc43), ownership-ops (6ee8fb04), oidc-single-provision (4b81f59d), and two join repairs: 665119fb pins the four ownership paths in the public-port isolation test, 3545236d registers the provisioning test in the integration tier, b70ad83f sets a fresh API secret before that test boots (shared-tier order).
 
 **What an operator sees.** Optional, off by default. Single-site sites may sign people in with an identity provider without Vault, using a list of people and their roles. Multitenant operators gain assisted ownership changes and a 30-day key retention window after a tenant is deleted; destroying retained keys cannot be undone.
 
@@ -10785,7 +10785,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED until the full campaign on 3545236d completes (all tiers, browser, multitenant corpus, OIDC matrix, lane native instruments, prcheck). Focused checks on the join: internal-api, ownership, auth and human-session files 213 passing; tier check ok (614 files); npm run lint 0 errors.
+- `[static]` `node tools/queue/gates/oidc-native-recorded.js reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/oidc-matrix/summary.json`
+  - RECORDED-EVIDENCE: full acceptance on frozen head b70ad83f (2026-11-10). unit 3106, dom 205, dependency 368/2 pending, core 319, harness 99, integration 3643/547 pending, stress 18, browser 686, multitenant corpus 550/1 pending (49 suites), all 0 failing; OIDC matrix 9/9 with three controls red then green (this gate: 13 checked, 0 failing; 1 failing before the controls were merged); key-retention native 6, ownership family 20, internal-api-compose pass and its blanket-window control exit 1; test:tiers ok (614); write-intent and write-boundary clean; lint 0 errors; prcheck OK. The stopped run on 3545236d (2 integration failures, repaired by b70ad83f) is kept beside it.
 
 **Evidence.**
 
@@ -10794,7 +10795,7 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/ownership-ops-2026-11-10/README.md`
 - `reports/tenancy/oidc-single-provision-2026-11-10/README.md`
 
-**Notes.** Coordinator-owned join. Push of the accepted head and taking #8898 out of draft remain the maintainer's.
+**Notes.** Coordinator-owned join. Push of the accepted head and taking #8898 out of draft remain the maintainer's. 2026-11-10: lanes MT-KEY-RETENTION, MT- OWNERSHIP-OPS, MT-OIDC-SINGLE-PROVISION and the listener-composition part of MT-ENDPOINT-TRANSPORT ship through this push. Lane unit ablations were run in the lanes, not repeated on the joined head.
 
 ### `MT-OIDC-SINGLE-PROVISION` &mdash; Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers
 

@@ -1,0 +1,14 @@
+head b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+$ npm run test:tiers
+
+> nightscout@16.0.0 test:tiers
+> node scripts/test-tiers.js check
+
+# 614 test files, 8 tiers: ok
+exit 0
+$ node scripts/check-write-intent.js
+Write intent: 13 enrolled module(s) write only through write(intent); 3 read(s) by identifier-match
+exit 0
+$ node scripts/check-write-boundary.js
+Write boundary: all 9 adapter entry points and canonical socket delegation checked
+exit 0

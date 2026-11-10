@@ -1,0 +1,10 @@
+api-1  | 2026-11-10T20:29:56.671245227Z 2026-11-10T20:29:56.669Z api READY {"routes":["POST /authorize","POST /mutate","POST /cohort/status","POST /cohort/invalidate"],"endpoint":"http://api:7001","bind":"0.0.0.0"}
+api-1       | 2026-11-10T20:30:00.396239679Z 2026-11-10T20:30:00.395Z api SIGTERM received; closing private listener and draining window
+api-1       | 2026-11-10T20:30:01.951325394Z 2026-11-10T20:30:01.951Z api LISTENER_CLOSED 1556ms
+api-1       | 2026-11-10T20:30:01.951658890Z 2026-11-10T20:30:01.951Z api WINDOW_DRAINED 1556ms
+tenant-admin-1  | 2026-11-10T20:29:56.699516165Z 2026-11-10T20:29:56.698Z tenant-admin READY {"routes":["POST /cohort/status","POST /cohort/invalidate"],"endpoint":"http://tenant-admin:7004","bind":"0.0.0.0"}
+realtime-1  | 2026-11-10T20:29:56.680114794Z 2026-11-10T20:29:56.678Z realtime READY {"routes":["POST /alarm","POST /cohort/status","POST /cohort/invalidate"],"endpoint":"/shared/realtime.sock","bind":null}
+evaluator-1     | 2026-11-10T20:29:56.805030890Z 2026-11-10T20:29:56.803Z evaluator READY {"routes":["POST /cohort/status","POST /cohort/invalidate"],"endpoint":"http://evaluator:7003","bind":"0.0.0.0"}
+evaluator-1     | 2026-11-10T20:29:59.231042927Z 2026-11-10T20:29:59.230Z evaluator SIGTERM received; closing private listener and draining window
+evaluator-1     | 2026-11-10T20:29:59.266211007Z 2026-11-10T20:29:59.265Z evaluator LISTENER_CLOSED 35ms
+evaluator-1     | 2026-11-10T20:29:59.266242625Z 2026-11-10T20:29:59.266Z evaluator WINDOW_DRAINED 36ms

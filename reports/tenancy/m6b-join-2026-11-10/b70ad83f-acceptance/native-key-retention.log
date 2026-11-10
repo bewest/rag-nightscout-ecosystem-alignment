@@ -1,0 +1,18 @@
+head b70ad83fa4cdaeb7e6023137a05bd811d7db606a start 2026-11-10T20:29:51Z
+
+
+  tenant key retention (disposable PostgreSQL and Vault)
+    [32m✔[39m control: an artifact missing one key reference refuses deletion; rows, audit and keys stay (47ms)
+    [32m✔[39m executes deletion with a complete artifact and records a 30-day window; keys are retained (53ms)
+    [32m✔[39m gate: restore inside the window succeeds and the credential decrypts
+    [32m✔[39m gate: restore after the window refuses before any write (46ms)
+    [32m✔[39m gate: operator destroy deletes the provider keys irreversibly, audits it, then restore refuses (54ms)
+    [32m✔[39m the custodian credential cannot destroy a key outside its tenant inventory or policy
+
+
+[TIMING STATS] Total: 6 tests, Avg: 37ms, Slow: 0
+
+  6 passing (2s)
+
+key-retention exit 0
+end 2026-11-10T20:29:53Z

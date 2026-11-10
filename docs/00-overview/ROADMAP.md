@@ -218,7 +218,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 3 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-progress` | `MT-M6A-JOIN` |
-| 3 | `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener compositio | `in-progress` | `MT-M6A-JOIN` |
+| 3 | `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener compositio | `ready-to-push` | `MT-M6A-JOIN` |
 | 3 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in str | `in-progress` | `MT-M6A-JOIN` |
 | 3 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-progress` | `MT-M6A-JOIN` |
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |

@@ -25945,13 +25945,14 @@ items:
     branch: codex/m6b-join-20261110
     worktree: externals/work/crm-m6b-join-20261110
     base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
-    state: in-progress
+    state: ready-to-push
     blast_radius: >
-      Frozen candidate 3545236d: dc795bd1 plus merges of codeql-150 (7b30a6f2),
+      Frozen candidate b70ad83f: dc795bd1 plus merges of codeql-150 (7b30a6f2),
       listener-composition (d69b873a with docs 3a534e89/692bd507), key-retention
       (ed46cc43), ownership-ops (6ee8fb04), oidc-single-provision (4b81f59d), and two
       join repairs: 665119fb pins the four ownership paths in the public-port isolation
-      test, 3545236d registers the provisioning test in the integration tier.
+      test, 3545236d registers the provisioning test in the integration tier, b70ad83f
+      sets a fresh API secret before that test boots (shared-tier order).
     review: maintainer; security review of ownership, key destruction and identity provisioning
     operator_visible: >
       Optional, off by default. Single-site sites may sign people in with an identity
@@ -25962,11 +25963,17 @@ items:
     semver_reason: opt-in features on the dormant multitenant preview branch
     register: [BF-228]
     gates:
-      - no-gate: >
-          UNMEASURED until the full campaign on 3545236d completes (all tiers, browser,
-          multitenant corpus, OIDC matrix, lane native instruments, prcheck). Focused
-          checks on the join: internal-api, ownership, auth and human-session files 213
-          passing; tier check ok (614 files); npm run lint 0 errors.
+      - run: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/oidc-matrix/summary.json
+        kind: static
+        describe: >
+          RECORDED-EVIDENCE: full acceptance on frozen head b70ad83f (2026-11-10). unit 3106,
+          dom 205, dependency 368/2 pending, core 319, harness 99, integration 3643/547 pending,
+          stress 18, browser 686, multitenant corpus 550/1 pending (49 suites), all 0 failing;
+          OIDC matrix 9/9 with three controls red then green (this gate: 13 checked, 0 failing;
+          1 failing before the controls were merged); key-retention native 6, ownership family 20,
+          internal-api-compose pass and its blanket-window control exit 1; test:tiers ok (614);
+          write-intent and write-boundary clean; lint 0 errors; prcheck OK. The stopped run on
+          3545236d (2 integration failures, repaired by b70ad83f) is kept beside it.
     blocks_on:
       - MT-M6A-JOIN
     evidence:
@@ -25977,6 +25984,9 @@ items:
     notes: >
       Coordinator-owned join. Push of the accepted head and taking #8898 out of draft
       remain the maintainer's.
+      2026-11-10: lanes MT-KEY-RETENTION, MT-OWNERSHIP-OPS, MT-OIDC-SINGLE-PROVISION and the
+      listener-composition part of MT-ENDPOINT-TRANSPORT ship through this push. Lane unit
+      ablations were run in the lanes, not repeated on the joined head.
   - id: MT-OIDC-SINGLE-PROVISION
     title: "Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers"
     parcel: tenancy

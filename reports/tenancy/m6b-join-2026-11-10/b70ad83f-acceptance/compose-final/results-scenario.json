@@ -1,0 +1,99 @@
+{
+ "started": "2026-11-10T20:29:57.081Z",
+ "phases": {
+  "baseline": {
+   "A": {
+    "ok": 3,
+    "refused": 0
+   },
+   "B": {
+    "ok": 3,
+    "refused": 0
+   }
+  },
+  "revokedA": {
+   "A": {
+    "ok": 0,
+    "refused": 3
+   },
+   "B": {
+    "ok": 3,
+    "refused": 0
+   }
+  },
+  "suspendedA": {
+   "A": {
+    "ok": 0,
+    "refused": 3
+   },
+   "B": {
+    "ok": 3,
+    "refused": 0
+   },
+   "directA": "SOCKET_IPC_UNAVAILABLE",
+   "directB": "admitted",
+   "control": {
+    "api": {
+     "participant": "api",
+     "roles": [
+      "api"
+     ],
+     "statusOk": true,
+     "invalidated": "11111111-1111-4111-8111-111111111111",
+     "invalidationLog": [
+      "11111111-1111-4111-8111-111111111111"
+     ]
+    },
+    "realtime": {
+     "participant": "realtime",
+     "roles": [
+      "realtime"
+     ],
+     "statusOk": true,
+     "invalidated": "11111111-1111-4111-8111-111111111111",
+     "invalidationLog": [
+      "11111111-1111-4111-8111-111111111111"
+     ]
+    },
+    "evaluator": {
+     "participant": "evaluator",
+     "roles": [
+      "evaluator"
+     ],
+     "statusOk": true,
+     "invalidated": "11111111-1111-4111-8111-111111111111",
+     "invalidationLog": [
+      "11111111-1111-4111-8111-111111111111"
+     ]
+    },
+    "tenant-admin": {
+     "participant": "tenant_admin",
+     "roles": [
+      "tenant-admin"
+     ],
+     "statusOk": true,
+     "invalidated": "11111111-1111-4111-8111-111111111111",
+     "invalidationLog": [
+      "11111111-1111-4111-8111-111111111111"
+     ]
+    }
+   }
+  },
+  "resumed": {
+   "A": {
+    "ok": 3,
+    "refused": 0
+   },
+   "B": {
+    "ok": 3,
+    "refused": 0
+   }
+  },
+  "routes": {
+   "foreignOnApi": 503,
+   "unregisteredOnApi": 503,
+   "foreignOnRealtime": 503,
+   "lifecycleOnRealtime": 200
+  }
+ }
+}

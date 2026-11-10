@@ -1,0 +1,13 @@
+2026-11-10T20:29:56Z project=ns-lc-20261110t202956z-2570587 source=/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110 control=none head=b70ad83fa4cdaeb7e6023137a05bd811d7db606a dirty=0
+2026-11-10T20:29:56Z + docker compose -p ns-lc-20261110t202956z-2570587 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml up -d api realtime evaluator tenant-admin
+2026-11-10T20:29:56Z + docker compose -p ns-lc-20261110t202956z-2570587 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml run --rm driver node tests/native/internal-api-compose/driver.cjs scenario
+2026-11-10T20:29:59Z + docker compose -p ns-lc-20261110t202956z-2570587 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml stop evaluator
+2026-11-10T20:29:59Z evaluator exit: 0
+2026-11-10T20:29:59Z + docker compose -p ns-lc-20261110t202956z-2570587 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml run -d --name ns-lc-20261110t202956z-2570587-drain driver node tests/native/internal-api-compose/driver.cjs drain-hold
+2026-11-10T20:30:00Z + docker kill --signal SIGTERM api (598a12e31fe662d37ff741e51274e363f40768055d0b48f4b7b6435a5c984be3)
+2026-11-10T20:30:01Z api running during hold after SIGTERM: true; WINDOW_DRAINED lines: 0
+2026-11-10T20:30:02Z PASS
+2026-11-10T20:30:02Z + docker compose -p ns-lc-20261110t202956z-2570587 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-m6b-join-20261110/tests/native/internal-api-compose/compose.yaml down -v --remove-orphans
+2026-11-10T20:30:02Z containers remaining for project ns-lc-20261110t202956z-2570587: 0
+2026-11-10T20:30:02Z networks remaining for project ns-lc-20261110t202956z-2570587: 0
+2026-11-10T20:30:02Z exit 0

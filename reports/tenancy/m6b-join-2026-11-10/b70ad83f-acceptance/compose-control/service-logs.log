@@ -1,0 +1,4 @@
+evaluator-1  | 2026-11-10T20:30:03.142845134Z 2026-11-10T20:30:03.141Z evaluator READY {"routes":["POST /cohort/status","POST /cohort/invalidate"],"endpoint":"http://evaluator:7003","bind":"0.0.0.0"}
+tenant-admin-1  | 2026-11-10T20:30:03.003632908Z 2026-11-10T20:30:03.002Z tenant-admin READY {"routes":["POST /cohort/status","POST /cohort/invalidate"],"endpoint":"http://tenant-admin:7004","bind":"0.0.0.0"}
+api-1           | 2026-11-10T20:30:03.041765927Z 2026-11-10T20:30:03.040Z api READY {"routes":["POST /authorize","POST /mutate","POST /cohort/status","POST /cohort/invalidate"],"endpoint":"http://api:7001","bind":"0.0.0.0"}
+realtime-1      | 2026-11-10T20:30:03.018655424Z 2026-11-10T20:30:03.017Z realtime READY {"routes":["POST /alarm","POST /cohort/status","POST /cohort/invalidate"],"endpoint":"/shared/realtime.sock","bind":null}

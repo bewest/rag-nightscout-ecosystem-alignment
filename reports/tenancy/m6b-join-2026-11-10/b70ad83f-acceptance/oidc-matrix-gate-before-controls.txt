@@ -1,0 +1,17 @@
+$ gate before merging controls
+gate: oidc-native RECORDED-EVIDENCE (no fresh native execution): reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/oidc-matrix/summary.json
+  ok   sourceCommit is a 40-hex sha: b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+  ok   vault-single: PASS 196ms, families 1/1
+  ok   vault-multi: PASS 196ms, families 1/1
+  ok   mongo-sessions: PASS 413ms, families 1/1
+  ok   pg-sessions: PASS 449ms, families 1/1
+  ok   mongo-http: PASS 1689ms, families 4/4
+  ok   owner-consumer: PASS 2597ms, families 10/10
+  ok   owner-authority: PASS 2393ms, families 11/11
+  ok   owner-browser: PASS 3783ms, families 10/10
+  ok   owner-compatibility: PASS 2004ms, families 6/6
+  ok   no unknown stage ids
+  BAD  mutant controls red-then-green: 0 of 0
+  ok   postgres, mongo and vault images recorded by digest
+  13 checked, 1 failing
+exit 1

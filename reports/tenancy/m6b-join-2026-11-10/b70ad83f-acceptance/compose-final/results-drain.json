@@ -1,0 +1,16 @@
+{
+ "runningDuringHold": true,
+ "drainedLinesDuringHold": 0,
+ "apiExit": 0,
+ "heldCall": [
+  "start",
+  "finish"
+ ],
+ "windowOperations": 29,
+ "allFinished": true,
+ "drainedMs": 1556,
+ "client": {
+  "error": "SOCKET_IPC_UNAVAILABLE",
+  "elapsedMs": 201
+ }
+}
