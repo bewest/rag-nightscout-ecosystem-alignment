@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 389 |
-| runnable gates | 443 |
-| explicit `no-gate:` markers | 399 |
+| items | 391 |
+| runnable gates | 444 |
+| explicit `no-gate:` markers | 400 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 399 of the 842 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 844 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 17 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-OWNER-LAST-GUARD |
+| `not-started` | 84 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-ROOT-ADMIN-PARITY, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `in-progress` | 18 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-ADMIN-ROLE-OWNERSHIP, MT-OWNER-LAST-GUARD |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 89 items
+`parcel: tenancy` &mdash; 91 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8452,6 +8452,8 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 | `in-flight-upstream` | `codex/m6b-join-20261110` | minor | 1 run |
 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers | `in-flight-upstream` | `codex/oidc-single-provision-20261110` | minor | 1 run |
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-flight-upstream` | `codex/ownership-ops-20261110` | minor | 1 run |
+| `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity | `in-progress` | `codex/ownership-role-20261110` | n/a | 1 run |
+| `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-progress` | `codex/m6b-followups-20261110` | n/a | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-flight-upstream` | `codex/key-retention-20261110` | minor | 1 run |
 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | `codex/vault-token-file-20261109` | minor | 1 run |
@@ -10862,6 +10864,65 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
 **Notes.** Adopted policy: preview-operator-assisted-ownership (2026-11-07). Self-service co-owner/transfer is not a preview gate. 2026-11-10 (reproduced in lane): 6ee8fb04 on dc795bd1. ownership-operations v1 private contract (list/add/transfer/recover) with expectedOwners optimistic check, in- transaction operator authority, separate operator database identity, authorization migration 0006 (audit outcome/detail columns). Race: two transfers, one applied and one OWNERSHIP_CONFLICT, both audited. Foreign authority: no effect. Not yet composed into the admin role and no operator identity in deploy/multitenant/config.js. Read-derived: subject-admin remove() can delete the last owner subject; legacy subject-admin writers without ownerPolicy do not serialize with ownership changes. Joined into MT-M6B-JOIN. 2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
+
+### `MT-ADMIN-ROLE-OWNERSHIP` &mdash; M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/ownership-role-20261110` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `externals/work/crm-ownership-role-20261110` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-M6B-JOIN` |
+
+**Blast radius.** New multitenant admin role start (lib/server/serve/admin-config.js, admin- preview.js, roles.js, serve/index.js, cli multitenant command); admin listener serves only ownership-operations v1; deploy plan gains the ownership_operator identity and grants (e6f6e248, to be ported to nightscout-deploy).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** new role start on an unreleased preview
+
+**Gates.**
+
+- `[unit]` _(cwd: `externals/work/crm-ownership-role-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/admin-role.test.js`
+  - Admin role config, composition and grant-plan unit tests: 9 passing on 1376c294. The native suite (tests/admin-role-ownership.integration.test.js, NS_ADMIN_ROLE_DOCKER_TEST=1) is 11 passing through a real admin process; controls in reports/tenancy/ownership-role-2026-11-10/README.md.
+
+**Evidence.**
+
+- `reports/tenancy/ownership-role-2026-11-10/README.md`
+
+**Notes.** 2026-11-10 (reproduced in lane): three commits on b70ad83f. Decision inputs (read-derived): default admin bind vs plane rule; restore cohort census refuses while admin is connected; no lifecycle fence on ownership changes.
+
+### `MT-ROOT-ADMIN-PARITY` &mdash; Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-OWNER-LAST-GUARD` |
+
+**Blast radius.** Multitenant DATA API: restore the admin-tools authorization routes for a tenant's root principal, writing through the owner-aware subject writer (last- owner guard), under RLS. No owner or operator authority for root.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; not started; gate is a native run of admin-tools subject/role edits with a tenant root secret, with controls (root reaches an owner or operator route; root removes the last owner; tenant B's root edits tenant A)
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10).
 
 ### `MT-OWNER-LAST-GUARD` &mdash; M6b follow-up: refuse revoking the last usable owner's subject (BF-229)
 

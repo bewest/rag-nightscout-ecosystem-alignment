@@ -150,9 +150,11 @@ not certify current Nightscout grants; provider logout/revocation propagation mu
 be part of the eventual session integration contract.
 
 Initial headless management uses explicitly provisioned management credentials
-from the private operator plane. Legacy root/data credentials never acquire
-management authority implicitly. Root-based bootstrap, if added, needs a separate
-explicit exchange ceremony. Unattended uploaders use revocable machine credentials
+from the private operator plane. A tenant's root secret (`API_SECRET`) has
+[single-site parity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-root-single-site-parity):
+all data, subjects, roles and the admin tools, never owner or operator authority. It
+[may edit any subject](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#root-may-edit-owner-subjects)
+except removing the last usable owner, and cannot grant itself ownership. Unattended uploaders use revocable machine credentials
 whose renewal does not require a human login.
 
 Adopted initial limits, subject to measured implementation acceptance:

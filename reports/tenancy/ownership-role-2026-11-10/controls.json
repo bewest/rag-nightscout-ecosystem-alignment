@@ -1,0 +1,300 @@
+[
+  {
+    "id": "C1a",
+    "description": "admin composition loses the ownership module",
+    "file": "lib/server/serve/admin-preview.js",
+    "tests": [
+      "tests/admin-role-ownership.integration.test.js"
+    ],
+    "mutated": {
+      "exit": 2,
+      "summary": "5 passing / 2 failing",
+      "failing_titles": [
+        "1) \"before all\" hook for \"serves the ownership-operations contract on the admin listener and nothing else\"",
+        "2) \"after all\" hook for \"fails closed when a required grant is revoked under the running role: permission error, no partial write\"",
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "2) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)"
+      ],
+      "first_failure": [
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "a running `nightscout multitenant admin` process",
+        "\"before all\" hook for \"serves the ownership-operations contract on the admin listener and nothing else\":",
+        "AssertionError [ERR_ASSERTION]: admin role listening; stderr: nightscout multitenant: could not start: preview startup failed",
+        "exit: {\"code\":1,\"signal\":null}"
+      ]
+    },
+    "probe": "in-process boot: INTERNAL_API_COMPOSITION_INVALID INTERNAL_API_COMPOSITION_INVALID: at least one service module required",
+    "restored": {
+      "exit": 0,
+      "summary": "11 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  },
+  {
+    "id": "C1b",
+    "description": "admin listener serves no ownership routes (role still listens)",
+    "file": "lib/server/serve/admin-preview.js",
+    "tests": [
+      "tests/admin-role-ownership.integration.test.js"
+    ],
+    "mutated": {
+      "exit": 6,
+      "summary": "5 passing / 6 failing",
+      "failing_titles": [
+        "1) serves the ownership-operations contract on the admin listener and nothing else",
+        "2) adds a co-owner, transfers and refuses a stale owner set, each audited",
+        "3) recovers a tenant whose owner subjects were deleted, returning identifiers only",
+        "4) acts only for its configured tenants: tenant B is denied with no effect in either tenant",
+        "5) race: two concurrent transfers through the role, exactly one applies",
+        "6) fails closed when a required grant is revoked under the running role: permission error, no partial write",
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "2) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "3) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "4) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "5) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "6) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)"
+      ],
+      "first_failure": [
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "a running `nightscout multitenant admin` process",
+        "serves the ownership-operations contract on the admin listener and nothing else:",
+        "Error: SOCKET_IPC_UNAVAILABLE"
+      ]
+    },
+    "restored": {
+      "exit": 0,
+      "summary": "11 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  },
+  {
+    "id": "C2a",
+    "description": "deployment plan drops INSERT on the audit table",
+    "file": "deploy/multitenant/config.js",
+    "tests": [
+      "tests/admin-role-ownership.integration.test.js",
+      "tests/admin-role.test.js"
+    ],
+    "mutated": {
+      "exit": 4,
+      "summary": "12 passing / 4 failing",
+      "failing_titles": [
+        "1) holds exactly the ownership tables and cannot write any other authorization table",
+        "2) \"before all\" hook for \"serves the ownership-operations contract on the admin listener and nothing else\"",
+        "3) \"after all\" hook for \"fails closed when a required grant is revoked under the running role: permission error, no partial write\"",
+        "4) grants exactly the ownership store's table shape and nothing in any other namespace",
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "2) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "3) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "4) admin role: deployment plan ownership_operator identity"
+      ],
+      "first_failure": [
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "the ownership identity, as the deployment plan grants it",
+        "holds exactly the ownership tables and cannot write any other authorization table:",
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:",
+        "+ actual - expected",
+        "... Skipped lines",
+        "{",
+        "tenant_authorization_config: {",
+        "columns: [",
+        "'owner_fence'",
+        "],",
+        "...",
+        "},",
+        "-   tenant_subject_admin_audit: {"
+      ]
+    },
+    "restored": {
+      "exit": 0,
+      "summary": "20 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  },
+  {
+    "id": "C3",
+    "description": "deployment plan also grants DELETE on owner actors",
+    "file": "deploy/multitenant/config.js",
+    "tests": [
+      "tests/admin-role-ownership.integration.test.js",
+      "tests/admin-role.test.js"
+    ],
+    "mutated": {
+      "exit": 4,
+      "summary": "12 passing / 4 failing",
+      "failing_titles": [
+        "1) holds exactly the ownership tables and cannot write any other authorization table",
+        "2) \"before all\" hook for \"serves the ownership-operations contract on the admin listener and nothing else\"",
+        "3) \"after all\" hook for \"fails closed when a required grant is revoked under the running role: permission error, no partial write\"",
+        "4) grants exactly the ownership store's table shape and nothing in any other namespace",
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "2) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "3) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "4) admin role: deployment plan ownership_operator identity"
+      ],
+      "first_failure": [
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "the ownership identity, as the deployment plan grants it",
+        "holds exactly the ownership tables and cannot write any other authorization table:",
+        "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:",
+        "+ actual - expected",
+        "... Skipped lines",
+        "{",
+        "tenant_authorization_config: {",
+        "columns: [",
+        "'owner_fence'",
+        "],",
+        "...",
+        "],",
+        "+     deletes: true,"
+      ]
+    },
+    "restored": {
+      "exit": 0,
+      "summary": "20 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  },
+  {
+    "id": "C4",
+    "description": "admin identity readiness check removed",
+    "file": "lib/server/serve/admin-preview.js",
+    "tests": [
+      "tests/admin-role-ownership.integration.test.js"
+    ],
+    "mutated": {
+      "exit": 1,
+      "summary": "10 passing / 1 failing",
+      "failing_titles": [
+        "1) refuses a CREATEROLE identity (admin identity readiness)",
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)"
+      ],
+      "first_failure": [
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "startup refusals",
+        "refuses a CREATEROLE identity (admin identity readiness):",
+        "AssertionError [ERR_ASSERTION]: role exits instead of listening; stdout: Listening for role admin on 127.0.0.2:36639"
+      ]
+    },
+    "restored": {
+      "exit": 0,
+      "summary": "11 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  },
+  {
+    "id": "C5",
+    "description": "admin composition widens the operator tenant list",
+    "file": "lib/server/serve/admin-preview.js",
+    "tests": [
+      "tests/admin-role-ownership.integration.test.js"
+    ],
+    "mutated": {
+      "exit": 1,
+      "summary": "10 passing / 1 failing",
+      "failing_titles": [
+        "1) acts only for its configured tenants: tenant B is denied with no effect in either tenant",
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)"
+      ],
+      "first_failure": [
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "a running `nightscout multitenant admin` process",
+        "acts only for its configured tenants: tenant B is denied with no effect in either tenant:",
+        "AssertionError [ERR_ASSERTION]: listOwners",
+        "+ actual - expected",
+        "{",
+        "+   outcome: 'listed',",
+        "+   owners: [",
+        "+     {",
+        "+       consumer: 'tenant-admin',",
+        "+       principal: 's_bowner'",
+        "+     }",
+        "+   ]",
+        "-   code: 'OWNERSHIP_FORBIDDEN',"
+      ]
+    },
+    "restored": {
+      "exit": 0,
+      "summary": "11 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  },
+  {
+    "id": "C6",
+    "description": "serve accepts admin inside a lifecycle operation cohort",
+    "file": "lib/server/serve/index.js",
+    "tests": [
+      "tests/admin-role.test.js"
+    ],
+    "mutated": {
+      "exit": 1,
+      "summary": "8 passing / 1 failing",
+      "failing_titles": [
+        "1) serve refuses admin without its configuration and inside a lifecycle operation cohort",
+        "1) admin role: composition"
+      ],
+      "first_failure": [
+        "1) admin role: composition",
+        "serve refuses admin without its configuration and inside a lifecycle operation cohort:",
+        "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /admin is not a lifecycle operation cohort participant/. Input:",
+        "\"TypeError: Cannot read properties of undefined (reading 'startsWith')\""
+      ]
+    },
+    "restored": {
+      "exit": 0,
+      "summary": "9 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  },
+  {
+    "id": "C7",
+    "description": "the runtime-revoke test no longer revokes",
+    "file": "tests/admin-role-ownership.integration.test.js",
+    "tests": [
+      "tests/admin-role-ownership.integration.test.js"
+    ],
+    "mutated": {
+      "exit": 1,
+      "summary": "10 passing / 1 failing",
+      "failing_titles": [
+        "1) fails closed when a required grant is revoked under the running role: permission error, no partial write",
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)"
+      ],
+      "first_failure": [
+        "1) admin role: ownership operations through `nightscout multitenant admin` (disposable PostgreSQL)",
+        "a running `nightscout multitenant admin` process",
+        "fails closed when a required grant is revoked under the running role: permission error, no partial write:",
+        "AssertionError [ERR_ASSERTION]: Missing expected rejection."
+      ]
+    },
+    "restored": {
+      "exit": 0,
+      "summary": "11 passing",
+      "failing_titles": [],
+      "first_failure": []
+    },
+    "tree_clean": true,
+    "containers_left": []
+  }
+]

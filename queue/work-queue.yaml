@@ -26121,6 +26121,61 @@ items:
       subject-admin remove() can delete the last owner subject; legacy subject-admin writers without
       ownerPolicy do not serialize with ownership changes. Joined into MT-M6B-JOIN.
       2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
+  - id: MT-ADMIN-ROLE-OWNERSHIP
+    title: "M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/ownership-role-20261110
+    worktree: externals/work/crm-ownership-role-20261110
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: in-progress
+    blast_radius: >
+      New multitenant admin role start (lib/server/serve/admin-config.js, admin-preview.js, roles.js, serve/index.js,
+      cli multitenant command); admin listener serves only ownership-operations v1; deploy plan gains the
+      ownership_operator identity and grants (e6f6e248, to be ported to nightscout-deploy).
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: new role start on an unreleased preview
+    register: []
+    gates:
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/admin-role.test.js
+        cwd: externals/work/crm-ownership-role-20261110
+        kind: unit
+        describe: >
+          Admin role config, composition and grant-plan unit tests: 9 passing on 1376c294. The native suite
+          (tests/admin-role-ownership.integration.test.js, NS_ADMIN_ROLE_DOCKER_TEST=1) is 11 passing through a real
+          admin process; controls in reports/tenancy/ownership-role-2026-11-10/README.md.
+    blocks_on:
+      - MT-M6B-JOIN
+    evidence:
+      - reports/tenancy/ownership-role-2026-11-10/README.md
+    notes: >
+      2026-11-10 (reproduced in lane): three commits on b70ad83f. Decision inputs (read-derived): default admin bind
+      vs plane rule; restore cohort census refuses while admin is connected; no lifecycle fence on ownership changes.
+  - id: MT-ROOT-ADMIN-PARITY
+    title: "Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: not-started
+    blast_radius: >
+      Multitenant DATA API: restore the admin-tools authorization routes for a tenant's root principal, writing
+      through the owner-aware subject writer (last-owner guard), under RLS. No owner or operator authority for root.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: "not started; gate is a native run of admin-tools subject/role edits with a tenant root secret, with controls (root reaches an owner or operator route; root removes the last owner; tenant B's root edits tenant A)"
+    blocks_on:
+      - MT-OWNER-LAST-GUARD
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10).
   - id: MT-OWNER-LAST-GUARD
     title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
     parcel: tenancy

@@ -3332,3 +3332,11 @@ controls:
       reports/tenancy/m6b-followups-2026-11-10/README.md. They run against native PostgreSQL; automating them
       would write into the lane worktree.
 
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/admin-role.test.js
+    cwd: externals/work/crm-ownership-role-20261110
+    control-exempt: >
+      2026-11-10, ownership-role lane on 1376c294: eight controls (module removed, listener 404, audit INSERT dropped,
+      DELETE over-granted, identity-readiness check removed, tenant list widened, cohort refusal disabled, runtime
+      revoke skipped), each red with its recorded symptom and restored clean, are in
+      reports/tenancy/ownership-role-2026-11-10/README.md. They need native PostgreSQL and write the lane worktree.
+
