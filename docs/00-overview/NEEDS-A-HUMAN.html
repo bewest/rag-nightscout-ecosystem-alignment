@@ -2460,7 +2460,7 @@
 
 
 <h1 id="work-waiting-on-a-person-what-to-push-decide-or-review">Work waiting on a person: what to push, decide or review<a class="headerlink" href="#work-waiting-on-a-person-what-to-push-decide-or-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>de6b6c06d</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>d38055bc9</code>.</em></p>
 <p><em>What this is: a record (contributor-facing). Read after the <a href="ROADMAP.html">roadmap</a>; leads to the
 <a href="DEFINITION-OF-DONE.html">definition of done: when a change is ready for the apps that depend on it</a>. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
@@ -2758,15 +2758,10 @@ maintainer's actions.</p>
 <code>nightscout-deploy</code>, chose a Vault Agent sidecar over a hand-written service-login
 adapter, and retired the agent-invented grant ceremony in favour of a disposable harness
 (<a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html#plan-restructuring-and-process-simplification-2026-11-09">decisions</a>).</p>
+<p>Settled 2026-11-10 (<a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-companion-internal-listener-activity-policy-and-8898-timing-2026-11-10">decisions</a>): the internal listener shape (Ory pattern, socket default, graceful shutdown), the operator activity policy (pause/suspend; owner may pause), the <code>nightscout-deploy</code> home (pushed to the nightscout organisation; it owns the Compose tree) and #8898 timing (draft until the next batch joins).</p>
 <p>What still needs a person:</p>
 <ul>
-<li><strong>A configuration shape for a shared component listener.</strong> Listener composition is
-  reproduced and joined; production wiring of several contracts on one listener needs the
-  maintainer to choose how it is configured (<code>MT-ENDPOINT-TRANSPORT</code>,
-  <a href="../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.html">plan</a>).</li>
-<li><strong>The operator activity/resource policy</strong> question stays open in the
-  <a href="../30-design/tenancy/m5-m6-decision-list.html#human-policy-review">decision index</a>.</li>
-<li><strong>Repository home and licence</strong> for <code>nightscout-deploy</code> (deploy-companion note, item 8).</li>
+<li><strong>Taking #8898 out of draft</strong> after the next batch's acceptance, and posting the early design-feedback comment if wanted.</li>
 <li><strong>Nothing for the operating envelope.</strong> On 2026-11-09 the maintainer made M7
   measured, not declared: <code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code> and <code>MT-SCALE-UNBOUND</code>
   produce the numbers; limits follow.</li>

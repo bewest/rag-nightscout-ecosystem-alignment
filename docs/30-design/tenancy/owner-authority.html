@@ -5682,7 +5682,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>50b424fab</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5837,9 +5837,11 @@ management token. No custom password/recovery system. Provider sessions alone do
 not certify current Nightscout grants; provider logout/revocation propagation must
 be part of the eventual session integration contract.</p>
 <p>Initial headless management uses explicitly provisioned management credentials
-from the private operator plane. Legacy root/data credentials never acquire
-management authority implicitly. Root-based bootstrap, if added, needs a separate
-explicit exchange ceremony. Unattended uploaders use revocable machine credentials
+from the private operator plane. A tenant's root secret (<code>API_SECRET</code>) has
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-root-single-site-parity">single-site parity</a>:
+all data, subjects, roles and the admin tools, never owner or operator authority. It
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-may-edit-owner-subjects">may edit any subject</a>
+except removing the last usable owner, and cannot grant itself ownership. Unattended uploaders use revocable machine credentials
 whose renewal does not require a human login.</p>
 <p>Adopted initial limits, subject to measured implementation acceptance:</p>
 <table>

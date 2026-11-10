@@ -2188,7 +2188,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>820f446eb</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>b76d3b470</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3660,7 +3660,92 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/b76d3b4703c8e6088070fb1fc76c8f818f262463/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="deploy-companion-internal-listener-activity-policy-and-8898-timing-2026-11-10">Deploy companion, internal listener, activity policy and #8898 timing (2026-11-10)<a class="headerlink" href="#deploy-companion-internal-listener-activity-policy-and-8898-timing-2026-11-10" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>decision</th>
+<th>who, when</th>
+<th>scope</th>
+<th>as it stands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="deploy-tree-home-now"></a><strong><code>nightscout-deploy</code> (github <code>nightscout/nightscout-deploy</code>, pushed 2026-11-10) is the home of the Compose deployment tree from the next #8898 batch on, not from deploy wave 2. Core keeps only the fixture its own native and CI tests boot; #8898 drops or shrinks <code>deploy/multitenant</code> accordingly.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>Refines <a href="#deploy-tree-lives-in-nightscout-deploy">deploy-tree-lives-in-nightscout-deploy</a>; #8898, deploy repo</td>
+<td>Removes the byte-identity sync between the two copies. Changes that today land in <code>deploy/multitenant/config.js</code> (for example the <code>ownership_operator</code> grants) are written so they port to a deploy-repo overlay. Which core tests need the fixture is read from the tests in the batch, not assumed.</td>
+</tr>
+<tr>
+<td><a id="deploy-repo-readme"></a><strong>The <code>nightscout-deploy</code> README addresses an operator: what runs today (Compose binding, Vault Agent overlay), how to run it, the core commit it pins. Placeholder directories stay, each saying in one line that it is not started; programme vocabulary (waves, gates) moves out of the front page.</strong></td>
+<td>maintainer, 2026-11-10 ("looks written like a rough draft")</td>
+<td><code>nightscout-deploy</code> README, roadmap, stub READMEs</td>
+<td>The pushed README (<code>cda3826</code>) is anchored to <code>ed2ced00</code>, calls the organisation home and licence "intended/pending" although both are now in place, and 7 of 13 areas are 4–8 line notes.</td>
+</tr>
+<tr>
+<td><a id="internal-listener-ory-pattern"></a><strong>Each role process has one private listener, <code>serve.internal</code>, configured Ory-style: <code>host</code>/<code>port</code> or <code>socket</code>, each overridable from the environment (<code>NS_SERVE_INTERNAL_HOST</code>, <code>_PORT</code>, <code>_SOCKET</code>), with a default. The role's code decides which internal contracts the listener serves; configuration cannot move or merge contracts. Callers receive peer addresses (for example <code>NS_API_INTERNAL_URL</code>). The default is a unix socket under a runtime directory; network exposure requires an explicit host/port.</strong></td>
+<td>maintainer, 2026-11-10 (prior art: Ory Kratos/Hydra <code>serve.public</code>/<code>serve.admin</code>)</td>
+<td>Refines <a href="#internal-service-contracts">internal-service-contracts</a>; <code>MT-ENDPOINT-TRANSPORT</code>, multitenant only</td>
+<td>Replaces the per-contract <code>socketPathEnv</code>/<code>endpoint</code> indirection with no defaults (<code>lib/server/internal-api/endpoint-config.js:11-30</code>; callers <code>realtime/private-config.js</code>, <code>serve/operation-cohort-config.js</code>, <code>serve/evaluator-consumer-config.js</code>). The preview is unreleased, so there is no compatibility shim. A socket default because the internal listener trusts its network (<code>trust:'network'</code>) and has no authentication of its own; Ory's admin listener does. The public listener stays separate.</td>
+</tr>
+<tr>
+<td><a id="internal-listener-graceful-shutdown"></a><strong>On SIGTERM the internal listener stops accepting connections, lets in-flight calls finish and send their responses up to a configurable deadline, then force-closes what remains; callers still treat a force-closed call as uncertain.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-ENDPOINT-TRANSPORT</code></td>
+<td>Reproduced current behaviour (listener-composition lane, Compose, <code>d69b873a</code>): <code>close()</code> dropped a held call at 176 ms while the server still drained its handler and window (29/29, 1535 ms). The deadline sits under the platform's termination grace. Acceptance needs a held-call test whose caller receives the response, and a control that restores the early drop.</td>
+</tr>
+<tr>
+<td><a id="activity-is-pause-suspend"></a><strong>Operator activity policy is pause and suspend; there is no third state. Background workers build their work lists from tenants eligible under the current state, not from configured presence. While paused, uploads and connector polling continue and the evaluator stops; on unpause it recomputes from current data before publishing. While suspended, nothing runs for the tenant. Restore and restart preserve the state.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>Closes the open topic in the <a href="../../docs/30-design/tenancy/m5-m6-decision-list.html#human-policy-review">decision index</a>; multitenant; <a href="../../docs/30-design/tenancy/tenant-admission-and-activity.html">proposal</a></td>
+<td>Today the evaluator iterates every configured tenant and installs timers for each (<code>evaluator-runtime.js:101,152</code>, read-derived), refusing per cycle rather than skipping. Operator-visible consequence: <strong>no alarms are computed or delivered while a site is paused</strong>; owner- and operator-facing text says so in plain language. Connector workers do not yet exist as a multitenant runtime (<code>roles.js:81</code>).</td>
+</tr>
+<tr>
+<td><a id="owner-may-pause"></a><strong>An owner may pause their own site; only the operator suspends (and deletes, which requires suspend).</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>Owner API, operator plane; multitenant</td>
+<td>Needs an owner-API verb with audit; the pause control states that alarms stop while paused. Single-site behaviour is unchanged.</td>
+</tr>
+<tr>
+<td><a id="8898-review-after-batch"></a><strong>#8898 stays a draft until the batch carrying these decisions joins and passes acceptance; meanwhile a short comment invites early design feedback on the architecture.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>#8898</td>
+<td>Batch: deploy-tree move, internal listener reshape, graceful shutdown, ownership in the admin role (lane started 2026-11-10), reproduced M6b follow-up fixes (lane started 2026-11-10). The comment is drafted for the maintainer to post.</td>
+</tr>
+<tr>
+<td><a id="tenant-root-single-site-parity"></a><strong>A tenant's <code>API_SECRET</code> (root) has the same authority in multitenant as on a single site: all data, plus creating and editing subjects and roles and the admin tools page. It never has owner authority (settings, export, deletion, ownership) or operator authority (infrastructure, environment, runtime defaults, vendor connectivity), and it cannot make itself an owner.</strong></td>
+<td>maintainer, 2026-11-10 ("the use of API SECRET should be equivalent between single tenant and multitenant")</td>
+<td>Amends <a href="../../docs/30-design/tenancy/owner-authority.html">owner authority</a> ("legacy root/data credentials never acquire management authority implicitly"); multitenant DATA API, subject management</td>
+<td>Today a tenant root secret verifies as <code>root</code> (<code>lib/secrets/component.js:62-93</code>) and is allowed every data permission (<code>lib/tenant-authorization/postgres.js:204</code>), but owner/subject management accepts only a provisioned actor (<code>lib/human-session/management.js:4</code>) and the DATA API excludes the admin-tools authorization routes (read-derived). Implementation restores those routes for a tenant's root through the tenant's subject store under RLS. Consistent with the 2026-11-07 direction that multitenant behaves as single tenant.</td>
+</tr>
+<tr>
+<td><a id="root-may-edit-owner-subjects"></a><strong>Root may edit or delete any subject, including an owner's; removing the last usable owner is refused (BF-229 guard). Root cannot add or transfer ownership. In multitenant mode every subject write goes through the owner-aware writer; the older writer without <code>ownerPolicy</code> is not built in multitenant mode. Single-site is unchanged.</strong></td>
+<td>maintainer, 2026-11-10 (chose "root can edit any subject" over owner subjects read-only to root and over root managing ownership)</td>
+<td>Subject admin, multitenant; closes decision question D-A of the <a href="../../reports/tenancy/m6b-followups-2026-11-10/index.html">M6b follow-ups</a></td>
+<td>Trade-off accepted: a leaked <code>API_SECRET</code> (commonly configured in uploaders and shared with caregivers) can remove co-owners but not the last one, and cannot take over ownership, export or deletion; recovery is the operator's audited <code>recover</code>. Making owner subjects read-only to root later is a breaking change. The owner-aware writer needs read access to owner rows for the guard.</td>
+</tr>
+<tr>
+<td><a id="key-destruction-removes-export"></a><strong>When the operator destroys a deleted tenant's keys at the end of the 30-day retention window, the same step removes the export artifact file it knows by digest, recorded in the same audit entry. Copies made elsewhere are the operator's responsibility, and the operator note says so.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>Refines <a href="#tenant-deletion-key-retention">tenant-deletion-key-retention</a>; multitenant; closes D-B of the <a href="../../reports/tenancy/m6b-followups-2026-11-10/index.html">M6b follow-ups</a></td>
+<td>Today no path removes <code>tenant-artifact-&lt;digest&gt;</code>; the only <code>rm</code> cleans staging after a failed save (<code>filesystem-artifact.js:48</code>, read-derived). Key destruction leaves the artifact's clinical records readable, so the file must go with the keys. No new timer.</td>
+</tr>
+<tr>
+<td><a id="restore-census-and-ownership-phase"></a><strong>The restore census accepts connections from database identities whose grants are checked, at census time, to exclude every clinical table (the admin role's <code>ownership_operator</code>). Ownership operations refuse unless the tenant is active (not suspended, restoring, exporting or in a deletion ceremony). The admin role does not join the lifecycle cohort.</strong></td>
+<td>maintainer, 2026-11-10 (chose over admin joining the cohort and over stopping admin by procedure)</td>
+<td><code>operation-cohort.js</code> <code>assertComplete</code>; ownership operations; multitenant</td>
+<td>Read-derived from the ownership-role lane: the census refuses any non-participant backend (<code>RESTORE_COHORT_UNKNOWN_BACKEND</code>), so restore refuses while admin is connected, although restore keeps authority and ownership untouched (<code>logical-restore.js:3</code>); and nothing fences ownership changes during lifecycle operations. Control for the census: grant the identity one clinical table and the census must refuse.</td>
+</tr>
+<tr>
+<td><a id="admin-plane-same-address-different-port"></a><strong>The admin listener may share the public API listener's address when the ports differ, on loopback and non-loopback addresses alike. It still may not bind every interface, and a non-loopback address still needs <code>ADMIN_INSECURE_BIND_ACKNOWLEDGED=true</code>.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>lib/server/serve/listeners.js</code> plane rule; multitenant</td>
+<td>Reproduced 2026-11-10 by resolving listeners directly on <code>1376c294</code>: with nothing set, admin resolves to <code>127.0.0.1:1338</code> and starts (the consumer address is every interface); with <code>HOSTNAME=127.0.0.1</code> it refuses ("is on the consumer listener's address"). The ownership lane's "exits 78 by default" came from a test environment that sets <code>HOSTNAME</code>. Relaxes the same-address check written with D7/D21 (<code>listeners.js:8-16</code>); separation of a shared non-loopback address now rests on the port, the acknowledgement and the deployment's network policy.</td>
 </tr>
 </tbody>
 </table>

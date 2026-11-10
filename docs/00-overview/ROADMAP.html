@@ -2414,7 +2414,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>de6b6c06d</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>b76d3b470</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -3011,6 +3011,13 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>MT-INTERNAL-LISTENER</code></td>
+<td>Internal listener: one serve.internal per role (Ory pattern, socket default) and</td>
+<td><code>not-started</code></td>
+<td><code>MT-ENDPOINT-TRANSPORT</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>MT-M6A-JOIN</code></td>
 <td>M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign</td>
 <td><code>in-flight-upstream</code></td>
@@ -3109,6 +3116,27 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
+<td><code>DEPLOY-TREE-HOME</code></td>
+<td>Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6B-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>MT-ACTIVITY-ELIGIBILITY</code></td>
+<td>Pause/suspend drive worker eligibility; evaluator stops while paused; owner may</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6B-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>MT-ADMIN-ROLE-OWNERSHIP</code></td>
+<td>M6b: compose ownership operations into the multitenant admin role with an owners</td>
+<td><code>in-progress</code></td>
+<td><code>MT-M6B-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
 <td><code>MT-BENCH-CONTRAST</code></td>
 <td>M7: contrast the multitenant cohort with existing deployment shapes at equal loa</td>
 <td><code>not-started</code></td>
@@ -3123,10 +3151,38 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
+<td><code>MT-EXPORT-EXPIRY</code></td>
+<td>Key destruction removes the export artifact file in the same audited step</td>
+<td><code>not-started</code></td>
+<td><code>MT-M6B-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>MT-OWNER-LAST-GUARD</code></td>
+<td>M6b follow-up: refuse revoking the last usable owner's subject (BF-229)</td>
+<td><code>in-progress</code></td>
+<td><code>MT-M6B-JOIN</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
 <td><code>MT-SCALE-UNBOUND</code></td>
 <td>M7: prove each component scales horizontally or vertically as intended, with no</td>
 <td><code>not-started</code></td>
 <td><code>MT-BENCH-BASELINE</code>, <code>MT-API-FIXED-ROSTER</code>, <code>MT-REALTIME-SHARDING</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>MT-ADMIN-LIFECYCLE-FIT</code></td>
+<td>Restore census accepts non-clinical identities; ownership refuses on non-active</td>
+<td><code>not-started</code></td>
+<td><code>MT-ADMIN-ROLE-OWNERSHIP</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>MT-ROOT-ADMIN-PARITY</code></td>
+<td>Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad</td>
+<td><code>not-started</code></td>
+<td><code>MT-OWNER-LAST-GUARD</code></td>
 </tr>
 </tbody>
 </table>
