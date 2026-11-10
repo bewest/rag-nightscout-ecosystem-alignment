@@ -1,0 +1,99 @@
+[
+ {
+  "control": "C1-email-key-without-issuer",
+  "grep": "same verified email from a second issuer",
+  "mutant": {
+   "exit": 1,
+   "summary": "0 passing (242ms) 1 failing",
+   "symptom": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "summary": "1 passing (255ms)"
+  },
+  "tree_clean_after_restore": true
+ },
+ {
+  "control": "C2-email-without-verified-check",
+  "grep": "unverified email at the listed issuer",
+  "mutant": {
+   "exit": 1,
+   "summary": "0 passing (226ms) 1 failing",
+   "symptom": [
+    "Error: HUMAN_AUTHORITY_REFUSED"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "summary": "1 passing (241ms)"
+  },
+  "tree_clean_after_restore": true
+ },
+ {
+  "control": "C3-permission-snapshot-reintroduced",
+  "grep": "next request",
+  "mutant": {
+   "exit": 4,
+   "summary": "4 passing (442ms) 4 failing",
+   "symptom": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "summary": "8 passing (448ms)"
+  },
+  "tree_clean_after_restore": true
+ },
+ {
+  "control": "C4-unlisted-gets-a-binding",
+  "grep": "fallback readable",
+  "mutant": {
+   "exit": 1,
+   "summary": "0 passing (224ms) 1 failing",
+   "symptom": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "summary": "1 passing (252ms)"
+  },
+  "tree_clean_after_restore": true
+ },
+ {
+  "control": "C5-config-exclusivity-removed",
+  "grep": "together refuse at load",
+  "mutant": {
+   "exit": 1,
+   "summary": "0 passing (5ms) 1 failing",
+   "symptom": [
+    "AssertionError [ERR_ASSERTION]: The validation function is expected to return \"true\". Received false"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "summary": "1 passing (4ms)"
+  },
+  "tree_clean_after_restore": true
+ },
+ {
+  "control": "C6-fallback-session-share-removed",
+  "grep": "bounded share of sessions",
+  "mutant": {
+   "exit": 1,
+   "summary": "0 passing (508ms) 1 failing",
+   "symptom": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "summary": "1 passing (534ms)"
+  },
+  "tree_clean_after_restore": true
+ }
+]

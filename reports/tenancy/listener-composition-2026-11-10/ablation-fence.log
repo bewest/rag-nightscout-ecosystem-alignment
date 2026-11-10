@@ -1,0 +1,54 @@
+
+
+  .!..!....!.........
+
+  16 passing (529ms)
+  3 failing
+
+  1) Composed component-private listener over uds
+       refuses a request naming a foreign or unregistered service before dispatch:
+
+      AssertionError [ERR_ASSERTION]: foreign co-resident service
+
+200 !== 503
+
+      + expected - actual
+
+      -200
+      +503
+      
+      at refused (tests/internal-api-composition.test.js:60:10)
+      at Context.<anonymous> (tests/internal-api-composition.test.js:101:7)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  2) Composed component-private listener over http
+       refuses a request naming a foreign or unregistered service before dispatch:
+
+      AssertionError [ERR_ASSERTION]: foreign co-resident service
+
+200 !== 503
+
+      + expected - actual
+
+      -200
+      +503
+      
+      at refused (tests/internal-api-composition.test.js:60:10)
+      at Context.<anonymous> (tests/internal-api-composition.test.js:101:7)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  3) Composition registration rules
+       control: co-resident foreign-service refusal goes red when the route owner fence is removed:
+
+      AssertionError [ERR_ASSERTION]: Mutation marker must match actual transport source
+      + expected - actual
+
+
+      [mocha] output truncated to 8192 characters, see "maxDiffSize" reporter-option
+
+      at mutated (tests/internal-api-composition.test.js:27:10)
+      at Context.<anonymous> (tests/internal-api-composition.test.js:171:20)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+

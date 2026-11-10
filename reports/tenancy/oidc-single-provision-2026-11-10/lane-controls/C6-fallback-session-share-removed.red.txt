@@ -1,0 +1,21 @@
+  0 passing (508ms)
+  1 failing
+
+  1) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       an unlisted signed-in identity gets only the fallback role
+         strangers hold a bounded share of sessions and cannot exhaust capacity for listed people:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+40 !== 32
+
+      + expected - actual
+
+      -40
+      +32
+      
+      at Context.<anonymous> (tests/human-session-provision.test.js:122:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+

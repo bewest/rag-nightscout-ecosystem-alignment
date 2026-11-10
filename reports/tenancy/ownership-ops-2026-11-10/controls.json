@@ -1,0 +1,194 @@
+[
+  {
+    "control": "C1-locks-and-conditional-removed",
+    "test": "race control",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "race control: two concurrent transfers from one owner, exactly one wins and both attempts are audited:\nAssertionError [ERR_ASSERTION]: exactly one transfer applies: applied:,applied:\n2 !== 1\n+ expected - actual\n-2\n+1\nat Context.<anonymous> (tests/tenant-ownership-postgres.integration.test.js:228:14)\nat process.processTicksAndRejections (node:internal/process/task_queues:103:5)"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C1b-locks-removed-conditional-kept",
+    "test": "race control",
+    "mutated": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0",
+      "symptom": ""
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C1c-conditional-removed-locks-kept",
+    "test": "race control",
+    "mutated": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0",
+      "symptom": ""
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C2-authority-tenant-equality-removed",
+    "test": "foreign-authority",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "foreign-authority control: an operator bound to tenant B acting on tenant A has no effect in either tenant:\nAssertionError [ERR_ASSERTION]: Missing expected rejection.\nat process.processTicksAndRejections (node:internal/process/task_queues:103:5)\nat async Context.<anonymous> (tests/tenant-ownership-postgres.integration.test.js:251:5)"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C2b-tenant-set-binding-removed",
+    "test": "foreign-authority",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "foreign-authority control: an operator bound to tenant B acting on tenant A has no effect in either tenant:\nAssertionError [ERR_ASSERTION]: Missing expected rejection.\nat process.processTicksAndRejections (node:internal/process/task_queues:103:5)\nat async Context.<anonymous> (tests/tenant-ownership-postgres.integration.test.js:248:53)"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C3-in-transaction-authority-removed-from-change",
+    "test": "foreign-authority",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "foreign-authority control: an operator bound to tenant B acting on tenant A has no effect in either tenant:\nAssertionError [ERR_ASSERTION]: Missing expected rejection.\nat process.processTicksAndRejections (node:internal/process/task_queues:103:5)\nat async Context.<anonymous> (tests/tenant-ownership-postgres.integration.test.js:248:53)"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C4a-transfer-plan-drops-target-guard-kept",
+    "test": "transfers ownership",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "transfers ownership so the previous owner loses owner-plane authority and the new owner gains it:\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n{\n+   outcome: 'refused',\n-   outcome: 'applied',\nowners: [\n{\nconsumer: 'tenant-admin',\n+       principal: 's_owner1'\n-       principal: 's_new'\n}"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C4b-transfer-plan-drops-target-and-orphan-guard-removed",
+    "test": "transfers ownership",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "transfers ownership so the previous owner loses owner-plane authority and the new owner gains it:\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n{\noutcome: 'applied',\n+   owners: []\n-   owners: [\n-     {\n-       consumer: 'tenant-admin',\n-       principal: 's_new'\n-     }\n-   ]"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C5-service-adds-field-to-wire-result",
+    "test": "private internal service",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "serves the operations over the private internal service on UDS and internal HTTP with schema-checked results:\nError: SOCKET_IPC_UNAVAILABLE\nat fail (lib/server/internal-api/transport.js:174:33)\nat IncomingMessage.<anonymous> (lib/server/internal-api/transport.js:188:21)\nat IncomingMessage.emit (node:events:531:35)\nat endReadableNT (node:internal/streams/readable:1698:12)\nat process.processTicksAndRejections (node:internal/process/task_queues:89:21)"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C5b-store-returns-delegation-on-recover",
+    "test": "recovers an orphaned",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "recovers an orphaned tenant to one named owner without returning or logging any credential:\nAssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n[\n'code',\n+   'delegable',\n'event',\n'outcome',\n'owners'\n]\n+ expected - actual"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C6-privilege-screen-unsafe-ignored",
+    "test": "refuses an operator store",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "refuses an operator store whose identity can delete or rewrite authority rows:\nAssertionError [ERR_ASSERTION]: Missing expected rejection.\nat process.processTicksAndRejections (node:internal/process/task_queues:103:5)\nat async Context.<anonymous> (tests/tenant-ownership-postgres.integration.test.js:124:7)"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  },
+  {
+    "control": "C7-plan-skips-expected-owner-compare",
+    "test": "every applied plan",
+    "mutated": {
+      "exit": 1,
+      "passing": "0",
+      "failing": "1",
+      "symptom": "every applied plan leaves at least one owner and changes only what the operator named:\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n+ undefined\n- 'OWNERSHIP_CONFLICT'\nat Context.<anonymous> (tests/tenant-ownership.test.js:71:12)\nat process.processImmediate (node:internal/timers:484:21)"
+    },
+    "restored": {
+      "exit": 0,
+      "passing": "1",
+      "failing": "0"
+    },
+    "tree_clean_after_restore": true
+  }
+]

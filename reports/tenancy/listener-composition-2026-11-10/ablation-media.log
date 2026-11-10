@@ -1,0 +1,26 @@
+
+
+  ............!......
+
+  18 passing (543ms)
+  1 failing
+
+  1) Per-operation media, byte and deadline bounds
+       requires the operation media type on requests and responses:
+
+      AssertionError [ERR_ASSERTION]: text/plain
+
+200 !== 503
+
+      + expected - actual
+
+      -200
+      +503
+      
+      at refused (tests/internal-api-composition.test.js:60:10)
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/internal-api-composition.test.js:226:7
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async bounded (tests/internal-api-composition.test.js:204:7)
+
+
+

@@ -3251,3 +3251,37 @@ controls:
       lane also recorded the gate failing on this record before its controls were
       merged ("0 of 0" controls).
 
+
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-lifecycle.test.js
+    cwd: externals/work/crm-m6b-join-20261110
+    control-exempt: >
+      The meaningful controls are source ablations in the lane (skip the artifact
+      completeness check: 2 failing; ignore the window: 1; ignore destroyed: 2; revert
+      the ledger check to two tables: 20), each restored byte-identical, recorded in
+      reports/tenancy/key-retention-2026-11-10/README.md. Automating them would write
+      into the candidate worktree, which a gate may not do.
+
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-ownership.test.js tests/internal-api-contracts.test.js
+    cwd: externals/work/crm-m6b-join-20261110
+    control-exempt: >
+      Twelve source ablations in the lane (locks plus conditional writes removed:
+      applied twice; tenant check dropped: A changed; orphan guard removed: owners [];
+      extra wire field: schema refusal) are recorded with their restore runs in
+      reports/tenancy/ownership-ops-2026-11-10/controls.json. Automating them would write
+      into the candidate worktree.
+
+  - gate: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/oidc-single-provision-2026-11-10/summary.json
+    control: node tools/queue/gates/oidc-native-recorded.js tools/queue/gates/_oidc-native-recorded/missing-stage.json
+    positive-control: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/oidc-single-provision-2026-11-10/summary.json
+    control-kind: static
+    proves: >
+      The provisioning lane's matrix record validates; the fixture without owner-browser
+      fails with the same validator.
+
+  - gate: "! grep -q '^FAIL' reports/tenancy/connector-sync-2026-11-10/run-summary.txt && grep -q '^SUMMARY 16 checks, 0 failing' reports/tenancy/connector-sync-2026-11-10/run-summary.txt"
+    control: "! grep -q '^FAIL' tools/queue/gates/_connector-sync/one-failing.txt && grep -q '^SUMMARY 16 checks, 0 failing' tools/queue/gates/_connector-sync/one-failing.txt"
+    positive-control: "! grep -q '^FAIL' reports/tenancy/connector-sync-2026-11-10/run-summary.txt && grep -q '^SUMMARY 16 checks, 0 failing' reports/tenancy/connector-sync-2026-11-10/run-summary.txt"
+    control-kind: static
+    proves: >
+      The recorded run has no FAIL line and a zero-failure summary; the fixture with the
+      revoke control marked FAIL and a one-failure summary exits 1.

@@ -1,0 +1,19 @@
+preview port 39887 destination port 32797
+PASS reader exchange before revoke :: HTTP 200
+PASS reader cannot write (read-only role) :: HTTP 401
+PASS GATE pull 1 matches tenant store (PG direct vs Mongo direct) :: {"ok":true,"missing":0,"extra":0,"expected":30,"actual":30}
+PASS BREAK-IT drop one tenant entry from oracle copy -> red :: {"ok":false,"missing":0,"extra":1,"expected":29,"actual":30}
+PASS BREAK-IT alter one sgv -> red :: {"ok":false,"missing":1,"extra":1,"expected":30,"actual":30}
+PASS restore oracle -> green :: {"ok":true,"missing":0,"extra":0,"expected":30,"actual":30}
+PASS tenant B untouched by sync (count) :: B rows 10; destination rows from B device: 0
+PASS GATE pull 2 (5 new entries) matches :: {"ok":true,"missing":0,"extra":0,"expected":35,"actual":35}
+PASS CONTROL revoked reader exchange refused :: HTTP 401
+PASS CONTROL pull after revoke adds zero rows :: before 35 after 35; connector log lines: nightscout-connect: Authorization failed (HTTP 401) | nightscout-connect: Polling frame failed | nightscout-connect: Authorization failed (HTTP 401)
+PASS tenant has the 3 pending entries the revoked pull did not receive :: tenant 38
+PASS re-granted reader exchange works again
+PASS CONTROL issued bearer after role removal refused (current grants) :: HTTP 401
+PASS CONTROL pull with role removed adds zero rows :: rows 35
+PASS restore grant -> pull delivers pending entries, matches again :: {"ok":true,"missing":0,"extra":0,"expected":38,"actual":38}
+PASS tenant B still untouched at end :: B rows 10
+
+SUMMARY 16 checks, 0 failing

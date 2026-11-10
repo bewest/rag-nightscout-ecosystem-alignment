@@ -1,0 +1,46 @@
+
+
+  ..........!!..!....
+
+  16 passing (468ms)
+  3 failing
+
+  1) Per-operation media, byte and deadline bounds
+       applies the operation byte bound to requests and responses at both ends:
+
+      AssertionError [ERR_ASSERTION]: request above operation bound
+
+200 !== 503
+
+      + expected - actual
+
+      -200
+      +503
+      
+      at refused (tests/internal-api-composition.test.js:60:10)
+      at oversize (tests/internal-api-composition.test.js:209:5)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async bounded (tests/internal-api-composition.test.js:204:7)
+
+  2) Per-operation media, byte and deadline bounds
+       applies the operation deadline independently of a longer listener deadline:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/internal-api-composition.test.js:220:5
+      at async bounded (tests/internal-api-composition.test.js:204:7)
+
+  3) Per-operation media, byte and deadline bounds
+       control: byte bound test goes red when operation bounds are replaced by the listener bound:
+
+      AssertionError [ERR_ASSERTION]: Mutation marker must match actual transport source
+      + expected - actual
+
+
+      [mocha] output truncated to 8192 characters, see "maxDiffSize" reporter-option
+
+      at mutated (tests/internal-api-composition.test.js:27:10)
+      at Context.<anonymous> (tests/internal-api-composition.test.js:241:20)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+

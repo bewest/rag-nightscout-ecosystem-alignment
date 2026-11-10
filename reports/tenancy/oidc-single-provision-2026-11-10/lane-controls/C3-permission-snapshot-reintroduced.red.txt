@@ -1,0 +1,51 @@
+  4 passing (442ms)
+  4 failing
+
+  1) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       a role or binding edit takes effect on the next request
+         an admin-UI role edit on the bound subject governs the next request:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+      + expected - actual
+
+      -true
+      +false
+      
+      at Context.<anonymous> (tests/human-session-provision.test.js:135:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  2) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       a role or binding edit takes effect on the next request
+         a stored role overriding a default role governs the next request:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+      + expected - actual
+
+      -true
+      +false
+      
+      at Context.<anonymous> (tests/human-session-provision.test.js:144:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  3) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       a role or binding edit takes effect on the next request
+         a disabled binding refuses the next request; a removed subject grants nothing:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/human-session-provision.test.js:154:7)
+
+  4) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       a role or binding edit takes effect on the next request
+         a principal stored with a permissionGroups copy takes nothing from it (migration):
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/human-session-provision.test.js:197:7)
+
+
+

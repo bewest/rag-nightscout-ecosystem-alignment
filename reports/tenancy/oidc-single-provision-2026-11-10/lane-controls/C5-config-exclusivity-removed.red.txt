@@ -1,0 +1,15 @@
+  0 passing (5ms)
+  1 failing
+
+  1) single-site OIDC configuration sources
+       CONTROL: OIDC_ACCESS_CONFIG and OIDC_ACCESS_CONFIG_FILE together refuse at load:
+     AssertionError [ERR_ASSERTION]: The validation function is expected to return "true". Received false
+
+Caught error:
+
+TypeError: Invalid explicit human access issuer configuration
+      at Context.<anonymous> (tests/human-session-provision.test.js:299:12)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+

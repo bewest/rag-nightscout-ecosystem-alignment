@@ -21,7 +21,7 @@ compatibility)**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/vault-token-file-20261109` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-VAULT-TOKEN-FILE` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-VAULT-TOKEN-FILE` is the measurement |
 | semver | `minor` |
 
 ## What this changes
@@ -65,7 +65,9 @@ site that exists at ed2 (lib/server/serve/preview-config.js); the other three
 sites named in the brief live on the owner/OIDC candidate branch and get the
 same shape at MT-M6A-JOIN. test:affected on mongo:7: unit 191 / harness 27 /
 integration 24 passing, 0 failing. Report reports/tenancy/vault-
-agent-2026-11-09/.
+agent-2026-11-09/. 2026-11-10: 0c547958 is an ancestor of dc795bd1 (git merge-
+base --is-ancestor), which the maintainer pushed to #8898; this item ships
+with the M6a bundle and needs no separate push.
 
 ---
 

@@ -1,0 +1,35 @@
+  0 passing (224ms)
+  1 failing
+
+  1) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       an unlisted signed-in identity gets only the fallback role
+         fallback readable: reads, never writes, never management:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
+  [
+    [
++     'api:treatments:create'
++   ],
++   [
+      '*:*:read'
+    ]
+  ]
+
+      + expected - actual
+
+       [
+         [
+      -    "api:treatments:create"
+      -  ]
+      -  [
+           "*:*:read"
+         ]
+       ]
+      
+      at Context.<anonymous> (tests/human-session-provision.test.js:105:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+

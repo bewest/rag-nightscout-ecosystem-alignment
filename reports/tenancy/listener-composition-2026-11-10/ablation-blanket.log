@@ -1,0 +1,36 @@
+
+
+  ...............!!.!
+
+  16 passing (542ms)
+  3 failing
+
+  1) Per-module lifetime on a composed listener
+       keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over uds:
+     AssertionError [ERR_ASSERTION]: lifecycle invalidation of suspended A must stay callable: SOCKET_IPC_UNAVAILABLE
+      at suspendedScenario (tests/internal-api-composition.test.js:307:28)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  2) Per-module lifetime on a composed listener
+       keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over http:
+     AssertionError [ERR_ASSERTION]: lifecycle invalidation of suspended A must stay callable: SOCKET_IPC_UNAVAILABLE
+      at suspendedScenario (tests/internal-api-composition.test.js:307:28)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  3) Per-module lifetime on a composed listener
+       control: a blanket listener-wide window mutant fails the lifecycle invalidation assertion:
+     /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/lib/server/internal-api/transport.js:129
+  const blanket = [...table.values()].find(entry => entry.lifetime)?.lifetime;
+        ^
+
+SyntaxError: Identifier 'blanket' has already been declared
+      at new Script (node:vm:117:7)
+      at createScript (node:vm:269:10)
+      at Object.runInThisContext (node:vm:317:10)
+      at mutated (tests/internal-api-composition.test.js:29:6)
+      at Context.<anonymous> (tests/internal-api-composition.test.js:339:20)
+      at process.processImmediate (node:internal/timers:484:21)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17)
+
+
+

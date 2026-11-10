@@ -1,0 +1,17 @@
+  0 passing (226ms)
+  1 failing
+
+  1) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       email entries match only a verified address from the same issuer
+         CONTROL: an unverified email at the listed issuer gets no listed role:
+     Error: HUMAN_AUTHORITY_REFUSED
+      at fail (lib/human-session/engine.js:6:36)
+      at authority (lib/human-session/engine.js:60:77)
+      at live (lib/human-session/engine.js:92:19)
+      at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-oidc-single-provision-20261110/lib/human-session/engine.js:149:49
+      at Object.transaction (lib/human-session/mongo.js:154:33)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/human-session-provision.test.js:226:23)
+
+
+

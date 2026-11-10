@@ -1,0 +1,21 @@
+  0 passing (242ms)
+  1 failing
+
+  1) single-site OIDC identity list, fallback role and current subject roles (actual MongoDB)
+       email entries match only a verified address from the same issuer
+         CONTROL: the same verified email from a second issuer gets no listed role:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+      + expected - actual
+
+      -true
+      +false
+      
+      at Context.<anonymous> (tests/human-session-provision.test.js:215:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+

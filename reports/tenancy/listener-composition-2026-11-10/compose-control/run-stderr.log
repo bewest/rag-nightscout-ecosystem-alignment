@@ -1,0 +1,10 @@
+BLANKET_WINDOW_CONTROL_APPLIED /tmp/claude-1000/-home-bewest-src-rag-nightscout-ecosystem-alignment/d932d68d-9c16-442c-84b7-bd75ad82cc68/scratchpad/ns-lc-UgepUL2M/src/lib/server/internal-api/transport.js
+2026-11-10T19:04:16Z project=ns-lc-20261110t190416z-2419056 source=/tmp/claude-1000/-home-bewest-src-rag-nightscout-ecosystem-alignment/d932d68d-9c16-442c-84b7-bd75ad82cc68/scratchpad/ns-lc-UgepUL2M/src control=blanket-window head=d69b873aa93044ed90c004ba79491eb49e25405a dirty=0
+2026-11-10T19:04:16Z + docker compose -p ns-lc-20261110t190416z-2419056 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml up -d api realtime evaluator tenant-admin
+2026-11-10T19:04:16Z + docker compose -p ns-lc-20261110t190416z-2419056 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml run --rm driver node tests/native/internal-api-compose/driver.cjs scenario
+DRIVER_FAILED lifecycle invalidation of suspended A on api: SOCKET_IPC_UNAVAILABLE
+
+2026-11-10T19:04:18Z + docker compose -p ns-lc-20261110t190416z-2419056 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml down -v --remove-orphans
+2026-11-10T19:04:19Z containers remaining for project ns-lc-20261110t190416z-2419056: 0
+2026-11-10T19:04:19Z networks remaining for project ns-lc-20261110t190416z-2419056: 0
+2026-11-10T19:04:19Z exit 1

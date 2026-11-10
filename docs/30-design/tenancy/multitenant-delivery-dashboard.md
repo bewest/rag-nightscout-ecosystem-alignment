@@ -96,17 +96,17 @@ flowchart LR
   MT-BENCH-BASELINE["MT-BENCH-BASELINE<br/>not-started"]
   MT-BENCH-CONTRAST["MT-BENCH-CONTRAST<br/>not-started"]
   MT-CONFIG-MIN["MT-CONFIG-MIN<br/>closed"]
-  MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>not-started"]
+  MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>done"]
   MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>not-started"]
   MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>not-started"]
-  MT-KEY-RETENTION["MT-KEY-RETENTION<br/>not-started"]
+  MT-KEY-RETENTION["MT-KEY-RETENTION<br/>in-progress"]
   MT-M6A-JOIN["MT-M6A-JOIN<br/>in-flight-upstream"]
   MT-OIDC-NATIVE["MT-OIDC-NATIVE<br/>in-flight-upstream"]
-  MT-OWNERSHIP-OPS["MT-OWNERSHIP-OPS<br/>not-started"]
+  MT-OWNERSHIP-OPS["MT-OWNERSHIP-OPS<br/>in-progress"]
   MT-RUNTIME-PLAN["MT-RUNTIME-PLAN<br/>closed"]
   MT-SCALE-UNBOUND["MT-SCALE-UNBOUND<br/>not-started"]
   MT-SECRETS-CONTRACT["MT-SECRETS-CONTRACT<br/>closed"]
-  MT-VAULT-TOKEN-FILE["MT-VAULT-TOKEN-FILE<br/>ready-to-push"]
+  MT-VAULT-TOKEN-FILE["MT-VAULT-TOKEN-FILE<br/>in-flight-upstream"]
   PLAT-SERVE["PLAT-SERVE<br/>merged-upstream"]
   ST-PG["ST-PG<br/>closed"]
   ST-VIEWS-PROFILE["ST-VIEWS-PROFILE<br/>in-progress"]
@@ -172,13 +172,13 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="t30-tenant-admin"></a>**T30-TENANT-ADMIN**: closed | Closed 2026-11-09 as superseded; accepted scope on draft #8898 | T30-WIRING (closed) | Remaining scope moved to the M6a-M6d/M7 capability items. Gates and evidence retained on the closed item. |
 | <a id="mt-oidc-native"></a>**MT-OIDC-NATIVE**: in-flight-upstream | M6a / harness lane: RUN, all nine PASS (local branch) | None recorded | Hand the harness branch codex/oidc-native-harness-20261109 (c0a67b69 + probe fix + harness) to MT-M6A-JOIN. Rerun with tests/native/oidc-matrix/run.sh on the joined head. |
 | <a id="mt-m6a-join"></a>**MT-M6A-JOIN**: in-flight-upstream | M6a / joined head 74036ba6 verified, local | MT-OIDC-NATIVE (in-flight-upstream) | Maintainer decides opt-in OIDC browser discovery and permitted owner DELETE, then pushes the fast-forward; CodeQL on the IPC Map change measured by CI. |
-| <a id="mt-ownership-ops"></a>**MT-OWNERSHIP-OPS**: not-started | M6b | MT-M6A-JOIN (in-flight-upstream) | Operator-assisted add/transfer/recovery on the headless operator API; concurrent-change and unauthorized controls; audit rows. |
-| <a id="mt-key-retention"></a>**MT-KEY-RETENTION**: not-started | M6b | MT-M6A-JOIN (in-flight-upstream) | 30-day retention after delete; operator destroy; after-window refusal; artifact holds every ciphertext/key reference before secret/audit rows are removed. |
-| <a id="mt-vault-token-file"></a>**MT-VAULT-TOKEN-FILE**: ready-to-push | M6c / core: fixed on local branch (5 unit, 2 ablations red) | None recorded | Join with MT-M6A-JOIN; apply the same shape to the three OIDC-branch getToken sites. |
-| <a id="deploy-vault-agent"></a>**DEPLOY-VAULT-AGENT**: ready-to-push | M6c / nightscout-deploy main cda38265: overlay landed, smoke measured | MT-VAULT-TOKEN-FILE (ready-to-push) | Decided: one AppRole per deployment. Replace the policy union with a path glob; measure re-auth after token_max_ttl and seal/unseal. |
+| <a id="mt-ownership-ops"></a>**MT-OWNERSHIP-OPS**: in-progress | M6b | MT-M6A-JOIN (in-flight-upstream) | Operator-assisted add/transfer/recovery on the headless operator API; concurrent-change and unauthorized controls; audit rows. |
+| <a id="mt-key-retention"></a>**MT-KEY-RETENTION**: in-progress | M6b | MT-M6A-JOIN (in-flight-upstream) | 30-day retention after delete; operator destroy; after-window refusal; artifact holds every ciphertext/key reference before secret/audit rows are removed. |
+| <a id="mt-vault-token-file"></a>**MT-VAULT-TOKEN-FILE**: in-flight-upstream | M6c / core: fixed on local branch (5 unit, 2 ablations red) | None recorded | Join with MT-M6A-JOIN; apply the same shape to the three OIDC-branch getToken sites. |
+| <a id="deploy-vault-agent"></a>**DEPLOY-VAULT-AGENT**: ready-to-push | M6c / nightscout-deploy main cda38265: overlay landed, smoke measured | MT-VAULT-TOKEN-FILE (in-flight-upstream) | Decided: one AppRole per deployment. Replace the policy union with a path glob; measure re-auth after token_max_ttl and seal/unseal. |
 | <a id="deploy-idp-profile"></a>**DEPLOY-IDP-PROFILE**: not-started | M6c / nightscout-deploy | MT-M6A-JOIN (in-flight-upstream) | Authentik provider profile over HTTPS with synthetic people; login/renewal/logout/outage against the owner HTTP routes; Kratos fallback profile only if the Authentik proof fails. |
 | <a id="deploy-trust-probes"></a>**DEPLOY-TRUST-PROBES**: not-started | M6c / nightscout-deploy | DEPLOY-VAULT-AGENT (ready-to-push) | Spoof, host/selector conflict, unknown tenant, socket and outage probes against the live Compose edge and Vault; trust record from edge/trust-record.template.md. |
-| <a id="mt-connector-sync"></a>**MT-CONNECTOR-SYNC**: not-started | M6d | MT-M6A-JOIN (in-flight-upstream) | nightscout-connect outbound pull from a tenant with a pre-issued reader; stored/history oracle; revocation control. |
+| <a id="mt-connector-sync"></a>**MT-CONNECTOR-SYNC**: done | M6d | MT-M6A-JOIN (in-flight-upstream) | nightscout-connect outbound pull from a tenant with a pre-issued reader; stored/history oracle; revocation control. |
 | <a id="mt-android-lab"></a>**MT-ANDROID-LAB**: not-started | M7 | MT-M6A-JOIN (in-flight-upstream) | Android emulator acceptance for the pinned uploader/follower shapes; iOS stays outside the automated lab. |
 | <a id="deploy-k8s-binding"></a>**DEPLOY-K8S-BINDING**: not-started | M7 / nightscout-deploy | DEPLOY-TRUST-PROBES (not-started) | One Pod per cohort, private socket volume, no-overlap update; binding equivalence table. |
 | <a id="mt-bench-baseline"></a>**MT-BENCH-BASELINE**: not-started | M7 / measurement | MT-M6A-JOIN (in-flight-upstream) | k6 or autocannon driving pinned client shapes at 1/10/50/200 tenants with one hot tenant on the Compose reference; p50/p95/p99, socket fanout, evaluator cycle, pool/lock waits, CPU/RSS per role, disk per tenant-day, reconnect recovery. Independent stored-count oracle. Numbers are the deliverable. |

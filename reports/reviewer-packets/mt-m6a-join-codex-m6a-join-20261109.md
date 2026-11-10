@@ -101,7 +101,11 @@ failing; OIDC matrix 9/9 with 3/3 controls; new response-schema break-it red
 (listener 200 instead of 503; client "Missing expected rejection.") then
 green; prcheck OK. Evidence
 reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/. Ready for the
-maintainer to push dc795bd1 to #8898.
+maintainer to push dc795bd1 to #8898. 2026-11-10 (read from official and gh):
+maintainer pushed dc795bd1 to workspace/multitenant-20261102. Every CI job on
+that head is green, CodeQL included: alert 155 fixed, 154 dismissed (used in
+tests), 150 still open at the new line lib/authorization/storage.js:395 (the
+accessToken.length loop). Fix 7b30a6f2 joins under MT-M6B-JOIN.
 
 ---
 

@@ -31,26 +31,26 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 386 |
-| runnable gates | 435 |
-| explicit `no-gate:` markers | 403 |
+| items | 387 |
+| runnable gates | 439 |
+| explicit `no-gate:` markers | 400 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 403 of the 838 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 839 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 87 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-CONNECTOR-SYNC, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 15 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME |
+| `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `in-progress` | 19 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 3 | WS-LAB, MT-VAULT-TOKEN-FILE, DEPLOY-VAULT-AGENT |
+| `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
-| `in-flight-upstream` | 6 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN |
+| `in-flight-upstream` | 7 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-VAULT-TOKEN-FILE |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 7 | BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
-| `done` | 47 | TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL |
+| `done` | 48 | TEN-LAB, P0-TAG, T30-SCHEMA-CRED, MIG-VV, T30-ORY-PROOF, ID-DUP-MEASURE, DOC-VIEWS, DOC-LINKS, RT-SOAK, DOCS-TESTFLIGHT-APPLE, DOCS-REMOTE-PATHS, DOCS-DATA-RIGHTS-LAW, DOCS-VENDOR-FACTS, DOCS-REMOTE-FOLLOWUP, DOCS-INTEROP-MATRIX, DOCS-G7-SLOTS, DOCS-RECORD-IDENTITY, LOOP-ID-RECORDS, SCHEMA-REG-EXT, SPEC-REG-NEGOTIATE, SPEC-REG-DECISIONS, SPEC-REG-INSTANCE, SPEC-REG-QUIRKS, SPEC-REG-AMEND, SPEC-REG-AMEND-2, SPEC-REG-COMMANDS, SPEC-STPA-PLATFORM, SPEC-PLANS, SPEC-COMPAT-APPS, SPEC-DEV-GUIDES, SPEC-CMD-DELIVERY, LAB-HUB-ACTIVE-STATE, LOOP-ID-REPLY, LOOP-ID-V3-IMMUTABLE, SPEC-ID, SPEC-REGISTRATION, SPEC-STATE-INTENT, SPEC-SYNC-TRANSPORT, SPEC-AUTHORITY, SPEC-RECORDS, SPEC-ACTIVE-STATE, SCHEMA-INTENT-GAPS, QC-MATRIX-WIRE-ATTRIBUTION, M4-CLIENT-LAB, MT-DOC-DEPLOY, MT-DOC-REALTIME, MT-DOC-SQL, MT-CONNECTOR-SYNC |
 | `unsettled` | 1 | A7A-7 |
 | `closed` | 19 | ST-PG, MT-CONFIG-MIN, MT-SECRETS-CONTRACT, TEN-RESOLVE, MT-RUNTIME-PLAN, MT-IDENTITY-PLAN, T30-RESEARCH, T30-AUTH, T30-SCHEMA-CONFIG, MIG-RUNNER, T30-WIRING, T30-TENANT-ADMIN, T32-REM, SEAM-REFRESH, BFQ-71, BFQ-41, BFQ-175, BFQ-210, BFQ-141 |
 | `answered` | 10 | RT-D3, RT-VERSION, RT-PROPAGATION, ARCH-8854-FAILED, ID-FORMAT-DECISION, ID-CLIENT-OID-DECISION, ID-ABSENT-DECISION, ID-DELETE-REUSE-DECISION, ID-SCOPE-DECISION, ID-V3-IMMUTABLE-DECISION |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 86 items
+`parcel: tenancy` &mdash; 87 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8449,14 +8449,15 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | `codex/oidc-native-harness-20261109` | n/a | 1 run |
 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `codex/m6a-join-20261109` | minor | 1 run |
-| `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers | `not-started` | `codex/oidc-single-provision` | minor | 0 run + 1 no-gate |
-| `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `not-started` | `codex/ownership-ops` | minor | 0 run + 1 no-gate |
-| `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `not-started` | `codex/key-retention` | minor | 0 run + 1 no-gate |
-| `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `ready-to-push` | `codex/vault-token-file-20261109` | minor | 1 run |
+| `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 | `in-progress` | `codex/m6b-join-20261110` | minor | 0 run + 1 no-gate |
+| `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers | `in-progress` | `codex/oidc-single-provision-20261110` | minor | 1 run |
+| `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-progress` | `codex/ownership-ops-20261110` | minor | 1 run |
+| `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-progress` | `codex/key-retention-20261110` | minor | 1 run |
+| `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | `codex/vault-token-file-20261109` | minor | 1 run |
 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `main` | n/a | 1 run |
 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-TRUST-PROBES` | M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `done` | `main` | n/a | 1 run |
 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
@@ -10760,17 +10761,49 @@ alarm-readiness items, and the seam branch refresh.
 
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** Owns the coherent join that closes M6a. Taking the PR out of draft, review and merge remain the maintainer's actions. Also joins codex/vault-token- file-20261109 and gives the three OIDC-branch getToken sites (human- session/access-config.js, serve/owner-credential-config.js, secrets/vault- access-signing.js) the same tokenFile shape. 2026-11-09 (reproduced): head 74036ba6, a fast-forward of the PR branch from ed2ced00 (40 commits, 143 files). Repairs: D23 socket delegation via a beforeWrite hook; human_session family admitted to the lifecycle catalogue; two date-pinned test time bombs; OIDC browser discovery made opt-in by a page-server hint so default-off sites start exactly as on ed2; owner capability test expectations and grants. 2026-11-09: maintainer accepted opt-in discovery and permitted owner DELETE, and pushed 74036ba6 to workspace/multitenant-20261102 (PR #8898, draft). CI on that head: tests, no-database, npm, Docker green; browser, maintained-MongoDB and multitenant corpus jobs were still running when read; CodeQL failed on alerts 150/154/155. Follow-up 0fc5abf9 (local, unpushed): non-string access tokens find no subject (test red without the guard with "accessToken.split is not a function", green with it); IPC dispatch requires a function. Focused: authorization reload 4/0, realtime-preview 24/0, security/api.security/api.unauthorized 40/0, lint clean, write-intent clean, prcheck OK. 2026-11-10 (reproduced): joined the internal service API refactor dc795bd1 (fast-forward over 0fc5abf9; decision internal-service-contracts). Full acceptance on dc795bd1: unit 3072, dom 205, dependency 368/2, core 319, harness 99, integration 3618/534, stress 18, browser 686, corpus 537/1, all 0 failing; OIDC matrix 9/9 with 3/3 controls; new response-schema break-it red (listener 200 instead of 503; client "Missing expected rejection.") then green; prcheck OK. Evidence reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/. Ready for the maintainer to push dc795bd1 to #8898.
+**Notes.** Owns the coherent join that closes M6a. Taking the PR out of draft, review and merge remain the maintainer's actions. Also joins codex/vault-token- file-20261109 and gives the three OIDC-branch getToken sites (human- session/access-config.js, serve/owner-credential-config.js, secrets/vault- access-signing.js) the same tokenFile shape. 2026-11-09 (reproduced): head 74036ba6, a fast-forward of the PR branch from ed2ced00 (40 commits, 143 files). Repairs: D23 socket delegation via a beforeWrite hook; human_session family admitted to the lifecycle catalogue; two date-pinned test time bombs; OIDC browser discovery made opt-in by a page-server hint so default-off sites start exactly as on ed2; owner capability test expectations and grants. 2026-11-09: maintainer accepted opt-in discovery and permitted owner DELETE, and pushed 74036ba6 to workspace/multitenant-20261102 (PR #8898, draft). CI on that head: tests, no-database, npm, Docker green; browser, maintained-MongoDB and multitenant corpus jobs were still running when read; CodeQL failed on alerts 150/154/155. Follow-up 0fc5abf9 (local, unpushed): non-string access tokens find no subject (test red without the guard with "accessToken.split is not a function", green with it); IPC dispatch requires a function. Focused: authorization reload 4/0, realtime-preview 24/0, security/api.security/api.unauthorized 40/0, lint clean, write-intent clean, prcheck OK. 2026-11-10 (reproduced): joined the internal service API refactor dc795bd1 (fast-forward over 0fc5abf9; decision internal-service-contracts). Full acceptance on dc795bd1: unit 3072, dom 205, dependency 368/2, core 319, harness 99, integration 3618/534, stress 18, browser 686, corpus 537/1, all 0 failing; OIDC matrix 9/9 with 3/3 controls; new response-schema break-it red (listener 200 instead of 503; client "Missing expected rejection.") then green; prcheck OK. Evidence reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/. Ready for the maintainer to push dc795bd1 to #8898. 2026-11-10 (read from official and gh): maintainer pushed dc795bd1 to workspace/multitenant-20261102. Every CI job on that head is green, CodeQL included: alert 155 fixed, 154 dismissed (used in tests), 150 still open at the new line lib/authorization/storage.js:395 (the accessToken.length loop). Fix 7b30a6f2 joins under MT-M6B-JOIN.
+
+### `MT-M6B-JOIN` &mdash; Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/m6b-join-20261110` |
+| base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
+| worktree | `externals/work/crm-m6b-join-20261110` |
+| semver | `minor` |
+| review | maintainer; security review of ownership, key destruction and identity provisioning |
+| blocks on | `MT-M6A-JOIN` |
+
+**Blast radius.** Frozen candidate 3545236d: dc795bd1 plus merges of codeql-150 (7b30a6f2), listener-composition (d69b873a with docs 3a534e89/692bd507), key-retention (ed46cc43), ownership-ops (6ee8fb04), oidc-single-provision (4b81f59d), and two join repairs: 665119fb pins the four ownership paths in the public-port isolation test, 3545236d registers the provisioning test in the integration tier.
+
+**What an operator sees.** Optional, off by default. Single-site sites may sign people in with an identity provider without Vault, using a list of people and their roles. Multitenant operators gain assisted ownership changes and a 30-day key retention window after a tenant is deleted; destroying retained keys cannot be undone.
+
+**Why `minor`.** opt-in features on the dormant multitenant preview branch
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until the full campaign on 3545236d completes (all tiers, browser, multitenant corpus, OIDC matrix, lane native instruments, prcheck). Focused checks on the join: internal-api, ownership, auth and human-session files 213 passing; tier check ok (614 files); npm run lint 0 errors.
+
+**Evidence.**
+
+- `reports/tenancy/listener-composition-2026-11-10/README.md`
+- `reports/tenancy/key-retention-2026-11-10/README.md`
+- `reports/tenancy/ownership-ops-2026-11-10/README.md`
+- `reports/tenancy/oidc-single-provision-2026-11-10/README.md`
+
+**Notes.** Coordinator-owned join. Push of the accepted head and taking #8898 out of draft remain the maintainer's.
 
 ### `MT-OIDC-SINGLE-PROVISION` &mdash; Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/oidc-single-provision` |
-| base | `workspace/multitenant-20261102@74036ba6e3572f6774fbc94ae2dc41b31922d2b7` |
-| worktree | `-` |
+| branch | `codex/oidc-single-provision-20261110` |
+| base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
+| worktree | `externals/work/crm-oidc-single-provision-20261110` |
 | semver | `minor` |
 | review | maintainer; security review of the identity surface |
 | blocks on | `MT-M6A-JOIN` |
@@ -10783,23 +10816,24 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED: a listed identity gets exactly its roles, an unlisted signed-in identity gets only the fallback role, a list edit takes effect on the next request; controls: the same email from a second issuer and an unverified email get no listed role.
+- `[static]` `node tools/queue/gates/oidc-native-recorded.js reports/tenancy/oidc-single-provision-2026-11-10/summary.json`
+  - RECORDED-EVIDENCE: nine-stage OIDC native matrix at lane commit 61af8beb, 9/9 PASS, three harness controls red then green (13 checked, 0 failing). Provisioning suite tests/human-session-provision.test.js 24 passing against MongoDB; seven lane controls C1-C7 in reports/tenancy/oidc-single-provision-2026-11-10/.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Design points to settle in the lane: key the list on issuer + provider subject, and accept email only when the same issuer marks it verified (emails can be reassigned). Single-site OIDC currently also needs a Vault Transit signer (OIDC_ACCESS_CONFIG vault block is required), a heavy dependency for one site; a local signing-key option belongs in the same lane. 2026-11-09 (read-derived, 0fc5abf9): the single-site Mongo store keeps a permissionGroups snapshot on each principal (lib/human-session/mongo.js:70-73), so roles edited in the admin UI do not govern a signed-in person; the PostgreSQL path joins current subject roles. The only signer is Vault Transit (access-config.js:73); the access tokens are Ed25519, which node:crypto signs locally. Proposed shape: config inline in an env value or by a *_FILE path (as LOOP_APNS_KEY carries a key inline); single-site signs with a local Ed25519 key and derives issuer, audiences and kid; a principal binds to an existing auth subject and takes that subject's current roles; the env/file list seeds those bindings at boot the way default roles are seeded, with the database as the home.
+**Notes.** Design points to settle in the lane: key the list on issuer + provider subject, and accept email only when the same issuer marks it verified (emails can be reassigned). Single-site OIDC currently also needs a Vault Transit signer (OIDC_ACCESS_CONFIG vault block is required), a heavy dependency for one site; a local signing-key option belongs in the same lane. 2026-11-09 (read-derived, 0fc5abf9): the single-site Mongo store keeps a permissionGroups snapshot on each principal (lib/human-session/mongo.js:70-73), so roles edited in the admin UI do not govern a signed-in person; the PostgreSQL path joins current subject roles. The only signer is Vault Transit (access-config.js:73); the access tokens are Ed25519, which node:crypto signs locally. Proposed shape: config inline in an env value or by a *_FILE path (as LOOP_APNS_KEY carries a key inline); single-site signs with a local Ed25519 key and derives issuer, audiences and kid; a principal binds to an existing auth subject and takes that subject's current roles; the env/file list seeds those bindings at boot the way default roles are seeded, with the database as the home. 2026-11-10 (reproduced in lane): 4b81f59d on dc795bd1. OIDC_ACCESS_CONFIG inline or _FILE (both refuse); single-site local Ed25519 signer (OIDC_ACCESS_SIGNING_KEY[_FILE]) with HKDF-derived purpose keys, Vault optional for single-site, refused in multitenant; principals bind to an auth subject and read current roles per operation (stored permissionGroups ignored); OIDC_IDENTITIES[_FILE] keyed on issuer+subject or issuer-verified email; OIDC_FALLBACK_ROLES for unlisted people. Needs a maintainer decision: the list is authoritative at each start (removes unlisted list-managed bindings; admin-UI edits to list subjects last until restart) versus add-only. Joined into MT-M6B-JOIN.
 
 ### `MT-OWNERSHIP-OPS` &mdash; M6b: operator-assisted ownership add, transfer and recovery
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/ownership-ops` |
-| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
-| worktree | `-` |
+| branch | `codex/ownership-ops-20261110` |
+| base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
+| worktree | `externals/work/crm-ownership-ops-20261110` |
 | semver | `minor` |
 | review | maintainer |
 | blocks on | `MT-M6A-JOIN` |
@@ -10812,23 +10846,24 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED: SQL/HTTP family with a race control (two transfers, one wins, audit shows both attempts) and a foreign-authority control (no effect).
+- `[unit]` _(cwd: `externals/work/crm-m6b-join-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-ownership.test.js tests/internal-api-contracts.test.js`
+  - Ownership source and contract tests on the joined candidate 3545236d: 13 passing. The PostgreSQL/HTTP family (race and foreign-authority controls) is opt-in native: 20 passing in the lane, with 12 ablations in reports/tenancy/ownership-ops-2026-11-10/README.md.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Adopted policy: preview-operator-assisted-ownership (2026-11-07). Self-service co-owner/transfer is not a preview gate.
+**Notes.** Adopted policy: preview-operator-assisted-ownership (2026-11-07). Self-service co-owner/transfer is not a preview gate. 2026-11-10 (reproduced in lane): 6ee8fb04 on dc795bd1. ownership-operations v1 private contract (list/add/transfer/recover) with expectedOwners optimistic check, in- transaction operator authority, separate operator database identity, authorization migration 0006 (audit outcome/detail columns). Race: two transfers, one applied and one OWNERSHIP_CONFLICT, both audited. Foreign authority: no effect. Not yet composed into the admin role and no operator identity in deploy/multitenant/config.js. Read-derived: subject-admin remove() can delete the last owner subject; legacy subject-admin writers without ownerPolicy do not serialize with ownership changes. Joined into MT-M6B-JOIN.
 
 ### `MT-KEY-RETENTION` &mdash; M6b: 30-day retained-key destruction and after-window refusal
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/key-retention` |
-| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
-| worktree | `-` |
+| branch | `codex/key-retention-20261110` |
+| base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
+| worktree | `externals/work/crm-key-retention-20261110` |
 | semver | `minor` |
 | review | maintainer |
 | blocks on | `MT-M6A-JOIN` |
@@ -10841,19 +10876,20 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED: destroy then restore refuses; restore inside the window succeeds; artifact missing one key reference refuses deletion (control).
+- `[unit]` _(cwd: `externals/work/crm-m6b-join-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-lifecycle.test.js`
+  - tenant-lifecycle unit file on the joined candidate 3545236d: 31 passing (23 existing + 8 retention cases). Native PostgreSQL 16 + Vault suite tests/tenant-key-retention.integration.test.js 6 passing in the lane; source ablations in reports/tenancy/key-retention-2026-11-10/README.md.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Builds on the export/delete work recorded 2026-11-06 (HANDOFF-tenant-export- delete).
+**Notes.** Builds on the export/delete work recorded 2026-11-06 (HANDOFF-tenant-export- delete). 2026-11-10 (reproduced in lane): ed46cc43 on dc795bd1. Deletion refuses an artifact missing a key reference (LIFECYCLE_KEY_REFERENCE_MISSING) before any secret/audit row goes; 30-day retention record (lifecycle migration 0005); restore refused after the window or after destroy; operator destroy needs the exact intent string and an ended window, Vault key confirmed 404. Four ablations red then green. Also fixed a defect in the dc795bd1 tree: the ceremony ledger check admitted two of six lifecycle tables, so every ceremony call refused on a fully migrated namespace (LIFECYCLE_RELATION_UNADMITTED, reproduced natively; never released). Joined into MT-M6B-JOIN. Open for the maintainer: early destroy refused by design; export-file expiry not automated.
 
 ### `MT-VAULT-TOKEN-FILE` &mdash; M6c: read the Vault token from a sink file per call (Vault Agent compatibility)
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/vault-token-file-20261109` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
@@ -10876,7 +10912,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Decision vault-agent-sidecar (2026-11-09). Small core change; the sidecar is DEPLOY-VAULT-AGENT. 2026-11-09 (reproduced): implemented at the one getToken site that exists at ed2 (lib/server/serve/preview-config.js); the other three sites named in the brief live on the owner/OIDC candidate branch and get the same shape at MT-M6A-JOIN. test:affected on mongo:7: unit 191 / harness 27 / integration 24 passing, 0 failing. Report reports/tenancy/vault- agent-2026-11-09/.
+**Notes.** Decision vault-agent-sidecar (2026-11-09). Small core change; the sidecar is DEPLOY-VAULT-AGENT. 2026-11-09 (reproduced): implemented at the one getToken site that exists at ed2 (lib/server/serve/preview-config.js); the other three sites named in the brief live on the owner/OIDC candidate branch and get the same shape at MT-M6A-JOIN. test:affected on mongo:7: unit 191 / harness 27 / integration 24 passing, 0 failing. Report reports/tenancy/vault- agent-2026-11-09/. 2026-11-10: 0c547958 is an ancestor of dc795bd1 (git merge- base --is-ancestor), which the maintainer pushed to #8898; this item ships with the M6a bundle and needs no separate push.
 
 ### `DEPLOY-VAULT-AGENT` &mdash; M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)
 
@@ -10970,7 +11006,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `done` |
 | repo | `nightscout-connect` |
 | branch | `main` |
 | base | `main@HEAD` |
@@ -10987,13 +11023,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED: pull succeeds and matches the tenant's entries; control: revoke the reader and the next pull is refused with no new rows.
+- `[static]` `! grep -q '^FAIL' reports/tenancy/connector-sync-2026-11-10/run-summary.txt && grep -q '^SUMMARY 16 checks, 0 failing' reports/tenancy/connector-sync-2026-11-10/run-summary.txt`
+  - RECORDED-EVIDENCE (Docker lab, tools/tenancy/connector-sync/run.cjs): nightscout-connect 04102f9d (lock pin b394411a is an ancestor, not run) pulled entries from tenant alias ns-cs-a.localhost on crm dc795bd1 with a read-only reader credential; destination Mongo equals tenant PostgreSQL read directly (30 then 35, then 38 after re-grant); two oracle ablations red then green; credential deletion and role removal after issue both refuse (HTTP 401) with zero new rows; tenant B untouched.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Decision first-preview-no-push-provider (2026-11-07): outbound first. Inbound tenant-side connector is a later contract.
+**Notes.** Decision first-preview-no-push-provider (2026-11-07): outbound first. Inbound tenant-side connector is a later contract. 2026-11-10 (reproduced): no connector change needed; the connector logs Authorization failed (HTTP 401) on a revoked pull and keeps retrying on its backoff. UNMEASURED: treatments/devicestatus/profiles, destination history view, long-running cadence, token refresh at expiry, revocation through the owner surface, real DNS/TLS/proxy ingress, the lock-pinned connector commit. Report reports/tenancy/connector- sync-2026-11-10/README.md.
 
 ### `MT-BENCH-BASELINE` &mdash; M7: benchmark the one-host reference and publish the numbers
 

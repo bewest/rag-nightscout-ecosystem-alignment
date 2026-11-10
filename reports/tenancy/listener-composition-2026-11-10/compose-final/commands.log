@@ -1,0 +1,13 @@
+2026-11-10T19:04:09Z project=ns-lc-20261110t190409z-2417553 source=/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110 control=none head=d69b873aa93044ed90c004ba79491eb49e25405a dirty=0
+2026-11-10T19:04:09Z + docker compose -p ns-lc-20261110t190409z-2417553 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml up -d api realtime evaluator tenant-admin
+2026-11-10T19:04:10Z + docker compose -p ns-lc-20261110t190409z-2417553 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml run --rm driver node tests/native/internal-api-compose/driver.cjs scenario
+2026-11-10T19:04:12Z + docker compose -p ns-lc-20261110t190409z-2417553 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml stop evaluator
+2026-11-10T19:04:13Z evaluator exit: 0
+2026-11-10T19:04:13Z + docker compose -p ns-lc-20261110t190409z-2417553 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml run -d --name ns-lc-20261110t190409z-2417553-drain driver node tests/native/internal-api-compose/driver.cjs drain-hold
+2026-11-10T19:04:13Z + docker kill --signal SIGTERM api (2350b06ced893fe8dcc7475dcf01fdda6e43341f27192a72497362e671eec730)
+2026-11-10T19:04:15Z api running during hold after SIGTERM: true; WINDOW_DRAINED lines: 0
+2026-11-10T19:04:15Z PASS
+2026-11-10T19:04:15Z + docker compose -p ns-lc-20261110t190409z-2417553 -f /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-listener-composition-20261110/tests/native/internal-api-compose/compose.yaml down -v --remove-orphans
+2026-11-10T19:04:16Z containers remaining for project ns-lc-20261110t190409z-2417553: 0
+2026-11-10T19:04:16Z networks remaining for project ns-lc-20261110t190409z-2417553: 0
+2026-11-10T19:04:16Z exit 0

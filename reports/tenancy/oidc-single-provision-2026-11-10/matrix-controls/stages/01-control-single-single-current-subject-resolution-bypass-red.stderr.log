@@ -1,0 +1,2 @@
+Resolving secret/token to permissions failed
+{"instrument":"oidc-matrix-stage","stage":"mongo-http","verdict":"failed","error":"ERR_ASSERTION","message":"single removed subject JWT: actual known route must refuse","failures":[{"name":"AssertionError","code":"ERR_ASSERTION","message":"single removed subject JWT: actual known route must refuse"}]}
