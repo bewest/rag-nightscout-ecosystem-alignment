@@ -37,6 +37,8 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
 | `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | #8888 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
+| `MT-M6A-JOIN` | `in-flight-upstream` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | &mdash; |
+| `MT-OIDC-NATIVE` | `in-flight-upstream` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
 | `ADV-XSS-META` | `needs-decision` | GHSA-5mrq + GHSA-mjp4 - both closed in 15.0.8; metadata is wrong (BF-73, BF-74) | &mdash; |
@@ -46,8 +48,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `DEPLOY-VAULT-AGENT` | `ready-to-push` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | &mdash; |
-| `MT-M6A-JOIN` | `ready-to-push` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | &mdash; |
-| `MT-OIDC-NATIVE` | `ready-to-push` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | &mdash; |
 | `MT-VAULT-TOKEN-FILE` | `ready-to-push` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 

@@ -20,7 +20,7 @@
 | repository | `cgm-remote-monitor` |
 | branch | `codex/oidc-native-harness-20261109` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-OIDC-NATIVE` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-OIDC-NATIVE` is the measurement |
 | semver | `n/a` |
 
 ## What this changes

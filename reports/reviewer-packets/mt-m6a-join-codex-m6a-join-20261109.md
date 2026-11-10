@@ -21,18 +21,20 @@ campaign**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/m6a-join-20261109` |
 | base | `official/dev@4a482627bfdafb1fef8dcbe0ac6c484811cae563` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-M6A-JOIN` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-M6A-JOIN` is the measurement |
 | semver | `minor` |
 
 ## What this changes
 
 Draft PR #8898 head moves from ed2ced00 to the joined candidate. Full seven-
 tier, default-browser, enabled-corpus, pinned-client and prcheck must be re-
-run on the new frozen head; the ed2 campaign does not transfer. Also clears
-the CodeQL alert on the private IPC dispatch (lib/server/realtime/ipc.js,
-bounded own-property lookup; restructure to a Map or dismiss with
-justification). The second CodeQL alert is on code identical to official/dev
-and is not this PR's.
+run on the new frozen head; the ed2 campaign does not transfer. CodeQL on
+74036ba6 (measured 2026-11-10 UTC): the Map dispatch closed alert 153 but
+opened 155 on the same call; 150 (token type flow into subject lookup, code
+identical to dev but only reported on this PR) and 154 (rate limiting on a
+native test fixture) remain open. Follow-up 0fc5abf9 adds a function check on
+the IPC dispatch and a string check on the subject lookup; 154 follows the
+test-fixture dismissal precedent.
 
 ## Why that semver
 
@@ -82,8 +84,16 @@ files). Repairs: D23 socket delegation via a beforeWrite hook; human_session
 family admitted to the lifecycle catalogue; two date-pinned test time bombs;
 OIDC browser discovery made opt-in by a page-server hint so default-off sites
 start exactly as on ed2; owner capability test expectations and grants.
-Awaiting maintainer decisions on opt-in discovery and permitted owner DELETE
-before the push.
+2026-11-09: maintainer accepted opt-in discovery and permitted owner DELETE,
+and pushed 74036ba6 to workspace/multitenant-20261102 (PR #8898, draft). CI on
+that head: tests, no-database, npm, Docker green; browser, maintained-MongoDB
+and multitenant corpus jobs were still running when read; CodeQL failed on
+alerts 150/154/155. Follow-up 0fc5abf9 (local, unpushed): non-string access
+tokens find no subject (test red without the guard with "accessToken.split is
+not a function", green with it); IPC dispatch requires a function. Focused:
+authorization reload 4/0, realtime-preview 24/0,
+security/api.security/api.unauthorized 40/0, lint clean, write-intent clean,
+prcheck OK.
 
 ---
 

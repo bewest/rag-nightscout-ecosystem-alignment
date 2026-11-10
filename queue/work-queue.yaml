@@ -25819,7 +25819,7 @@ items:
     branch: codex/oidc-native-harness-20261109
     base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
     worktree: externals/work/crm-oidc-harness-20261109
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Test infrastructure only: a harness that starts PostgreSQL, Mongo and Vault
       containers by digest, provisions the fixture identities, runs the nine prepared
@@ -25873,14 +25873,16 @@ items:
     branch: codex/m6a-join-20261109
     worktree: externals/work/crm-m6a-join-20261109
     base: official/dev@4a482627bfdafb1fef8dcbe0ac6c484811cae563
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Draft PR #8898 head moves from ed2ced00 to the joined candidate. Full seven-tier,
       default-browser, enabled-corpus, pinned-client and prcheck must be re-run on the
-      new frozen head; the ed2 campaign does not transfer. Also clears the CodeQL
-      alert on the private IPC dispatch (lib/server/realtime/ipc.js, bounded own-property
-      lookup; restructure to a Map or dismiss with justification). The second CodeQL
-      alert is on code identical to official/dev and is not this PR's.
+      new frozen head; the ed2 campaign does not transfer. CodeQL on 74036ba6
+      (measured 2026-11-10 UTC): the Map dispatch closed alert 153 but opened 155 on the
+      same call; 150 (token type flow into subject lookup, code identical to dev but only
+      reported on this PR) and 154 (rate limiting on a native test fixture) remain open.
+      Follow-up 0fc5abf9 adds a function check on the IPC dispatch and a string check on
+      the subject lookup; 154 follows the test-fixture dismissal precedent.
     review: maintainer; security review of the identity surface
     operator_visible: >
       Optional sign-in with an identity provider for people managing a Nightscout
@@ -25913,8 +25915,56 @@ items:
       beforeWrite hook; human_session family admitted to the lifecycle catalogue;
       two date-pinned test time bombs; OIDC browser discovery made opt-in by a
       page-server hint so default-off sites start exactly as on ed2; owner
-      capability test expectations and grants. Awaiting maintainer decisions on
-      opt-in discovery and permitted owner DELETE before the push.
+      capability test expectations and grants.
+      2026-11-09: maintainer accepted opt-in discovery and permitted owner DELETE, and
+      pushed 74036ba6 to workspace/multitenant-20261102 (PR #8898, draft). CI on that
+      head: tests, no-database, npm, Docker green; browser, maintained-MongoDB and
+      multitenant corpus jobs were still running when read; CodeQL failed on alerts
+      150/154/155. Follow-up 0fc5abf9 (local, unpushed): non-string access tokens find no
+      subject (test red without the guard with "accessToken.split is not a function",
+      green with it); IPC dispatch requires a function. Focused: authorization reload
+      4/0, realtime-preview 24/0, security/api.security/api.unauthorized 40/0, lint
+      clean, write-intent clean, prcheck OK.
+
+  - id: MT-OIDC-SINGLE-PROVISION
+    title: "Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/oidc-single-provision
+    base: workspace/multitenant-20261102@74036ba6e3572f6774fbc94ae2dc41b31922d2b7
+    state: not-started
+    blast_radius: >
+      Single-site OIDC (ENABLE includes oidc, lib/human-session/runtime.js:8) today maps a
+      signed-in person only through principal rows inside the <prefix>human_authority
+      document (lib/human-session/mongo.js); nothing provisions those rows, and a
+      signed-in identity with no row is refused rather than given a role. Direction
+      (maintainer, 2026-11-09): an operator-supplied list (env or file, CSV/TSV/JSON) maps
+      identities to existing roles such as careportal + readable, and signed-in people
+      who are not listed fall back to a configured role (for example readable), as
+      anonymous visitors already do with AUTH_DEFAULT_ROLES.
+    review: maintainer; security review of the identity surface
+    operator_visible: >
+      A site that turns on sign-in can list the people allowed in and what each may do,
+      in one file, and choose what anyone else who signs in can see.
+    semver: minor
+    semver_reason: opt-in feature on the preview
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: a listed identity gets exactly its roles, an unlisted signed-in
+          identity gets only the fallback role, a list edit takes effect on the next
+          request; controls: the same email from a second issuer and an unverified email
+          get no listed role.
+    blocks_on:
+      - MT-M6A-JOIN
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      Design points to settle in the lane: key the list on issuer + provider subject,
+      and accept email only when the same issuer marks it verified (emails can be
+      reassigned). Single-site OIDC currently also needs a Vault Transit signer
+      (OIDC_ACCESS_CONFIG vault block is required), a heavy dependency for one site;
+      a local signing-key option belongs in the same lane.
 
   - id: MT-OWNERSHIP-OPS
     title: "M6b: operator-assisted ownership add, transfer and recovery"

@@ -186,7 +186,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
 | 1 | `MT-ENDPOINT-TRANSPORT` | Selectable private UDS/HTTP(S) component endpoints | `not-started` | &mdash; |
-| 1 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `ready-to-push` | &mdash; |
+| 1 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | &mdash; |
 | 1 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `ready-to-push` | &mdash; |
 | 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | &mdash; |
 | 1 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | &mdash; |
@@ -210,7 +210,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `MT-VAULT-TOKEN-FILE` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
 | 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `MT-ENDPOINT-TRANSPORT` |
-| 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `ready-to-push` | `MT-OIDC-NATIVE` |
+| 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `MT-OIDC-NATIVE` |
 | 3 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
 | 3 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `in-progress` | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
 | 3 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `MT-M6A-JOIN` |
@@ -219,6 +219,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 3 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `not-started` | `MT-M6A-JOIN` |
+| 3 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in str | `not-started` | `MT-M6A-JOIN` |
 | 3 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `not-started` | `MT-M6A-JOIN` |
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
 | 4 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up | `not-started` | `DEPLOY-TRUST-PROBES` |
