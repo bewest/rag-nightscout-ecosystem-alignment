@@ -10789,7 +10789,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
-**Notes.** Design points to settle in the lane: key the list on issuer + provider subject, and accept email only when the same issuer marks it verified (emails can be reassigned). Single-site OIDC currently also needs a Vault Transit signer (OIDC_ACCESS_CONFIG vault block is required), a heavy dependency for one site; a local signing-key option belongs in the same lane.
+**Notes.** Design points to settle in the lane: key the list on issuer + provider subject, and accept email only when the same issuer marks it verified (emails can be reassigned). Single-site OIDC currently also needs a Vault Transit signer (OIDC_ACCESS_CONFIG vault block is required), a heavy dependency for one site; a local signing-key option belongs in the same lane. 2026-11-09 (read-derived, 0fc5abf9): the single-site Mongo store keeps a permissionGroups snapshot on each principal (lib/human-session/mongo.js:70-73), so roles edited in the admin UI do not govern a signed-in person; the PostgreSQL path joins current subject roles. The only signer is Vault Transit (access-config.js:73); the access tokens are Ed25519, which node:crypto signs locally. Proposed shape: config inline in an env value or by a *_FILE path (as LOOP_APNS_KEY carries a key inline); single-site signs with a local Ed25519 key and derives issuer, audiences and kid; a principal binds to an existing auth subject and takes that subject's current roles; the env/file list seeds those bindings at boot the way default roles are seeded, with the database as the home.
 
 ### `MT-OWNERSHIP-OPS` &mdash; M6b: operator-assisted ownership add, transfer and recovery
 
