@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3171,7 +3167,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3340,62 +3336,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3612,14 +3552,14 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3640,14 +3580,14 @@
   
   
     <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -5798,7 +5738,7 @@
 
 
 <h1 id="multitenancy-decisions-and-architectural-contracts">Multitenancy decisions and architectural contracts<a class="headerlink" href="#multitenancy-decisions-and-architectural-contracts" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>3f736c118</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>820f446eb</code>.</em></p>
 <p><em>Contributor-facing living decision reference. Consolidated 2026-11-06 from the
 maintainer's D1–D23 decisions and their later amendments. This is a read-derived
 reorganization, not new implementation acceptance or a new decision. The
@@ -5810,7 +5750,7 @@ amendment; the <a href="durable-event-delivery-contract-2026-11-06.html">durable
 owns B7's consumer/recovery rules. Later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">release decisions</a>
 own promotion-bar, compatibility and lifecycle decisions. Their amendments take
 precedence over earlier journal text. The <a href="multitenant-delivery-dashboard.html">dashboard</a>
-owns milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/queue/work-queue.yaml">queue</a> owns item state
+owns milestone claims, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/queue/work-queue.yaml">queue</a> owns item state
 and gates, and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 owns integration/publication status. Read the <a href="index.html">tenancy guide</a> for the
 current execution plan; archived “next” instructions are historical.</p>
@@ -6066,7 +6006,7 @@ placement; journal prototype behavior is not an instruction to change defaults.<
 continues. Delete requires suspend, not pause. On suspension, disconnect sockets
 and show last data visibly stale using existing staleness vocabulary; silent
 frozen charts are not sufficient. Destructive lifecycle preconditions, export
-coverage and key retention now live in the <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner-lifecycle packet</a>
+coverage and key retention now live in the <a href="../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.html">owner-lifecycle packet</a>
 and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">release decisions</a>.
 Do not infer current deletion behavior from the original seam's admin prototype.
 Shared-role startup follows the adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-startup-admission">tenant-local startup admission decision</a>.

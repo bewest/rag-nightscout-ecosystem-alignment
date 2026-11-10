@@ -1161,10 +1161,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#maintainer--16-items" class="md-nav__link">
+  <a href="#maintainer--20-items" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Maintainer &mdash; 16 items
+        Maintainer &mdash; 20 items
       
     </span>
   </a>
@@ -2366,10 +2366,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#maintainer--16-items" class="md-nav__link">
+  <a href="#maintainer--20-items" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Maintainer &mdash; 16 items
+        Maintainer &mdash; 20 items
       
     </span>
   </a>
@@ -2460,13 +2460,13 @@
 
 
 <h1 id="work-waiting-on-a-person-what-to-push-decide-or-review">Work waiting on a person: what to push, decide or review<a class="headerlink" href="#work-waiting-on-a-person-what-to-push-decide-or-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-09 at <code>928a2d43e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>de6b6c06d</code>.</em></p>
 <p><em>What this is: a record (contributor-facing). Read after the <a href="ROADMAP.html">roadmap</a>; leads to the
 <a href="DEFINITION-OF-DONE.html">definition of done: when a change is ready for the apps that depend on it</a>. The subset of the work queue where no further engineering
 advances anything — a person has to push, decide, or review. Prose revised
 2026-10-08 against cgm-remote-monitor <code>official/dev</code> <code>fade2299</code> (the <code>RT-0</code> section 2026-10-21,
 against <code>official/master</code> <code>c6a0d8ed</code>, tag <code>v15.0.9</code>) and nightscout-connect
-<code>official/main</code> <code>4dde1ec</code> (tag <code>v0.1.0</code>); tables generated.</em></p>
+<code>official/main</code> <code>4dde1ec</code> (tag <code>v0.1.0</code>); the multitenant section 2026-11-10 against draft #8898 <code>b70ad83f</code>; tables generated.</em></p>
 <p>This page lists only the items whose claimed state means <strong>the next move belongs to
 a person</strong>, grouped by the kind of person, so that "what is blocked on me" is one
 page.</p>
@@ -2504,7 +2504,7 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <h2 id="grouped-by-who-it-waits-for">Grouped by who it waits for<a class="headerlink" href="#grouped-by-who-it-waits-for" title="Permanent link">&para;</a></h2>
 <!-- BEGIN GENERATED: needs-a-human -->
 
-<h3 id="maintainer--16-items">Maintainer &mdash; 16 items<a class="headerlink" href="#maintainer--16-items" title="Permanent link">&para;</a></h3>
+<h3 id="maintainer--20-items">Maintainer &mdash; 20 items<a class="headerlink" href="#maintainer--20-items" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -2534,15 +2534,45 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td>&mdash;</td>
 </tr>
 <tr>
+<td><code>MT-KEY-RETENTION</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>M6b: 30-day retained-key destruction and after-window refusal</td>
+<td>&mdash;</td>
+</tr>
+<tr>
 <td><code>MT-M6A-JOIN</code></td>
 <td><code>in-flight-upstream</code></td>
 <td>M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign</td>
 <td>&mdash;</td>
 </tr>
 <tr>
+<td><code>MT-M6B-JOIN</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>Join M6b ownership/retention, single-site OIDC provisioning, listener compositio</td>
+<td>&mdash;</td>
+</tr>
+<tr>
 <td><code>MT-OIDC-NATIVE</code></td>
 <td><code>in-flight-upstream</code></td>
 <td>M6a: run the nine-stage owner/OIDC native matrix through a disposable harness</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-OIDC-SINGLE-PROVISION</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>Single-site OIDC: declarative identity-to-role list and a role for signed-in str</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-OWNERSHIP-OPS</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>M6b: operator-assisted ownership add, transfer and recovery</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td><code>MT-VAULT-TOKEN-FILE</code></td>
+<td><code>in-flight-upstream</code></td>
+<td>M6c: read the Vault token from a sink file per call (Vault Agent compatibility)</td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2597,12 +2627,6 @@ every item that was <code>merged-upstream</code> then is <code>released</code>.<
 <td><code>DEPLOY-VAULT-AGENT</code></td>
 <td><code>ready-to-push</code></td>
 <td>M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)</td>
-<td>&mdash;</td>
-</tr>
-<tr>
-<td><code>MT-VAULT-TOKEN-FILE</code></td>
-<td><code>ready-to-push</code></td>
-<td>M6c: read the Vault token from a sink file per call (Vault Agent compatibility)</td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2722,27 +2746,30 @@ of #8754.</p>
 <code>dev</code>. Mechanism only is recorded in this public repository. The maintainer has decided its
 disposition; the details are held outside this public repository while the defect is live on the
 shipping release, under the disclosure rule (<a href="DOCUMENT-CONTROL.html#38-external-and-restricted-documents">DOCUMENT-CONTROL §3.8</a>).</p>
-<h3 id="mt-oidc-native-mt-m6a-join-mt-bench-baseline--the-multitenant-preview-on-8898"><code>MT-OIDC-NATIVE</code>, <code>MT-M6A-JOIN</code>, <code>MT-BENCH-BASELINE</code> — the multitenant preview on #8898<a class="headerlink" href="#mt-oidc-native-mt-m6a-join-mt-bench-baseline--the-multitenant-preview-on-8898" title="Permanent link">&para;</a></h3>
-<p>Draft #8898 is <code>ed2ced00</code> (read 2026-11-09), open and mergeable; checks on that head are
-16 success, 3 skipped and 1 failure (CodeQL). The CodeQL failure is one new alert on the
-private IPC dispatch, a bounded own-property lookup that <code>MT-M6A-JOIN</code> restructures or
-dismisses with justification; a second alert is on code identical to <code>official/dev</code>.
+<h3 id="mt-m6b-join-mt-endpoint-transport--the-multitenant-preview-on-8898"><code>MT-M6B-JOIN</code>, <code>MT-ENDPOINT-TRANSPORT</code> — the multitenant preview on #8898<a class="headerlink" href="#mt-m6b-join-mt-endpoint-transport--the-multitenant-preview-on-8898" title="Permanent link">&para;</a></h3>
+<p>Draft #8898 is <code>b70ad83f</code> (read from GitHub 2026-11-10, 20:54 UTC), open; 17 checks pass
+and 3 are skipped, CodeQL and the multitenant opt-in corpus among the passes. That head
+carries the M6a owner/OIDC and internal service API candidate and the M6b join; its
+frozen-head acceptance is the
+<a href="../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b record</a>.
 The preview is dormant and opt-in; taking it out of draft, review and merge are the
-maintainer's actions once M6a closes.</p>
+maintainer's actions.</p>
 <p>On 2026-11-09 the maintainer split M6 into M6a–M6d and M7, moved the deployment tree to
 <code>nightscout-deploy</code>, chose a Vault Agent sidecar over a hand-written service-login
 adapter, and retired the agent-invented grant ceremony in favour of a disposable harness
 (<a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html#plan-restructuring-and-process-simplification-2026-11-09">decisions</a>).</p>
 <p>What still needs a person:</p>
 <ul>
-<li><strong>Nothing for the OIDC native run.</strong> <code>MT-OIDC-NATIVE</code> runs when the harness lands; no
-  grant, reservation or attestation is required from the maintainer.</li>
-<li><strong>Nothing for the operating envelope either.</strong> On 2026-11-09 the maintainer made M7
-  measured, not declared: <code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code> and <code>MT-SCALE-UNBOUND</code>
-  produce the numbers; limits follow.</li>
+<li><strong>A configuration shape for a shared component listener.</strong> Listener composition is
+  reproduced and joined; production wiring of several contracts on one listener needs the
+  maintainer to choose how it is configured (<code>MT-ENDPOINT-TRANSPORT</code>,
+  <a href="../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.html">plan</a>).</li>
 <li><strong>The operator activity/resource policy</strong> question stays open in the
   <a href="../30-design/tenancy/m5-m6-decision-list.html#human-policy-review">decision index</a>.</li>
 <li><strong>Repository home and licence</strong> for <code>nightscout-deploy</code> (deploy-companion note, item 8).</li>
+<li><strong>Nothing for the operating envelope.</strong> On 2026-11-09 the maintainer made M7
+  measured, not declared: <code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code> and <code>MT-SCALE-UNBOUND</code>
+  produce the numbers; limits follow.</li>
 </ul>
 <h3 id="bfq-09-a7a-7--unsettled-which-is-not-the-same-as-open"><code>BFQ-09</code>, <code>A7A-7</code> — <code>unsettled</code>, which is not the same as open<a class="headerlink" href="#bfq-09-a7a-7--unsettled-which-is-not-the-same-as-open" title="Permanent link">&para;</a></h3>
 <p>These are not yet established as defects. <code>unsettled</code> exists so that "we looked and could not settle

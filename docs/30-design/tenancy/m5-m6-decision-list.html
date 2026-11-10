@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3132,7 +3128,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3301,62 +3297,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3573,14 +3513,14 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3601,14 +3541,14 @@
   
   
     <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -5720,8 +5660,8 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-09 at <code>b8de4e15c</code>.</em></p>
-<p><em>Living contributor-facing decision index, 2026-11-09. Read this before older
+<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
+<p><em>Living contributor-facing decision index, 2026-11-10. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
 records no new application measurement or promotion.</em></p>
@@ -5746,12 +5686,13 @@ the satisfied M5 functional bar.</p>
 <p>M6 now includes <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">accepted native tenant-local restore/restart and cold Compose
 reference evidence</a>.
 The published ed2 candidate closes that bounded clinical restore capability;
-restoring or cloning credentials/identity is a separate contract. Shared human
-identity/session and owner source has progressed locally, while signed native
-DB/Vault/HTTPS/browser acceptance remains <strong>UNMEASURED</strong> in the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release update</a>.
-Continue that acceptance, operator-assisted ownership, retained-key destruction
-and workload-based operating limits. The
+restoring or cloning credentials/identity is a separate contract. The owner/OIDC
+and internal service API work (M6a) and the lifecycle, key-retention, ownership and
+single-site provisioning work (M6b) have joined acceptance records
+(<a href="../../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>,
+<a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a>);
+publication state and the remaining boundaries are in the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>. The
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
 owns assignments; the <a href="multitenant-delivery-roadmap.html#m5m6-acceptance-families">roadmap acceptance families</a>
 own observable completion. Prefer a minimal working base with explicit later
@@ -5823,11 +5764,15 @@ enhancements; that preference grants no production permission or criterion waive
 </tr>
 <tr>
 <td>M6 human session effects</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-idle-scope-management-only">Idle/absolute lifetimes scoped to management sessions only; always-on displays unchanged</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-logout-local-first">local-first logout, provider optional, signal-less providers admitted with disclosure</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-renewal-fenced">fenced idempotent renewal</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-transport-cookie-default">both browser transports, HttpOnly cookie default, headless bearer unchanged</a>. Local signed source exists; actual joined native/browser/provider acceptance remains UNMEASURED.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-idle-scope-management-only">Idle/absolute lifetimes scoped to management sessions only; always-on displays unchanged</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-logout-local-first">local-first logout, provider optional, signal-less providers admitted with disclosure</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-renewal-fenced">fenced idempotent renewal</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#human-session-transport-cookie-default">both browser transports, HttpOnly cookie default, headless bearer unchanged</a>. The OIDC native matrix runs in the <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b joined acceptance</a>; real identity-provider interoperability is synthetic only.</td>
 </tr>
 <tr>
 <td>M6 deployment and trust</td>
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-ingress-peer-list-trust">Peer-list ingress trust, one list for tenant selection and client IP</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-secrets-ladder-vault-all-stages">Vault Transit at every stage, service-login adapter before production</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">generic OIDC adapter, Authentik intended reference subject to the Kratos proof</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">admission by trust record plus live probes</a>. Synthetic Compose edge/TLS Vault is measured at the reference scope; provider/service-login proof and production deployment remain UNMEASURED.</td>
+</tr>
+<tr>
+<td>Single-site OIDC identity list</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#single-site-oidc-list-authoritative">Each start re-applies the list; list-managed people taken off it are removed</a>; fallback roles for unlisted people. <code>MT-OIDC-SINGLE-PROVISION</code> carries the implementation.</td>
 </tr>
 <tr>
 <td>Legacy authority and management split</td>
@@ -5870,9 +5815,9 @@ Evaluator partitioning is settled in direction: <a href="../../../releases/cgm-r
 </tr>
 </tbody>
 </table>
-<p>The <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner lifecycle packet</a>
+<p>The <a href="../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.html">owner lifecycle packet</a>
 retains source surveys and alternatives; its recommended grace periods, invitation
-lifetimes and self-service operations are not approved defaults. The <a href="multitenant-open-decisions-2026-11-06.html">earlier
+lifetimes and self-service operations are not approved defaults. The <a href="../../archive/tenancy/multitenant-open-decisions-2026-11-06.html">earlier
 open-decision note</a> preserves already
 answered A questions, not the current backlog.</p>
 <p>The <a href="counter-and-restore-options.html">counter and restore options analysis</a>

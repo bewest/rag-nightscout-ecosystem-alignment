@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3019,7 +3015,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3344,62 +3340,6 @@
   
   
     <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="multitenant-rest-api-delivery-plan-2026-11-04.html" class="md-nav__link">
         
   
@@ -3596,14 +3536,14 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3624,14 +3564,14 @@
   
   
     <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -5766,8 +5706,8 @@
 
 
 <h1 id="deployment-bindings-public-names-and-load-behavior">Deployment bindings, public names and load behavior<a class="headerlink" href="#deployment-bindings-public-names-and-load-behavior" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>3f736c118</code>.</em></p>
-<p><em>Living contributor-facing requirements and decision-preparation guide, 2026-11-08.
+<p><em>Living document, last changed 2026-11-10 at <code>8760ec6d0</code>.</em></p>
+<p><em>Living contributor-facing requirements and decision-preparation guide, refreshed 2026-11-10.
 The maintainer clarified the target: ordinary Kubernetes resources should be able
 to express the bounded deployment, public-name lifetime must be distinct from
 private tenant identity, and shareable names need explicit authentication and
@@ -5898,27 +5838,29 @@ acquires fresh request frames and exposes invalidation of local startup/readines
 state. Stateless request handling means durable authority is external and local
 state can be reconstructed; it does not mean an instance has no connections,
 caches, in-flight responses or restore obligations.</p>
-<p>The current <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/realtime/ipc.js#L107">private transport</a>
-already carries bounded HTTP POST/JSON over Unix sockets. Configuration resolves
-an environment reference into <code>socketPath</code>; the parser currently accepts only
-that transport. Node supports HTTP over a Unix <code>socketPath</code> or a TCP host/port,
-and a <a href="https://nodejs.org/api/https.html#httpsrequestoptions-callback">separate HTTPS request adapter</a>.
-See <a href="https://nodejs.org/api/http.html#httprequestoptions-callback">HTTP request options</a>.
-Adding a network transport is feasible without changing operation payloads or
-requiring realtime to share API memory. It needs an admitted client/listener and
-trust profile, not merely a new value in the current socket-only field.</p>
-<p><strong>Proposed configuration boundary:</strong> operator environment or mounted config
-selects an endpoint kind and address; the normalized adapter implements the same
-bounded invoke/response contract. A name such as <code>NS_PRIVATE_API_ENDPOINT</code> with
-<code>unix:/run/ns-ipc/api.sock</code> or <code>https://api.internal:8443</code> illustrates that design;
-<strong>this variable and URL syntax are proposals, not shipping options</strong>. Keep listen
-binding distinct from the client's service destination. CA/client identity and
-other credentials use separate private file/secret references, not ConfigMap
-plaintext or credentials embedded in the URL. An HTTP endpoint needs an explicitly
-admitted private trust profile; HTTPS still needs caller authorization. Verify
-service identity before granting the internal transport capability, in addition
-to the unchanged tenant/client credential checks. Refuse unsupported schemes,
-redirects or trust failures; do not fall back silently between transports.</p>
+<p>The current joined <code>dc795bd1</code> implementation has a shared HTTP/JSON transport,
+service schemas and named clients with selectable UDS or explicit TCP/HTTP
+endpoints. The <a href="../../../reports/tenancy/internal-service-api-2026-11-09/index.html">implementation record</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a>
+retain their actual source and tested scope. The reference Compose binding still
+uses UDS; remote HTTP beyond loopback and replicated API behavior are not qualified
+by those records.</p>
+<p>Use the actual environment-reference descriptors in the
+<a href="selectable-endpoints-and-api-scaling-plan.html#endpoint-and-compatibility-contract">endpoint contract</a>:
+legacy socket references remain valid, or an explicit <code>urlEnv</code> with <code>trust: network</code>
+and optional <code>bindHostEnv</code> selects HTTP. A dial service name can differ from the
+listener's bind interface. Public/management listeners remain separate from the
+private contracts. The current transport binds one contract per listener; shared
+component-private module composition is a remaining code adjustment, not a reason
+to multiply mandatory deployment services.</p>
+<p>The current adapter supports <code>http:</code>, not direct <code>https:</code>. The deployment owns
+network reachability and any selected standard TLS proxy/mesh boundary; contract
+and version headers are not credentials or proof of process identity. No new
+bearer credential protocol is required. Preserve UDS ownership/inode protections,
+exact operation registration, schemas, deadlines, cancellation, no redirects or
+silent fallback, and current tenant/client authority across either binding.
+Internal peers require coordinated upgrade for the mandatory service/version
+headers. A proposed endpoint string or generic HTTPS URL is not a shipping option.</p>
 <p>The calls have different addressing semantics:</p>
 <table>
 <thead>
@@ -5936,7 +5878,7 @@ redirects or trust failures; do not fall back silently between transports.</p>
 </tr>
 <tr>
 <td>Restore controller to each participant</td>
-<td>A separately addressable instance endpoint, with authenticated identity and pinned boot incarnation.</td>
+<td>A separately addressable instance endpoint under the selected deployment access boundary, with pinned actual boot incarnation.</td>
 <td>The controller must reach every relevant instance for status/drain/invalidation. A single load-balanced endpoint cannot stand in for the complete roster: repeated calls could reach the same replica while missing another.</td>
 </tr>
 <tr>

@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3221,7 +3217,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3390,62 +3386,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3662,14 +3602,14 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3690,14 +3630,14 @@
   
   
     <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -5898,10 +5838,14 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>3f736c118</code>.</em></p>
-<p><em>Contributor-facing living explanation, groomed 2026-11-08. The published
-candidate is cgm-remote-monitor <code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>,
-recorded in the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
+<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
+<p><em>Contributor-facing living explanation, groomed 2026-11-08; header 2026-11-10. The
+restore/Compose reference this page explains is cgm-remote-monitor
+<code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>, recorded in the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
+Draft PR #8898 has since moved on (M6a and M6b joins); its current head and
+verification are in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>,
+and private service composition is in the <a href="runtime-topology.html">runtime topology guide</a>.
 PR #8898 remains open/draft, not merged or released. Architecture interpretation
 is </em><em>read-derived</em><em>; linked runtime results are </em><em>recorded reproductions</em><em>, not
 new executions for this document. The retained shared-code/module survey is
@@ -5925,7 +5869,7 @@ need their own evidence; an accepted component is not a completed platform track
 <tbody>
 <tr>
 <td>Separate API/realtime/evaluator/admin and packaged UI</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
 <td>One-host role composition, existing client/browser routes and private control channels work together.</td>
 <td>Multi-host discovery, replicas/failover, production ingress/service identity and operating limits.</td>
 </tr>
@@ -5943,7 +5887,7 @@ need their own evidence; an accepted component is not a completed platform track
 </tr>
 <tr>
 <td>Existing client compatibility</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
 <td>Use the admitted API/history/credential shapes and the named clients' stored outcomes.</td>
 <td>Wider/mobile clients, other query shapes and all-client acceptance.</td>
 </tr>
@@ -6376,8 +6320,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof

@@ -2304,13 +2304,14 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-09 at <code>928a2d43e</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>de6b6c06d</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
 Prose revised 2026-10-08 against cgm-remote-monitor <code>official/dev</code> <code>fade2299</code> and
 <code>official/master</code> <code>92d08342</code> (tag <code>15.0.8</code>); the remedial horizon and the register paragraph
-2026-10-21, against <code>official/master</code> <code>c6a0d8ed</code> (tag <code>v15.0.9</code>). The tables are generated from
+2026-10-21, against <code>official/master</code> <code>c6a0d8ed</code> (tag <code>v15.0.9</code>); the multitenant paragraph
+2026-11-10. The tables are generated from
 <code>queue/work-queue.yaml</code>; see <a href="#how-to-check-any-of-this-yourself">How to check any of this yourself</a>.</em></p>
 <p>This page answers "where is the work, and what is it waiting for" across the three
 horizons the project runs in parallel. The detail lives in the queue, the backfix
@@ -2350,16 +2351,16 @@ current and the prose is stale.</p>
 <tr>
 <td><strong>Multitenant</strong></td>
 <td><code>tenancy</code>, <code>platform</code></td>
-<td style="text-align: right;">124</td>
-<td style="text-align: right;">40</td>
-<td style="text-align: right;">7</td>
+<td style="text-align: right;">126</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">11</td>
 </tr>
 <tr>
 <td></td>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>386</strong></td>
-<td style="text-align: right;"><strong>87</strong></td>
-<td style="text-align: right;"><strong>17</strong></td>
+<td style="text-align: right;"><strong>388</strong></td>
+<td style="text-align: right;"><strong>83</strong></td>
+<td style="text-align: right;"><strong>21</strong></td>
 </tr>
 </tbody>
 </table>
@@ -2450,15 +2451,24 @@ retains the M0–M4 baseline; <a href="../30-design/remedial/rc-16.0.0-integrati
 accepts the functional M5 reference on one host at its recorded local source.
 The <a href="../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">published operation-window reference</a>
 adds bounded tenant-local restore, shared-role restart with another tenant suspended,
-and cold Compose/UI/client acceptance. M6 remains blocked; local shared OIDC/owner
-source still needs signed native acceptance. The <a href="../30-design/tenancy/deployment-and-rig-testing.html">deployment guide</a>
+and cold Compose/UI/client acceptance. M6 is split into M6a–M6d and M7
+(<a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-split-and-queue-collapse">decision</a>).
+Draft PR #8898 carries the M6a owner/OIDC and internal service API work and the M6b
+join, each with a joined acceptance record
+(<a href="../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>,
+<a href="../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a>);
+no M6 milestone is promoted. M7 production readiness is measured, not declared:
+<a href="../30-design/tenancy/runtime-topology.html">runtime topology</a>,
+<a href="../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.html">endpoint/API scaling</a>
+and <a href="../30-design/tenancy/realtime-sharding-plan.html">realtime sharding</a> hold the plans.
+The <a href="../30-design/tenancy/deployment-and-rig-testing.html">deployment guide</a>
 explains deployment models and shared fault domains. The <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 own the current published head and remote verification for draft PR #8898.
 Local acceptance does not imply remote publication, dev merge or operator release. The
 <a href="../30-design/tenancy/single-and-multitenant-architecture.html">architecture comparison</a>
 lists what it holds and which record governs each module.
 Decisions D1–D23 live in the
-<a href="../30-design/tenancy/multitenancy-decisions.html">execution plan</a>,
+<a href="../30-design/tenancy/multitenancy-decisions.html">tenancy decisions reference</a>,
 with the adopted <a href="../30-design/tenancy/owner-authority.html">owner-authority amendment</a>
 and the <a href="../30-design/tenancy/durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a> (B7).
 Self-hosted single-tenant remains first-class permanently (D1, D4); multitenant is
@@ -3123,20 +3133,20 @@ cover more than one <code>BF-</code>:</p>
 </tr>
 <tr>
 <td><code>tenancy</code></td>
-<td>32</td>
-<td>8</td>
-<td></td>
-<td>2</td>
-<td>6</td>
-<td>2</td>
-<td>6</td>
-<td></td>
-<td></td>
+<td>28</td>
 <td>9</td>
+<td></td>
+<td>1</td>
+<td>6</td>
+<td>7</td>
+<td>6</td>
+<td></td>
+<td></td>
+<td>10</td>
 <td>1</td>
 <td>14</td>
 <td>6</td>
-<td><strong>86</strong></td>
+<td><strong>88</strong></td>
 </tr>
 <tr>
 <td><code>docs-truth</code></td>
@@ -3228,7 +3238,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 <tbody>
 <tr>
 <td>Maintainer</td>
-<td style="text-align: right;">348</td>
+<td style="text-align: right;">350</td>
 <td style="text-align: right;">90%</td>
 </tr>
 <tr>
@@ -3263,7 +3273,7 @@ each cut needs a reviewer other than its author before it reaches <code>dev</cod
 </tr>
 <tr>
 <td><strong>total</strong></td>
-<td style="text-align: right;"><strong>386</strong></td>
+<td style="text-align: right;"><strong>388</strong></td>
 <td style="text-align: right;"></td>
 </tr>
 </tbody>

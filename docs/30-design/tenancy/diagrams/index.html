@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3019,7 +3015,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3188,62 +3184,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3460,14 +3400,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="../postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3488,14 +3428,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="../realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -3621,7 +3561,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_36" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_34" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -3644,8 +3584,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_36_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5_24_15_36">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_34_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15_34">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5547,14 +5487,19 @@
 
 
 <h1 id="tenancy-topology-plates">Tenancy topology plates<a class="headerlink" href="#tenancy-topology-plates" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>3f736c118</code>.</em></p>
-<p><em>Contributor-facing architecture figures, 2026-11-08. Interpretation is
+<p><em>Living document, last changed 2026-11-10 at <code>8760ec6d0</code>.</em></p>
+<p><em>Contributor-facing architecture figures, 2026-11-10. Interpretation is
 read-derived; linked acceptance retains its actual source. Trust zones do not
 mean physical hosts, and logical endpoints do not imply additional processes.</em></p>
 <ul>
 <li><a href="accepted-one-host-topology.svg">Accepted one-host reference — SVG</a> / <a href="accepted-one-host-topology.png">PNG</a>: ed2 cold Compose/UI/restore and c23 native separate-role restart evidence, within the <a href="../../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>. Its public-facing synthetic origin uses HTTP; Vault uses TLS. No OIDC, external ingress TLS, capacity or production acceptance is added by the drawing.</li>
-<li><a href="proposed-fixed-roster-network-topology.svg">Proposed fixed-roster network target — SVG</a> / <a href="proposed-fixed-roster-network-topology.png">PNG</a>: the <a href="../deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">configurable transport/API-scale proposal</a>. REST replica A/B are explicit instances of one stateless REST APIs (v1/v2/v3) component, realtime owns connections, evaluator remains one producer, and maintenance uses per-instance endpoints plus platform/config-supplied roster input. No custom membership service, evaluator scheduler, dynamic roster or Kubernetes resource design is selected. Network transport, remote trust and scale acceptance remain open.</li>
+<li><a href="current-internal-api-topology.svg">Current private API composition — SVG</a> / <a href="current-internal-api-topology.png">PNG</a>: read-derived current contracts/listeners at application <code>dc795bd1</code>. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a> retains its executed source and scope. Each current private listener owns one named contract. The reference uses UDS; the shared adapter also accepts explicit HTTP endpoints with deployment-owned network trust. Beyond-loopback HTTP, cluster and multi-host admission remain unmeasured.</li>
+<li><a href="proposed-fixed-roster-network-topology.svg">Proposed private-listener and fixed-roster target — SVG</a> / <a href="proposed-fixed-roster-network-topology.png">PNG</a>: the <a href="../selectable-endpoints-and-api-scaling-plan.html">current implementation plan</a>. Explicit private contract modules may share one component listener, separate from consumer/management listeners. REST replica A/B are explicit instances of one REST component. Maintenance still uses every exact instance endpoint, not a load-balanced sample. Private-listener composition, operational APIs and fixed-roster scale acceptance remain open; optional gateway middleware is a separate contract. Evaluator partitioning is separately queued M7 work, not implied by API scale-out.</li>
 </ul>
+<p>Start with the <a href="../runtime-topology.html">runtime topology guide</a>, which owns the
+current reading path and work boundaries. The historical reference, current
+implementation and proposed composition are different views; no acceptance
+result transfers between them because their boxes look similar.</p>
 <p>Version numbers label internal REST adapters, not services. Replica count and
 Compose/Kubernetes placement are separate from that logical component; no new
 route coverage or Kubernetes acceptance follows from the label.</p>
@@ -5568,13 +5513,25 @@ it avoids crossing connectors and implied all-to-all privileges. OWNER and
 operator audiences remain separate from public DATA paths. Backing resources
 are durable ownership boundaries, not a claim that every role accesses every
 resource.</p>
+<p>Application calls and lifecycle control are both private APIs. These labels
+describe purpose, not network interfaces or different wire protocols. Endpoint
+addresses bind contracts to UDS or TCP/HTTP at deployment time. Current service
+headers identify contracts, not caller identity. A direct HTTPS adapter is not
+implemented by the current HTTP transport; deployment TLS/proxy/mesh choices
+retain their own binding and acceptance boundaries.</p>
 <p>Re-render from the repository root:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/site/render_tenancy_topologies.py<span class="w"> </span>--png
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>tools/site/render_tenancy_topologies.py<span class="w"> </span>--check
 </code></pre></div>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
 standard library for SVG and installed ImageMagick for PNG previews. These are
 repo-native vector diagrams. Rendering does not run application services or
 establish deployment acceptance.</p>
+<p><code>--check</code> is read-only and compares the deterministic SVGs against the renderer's
+expected output. It does not assert PNG freshness or runtime correctness; render
+with <code>--png</code> and visually inspect the previews after a figure change. A changed
+contract, binding or topology must update the renderer and its generated SVG/PNG
+views together.</p>
 
 
 

@@ -1321,10 +1321,6 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/milestone-promotion-review-2026-11-06.html</loc>
-         <lastmod>2026-11-10</lastmod>
-    </url>
-    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenancy-decisions.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
@@ -1338,10 +1334,6 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html</loc>
-         <lastmod>2026-11-10</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/multitenant-open-decisions-2026-11-06.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
@@ -1377,15 +1369,15 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/owner-lifecycle-decision-packet-2026-11-06.html</loc>
-         <lastmod>2026-11-10</lastmod>
-    </url>
-    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/postgres-tenant-clock-proof.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/production-critical-path.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/realtime-sharding-plan.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
@@ -4017,6 +4009,10 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/milestone-promotion-review-2026-11-06.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/multitenant-delivery-roadmap-2026-11-02.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
@@ -4025,7 +4021,15 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/multitenant-open-decisions-2026-11-06.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
@@ -5545,11 +5549,27 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-key-retention-codex-key-retention-20261110.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-m6a-join-codex-m6a-join-20261109.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-m6b-join-codex-m6b-join-20261110.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-oidc-native-codex-oidc-native-harness-20261109.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-oidc-single-provision-codex-oidc-single-provision-20261110.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-ownership-ops-codex-ownership-ops-20261110.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
@@ -5637,6 +5657,10 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/runtime-topology-reconciliation-2026-11-10.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/serial-cumulative-acceptance-2026-11-06.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
@@ -5681,6 +5705,10 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/connector-sync-2026-11-10/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/derived-output-2026-11-07/index.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
@@ -5709,7 +5737,15 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/key-retention-2026-11-10/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/legacy-rest-temporal-fixtures-386dba33-2026-11-07/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/listener-composition-2026-11-10/index.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
@@ -5749,7 +5785,23 @@
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m6b-join-2026-11-10/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m6b-join-2026-11-10/3545236d-acceptance/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/oidc-native-2026-11-09/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/oidc-single-provision-2026-11-10/index.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>
@@ -5826,6 +5878,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/owner-settings-native-7015-2026-11-06/index.html</loc>
+         <lastmod>2026-11-10</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/ownership-ops-2026-11-10/index.html</loc>
          <lastmod>2026-11-10</lastmod>
     </url>
     <url>

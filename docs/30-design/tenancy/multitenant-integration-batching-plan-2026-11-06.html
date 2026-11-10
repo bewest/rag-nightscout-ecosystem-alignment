@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3182,7 +3178,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3351,62 +3347,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3623,14 +3563,14 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3651,14 +3591,14 @@
   
   
     <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -5824,9 +5764,9 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-11-06. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing living coordination plan, refreshed 2026-11-08. This page owns
+<p><em>Contributor-facing living coordination plan, refreshed 2026-11-10. This page owns
 capability boundaries, integration order and verification depth. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/queue/work-queue.yaml">queue</a> owns claimed item state; the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/queue/work-queue.yaml">queue</a> owns claimed item state; the
 <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
 <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> and the
 <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a> own actual source,
@@ -5961,7 +5901,7 @@ list. The schedule below governs further work.</p>
 <tbody>
 <tr>
 <td><strong>A — data, control and clients (M0–M4)</strong></td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">pinned-client campaign</a> belongs to its own source/instrument.</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">pinned-client campaign</a> belongs to its own source/instrument.</td>
 <td>Preserve legacy root/subject behavior and supported PG differences. Android emulator and measured operating limits remain C; no all-client claim. A's closed criteria are not new prerequisites to re-run for the documentation refresh.</td>
 </tr>
 <tr>
@@ -5970,14 +5910,34 @@ list. The schedule below governs further work.</p>
 <td>Keep the accepted reference distinct from live external delivery, retained every-transition history, multi-node ownership and capacity. Changes to a consumed runtime contract need affected checks and coherent joined acceptance.</td>
 </tr>
 <tr>
-<td><strong>C — synthetic operational preview (M6)</strong></td>
+<td><strong>C — synthetic operational preview (M6, now M6a–M6d)</strong></td>
 <td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">Operation-window acceptance</a> records separate-process tenant-local restore, ordinary forward history/client convergence and B continuity, plus cold Compose/UI/restore acceptance. Earlier SQL backup/upgrade/deletion evidence retains its captured scope.</td>
-<td><strong>M6 remains blocked.</strong> Join the complete chosen owner/human-session capability, lifecycle/key destruction/recovery, trusted deployment and approved workload/resource/egress evidence; retain Android and final criterion review. Accepted one-host recovery is not multi-host/HA admission.</td>
+<td>Split on 2026-11-09 into the capability items below. Accepted one-host recovery is not multi-host/HA admission.</td>
 </tr>
 <tr>
-<td><strong>Next owner/OIDC capability</strong></td>
-<td><a href="../../../reports/tenancy/shared-oidc-sessions-2026-11-07/index.html">Shared OIDC source evidence</a> establishes focused source behavior on its actual branch.</td>
-<td>Signed native database/Vault/HTTPS/browser acceptance on the coherent owner/OIDC candidate remains <strong>UNMEASURED</strong>. The combined source owner and next-capability acceptance lead are identified in the latest release update/local handoff. Do not infer this capability from the published Compose candidate or redispatch archived chats.</td>
+<td><strong>M6a — identity and owner API</strong></td>
+<td><a href="../../../reports/tenancy/m6a-join-2026-11-09/index.html">MT-M6A-JOIN acceptance</a> on the joined candidate, including the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-service-contracts">internal service contracts</a> and the disposable-harness <a href="../../../reports/tenancy/oidc-native-2026-11-09/index.html">OIDC matrix</a>.</td>
+<td>Real identity-provider interoperability is synthetic only. Publication and CI state: the release contents and the queue item.</td>
+</tr>
+<tr>
+<td><strong>M6b — lifecycle, keys and the joined candidate</strong></td>
+<td><a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">MT-M6B-JOIN acceptance</a> joins listener composition, key retention, ownership operations and single-site OIDC provisioning.</td>
+<td>Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; the release contents carry the full list.</td>
+</tr>
+<tr>
+<td><strong>M6c — deployment trust</strong> (in <code>nightscout-deploy</code>)</td>
+<td><a href="../../../reports/tenancy/vault-agent-2026-11-09/index.html">Vault Agent sidecar</a> and the core <code>tokenFile</code> read.</td>
+<td>Identity-provider profile and live trust probes (<code>DEPLOY-IDP-PROFILE</code>, <code>DEPLOY-TRUST-PROBES</code>).</td>
+</tr>
+<tr>
+<td><strong>M6d — connector sync</strong></td>
+<td><a href="../../../reports/tenancy/connector-sync-2026-11-10/index.html">MT-CONNECTOR-SYNC lab</a>.</td>
+<td>Other collections, cadence, token refresh and real ingress remain UNMEASURED.</td>
+</tr>
+<tr>
+<td><strong>M7 — production readiness</strong></td>
+<td>Plans: <a href="production-critical-path.html">production critical path</a>, <a href="selectable-endpoints-and-api-scaling-plan.html">selectable endpoints and API scaling</a>, <a href="realtime-sharding-plan.html">realtime sharding</a>.</td>
+<td>Bench, contrast, scale-unbound, evaluator partition, realtime sharding, Android lab and Kubernetes binding items in the queue.</td>
 </tr>
 </tbody>
 </table>
@@ -5985,9 +5945,10 @@ list. The schedule below governs further work.</p>
 <p>Stage C above is now four milestones and a production milestone, M6a–M6d and M7
 (<a href="multitenant-delivery-roadmap.html#milestones-and-continuous-integration">roadmap</a>,
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-split-and-queue-collapse">decision</a>).
-Each has one to four queue items with one gate each; the dashboard lists them. The
-"next owner/OIDC capability" row is <code>MT-OIDC-NATIVE</code> then <code>MT-M6A-JOIN</code>; its acceptance
-runs through a disposable harness, and no lead reservation or grant is required.</p>
+Each has one to four queue items with one gate each; the
+<a href="multitenant-delivery-dashboard.html">dashboard</a> lists them with their claimed state.
+Native acceptance runs through a disposable harness; no lead reservation or grant is
+required.</p>
 <h3 id="criterion-matrix-for-the-next-frozen-candidate">Criterion matrix for the next frozen candidate<a class="headerlink" href="#criterion-matrix-for-the-next-frozen-candidate" title="Permanent link">&para;</a></h3>
 <p>The coordinator records actual source, instrument, command/selector, artifact,
 control and verdict for each applicable
@@ -6010,10 +5971,11 @@ It proposes sequencing and closing evidence, without assigning new lanes or
 changing the adopted milestone bars.</p>
 <h2 id="6-lane-ownership-and-coordination">6. Lane ownership and coordination<a class="headerlink" href="#6-lane-ownership-and-coordination" title="Permanent link">&para;</a></h2>
 <p>The programme coordinator owns criterion closure, source freeze, queue/status
-integration and the acceptance reservation. Each capability has one source owner
-and one next integration boundary. Native acceptance has a named lead, finite
-reservation and independent resource/physical-closure checks. Source-only
-implementation is distinct from a runtime grant.</p>
+integration. Each capability has one source owner and one next integration
+boundary. Native acceptance runs in a disposable harness that records the source
+head, requires a clean tree and removes its containers
+(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#plan-restructuring-and-process-simplification-2026-11-09">decision</a>);
+the earlier grant/reservation ceremony is retired.</p>
 <p>Local evolving handoffs remain under <code>externals/work/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>.
 The latest release update points to current combined ownership; the
 <a href="../../archive/tenancy/multitenant-integration-batching-journal-2026-11-06.html#6-lane-ownership-and-coordination">archived lane roster</a>

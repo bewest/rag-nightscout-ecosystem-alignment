@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3019,7 +3015,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3188,62 +3184,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3460,14 +3400,14 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3488,14 +3428,14 @@
   
   
     <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -5607,11 +5547,11 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-09 at <code>2ea470f16</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
 <p><em>Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the <a href="../../archive/tenancy/index.html">tenancy archive</a>; dates in a
-filename do not establish currency. Reconciled 2026-11-09: M6 split into M6a–M6d and M7, deployment tree in <code>nightscout-deploy</code>, disposable native harness (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#plan-restructuring-and-process-simplification-2026-11-09">decisions</a>).</em></p>
+filename do not establish currency. Reconciled 2026-11-10: M6 is split into M6a–M6d and M7, the deployment tree lives in <code>nightscout-deploy</code>, native acceptance runs in a disposable harness (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#plan-restructuring-and-process-simplification-2026-11-09">decisions</a>); the answered November 6 decision and review packets are archived.</em></p>
 <h2 id="what-can-inform-a-decision-now">What can inform a decision now<a class="headerlink" href="#what-can-inform-a-decision-now" title="Permanent link">&para;</a></h2>
 <p>For a diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">multitenant database and component ownership
 page</a>. Its grid and static
@@ -5620,20 +5560,28 @@ limits remain visible beside the diagrams.</p>
 <p>Start with the <a href="deployment-and-rig-testing.html">deployment models and fault domains</a>
 and <a href="single-and-multitenant-architecture.html">architecture comparison</a>. The published
 one-host reference answers bounded component, tenant isolation and recovery questions.
-The dashboard distinguishes accepted M0–M5 criteria from incomplete M6 admission;
-the platform map is a dependency guide, not a production readiness score.</p>
+The dashboard distinguishes accepted M0–M5 criteria from the M6a–M6d and M7
+capability items; the platform map is a dependency guide, not a production
+readiness score.</p>
 <p>Use the <a href="m5-m6-decision-list.html">current decision list</a> to separate already adopted
-policy from implementation and evidence still needed. Keep historical journals
-for rationale and failed predictions; their “next” does not assign current work.</p>
+policy from implementation and evidence still needed. Archived journals and packets
+keep rationale and failed predictions; their “next” does not assign current work.</p>
 <p>For the path beyond the accepted preview, read the
 <a href="production-critical-path.html">production critical path</a>: blockers, closing evidence,
 conditional HA deferrals and prior art from node-multienv and the gateway projects.
 Its initial topology and operating envelope are proposals for review.</p>
 <p>The <a href="runtime-topology.html">grid topology guide</a> shows public/DMZ through backing
-stores, accepted one-host structure and the proposed fixed-roster API target.
+stores across the historical accepted one-host reference, current <code>dc795bd1</code>
+private API contracts and proposed component-private/fixed-roster target.
 The <a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API implementation plan</a>
-defines the queued capabilities and planned gates; Kubernetes proof and Jsonnet
-are deferred.</p>
+separates implemented UDS/HTTP/schema/client work from listener composition,
+operational APIs, remote binding and multi-API acceptance still needed. Kubernetes
+proof and Jsonnet remain deployment work; evaluator partitioning is separately
+queued M7 work.</p>
+<p>The <a href="realtime-sharding-plan.html">realtime sharding and recovery proposal</a> owns the
+separate tenant-placement capability and compares evaluator/realtime co-location
+with independent pools. Neither extra processes nor process merging alone supply
+assignment, notification delivery or failover correctness.</p>
 <p>For REST-module/process placement and operator inactivity versus recovery, read
 the <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/worker map</a>
 and <a href="tenant-admission-and-activity.html">tenant-admission review</a>. The latter is an
@@ -5682,12 +5630,12 @@ inactive-tenant feature.</p>
 <tr>
 <td>Owner, delegation and token rules; shared optional OIDC</td>
 <td><a href="owner-authority.html">Owner authority</a>, <a href="owner-authority.html#shared-oidc-integration">shared integration</a></td>
-<td>Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters; implementation acceptance is separate.</td>
+<td>Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters. Joined acceptance: <a href="../../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>, <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a>.</td>
 </tr>
 <tr>
 <td>What needs a maintainer decision</td>
 <td><a href="m5-m6-decision-list.html">Current M5/M6 decision list</a></td>
-<td>Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; older packets supply background only.</td>
+<td>Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; archived packets supply background only.</td>
 </tr>
 <tr>
 <td>Durable consumers and recovery</td>
@@ -5800,8 +5748,8 @@ application behavior.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="../../archive/tenancy/index.html">Archived execution journals</a></td>
-<td>Original decision detail, seam tasks, dispatches, failures, controls and checkpoints. Current rules live above.</td>
+<td><a href="../../archive/tenancy/index.html">Tenancy archive</a></td>
+<td>Execution journals (decision detail, seam tasks, dispatches, failures, controls, checkpoints) and the November 6 critical-path note, owner lifecycle packet and M0–M3 promotion review. Current rules live above.</td>
 </tr>
 <tr>
 <td><a href="nightscout-multitenancy-discussion-2026-09-09.html">September multitenancy discussion</a></td>
@@ -5820,12 +5768,8 @@ application behavior.</p>
 <td>Old-seam proposal; current ports, write contract and backend measurements govern admission.</td>
 </tr>
 <tr>
-<td><a href="multitenant-open-decisions-2026-11-06.html">Earlier open-decision note</a>, <a href="owner-lifecycle-decision-packet-2026-11-06.html">owner lifecycle packet</a></td>
-<td>Historical questions, source surveys and alternatives. Start with the current decision list; draft recommendations are not adopted policy.</td>
-</tr>
-<tr>
-<td><a href="milestone-promotion-review-2026-11-06.html">M0–M3 promotion review</a>, <a href="m4-client-binary-lab-packet-2026-11-06.html">M4 client dispatch</a></td>
-<td>Read-derived gap review and lab hypotheses. Later integration records own actual acceptance.</td>
+<td><a href="m4-client-binary-lab-packet-2026-11-06.html">M4 client dispatch</a></td>
+<td>Lab hypotheses for the pinned-client campaign. Later integration records own actual acceptance.</td>
 </tr>
 </tbody>
 </table>

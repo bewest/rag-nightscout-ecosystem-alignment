@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/owner-lifecycle-decision-packet-2026-11-06.html">
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/30-design/tenancy/realtime-sharding-plan.html">
       
       
-        <link rel="prev" href="nightscout-storage-seam-interface-2026-09-14.html">
+        <link rel="prev" href="postgres-tenant-clock-proof.html">
       
       
-        <link rel="next" href="postgres-tenant-clock-proof.html">
+        <link rel="next" href="tenant-config-schema-2026-10-27.html">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Owner session and issuer lifecycle: the decision packet (2026-11-06) - Nightscout ecosystem alignment</title>
+        <title>Realtime sharding, composition and recovery - Nightscout ecosystem alignment</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#owner-session-and-issuer-lifecycle-the-decision-packet-2026-11-06" class="md-skip">
+        <a href="#realtime-sharding-composition-and-recovery" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Owner session and issuer lifecycle: the decision packet (2026-11-06)
+              Realtime sharding, composition and recovery
             
           </span>
         </div>
@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3019,7 +3015,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3188,62 +3184,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3457,6 +3397,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transactional PostgreSQL tenant clock: proof plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -3476,7 +3444,7 @@
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Realtime sharding, composition and recovery
   
 
     
@@ -3487,14 +3455,14 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link md-nav__link--active">
+      <a href="realtime-sharding-plan.html" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Realtime sharding, composition and recovery
   
 
     
@@ -3520,10 +3488,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-original-published-source-survey-measured-against-read" class="md-nav__link">
+  <a href="#recommendation-and-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Original published-source survey, measured against read
+        Recommendation and boundary
       
     </span>
   </a>
@@ -3531,82 +3499,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-the-questions-one-topic-each-in-dependency-order" class="md-nav__link">
+  <a href="#evaluator-and-realtime-logical-components-versus-deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. The questions, one topic each, in dependency order
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. The questions, one topic each, in dependency order">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#q1-human-identity-provider-for-owners" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q1. Human identity provider for owners
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q2-session-model-and-lifetimes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q2. Session model and lifetimes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q3-issuer-and-audience-split-key-binding-and-rotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q3. Issuer and audience split; key binding and rotation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q4-existing-grant-authority-withdrawn-reader-mode-future-m6-research" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q4. Existing-grant authority: withdrawn reader mode, future M6 research
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q5-ownership-lifecycle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q5. Ownership lifecycle
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-entry-bar-controls-that-must-go-red-and-landing-order" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Entry bar: controls that must go red, and landing order
+        Evaluator and realtime: logical components versus deployment
       
     </span>
   </a>
@@ -3614,10 +3510,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-what-this-packet-does-not-decide" class="md-nav__link">
+  <a href="#placement-and-routing-contract" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. What this packet does not decide
+        Placement and routing contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#projection-and-checkpoint-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Projection and checkpoint ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controlled-moves-and-failure-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlled moves and failure behavior
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-acceptance-and-reconnect-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm acceptance and reconnect semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance-coverage-must-change-with-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance coverage must change with sharding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capacity-and-the-hot-tenant-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capacity and the hot-tenant limit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-and-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation and acceptance
       
     </span>
   </a>
@@ -3628,34 +3590,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -5676,10 +5610,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-original-published-source-survey-measured-against-read" class="md-nav__link">
+  <a href="#recommendation-and-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Original published-source survey, measured against read
+        Recommendation and boundary
       
     </span>
   </a>
@@ -5687,82 +5621,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-the-questions-one-topic-each-in-dependency-order" class="md-nav__link">
+  <a href="#evaluator-and-realtime-logical-components-versus-deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. The questions, one topic each, in dependency order
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. The questions, one topic each, in dependency order">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#q1-human-identity-provider-for-owners" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q1. Human identity provider for owners
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q2-session-model-and-lifetimes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q2. Session model and lifetimes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q3-issuer-and-audience-split-key-binding-and-rotation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q3. Issuer and audience split; key binding and rotation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q4-existing-grant-authority-withdrawn-reader-mode-future-m6-research" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q4. Existing-grant authority: withdrawn reader mode, future M6 research
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q5-ownership-lifecycle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q5. Ownership lifecycle
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-entry-bar-controls-that-must-go-red-and-landing-order" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Entry bar: controls that must go red, and landing order
+        Evaluator and realtime: logical components versus deployment
       
     </span>
   </a>
@@ -5770,10 +5632,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-what-this-packet-does-not-decide" class="md-nav__link">
+  <a href="#placement-and-routing-contract" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. What this packet does not decide
+        Placement and routing contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#projection-and-checkpoint-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Projection and checkpoint ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controlled-moves-and-failure-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controlled moves and failure behavior
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alarm-acceptance-and-reconnect-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alarm acceptance and reconnect semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance-coverage-must-change-with-sharding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance coverage must change with sharding
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#capacity-and-the-hot-tenant-limit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Capacity and the hot-tenant limit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-and-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation and acceptance
       
     </span>
   </a>
@@ -5797,838 +5725,382 @@
 
 
 
-<h1 id="owner-session-and-issuer-lifecycle-the-decision-packet-2026-11-06">Owner session and issuer lifecycle: the decision packet (2026-11-06)<a class="headerlink" href="#owner-session-and-issuer-lifecycle-the-decision-packet-2026-11-06" title="Permanent link">&para;</a></h1>
-<div class="admonition note">
-<p class="admonition-title">Record</p>
-<p>Record as of 2026-11-06. A point-in-time document; it is not kept up to date.</p>
-</div>
-<p><em>What this is: a </em><em>draft decision packet for maintainer review</em><em> (contributor-facing), read-derived
-unless a row says otherwise, written 2026-11-06 by session <code>-8c</code> under the batching plan's §5
-assignment. It lets the maintainer decide the five owner-plane questions that the
-<a href="milestone-promotion-review-2026-11-06.html">milestone promotion review</a> lists as unmeasured and
-unimplemented (rows "Human management issuer/refresh", "Existing-grant clamping", "Tenant
-lifecycle"; ranked item 7). Nothing here is a decision: a decision taken from this packet is one row
-in <code>releases/cgm-remote-monitor-16.0.0/decisions.md</code>, after which this packet points at it. No code
-was written; no gate was run. Companion: <a href="multitenant-open-decisions-2026-11-06.html">the five critical-path decisions</a>,
-whose items 1 and 2 now have maintainer decisions, linked below rather than re-asked.</em></p>
-<p><strong>Current reading path:</strong> use the <a href="m5-m6-decision-list.html">M5/M6 decision list</a>. This packet preserves source surveys and alternatives; later canonical decisions govern preview scope.</p>
-<p><strong>Anchors, read from <code>git</code> at the moment of writing.</strong></p>
+<h1 id="realtime-sharding-composition-and-recovery">Realtime sharding, composition and recovery<a class="headerlink" href="#realtime-sharding-composition-and-recovery" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-10 at <code>ac7d19f80</code>.</em></p>
+<p><em>Contributor-facing living proposal, 2026-11-10. </em><em>Read-derived</em><em> from joined
+application <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; no sharding implementation,
+capacity or failover acceptance is claimed. Queue home: <code>MT-REALTIME-SHARDING</code>.
+The <a href="runtime-topology.html">runtime topology</a> owns current composition; this page
+owns the proposed realtime scaling/recovery contract. Existing captured
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a>
+retains its original single-realtime scope.</em></p>
+<h2 id="recommendation-and-boundary">Recommendation and boundary<a class="headerlink" href="#recommendation-and-boundary" title="Permanent link">&para;</a></h2>
+<p>Start with <strong>tenant-sharded realtime</strong>: every tenant has one admitted realtime
+owner for connections, projection refresh and notification handoff. A stable
+logical shard contains tenants; worker placement is a separate versioned mapping.
+The evaluator's assignment is independent. Do not equate adding Socket.IO
+processes behind a load balancer with complete notification delivery.</p>
 <table>
 <thead>
 <tr>
-<th>tree</th>
-<th>head</th>
+<th>Review dimension</th>
+<th>Proposed direction</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>alignment <code>main</code> at the packet's start</td>
-<td><code>532af97c1b3c3404da5f5323a4e73f08d6768304</code></td>
+<td>Long-term direction</td>
+<td>Stable logical shards with controlled ownership changes; retain a separately scoped connection-fanout option for tenants larger than one worker.</td>
 </tr>
 <tr>
-<td>alignment <code>main</code> at the packet's write</td>
-<td><code>4833e0b53182936396ed70e12284bde0e447558d</code> (the head moved three times during the reads: <code>7cf54d1b1</code>, <code>6b8e486f2</code>, <code>4833e0b53</code>; of the files cited here only the batching plan, the roadmap, the dashboard, the integration record (R66–R68 appended, not cited) and the work queue changed in those ranges; every passage cited below was re-read on <code>4833e0b53</code> and found unchanged, and the roadmap line numbers were re-taken there; the <a href="multitenant-open-decisions-2026-11-06.html">open decisions note</a> arrived in the first range and is cited)</td>
+<td>Architecture</td>
+<td>Separate evaluation and realtime responsibilities; allow co-location. Edge routes consumer connections; a direct application adapter routes alarm handoff using the same admitted placement generation.</td>
 </tr>
 <tr>
-<td>accepted code head (R62), read-only worktree <code>externals/work/crm-codex-replay-controls-closure-20261106</code></td>
-<td><code>83582e876dd193f4448f44c28e379fb5464a26c7</code>, published head of draft #8898, containing <code>official/dev 4a482627</code> (R62), CI and CodeQL green there (R64)</td>
+<td>Backward/forward compatibility</td>
+<td>Preserve polling/WebSocket clients, namespaces, credential/write/ACK behavior and full current-state recovery. Specify coordinated changes to internal contracts; no silent new frame/epoch requirement on old clients.</td>
+</tr>
+<tr>
+<td>Maintenance</td>
+<td>One placement contract, explicit owner/incarnation and route generation, existing platform/config inputs and per-instance maintenance census. No new discovery/consensus product or mandatory gateway.</td>
+</tr>
+<tr>
+<td>Reliability</td>
+<td>Warm before owner admission, drain/terminate or effectively fence the old owner before replacement, and refuse unknown ownership rather than claiming transparent failover. Separate current-state recovery from alarm replay.</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Bound assigned tenant refresh work, viewer count, frames/bytes and authority fanout. Measure hot-tenant and reconnect load; CPU/memory capacity is not established by this plan.</td>
 </tr>
 </tbody>
 </table>
-<p>Every <code>file:line</code> below is on <code>83582e87</code> unless marked otherwise. Figures are quoted from the record
-text named beside them, never from memory. <strong>Measured</strong> means a record says a probe or suite ran it;
-<strong>read</strong> means it comes from reading code or a document.</p>
-<p><strong>Correction scope.</strong> The original source survey below remains anchored to <code>83582e87</code>.
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decisions</a>
-now settle the M2/M6 boundary and withdraw the optional subject-reader clamping mode.
-These are maintainer decisions; the remaining recommendations in this packet are proposals,
-not adopted policy. Numeric bounds deferred there remain unapproved here.</p>
-<p><strong>Newer bounded implementation, separate from human identity.</strong> The actual owner native run
-on <code>4cd95d069675b650e1173779057a7927f4873702</code> exercised operator-provisioned management
-keys/sessions and a management verifier capped at <strong>600 seconds</strong>, credential/purpose/tenant
-refusals and current credential/session/key/tenant revocation across independent workers.
-The <a href="multitenant-open-decisions-2026-11-06.html#2-what-m2-is-held-to-the-roadmap-cell-or-the-dashboards-additions">open-decisions note, item 2</a>
-is the record pointer for its two-listener scope; this is not a human issuer or refresh proof.
-Those owner-preview source and native assertions are unchanged in local candidate
-<code>e2a760bc326fca5ecf255f35a88bec229f13fb43</code> (source comparison, not a new native run).
-At that head, <code>lib/server/serve/owner-preview-authentication.js:7</code> enforces the management
-purpose/lifetime, <code>owner-preview-config.js:56-74</code> provisions public-key verification, and
-<code>tests/owner-preview.integration.test.js:133-180</code> supplies synthetic operator state and checks
-refusal/revocation. Human login issuance, refresh, rotation/reuse detection and idle expiry
-remain <strong>UNIMPLEMENTED</strong>. No M2 or M6 completion is claimed here.</p>
-<hr />
-<h2 id="1-original-published-source-survey-measured-against-read">1. Original published-source survey, measured against read<a class="headerlink" href="#1-original-published-source-survey-measured-against-read" title="Permanent link">&para;</a></h2>
-<p>The data-path credential is built and measured; the owner plane has a policy transaction and a
-dormant HTTP factory; everything that <em>issues</em> a human credential, keeps a session alive, or
-changes who owns a tenant does not exist in code.</p>
+<p>This is a proposal to evaluate, not an adopted shard count, hash algorithm,
+automatic failover policy, schema or new product dependency.</p>
+<h2 id="evaluator-and-realtime-logical-components-versus-deployment">Evaluator and realtime: logical components versus deployment<a class="headerlink" href="#evaluator-and-realtime-logical-components-versus-deployment" title="Permanent link">&para;</a></h2>
+<p>Evaluator schedules acquisition/time-based computation and owns evaluated output
+and notification intent. Realtime owns consumer protocol, subscriptions, current
+state frames and per-recipient delivery. Computation should continue without
+viewers; a connection flood should not consume the clinical scheduler's budget.
+Those are useful logical boundaries, not proof that every role needs a separate
+deployment or network hop.</p>
+<p>The current role launcher accepts composed roles (<code>evaluator,realtime</code>) and keeps
+their contexts distinct. It requires different owned checkpoint namespaces.
+That source capability does not qualify combined-process CPU/event-loop isolation
+or a colocated sharding/failover profile.</p>
 <table>
 <thead>
 <tr>
-<th>capability</th>
-<th>mechanism on <code>83582e87</code></th>
-<th>measured (record)</th>
-<th>state</th>
+<th>Deployment profile</th>
+<th>Benefit</th>
+<th>Required qualification</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Native per-tenant <strong>data</strong> token, new format</td>
-<td>Ed25519 <code>ns-access+jwt</code> verified locally: header <code>alg/typ/kid</code> only (<code>lib/tenant-authorization/access-token.js:36-37</code>); key resolved by <code>(tenant, kid)</code> and must bind issuer and purpose (<code>:39-41</code>); claims <code>iss, aud, tid, purpose, sub, sid, cv, iat, nbf, exp</code>, lifetime capped by policy (<code>:47-55</code>); one PostgreSQL snapshot per operation joins tenant, session, credential generation, key acceptance and roles (<code>access-postgres.js:44-58</code>); the token is refused unless the tenant is active, the session is active and its generation equals the credential's, the key is active, <code>cv</code> matches, and the session outlives the token (<code>access-token.js:66-68</code>). Policy in the preview: purpose <code>data</code>, <code>maxLifetimeSeconds: 28800</code> (<code>lib/server/serve/preview-config.js:160</code>)</td>
-<td><strong>R48</strong>: actual API, 7 new-format cases, A's token on B <code>TOKEN_SIGNATURE</code>, next-read revocation across processes, Vault paused: new-token reads continue; controls red at the HTTP assertion</td>
-<td>measured, unselected by default (<code>accessTokens</code> absent preserves existing behaviour, <code>access-tokens.md:27</code>)</td>
+<td>Same host/Pod, separate processes</td>
+<td>Local UDS/TCP calls and shared placement can reduce operational overhead while keeping event loops separate.</td>
+<td>Resource budgets and shared host/Pod failure remain explicit; scaling the Pod must not accidentally duplicate evaluator ownership.</td>
 </tr>
 <tr>
-<td>Legacy per-tenant data credential (root secret, raw subject token, HS256 JWT)</td>
-<td><code>exchangeLegacyCredential</code> signs inside the secrets component, exactly 28800 s (<code>lib/secrets/component.js:121-129</code>); HS256 with a version <code>kid</code> (<code>:175-177</code>); root and subject derivation reproduce <code>enclave.js</code> (<code>lib/secrets/legacy-credentials.md:63-67</code>)</td>
-<td>R25/R26 (dashboard rows <code>7eb76c71</code>, <code>81bc71e6</code>); re-run inside R48's full campaign (7058 / 80 / 0)</td>
-<td>measured</td>
+<td>Same process, separate modules</td>
+<td>Can use an explicit in-process contract adapter and share selected immutable inputs.</td>
+<td>Measure computation stalls, connection load, shutdown/drain and failure coupling. Preserve separate lifecycle and output ownership; source composition alone is not acceptance.</td>
 </tr>
 <tr>
-<td>Management <strong>actor</strong> and selected proposed-grant policy</td>
-<td>Actor = <code>{tenant, principal, consumer}</code> authenticated by an injected <code>authenticateManagement</code> callback (<code>lib/server/subject-management-app.js:79-83</code>); the store locks config, operator policy and the actor row <code>FOR SHARE</code>, then requires every proposed permission to be in catalogue ∩ ceiling ∩ the actor's <code>delegable</code> (<code>lib/subject-admin/owner-policy.js:81-110</code>); audit row per mutation (<code>postgres.js:96-100</code>). Tables <code>tenant_owner_policy(catalogue_digest, ceiling)</code> and <code>tenant_owner_actors(principal, consumer, active, can_update, delegable)</code> from migration <code>0004_owner_policy_fencing</code> (<code>lib/tenant-authorization/postgres-candidate.json</code>)</td>
-<td><strong>R53</strong> on <code>17f9a457</code>: 22 real PostgreSQL checks; catalogue, ceiling, delegation and actor controls each 0 passing / 1 assertion with actual HTTP 200 vs 403; full 7127 / 80 / 0</td>
-<td>measured; REST37 subset only (PUT subject); not composed on any listener</td>
-</tr>
-<tr>
-<td>Historical optional existing-grant <strong>clamping</strong> (reader side; withdrawn)</td>
-<td>Both readers accept <code>ownerPolicy: { catalogue }</code>; when set, the snapshot joins the operator ceiling and filters every stored permission group to catalogue ∩ ceiling (<code>access-postgres.js:18, :24-25, :76</code>; <code>owner-policy.js:129-140</code>); wildcard roles, the <code>readable</code> default and non-subject principals refuse (<code>owner-policy.js:131-137</code>; <code>tenant-authorization/postgres.js:136, :178</code>)</td>
-<td><strong>R62</strong> on <code>87133959</code>: owner-reader gate 12 / 0 / 0, intersection ablation admits three protected operations, restored 12; <strong>R63</strong>: oref0 subject-token uploads match the reference; emptied ceiling → 401 no effect; cgmsim root upload → <strong>503</strong> no effect</td>
-<td>historical unselected implementation on this anchor; withdrawn by the promotion-bar decision and removed in local candidate <code>e2a760bc</code>; Q4 below</td>
-</tr>
-<tr>
-<td>Dormant owner HTTP factory</td>
-<td><code>createSubjectManagementApp</code> returns an Express app and opens no socket (<code>subject-management-app.js:56-61</code>; README <code>:92-95</code>); routes <code>PUT /api/v2/authorization/subjects</code>, <code>DELETE .../:_id</code> (<code>:94-110</code>)</td>
-<td>R42 standalone management gate (dashboard T30-TENANT-ADMIN row)</td>
-<td>measured at factory level; no listener</td>
-</tr>
-<tr>
-<td>Secrets component: sign, verify, reveal</td>
-<td><code>sign</code> is tenant-wide minting authority for a trusted issuer (<code>lib/secrets/README.md:43</code>); <code>reveal</code> is its own permission and audit event, "the eventual owner policy must refuse operator reveal and enforce its selected re-authentication policy" (<code>:42</code>); private keys never leave Vault (<code>:89</code>)</td>
-<td>34 passing combined secrets/Vault/PG suite (<code>README.md:406-407</code>); Vault outage refuses decrypt</td>
-<td>measured; no owner route calls <code>reveal</code></td>
-</tr>
-<tr>
-<td>CLI roles</td>
-<td>only <code>api</code> is runnable: <code>multitenant &lt;role&gt;</code> "run explicit PG/Vault preview api; other roles unavailable" (<code>lib/cli/index.js:26-29</code>)</td>
-<td>R37/R38 executable boot (dashboard)</td>
-<td>measured for <code>api</code> only</td>
+<td>Independently placed pools</td>
+<td>Scale scheduled work and viewer delivery for different demand.</td>
+<td>Independent assignment maps, direct service contracts and complete maintenance coverage.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Unimplemented on <code>83582e87</code>, each confirmed by reading the tree</strong> (no <code>lib/</code> file constructs a
-<code>purpose: 'management'</code> verifier or signs an <code>ns-access+jwt</code>; the only signers of that type are
-test fixtures, <code>tests/fixtures/owner-clamping-acceptance.js</code> and <code>tests/fixtures/multitenant-preview-replicas.js</code>):</p>
+<p>Recommendation: preserve the logical boundary and permit co-location. Do not
+require a distributed deployment for a small installation, or force both pools
+to have identical counts merely to remove an inexpensive local call.</p>
+<p>There is shared machinery to inspect before creating another service:
+<code>tenant-projection-evaluator.js</code> materializes/evaluates clinical views; realtime
+<code>projection.js</code> separately reconciles a durable input projection and builds a
+snapshot/frame using shared read-context code. Realtime does not currently
+consume a durable evaluator-produced frame contract. Combining processes will
+not automatically remove those separate acquisitions/checkpoints. Measure the
+duplicate input/view work and define any reusable immutable output boundary
+before claiming a merger or new materialized-output API improves it.</p>
+<h2 id="placement-and-routing-contract">Placement and routing contract<a class="headerlink" href="#placement-and-routing-contract" title="Permanent link">&para;</a></h2>
+<p>The first prototype uses an explicit fixed worker roster and controlled map
+revisions. It consumes configuration/platform placement, not a new membership
+service. Freeze these source-owned facts together:</p>
 <table>
 <thead>
 <tr>
-<th>gap</th>
-<th>where the records say so</th>
-<th>what the code has instead</th>
+<th>Fact</th>
+<th>Rule</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>human <strong>issuer</strong> (login → management token)</td>
-<td>R48 "Complete human/refresh-session issuance ... remain open"; R53 "human issuer/refresh ... unimplemented"</td>
-<td><code>access-token.js:22-26</code> accepts a verifier with purpose <code>management</code>; nothing composes one; <code>access_keys.purpose</code> and <code>access_sessions.purpose</code> already admit <code>'management'</code> (<code>access-candidate.json</code>, migration <code>0001_access_state</code>)</td>
+<td>Tenant key</td>
+<td>Stable tenant UUID; never public alias, session ID or user-supplied destination. Alias-to-tenant resolution retains existing trust rules.</td>
 </tr>
 <tr>
-<td><strong>refresh / session credential</strong></td>
-<td>owner-authority.md:27 "PostgreSQL session record and one-way verifier; rotation/reuse detection"</td>
-<td><code>access_sessions(session_id, subject_id, credential_id, generation, expires_at, active, purpose)</code>: a presence-and-expiry row that <code>sid</code> references; <strong>no verifier column, no idle timestamp, no refresh secret</strong>; rows are "explicitly operator-provisioned in this preview" (R48)</td>
+<td>Logical assignment</td>
+<td>Versioned deterministic hash/encoding and deployment-selected logical shard count. Keep that count fixed when merely adding/removing workers; changing it is an explicit repartition operation.</td>
 </tr>
 <tr>
-<td>historical existing-grant clamping option</td>
-<td>R62 "All options remain unselected"</td>
-<td>present only on this original source anchor; activation is withdrawn, not a remaining implementation task (Q4)</td>
+<td>Owner placement</td>
+<td>Each shard maps to a declared worker identity plus actual boot incarnation and placement generation. One worker may own multiple shards; a reusable ordinal/hostname is not a process incarnation.</td>
 </tr>
 <tr>
-<td><strong>DELETE policy</strong> in selected mode</td>
-<td>R53 "DELETE refuses"; dashboard T30-TENANT-ADMIN "DELETE policy ... remain open"</td>
-<td><code>postgres.js:133</code> <code>if (owner) throw failure('SUBJECT_ADMIN_FORBIDDEN')</code>; unselected remove deletes links, legacy metadata and the subject row with no guard (<code>:136-141</code>)</td>
+<td>Consumer route</td>
+<td>Trusted edge resolves tenant to the admitted owner. Polling session IDs, upgrades and all namespaces remain on the same actual process for a connection lifetime.</td>
 </tr>
 <tr>
-<td>production <strong>owner listener</strong> (<code>ns-tenant-admin</code>)</td>
-<td>R53/R54 "production listener unimplemented"; queue T30-TENANT-ADMIN no-gate: "Full listener admission remains unmeasured"</td>
-<td>factory only; decided topology is a second bound socket inside <code>ns-api</code> (execution plan §2.9, 2026-10-16). The open-decisions note (item 2) reports an actual two-listener run on candidate <code>4cd95d06</code>, which is <strong>not</strong> on <code>83582e87</code> and is in its own campaign</td>
+<td>Alarm route</td>
+<td>The direct notification adapter resolves the same tenant/shard/owner mapping. Preserve logical consumer, request and attempt identity when an endpoint moves.</td>
 </tr>
 <tr>
-<td><strong>ownership transfer, co-owner, last-owner protection</strong></td>
-<td>owner-authority.md:45-48 "sensitive explicit operations; last-owner removal must not orphan the tenant"; subject-admin README <code>:259-262</code></td>
-<td><code>tenant_owner_actors</code> is read <code>FOR SHARE</code> only (<code>owner-policy.js:85-87</code>); no code inserts, transfers or counts actors</td>
-</tr>
-<tr>
-<td><strong>lifecycle deletion request / execution split</strong></td>
-<td>roadmap <code>:648-652</code> "an owner may export or request deletion; the operator authorizes and executes"; owner-authority.md:40-43</td>
-<td>no request table, no operator command; <code>nightscout multitenant admin</code> is not a runnable role</td>
-</tr>
-<tr>
-<td><strong>recent-reauthentication</strong> for reveal and ownership changes</td>
-<td>owner-authority.md:101 "Within 5 minutes"; D22 §2.13 "Reveal requires explicit authority and recent reauthentication"</td>
-<td>no <code>auth_time</code> claim in the token (<code>access-token.js:53</code> closed claim set), no session column for it</td>
-</tr>
-<tr>
-<td>owner audit "who took an owner action and when"</td>
-<td>platform authority spec §8 "Not recorded"; schema spec maintainer note 2026-10-29 "one audit approach"</td>
-<td><code>tenant_subject_admin_audit</code> holds tenant, principal, consumer, target, operation, time for subject mutations only (<code>postgres.js:97-99</code>)</td>
+<td>Route publication</td>
+<td>Owner readiness and mapping generation are explicit. Stale edge or sender views must not make a wrong owner accept work; no arbitrary healthy-backend fallback or generic HTTP redirect.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Single-tenant comparison (read, <code>83582e87</code>).</strong> The owner on <code>single</code> is whoever holds <code>API_SECRET</code>:
-a matching secret grants shiro <code>['*']</code> (<code>lib/authorization/index.js:178-185</code>), and AU2 of the
-authority spec records that owner actions on <code>single</code> are taken with it. Subject tokens are derived
-from the secret (<code>storage.js:296-299</code> via <code>enclave.getSubjectHash</code>, <code>enclave.js:71-76</code>), so the raw
-subject token is a non-expiring bearer credential; a JWT is minted from it with an <strong>8 h</strong> default
-(<code>enclave.js:58-61</code>) and re-minted on demand by <code>GET /api/v2/authorization/request/:accessToken</code>
-(<code>endpoints.js:31-39</code>, <code>index.js:306-334</code>) with no session, no refresh credential and no revocation
-other than deleting the subject (<code>index.js:207-209</code>). The signing key is one per install, read from
-<code>node_modules/.cache/_ns_cache/randomString</code> (<code>enclave.js:22-30</code>). <code>single</code> is unchanged by every
-option below (D1, D4; owner-authority.md:32-34).</p>
-<hr />
-<h2 id="2-the-questions-one-topic-each-in-dependency-order">2. The questions, one topic each, in dependency order<a class="headerlink" href="#2-the-questions-one-topic-each-in-dependency-order" title="Permanent link">&para;</a></h2>
-<p>Dependency order: Q3 (who mints, which audience) is needed by Q2 (what a session is) and Q1 (who the
-person is); Q4 and Q5 sit on top. They are presented Q1 → Q5 as briefed, with the dependency named in
-each.</p>
-<h3 id="q1-human-identity-provider-for-owners">Q1. Human identity provider for owners<a class="headerlink" href="#q1-human-identity-provider-for-owners" title="Permanent link">&para;</a></h3>
-<p><strong>Later direction adopted:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">shared optional OIDC integration</a>
-serves equivalent single/multitenant human authentication through separate authority
-adapters. No provider-specific deployment or callback/cookie contract is selected
-by that direction. The source survey and alternatives below retain their scope.</p>
-<p><strong>Mechanism.</strong> D17 row 2 as adopted in principle (2026-10-12): Kratos, one cohort-wide pool, cookie
-scope E, four production conditions, no real identities until the compliance question has an owner.
-D17 as amended (2026-10-27): the provider is interchangeable ("bring your own auth": Kratos, Clerk or
-another), behind Nightscout's own token exchange, "to keep in-house human-identity security surface
-small"; owed: the adapter interface and the provider properties a hoster must supply. The owner
-authority contract (owner-authority.md:82-87): "Human authentication uses an interchangeable identity
-provider; Nightscout maps verified provider/subject to current tenant access and exchanges it for a
-tenant-bound management token. No custom password/recovery system. Provider sessions alone do not
-certify current Nightscout grants." The schema spec settles the membership key as <code>(provider,
-subject_id)</code>, text, no foreign key, per tenant (Q10, Q19; table renamed <code>tenant_access_grants</code>, Q18).</p>
-<p><strong>What is measured.</strong> T30-ORY-PROOF (2026-10-07, Kratos v1.3.1/Hydra v2.3.0 and v26.2.0): 23/23 on
-both lines; isolation is held entirely by the <code>nsjwt</code> exchange (Host-first resolution, membership
-row, per-tenant key, client-id check), not by Ory; a minted token lives to its own <code>exp</code> (3600 s in
-the lab) whatever happens to the Kratos session (§2 revocation rows). Cookie variants (2026-10-12):
-E 21/21; H2 24/26 with the two misses being cross-origin writes once a tenant session exists, and a
-Kratos logout not reaching tenant sessions (§0 items 2-4). Neither ran over https, through socket.io,
-or against Nightscout's real API (§6). <strong>Read, not run:</strong> every claim about Clerk or any provider
-other than Kratos; the adapter interface; NRG's pipeline on current Ory beyond §5 of the proof.</p>
-<p><strong>Options.</strong></p>
-<ul>
-<li>(a) <strong>Generic OIDC adapter behind the exchange; Kratos is the measured reference deployment.</strong>
-  Nightscout implements one adapter contract (issuer, audience, subject claim, session-id claim,
-  logout back-channel if offered), and ships Kratos's configuration as the reference because E's
-  edge conditions were measured for it. Owners sign in at the provider; <code>ns-tenant-admin</code> never sees
-  a password.</li>
-<li>(b) <strong>Kratos only</strong>, as D17 row 2 before the amendment: one pool, scope E, and Kratos's session
-  API as the session of record.</li>
-<li>(c) <strong>Native owner password</strong> in Nightscout (hashing, recovery, MFA in <code>lib/</code>), no provider.</li>
-<li>(d) <strong>Defer</strong>: management credentials stay operator-provisioned (the R48 shape) until a provider
-  is chosen; owners never log in during the preview.</li>
-</ul>
-<p><strong>Trade-offs by axis.</strong></p>
-<table>
-<thead>
-<tr>
-<th>axis</th>
-<th>(a) generic adapter, Kratos reference</th>
-<th>(b) Kratos only</th>
-<th>(c) native password</th>
-<th>(d) defer</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>long-term direction</td>
-<td>matches D17 as amended; the exchange is the seam the proof showed carries isolation</td>
-<td>contradicts the amendment; a cohort pool is "effectively irreversible once identities exist" (§2.9)</td>
-<td>contradicts owner-authority.md:85 "No custom password/recovery system"</td>
-<td>leaves M6's human-identity criterion without an implementation path</td>
-</tr>
-<tr>
-<td>architecture</td>
-<td>one adapter interface; provider state stays outside the tenant tables</td>
-<td>provider-specific session API in the exchange</td>
-<td>password store inside the tenant DB; recovery, MFA, lockout all ours</td>
-<td>unchanged</td>
-</tr>
-<tr>
-<td>backward / forward compat</td>
-<td><code>single</code> unchanged; provider swap is configuration</td>
-<td>a hoster with Clerk or an enterprise IdP cannot use it</td>
-<td>none for <code>single</code>; every future provider needs a second path</td>
-<td>none</td>
-</tr>
-<tr>
-<td>maintenance</td>
-<td>adapter surface small; provider updates are the hoster's</td>
-<td>we track Kratos releases (calendar versions, §0 item 6)</td>
-<td>highest: password storage and recovery "need updates in the wild" (amendment)</td>
-<td>none now, all later</td>
-</tr>
-<tr>
-<td>reliability</td>
-<td>provider outage: existing sessions continue through our session row (Q2); new logins refuse (contract <code>:141-143</code>)</td>
-<td>same, plus Kratos's cohort-wide session scope hazards (§4.1)</td>
-<td>no external dependency; but recovery flows are the usual breach surface</td>
-<td>n/a</td>
-</tr>
-<tr>
-<td>performance</td>
-<td>one exchange per login; per-operation cost is ours either way (R48)</td>
-<td>same</td>
-<td>same</td>
-<td>same</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Who notices.</strong> Owners: under (a)/(b) they sign in at a provider-hosted page and land on their
-tenant; under (c) at a Nightscout page; under (d) they cannot sign in at all. Operators: (a)/(b)
-require the edge conditions of scope E (strip Kratos and CSRF cookies before any tenant backend,
-refuse cross-origin writes including WebSocket upgrades, every path through the edge, measured over
-https) or an equivalent for their provider; (c) requires none, and gives them a password database to
-protect. <strong>Multitenant only.</strong> <code>single</code> keeps <code>API_SECRET</code>.</p>
-<p><strong>Recommendation: (a).</strong> Direction: it is D17 as amended, and the proof already showed the
-exchange, not the provider, carries isolation. Architecture: the adapter boundary is the only place
-provider differences live. Compatibility: <code>single</code> untouched; a hoster swaps providers by
-configuration. Maintenance: the smallest in-house surface that still works. Reliability: the
-session of record is ours (Q2), so a provider outage degrades to "no new logins", which the contract
-already specifies. Performance: unchanged from R48. The compliance-owner condition in D17 row 2 is
-unchanged by this choice and remains a maintainer gate before any real identity exists.
-<strong>Unmeasured:</strong> any provider other than Kratos; the adapter against Nightscout's actual listener;
-E's edge over https and through socket.io.</p>
-<h3 id="q2-session-model-and-lifetimes">Q2. Session model and lifetimes<a class="headerlink" href="#q2-session-model-and-lifetimes" title="Permanent link">&para;</a></h3>
-<p><strong>Renewal direction adopted:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">provider-backed renewal first</a>,
-with existing Nightscout current authority and adopted limits. This supersedes the
-earlier recommendation (a) as the initial implementation selection. Nightscout-owned
-rotating refresh is not an initial requirement. Logout/idle/outage/concurrency and
-transport contracts still need acceptance; none of the numeric proposals below is
-approved by this direction.</p>
-<p><strong>Mechanism.</strong> The contract's table row (owner-authority.md:27): "Refresh/session credential:
-PostgreSQL session record and one-way verifier; rotation/reuse detection or provider-supported
-session equivalent." Adopted initial limits (<code>:97-102</code>): human management access token <strong>10 min</strong>;
-session idle / absolute <strong>30 min / 12 h</strong>; freshness for reveal, ownership changes and privileged
-credential issuance <strong>within 5 min</strong>; existing device/client exchange JWT <strong>8 h</strong> preserved. "Idle/absolute
-expiry requires current server-side session enforcement. Token expiry is not revocation" (<code>:105-106</code>).
-In code: <code>access_sessions</code> has <code>expires_at</code> (absolute) and <code>active</code>, nothing else about time; the
-verifier refuses a token whose <code>exp</code> exceeds the session's <code>expires_at</code> (<code>access-token.js:68</code>) and
-refuses when the session is inactive or its generation lags the credential's (<code>access-postgres.js:79</code>).
-The serving reader is SELECT-only by contract and startup screen ("must not own tables, bypass RLS
-or mutate authority", <code>access-tokens.md:33-36</code>; <code>access-postgres.js:27-36</code>). The lab token was
-3600 s (ORY proof §2); the preview data token is 28800 s (<code>preview-config.js:160</code>).</p>
-<p><strong>Measured.</strong> R48: committed session revocation refuses the same token on the next read across
-independent processes (controls: removing the session-active check turns a revoked session's GET
-from 403 to 200). The November 5 measurement: 16 semantic checks, 4 controls, 2880 timed operations;
-local arms make 0 Vault calls per operation. <strong>Read:</strong> everything about refresh, rotation, reuse
-detection and idle expiry; none of it exists in code.</p>
-<p><strong>Options.</strong></p>
-<ul>
-<li>(a) <strong>PostgreSQL session row is the session of record, extended</strong> with a refresh verifier
-  (one-way hash of a random refresh secret), refresh rotation state, an idle deadline and a
-  rotation family id. Only the issuer writes authority state (Q3). Every refresh rotates the
-  secret; reuse handling still needs the separately proposed retry/grace contract. Each reader
-  remains SELECT-only and checks the current idle deadline, absolute expiry, active state and
-  generation on every protected operation; the issuer checks both deadlines before refresh.
-  Checking idle only at refresh would let an already-issued token operate after idle expiry.</li>
-</ul>
-<p><strong>Proposed, not adopted or implemented:</strong> qualifying human activity is an authenticated,
-  explicit owner interaction delivered to the issuer for a current session. The issuer alone
-  advances that session's idle deadline after validating the interaction and current authority.
-  Automatic refresh, background polling and receipt of stream traffic do <strong>not</strong> extend human
-  activity. The activity-reporting route, ordering relative to a protected operation, cross-worker
-  propagation and treatment of activity arriving at/after the deadline require a bounded contract
-  and measurement. No asynchronous stale-acceptance window is adopted by this proposal.
-- (b) <strong>Provider-held sessions</strong>: no refresh of our own; the browser re-exchanges the provider
-  session for a new 10-minute token; our <code>access_sessions</code> row mirrors the provider's session id.
-- (c) <strong>Reader-written activity tracking</strong>: each operation updates <code>last_used_at</code> in the readers.
-  This is distinct from (a)'s SELECT-only per-operation idle check.
-- (d) <strong>Long-lived management token</strong> (hours) with no refresh, revoked only by session row.</p>
-<p><strong>Trade-offs by axis.</strong></p>
-<table>
-<thead>
-<tr>
-<th>axis</th>
-<th>(a) PG session + rotating refresh</th>
-<th>(b) provider sessions</th>
-<th>(c) reader-written activity</th>
-<th>(d) long token</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>direction</td>
-<td>the contract's first-named form; "provider sessions alone do not certify current grants" (<code>:85-86</code>)</td>
-<td>the contract's "provider-supported equivalent", conditional on logout propagation, which H2 measured as <strong>absent</strong> (<code>intact.logout</code>)</td>
-<td>contradicts the read-only reader; R48 measured the reader with no mutation grant</td>
-<td>contradicts the 10-minute limit</td>
-</tr>
-<tr>
-<td>architecture</td>
-<td>one writer (issuer), many readers; matches R48's split</td>
-<td>exchange depends on provider session API per adapter</td>
-<td>turns every data worker into an authority writer</td>
-<td>simplest; weakest</td>
-</tr>
-<tr>
-<td>compat</td>
-<td><code>single</code> unchanged; device tokens untouched (8 h preserved)</td>
-<td>tied to provider</td>
-<td>same as (a) for clients</td>
-<td>none</td>
-</tr>
-<tr>
-<td>maintenance</td>
-<td>our table, our rules; one more migration in the access candidate</td>
-<td>per-provider session semantics</td>
-<td>lock contention paths to characterise</td>
-<td>least</td>
-</tr>
-<tr>
-<td>reliability</td>
-<td>provider outage: refresh continues until idle/absolute expire (contract <code>:141</code> "Provider/identity outages ... need their own explicit acceptance")</td>
-<td>provider outage ends all management sessions at the next 10-minute boundary</td>
-<td>write on the hot path under outage</td>
-<td>long exposure window of a stolen token</td>
-</tr>
-<tr>
-<td>performance</td>
-<td>refresh writes plus issuer-only qualifying-activity writes; load unmeasured</td>
-<td>one exchange per 10 min per owner</td>
-<td>one UPDATE per operation (R48 measured reads at 2.8/2.3 ms p50 combined; a write per op is unmeasured)</td>
-<td>none</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Who notices (proposed).</strong> Owners under (a) may refresh silently while the current idle and absolute
-deadlines permit it; automatic refresh must not keep an unattended session alive. The adopted
-human lifetime limits still need implementation and acceptance. Provider-held sessions under (b)
-need equivalent enforcement; provider outages may prevent the next exchange;
-(d) keeps them signed in for the token's life even after a revocation that the session row has not
-caught. Operators: (a) adds one migration and an issuer role; (c) changes the serving role's grants.
-<strong>Multitenant only.</strong></p>
-<p><strong>Lifetimes.</strong> Those already stated: 10 min / 30 min / 12 h / 5 min / 8 h (owner-authority.md:97-102);
-3600 s was a lab value, not a policy; 28800 s is the data cap in code. Values the maintainer must set,
-each with a recommended default and its basis:</p>
-<table>
-<thead>
-<tr>
-<th>value</th>
-<th>recommended default</th>
-<th>basis</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>refresh-secret reuse grace (a second presentation of the just-rotated secret within this window is a retry, not an attack)</td>
-<td>30 s</td>
-<td>the cookie-variants record notes E's assertion was valid "for at most 30 s at the backend" (§6); this assertion lifetime does not establish a safe refresh retry window. Retry latency and concurrent refresh measurements must set the bound. <strong>Unmeasured; no approved default</strong></td>
-</tr>
-<tr>
-<td>management session absolute lifetime for <strong>headless</strong> management credentials (operator-provisioned, owner-authority.md:89-93)</td>
-<td>same 12 h, renewable without a human</td>
-<td>the contract says unattended uploaders renew without a human login; headless management should not be looser than human</td>
-</tr>
-<tr>
-<td>maximum concurrent management sessions per (tenant, subject)</td>
-<td>5</td>
-<td>an owner on a phone, a laptop and a caregiver's browser; bounds the family-revocation blast radius. <strong>Unmeasured</strong></td>
-</tr>
-<tr>
-<td>management-token clock skew tolerance</td>
-<td>0 (none)</td>
-<td><code>access-token.js:51</code> already refuses <code>iat &gt; now</code>; the lab ran in UTC with synchronised clocks; add tolerance only if a measurement shows refusals</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Recommendation: (a).</strong> Direction: it is the contract's primary form and keeps "provider sessions
-do not certify grants" true in code. Architecture: it preserves R48's writer/reader split, which is
-what made the read-only serving identity possible. Compatibility: device tokens and <code>single</code> are
-untouched. Maintenance: one table extension in our own candidate. Reliability: the only outage that
-ends a session early is PostgreSQL, which already refuses every protected operation. Performance:
-refresh and qualifying-activity writes require measurement; no per-session write rate is established.
-<strong>Unmeasured:</strong> the refresh endpoint, concurrent rotation, per-operation idle enforcement and
-qualifying-activity propagation; each requires an entry-bar control in §3.</p>
-<h3 id="q3-issuer-and-audience-split-key-binding-and-rotation">Q3. Issuer and audience split; key binding and rotation<a class="headerlink" href="#q3-issuer-and-audience-split-key-binding-and-rotation" title="Permanent link">&para;</a></h3>
-<p><strong>Mechanism.</strong> D14: per-tenant signing key, resolved after tenant resolution. D16: three listeners;
-<code>ns-tenant-admin</code> is a second bound socket inside <code>ns-api</code> (decided 2026-10-16). D22 as amended
-2026-11-05 and the contract's Vault amendment (owner-authority.md:110-122): private keys stay in
-the secrets component; serving workers verify with provisioned public keys; "verification pins
-algorithm, issuer, audience, tenant, purpose and key binding ... rejects unknown keys. Key discovery
-never follows a request-supplied URL/JWK." In code the verifier already enforces all of that:
-<code>key.tenant</code>, <code>key.kid</code>, <code>key.issuer</code>, <code>key.purpose</code> must match (<code>access-token.js:40-41</code>); <code>aud</code>,
-<code>tid</code>, <code>purpose</code> are claims (<code>:47-48</code>); <code>access_keys</code> is keyed <code>(tenant_id, kid, purpose)</code> with
-<code>active</code> (<code>access-candidate.json</code>), and <code>keyActive</code> is checked per operation (<code>access-token.js:66</code>).
-The secrets component's <code>sign</code> is "tenant-wide minting authority, reserved for a trusted token
-issuer" (<code>lib/secrets/README.md:43</code>); the call-path lab decided the owner dashboard calls
-<code>ns-tenant-admin</code> with an owner token and that "no component on the dashboard's path holds a
-credential for every tenant" (execution plan §2.13, call path). The data verifier refuses
-management-purpose tokens (<code>access-tokens.md:48</code>).</p>
-<p><strong>Measured.</strong> R48: public keys bind issuer, tenant, kid and purpose; unknown keys refuse without
-legacy fallback; duplicate key material refuses at boot (<code>preview-config.js:155-156</code>). The
-secrets suite: rotation creates new provider versions without export; retirement control shows
-old ciphertext refuses (<code>lib/secrets/README.md:318-320</code>). <strong>Read on <code>83582e87</code>:</strong> no human issuer or composed management-key verifier exists there.
-The newer operator-provisioned headless management proof is bounded separately above; it does
-not implement human issuance. Rotation of <em>token</em> keys (as opposed to ciphertext rewrap), including
-issuance cutoff and overlap, remains proposed and unmeasured.</p>
-<p><strong>Options.</strong></p>
-<ul>
-<li>(a) <strong>One issuing role beside the secrets component</strong> (<code>nightscout multitenant secrets</code>, or an
-  <code>issuer</code> role that is the only holder of the <code>sign</code> capability), minting <strong>both</strong> audiences with
-  <strong>separate keys per (tenant, purpose)</strong>; <code>ns-tenant-admin</code> holds public keys only and is a
-  verifier, exactly like <code>ns-api</code> in R48. The exchange (Q1) and the refresh (Q2) are endpoints of
-  this role, reached from <code>ns-tenant-admin</code> by an internal request, never from the browser.</li>
-<li>(b) <strong><code>ns-tenant-admin</code> is the issuer</strong>: the owner socket holds the management signing
-  capability for every tenant it serves.</li>
-<li>(c) <strong>The provider issues</strong> the management token (Hydra-style): the owner listener verifies the
-  provider's token directly.</li>
-<li>(d) <strong>One key per tenant for both purposes</strong>, purpose carried only by <code>aud</code>.</li>
-</ul>
-<p><strong>Trade-offs by axis.</strong></p>
-<table>
-<thead>
-<tr>
-<th>axis</th>
-<th>(a) separate issuer role, per-(tenant,purpose) keys</th>
-<th>(b) owner listener mints</th>
-<th>(c) provider mints</th>
-<th>(d) one key, two audiences</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>direction</td>
-<td>the call-path decision and the Vault amendment as written</td>
-<td>contradicts "no component on the dashboard's path holds a credential for every tenant"</td>
-<td>abandons D14 for the human path (§2.9: "Letting Hydra issue the token instead would abandon D14")</td>
-<td>weakens D14's purpose binding</td>
-</tr>
-<tr>
-<td>architecture</td>
-<td>the schema already keys by purpose; verifiers unchanged</td>
-<td>the listener gains the one capability R48 kept out of serving processes</td>
-<td>provider-specific claims in every verifier</td>
-<td>purpose check reduces to a claim check (the proof's <code>no-claim-check</code> arm shows a claim check is a second layer, not the first)</td>
-</tr>
-<tr>
-<td>compat</td>
-<td>management tokens refused on the data socket by key <em>and</em> claim</td>
-<td>same</td>
-<td>each provider a different token shape</td>
-<td>a compromised management key signs data tokens</td>
-</tr>
-<tr>
-<td>maintenance</td>
-<td>one role to operate; rotation is per (tenant, purpose)</td>
-<td>fewer processes</td>
-<td>provider's rotation schedule</td>
-<td>half the keys</td>
-</tr>
-<tr>
-<td>reliability</td>
-<td>issuer down → no new logins or refreshes; existing tokens verify (R48's Vault-paused result)</td>
-<td>listener compromise = minting</td>
-<td>provider down = no logins; no refresh of ours</td>
-<td>key compromise reach doubles</td>
-</tr>
-<tr>
-<td>performance</td>
-<td>one internal request per login/refresh</td>
-<td>none</td>
-<td>none</td>
-<td>none</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Who notices.</strong> Owners: nothing between (a), (b), (d); under (c) the token in their browser is the
-provider's. Operators: (a) is one more role to run, which D21 already names (<code>secrets</code>); (b) is one
-fewer. <strong>Multitenant only.</strong></p>
-<p><strong>Key binding and rotation under (a), proposed for the decision row.</strong> Two <code>kid</code>s per (tenant,
-purpose) may overlap. Provision the new verification key before issuing with it, then <strong>stop all
-issuance under the old key</strong> at a defined cutoff across every issuer. Do not retire the old key
-before its last possible issuance time plus that purpose's maximum token lifetime and any
-explicitly accepted clock-skew allowance. Activating a new key one lifetime earlier is insufficient
-if any issuer can continue signing with the old key. The cutoff/last-issuance proof and distribution
-order are unimplemented and unmeasured; no new skew allowance is adopted here. Retirement is
-<code>UPDATE access_keys SET active = false</code>, observed by each current snapshot (<code>access-token.js:66</code>);
-public keys reach verifiers through provisioned configuration (<code>access-tokens.md:8-28</code>), never a
-request. Rotation period is a value the maintainer must set: recommended <strong>90 days</strong> for management keys and <strong>365
-days</strong> for data keys, basis: the longest lifetime a stolen <em>public</em> key could be useful is zero and a
-stolen private key cannot leave Vault (<code>lib/secrets/README.md:89</code>), so the period bounds only the
-window of an undetected issuer compromise; <strong>unmeasured</strong>.</p>
-<p><strong>Recommendation: (a).</strong> Direction and architecture: it is what the call-path lab and the Vault
-amendment decided, and the schema already carries the <code>(tenant, kid, purpose)</code> key. Compatibility:
-the R48 verifier needs no change, only a second configured purpose. Maintenance: one issuer, two key
-sets. Reliability: issuer outage degrades to "no new sessions"; verification continues. Performance:
-one internal hop per login or refresh, not per operation. <strong>Unmeasured:</strong> the issuer role itself,
-full cross-purpose key-isolation acceptance and rotation overlap/cutoff. The bounded newer owner
-wrong-purpose refusal is already measured as described above; it is not a human-issuer proof.</p>
-<h3 id="q4-existing-grant-authority-withdrawn-reader-mode-future-m6-research">Q4. Existing-grant authority: withdrawn reader mode, future M6 research<a class="headerlink" href="#q4-existing-grant-authority-withdrawn-reader-mode-future-m6-research" title="Permanent link">&para;</a></h3>
-<p><strong>Decided: withdraw the optional subject-reader clamping mode.</strong> The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision</a>
-at alignment <code>56951c8088ec7f942c875a52a13f8816bbafea8f</code> supersedes this packet's earlier
-per-tenant activation/preflight proposal and the earlier root-carrier →401 recommendation.
-Changing that refusal from503 to401 would still break compatibility. A tenant's own
-<code>API_SECRET</code> must continue to get <strong>200 on its own protected resource</strong>. There is no retained
-reader selection, rollout preflight or opt-in mode recommended here.</p>
-<p><strong>Historical evidence stays valid at its executed scope.</strong> R62 measured the dormant reader's
-intersection and controls; R63 measured preserved subject-token uploads and an incompatible
-root-carrier refusal under selection, against a successful unselected reference. Those records
-explain the withdrawal; they are not acceptance of a current mode. Their measurements remain in
-<a href="../remedial/rc-16.0.0-integration-record.html">the integration record</a>
-(R62/R63); this correction does not rewrite them. Local source candidate <code>e2a760bc</code> removes the
-reader-only factory/options, joins/intersections and reader-only cases. That is source removal,
-not a new client execution result.</p>
-<p><strong>Retained writer policy is separate.</strong> R53's management transaction still constrains proposed
-subject grants to the reviewed catalogue, current operator ceiling and current actor's delegation
-(<code>lib/subject-admin/owner-policy.js</code> createOwnerPolicy). The headless owner's <code>ownerPolicy</code>
-configuration feeds that writer only. It does not alter data-reader authority or promote root/data
-credentials to management authority.</p>
-<p><strong>Future M6 research, not an implementation selection.</strong> Existing-grant lifecycle ideas must
-preserve existing credentials and first specify provenance, effective-authority transitions and
-recovery semantics. No sweep, per-tenant switch, replacement mode or root refusal is adopted here.
-Any proposal needs actual legacy root/API_SECRET <strong>and</strong> subject-client compatibility execution,
-cross-tenant refusal, current revocation and no-effect oracles, with independently calibrated
-controls. A subject-only pass cannot establish backward compatibility. Thresholds, activation
-policy, migration and performance remain unmeasured; the current decision is to remove the mode.</p>
-<h3 id="q5-ownership-lifecycle">Q5. Ownership lifecycle<a class="headerlink" href="#q5-ownership-lifecycle" title="Permanent link">&para;</a></h3>
-<p><strong>Preview scope decided:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">operator-assisted ownership changes</a>
-are sufficient initially. Self-service co-owner/transfer proposals below are later
-enhancements, not first-preview gates. The operator path still needs current
-authority, last-owner protection, audit and recovery without secret disclosure.
-The earlier recommendation (a) below is retained as a future proposal, not the
-adopted preview implementation. The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">deletion ceremony decision</a>
-requires explicit request and operator confirmation, cancellation until execution
-starts, and no mandatory waiting period. It supersedes the proposed 14-day
-pre-execution window below. The adopted 30-day post-deletion key/artifact retention
-remains separate; other future invitation/self-service proposals are not adopted.</p>
-<p><strong>Later decision, separate from this draft's recommendations:</strong> the maintainer's
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision record</a>
-adopts retaining Transit keys and the export artifact for 30 days, followed by
-operator key destruction. R69 measures recovery while laboratory keys remain;
-key destruction and restore-after-window refusal remain unmeasured. This artifact
-retention window is separate from the proposed cancellation/confirmation window
-below. Other lifecycle proposals in this packet are not adopted by that decision.</p>
-<p><strong>Mechanism.</strong> The contract (owner-authority.md:38-48): "Owner is an explicit tenant relationship,
-separate from legacy data wildcards"; initial capabilities include "export and deletion requests";
-"Operator provisioning, suspension, policy changes and execution of lifecycle deletion remain on the
-private operator plane"; "Secret reveal is a separate permission with recent reauthentication.
-Ownership transfer and adding co-owners are sensitive explicit operations; last-owner removal must
-not orphan the tenant. Transactional transfer/recovery details require a bounded implementation
-contract, not automatic operator access to owner secrets." The roadmap (<code>:648-652</code>): "an owner may
-export or request deletion; the operator authorizes and executes lifecycle deletion. A deletion
-request is not permission to bypass confirmation, retention or recovery policy." D7: the operator
-plane is credential-free by unreachability. In code, the only owner-identity table is
-<code>tenant_owner_actors(principal, consumer, active, can_update, delegable)</code> (migration 0004), read
-<code>FOR SHARE</code> and never written by the application; the subject-admin audit records subject mutations
-only; the platform authority spec §8 lists "who took an owner action and when" as not recorded.</p>
-<p><strong>Measured.</strong> R53's actor fencing (an inactive or non-matching actor refuses, 0 / 1 control); the
-secrets component's <code>reveal</code> permission and audit (34-case suite). <strong>Read:</strong> everything else in this
-question.</p>
-<p><strong>A contradiction to resolve inside this question.</strong> There are two owner-identity models and no
-mapping between them: <code>tenant_owner_actors</code> keys an actor by <code>(principal, consumer)</code> (0004, built and
-measured in R53), while the schema-config lab keys a person by <code>(provider, subject_id)</code> in
-<code>tenant_access_grants</code> (schema spec Q10/Q18, maintainer notes 2026-10-29, "one access-grant contract,
-two stores"). Q1's exchange produces a <code>(provider, subject)</code>; R53's policy consumes a <code>(principal,
-consumer)</code>. The decision row for Q5 must say which table is the owner relationship of record and how
-the other is derived; the recommendation below takes <code>tenant_access_grants</code> as the relationship and
-<code>tenant_owner_actors</code> as its projection for the management writer.</p>
-<p><strong>Options.</strong></p>
-<ul>
-<li>(a) <strong>Owner-plane operations on the owner listener, operator execution on the operator plane,
-  one transaction each, one audit shape.</strong> Add co-owner = insert an access grant with the owner
-  permission set, by an actor whose <code>delegable</code> covers it, with reauthentication ≤ 5 min. Transfer =
-  two steps: the current owner records an invitation naming a <code>(provider, subject)</code>; the invitee's
-  own verified session accepts it; the old owner's grant is kept until acceptance and removed in the
-  accepting transaction. Remove owner (self or co-owner) = refused in the same transaction when the
-  count of remaining active owner grants <code>FOR UPDATE</code> would be zero (last-owner invariant). Recovery
-  when the only owner is locked out = an <strong>operator-plane</strong> command that writes a fresh owner
-  invitation for a named <code>(provider, subject)</code> and records who ran it; it never reveals, decrypts or
-  reads a secret (contract <code>:47-48</code>). Deletion = an owner writes a <code>tenant_lifecycle_requests</code> row
-  (<code>requested</code>, with reauthentication); the operator plane moves it to <code>scheduled</code> after the
-  retention window and <code>executed</code> by the export-then-delete tooling the Batch C lane is building;
-  the owner may cancel until <code>scheduled</code>. Every step writes the same audit record shape on its plane.</li>
-<li>(b) <strong>Operator-only ownership</strong>: co-owner, transfer, removal and recovery all run on the operator
-  plane by ticket; owners request them out of band.</li>
-<li>(c) <strong>Owner-plane everything</strong>, including deletion execution, with a confirmation step.</li>
-<li>(d) <strong>Single owner per tenant</strong>, no co-owners; transfer and recovery are operator-only.</li>
-</ul>
-<p><strong>Trade-offs by axis.</strong></p>
-<table>
-<thead>
-<tr>
-<th>axis</th>
-<th>(a) split by plane, two-step transfer, last-owner invariant</th>
-<th>(b) operator-only</th>
-<th>(c) owner executes deletion</th>
-<th>(d) single owner</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>direction</td>
-<td>the contract and roadmap as written; D7 kept credential-free because the operator never touches a secret</td>
-<td>contradicts "initial capabilities cover ... export and deletion requests" and co-owner as an owner operation</td>
-<td>contradicts roadmap <code>:651</code> "the operator authorizes and executes"</td>
-<td>contradicts contract <code>:46</code> "adding co-owners"</td>
-</tr>
-<tr>
-<td>architecture</td>
-<td>two writers (owner-plane management writer; operator CLI), one request table, one audit shape (schema spec "one audit approach")</td>
-<td>one writer</td>
-<td>the owner listener gains destructive authority over tenant data</td>
-<td>simplest tables</td>
-</tr>
-<tr>
-<td>compat</td>
-<td><code>single</code> unchanged (its owner is <code>API_SECRET</code>)</td>
-<td>same</td>
-<td>same</td>
-<td>same</td>
-</tr>
-<tr>
-<td>maintenance</td>
-<td>invitations, request states, two audit writers to keep aligned</td>
-<td>tickets and humans</td>
-<td>one fewer plane</td>
-<td>least</td>
-</tr>
-<tr>
-<td>reliability</td>
-<td>the last-owner check is a row count inside the mutation transaction, so no partial state</td>
-<td>human latency</td>
-<td>an owner mistake is irreversible without the operator's retention window</td>
-<td>a locked-out single owner is always an operator incident</td>
-</tr>
-<tr>
-<td>performance</td>
-<td>n/a (rare operations)</td>
-<td>n/a</td>
-<td>n/a</td>
-<td>n/a</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Who notices.</strong> Owners: (a) lets them add a family member, hand over a site, and ask for deletion
-from the dashboard, with a fresh sign-in for each; (b) makes each a support request; (c) lets them
-delete a site in one sitting; (d) means a lost phone is a support request. Operators: (a) gives them
-two commands (<code>recover-owner</code>, <code>execute-deletion</code>) and a request queue to watch; (b) gives them every
-request. <strong>Multitenant only.</strong></p>
-<p><strong>Historical proposed values, not current preview requirements.</strong> The later deletion-ceremony decision above selects no mandatory pre-execution wait. The original alternative was a deletion retention window between <code>requested</code> and <code>scheduled</code>:
-recommended <strong>14 days</strong>, basis: long enough for an owner who did not intend it to notice and cancel,
-short enough that R62's populated restore lab (the only recovery instrument) bounds what must be
-kept; <strong>unmeasured</strong>, and an operator policy may lengthen it. Invitation validity: recommended
-<strong>7 days</strong>, basis: the invitation is a capability bound to a <code>(provider, subject)</code>, not a bearer
-secret, so its window is a usability choice; <strong>unmeasured</strong>.</p>
-<p><strong>Recommendation: (a).</strong> Direction: it implements the contract's sentences one by one and keeps the
-roadmap's audience split. Architecture: the request table and the two-step transfer are what make
-"last-owner removal must not orphan the tenant" and "not automatic operator access to owner
-secrets" both true at once. Compatibility: <code>single</code> untouched. Maintenance: one audit shape, which
-the schema spec already asks for before Q5 is built. Reliability: every invariant is a transaction.
-<strong>Unmeasured:</strong> all of it; the entry bar is in §3. The DELETE policy for <em>subjects</em> (R53's refusal)
-is a future writer-policy proposal, not the withdrawn reader mode: a remove could be authorised
-like an update to <code>roles: []</code> (the actor would need to be active with <code>can_update</code>) and
-additionally refused while the subject is the
-credential behind any active owner grant. This DELETE change is not implemented or adopted;
-current writer-selected DELETE refusal and existing unselected removal remain unchanged.</p>
-<hr />
-<h2 id="3-entry-bar-controls-that-must-go-red-and-landing-order">3. Entry bar: controls that must go red, and landing order<a class="headerlink" href="#3-entry-bar-controls-that-must-go-red-and-landing-order" title="Permanent link">&para;</a></h2>
-<p>Every control follows the R48 / R53 / R62 shape: a positive on actual HTTP against owned PostgreSQL,
-a break that removes one mechanism and must fail at the named assertion (setup failure is not red),
-and a restoration. Predicted results are written before the run.</p>
-<table>
-<thead>
-<tr>
-<th>question</th>
-<th>positive (predicted green)</th>
-<th>break-it control (predicted red, exact symptom)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Q1 provider adapter</td>
-<td>an owner's provider session for tenant A exchanges on A's host for a management token with <code>tid = A</code>, <code>purpose = management</code>; the same session on B's host is 403 <code>not-a-member</code>; the A token on B is 401 <code>TOKEN_SIGNATURE</code> (the ORY proof's gate re-run against the real <code>ns-tenant-admin</code>, not the stand-in)</td>
-<td>remove the membership check: B mints for A's owner (200 instead of 403); remove the subject-claim mapping: a token with no <code>sub</code> is accepted (200 instead of 401)</td>
-</tr>
-<tr>
-<td>Q2 session (proposed)</td>
-<td>refresh rotates secret within current idle/absolute deadlines; an already-issued, unexpired token is refused on its next protected operation after the idle deadline; automatic refresh alone never advances human activity; qualifying issuer-recorded activity can advance only an unexpired session under the future contract; reuse revokes current session authority across workers</td>
-<td>remove only the SELECT idle-deadline predicate: the expired-idle operation is accepted; count automatic refresh as human activity: the idle deadline advances without interaction; remove family revocation: the reused-secret session remains accepted. Exact HTTP statuses must follow each data/management route contract; setup or a different refusal layer is not a red</td>
-</tr>
-<tr>
-<td>Q3 issuer</td>
-<td>wrong-purpose tokens remain refused independently by provisioned-key binding and audience/purpose claims; an isolated verifier probe supplies otherwise valid data claims signed by a synthetic management-purpose key and an explicit resolver returning that management-bound key; expect TOKEN_KEY before signature/claims acceptance. Separately test retired-key refusal and last-old-issuance cutoff before planned retirement</td>
-<td>in the isolated probe only, remove the key.purpose check at access-token.js:40-41 while preserving the valid data claims, signature and resolver: verification returns claims instead of throwing TOKEN_KEY, so the independent assert.throws fails. Removing a resolver check alone need not admit a normal management token because audience/purpose claims still refuse. Separately remove keyActive: a valid otherwise-authorized retired-key operation is accepted</td>
-</tr>
-<tr>
-<td>Q4 compatibility after withdrawal</td>
-<td>actual root/API_SECRET and subject clients retain own-tenant outcomes; own root protected resource200, foreign credentials refuse; existing regular revocation and retained management-writer fences hold. No reader-mode activation is a positive</td>
-<td>use independent existing root/subject, tenant-isolation and writer-fence controls; historical reader-intersection controls remain historical. Any future M6 mechanism must calibrate its own controls without intentionally adopting a root refusal</td>
-</tr>
-<tr>
-<td>Q5 lifecycle</td>
-<td>add co-owner with a 4-minute-old authentication succeeds and with a 6-minute-old one is 403; transfer: the invitee accepts and the old grant is gone in the same transaction; removing the last active owner is 409 with no row change; <code>recover-owner</code> on the operator plane writes an invitation and no <code>reveal</code> audit row appears; a deletion request is <code>requested</code>, the owner can cancel, the operator's <code>execute-deletion</code> refuses before the window and succeeds after, and the export exists before the delete</td>
-<td>remove the freshness check: the 6-minute case is 200; remove the <code>FOR UPDATE</code> count: two concurrent removals leave zero owners; execute deletion from the owner listener: must be 405/403, red if 200; remove the export-before-delete ordering: the delete proceeds with no export (red)</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Research dependency order, not an implementation commitment.</strong> The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decisions</a>
-place human issuer/refresh, future existing-grant lifecycle and tenant lifecycle under M6.
-M2 retains the roadmap cell's bar and is <strong>not promoted</strong> by this packet.</p>
+<p>The edge can consume a rendered map or an existing application's routing decision
+projected into response headers, as in the roles gateway. It need not ask an
+authentication service for every frame, and internal application calls need not
+traverse that edge. Deployment chooses UDS or private TCP/HTTP. No authentication
+redesign, new bearer protocol or custom proxy belongs to this capability.</p>
+<p>A backend verifies current tenant assignment before admitting new connections,
+refresh work and alarm handoff. The routing map does not grant client authority:
+current permissions, tenant bindings, exact writes/ACKs and operation lifetimes
+remain enforced. If placement generation/owner admission becomes a wire field,
+change the exact schemas/versioning deliberately; current alarm messages do not
+already carry an ownership epoch.</p>
+<p>The prototype must specify freshness/admission of its fixed map. A local cache or
+Kubernetes readiness observation alone is not an exclusive owner fence. Unknown
+or inconsistent placement refuses new admission until resolved.</p>
+<h2 id="projection-and-checkpoint-ownership">Projection and checkpoint ownership<a class="headerlink" href="#projection-and-checkpoint-ownership" title="Permanent link">&para;</a></h2>
+<p>Warm only assigned active tenants before routing them to a worker; report genuine
+suspended tenants separately so healthy B remains routable. Process liveness,
+owner readiness and tenant readiness are distinct. Operational inspection stays
+available when application work is blocked.</p>
+<p>Preserve a stable durable realtime consumer/checkpoint identity across worker
+incarnation changes. Current code has one process-wide consumer, freezes tenant
+configuration at boot and rejects another consumer in a tenant's checkpoint
+namespace. Sharding therefore needs explicit parser/admission/assignment-update
+changes; it cannot be implemented by starting the same configuration twice.
+Do not derive durable identity from a Pod UID or reset checkpoints to hide a
+collision. If a shard-specific identity is selected, specify legacy migration
+and multi-shard ownership explicitly.</p>
+<p>Owner admission protects checkpoint/projection work as well as socket delivery.
+The new owner reconstructs current state, validates its source/tenant binding and
+only then becomes routable. Independent physical-row/checkpoint inspection must
+prove continuity; a plausible first browser frame is insufficient evidence.</p>
+<p>Logical shards may be empty and a worker may initially own no active tenants.
+Define an inspection-only idle state with no consumer route or synthetic jobs;
+do not invent a tenant to satisfy the current nonempty runtime constructor.
+Control-plane liveness, readiness to accept an assignment and readiness to serve
+an assigned tenant are different signals. All-suspended assignments remain
+inspectable without fabricating healthy clinical progress or blocking unrelated
+owners. Empty-to-active and tenant-roster changes need explicit admitted startup
+and coverage transitions; the current frozen boot configuration is not dynamic
+tenant admission.</p>
+<h2 id="controlled-moves-and-failure-behavior">Controlled moves and failure behavior<a class="headerlink" href="#controlled-moves-and-failure-behavior" title="Permanent link">&para;</a></h2>
+<p>Initial scope is controlled fixed-roster moves and restart recovery, not automatic
+takeover under an ambiguous partition. Planned sequence per affected shard:</p>
 <ol>
-<li>Q3 issuer and Q2 session research must define issuance/cutoff, idle/activity and propagation
-   contracts before a new implementation batch is proposed. The bounded headless management
-   verifier does not supply these human-session semantics.</li>
-<li>Q4's earlier Batch A activation/status-change plan is withdrawn. Current acceptance checks
-   ordinary legacy root and subject compatibility with no reader clamping mode.</li>
-<li>Q1 remains gated on the compliance owner; provider work joins only at an explicitly reviewed
-   batch boundary using synthetic identities.</li>
-<li>Q5 can inform Batch C export/delete tooling and the future owner request contract. The
-   request/confirmation/retention/recovery policy is not adopted by this packet.</li>
+<li>Serialize the move against tenant maintenance and freeze the source/target
+   assignment generation. Do not change a pinned restore cohort underneath it.</li>
+<li>Stop new admission to the old owner, including new alarm attempts; retain
+   accounting for existing connections, requests and responses.</li>
+<li>Quiesce assigned work, finish or record uncertain in-flight handoffs, close
+   connections and stop/terminate or effectively fence the old owner. Merely
+   removing its route or observing lease expiry does not prove it stopped emitting.</li>
+<li>Confirm old-owner exclusion, transfer the admitted generation, warm the target
+   from durable state, then publish its route/readiness.</li>
+<li>Clients establish new sessions, reauthorize and obtain current state. A live
+   TCP/Socket.IO session is not migrated between processes. Stagger reconnects
+   within measured bounds; prove healthy-tenant progress.</li>
 </ol>
-<hr />
-<h2 id="4-what-this-packet-does-not-decide">4. What this packet does not decide<a class="headerlink" href="#4-what-this-packet-does-not-decide" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Real identities, real traffic, real data.</strong> D17 row 2's compliance-owner condition and its
-  four edge conditions are untouched; every lifetime and every control above is for synthetic
-  identities in owned containers.</li>
-<li><strong>Numeric bounds the maintainer has not set</strong>: refresh grace, concurrent-session cap, key
-  rotation periods, deletion retention window and invitation validity retain only draft candidates
-  for future measurement. No value in this packet overrides the promotion-bar decision deferring
-  numeric bounds; none is an approved default or an implementation instruction.</li>
-<li><strong>M2 promotion.</strong> The roadmap-cell bar and M6 placement are decided in the
-  <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision</a>,
-  recorded at alignment <code>0de4d791b71f70616ea21893c2a98832bd3e67da</code>; completion still requires
-  final-head evidence. This packet does not promote M2.</li>
-<li><strong>The provider list.</strong> Only Kratos has been run; Clerk and others are read. The adapter
-  interface is owed by D17 as amended and is not drafted here.</li>
-<li><strong>Owner UI.</strong> The roadmap defers a first-party owner UI; every operation here is an API on
-  <code>ns-tenant-admin</code>.</li>
-<li><strong>Single-tenant login.</strong> The schema spec's maintainer note (2026-10-29) says <code>single</code> will need
-  the same access-grant contract once a login plugin exists; that is "not yet designed; no plan row
-  yet" and stays so.</li>
-<li><strong>The candidate <code>4cd95d06</code></strong> (owner/evaluator, in its own campaign): its two-listener run is
-  reported in the open-decisions note and is not on the head this packet read.</li>
-</ul>
-<p><strong>Contradictions found between documents and code, for the maintainer's attention.</strong></p>
-<ol>
-<li>The platform authority spec AU1 still says tenant owners "are to authenticate through one
-   cohort-wide Ory Kratos pool"; D17 as amended on 2026-10-27 makes the provider interchangeable.
-   AU1's text predates the amendment.</li>
-<li>owner-authority.md:27 names a "PostgreSQL session record and one-way verifier; rotation/reuse
-   detection"; <code>access_sessions</code> on <code>83582e87</code> has no verifier, no refresh secret and no idle
-   timestamp. Q2(a) proposes a SELECT-only per-operation idle-deadline check and issuer-only
-   qualifying-activity writes; neither exists yet, and their propagation semantics remain open.</li>
-<li>Two owner-identity keys with no mapping: <code>tenant_owner_actors(principal, consumer)</code> (built, R53)
-   and <code>tenant_access_grants(provider, subject_id)</code> (schema spec, decided 2026-10-29). Q5 names
-   the resolution.</li>
-<li>Execution plan §2.8 says the operator "mints a tenant's initial credential through <code>bin/admin.js</code>
-   on the unroutable port"; on <code>83582e87</code> the CLI runs only the <code>api</code> role (<code>lib/cli/index.js:26-29</code>).</li>
-<li>The queue's T30-RESEARCH note records reveal's "initial policy: an owner session; target:
-   re-authentication"; the adopted contract (2026-11-05) is "within 5 minutes". The note is the
-   older statement.</li>
-</ol>
-<p><em>Draft requiring maintainer review. Decisions taken go into decisions.md as rows; the queue,
-dashboard and roadmap move only after a row exists.</em></p>
+<p>Resynchronization is namespace-specific. The main namespace can provide a current
+full frame; a storage subscription acknowledgement is not a collection/history
+reload, and an alarm subscription is not replay of earlier alarms. Qualify actual
+API3 client reload/subscription ordering, concurrent changes and deletions rather
+than assuming every namespace has the main browser's snapshot behavior.</p>
+<p>If the target fails to warm, do not publish it as ready. With partial/stale route
+publication, keep backend owner admission authoritative and expose routing
+generation disagreement; affected requests may refuse rather than silently
+falling back. Recovery or rollback is a fresh admitted generation/move with
+old-owner exclusion re-established. Never republish an old incarnation/map or
+restore old checkpoint data to make rollback appear successful. Preserve accepted
+and uncertain outbox outcomes. Until a valid target is ready, the affected shard
+can remain unavailable while unrelated shards continue.</p>
+<p>If old-owner exclusion cannot be established, keep the affected shard unavailable.
+Automatic partition failover is a later option requiring an effective platform
+fence/defined bounded-overlap contract and its own adversarial proof. A database
+epoch check or private network address alone cannot retract an already buffered
+socket emission. Do not promise instantaneous exclusive delivery from a lease.</p>
+<table>
+<thead>
+<tr>
+<th>Failure</th>
+<th>Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Worker crash with confirmed termination</td>
+<td>Route affected tenants through admitted replacement; reconnect, current authorization and full snapshot. Other owners continue.</td>
+</tr>
+<tr>
+<td>Old owner unreachable but possibly alive</td>
+<td>No speculative active replacement in this first scope; report unavailable/uncertain ownership.</td>
+</tr>
+<tr>
+<td>Wrong/stale consumer or alarm route</td>
+<td>Refuse before protected effects when assignment can be established; otherwise retain uncertainty. Never forward to an arbitrary URL.</td>
+</tr>
+<tr>
+<td>PostgreSQL/API dependency failure</td>
+<td>Preserve existing current-state/authority refusal; do not mark old frames fresh or invent write/notification success.</td>
+</tr>
+<tr>
+<td>Worker or hot tenant overload</td>
+<td>Bound connections/work/queues and expose pressure; do not silently route to a non-owner or allow one tenant to starve unrelated owners.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="alarm-acceptance-and-reconnect-semantics">Alarm acceptance and reconnect semantics<a class="headerlink" href="#alarm-acceptance-and-reconnect-semantics" title="Permanent link">&para;</a></h2>
+<p>Current alarm acceptance means handoff to realtime fanout, not durable storage of
+an event for every device. Default Socket.IO delivery does not replay events a
+disconnected client missed. A reconnected current-state snapshot is not proof of
+alarm-event replay. See <a href="https://socket.io/docs/v4/delivery-guarantees/">Socket.IO delivery guarantees</a>.</p>
+<p>Preserve existing durable pending/uncertain attempt recovery. A changed owner
+address alone must not change clinical config identity, retire/mint an equivalent
+notification, or make an already accepted request pending again. A late old-owner
+success response still belongs to its original attempt; do not reinterpret it as
+a fresh new-owner attempt. A lost response remains ambiguous. Current generic
+transport errors do not prove pre-effect refusal, so routing changes cannot
+justify an immediate transparent retry. Re-resolution for the next permitted
+durable attempt retains its logical request/attempt semantics.</p>
+<p>Explicitly choose and test the product's future delivery guarantee before claiming
+no missed alarms across moves. Durable per-client offsets/event replay would be
+additional protocol/state work, not a property supplied by sharding or successful
+handoff. Do not fabricate device receipts, replay historical alerts blindly or
+replay uncertain clinical mutations. Existing supported-client behavior and
+operator-visible gaps must be evaluated in acceptance.</p>
+<h2 id="maintenance-coverage-must-change-with-sharding">Maintenance coverage must change with sharding<a class="headerlink" href="#maintenance-coverage-must-change-with-sharding" title="Permanent link">&para;</a></h2>
+<p>Current cohort code assumes each role/participant covers the same tenant set.
+API can continue covering every tenant while realtime workers cover subsets;
+this requires a real cohort/manifest contract change, not merely a route table.</p>
+<p>For tenant maintenance, enumerate every actual actor that may hold work/state for
+that tenant, including old/draining owners during a move. Validate complete
+assignment/role coverage against the admitted generation, retain actual datastore
+and backend census, pin incarnations and await all required invalidations.
+Self-reported subset membership is not proof of completeness. Shared processes
+may host different role coverages; account for each actual role and backend.</p>
+<p>A pinned attempt freezes the relevant placement revision or refuses observed
+change. New owner admission cannot bypass invalidation, and old actors cannot
+vanish because they are unready or absent from service routing. A fresh attempt
+follows the existing uncertainty/suspension and cleanup rules.</p>
+<h2 id="capacity-and-the-hot-tenant-limit">Capacity and the hot-tenant limit<a class="headerlink" href="#capacity-and-the-hot-tenant-limit" title="Permanent link">&para;</a></h2>
+<p>Tenant sharding spreads tenants, not every tenant's viewers. Measure connection
+count, serialization/bytes, refresh/checkpoint costs, per-recipient authority
+calls, event-loop lag, dependency pools, reconnect bursts and per-tenant interference.
+A busy shard can move to a larger/dedicated worker; that still leaves a single
+tenant's delivery bounded by one worker. More CPU cores alone do not parallelize
+one JavaScript event loop.</p>
+<p>If one tenant exceeds a suitably sized worker, qualify connection-sharded fanout
+as a second capability: multiple connection owners for that tenant, maintained
+Socket.IO adapter/distribution, per-recipient current authority and defined
+projection ownership. Do not introduce a mandatory broker before that workload
+requires it, or assume an adapter replaces the current local-client delivery loop.
+Polling affinity remains required for the supported fallback transports; see
+<a href="https://socket.io/docs/v4/using-multiple-nodes/">multiple-node guidance</a>.</p>
+<p>The private operational API reports intended versus observed assignments,
+incarnation/generation, active/draining/ready state, connection and tenant counts,
+checkpoint/refresh progress, handoff outcomes, pressure and dependency health.
+Bounded inspection must work during refusal and must not acquire ownership.</p>
+<h2 id="implementation-and-acceptance">Implementation and acceptance<a class="headerlink" href="#implementation-and-acceptance" title="Permanent link">&para;</a></h2>
+<p>One <code>MT-REALTIME-SHARDING</code> owner keeps assignment, routing adapters, parser/runtime,
+checkpoint migration, cohort coverage, fixtures and controls together. Prototype
+with the incorporated private API foundation; consume shared listener/operational
+composition when it is integrated. Deployment-companion changes render routing
+and worker placement. No Kubernetes installation or new scheduler is required for
+the native fixed-roster proof.</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Positive experiment</th>
+<th>Intended semantic red control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single-worker compatibility</td>
+<td>Same clients, frames, polling/upgrades, namespaces, credentials and ACK/write behavior with one worker owning all shards.</td>
+<td>Change a reply or skip current authorization; independent client/store assertions fail.</td>
+</tr>
+<tr>
+<td>Multi-owner coverage</td>
+<td>Two real owners, synthetic tenants across both and a trusted edge; verify every connection and notification reaches the assigned owner.</td>
+<td>Independent edge/alarm map mismatch or non-owner admission causes missing/foreign delivery assertion failure.</td>
+</tr>
+<tr>
+<td>Stable logical assignment</td>
+<td>Add a worker without changing logical shard count; only explicitly moved shards change owner.</td>
+<td>Derive bucket count from process count and observe unexpected tenant/session churn.</td>
+</tr>
+<tr>
+<td>Checkpoint continuity</td>
+<td>Kill/move an owner, inspect physical checkpoint/digest and reconstruct current state on the target.</td>
+<td>Reset consumer/checkpoint or admit overlapping checkpoint writers; continuity/ownership assertions fail.</td>
+</tr>
+<tr>
+<td>Polling and namespace affinity</td>
+<td>Repeated polling, upgrades and main/storage/alarm sessions stay on the admitted incarnation; move requires fresh sessions.</td>
+<td>Route an existing session ID to another incarnation; compatibility assertion fails.</td>
+</tr>
+<tr>
+<td>Controlled drain and partition refusal</td>
+<td>Hold a response during a move; establish old-owner termination/fence before target admission. Exercise an unknown-alive partition.</td>
+<td>Activate solely on a route/lease change; observe old/new protected output or premature activation.</td>
+</tr>
+<tr>
+<td>Partial cutover and rollback</td>
+<td>Fail target warmup or route publication between stages; recover through a fresh admitted generation without rolling back durable outcomes.</td>
+<td>Reactivate an old incarnation/map, reset checkpoints or fabricate readiness; ownership/continuity assertions fail.</td>
+</tr>
+<tr>
+<td>Empty and suspended assignments</td>
+<td>Start an idle worker, activate an admitted assignment, and suspend its only tenant while another owner progresses.</td>
+<td>Fabricate a tenant/job, route to an unready owner or globally block unrelated work; readiness/progress assertions fail.</td>
+</tr>
+<tr>
+<td>Notification ambiguity</td>
+<td>Hold/drop and deliver late old-owner responses; inspect original durable request/attempt and independent delivered outcomes.</td>
+<td>Reset accepted state, change logical identity on move or synthesize success; duplicate/false-outcome assertion fails.</td>
+</tr>
+<tr>
+<td>Cohort coverage</td>
+<td>API full coverage plus realtime subsets and a draining owner; restore A while B continues.</td>
+<td>Omit a former owner or accept only a sampled service endpoint/self-report; complete census/invalidation assertion fails.</td>
+</tr>
+<tr>
+<td>Isolation and progress</td>
+<td>Suspension, dependency outage, reconnect pressure and hot shard do not expose another tenant or starve unrelated owner progress.</td>
+<td>Broad readiness deferral or unbounded scheduling makes B's progress/freshness oracle fail.</td>
+</tr>
+<tr>
+<td>Composition choice</td>
+<td>Run the selected colocated/separate-role profile with independent clinical and viewer load.</td>
+<td>Block delivery/event loop or duplicate assignment; scheduler-lag/ownership bounds fail.</td>
+</tr>
+</tbody>
+</table>
+<p>All experiments and limits are <strong>UNMEASURED</strong>. Choose finite workload/budget inputs,
+retain failed predictions and inspect independent durable/output outcomes. Join a
+coherent candidate before applicable full/browser/enabled-corpus/native/client
+acceptance and final prcheck. <code>MT-SCALE-UNBOUND</code> consumes this capability for
+horizontal realtime measurements; it does not substitute for its correctness gates.</p>
 
 
 

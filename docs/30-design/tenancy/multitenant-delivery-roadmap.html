@@ -2583,10 +2583,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2655,7 +2651,7 @@
   <span class="md-ellipsis">
     
   
-    Runtime topology: zones, components and coordination
+    Runtime topology: zones, components and private APIs
   
 
     
@@ -3165,7 +3161,7 @@
   <span class="md-ellipsis">
     
   
-    Selectable private endpoints and fixed-roster API scaling
+    Private API composition, deployment bindings and fixed-roster scaling
   
 
     
@@ -3334,62 +3330,6 @@
     
   
     M4 existing-client surface: client-binary lab packet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="milestone-promotion-review-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Milestone promotion review: M0–M3 against the recorded evidence (2026-11-06)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="multitenant-open-decisions-2026-11-06.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Multitenant: the five decisions on the critical path (2026-11-06)
   
 
     
@@ -3606,14 +3546,14 @@
   
   
     <li class="md-nav__item">
-      <a href="owner-lifecycle-decision-packet-2026-11-06.html" class="md-nav__link">
+      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Owner session and issuer lifecycle: the decision packet (2026-11-06)
+    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -3634,14 +3574,14 @@
   
   
     <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
+      <a href="realtime-sharding-plan.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Transactional PostgreSQL tenant clock: proof plan
+    Realtime sharding, composition and recovery
   
 
     
@@ -5786,11 +5726,11 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-09 at <code>b8de4e15c</code>.</em></p>
-<p><em>Contributor-facing living plan. Reconciled 2026-11-08 to the published reference and adopted release decisions,
+<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
+<p><em>Contributor-facing living plan. Reconciled 2026-11-10 to the M6a/M6b joined acceptance records and adopted release decisions,
 without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5800,7 +5740,8 @@ failures, controls and campaign limits; <a href="../../../releases/cgm-remote-mo
 owns publication and cycle updates. A source branch, an incorporated change, an
 accepted batch and a promoted milestone are distinct claims.</p>
 <p>Delivery uses three completion stages: <strong>A</strong>, data/control/clients through M4;
-<strong>B</strong>, durable runtime for M5; <strong>C</strong>, synthetic operations for M6. Independent
+<strong>B</strong>, durable runtime for M5; <strong>C</strong>, synthetic operations for M6, split on
+2026-11-09 into M6a–M6d, followed by M7 production readiness. Independent
 implementation and early uncertainty proofs may proceed in parallel. Freeze one
 coherent candidate for comprehensive acceptance; do not rerun accepted campaigns
 merely because a new session resumes. Promotion requires the complete criterion
@@ -6015,7 +5956,7 @@ an intentional PG-only difference. No threshold is invented by a passing lab.</p
 <tr>
 <td>M7: production readiness</td>
 <td>M6a–M6d</td>
-<td>Measured, not declared (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-envelope-measured-not-declared">decision</a>): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove each component scales horizontally or vertically as intended with a binding inventory (any binding is a <code>file:line</code> finding); evaluator partitioning by member count and ordinal with a pool-membership table (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">decision</a>). Android emulator lab; selectable endpoints and fixed-roster API scaling; Kubernetes binding equivalence. Limits follow the measurements. Required before a production cohort, not before the dormant alpha release.</td>
+<td>Measured, not declared (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-envelope-measured-not-declared">decision</a>): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove each component scales horizontally or vertically as intended with a binding inventory (any binding is a <code>file:line</code> finding); evaluator partitioning by member count and ordinal with a pool-membership table (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">decision</a>). <a href="realtime-sharding-plan.html">Realtime tenant sharding and controlled recovery</a>, including checkpoint and complete participant coverage; larger single-tenant connection fanout remains separately bounded. Android emulator lab; selectable endpoints and fixed-roster API scaling; Kubernetes binding equivalence. Limits follow the measurements. Required before a production cohort, not before the dormant alpha release.</td>
 </tr>
 </tbody>
 </table>
@@ -6046,8 +5987,8 @@ implementation and destroy/after-window refusal evidence remain separate.</p>
 <p><a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a> accepts the functional M5 reference on one host and records its final
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
-observations, not a fresh current-HEAD campaign. M6 remains blocked. The later accepted ed2 reference is published on draft
-PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3259787103b8a8d5a6ed4b193422dc868b127602/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
+observations, not a fresh current-HEAD campaign. The later accepted ed2 reference is published on draft
+PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de6b6c06d578981c24f068ed66282b46b21b71f0/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
 is distinct from dev merge, release and production/default admission.</p>
 <table>
 <thead>
@@ -6079,12 +6020,15 @@ is distinct from dev merge, release and production/default admission.</p>
 </tr>
 </tbody>
 </table>
-<p>Shared OIDC/session effects, operator-assisted ownership, full lifecycle,
-retained-key destruction/after-window refusal and measured operating budgets
-remain M6 work. Local OIDC/owner source is not native acceptance; the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> records
-the next candidate and ownership. The <a href="m5-m6-decision-list.html">current decision index</a> separates
-human choices from implementation and measurement work.</p>
+<p>| <a href="../../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a joined candidate</a> | Owner/OIDC, the disposable-harness OIDC matrix and the internal service contracts joined to #8898. Real identity-provider interoperability is synthetic only. |
+| <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b joined candidate</a> | Listener composition, key retention, operator-assisted ownership and single-site OIDC provisioning on one frozen head. Ownership in a serving role, real role processes over Compose and the production key custodian remain open. |
+| <a href="../../../reports/tenancy/vault-agent-2026-11-09/index.html">Vault Agent sidecar</a>, <a href="../../../reports/tenancy/connector-sync-2026-11-10/index.html">connector sync</a> | M6c Vault connectivity and the M6d outbound connector lab. Identity-provider profile, live trust probes and the remaining connector scope are open queue items. |</p>
+<p>Publication state, CI and the open boundaries of each candidate are in the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>; the
+<a href="multitenant-delivery-dashboard.html">dashboard</a> lists the M6a–M6d and M7 items with
+their claimed state. Measured operating budgets are M7 work. The
+<a href="m5-m6-decision-list.html">current decision index</a> separates human choices from
+implementation and measurement work.</p>
 <h2 id="m5m6-acceptance-families">M5/M6 acceptance families<a class="headerlink" href="#m5m6-acceptance-families" title="Permanent link">&para;</a></h2>
 <p>These refine the milestone cells above into observable results. They are required
 coverage, not new passing measurements. The coordinator records actual source,
