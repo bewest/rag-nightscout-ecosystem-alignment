@@ -2124,3 +2124,10 @@ Local lane handoff: `externals/work/HANDOFF-vault-agent-20261109.md`.
 | Focused evidence | **Reproduced:** 204 passing / 5 pending, no failures; existing UDS custody/replacement fixture passes; changed-code lint has no errors; tier inventory passes. Persisted schema, service-ownership and public-listener ablations detect their intended semantic failures, restored checks pass. [Evidence and commands](../../reports/tenancy/internal-service-api-2026-11-09/README.md). | Full joined database/browser/enabled-corpus/native/client acceptance and remote CodeQL remain UNMEASURED for this change. Local HTTP behavior does not establish Kubernetes or multi-host lifecycle admission. Existing authorization, tenant operation-window and restore identity gates remain. |
 
 Local lane detail: `externals/work/HANDOFF-internal-service-api-2026-11-09.md`.
+
+
+### Update — joined candidate dc795bd1 for #8898: CodeQL guards and internal service API (2026-11-10)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| MT-M6A-JOIN | **Reproduced** on `codex/m6a-join-20261109` head `dc795bd1` (= `74036ba6` + `0fc5abf9` CodeQL guards + `dc795bd1` [internal service contracts](decisions.md#internal-service-contracts)): unit 3072, dom 205, dependency 368/2 pending, core 319, harness 99, integration 3618/534 pending, stress 18, browser 686, multitenant corpus 537/1 pending, all 0 failing; OIDC matrix 9/9 with 3/3 controls and gate 13 checked/0 failing; write-intent and write-boundary clean; ESLint 0 errors; prcheck OK. New break-it: skipping response-schema validation in the listener returns 200 instead of 503, and in the named client gives "Missing expected rejection."; both green on restore. [Evidence](../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/) | Push of `dc795bd1` to `workspace/multitenant-20261102` is the maintainer's. UNMEASURED: CodeQL on the new head; internal HTTP endpoints beyond loopback (Compose, Kubernetes, multi-host); a mixed-version process pair (peers refuse missing service/version headers, so upgrade is coordinated). |

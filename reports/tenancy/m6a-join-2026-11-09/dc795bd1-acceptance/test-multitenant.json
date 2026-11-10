@@ -1,0 +1,107 @@
+{
+  "id": "66c208b14ef1",
+  "startedAt": "2026-11-10T03:10:11.284Z",
+  "suites": [
+    "tests/tenant-insertion-upgrade.integration.test.js",
+    "tests/tenant-insertion-readiness.integration.test.js",
+    "tests/owner-configuration.integration.test.js",
+    "tests/owner-preview.integration.test.js",
+    "tests/tenant-socket-order-capability.integration.test.js",
+    "tests/tenant-socket-data-forwarding.integration.test.js",
+    "tests/postgres-connection.test.js",
+    "tests/entries-importer-postgres.integration.test.js",
+    "tests/postgres-entries-read.test.js",
+    "tests/postgres-entries-write.test.js",
+    "tests/api3.entries-crud.http.test.js",
+    "tests/tenant-rest-entries.integration.test.js",
+    "tests/tenant-rest-identifier-race.integration.test.js",
+    "tests/tenant-rest-identity-differential.integration.test.js",
+    "tests/tenant-frame-concurrency.integration.test.js",
+    "tests/tenant-durable-replay.integration.test.js",
+    "tests/tenant-projection-evaluator.integration.test.js",
+    "tests/tenant-current-state-recovery-proof.integration.test.js",
+    "tests/tenant-alarm-state.integration.test.js",
+    "tests/tenant-notifications.integration.test.js",
+    "tests/evaluator-consumers.integration.test.js",
+    "tests/tenant-operations.integration.test.js",
+    "tests/tenant-commit-clock-port.integration.test.js",
+    "tests/tenant-commit-clock-http.integration.test.js",
+    "tests/multitenant-preview-replicas.integration.test.js",
+    "tests/tenant-rest-derived.integration.test.js",
+    "tests/tenant-rest-treatments.integration.test.js",
+    "tests/tenant-rest-context.integration.test.js",
+    "tests/tenant-rest-device-activity.integration.test.js",
+    "tests/tenant-rest-profile-food.integration.test.js",
+    "tests/tenant-rest-settings-differential.integration.test.js",
+    "tests/postgres-migrations.integration.test.js",
+    "tests/mongodb-migrations.integration.test.js",
+    "tests/postgres-secrets.integration.test.js",
+    "tests/vault-secrets.integration.test.js",
+    "tests/tenant-runtime-vault.integration.test.js",
+    "tests/tenant-entries-http.integration.test.js",
+    "tests/tenant-credential-http.integration.test.js",
+    "tests/tenant-authorization-postgres.integration.test.js",
+    "tests/subject-management-http.integration.test.js",
+    "tests/subject-admin-postgres.integration.test.js",
+    "tests/owner-subject-policy.integration.test.js",
+    "tests/tenant-rest-authority-review.test.js",
+    "tests/storage-port-contract.integration.test.js",
+    "tests/tenant-frame-acquisition.integration.test.js",
+    "tests/tenant-rest-client-replay.integration.test.js",
+    "tests/multitenant-preview-process.integration.test.js"
+  ],
+  "created": [
+    {
+      "kind": "postgres",
+      "id": "dcdd578421a1695f1970266608ff614881d1ab054b65d0defe05764d62c215d0",
+      "volumes": [
+        "8f24b6e125a87535270c62677adda096728435269644d7c838752a539104d553"
+      ],
+      "image": "postgres:16"
+    },
+    {
+      "kind": "vault",
+      "id": "513e4da8eca57049489b6452a45c4affadbff50e2a62f67b76b1f8119cc137ff",
+      "volumes": [
+        "2b7f6f703fe40150c50887126b0aa955fc82d6730944db16b097202b3e96e1bf",
+        "a8f2a462dcd72aa76e2622cf426f06caf35cf5846d7eca2536098e3c72d1aad3"
+      ],
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2"
+    }
+  ],
+  "removed": [
+    {
+      "kind": "vault",
+      "id": "513e4da8eca57049489b6452a45c4affadbff50e2a62f67b76b1f8119cc137ff",
+      "volumes": [
+        "2b7f6f703fe40150c50887126b0aa955fc82d6730944db16b097202b3e96e1bf",
+        "a8f2a462dcd72aa76e2622cf426f06caf35cf5846d7eca2536098e3c72d1aad3"
+      ],
+      "verifiedAbsent": true
+    },
+    {
+      "kind": "postgres",
+      "id": "dcdd578421a1695f1970266608ff614881d1ab054b65d0defe05764d62c215d0",
+      "volumes": [
+        "8f24b6e125a87535270c62677adda096728435269644d7c838752a539104d553"
+      ],
+      "verifiedAbsent": true
+    }
+  ],
+  "env": {
+    "NS_TEST_POSTGRES_ADMIN_URI": "disposable",
+    "CUSTOMCONNSTR_mongo": "caller-provided",
+    "NS_PROFILE_FOOD_VAULT_ADDRESS": "disposable",
+    "NS_SETTINGS_VAULT_ADDRESS": "disposable"
+  },
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 537,
+    "pending": 1,
+    "failing": 0
+  },
+  "finishedAt": "2026-11-10T03:15:04.473Z",
+  "remaining": [],
+  "status": 0
+}

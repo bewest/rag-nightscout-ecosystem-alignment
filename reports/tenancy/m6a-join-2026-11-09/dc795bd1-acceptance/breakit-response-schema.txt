@@ -1,0 +1,51 @@
+scratch worktree at dc795bd1515f11808a8d0732f2be9925cb2ffcd1 (detached; node_modules symlinked from the candidate worktree; server-side code only)
+== baseline
+  ......................
+
+  22 passing (347ms)
+
+== BREAK A: listener skips response-schema validation (transport.js:81)
+ lib/server/internal-api/transport.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+-      validate(operation.response, JSON.parse(bytes.toString('utf8')));
++      // BREAK-IT: response validation skipped
+    ✔ rejects raw unknown, cross-service, query, encoded, and prototype paths before effects
+    1) rejects malformed domain responses instead of delivering them
+    ✔ rejects raw unknown, cross-service, query, encoded, and prototype paths before effects
+    2) rejects malformed domain responses instead of delivering them
+    ✔ refuses missing, extra, and non-function service handlers at registration
+    ✔ requires explicit HTTP trust and accepts configured DNS, link-local, private and loopback endpoints
+    ✔ serves explicitly trusted-network HTTP without an application credential and uses an explicit bind address
+    ✔ keeps internal operations off the actual public API app while the private service remains callable (136ms)
+  20 passing (339ms)
+  2 failing
+  1) Internal API service boundary over uds
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+      + expected - actual
+      -200
+      +503
+      at refused (tests/internal-api-transport.test.js:81:10)
+      at Context.<anonymous> (tests/internal-api-transport.test.js:136:7)
+  2) Internal API service boundary over http
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+      + expected - actual
+      -200
+      +503
+      at refused (tests/internal-api-transport.test.js:81:10)
+      at Context.<anonymous> (tests/internal-api-transport.test.js:136:7)
+restored: 0 modified
+== BREAK B: named client skips response-schema validation (transport.js:187)
+-            validate(operation.response, value); resolve(value);
++            resolve(value); // BREAK-IT
+    1) validates client requests before sending and responses from an independently implemented peer
+    ✔ keeps internal operations off the actual public API app while the private service remains callable (130ms)
+  21 passing (337ms)
+  1 failing
+  1) Internal API transport registration and custody
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+restored: 0 modified
+== after restore
+  ......................
+
+  22 passing (337ms)
+

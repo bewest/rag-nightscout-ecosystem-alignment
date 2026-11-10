@@ -93,7 +93,15 @@ tokens find no subject (test red without the guard with "accessToken.split is
 not a function", green with it); IPC dispatch requires a function. Focused:
 authorization reload 4/0, realtime-preview 24/0,
 security/api.security/api.unauthorized 40/0, lint clean, write-intent clean,
-prcheck OK.
+prcheck OK. 2026-11-10 (reproduced): joined the internal service API refactor
+dc795bd1 (fast-forward over 0fc5abf9; decision internal-service-contracts).
+Full acceptance on dc795bd1: unit 3072, dom 205, dependency 368/2, core 319,
+harness 99, integration 3618/534, stress 18, browser 686, corpus 537/1, all 0
+failing; OIDC matrix 9/9 with 3/3 controls; new response-schema break-it red
+(listener 200 instead of 503; client "Missing expected rejection.") then
+green; prcheck OK. Evidence
+reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/. Ready for the
+maintainer to push dc795bd1 to #8898.
 
 ---
 

@@ -1,0 +1,1 @@
+{"instrument":"oidc-matrix-stage","stage":"mongo-http","verdict":"failed","error":"ERR_ASSERTION","message":"shipping single subject JWT lifetime is eight hours\n\n3600 !== 28800\n","failures":[{"name":"AssertionError","code":"ERR_ASSERTION","message":"shipping single subject JWT lifetime is eight hours\n\n3600 !== 28800\n"}]}
