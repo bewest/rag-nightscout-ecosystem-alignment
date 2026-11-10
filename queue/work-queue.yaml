@@ -25710,8 +25710,9 @@ items:
     title: "Component-private UDS/HTTP API composition and deployment acceptance"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/internal-service-api-20261109
-    base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
+    branch: codex/listener-composition-20261110
+    worktree: externals/work/crm-listener-composition-20261110
+    base: codex/internal-service-api-20261109@692bd507
     state: in-progress
     blast_radius: >
       Shared internal service transport, schemas, named clients and consuming-role
@@ -25731,23 +25732,32 @@ items:
       public protocol, and specify any internal header/path migration explicitly.
     register: []
     gates:
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/internal-api-composition.test.js
+        cwd: externals/work/crm-m6b-join-20261110
+        kind: unit
+        describe: >
+          Listener composition on the accepted candidate b70ad83f: 19 passing. Fixed
+          (method, path) route table; duplicate route/service refused before bind;
+          foreign co-resident service 503; per-operation media type, size and deadline
+          that only tighten; lifecycle status/invalidation callable for suspended A while
+          A's application calls refuse and B proceeds. Five source ablations red then green
+          in reports/tenancy/listener-composition-2026-11-10/README.md.
+      - run: "grep -q '^compose exit 0$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt && grep -q '^compose control exit 1 (expected 1)$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt"
+        kind: static
+        describe: >
+          RECORDED-EVIDENCE: separated processes over a Docker Compose network (HTTP and a
+          shared UDS) on b70ad83f preserve revocation, suspension, per-participant
+          invalidation and drain; the blanket-window control exits 1 with
+          SOCKET_IPC_UNAVAILABLE. Uses the production transport and lifecycle handlers with
+          synthetic authority, not the real api/realtime/evaluator roles.
       - no-gate: >
-          UNMEASURED remaining listener-composition and operational-API acceptance.
-          Joined dc795bd1 already carries transport/schema/client/parser and loopback
-          UDS/HTTP evidence; it is not this remaining gate. Define fixed method/path
-          registration, collision/foreign-service refusal, request/response and
-          content-type rules, public-port refusal and per-operation lifetimes.
-          Lifecycle status/invalidation must remain callable during suspended A
-          while application work refuses and B progresses. GET metrics/readiness
-          are not implemented by the current JSON POST dispatcher.
-      - no-gate: >
-          UNMEASURED native deployment/network acceptance beyond loopback. Actual
-          separated processes must preserve current authority, per-instance pins,
-          response drain, tenant-local invalidation and commit/ack uncertainty over
-          the selected UDS or HTTP binding. Deployment owns reachability and any
-          selected standard TLS/proxy/mesh profile; direct HTTPS is not implemented
-          and no new bearer credential protocol is required. A reachable URL or
-          service/version header is not process identity or lifecycle acceptance.
+          UNMEASURED real-role deployment acceptance beyond loopback: actual nightscout
+          multitenant api|realtime|evaluator processes over Compose with PostgreSQL, Vault
+          and socket forwarding (needs in-tree provisioning), Kubernetes and multi-host.
+          Production wiring of a shared component listener needs a configuration shape
+          naming the endpoint and a register-before-bind boot order (maintainer decision).
+          GET metrics/readiness, direct HTTPS and held-response delivery on shutdown are
+          follow-ups.
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
@@ -25767,7 +25777,11 @@ items:
       An optional edge decision adapter needs a selected status/metadata/header
       contract; it is not a mandatory dependency of transport acceptance.
       No production admission, multi-host restore, capacity or milestone promotion.
-
+      2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b
+      candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a
+      response whose media type only starts with application/json is now refused by the
+      client. Finding: on shutdown close() drops in-flight connections before handlers
+      finish, consistent with the no-retry contract; a decision for the replica/drain owner.
   - id: MT-API-FIXED-ROSTER
     title: "Independent API scaling with a fixed restore participant roster"
     parcel: tenancy

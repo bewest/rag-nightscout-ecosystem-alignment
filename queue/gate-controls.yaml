@@ -3305,3 +3305,20 @@ controls:
       existing deliberately stale fixture artifacts. Current generated SVGs
       compare equal and exit 0. The control measures content drift, not just a
       missing-file/setup error; it never writes a checkout or fixture.
+
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/internal-api-composition.test.js
+    cwd: externals/work/crm-m6b-join-20261110
+    control-exempt: >
+      Five source ablations of lib/server/internal-api/transport.js in the lane (duplicate-route
+      check removed, route-owner fence removed, per-operation bounds replaced, media-type check
+      skipped, listener-wide window), each red with its recorded symptom and restored to the
+      committed sha256, are in reports/tenancy/listener-composition-2026-11-10/README.md.
+      Automating them would write into the candidate worktree.
+
+  - gate: "grep -q '^compose exit 0$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt && grep -q '^compose control exit 1 (expected 1)$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt"
+    control: "grep -q '^compose exit 0$' tools/queue/gates/_internal-api-compose/control-passed.txt && grep -q '^compose control exit 1 (expected 1)$' tools/queue/gates/_internal-api-compose/control-passed.txt"
+    positive-control: "grep -q '^compose exit 0$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt && grep -q '^compose control exit 1 (expected 1)$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt"
+    control-kind: static
+    proves: >
+      The record shows the scenario passing and the blanket-window control failing as
+      required; the fixture in which the control run passed (a vacuous control) exits 1.

@@ -32,10 +32,10 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 388 |
-| runnable gates | 440 |
-| explicit `no-gate:` markers | 400 |
+| runnable gates | 442 |
+| explicit `no-gate:` markers | 399 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 840 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 399 of the 841 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
@@ -8445,7 +8445,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
-| `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | `codex/internal-service-api-20261109` | minor | 0 run + 2 no-gate |
+| `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | `codex/listener-composition-20261110` | minor | 2 run + 1 no-gate |
 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | `codex/oidc-native-harness-20261109` | n/a | 1 run |
 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `codex/m6a-join-20261109` | minor | 1 run |
@@ -10643,9 +10643,9 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/internal-service-api-20261109` |
-| base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
-| worktree | `-` |
+| branch | `codex/listener-composition-20261110` |
+| base | `codex/internal-service-api-20261109@692bd507` |
+| worktree | `externals/work/crm-listener-composition-20261110` |
 | semver | `minor` |
 | review | maintainer; compatibility, architecture and deployment operations review |
 
@@ -10657,8 +10657,11 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED remaining listener-composition and operational-API acceptance. Joined dc795bd1 already carries transport/schema/client/parser and loopback UDS/HTTP evidence; it is not this remaining gate. Define fixed method/path registration, collision/foreign-service refusal, request/response and content-type rules, public-port refusal and per-operation lifetimes. Lifecycle status/invalidation must remain callable during suspended A while application work refuses and B progresses. GET metrics/readiness are not implemented by the current JSON POST dispatcher.
-- **NO GATE** &mdash; UNMEASURED native deployment/network acceptance beyond loopback. Actual separated processes must preserve current authority, per-instance pins, response drain, tenant-local invalidation and commit/ack uncertainty over the selected UDS or HTTP binding. Deployment owns reachability and any selected standard TLS/proxy/mesh profile; direct HTTPS is not implemented and no new bearer credential protocol is required. A reachable URL or service/version header is not process identity or lifecycle acceptance.
+- `[unit]` _(cwd: `externals/work/crm-m6b-join-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/internal-api-composition.test.js`
+  - Listener composition on the accepted candidate b70ad83f: 19 passing. Fixed (method, path) route table; duplicate route/service refused before bind; foreign co-resident service 503; per-operation media type, size and deadline that only tighten; lifecycle status/invalidation callable for suspended A while A's application calls refuse and B proceeds. Five source ablations red then green in reports/tenancy/listener-composition-2026-11-10/README.md.
+- `[static]` `grep -q '^compose exit 0$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt && grep -q '^compose control exit 1 (expected 1)$' reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/native-compose.txt`
+  - RECORDED-EVIDENCE: separated processes over a Docker Compose network (HTTP and a shared UDS) on b70ad83f preserve revocation, suspension, per-participant invalidation and drain; the blanket-window control exits 1 with SOCKET_IPC_UNAVAILABLE. Uses the production transport and lifecycle handlers with synthetic authority, not the real api/realtime/evaluator roles.
+- **NO GATE** &mdash; UNMEASURED real-role deployment acceptance beyond loopback: actual nightscout multitenant api|realtime|evaluator processes over Compose with PostgreSQL, Vault and socket forwarding (needs in-tree provisioning), Kubernetes and multi-host. Production wiring of a shared component listener needs a configuration shape naming the endpoint and a register-before-bind boot order (maintainer decision). GET metrics/readiness, direct HTTPS and held-response delivery on shutdown are follow-ups.
 
 **Evidence.**
 
@@ -10668,7 +10671,7 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/internal-service-api-2026-11-09/README.md`
 - `reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/test-all-and-browser.txt`
 
-**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion.
+**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion. 2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a response whose media type only starts with application/json is now refused by the client. Finding: on shutdown close() drops in-flight connections before handlers finish, consistent with the no-retry contract; a decision for the replica/drain owner.
 
 ### `MT-API-FIXED-ROSTER` &mdash; Independent API scaling with a fixed restore participant roster
 
