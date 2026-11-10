@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 15 items
+### Maintainer &mdash; 16 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -46,6 +46,7 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `DEPLOY-VAULT-AGENT` | `ready-to-push` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | &mdash; |
+| `MT-M6A-JOIN` | `ready-to-push` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | &mdash; |
 | `MT-OIDC-NATIVE` | `ready-to-push` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | &mdash; |
 | `MT-VAULT-TOKEN-FILE` | `ready-to-push` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |

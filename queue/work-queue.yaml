@@ -25870,9 +25870,10 @@ items:
     title: "M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/multitenant-20261102
+    branch: codex/m6a-join-20261109
+    worktree: externals/work/crm-m6a-join-20261109
     base: official/dev@4a482627bfdafb1fef8dcbe0ac6c484811cae563
-    state: not-started
+    state: ready-to-push
     blast_radius: >
       Draft PR #8898 head moves from ed2ced00 to the joined candidate. Full seven-tier,
       default-browser, enabled-corpus, pinned-client and prcheck must be re-run on the
@@ -25889,9 +25890,14 @@ items:
     semver_reason: opt-in feature on a dormant preview branch
     register: []
     gates:
-      - no-gate: >
-          UNMEASURED until MT-OIDC-NATIVE passes. Then: full/default-browser/enabled-corpus/
-          pinned-client on the joined head and tools/review/prcheck/prcheck.sh last.
+      - run: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/m6a-join-2026-11-09/oidc-matrix-final/summary.json
+        kind: static
+        describe: >
+          RECORDED-EVIDENCE: nine-stage OIDC matrix on the joined head 74036ba6, all PASS,
+          three mutant controls red then green. The rest of the final verification is in
+          reports/tenancy/m6a-join-2026-11-09/README.md section 10: test:all 0 failing,
+          browser 686/0, multitenant corpus 537/1 pending/0, write-intent and
+          write-boundary clean, prcheck exit 0 against official/dev 4a482627.
     blocks_on:
       - MT-OIDC-NATIVE
     evidence:
@@ -25902,6 +25908,13 @@ items:
       and gives the three OIDC-branch getToken sites (human-session/access-config.js,
       serve/owner-credential-config.js, secrets/vault-access-signing.js) the same
       tokenFile shape.
+      2026-11-09 (reproduced): head 74036ba6, a fast-forward of the PR branch from
+      ed2ced00 (40 commits, 143 files). Repairs: D23 socket delegation via a
+      beforeWrite hook; human_session family admitted to the lifecycle catalogue;
+      two date-pinned test time bombs; OIDC browser discovery made opt-in by a
+      page-server hint so default-off sites start exactly as on ed2; owner
+      capability test expectations and grants. Awaiting maintainer decisions on
+      opt-in discovery and permitted owner DELETE before the push.
 
   - id: MT-OWNERSHIP-OPS
     title: "M6b: operator-assisted ownership add, transfer and recovery"

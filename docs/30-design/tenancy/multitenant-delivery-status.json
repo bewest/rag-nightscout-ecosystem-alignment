@@ -243,8 +243,8 @@
     },
     {
       "id": "MT-M6A-JOIN",
-      "lane": "M6a / source owner",
-      "next": "Join codex/oidc-native-harness-20261109 (carries the combined owner/OIDC candidate, the Vault probe status fix and the harness) to #8898; clear the CodeQL alert on the private IPC dispatch; rerun the nine stages plus full/default-browser/enabled-corpus/pinned-client/prcheck on the new frozen head."
+      "lane": "M6a / joined head 74036ba6 verified, local",
+      "next": "Maintainer decides opt-in OIDC browser discovery and permitted owner DELETE, then pushes the fast-forward; CodeQL on the IPC Map change measured by CI."
     },
     {
       "id": "MT-OWNERSHIP-OPS",
@@ -736,6 +736,14 @@
       "commit": "cda38265",
       "evidence": "../../../reports/tenancy/vault-agent-2026-11-09/README.md#measured-run",
       "result": "Reproduced 2026-11-09: renewal past a 2-minute TTL, stopped Agent fails closed with env tokens still present (no fallback), recovery after secret-id reissue, restore demo through the overlay. Core tokenFile on codex/vault-token-file-20261109 (0c547958). Imported tree unchanged."
+    },
+    {
+      "title": "M6a joined candidate for draft #8898",
+      "work": "MT-M6A-JOIN",
+      "stage": "local-accepted",
+      "commit": "74036ba6",
+      "evidence": "../../../reports/tenancy/m6a-join-2026-11-09/README.md",
+      "result": "Reproduced 2026-11-09: OIDC matrix 9/9 with 3/3 controls; test:all 0 failing; browser 686/0; multitenant corpus 537/1/0; prcheck exit 0. Fast-forward of the PR branch; push awaits two maintainer decisions."
     }
   ],
   "deferred": [

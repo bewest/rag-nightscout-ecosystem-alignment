@@ -3242,3 +3242,12 @@ controls:
       The renew-self grant is what the measured run showed was missing; the imported
       per-tenant bootstrap (which the overlay must not edit) lacks it and the grep exits 1.
 
+  - gate: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/m6a-join-2026-11-09/oidc-matrix-final/summary.json
+    control: node tools/queue/gates/oidc-native-recorded.js tools/queue/gates/_oidc-native-recorded/missing-stage.json
+    positive-control: node tools/queue/gates/oidc-native-recorded.js reports/tenancy/m6a-join-2026-11-09/oidc-matrix-final/summary.json
+    control-kind: static
+    proves: >
+      The joined-head record validates; the fixture without owner-browser fails. The
+      lane also recorded the gate failing on this record before its controls were
+      merged ("0 of 0" controls).
+

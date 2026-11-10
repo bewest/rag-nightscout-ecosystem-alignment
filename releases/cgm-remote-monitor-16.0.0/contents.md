@@ -2098,3 +2098,10 @@ Local lane handoff: `externals/work/HANDOFF-oidc-native-harness-20261109.md`.
 
 Local lane handoff: `externals/work/HANDOFF-vault-agent-20261109.md`.
 
+
+### Update — M6a joined candidate for draft #8898 (2026-11-09)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| MT-M6A-JOIN | **Reproduced:** `codex/m6a-join-20261109` head `74036ba6`, a fast-forward of `workspace/multitenant-20261102` from `ed2ced00` (40 commits, 143 files). Joins the OIDC harness and tokenFile branches, then repairs every regression the OIDC candidate brought: D23 socket delegation via a `beforeWrite` hook (`521c35e0`); `human_session` family admitted to the lifecycle catalogue following `access` (`cc1789bd`); two date-pinned test time bombs (`463e2806`, `2c289a0c`); OIDC browser discovery opt-in by a page-server hint (`861a5d11`); owner capability test expectations and grants (`74036ba6`). Each repair has a red control. Final: OIDC matrix 9/9 with 3/3 controls; `test:all` 0 failing; browser 686/0; multitenant corpus 537/1 pending/0 (ed2: 537/1/0); write-intent and write-boundary clean; prcheck exit 0 against official/dev `4a482627`. [Report](../../reports/tenancy/m6a-join-2026-11-09/README.md). | Push awaits two maintainer decisions (opt-in browser discovery; permitted owner DELETE). UNMEASURED: CodeQL on the IPC Map change, Compose runtime with the new grants, end-to-end single-process OIDC with a real provider. `deploy/multitenant/config.js` now diverges from the nightscout-deploy mirror (owner_writer grants). |
+
