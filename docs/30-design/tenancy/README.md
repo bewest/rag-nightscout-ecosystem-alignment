@@ -3,7 +3,7 @@
 *Contributor-facing living reading guide. The current documents below own rules,
 coordination and recorded acceptance. The complete long execution journals are
 retained in the [tenancy archive](../../archive/tenancy/README.md); dates in a
-filename do not establish currency. Reconciled 2026-11-09: M6 split into M6a–M6d and M7, deployment tree in `nightscout-deploy`, disposable native harness ([decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09)).*
+filename do not establish currency. Reconciled 2026-11-10: M6 is split into M6a–M6d and M7, the deployment tree lives in `nightscout-deploy`, native acceptance runs in a disposable harness ([decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09)); the answered November 6 decision and review packets are archived.*
 
 ## What can inform a decision now
 
@@ -15,12 +15,13 @@ limits remain visible beside the diagrams.
 Start with the [deployment models and fault domains](deployment-and-rig-testing.md)
 and [architecture comparison](single-and-multitenant-architecture.md). The published
 one-host reference answers bounded component, tenant isolation and recovery questions.
-The dashboard distinguishes accepted M0–M5 criteria from incomplete M6 admission;
-the platform map is a dependency guide, not a production readiness score.
+The dashboard distinguishes accepted M0–M5 criteria from the M6a–M6d and M7
+capability items; the platform map is a dependency guide, not a production
+readiness score.
 
 Use the [current decision list](m5-m6-decision-list.md) to separate already adopted
-policy from implementation and evidence still needed. Keep historical journals
-for rationale and failed predictions; their “next” does not assign current work.
+policy from implementation and evidence still needed. Archived journals and packets
+keep rationale and failed predictions; their “next” does not assign current work.
 
 For the path beyond the accepted preview, read the
 [production critical path](production-critical-path.md): blockers, closing evidence,
@@ -57,8 +58,8 @@ inactive-tenant feature.
 | Deployment packaging, edge, identity-provider profiles, Vault Agent | `nightscout-deploy` (sibling repository; local `/home/bewest/src/nightscout-deploy`), [scope split](claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private) | The Compose tree moved there with history on 2026-11-09. Core keeps application code and the Dockerfile. |
 | Why the architecture is this way | [Tenancy decisions](multitenancy-decisions.md#1-decisions) | D1–D23, hard qualifications and links to detailed contracts. Old per-commit tasks belong to the archive. |
 | Current promotion bars and compatibility direction | [Promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06) | Reader mode withdrawn; writer policy retained. M2 cell/M6 lifecycle and deferred M1 budgets/Android lab retain their adopted scope. No new promotion. |
-| Owner, delegation and token rules; shared optional OIDC | [Owner authority](owner-authority.md), [shared integration](owner-authority.md#shared-oidc-integration) | Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters; implementation acceptance is separate. |
-| What needs a maintainer decision | [Current M5/M6 decision list](m5-m6-decision-list.md) | Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; older packets supply background only. |
+| Owner, delegation and token rules; shared optional OIDC | [Owner authority](owner-authority.md), [shared integration](owner-authority.md#shared-oidc-integration) | Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters. Joined acceptance: [M6a](../../../reports/tenancy/m6a-join-2026-11-09/README.md), [M6b](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md). |
+| What needs a maintainer decision | [Current M5/M6 decision list](m5-m6-decision-list.md) | Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; archived packets supply background only. |
 | Durable consumers and recovery | [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | Adopted B7 direction; runtime evidence retains its actual tree and limits. |
 | Separate service processes and restore coordination | [Current composition diagram](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07) | Fixed cross-process cohort and source-attributed restore evidence; native tenant-local shared-role restart is accepted on c23; cold Compose restore is accepted on ed2. |
 | Express the same deployment with Kubernetes/Jsonnet, public aliases and group policy | [Deployment bindings and public names](deployment-bindings-and-public-names.md) | Public requirements, candidate resource translation, transport/replacement boundaries and load-herd experiments; implementation and policy defaults remain unmeasured. |
@@ -106,13 +107,12 @@ These retain distinct evidence or alternatives; they are not current work instru
 
 | Read only for this purpose | Current successor / boundary |
 |---|---|
-| [Archived execution journals](../../archive/tenancy/README.md) | Original decision detail, seam tasks, dispatches, failures, controls and checkpoints. Current rules live above. |
+| [Tenancy archive](../../archive/tenancy/README.md) | Execution journals (decision detail, seam tasks, dispatches, failures, controls, checkpoints) and the November 6 critical-path note, owner lifecycle packet and M0–M3 promotion review. Current rules live above. |
 | [September multitenancy discussion](nightscout-multitenancy-discussion-2026-09-09.md) | Original options/evidence; decisions superseded by the current decision reference. |
 | [Owner configuration census](tenant-owner-config-surface-2026-09-15.md) | Historical census/DDL; later [dev census](../../60-research/tenancy/t30-census-dev-2026-10-27.md), config candidate and owner authority have separate scopes. |
 | [Configuration/delegation questions](nightscout-configuration-and-delegation-2026-09-10.md), [control-plane reconciliation](nightscout-control-plane-reconciliation-2026-09-11.md) | Historical analysis and supersession map; not a replacement backlog. |
 | [Ordering translation](nightscout-seam-ordering-translation.md) | Old-seam proposal; current ports, write contract and backend measurements govern admission. |
-| [Earlier open-decision note](../../archive/tenancy/multitenant-open-decisions-2026-11-06.md), [owner lifecycle packet](../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.md) | Historical questions, source surveys and alternatives. Start with the current decision list; draft recommendations are not adopted policy. |
-| [M0–M3 promotion review](../../archive/tenancy/milestone-promotion-review-2026-11-06.md), [M4 client dispatch](m4-client-binary-lab-packet-2026-11-06.md) | Read-derived gap review and lab hypotheses. Later integration records own actual acceptance. |
+| [M4 client dispatch](m4-client-binary-lab-packet-2026-11-06.md) | Lab hypotheses for the pinned-client campaign. Later integration records own actual acceptance. |
 
 ## Keeping this path useful
 

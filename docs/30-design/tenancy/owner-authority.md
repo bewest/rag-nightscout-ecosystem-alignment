@@ -3,7 +3,8 @@
 *Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
-Queue homes: MT-CONFIG-MIN, MT-SECRETS-CONTRACT, T30-WIRING, MT-IDENTITY-PLAN.*
+Queue homes: MT-OIDC-NATIVE and MT-M6A-JOIN (M6a), MT-OWNERSHIP-OPS (M6b), MT-OIDC-SINGLE-PROVISION;
+the earlier MT-CONFIG-MIN, MT-SECRETS-CONTRACT, T30-WIRING and MT-IDENTITY-PLAN are closed as superseded.*
 
 ## Authority and storage boundaries
 
@@ -207,9 +208,12 @@ renewal refuses. Local logout/revocation takes effect on the next protected
 operation across workers; unavailable current authority refuses even with an
 unexpired token. No grace extension or Nightscout-owned refresh system is added.
 Provider logout propagation, qualifying idle activity, concurrent renewal and
-browser transport have adopted contracts and still require implementation/acceptance. Upstream
-logout cannot take immediate local effect until it is known locally. Human
-login/session implementation remains UNIMPLEMENTED/UNMEASURED.
+browser transport have adopted contracts. Upstream logout cannot take immediate
+local effect until it is known locally. Human login/session implementation is on
+draft #8898 with joined acceptance records
+([M6a](../../../reports/tenancy/m6a-join-2026-11-09/README.md),
+[M6b](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md));
+real identity-provider interoperability is synthetic only.
 
 The [lab](../../../tools/lab/owner-authority/README.md) compares the actual current
 credential component/authority adapter with local verification and a bounded combined

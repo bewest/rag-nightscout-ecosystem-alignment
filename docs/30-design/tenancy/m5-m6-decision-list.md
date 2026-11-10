@@ -1,6 +1,6 @@
 # M5/M6: current decisions and next review
 
-*Living contributor-facing decision index, 2026-11-09. Read this before older
+*Living contributor-facing decision index, 2026-11-10. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
 records no new application measurement or promotion.*
@@ -31,12 +31,13 @@ the satisfied M5 functional bar.
 M6 now includes [accepted native tenant-local restore/restart and cold Compose
 reference evidence](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md).
 The published ed2 candidate closes that bounded clinical restore capability;
-restoring or cloning credentials/identity is a separate contract. Shared human
-identity/session and owner source has progressed locally, while signed native
-DB/Vault/HTTPS/browser acceptance remains **UNMEASURED** in the
-[release update](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
-Continue that acceptance, operator-assisted ownership, retained-key destruction
-and workload-based operating limits. The
+restoring or cloning credentials/identity is a separate contract. The owner/OIDC
+and internal service API work (M6a) and the lifecycle, key-retention, ownership and
+single-site provisioning work (M6b) have joined acceptance records
+([M6a](../../../reports/tenancy/m6a-join-2026-11-09/README.md),
+[M6b](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md));
+publication state and the remaining boundaries are in the
+[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md). The
 [completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06)
 owns assignments; the [roadmap acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families)
 own observable completion. Prefer a minimal working base with explicit later
@@ -60,8 +61,9 @@ enhancements; that preference grants no production permission or criterion waive
 | Tenant-local restore and ordering | [Per-tenant/collection ordering only; pursue tenant-local insertion state](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics). Preserve other tenants' current state and supported client ordering. [Standalone native proof](../../../reports/tenancy/tenant-local-insertion-2026-11-07/README.md) retains its early SQL scope; later c23 native and ed2 packaged restore evidence covers the admitted fixed-cohort reference. No global restore pause selected. |
 | First-preview owner surface | [Projected display catalogue](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-settings-projected-catalogue), [bounded owner thresholds and alarm enables](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-alarm-thresholds), [single-tenant-equivalent credentials, wildcards accepted as single tenant accepts them, under the operator ceiling](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-credentials-single-tenant-equivalent), [tightening applies to both and is a separate proposal](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#permission-tightening-applies-to-both), [no owner integrations yet](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-integrations-none-first-preview). D22 floors stand. Implementation and consuming-runtime tests remain open. |
 | First-preview external delivery | [No live push provider; Nightscout-to-Nightscout sync via nightscout-connect in both directions, outbound first](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#first-preview-no-push-provider); [per-kind operator/owner credential parts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#integration-credential-parts); [single-tenant constants as first bounds](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#notification-bounds-single-tenant-constants); [admission by probes and lab sync](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#external-delivery-admission-by-probe). Pushover/Maker deferred. Connector actor and lab sync remain open. |
-| M6 human session effects | [Idle/absolute lifetimes scoped to management sessions only; always-on displays unchanged](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-idle-scope-management-only); [local-first logout, provider optional, signal-less providers admitted with disclosure](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-logout-local-first); [fenced idempotent renewal](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-renewal-fenced); [both browser transports, HttpOnly cookie default, headless bearer unchanged](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-transport-cookie-default). Local signed source exists; actual joined native/browser/provider acceptance remains UNMEASURED. |
+| M6 human session effects | [Idle/absolute lifetimes scoped to management sessions only; always-on displays unchanged](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-idle-scope-management-only); [local-first logout, provider optional, signal-less providers admitted with disclosure](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-logout-local-first); [fenced idempotent renewal](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-renewal-fenced); [both browser transports, HttpOnly cookie default, headless bearer unchanged](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#human-session-transport-cookie-default). The OIDC native matrix runs in the [M6b joined acceptance](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md); real identity-provider interoperability is synthetic only. |
 | M6 deployment and trust | [Peer-list ingress trust, one list for tenant selection and client IP](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-ingress-peer-list-trust); [Vault Transit at every stage, service-login adapter before production](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-secrets-ladder-vault-all-stages); [generic OIDC adapter, Authentik intended reference subject to the Kratos proof](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-identity-generic-adapter-authentik-reference); [admission by trust record plus live probes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-admission-probes-and-trust-record). Synthetic Compose edge/TLS Vault is measured at the reference scope; provider/service-login proof and production deployment remain UNMEASURED. |
+| Single-site OIDC identity list | [Each start re-applies the list; list-managed people taken off it are removed](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#single-site-oidc-list-authoritative); fallback roles for unlisted people. `MT-OIDC-SINGLE-PROVISION` carries the implementation. |
 | Legacy authority and management split | [Reader clamp withdrawn; preserve own-tenant credentials](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06); [owner authority](owner-authority.md) governs separate management audience, current authority and adopted lifetimes. |
 | Socket writer and recovery direction | [D23](multitenancy-decisions.md#d23): realtime forwards to API with existing protocol/source; failure gives no acknowledgement. First runtime proof uses separate roles on one machine. No multi-node lease claim. |
 

@@ -1,6 +1,6 @@
 # Multitenant delivery roadmap
 
-*Contributor-facing living plan. Reconciled 2026-11-08 to the published reference and adopted release decisions,
+*Contributor-facing living plan. Reconciled 2026-11-10 to the M6a/M6b joined acceptance records and adopted release decisions,
 without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The [dashboard](multitenant-delivery-dashboard.md) owns recorded milestone claims;
 the [queue](../../../queue/work-queue.yaml) owns item states, gates and blockers.*
@@ -16,7 +16,8 @@ owns publication and cycle updates. A source branch, an incorporated change, an
 accepted batch and a promoted milestone are distinct claims.
 
 Delivery uses three completion stages: **A**, data/control/clients through M4;
-**B**, durable runtime for M5; **C**, synthetic operations for M6. Independent
+**B**, durable runtime for M5; **C**, synthetic operations for M6, split on
+2026-11-09 into M6a–M6d, followed by M7 production readiness. Independent
 implementation and early uncertainty proofs may proceed in parallel. Freeze one
 coherent candidate for comprehensive acceptance; do not rerun accepted campaigns
 merely because a new session resumes. Promotion requires the complete criterion
@@ -203,7 +204,7 @@ implementation and destroy/after-window refusal evidence remain separate.
 [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) accepts the functional M5 reference on one host and records its final
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
-observations, not a fresh current-HEAD campaign. M6 remains blocked. The later accepted ed2 reference is published on draft
+observations, not a fresh current-HEAD campaign. The later accepted ed2 reference is published on draft
 PR #8898; its [publication and alignment CI record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json)
 is distinct from dev merge, release and production/default admission.
 
@@ -215,12 +216,16 @@ is distinct from dev merge, release and production/default admission.
 | [Native tenant-local restore and restart](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) | c23 fixed-cohort separate-role controller proof: restore with forward history, rollback/uncertainty refusal, B continuity and fresh shared-role restart while A remains suspended. Direct SQL writers and multi-host coordination remain outside this cooperative protocol. |
 | [Packaged Compose and clients](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md) | ed2 exact image/cold UI/main+alarm sockets, tenant-local restore/client convergence, actual pinned clients and full nonbrowser acceptance. Browser/native c23 and enabled corpus39f4 retain their own attribution. This answers feasibility and bounded compatibility questions; capacity, HA and production admission remain open. |
 
-Shared OIDC/session effects, operator-assisted ownership, full lifecycle,
-retained-key destruction/after-window refusal and measured operating budgets
-remain M6 work. Local OIDC/owner source is not native acceptance; the
-[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) records
-the next candidate and ownership. The [current decision index](m5-m6-decision-list.md) separates
-human choices from implementation and measurement work.
+| [M6a joined candidate](../../../reports/tenancy/m6a-join-2026-11-09/README.md) | Owner/OIDC, the disposable-harness OIDC matrix and the internal service contracts joined to #8898. Real identity-provider interoperability is synthetic only. |
+| [M6b joined candidate](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md) | Listener composition, key retention, operator-assisted ownership and single-site OIDC provisioning on one frozen head. Ownership in a serving role, real role processes over Compose and the production key custodian remain open. |
+| [Vault Agent sidecar](../../../reports/tenancy/vault-agent-2026-11-09/README.md), [connector sync](../../../reports/tenancy/connector-sync-2026-11-10/README.md) | M6c Vault connectivity and the M6d outbound connector lab. Identity-provider profile, live trust probes and the remaining connector scope are open queue items. |
+
+Publication state, CI and the open boundaries of each candidate are in the
+[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md); the
+[dashboard](multitenant-delivery-dashboard.md) lists the M6a–M6d and M7 items with
+their claimed state. Measured operating budgets are M7 work. The
+[current decision index](m5-m6-decision-list.md) separates human choices from
+implementation and measurement work.
 
 ## M5/M6 acceptance families
 

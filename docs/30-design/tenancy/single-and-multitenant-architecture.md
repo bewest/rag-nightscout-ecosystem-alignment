@@ -1,8 +1,12 @@
 # Single and multitenant Nightscout: architecture and compatibility
 
-*Contributor-facing living explanation, groomed 2026-11-08. The published
-candidate is cgm-remote-monitor `ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`,
-recorded in the [publication measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json).
+*Contributor-facing living explanation, groomed 2026-11-08; header 2026-11-10. The
+restore/Compose reference this page explains is cgm-remote-monitor
+`ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`, recorded in the
+[publication measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json).
+Draft PR #8898 has since moved on (M6a and M6b joins); its current head and
+verification are in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md),
+and private service composition is in the [runtime topology guide](runtime-topology.md).
 PR #8898 remains open/draft, not merged or released. Architecture interpretation
 is **read-derived**; linked runtime results are **recorded reproductions**, not
 new executions for this document. The retained shared-code/module survey is
