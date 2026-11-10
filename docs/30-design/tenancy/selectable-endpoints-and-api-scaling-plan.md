@@ -1,262 +1,206 @@
-# Selectable private endpoints and fixed-roster API scaling
+# Private API composition, deployment bindings and fixed-roster scaling
 
-*Contributor-facing implementation plan, 2026-11-08. **PLANNED, not executed.**
-The maintainer requested selectable Unix-socket/HTTP(S) endpoints and independently
-scaled API instances. This plan defines two bounded capabilities and their
-acceptance; it selects no new production trust profile, endpoint environment
-variable, wire schema, operating budget or milestone promotion. Queue homes:
-`MT-ENDPOINT-TRANSPORT` and `MT-API-FIXED-ROSTER`. Read after
-[deployment bindings and public names](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api).
-The source assessment is **read-derived** from application
-`ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`; actual prior acceptance retains the
-heads in the [operation-window acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md).
-No application, native transport, load balancer or replica campaign ran for this plan.*
+*Living contributor-facing implementation plan, refreshed 2026-11-10. Current
+mechanisms are **read-derived** from joined application `dc795bd1`; carried
+measurements retain their original source/instrument in the linked evidence.
+Remaining criteria are **UNMEASURED** until their instruments run. Queue homes:
+`MT-ENDPOINT-TRANSPORT`, `MT-API-FIXED-ROSTER`; scaling and partitioning retain
+`MT-SCALE-UNBOUND` and `MT-EVALUATOR-PARTITION`. Read with the
+[runtime topology](runtime-topology.md). No production/default enablement follows
+from implementation or a diagram.*
 
-## Outcome and boundaries
+## Implemented foundation and remaining boundary
 
-An operator can select a private transport without changing its operation
-payloads or client-visible behavior. The same admitted operations work over a
-filesystem Unix socket or an explicitly configured HTTP(S) endpoint. HTTPS needs
-verified service and caller identity; cleartext HTTP requires an explicitly
-admitted private deployment trust profile. An address alone grants no capability.
+The [internal API implementation](../../../reports/tenancy/internal-service-api-2026-11-09/README.md)
+and [joined dc795bd1 acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
+carry the shared transport, three service registries, executable request/response
+schemas, named clients, strict public/private separation and consuming-role
+configuration. UDS and actual loopback HTTP tests exist; the joined regression,
+browser, enabled-corpus and OIDC records have their own executed scope.
 
-The REST APIs (v1/v2/v3) remain one stateless request-serving component, with
-version-specific routers/adapters inside it. Replication scales that whole
-component; each equivalent replica serves the same configured admitted routes.
-Neither capability creates version-specific services or scaling groups. Compose
-service instances and a Kubernetes Deployment are alternative runtime placement
-mechanisms; platform proof remains deferred.
-
-After transport acceptance, a fixed deployment can declare more than one API
-participant. Ordinary HTTP requests and realtime-to-API authorization/mutation
-may use an admitted service destination. Restore addresses every actual API
-instance separately, pins its incarnation and awaits the existing drain and
-invalidation protocol. The minimal acceptance fixture moves from one API to two
-declared APIs with the same synthetic tenants and admitted version-route configuration; other
-role counts stay unchanged. Version labels identify adapters, never replicas.
-
-These are capability boundaries within the existing preview. The accepted
-baseline is usable despite broader parent items remaining in progress. Neither
-capability claims whole M6, production/default enablement, operator release,
-capacity, arbitrary raw-SQL fencing or all-client compatibility.
-
-The evaluator remains one active owner of the current configured tenant set.
-An evaluator replica count of one or a StatefulSet ordinal is placement, not
-execution fencing. Future evaluator partitioning needs explicit disjoint tenant
-assignment and its own overlap/recovery proof. Realtime replication, fanout,
-polling affinity, dynamic membership, autoscaling, transaction-pooling proxies
-and automatic orphan clearance are outside this plan. Platform membership and
-scheduling primitives remain the source of placement and inventory. This work adds no custom API membership registry, discovery
-service, evaluator scheduler, replica manager or consensus product. A platform
-inventory/config adapter may supply the restore roster; native acceptance supplies
-explicit endpoints. Kubernetes is a conceptual architecture frame here. Jsonnet,
-resource manifests, cluster installation and platform rollout acceptance are
-deferred and are not either capability's gate.
-
-The [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
-is independent of listener/process packaging: owner REST can be colocated with API
-under its existing audience/bind contract. The private lifecycle controller remains
-an operator execution boundary. APIs consume generic operation admission and
-invalidation; they do not each implement a restore engine. The
-[activity/admission proposal](tenant-admission-and-activity.md) is a separate open
-policy topic. These two source capabilities preserve current maintenance semantics
-without implementing a new inactive-tenant schema, scheduler or policy default.
-
-## Boundary audit: keep responsibilities separate
-
-| Boundary | Stable application responsibility | Adapter/platform responsibility | Current implementation scope |
-|---|---|---|---|
-| Operation protocol | Fixed payload/result shapes, tenant/current-credential checks, lifetime, nonce/incarnation/schema identity and uncertainty refusal | Carry the same messages to the intended peer | Preserve the existing admitted operations and observable client behavior. |
-| Private transport | Admit an authenticated service capability before invoking source-owned handlers; retain limits, cancellation and actual completion | UDS ownership or explicit HTTP(S) listen/dial and trust implementation | Add selectable transport; no generic proxy or public destination selection. |
-| Service discovery | Request-scoped calls need an equivalently configured admitted API | Platform DNS/service or a configured native test dispatcher supplies the service destination | Consume destination configuration; do not create a discovery registry. |
-| Restore inventory | Require a complete relevant roster, direct per-instance reachability and pinned actual incarnations; refuse change/missing peer during an attempt | Platform inventory/config adapter supplies identities/endpoints and communicates inventory changes | Consume a fixed roster in native proof; platform integration remains deferred. |
-| API placement | Each real API participates in tenant admission, response drain and invalidation | Platform schedules/replaces API instances and may balance ordinary service requests | Prove two explicitly declared APIs with native processes, including replacement/overlap controls. |
-| Evaluator ownership | One active owner for the current tenant set; future partitions consume explicit disjoint tenant assignments | Platform may supply stable partition identities, for example StatefulSet ordinals | Keep the singleton. No evaluator scheduler, partitions or replicated same-work execution is built here. An ordinal alone is not exclusion/fencing. |
-
-These interfaces expose coupling before deployment-specific work hardens it.
-A complete roster is an input to restore coordination, not permission to build a
-parallel membership service. Platform churn observed during a pinned attempt
-must retain refusal/suspension semantics; native fixtures simulate that runtime
-condition without proving the platform itself.
-
-Predictable bounded work can justify a singleton deployment when headroom and
-restart availability are adequate. That sizing choice is distinct from the
-logical single-owner rule for evaluator effects. Neither adds a watcher,
-replicated evaluator, custom membership service or scheduler to these lanes.
-
-## Source baseline and invariants to preserve
-
-| Source at ed2 | Read-derived mechanism | Implementation constraint |
+| Surface | Current implementation | Remaining adjustment or proof |
 |---|---|---|
-| [Private IPC](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/realtime/ipc.js#L10) | Bounded HTTP POST/JSON already runs over a Unix `socketPath`. Directory/socket ownership and the service UID establish local admission; the trusted factory receives a process-local symbol. | Preserve operation allowlists, byte bounds, deadlines, cancellation and actual response completion. A local symbol is not a network credential. Retain Unix ownership/publication/cleanup protections. |
-| [Private API configuration](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/realtime/private-config.js#L5) | The exact parser accepts `socketPathEnv`, resolves it through private environment and calls IPC options. | Add an explicit endpoint contract; a TCP URL placed in the old field is unsupported. Preserve existing UDS configuration compatibility through an explicit parser rule. |
-| [Private API operations](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/realtime/private-api.js#L69) | `/authorize` and `/mutate` each resolve the host/tenant and prepare current tenant state. Mutation rechecks the actual credential through the existing receiver. | A service destination may distribute request-scoped calls; do not substitute service authority for tenant/client authority or introduce an authorization ticket that silently requires replica affinity. |
-| [API runtime](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/preview-api.js#L129) | Request frames are fresh; retained startup and floor state have explicit tenant invalidators. Pools, responses and initialization are still local state. | Stateless request handling does not remove instance drain/invalidation obligations. Every admitted API instance must join the cohort. |
-| [Cohort manifest](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/docs/tenant-operation-cohort.md#L3) | Fixed API replicas are already permitted as distinct participants. Participant IDs, roles, namespaces, endpoints and actual boot/datastore identities are compared. | Retain fixed membership, distinct instance destinations and actual incarnation checks. A load-balanced destination cannot represent the participant list. |
-| [Outer operation lifetime](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/docs/tenant-operation-cohort.md#L24) | Operations remain unfinished until callback, HTTP/private response or socket acknowledgement completes; restore requires complete drain. | HTTP cancellation, connection loss or a drained SQL pool alone cannot declare a pending callback finished. Preserve uncertainty and suspension. |
-| [Forwarding behavior](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/tenant-socket-forwarding.js#L33) | Each forward uses current socket credentials; an ambiguous result yields no acknowledgement and no automatic retry. | Transport and load-balancer policies must preserve that behavior, including when a mutation may already have committed. |
+| Private contracts | Socket authority/mutations, alarm delivery and lifecycle participant operations have named clients and schemas. | Compose explicit contract modules on a component-private listener without weakening ownership or lifetime checks. |
+| Binding | UDS or explicit `http:` origin; optional independent bind address. Existing UDS configuration is retained. | Qualify a selected private network deployment, not merely a helper's loopback behavior. Direct `https:` is not implemented. |
+| Trust | UDS permissions/UID/inode protections or explicit deployment-owned network reachability. Service/version headers identify the contract, not a caller identity. | Exercise the selected deployment's reachability/access boundary. TLS/mesh/proxy integration, if selected, belongs to the deployment; no new bearer protocol is required. |
+| Listener allocation | One service contract per listener. Public/management interfaces are separate. | Proposed one private listener per component, with server-owned module registration. More listeners remain possible where an actual policy/resource boundary requires them. |
+| Worker operations | Evaluator has lifecycle control and in-process `health()`; realtime has a consumer-app health route. | Define and integrate an operational health/readiness/metrics contract. A GET metrics endpoint and its response format do not already exist. |
+| API replicas | API work is request scoped; fixed participant identity/drain mechanisms exist. | Run two real equivalent APIs behind a service destination and prove all-instance maintenance, replacement and compatibility. |
+| Runtime cost | Realtime obtains current authority during recipient fanout. | Measure latency, request amplification, dependency failure and aggregate resource limits under `MT-SCALE-UNBOUND`. |
 
-The application cohort document contains its original source-check/pending-native
-wording. The alignment acceptance family records later native/cold executions on
-their actual heads; this plan does not turn either source prose or old green
-captures into new transport/replica acceptance.
+Private application calls and private lifecycle control are different purposes
+inside the same private API surface. They need not create separate transports,
+services or deployment processes. Data/authorization/owner REST modules may
+co-locate under existing audience and credential rules. REST v1/v2/v3 remain
+version adapters inside one logical request-serving component.
 
-The later [exclusive application PostgreSQL ownership decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership)
-qualifies the supported participant set collectively across Nightscout components.
-External direct writers are unsupported, not an additional fencing target for
-these lanes. Preserve [component-owned commands and admitted persistence](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis):
-transport adapters expose the intended application operations, not generic SQL
-or permission to write another component's tables. Admitted reads and owned
-transactional persistence retain their direct storage contracts.
+## Endpoint and compatibility contract
 
-## Endpoint contract to settle before implementation
+The current source of truth is application `lib/server/internal-api/endpoint-config.js`
+and `transport.js`, with service descriptions under `contracts/` and usage in
+`docs/internal-service-api.md`. Deployment configuration uses environment references:
 
-The endpoint owner proposes the normalized configuration and both listener and
-client interfaces together. Settle the contract in one review before parallel
-consumer changes; do not invent incompatible env names in individual role lanes.
-The illustrative names/syntax in the deployment guide remain proposals.
+```json
+{ "socketPathEnv": "NS_INTERNAL_SOCKET" }
+```
 
-| Contract element | Required behavior |
-|---|---|
-| Listen versus dial | A listener binds an owned UDS path or explicit interface/port. A dial endpoint names an approved UDS path or HTTP(S) origin. Service destinations and direct instance destinations are separate configuration entries. A wildcard listen address is never copied into a client destination. |
-| Operator selection | Environment/config references select endpoint kind, address and trust material at boot. Reject ambiguous mixed legacy/new fields, unsupported schemes, embedded credentials, fragments and unexpected URL components. Public requests, Host headers and socket message bodies cannot select private destinations. |
-| UDS trust | Preserve private directory/socket permissions, correct numeric UID, symlink/path/inode protections, refusal to replace an existing endpoint and removal of only the owned endpoint. |
-| Network service identity | Specify the authorized server identity and authorized caller role/purpose. HTTPS validates chain, server name and configured identity; caller admission may use an explicitly reviewed mutual-TLS or other bounded service-credential contract. TLS encryption or a private DNS name alone does not authenticate the caller. Credentials live in private references, not URLs or public configuration. |
-| Private HTTP | Refuse unless its selected deployment profile explicitly supplies and measures the private reachability/caller-authentication boundary. No automatic HTTPS-to-HTTP downgrade. Network encryption requirements remain deployment admission work. |
-| Capability admission | Only an admitted transport creates the internal trusted operation context. Tenant resolution, current client/session/key/grants, RLS and operator authority still run at their existing boundaries. The transport grants no arbitrary handler invocation. |
-| Framing and limits | Preserve fixed operation routes, method/content type, bounded request and response bytes, complete JSON-object validation, non-success refusal, total deadlines and cancellation. Define connection establishment and response-completion handling; do not rely solely on idle timeouts. |
-| Proxy behavior | No redirects, ambient proxy discovery, public forwarding headers, destination rewriting or silent transport fallback. Explicit service load balancing is permitted only under its declared no-replay/admission contract. |
-| Failure/cleanup | Trust or identity failure refuses before an authorized operation. Transport loss/timeout preserves unknown mutation outcome and pending operation state. Shutdown drains actual work and closes only owned listeners/connections; an unresolved drain cannot select an unwindowed fallback. |
-| Compatibility | Existing UDS config retains its documented semantics. Additive fields, versioning or explicit legacy normalization must be stated and tested; malformed legacy config cannot become a valid network endpoint by inference. No change to public API, websocket or mutation reply contracts. |
+```json
+{ "urlEnv": "NS_INTERNAL_URL", "trust": "network", "bindHostEnv": "NS_INTERNAL_BIND" }
+```
 
-The transport contract must inventory all actual callers: private API authorization
-and mutation, evaluator notification destination, cohort status/invalidation and
-any shared configuration parser. Supporting an endpoint kind in a helper is not
-consumer integration. Evaluator-to-realtime stays a single-destination handoff
-within this scope; it does not acquire replicated realtime fanout semantics.
+`bindHostEnv` is optional. A Kubernetes Service DNS name can be the dial origin
+while a listener binds its own interface. A configured link-local/private address
+is supported; loopback is not an architectural restriction. The current parser
+accepts a legacy socket reference OR its endpoint-descriptor alternative, never
+both. Public request content cannot choose private destinations. Credentials in
+URLs, unexpected paths/query/fragment components, unsupported schemes and
+implicit trust/fallback refuse.
 
-## Implementation sequence and integration ownership
+Private operation payloads retain current tenant, credential, RLS, ACK and
+lifecycle semantics. Current service/version headers require a coordinated
+internal-peer upgrade; preserving the public client protocol does not establish
+mixed-version peer compatibility. Listener consolidation must specify any header,
+operation-path or schema migration explicitly. Existing UDS settings must remain
+supported or have an explicit measured transition; a URL must not be inferred
+from a malformed socket field.
 
-These roles are proposed responsibilities, not active assignments. Confirm the
-current coordinator and source ownership before dispatch. Each implementation
-brief carries: **confirm the head commit and that the task is still open before
-starting; stop and report a mismatch rather than reaching for the nearest thing
-that works.** No runtime reservation or publication follows from this plan.
+UDS-specific filesystem checks remain inside its adapter. HTTP reachability is
+supplied by the selected deployment policy. If established TLS termination or a
+service mesh is chosen, document its trust boundary and test the selected binding;
+do not infer process identity from a DNS name, port, header or successful probe.
+No new application cryptographic login, discovery service or orchestrator is
+needed to keep these contracts well defined.
 
-| Step | Owner role | Deliverable and integration boundary | Required focused evidence |
-|---|---|---|---|
-| 1. Freeze contracts | Transport owner with restore coordinator and security reviewer | One normalized endpoint/trust contract, explicit legacy compatibility and source inventory. `MT-ENDPOINT-TRANSPORT` owns parser, adapter and its helper/fixture/control changes. | Source inspection links identify every caller; config/trust alternatives are resolved without changing operation authority or wire payloads. Unsettled credential/trust policy stops dependent implementation. |
-| 2. Implement adapter and consuming roles | Transport owner | UDS plus admitted HTTP(S) listener/client composition at all declared private consumers. Keep source-owned operation handlers and actual lifetime hooks. | Focused config, transport and consumer tests plus intended semantic reds/restorations. Native parity uses real owned sockets/listeners and test identities; source doubles are reported separately. |
-| 3. Consume fixed API inventory | API scaling owner with restore coordinator | `MT-API-FIXED-ROSTER` consumes the accepted endpoint capability. Consume one API baseline and then two explicit API participants, service destination, direct instance endpoints, same role/namespace/tenant bindings and aggregate pool inventory. The roster is configuration/platform-adapter input, not a new registry. | Actual requests identify which API accepted them. Duplicate/missing/mismatched participants refuse; service routing never replaces cohort enumeration. No dynamic membership is implemented. |
-| 4. Prove API equivalence and maintenance | API scaling owner owns API/config/client fixtures; restore coordinator owns joined maintenance composition | Concurrent direct/service requests, cross-API current authority, full response drain and all-instance invalidation; explicit death/replacement cases. Join original lane history normally. | Native stored-outcome and process-incarnation oracles, response/callback barriers, lost-ack uncertainty and positive B continuity. Focused diagnosis repairs failures before a new coherent freeze. |
-| 5. Accept coherent joined candidate | Programme integration coordinator | Freeze exact joined application/config/instrument heads and complete the selected endpoint/replica matrix, then the required full suite, default browser, entire enabled corpus and final unchanged-source prcheck. | One comprehensive campaign for the coherent batch, not one per leaf. Prior campaigns retain their own heads and are not added together. Publish readiness remains separate from accepted capability. |
+## Remaining work and acceptance
 
-The second queue capability depends on `MT-ENDPOINT-TRANSPORT`. Existing broad
-storage/runtime/tenancy parent cards remain context and retain their own gates;
-their incomplete wider scope is not a fabricated prerequisite for using the
-accepted bounded ed2 foundation. The coordinator may join implementation before
-final acceptance, but incorporation alone does not close either capability.
+These owner roles name integration boundaries, not a new reservation ceremony.
+Confirm actual HEAD, current item openness and ownership before starting; stop
+and report a mismatch rather than substituting the nearest working mechanism.
+Keep each capability's helper, fixtures and meaningful controls in its lane.
 
-## Fixed-roster topology and replacement rules
-
-Native acceptance supplies explicit endpoints and an instrumented service
-dispatcher; a platform binding is deferred. For ordinary traffic, the service
-destination can select either equivalently configured API. A caller need not retain affinity merely because realtime keeps
-its own socket connection. Each API still resolves the tenant, rechecks current
-authority and enters the tenant operation window for its actual work. The service
-must not transparently replay a mutation after connection loss or select an
-undeclared API instance.
-
-For maintenance, the fixed input manifest enumerates each actual API participant alongside
-realtime, evaluator and tenant-admin. Each has a directly addressable endpoint,
-expected authenticated service identity and actual boot incarnation. The
-controller obtains status, validates datastore/namespace/role binding, pins the
-whole selected cohort, drains and invalidates every participant. Sending the same
-request repeatedly to a service URL cannot prove every API was reached.
-
-A replacement process may reuse its logical participant ID only with a new actual
-incarnation. An existing restore pin cannot accept the replacement's reply as the
-old process. A lost participant, partial invalidation or uncertain DATA commit
-retains the affected tenant's suspension. A fresh operator-controlled attempt can
-register the actual complete cohort after prior-attempt cleanup under the existing
-contract; this is not automatic restore resume or orphan clearance. Any
-replacement/overlap must obey the admitted fixed-roster procedure with no
-unaccounted overlap; a
-StatefulSet name or desired replica count cannot prove the old process stopped.
-
-Readiness keeps shared-process liveness distinct from tenant readiness. A remains
-unavailable while its durable suspension/uncertainty persists; B must start and
-make actual HTTP/realtime/evaluator progress. Shared schema, effective privilege,
-binding, datastore identity or transport-trust failure still refuses readiness.
-A TCP health probe or successful service request cannot substitute for full cohort
-admission or authorize activation.
-
-## Planned acceptance matrix
-
-Every row below is **PLANNED / UNMEASURED**. The expected red names the intended
-semantic failure, not a generic crash, connection/setup error or failing unrelated
-assertion. Run mutations only in owned isolated copies/fixtures, confirm the break
-landed, restore exact source/config and rerun the focused positive case. Preserve
-failed predictions and correct this plan if the observed mechanism disagrees.
-
-| Criterion | Positive experiment and independent oracle | Intended negative control and predicted symptom |
+| Step / queue owner | Concrete change | Focused gate and intended semantic control |
 |---|---|---|
-| Endpoint parsing and legacy UDS | Load existing private UDS config unchanged; separately admit proposed endpoint forms through actual role parsers. Compare normalized effective endpoints/consumer inventory without secret values. | Remove exact-kind/field validation: a malformed or mixed endpoint is accepted, causing the explicit refusal assertion to fail. Restore validation and refusal. |
-| UDS ownership remains enforced | Real private directory/socket; refuse unowned/unsafe paths and clean only the owned published inode. | Bypass ownership/inode check in an isolated copy: unsafe path admission or wrong-endpoint cleanup is detected by the ownership assertion. A permission-denied setup failure is not this control. |
-| HTTPS service and caller identity | Actual TLS listener/client with synthetic trusted and foreign identities. Verify correct intended peer and caller purpose before the operation; inspect independent handler/store counters. | Bypass server identity or caller-role check separately: a wrong peer or unadmitted caller reaches the handler, so the expected refusal/counter assertion fails. Restored case must leave no protected effect. |
-| Private HTTP is explicit | Config without the admitted private trust profile refuses; the selected bounded fixture admits only intended private peers/callers. | Remove profile admission: unauthenticated/unqualified HTTP becomes usable and the explicit refusal assertion fails. No public deployment is opened for this test. |
-| Framing, limits and deadlines | Real endpoints reject wrong method/type/route, malformed/oversized/truncated bodies and oversized responses. Held-open request/response hits the declared total deadline and closes owned work correctly. | Remove one byte or deadline check at a time: the deliberately oversized/held exchange is accepted or remains open beyond its bound; the matching assertion detects it. Avoid treating a process kill as deadline compliance. |
-| Cancellation, redirect and fallback | Abort held requests; refuse redirects and trust failures without contacting alternate endpoints. Instrument actual destination/handler calls. | Enable redirect/downgrade/fallback in the isolated adapter: forbidden destination is reached, violating the independent zero-contact assertion. |
-| Public inputs cannot choose private endpoint | Send permitted public requests with varying untrusted selector/message fields and verify only configured destinations are contacted; existing tenant-selector refusals remain. | Inject request-derived destination selection into an isolated copy: destination oracle sees a forbidden target or unknown-input request stops refusing. Synthetic targets only. |
-| UDS/network operation parity | Run equivalent authorized/refused `/authorize`, `/mutate`, alarm and cohort status/invalidation fixtures through real selected transports. Compare public replies and independent stored effects, including absence. | Bypass current tenant/client authorization or change one reply field: foreign/refused effect or wire difference is caught. A successful TLS handshake alone cannot count as parity. |
-| Two APIs really serve work | One-API baseline then fixed two-API fixture. Force direct and service requests through both instances; independent instance observations and stored outcomes confirm actual distribution/concurrency. | Omit or silently route away the second API: forced-instance coverage fails even if aggregate service responses stay green. |
-| Current authority/config across APIs | Authorize through one API, revoke/change current state through its existing authority path, then use both direct APIs and the service. Compare replies, stored absence and consumed settings. | Retain stale permission/settings in one API: a revoked operation succeeds or an old setting is observed; current-state assertions fail. Merely refreshing a test-side cache is insufficient. |
-| Complete cohort membership | Both APIs have unique manifest identities/endpoints and correct roles/namespaces/datastore tuple; restore pins actual distinct incarnations. | Point two manifest entries to the same actual process or omit one selected API: membership/coverage refuses rather than treating repeated service replies as a complete cohort. |
-| Actual response/callback drain | Hold an A callback/HTTP response open on the second API after its SQL work completes. Restore cannot advance until that outer lifetime finishes; verify durable pending state and B progress independently. | Release lifetime at SQL commit or timeout alone: restore advances while the response/callback remains open, violating the barrier assertion. |
-| All-instance invalidation | Warm both APIs' startup/floor state, restore A, and require fresh invalidation acknowledgement from each; follow-up reads reacquire correct state. B retains current state. | Skip one API invalidator or accept a synthetic reply: stale local state or missing actual acknowledgement is detected; activation must refuse. |
-| Replacement and old pins | Replace a declared API with the same logical ID/new actual incarnation during a pinned attempt. Old pin refuses; a separately authorized fresh attempt pins the complete current cohort. | Ignore incarnation/schema/nonce identity: replacement/stale response enables activation, violating refusal. DNS/StatefulSet identity alone cannot satisfy the oracle. |
-| Ambiguous mutation/no replay | Lose the mutation response after an independently observed commit. Client/socket receives no invented acknowledgement; adapter and service produce no automatic second attempt. | Enable transparent retry or success synthesis: independent stored/request count or reply oracle detects replay/false acknowledgement. Restore pending/uncertain state is retained where required. |
-| Restore faults and tenant isolation | Exercise missing peer, DATA acknowledgement loss, invalidation acknowledgement loss and unresolved orphan. A remains protected/unavailable; fresh processes serve B via actual HTTP/realtime/evaluator paths. | Ignore uncertainty/missing peer or broadly defer shared errors: unsafe activation/startup is caught. Conversely disable tenant-local startup deferral: B replacement startup fails with A suspended. Preserve exact symptoms and restorations. |
-| Aggregate resource behavior | Inventory all API pools/connections and exercise bounded concurrent work, shutdown and dependency outage/recovery. Verify stored effects, absence of leaked owned resources and healthy-tenant progress. | Remove a selected bound or omit an instance's pool from cleanup: retained resource/unbounded-admission oracle fails. This is mechanism acceptance, not an approved capacity/SLO claim. |
-| Client and public behavior | Compare existing legacy/API3 credential forms, mutation replies/history, main/alarm socket acknowledgements and reconnect behavior against the single-API baseline, using actual pinned clients where required. | Change an observable reply/history/ack or substitute service identity for client authority: exact compatibility/independent storage oracle fails. A source-pattern replay stays labelled as such. |
+| Private API composition — `MT-ENDPOINT-TRANSPORT` | Build one explicit registry of supported `(method,path)` routes and contract modules per selected private listener. Enforce duplicate/missing/extra registration, schema/content-type and service/version ownership. Bind independently from public/management HTTP. | Actual UDS and HTTP calls succeed only on their intended private routes; public routes return 404. Inject a duplicate route, foreign contract/header, extra handler, malformed request or response and show the corresponding assertion turns red before unauthorized effects. |
+| Per-operation lifecycle policy — same owner, with restore integration | Preserve application tenant admission through response completion. Lifecycle status/invalidation and operational probes need their own explicit policy, rather than inheriting a blanket tenant-work window. | With A in maintenance/suspended, status and the admitted invalidation still execute under the controller's existing rules while A application work refuses and B progresses. Hold an application response after SQL completion: drain must still wait. A blanket-window mutant must fail the lifecycle assertion, not merely a setup check. |
+| Operational module — same composition owner | Specify liveness, readiness and metrics semantics, supported methods/response formats, dependency/tenant readiness behavior and scrape access. Retain useful existing health behavior or migrate it explicitly. | Exercise actual GET/operational responses and any metrics content type. Wrong method/schema/format and false-ready dependency mutants go red. The JSON POST RPC client is not silently used as a metrics client. Naming endpoints is not implementing a collector or inventing new metric values. |
+| Deployment binding — endpoint owner with deployment-companion owner | Select UDS or private HTTP independently for application and direct-instance calls. Render actual service/dial and listen addresses, access policy and upgrade configuration; keep existing reference UDS settings valid. | Run real separated processes on the selected network. Compare current authority, stored effects/absence, schema responses, byte/deadline/cancellation bounds, disconnect/no-retry behavior and shutdown. Remove the selected boundary/config check or synthesize an acknowledgement after commit/response loss: the intended refusal/uncertainty oracle must fail. |
+| Fixed roster — `MT-API-FIXED-ROSTER` | Consume two equivalent real APIs, one ordinary service destination and a complete roster of exact participant endpoints, with pool inventory. Controller addresses each actual instance even when contracts share its private port. | Observe which API handles each direct/service call. Missing/duplicate/service-aliased participants, wrong datastore/birth/incarnation/nonce, replacement during an old pin and omitted instance invalidation must refuse. Sampling a load-balanced destination is a deliberate failing control. |
+| Joined replica behavior — same API owner | Preserve concurrent current authority, response/callback drain, tenant-local invalidation, lost-ack/commit uncertainty, replacement and B continuity. No transparent mutation replay. | Revoke/change state through one API and exercise both direct APIs/service; hold the other API's response; lose a commit or invalidation reply; replace an incarnation. Stale authority, early lifetime release, ignored uncertainty or missing B progress must each fail its own independent outcome assertion. |
+| Coherent integration — existing candidate coordinator | Join original lane histories, freeze the chosen code/config/instrument candidate, then run applicable full/default-browser/enabled-corpus/native/client acceptance and final prcheck. | Preserve exact source/instrument attribution and named pending cases. A source-identical carried result stays attributed to its original run; new inputs require affected acceptance. No comprehensive campaign per leaf commit. |
 
-Select supported workload sizes and finite deadlines before native dispatch.
-Measure aggregate API pools against PostgreSQL/Vault/authority limits. Record
-latency, connection wait and healthy-tenant interference where useful, but do not
-invent a production threshold from passing functional fixtures. A numeric budget
-requires its separate workload and maintainer acceptance.
+**Lifetime composition is a substantive code change.** Current API and alarm
+listeners supply an operation window; lifecycle control deliberately does not.
+Read-derived from `tenant-lifecycle/operation-window.js`, shared work admission
+refuses during exclusive/suspended maintenance. Wrapping lifecycle operations in
+that same policy would make control unavailable when it is needed. This is a
+predicted failure to reproduce with the control above, not a reported deadlock.
 
-## Evidence, dispatch and closure
+## Optional gateway decision adapter
 
-Before dispatch, the coordinator records source and instrument commits, clean
-worktree state, current queue openness and the exact capability criteria selected.
-Each lane brief includes the relevant mechanism above, focused checks, semantic
-controls, remaining policy boundaries and the two standing instructions. Runtime
-execution needs the current owner's finite reservation and declared resource/
-process cleanup; this document supplies no reservation.
+Direct application-to-application calls retain the existing authentication and
+authorization semantics. Listener composition or using TCP instead of UDS does
+not inherently require changing those semantics. A native client can consume
+JSON; an edge integration can project selected decision fields into HTTP status
+and headers without making every private application call traverse a gateway.
 
-Each capture names the actual application/config/endpoint trust/instrument
-identity, transport kind, direct/service topology, complete participant roster,
-actual incarnation coverage and datastore contract. Use synthetic tenant/client
-fixtures only. Red controls name the changed property, exact intended symptom,
-confirmed break and byte-exact restoration. Preserve native versus doubles,
-source-pattern versus client binary, failed versus successful run and inherited
-versus newly executed evidence. Counts from different attempts/heads are not added.
+**Read-derived prior art:** inspected `nightscout-roles-gateway`
+`90840acee1ec641d881512e91f1728f7ed8f7817`. Its
+[GET/HEAD Warden chain](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/routes.js#L327)
+uses the existing policy decision and then
+[sets upstream routing headers](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/policies/index.js#L107)
+(`x-upstream-origin`, `x-forwarded-host`); its
+[token header adapter](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/exchanged.js#L75)
+sets `X-NSJWT`. Nginx can consume response headers through `auth_request_set`
+without interpreting the JSON body. These code mechanisms are inspected, not a
+newly executed gateway or interoperability campaign.
 
-During implementation, use focused source/native/consumer checks appropriate to
-the changed capability. Once joined, freeze one coherent candidate for complete
-full/default-browser/entire-enabled-corpus acceptance and final prcheck after a
-fresh upstream merge/check as required by the repository contract. A failed
-campaign requires focused diagnosis and joined repairs before final acceptance
-is repeated; a leaf commit does not trigger another comprehensive campaign.
+Nginx already handles public proxying and the Socket.IO upgrade. A selected
+`auth_request`/Oathkeeper-style integration would add a private decision contract:
+HTTP allow/deny/error semantics, original-request metadata, tenant resolution and
+which injected identity headers the application trusts. Reuse the existing
+authority component; do not duplicate its policy or use JSON `{denied:true}` as
+an HTTP allow. Client-supplied identity headers must not become trusted inputs.
 
-The queue owns claimed state and runnable gates; the integration record owns
-executed acceptance; release contents own capability closure, remaining blockers
-and next integration owner. Documentation and generated diagrams may describe the
-plan before either capability passes. A documentation/link gate establishes
-structure, never transport trust, replica correctness, production admission or
-milestone promotion. Close each capability only after its consuming paths and
-native semantic controls pass on the attributed joined candidate. Future deployment
-bindings consume the accepted interfaces separately. No Jsonnet, Kubernetes
-manifest, cluster execution or platform rollout proof is required to close these
-two native capabilities.
+This adapter is a separately bounded optional deployment integration until its
+contract is selected. It is not an extra prerequisite for selectable UDS/HTTP
+transport. Connection admission does not replace subsequent message, subscription,
+recipient, exact mutation/ACK or current credential authorization. Deployment
+binding/trust work owns an adopted gateway profile; core owns its stable decision
+hook if one is selected. No new mandatory gateway or authentication product is
+selected by this plan.
+
+## Evaluator workload and membership inspection
+
+The operational listener supports a read-only evaluator module whose payload is
+owned by `MT-EVALUATOR-PARTITION`. It reports configured mode/rule/version,
+member count, ordinal/incarnation and intended slice separately from observed
+membership/heartbeat agreement, freshness, conflicts and current eligibility.
+Expose aggregate assignment/progress/lag and handoff health, with bounded private
+drill-down where needed. Endpoint names and executable response schemas are still
+to be implemented; existing cohort status is not relabelled as ring health.
+
+Standalone mode reports all configured tenants without inventing a membership
+lease. Partitioned mode reports the actual slice and observed membership basis;
+ordinal configuration alone cannot make a stale/conflicting member healthy.
+Introspection remains callable while evaluation is blocked, does not schedule
+clinical work or acquire ownership, and does not clear lifecycle suspension.
+
+Acceptance uses actual evaluator processes and independently enumerated tenant
+assignments: member-count one covers the configured set; distinct members cover
+it without stable-state gaps/overlap; stale/mismatched count or duplicate ordinal
+is visible and blocks the affected computation. A mutant reporting only intended
+configuration as observed health must go red. Exercise membership-change overlap,
+recovery and duplicate durable/external effects under the existing M7 policy;
+the inspection API must not claim exactly-once execution from a hash mapping.
+
+The [ownership inventory](runtime-topology.md#evaluator-inspection-and-workload-ownership)
+also covers notification attempts, future connector actors, realtime projections
+and maintenance claims. The shared operational module does not impose one common
+ring on these different work units or make them all stateless replicas.
+
+## Service destinations, participants and workload owners
+
+Ordinary request-scoped calls may use an equivalently configured API service
+without pinning to the API that handled a prior request. A service must not retry
+an uncertain mutation automatically or route to an undeclared participant.
+
+Maintenance consumes a complete relevant roster, directly reaches each instance,
+checks actual datastore/backend and role/namespace identity, pins incarnation,
+drains actual operations and awaits every invalidation acknowledgement. Logical
+participant IDs can survive replacement; an old pin cannot accept a new process.
+A lost peer or uncertain commit/ack retains the affected tenant's suspension. A
+fresh authorized attempt follows existing cleanup/registration rules; this is
+not automatic restore resume or orphan clearance.
+
+Use supplied configuration/platform inventory. A routing table may exclude
+unready/terminating actors that still own operations, so it cannot automatically
+serve as the maintenance census. The native proof uses explicit endpoints; a
+Kubernetes/platform adapter is separate deployment work. No new membership or
+consensus service is required for the API capability.
+
+Evaluator and realtime replication remain separate semantics. `MT-EVALUATOR-PARTITION`
+carries the adopted optional member-count/ordinal and pool-membership contract;
+the default remains one workload owner. Realtime scale-out is scoped by the separate
+[sharding/composition proposal](realtime-sharding-plan.md), which owns placement,
+checkpoint and subset-aware maintenance changes and their acceptance. Neither is a reason to split REST
+version adapters into separate services or to block the already accepted foundation.
+
+## Measurement and documentation boundaries
+
+`MT-SCALE-UNBOUND` owns synchronous authority fanout/dependency cost and aggregate
+API pools, database/Vault pressure, failure/recovery and healthy-tenant progress.
+Benchmarks retain synthetic workload, actual source/config, latency/queue/freshness
+and independent durable outcome oracles. Functional success is not a capacity
+or availability target. Metrics endpoint implementation does not itself supply
+that measurement, and a proposed cache must retain current-authority guarantees.
+
+Native runs use the adopted disposable harness and owned resource cleanup; there
+is no grant, lead reservation or freshness-attestation ceremony. Capture exact
+code/config/instrument identities, direct/service topology, complete participant
+coverage, real listener/transport and each red/restored symptom. Preserve failed
+predictions and distinguish actual clients/native processes from source doubles.
+
+The [runtime topology](runtime-topology.md) owns figures and audience/purpose/binding
+terminology. This page owns remaining work/acceptance; the queue owns claimed
+state. Correct superseded living prose in place and link retained measurements;
+do not create a second current plan or rewrite captured evidence.

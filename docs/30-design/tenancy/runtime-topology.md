@@ -1,155 +1,223 @@
-# Runtime topology: zones, components and coordination
+# Runtime topology: zones, components and private APIs
 
-*Living contributor-facing architecture guide, 2026-11-08. **Read-derived**
-structure with source-scoped acceptance links; target endpoints/API replication
-are planned, not executed. These grid diagrams separate trust zones, logical
-endpoints and physical placement. The [implementation plan](selectable-endpoints-and-api-scaling-plan.md)
-owns the new capability boundaries and planned acceptance matrix; the
-[queue](../../../queue/work-queue.yaml) owns implementation state. Kubernetes is
-an architectural frame here, not a deployment to build or prove. Jsonnet,
-cluster bindings and evaluator partitioning are deferred.*
+*Living contributor-facing architecture guide, refreshed 2026-11-10. Structure is
+**read-derived**; measured acceptance retains its exact source in the linked
+records. This Markdown generates the site's `runtime-topology.html`. The
+[endpoint/API work plan](selectable-endpoints-and-api-scaling-plan.md) owns remaining
+implementation and acceptance criteria; the [queue](../../../queue/work-queue.yaml)
+owns claimed work state. A diagram is not deployment or capacity acceptance.*
 
 ## Read the diagrams
 
-Read downward: public clients/DMZ, public address/load balancing, trusted HTTP
-edge, service destinations, actual role processes, then database/secrets and other
-backing resources. A trust zone is not a host, Pod or container. A service address
-is not a process identity. Named connection terminals and communication-plane
-tables replace long crossing lines; they reference the same components/resources,
-not duplicate stores or new mandatory services.
+The three plates answer different questions: the historical accepted deployment,
+the current implemented API contracts, and the proposed deployment/composition
+adjustment. Read downward through client ingress, edge, service destinations,
+actual role processes and backing resources. Components sit on a grid; named
+terminals and a communication ledger replace long crossing connectors.
 
-### Accepted one-host reference
+A trust zone is not a host or Pod. A logical API contract, bound listener and
+deployable process are separate boundaries. Ordinary service destinations and
+the exact instance endpoints needed for maintenance are also different identities.
 
-![Accepted one-host reference topology](diagrams/accepted-one-host-topology.svg)
+### Historical accepted one-host reference
 
-[PNG preview](diagrams/accepted-one-host-topology.png) ·
-[SVG source](diagrams/accepted-one-host-topology.svg)
+![Historical accepted one-host reference](diagrams/accepted-one-host-topology.svg)
 
-The actual [ed2 cold Compose acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
-measures the synthetic one-host UI/socket/ordinary-restore deployment. Public
-publication is lab HTTP; Vault uses TLS. The actual
+[PNG preview](diagrams/accepted-one-host-topology.png) · [SVG source](diagrams/accepted-one-host-topology.svg)
+
+The [ed2 cold Compose record](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json)
+measures synthetic UI/socket/ordinary restore; the
 [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
-retains separate-role restore and fresh shared-role restart attribution. Drawing
-a topology does not transfer either campaign to another image/head or qualify
-production ingress, capacity or identity integration.
+retains its separate-role restore and restart scope. The reference publishes lab
+HTTP and uses TLS for Vault. Those captured runs are not relabelled as new-head,
+OIDC, network transport, scaling or production measurements.
 
-### Proposed fixed-roster API/network target
+### Current implemented internal API composition
 
-![Proposed fixed-roster API and network topology](diagrams/proposed-fixed-roster-network-topology.svg)
+![Current internal API composition](diagrams/current-internal-api-topology.svg)
 
-[PNG preview](diagrams/proposed-fixed-roster-network-topology.png) ·
-[SVG source](diagrams/proposed-fixed-roster-network-topology.svg)
+[PNG preview](diagrams/current-internal-api-topology.png) · [SVG source](diagrams/current-internal-api-topology.svg)
 
-This is the proposed architecture for the queued endpoint/API capability, not a
-Kubernetes resource design, an accepted multihost deployment or a replicated
-clinical workload. REST replica A and replica B are two instances of the same component, not API
-versions. They are the minimal explicit scale-out fixture. Realtime
-retains its connected clients and evaluator remains one active workload owner.
-Network locations, public TLS and optional human identity retain their own
-implementation/admission boundaries. PostgreSQL grants, Vault use and private
-operator reachability remain role-specific; being in one zone grants no authority.
+The joined candidate `dc795bd1` contains shared transport, three executable service
+contracts, request/response schemas, named clients and endpoint configuration.
+The [joined acceptance record](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
+records its actual full/browser/enabled-corpus and OIDC campaign. The
+[implementation evidence](../../../reports/tenancy/internal-service-api-2026-11-09/README.md)
+records focused transport, schema, public/private separation and UDS controls.
+These measurements do not qualify a remote HTTP deployment or multiple API replicas.
+
+The source homes are application `lib/server/internal-api/` and
+`docs/internal-service-api.md`. The current source-level topology clarification is
+on the same lane's documentation-only descendant `692bd507`; runtime measurements
+retain `dc795bd1`. The existing reference binding still uses Unix sockets.
+
+**Both application and lifecycle operations are private APIs.** The labels name
+purpose, not different networks or mandatory sockets:
+
+| Dimension | Meaning |
+|---|---|
+| Audience | Consumer DATA, owner management, or private component/operator access. A backend-only owner port still has a different contract from lifecycle control. |
+| Contract family | Application authority/mutations, notification delivery, lifecycle status/invalidation; operational health/readiness/metrics can be another family. |
+| Binding | HTTP over UDS or an explicitly selected TCP/HTTP origin, with a separately configurable bind address. The deployment chooses reachability and access policy. |
+| Instance addressing | Ordinary calls may target a service destination; maintenance must reach every actual participant and pin its incarnation. |
+
+Current listener allocation is one contract per listener. API has its consumer
+listener plus private socket-authority and lifecycle listeners; realtime has
+consumer Socket.IO plus private alarm-delivery and lifecycle listeners. Evaluator
+has lifecycle control without a consumer HTTP API. Its in-process `health()`
+result is not an implemented remote metrics endpoint. Tenant-admin retains its
+management audience and separate lifecycle listener.
+
+The private application arrows are different calls, not a generic proxy chain:
+`evaluator → realtime` delivers notifications; `realtime → API` asks for current
+permissions and forwards authorized client writes/acknowledgements. Realtime
+owns Socket.IO semantics, subscriptions and fanout. It also checks recipients'
+current permissions during delivery. That synchronous authority dependency is
+read-derived; its latency, load and failure effects need measurement.
+
+### Proposed component-private listener and fixed-roster target
+
+![Proposed component-private listener and API scale target](diagrams/proposed-fixed-roster-network-topology.svg)
+
+[PNG preview](diagrams/proposed-fixed-roster-network-topology.png) · [SVG source](diagrams/proposed-fixed-roster-network-topology.svg)
+
+Keep public/management and private interfaces independently bound. Multiple
+explicit private contract modules may share a component's private listener; the
+current single-service dispatcher does not implement that composition. This is
+the proposed adjustment, not a new claim of accepted code. UDS versus TCP remains
+a deployment choice; a new socket is not required merely because a module is named.
+
+The target also shows two equivalent REST replicas behind a service destination,
+with directly addressable private instance endpoints for maintenance. It is not
+an accepted multihost or Kubernetes deployment. Realtime tenant placement and recovery have their own
+[sharding proposal](realtime-sharding-plan.md); the two-API fixture shown here
+retains one realtime process and does not establish realtime scale-out. Evaluator partitioning is separately
+adopted/queued under `MT-EVALUATOR-PARTITION`; the current reference remains one
+active owner. A replica count is not a workload-assignment rule.
 
 ## Logical REST cohesion and worker placement
 
-**REST APIs (v1/v2/v3) form one stateless request-serving component.** Version
-routers/adapters stay together; replicas serve the same configured admitted
-routes. A logical application component, an HTTP listener and a deployed process
-are separate boundaries. The diagrams show one valid process composition, not a
-requirement to make each REST module a separate service. Data, authorization and
-owner-management REST modules may form one logical API component, retaining their
-separate credentials/audiences and listener requirements. The existing owner
-contract permits colocation with API; it does not collapse private operator
-privileges into ordinary request-serving credentials.
+**REST APIs v1/v2/v3 form one stateless request-serving component.** Version
+adapters remain inside each equivalent replica. Data, authorization and owner REST
+modules may co-locate while retaining their credentials/audiences/listener rules.
+Process layout is a deployment choice; request pools, caches and in-flight work
+still make every real instance a maintenance participant. The
+[placement/admission review](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
+owns the detailed assessment and the separate open activity-policy proposal.
 
-Compose service instances or a Kubernetes Deployment can place replicas of that
-same component. Replica count and host/Pod placement are separate from API
-versioning; this architecture choice does not claim cluster or scaling acceptance.
-Stateless replicas retain in-flight work and reconstructible local state, so
-every actual instance still participates in maintenance drain/invalidation.
+Nginx already performs reverse proxying and Socket.IO upgrade/tunnelling in the
+reference. An optional nginx `auth_request` or Oathkeeper decision adapter would
+need its own private HTTP status/metadata/trusted-header contract. The socket
+`/authorize` operation is not that adapter: it can return HTTP success with a JSON
+denial. A gateway's initial connection decision also does not authorize later
+messages, subscriptions, delivery recipients or database writes. Existing
+current-client, tenant, RLS, ACK transaction and lifecycle gates remain.
 
-The source-backed [component placement and admission review](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
-is the home of the REST/worker placement assessment. It identifies private
-operator restore execution, generic admission/invalidation in API participants,
-and the distinction between evaluator/connector workers and request serving.
-The declared `vcpool` role has no runnable start in inspected ed2 and therefore
-is not an accepted box in these capability diagrams. Desired activity/resource
-policy remains the review's open proposal, not an implemented restore feature.
+This is a response-adaptation boundary, not a requirement to redesign existing
+application-to-application authentication. Direct component clients can consume
+the current JSON decision efficiently; nginx can consume a selected projection
+through status and response headers. Existing
+[roles-gateway header handlers](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/policies/index.js#L107)
+demonstrate that separation. The work plan records that prior art and keeps this
+optional edge integration independent of direct private service calls.
 
-## Cohesion and coupling contracts
+HTTP network reachability is deployment-owned; contract/version headers are not
+credentials. The current application adapter implements HTTP, not direct HTTPS.
+A selected TLS proxy/mesh can supply a deployment boundary; no new bearer login,
+credential-renewal system or mandatory gateway is implied by these diagrams.
 
-| Responsibility | Contract to keep cohesive | Coupling to avoid |
-|---|---|---|
-| Public edge and load balancing | Resolve a trusted public name, preserve current route/audience policy and forward to the intended service. | Public alias, backend service address and stable tenant ID becoming the same identity or an implicit permission. |
-| Request-serving API | Existing request/write/authority semantics over current tenant-scoped durable state; reconstructible local state, explicit operation completion and invalidation. | In-memory singleton authority, sticky dependence on the API that handled the previous ordinary call, or owning evaluator scheduling. |
-| Private transport | Same operation payloads, trusted service/caller admission, bounded messages/deadlines/cancellation and real acknowledgement outcomes over UDS or HTTP(S). | Filesystem ownership tests leaking into domain handlers, a URL conferring authority, or remote retry silently repeating mutations. |
-| Realtime | Own live connections/rooms and deliver current permitted state; call API through a service destination. | Assuming an API service address identifies a restore participant, or that one load-balanced alarm handoff broadcasts to all realtime instances. Realtime replication is outside the new scope. |
-| Evaluator | One active owner of its configured workload, with durable effects and existing current-state/recovery semantics. | Replicating the same tenant's evaluation simply because additional processes can be scheduled. Future explicit partitions may use platform-provided stable identities. |
-| Restore coordination | Consume a complete supplied participant set, pin actual incarnations, drain actual operations and await every required invalidation before activation. | Discovering participants by sampling a load-balanced endpoint, treating readiness as proof that no old actor exists, or coupling correctness to a particular scheduler API. |
-| Platform/configuration adapter | Supply process lifecycle, endpoint inventory and stable instance/partition identities through existing primitives or explicit configuration. | Building a parallel membership service, custom workload scheduler or orchestrator in this capability. |
+## Ownership and placement constraints
 
-The backing-store boxes follow the [component ownership map](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis).
-Nightscout collectively owns its selected PostgreSQL namespaces. Commands across
-component ownership use admitted application APIs; scoped reads and component-owned
-transactional state may use direct storage. This is not a SQL-over-HTTP layer and
-does not add support for external direct writers.
-
-## What comes from the platform, and what the application consumes
-
-Use the platform's workload lifecycle and discovery. Kubernetes Services and
-[EndpointSlices](https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/)
-provide endpoint-routing infrastructure; [StatefulSet identities and ordinals](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-identity)
-can provide stable instance/partition identities. We do not need to implement
-those primitives again or prove Kubernetes itself for this plan.
-
-The application-facing contract is narrower: receive a versioned complete roster
-of the instances allowed to participate, address their control endpoints and
-check actual runtime identity during maintenance. The set relevant to draining
-can include an unready or terminating process that still owns an operation;
-it cannot be reduced blindly to currently routable service destinations. The
-scoped native acceptance fixture supplies an explicit roster. A future platform
-adapter may supply equivalent inventory; its integration is deferred.
-
-Similarly, an evaluator can consume one platform/config-assigned partition.
-Stable ordinals are useful partition identities; the mapping of tenant/workload
-to that identity and the policy for reassignment still need an explicit contract
-when partitioning is pursued. No new evaluator scheduler, replicated evaluator
-or sharding implementation is requested now. A Deployment of one or stable
-StatefulSet identity is a useful lifecycle primitive; application completion and
-uncertain durable effects retain their existing operation/recovery rules.
-
-## Sizing is separate from logical ownership
-
-For a component whose workload is bounded/predictable, one instance is a sensible
-initial deployment recommendation when measured headroom and restart downtime
-meet its service needs. A scoped configuration watcher/reconciler can fit this
-model; it need not gain replicas merely because the API scales. This is a sizing
-and maintenance choice, not a request for a new watcher in this architecture.
-
-Keep the two questions explicit:
-
-| Question | Examples / architectural consequence |
+| Responsibility | Boundary to preserve |
 |---|---|
-| How many instances are needed for load and availability? | An API, edge or bounded watcher may initially need one, and may scale if demand or availability requires it. Predictable throughput alone does not decide outage tolerance. |
-| How many owners may process the same logical workload? | The evaluator has one active owner for its assigned tenant set. Later disjoint partitions may each have one owner, using platform identities/assignment inputs. Replicating the same work is a separate semantic choice. |
+| Private listener composition | Server-owned method/path registry, collision checks, per-operation schemas and service/version rules. No arbitrary URL-selected handler. |
+| Operation lifetime | API work and delivery retain tenant admission through actual response completion. Lifecycle status/invalidation and operational probes need their own policy; do not blanket-wrap them in the tenant work they must inspect or invalidate. |
+| Restore coordination | Complete supplied roster, direct instance reachability, actual datastore/backend/incarnation pins, drain and every invalidation acknowledgement. A sampled load-balanced endpoint is not a census. |
+| Placement/discovery | Platform lifecycle and configured inventory are inputs. Native acceptance uses a fixed roster; no custom scheduler/discovery service is required. Unready or terminating actors with outstanding work cannot disappear from the roster merely because they left a routing table. |
+| Backing resources | Follow the [component ownership map](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis): scoped reads and component-owned state can use storage; cross-component commands use admitted APIs. UI/nginx receive no blanket database/Vault authority. |
+| Workload ownership | Size replicas for measured load/availability, and define ownership separately. API replicas do not require evaluator partition leases. The selected evaluator partition work has its own membership/conflict criteria. |
 
-This avoids making either automatic replication or a custom scheduling system a
-condition of a sound component boundary. Platform lifecycle primitives remain
-reusable; application operation completion and uncertain durable effects remain
-explicit where the existing runtime requires them.
+## Work needed to reach the target
 
-## Immediate implementation boundary
+The [work plan](selectable-endpoints-and-api-scaling-plan.md#remaining-work-and-acceptance)
+defines owners, integration boundaries and controls. It separates code already
+incorporated in `dc795bd1` from these remaining changes:
 
-1. **MT-ENDPOINT-TRANSPORT:** selectable private transport and effective trust,
-   preserving the same operation/authority/lifetime/client semantics.
-2. **MT-API-FIXED-ROSTER:** independent API processes behind a service destination,
-   with every declared instance separately addressable for restore and replacement.
+1. Component-private listener composition and explicit lifetime policies; define
+   operational endpoints without pretending `/metrics` already exists.
+2. Deployment binding and remote UDS/HTTP parity, preserving the selected trust,
+   actual acknowledgement and suspension semantics. Gateway hooks are an optional
+   deployment integration, not a new authentication prerequisite.
+3. Fixed-roster API service/instance addressing and native concurrency,
+   all-instance restore, replacement and uncertainty acceptance.
+4. [Realtime sharding and recovery](realtime-sharding-plan.md), including a
+   measured co-location option, stable assignment and complete owner coverage.
+5. Measured scaling/fanout costs and separately scoped evaluator partitioning.
 
-Acceptance uses separate native processes and synthetic A/B tenants, with the
-plan's ordinary and meaningful red/restored controls. It does not require a
-cluster, Jsonnet, autoscaling, a new membership product or an evaluator scheduler.
-No implementation completion follows from this architecture/documentation work.
+No milestone promotion, default enablement or production admission follows from
+this reconciliation. Historical captures remain unchanged; stale living prose
+is corrected in place rather than kept as a second current design. The
+[deployment guide](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
+owns platform/binding examples. This page owns topology interpretation; the work
+plan owns the acceptance matrix; the queue owns work state.
 
-Diagrams are maintained by
+Figures are generated by
 [`render_tenancy_topologies.py`](../../../tools/site/render_tenancy_topologies.py).
-Render SVG with Python; use its PNG option for previews. Diagram rendering is
-separate from application runtime acceptance.
+Use `--png` to render previews and `--check` to detect stale vector outputs. Review
+the figures with contract/listener or deployment changes. Rendering checks
+freshness and layout, not application runtime acceptance.
+
+## Evaluator inspection and workload ownership
+
+The planned evaluator operational API includes read-only assignment and membership
+inspection, not only process liveness. `MT-ENDPOINT-TRANSPORT` owns the shared
+operational listener/module plumbing; `MT-EVALUATOR-PARTITION` owns the evaluator's
+assignment facts, membership rules, payload/schema and scaling controls. Neither
+the current lifecycle status response nor in-process `health()` exposes a ring API.
+
+The inspection contract must distinguish:
+
+- Configured mode and assignment rule/version, member count, this instance's
+  ordinal and actual incarnation, and intended hash slice.
+- Observed peer membership/heartbeat expiry, agreement/conflict, the observation
+  time and whether this instance is currently eligible to evaluate, with a reason
+  when blocked. Configuration alone is not observed ring health.
+- Workload counts and progress: assigned/active/suspended tenants, current jobs,
+  last successful acquisition/tick, lag/backlog and notification-handoff health.
+  Aggregate metrics and bounded private drill-down serve different inspection needs.
+
+In standalone Compose mode the intended assignment is all configured tenants
+(the complete assignment space); no membership lease should be fabricated when
+partitioning is disabled. With N configured members and one distinct eligible
+ordinal per member, each handles its assigned hash slice, approximately 1/N of a
+well-distributed tenant population. Equal hash slices do not guarantee equal
+tenant counts or computational load. A StatefulSet can supply ordinals; the
+application's selected membership/assignment policy decides eligibility.
+For the initial modulo-style assignment, an ordinal owns a hash bucket/predicate,
+not necessarily a contiguous token interval on a consistent-hash ring. Inspection
+must name the actual rule rather than inventing token-range metadata.
+
+Stable assignment intends one evaluator owner per tenant. The adopted M7 policy
+allows a bounded overlap window with idempotent effects during membership change;
+it does not establish instantaneous exactly-once execution or automatic takeover.
+Those transition/duplicate-effect criteria remain unmeasured. The operational API
+must report conflicts and blocked work even when it refuses evaluation; querying
+inspection must not itself create work, acquire ownership or clear suspension.
+
+Evaluator is not the only component with ownership-sensitive state. A ring is
+one possible assignment mechanism, not a universal scaling rule:
+
+| Component/work | Relevant ownership unit | Scaling implication |
+|---|---|---|
+| Clinical evaluator | Tenant's scheduled acquisition/time-based evaluation | Selected M7 member-count/ordinal assignment; partition inspection belongs here. |
+| Notification producer/consumer | Tenant/consumer state and individual durable delivery attempts | Current consumer timers are serialized per tenant within each process; the store locks state and records attempt tokens/deadlines. Co-located consumers must follow the evaluator's admitted assignment, or have a separately qualified work-claim distribution model. A ring alone does not establish exactly-once external delivery. |
+| Connector actors | Tenant/source account, polling cursor/session and upstream effects | Future tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. `MT-CONNECTOR-SYNC` currently tests an external existing connector; it does not implement a partitioned tenant-side pool. |
+| Realtime | Client connections/rooms and per-tenant projection/checkpoint consumers | It has scheduled refresh work and retained state. Replication needs affinity, checkpoint ownership and complete notification fanout; it is not ordinary stateless replication and does not inherently require one realtime instance per tenant. |
+| REST/owner request serving | Individual admitted request/transaction, plus instance drain state | Equivalent replicas serve tenants without assigning each tenant to exactly one API. Every actual replica still participates in maintenance. |
+| Maintenance jobs | Exclusive claim for the affected tenant/operation | Existing database/lifecycle claim and census rules serialize destructive work; a tenant ring is not required for all maintenance jobs. |
+| PostgreSQL/Vault/edge/UI | Their native storage, connection or request responsibilities | Scale with their own mechanisms and resource bounds; the application evaluator ring does not assign their per-tenant ownership. They are not assumed to have tenant-independent cost. |
+
+These mechanisms are read-derived from the inspected runtime. The next owner must
+measure placement transitions, duplicate effects, recovery and cost before
+claiming another worker type is safe to replicate. Shared infrastructure may
+scale with tenant load even when it has no per-tenant scheduler.

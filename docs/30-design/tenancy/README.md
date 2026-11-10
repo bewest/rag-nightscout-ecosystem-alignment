@@ -28,10 +28,18 @@ conditional HA deferrals and prior art from node-multienv and the gateway projec
 Its initial topology and operating envelope are proposals for review.
 
 The [grid topology guide](runtime-topology.md) shows public/DMZ through backing
-stores, accepted one-host structure and the proposed fixed-roster API target.
+stores across the historical accepted one-host reference, current `dc795bd1`
+private API contracts and proposed component-private/fixed-roster target.
 The [endpoint/API implementation plan](selectable-endpoints-and-api-scaling-plan.md)
-defines the queued capabilities and planned gates; Kubernetes proof and Jsonnet
-are deferred.
+separates implemented UDS/HTTP/schema/client work from listener composition,
+operational APIs, remote binding and multi-API acceptance still needed. Kubernetes
+proof and Jsonnet remain deployment work; evaluator partitioning is separately
+queued M7 work.
+
+The [realtime sharding and recovery proposal](realtime-sharding-plan.md) owns the
+separate tenant-placement capability and compares evaluator/realtime co-location
+with independent pools. Neither extra processes nor process merging alone supply
+assignment, notification delivery or failover correctness.
 
 For REST-module/process placement and operator inactivity versus recovery, read
 the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)

@@ -147,6 +147,7 @@
         "MT-BENCH-CONTRAST",
         "MT-SCALE-UNBOUND",
         "MT-EVALUATOR-PARTITION",
+        "MT-REALTIME-SHARDING",
         "MT-ANDROID-LAB",
         "MT-ENDPOINT-TRANSPORT",
         "MT-API-FIXED-ROSTER",
@@ -304,7 +305,12 @@
     {
       "id": "MT-SCALE-UNBOUND",
       "lane": "M7 / architecture proof",
-      "next": "API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; consumes endpoint transport and fixed roster."
+      "next": "API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; horizontal realtime consumes endpoint transport and realtime sharding correctness, API scale consumes fixed roster; vertical baselines remain independent."
+    },
+    {
+      "id": "MT-REALTIME-SHARDING",
+      "lane": "M7 / realtime placement and recovery",
+      "next": "Evaluate stable logical tenant shards with explicit edge/alarm mapping, owner incarnations, checkpoint continuity, subset-aware maintenance and controlled moves/rollback. Preserve separate evaluator/delivery responsibilities with optional measured co-location; no lease-only HA or implied alarm replay."
     },
     {
       "id": "MT-EVALUATOR-PARTITION",

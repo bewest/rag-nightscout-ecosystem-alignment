@@ -1044,6 +1044,7 @@ queue-check: queue-validate
 	@$(QUEUE)/multitenant_dashboard.py --check
 	@$(QUEUE)/emit_views.py --check
 	@$(QUEUE)/emit_packets.py --check
+	@python3 tools/site/render_tenancy_topologies.py --check
 	@node tools/queue/gates/doc-links.js >/dev/null 2>&1 && \
 	  echo "OK     every path the programme documents cite resolves" || \
 	  { node tools/queue/gates/doc-links.js; exit 1; }
