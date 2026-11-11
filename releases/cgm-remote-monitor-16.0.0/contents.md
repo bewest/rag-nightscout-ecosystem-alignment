@@ -2214,3 +2214,12 @@ Lane detail: `externals/work/HANDOFF-{listener-composition,key-retention,ownersh
 | Archiving of four dispatch-era plans | Not done: two are live evidence for in-progress items; two can move once the queue and release-record links are rewritten with them. | lane E2 report |
 | Decisions | [pool-primitive-shared](decisions.md#pool-primitive-shared), [vcpool-egress-capacity](decisions.md#vcpool-egress-capacity), [8898-continue-adding](decisions.md#8898-continue-adding), [tanka-binding-parallel](decisions.md#tanka-binding-parallel), [bench-first-on-workstation](decisions.md#bench-first-on-workstation) | this file's sibling |
 | Lanes | Started: `DEPLOY-TREE-HOME` (fixture shrink), `MT-POOL-PRIMITIVE`, `MT-BENCH-BASELINE`, `DEPLOY-K8S-BINDING`, connector outbound gaps. Queued: `MT-CONNECTOR-REVERSE` after the pool primitive. | `queue/work-queue.yaml` |
+
+### Update — next #8898 batch: lane branches ready to join (2026-11-10)
+
+| branch (base `16a1fc2d`) | head | what | focused evidence |
+|---|---|---|---|
+| `codex/deploy-fixture-20261110` | `f3dc10c8` | `deploy/multitenant` reduced to the five modules core tests load; operators pointed at nightscout-deploy (synced to `16a1fc2d` on `deploy/compose-sync-20261110` `085d88ad`) | unit 3176, fixture suites 28 + 19 integration, removal control red; `reports/tenancy/deploy-fixture-2026-11-10/README.md` |
+| `codex/devicestatus-advanced-20261110` | `0df0e66f` | [tenant-devicestatus-status-parity](decisions.md#tenant-devicestatus-status-parity): status route and realtime status frame report `{advanced:true, days:1}`, operator override honoured | unit 3178, multitenant integration 44, default-removal control red; `reports/tenancy/devicestatus-advanced-2026-11-10/README.md` §7 |
+
+Not joined; full acceptance runs on the frozen join with the other lanes in progress (pool primitive, connector).
