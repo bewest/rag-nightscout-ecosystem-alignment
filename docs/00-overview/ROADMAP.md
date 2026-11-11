@@ -216,7 +216,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `MT-VAULT-TOKEN-FILE` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
 | 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `MT-ENDPOINT-TRANSPORT` |
-| 2 | `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | `not-started` | `MT-ENDPOINT-TRANSPORT` |
+| 2 | `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | `in-progress` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `MT-OIDC-NATIVE` |
 | 2 | `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `not-started` | `MT-ENDPOINT-TRANSPORT` |
 | 3 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
@@ -232,15 +232,15 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
 | 4 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up | `not-started` | `DEPLOY-TRUST-PROBES` |
 | 4 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;  | `in-progress` | `MT-M6B-JOIN` |
-| 4 | `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | `not-started` | `MT-M6B-JOIN` |
+| 4 | `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | `in-progress` | `MT-M6B-JOIN` |
 | 4 | `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an owners | `in-progress` | `MT-M6B-JOIN` |
 | 4 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal loa | `not-started` | `MT-BENCH-BASELINE` |
 | 4 | `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership t | `not-started` | `MT-BENCH-BASELINE` |
 | 4 | `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `in-progress` | `MT-M6B-JOIN` |
 | 4 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-progress` | `MT-M6B-JOIN` |
 | 4 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no  | `not-started` | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING` |
-| 5 | `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active  | `not-started` | `MT-ADMIN-ROLE-OWNERSHIP` |
-| 5 | `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | `not-started` | `MT-OWNER-LAST-GUARD` |
+| 5 | `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active  | `in-progress` | `MT-ADMIN-ROLE-OWNERSHIP` |
+| 5 | `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | `in-progress` | `MT-OWNER-LAST-GUARD` |
 
 <!-- END GENERATED: road-tenancy -->
 

@@ -32,17 +32,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 | | count |
 |---|---|
 | items | 396 |
-| runnable gates | 445 |
-| explicit `no-gate:` markers | 404 |
+| runnable gates | 449 |
+| explicit `no-gate:` markers | 400 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 404 of the 849 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 849 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 87 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-ADMIN-LIFECYCLE-FIT, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 20 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-ADMIN-ROLE-OWNERSHIP, MT-EXPORT-EXPIRY, DEPLOY-TREE-HOME, MT-OWNER-LAST-GUARD |
+| `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `in-progress` | 24 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, DEPLOY-TREE-HOME, MT-OWNER-LAST-GUARD |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8453,11 +8453,11 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers | `in-flight-upstream` | `codex/oidc-single-provision-20261110` | minor | 1 run |
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-flight-upstream` | `codex/ownership-ops-20261110` | minor | 1 run |
 | `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity | `in-progress` | `codex/ownership-role-20261110` | n/a | 1 run |
-| `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
-| `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
-| `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
+| `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `in-progress` | `codex/root-admin-parity-20261110` | n/a | 1 run |
+| `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline | `in-progress` | `codex/internal-listener-20261110` | n/a | 1 run |
+| `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause | `in-progress` | `codex/activity-eligibility-20261110` | n/a | 1 run |
 | `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `in-progress` | `codex/export-expiry-20261110` | n/a | 1 run |
-| `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `not-started` | `codex/ownership-role-20261110` | n/a | 0 run + 1 no-gate |
+| `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `in-progress` | `codex/admin-lifecycle-20261110` | n/a | 1 run |
 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README | `in-progress` | `docs/operator-readme-20261110` | n/a | 0 run + 1 no-gate |
 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-progress` | `codex/m6b-followups-20261110` | n/a | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-flight-upstream` | `codex/key-retention-20261110` | minor | 1 run |
@@ -10904,11 +10904,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `workspace/multitenant-20261102` |
-| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
-| worktree | `-` |
+| branch | `codex/root-admin-parity-20261110` |
+| base | `codex/m6b-followups-20261110@65657a62a1e26dde9e245f9a7651d2593da0208a` |
+| worktree | `externals/work/crm-root-admin-parity-20261110` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `MT-OWNER-LAST-GUARD` |
@@ -10921,23 +10921,25 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; not started; gate is a native run of admin-tools subject/role edits with a tenant root secret, with controls (root reaches an owner or operator route; root removes the last owner; tenant B's root edits tenant A)
+- `[unit]` _(cwd: `externals/work/crm-root-admin-parity-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/root-admin.test.js`
+  - Root admin plane unit tests: 5 passing on cfae532c. PostgreSQL suites owner-subject-policy 33, subject-admin-postgres 10, subject-management-http 13, owner-preview 9 in the evidence.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
+- `reports/tenancy/root-admin-parity-2026-11-10/README.md`
 
-**Notes.** Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10).
+**Notes.** Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10). 2026-11-10 (reproduced in lane): cfae532c on 65657a62. /api/v2/authorization subjects (list/create/edit/delete) and roles (list/create) for the tenant root secret on DATA; role edit/delete return 501; store refuses construction without ownerPolicy; new nsdemo_root_writer identity. Not run: preview API boot with subjectAdmin on real PostgreSQL and Vault; browser admin page.
 
 ### `MT-INTERNAL-LISTENER` &mdash; Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `workspace/multitenant-20261102` |
+| branch | `codex/internal-listener-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
-| worktree | `-` |
+| worktree | `externals/work/crm-internal-listener-20261110` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `MT-ENDPOINT-TRANSPORT` |
@@ -10950,23 +10952,25 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; not started; gate is the Compose internal-api run with real config, plus a held-call shutdown test whose caller receives the response; controls: early-drop close, a contract moved by config, network default
+- `[unit]` _(cwd: `externals/work/crm-internal-listener-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/internal-api-listener-config.test.js tests/internal-api-shutdown.test.js tests/serve-internal-listener.test.js`
+  - Listener config, shutdown and role-contract planning: 18 passing on 78ecba76. Compose run: held caller received its response (5000 ms deadline); early-drop control red.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
+- `reports/tenancy/internal-listener-2026-11-10/README.md`
 
-**Notes.** Decisions internal-listener-ory-pattern and internal-listener-graceful- shutdown (2026-11-10).
+**Notes.** Decisions internal-listener-ory-pattern and internal-listener-graceful- shutdown (2026-11-10). 2026-11-10 (reproduced in lane): 78ecba76 on b70ad83f. serve.internal {socket}|{host,port}, NS_SERVE_INTERNAL_*, socket default <runtime>/<roles>.sock; peers NS_<ROLE>_INTERNAL_URL|SOCKET defaulting to sockets; contracts fixed per role in internal-listener.js; endpoint-config.js and openControl removed. Join: ownership-operations must be added to OWNED/plan() for admin.
 
 ### `MT-ACTIVITY-ELIGIBILITY` &mdash; Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `workspace/multitenant-20261102` |
+| branch | `codex/activity-eligibility-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
-| worktree | `-` |
+| worktree | `externals/work/crm-activity-eligibility-20261110` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `MT-M6B-JOIN` |
@@ -10979,13 +10983,15 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; not started; gate per the focused acceptance in tenant-admission-and-activity.md; controls: schedule from configured presence, restore re-enables, evaluator runs while paused
+- `[unit]` _(cwd: `externals/work/crm-activity-eligibility-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-activity.test.js`
+  - Activity policy and store unit tests: 12 passing on 8f3e3c60. Native evaluator acceptance (29 passing across four suites) in the evidence.
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
+- `reports/tenancy/activity-eligibility-2026-11-10/README.md`
 
-**Notes.** Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner- facing text says alarms stop while paused.
+**Notes.** Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner- facing text says alarms stop while paused. 2026-11-10 (reproduced in lane): 8f3e3c60 on b70ad83f. New lib/tenant-activity (migration 0001, paused/suspended flags, audit); evaluator and realtime consumers skip ineligible tenants; owner pause/unpause routes with audit. Not wired: API ingest/serving refusal under suspend, read blocking under pause, socket disconnect on suspend; owner-facing suspend text currently overstates (says uploads stop).
 
 ### `MT-EXPORT-EXPIRY` &mdash; Key destruction removes the export artifact file in the same audited step
 
@@ -11022,11 +11028,11 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/ownership-role-20261110` |
-| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
-| worktree | `-` |
+| branch | `codex/admin-lifecycle-20261110` |
+| base | `codex/ownership-role-20261110@1376c2946ce71078b477d4e0f2e4d428f29778ed` |
+| worktree | `externals/work/crm-admin-lifecycle-20261110` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `MT-ADMIN-ROLE-OWNERSHIP` |
@@ -11039,13 +11045,15 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; not started; gate: restore succeeds with the admin role connected; ownership add on a suspended tenant refuses; admin and api on one address with different ports start; controls: identity granted a clinical table must be refused by the census, same port must refuse
+- `[unit]` _(cwd: `externals/work/crm-admin-lifecycle-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/serve-listeners.test.js`
+  - Plane-rule tests including admin on the consumer address at another port: 23 passing on 26b5349d. Native admin-lifecycle-fit suite 4 passing (restore with admin connected).
 
 **Evidence.**
 
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
+- `reports/tenancy/admin-lifecycle-2026-11-10/README.md`
 
-**Notes.** Decisions restore-census-and-ownership-phase and admin-plane-same-address- different-port (2026-11-10).
+**Notes.** Decisions restore-census-and-ownership-phase and admin-plane-same-address- different-port (2026-11-10). 2026-11-10 (reproduced in lane): 26b5349d on 1376c294. Census exempts backends whose identity holds no privilege on CLINICAL tables (lib/tenant-lifecycle/clinical-catalogue.js), checked in the census SQL; ownership refuses OWNERSHIP_TENANT_INACTIVE via tenantPhase (window lock held shared). Not run: clinical logical restore with admin connected.
 
 ### `DEPLOY-TREE-HOME` &mdash; Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README
 

@@ -26157,9 +26157,10 @@ items:
     title: "Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/multitenant-20261102
-    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: not-started
+    branch: codex/root-admin-parity-20261110
+    worktree: externals/work/crm-root-admin-parity-20261110
+    base: codex/m6b-followups-20261110@65657a62a1e26dde9e245f9a7651d2593da0208a
+    state: in-progress
     blast_radius: >
       Multitenant DATA API: restore the admin-tools authorization routes for a tenant's root principal, writing
       through the owner-aware subject writer (last-owner guard), under RLS. No owner or operator authority for root.
@@ -26169,20 +26170,28 @@ items:
     semver_reason: unreleased preview
     register: []
     gates:
-      - no-gate: "not started; gate is a native run of admin-tools subject/role edits with a tenant root secret, with controls (root reaches an owner or operator route; root removes the last owner; tenant B's root edits tenant A)"
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/root-admin.test.js
+        cwd: externals/work/crm-root-admin-parity-20261110
+        kind: unit
+        describe: >
+          Root admin plane unit tests: 5 passing on cfae532c. PostgreSQL suites owner-subject-policy 33, subject-admin-postgres 10, subject-management-http 13, owner-preview 9 in the evidence.
     blocks_on:
       - MT-OWNER-LAST-GUARD
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
+      - reports/tenancy/root-admin-parity-2026-11-10/README.md
     notes: >
       Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10).
+      2026-11-10 (reproduced in lane): cfae532c on 65657a62. /api/v2/authorization subjects (list/create/edit/delete) and roles (list/create) for the tenant root secret on DATA; role edit/delete return 501; store refuses construction without ownerPolicy; new nsdemo_root_writer identity. Not run: preview API boot with subjectAdmin on real PostgreSQL and Vault; browser admin page.
+
   - id: MT-INTERNAL-LISTENER
     title: "Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/multitenant-20261102
+    branch: codex/internal-listener-20261110
+    worktree: externals/work/crm-internal-listener-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: not-started
+    state: in-progress
     blast_radius: >
       Replace per-contract socketPathEnv/endpoint config (internal-api/endpoint-config.js and its three callers) with serve.internal host/port/socket plus NS_SERVE_INTERNAL_* overrides; peers get NS_*_INTERNAL_URL; transport close() waits for in-flight responses up to a deadline.
     review: maintainer
@@ -26191,19 +26200,27 @@ items:
     semver_reason: unreleased preview
     register: []
     gates:
-      - no-gate: "not started; gate is the Compose internal-api run with real config, plus a held-call shutdown test whose caller receives the response; controls: early-drop close, a contract moved by config, network default"
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/internal-api-listener-config.test.js tests/internal-api-shutdown.test.js tests/serve-internal-listener.test.js
+        cwd: externals/work/crm-internal-listener-20261110
+        kind: unit
+        describe: >
+          Listener config, shutdown and role-contract planning: 18 passing on 78ecba76. Compose run: held caller received its response (5000 ms deadline); early-drop control red.
     blocks_on: [MT-ENDPOINT-TRANSPORT]
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
+      - reports/tenancy/internal-listener-2026-11-10/README.md
     notes: >
       Decisions internal-listener-ory-pattern and internal-listener-graceful-shutdown (2026-11-10).
+      2026-11-10 (reproduced in lane): 78ecba76 on b70ad83f. serve.internal {socket}|{host,port}, NS_SERVE_INTERNAL_*, socket default <runtime>/<roles>.sock; peers NS_<ROLE>_INTERNAL_URL|SOCKET defaulting to sockets; contracts fixed per role in internal-listener.js; endpoint-config.js and openControl removed. Join: ownership-operations must be added to OWNED/plan() for admin.
+
   - id: MT-ACTIVITY-ELIGIBILITY
     title: "Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/multitenant-20261102
+    branch: codex/activity-eligibility-20261110
+    worktree: externals/work/crm-activity-eligibility-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: not-started
+    state: in-progress
     blast_radius: >
       Evaluator (and future connector workers) build work lists from tenants eligible under pause/suspend instead of configured presence (evaluator-runtime.js:101,152); owner-API pause verb with audit; restore/restart preserve state.
     review: maintainer
@@ -26212,12 +26229,19 @@ items:
     semver_reason: unreleased preview
     register: []
     gates:
-      - no-gate: "not started; gate per the focused acceptance in tenant-admission-and-activity.md; controls: schedule from configured presence, restore re-enables, evaluator runs while paused"
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-activity.test.js
+        cwd: externals/work/crm-activity-eligibility-20261110
+        kind: unit
+        describe: >
+          Activity policy and store unit tests: 12 passing on 8f3e3c60. Native evaluator acceptance (29 passing across four suites) in the evidence.
     blocks_on: [MT-M6B-JOIN]
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
+      - reports/tenancy/activity-eligibility-2026-11-10/README.md
     notes: >
       Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner-facing text says alarms stop while paused.
+      2026-11-10 (reproduced in lane): 8f3e3c60 on b70ad83f. New lib/tenant-activity (migration 0001, paused/suspended flags, audit); evaluator and realtime consumers skip ineligible tenants; owner pause/unpause routes with audit. Not wired: API ingest/serving refusal under suspend, read blocking under pause, socket disconnect on suspend; owner-facing suspend text currently overstates (says uploads stop).
+
   - id: MT-EXPORT-EXPIRY
     title: "Key destruction removes the export artifact file in the same audited step"
     parcel: tenancy
@@ -26256,9 +26280,10 @@ items:
     title: "Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/ownership-role-20261110
-    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: not-started
+    branch: codex/admin-lifecycle-20261110
+    worktree: externals/work/crm-admin-lifecycle-20261110
+    base: codex/ownership-role-20261110@1376c2946ce71078b477d4e0f2e4d428f29778ed
+    state: in-progress
     blast_radius: >
       operation-cohort.js assertComplete (grant-checked exemption), ownership operations phase check, listeners.js plane rule.
     review: maintainer
@@ -26267,12 +26292,19 @@ items:
     semver_reason: unreleased preview
     register: []
     gates:
-      - no-gate: "not started; gate: restore succeeds with the admin role connected; ownership add on a suspended tenant refuses; admin and api on one address with different ports start; controls: identity granted a clinical table must be refused by the census, same port must refuse"
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/serve-listeners.test.js
+        cwd: externals/work/crm-admin-lifecycle-20261110
+        kind: unit
+        describe: >
+          Plane-rule tests including admin on the consumer address at another port: 23 passing on 26b5349d. Native admin-lifecycle-fit suite 4 passing (restore with admin connected).
     blocks_on: [MT-ADMIN-ROLE-OWNERSHIP]
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
+      - reports/tenancy/admin-lifecycle-2026-11-10/README.md
     notes: >
       Decisions restore-census-and-ownership-phase and admin-plane-same-address-different-port (2026-11-10).
+      2026-11-10 (reproduced in lane): 26b5349d on 1376c294. Census exempts backends whose identity holds no privilege on CLINICAL tables (lib/tenant-lifecycle/clinical-catalogue.js), checked in the census SQL; ownership refuses OWNERSHIP_TENANT_INACTIVE via tenantPhase (window lock held shared). Not run: clinical logical restore with admin connected.
+
   - id: DEPLOY-TREE-HOME
     title: "Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README"
     parcel: tenancy

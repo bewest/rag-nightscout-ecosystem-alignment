@@ -1,0 +1,10 @@
+BLANKET_WINDOW_CONTROL_APPLIED /tmp/ns-lc-CbshQKOy/src/lib/server/internal-api/transport.js
+2026-11-10T23:47:50Z project=ns-lc-20261110t234750z-2956368 source=/tmp/ns-lc-CbshQKOy/src control=blanket-window api-shutdown-ms=5000 head=78ecba7684aa94b0ce46a08a189217c1e4191605 dirty=0
+2026-11-10T23:47:50Z + docker compose -p ns-lc-20261110t234750z-2956368 -f <alignment>/externals/work/crm-internal-listener-20261110/tests/native/internal-api-compose/compose.yaml up -d api realtime evaluator tenant-admin
+2026-11-10T23:47:51Z + docker compose -p ns-lc-20261110t234750z-2956368 -f <alignment>/externals/work/crm-internal-listener-20261110/tests/native/internal-api-compose/compose.yaml run --rm driver node tests/native/internal-api-compose/driver.cjs scenario
+DRIVER_FAILED lifecycle invalidation of suspended A on api: SOCKET_IPC_UNAVAILABLE
+
+2026-11-10T23:47:53Z + docker compose -p ns-lc-20261110t234750z-2956368 -f <alignment>/externals/work/crm-internal-listener-20261110/tests/native/internal-api-compose/compose.yaml down -v --remove-orphans
+2026-11-10T23:47:53Z containers remaining for project ns-lc-20261110t234750z-2956368: 0
+2026-11-10T23:47:54Z networks remaining for project ns-lc-20261110t234750z-2956368: 0
+2026-11-10T23:47:54Z exit 1

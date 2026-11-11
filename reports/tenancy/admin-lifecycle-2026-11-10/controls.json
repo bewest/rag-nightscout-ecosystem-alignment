@@ -1,0 +1,231 @@
+[
+ {
+  "id": "C0",
+  "mutation": "census exemption removed (any non-participant refuses, as before the decision)",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 2,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "Error: RESTORE_COHORT_UNKNOWN_BACKEND",
+    "Error: RESTORE_COHORT_UNKNOWN_BACKEND"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 4,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "C1",
+  "mutation": "plan grants ownership_operator SELECT on entries (one clinical table)",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js",
+   "tests/admin-role.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 11,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role: deployment plan ownership_operator identity"
+   ],
+   "symptoms": [
+    "Error: RESTORE_COHORT_UNKNOWN_BACKEND",
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 13,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "C2",
+  "mutation": "exempt by role name instead of by grants",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 1,
+   "passing": 3,
+   "failing": 1,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Missing expected rejection."
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 4,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "C1+C2",
+  "mutation": "clinical grant in the plan AND name-based exemption",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 1,
+   "passing": 3,
+   "failing": 1,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Missing expected rejection."
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 4,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "C3",
+  "mutation": "ownership phase check removed (plan regardless of lifecycle)",
+  "files": [
+   "tests/tenant-ownership-postgres.integration.test.js",
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 11,
+   "failing": 2,
+   "failures": [
+    "operator-assisted tenant ownership (disposable PostgreSQL, private service)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: add while suspended",
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 13,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "C3b",
+  "mutation": "phase read without the shared window lock (hold: false)",
+  "files": [
+   "tests/tenant-ownership-postgres.integration.test.js",
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 3,
+   "passing": 10,
+   "failing": 3,
+   "failures": [
+    "operator-assisted tenant ownership (disposable PostgreSQL, private service)",
+    "operator-assisted tenant ownership (disposable PostgreSQL, private service)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: add while held",
+    "AssertionError [ERR_ASSERTION]: ownership change holds the window lock shared",
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 13,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "C4a",
+  "mutation": "plane rule no longer checks the consumer listener's port",
+  "files": [
+   "tests/serve-listeners.test.js",
+   "tests/admin-role.test.js"
+  ],
+  "mutated": {
+   "exit": 3,
+   "passing": 29,
+   "failing": 3,
+   "failures": [
+    "multitenant role listeners (PLAT-SERVE)",
+    "multitenant role listeners (PLAT-SERVE)",
+    "admin role: composition"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /would share the consumer listener/. Input:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 32,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "C4b",
+  "mutation": "same port allowed everywhere (overlaps always false)",
+  "files": [
+   "tests/serve-listeners.test.js",
+   "tests/admin-role.test.js"
+  ],
+  "mutated": {
+   "exit": 4,
+   "passing": 28,
+   "failing": 4,
+   "failures": [
+    "multitenant role listeners (PLAT-SERVE)",
+    "multitenant role listeners (PLAT-SERVE)",
+    "multitenant role listeners (PLAT-SERVE)",
+    "admin role: composition"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Missing expected exception.",
+    "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /would share the consumer listener/. Input:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 32,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ }
+]

@@ -1,0 +1,19 @@
+{
+ "apiShutdownMs": 5000,
+ "holdMs": 1500,
+ "runningDuringHold": true,
+ "drainedLinesDuringHold": 0,
+ "apiExit": 0,
+ "heldCall": [
+  "start",
+  "finish"
+ ],
+ "windowOperations": 29,
+ "allFinished": true,
+ "drainedMs": 1546,
+ "client": {
+  "error": "SOCKET_IPC_UNAVAILABLE",
+  "elapsedMs": 165
+ },
+ "expected": "response"
+}
