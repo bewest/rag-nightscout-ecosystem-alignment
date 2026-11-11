@@ -98,7 +98,7 @@ flowchart LR
   MT-ANDROID-LAB["MT-ANDROID-LAB<br/>not-started"]
   MT-API-FIXED-ROSTER["MT-API-FIXED-ROSTER<br/>not-started"]
   MT-BENCH-BASELINE["MT-BENCH-BASELINE<br/>in-progress"]
-  MT-BENCH-CONTRAST["MT-BENCH-CONTRAST<br/>not-started"]
+  MT-BENCH-CONTRAST["MT-BENCH-CONTRAST<br/>closed"]
   MT-CONFIG-MIN["MT-CONFIG-MIN<br/>closed"]
   MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>done"]
   MT-CONSUMER-STALE-RESELECT["MT-CONSUMER-STALE-RESELECT<br/>in-flight-upstream"]
@@ -208,7 +208,7 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="mt-android-lab"></a>**MT-ANDROID-LAB**: not-started | M7 | MT-M6A-JOIN (in-flight-upstream) | Android emulator acceptance for the pinned uploader/follower shapes; iOS stays outside the automated lab. |
 | <a id="deploy-k8s-binding"></a>**DEPLOY-K8S-BINDING**: in-progress | M7 / nightscout-deploy | DEPLOY-TRUST-PROBES (not-started) | One Pod per cohort, private socket volume, no-overlap update; binding equivalence table. |
 | <a id="mt-bench-baseline"></a>**MT-BENCH-BASELINE**: in-progress | M7 / measurement | MT-M6A-JOIN (in-flight-upstream) | k6 or autocannon driving pinned client shapes at 1/10/50/200 tenants with one hot tenant on the Compose reference; p50/p95/p99, socket fanout, evaluator cycle, pool/lock waits, CPU/RSS per role, disk per tenant-day, reconnect recovery. Independent stored-count oracle. Numbers are the deliverable. |
-| <a id="mt-bench-contrast"></a>**MT-BENCH-CONTRAST**: not-started | M7 / measurement | MT-BENCH-BASELINE (in-progress) | Same workload against N single-tenant Mongo processes and the per-site process model; resource per tenant, latency, startup/restore time, operator steps per tenant, side by side. |
+| <a id="mt-bench-contrast"></a>**MT-BENCH-CONTRAST**: closed | M7 / measurement | MT-BENCH-BASELINE (in-progress) | Same workload against N single-tenant Mongo processes and the per-site process model; resource per tenant, latency, startup/restore time, operator steps per tenant, side by side. |
 | <a id="mt-scale-unbound"></a>**MT-SCALE-UNBOUND**: not-started | M7 / architecture proof | MT-BENCH-BASELINE (in-progress), MT-API-FIXED-ROSTER (not-started), MT-REALTIME-SHARDING (not-started) | API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; horizontal realtime consumes endpoint transport and realtime sharding correctness, API scale consumes fixed roster; vertical baselines remain independent. |
 | <a id="mt-realtime-sharding"></a>**MT-REALTIME-SHARDING**: not-started | M7 / realtime placement and recovery | MT-ENDPOINT-TRANSPORT (in-progress) | Evaluate stable logical tenant shards with explicit edge/alarm mapping, owner incarnations, checkpoint continuity, subset-aware maintenance and controlled moves/rollback. Preserve separate evaluator/delivery responsibilities with optional measured co-location; no lease-only HA or implied alarm replay. |
 | <a id="mt-evaluator-partition"></a>**MT-EVALUATOR-PARTITION**: ready-to-push | M7 / evaluator scaling | MT-BENCH-BASELINE (in-progress) | Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control. |

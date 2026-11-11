@@ -26763,7 +26763,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main@2ea470f16
-    state: not-started
+    state: closed
     blast_radius: >
       Same synthetic workload as MT-BENCH-BASELINE run against (a) N single-tenant
       `nightscout single` processes on MongoDB in Compose on the same host, the
