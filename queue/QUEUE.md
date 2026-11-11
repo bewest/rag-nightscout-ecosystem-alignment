@@ -11590,7 +11590,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED: binding equivalence table satisfied on a kind/k3s cluster; control: two Pods of one cohort refuse to both serve.
+- **NO GATE** &mdash; Binding equivalence table on a kind cluster (smoked 2026-11-10: 17 of 23 rows, reports/tenancy/k8s-binding-2026-11-10/README.md); the one-Pod cohort is held to replicas 1 by an offline invariant with a break-it control (decisions.md#cohort-pod-not-scaled), not by a runtime refusal.
 
 **Evidence.**
 
