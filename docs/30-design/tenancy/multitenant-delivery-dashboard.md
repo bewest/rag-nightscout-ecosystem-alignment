@@ -2,7 +2,7 @@
 # Multitenant delivery: working dashboard
 
 **Recorded 2026-11-10; not a live branch monitor.** Observed integration tip: `b70ad83fa4cdaeb7e6023137a05bd811d7db606a` on `workspace/multitenant-20261102 (draft PR #8898)`.
-Draft #8898 carries the accepted ed2 one-host reference, the M6a owner/OIDC and internal service API candidate (dc795bd1) and the M6b join: listener composition, key retention, ownership operations, single-site OIDC provisioning and the CodeQL 150 fix. Read from GitHub 2026-11-10 20:54 UTC: head b70ad83f, open draft, 17 checks pass and 3 skipped (CodeQL and the multitenant opt-in corpus included). The frozen-head acceptance is reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md. On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moved to a Vault Agent sidecar and native acceptance runs through a disposable harness (release decisions, 2026-11-09). No dev merge, operator release, production/default enablement, capacity or multi-host claim.
+Draft #8898 carries the accepted ed2 one-host reference, the M6a owner/OIDC and internal service API candidate (dc795bd1) and the M6b join: listener composition, key retention, ownership operations, single-site OIDC provisioning and the CodeQL 150 fix. Read from GitHub 2026-11-10 20:54 UTC: head b70ad83f, open draft, 17 checks pass and 3 skipped (CodeQL and the multitenant opt-in corpus included). The frozen-head acceptance is reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md. The next batch (codex/batch-join-20261110) joins the 2026-11-10 lanes: last-owner guard (BF-229), root admin parity, ownership in the admin role with the lifecycle fit (BF-230), one serve.internal per role with graceful shutdown, pause/suspend activity, export-file removal on key destruction, content-change revisions with the alarm repeat clock (BF-231) and tenant extended settings (BF-232). That join is in acceptance and not pushed; the lanes below record their own focused evidence. On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moved to a Vault Agent sidecar and native acceptance runs through a disposable harness (release decisions, 2026-11-09). No dev merge, operator release, production/default enablement, capacity or multi-host claim.
 
 **Start here:** use the dependency map for sequencing, the lane table for parallel work, and the acceptance ledger for what has actually passed. No milestone is promoted by a completed dependency slice.
 
@@ -67,7 +67,7 @@ flowchart LR
 | **M4: Existing-client surface** | promoted | M3, [ST-PG](#st-pg), [TEN-LAB](#ten-lab) | R72 accepts actual pinned cgmsim/oref0 and source-pattern replay, tenant-local identity/history/batch/retry/refusal/exchange. No all-client claim. Android emulator C; iOS outside automated lab. |
 | **M5: Realtime and evaluator** | promoted | [MT-RUNTIME-PLAN](#mt-runtime-plan) | R73 accepts the functional separate-role reference on one host: bounded consistent current-state/evaluator recovery, current socket authority/DATA compatibility, durable original suppression and actual stable-request consumer handoff, controls/restorations and complete final-tree verification. Current polling/snapshot reference makes no LISTEN/latency or evaluator-to-device claim. Provider/device, multi-node ownership and operating envelope remain separate; published through draft #8898, not merged or released. |
 | **M6a: Identity and owner API** | in-progress | M4, M5, [MT-OIDC-NATIVE](#mt-oidc-native), [MT-M6A-JOIN](#mt-m6a-join) | Nine-stage native matrix (Vault single/multi, Mongo/PG sessions, Mongo HTTPS, owner consumer/authority/browser/compatibility) passes on the frozen candidate through the disposable harness with red controls; then the joined candidate passes full, default-browser, enabled-corpus, pinned-client and prcheck on #8898. Recorded: matrix 9/9 with 3/3 controls on the dc795bd1 and b70ad83f joined candidates (reports/tenancy/m6a-join-2026-11-09, reports/tenancy/m6b-join-2026-11-10). Real identity-provider interoperability is synthetic only; no promotion recorded. |
-| **M6b: Lifecycle and keys** | in-progress | M6a, [MT-OWNERSHIP-OPS](#mt-ownership-ops), [MT-KEY-RETENTION](#mt-key-retention) | Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Both capabilities are in the b70ad83f joined acceptance (reports/tenancy/m6b-join-2026-11-10). Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; no promotion recorded. |
+| **M6b: Lifecycle and keys** | in-progress | M6a, [MT-OWNERSHIP-OPS](#mt-ownership-ops), [MT-KEY-RETENTION](#mt-key-retention), [MT-M6B-JOIN](#mt-m6b-join), [MT-OWNER-LAST-GUARD](#mt-owner-last-guard), [MT-ADMIN-ROLE-OWNERSHIP](#mt-admin-role-ownership) | Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Both capabilities are in the b70ad83f joined acceptance (reports/tenancy/m6b-join-2026-11-10). Ownership in the admin role, the last-owner guard and export-file removal are fixed on lane branches and in the batch join, which is in acceptance. Real role processes over Compose, the deploy-repo ownership overlay and the production key custodian remain open; no promotion recorded. |
 | **M6c: Deployment trust (nightscout-deploy)** | in-progress | M6a, [MT-VAULT-TOKEN-FILE](#mt-vault-token-file), [DEPLOY-VAULT-AGENT](#deploy-vault-agent), [DEPLOY-IDP-PROFILE](#deploy-idp-profile), [DEPLOY-TRUST-PROBES](#deploy-trust-probes) | Vault Agent sidecar (auto-auth, sink, renewal) with core reading the sink; Authentik profile over HTTPS with synthetic people; live spoof/conflict/outage probes against the Compose edge and Vault; trust record written from the template. Vault Agent overlay and core tokenFile are measured (reports/tenancy/vault-agent-2026-11-09); the identity-provider profile and trust probes are not started. |
 | **M6d: Connector sync** | in-progress | M6a, [MT-CONNECTOR-SYNC](#mt-connector-sync) | nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. Docker lab measured (reports/tenancy/connector-sync-2026-11-10): other collections, cadence, token refresh, owner-surface revocation and real ingress remain UNMEASURED; no promotion recorded. |
 | **M7: Production readiness** | not-started | M6a, M6b, M6c, M6d, [MT-BENCH-BASELINE](#mt-bench-baseline), [MT-BENCH-CONTRAST](#mt-bench-contrast), [MT-SCALE-UNBOUND](#mt-scale-unbound), [MT-EVALUATOR-PARTITION](#mt-evaluator-partition), [MT-REALTIME-SHARDING](#mt-realtime-sharding), [MT-ANDROID-LAB](#mt-android-lab), [MT-ENDPOINT-TRANSPORT](#mt-endpoint-transport), [MT-API-FIXED-ROSTER](#mt-api-fixed-roster), [DEPLOY-K8S-BINDING](#deploy-k8s-binding) | Measured, not declared (maintainer 2026-11-09): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast the cohort against N single-tenant processes and the per-site model at equal synthetic load; prove API, realtime, evaluator, PostgreSQL and Vault Agent each scale horizontally or vertically as intended with no hidden binding (any binding is a file:line finding). Evaluator partitioning by member count and ordinal with a pool-membership table (decision 2026-11-09); Android emulator lab; selectable endpoints and fixed-roster API; Kubernetes binding equivalence. Limits are set from the measurements afterwards. Required before a production cohort, not before the dormant alpha. |
@@ -87,26 +87,38 @@ flowchart LR
   ARCH-SEAM-CONTRACT["ARCH-SEAM-CONTRACT<br/>in-progress"]
   DEPLOY-IDP-PROFILE["DEPLOY-IDP-PROFILE<br/>not-started"]
   DEPLOY-K8S-BINDING["DEPLOY-K8S-BINDING<br/>not-started"]
+  DEPLOY-TREE-HOME["DEPLOY-TREE-HOME<br/>in-progress"]
   DEPLOY-TRUST-PROBES["DEPLOY-TRUST-PROBES<br/>not-started"]
   DEPLOY-VAULT-AGENT["DEPLOY-VAULT-AGENT<br/>ready-to-push"]
   MIG-RUNNER["MIG-RUNNER<br/>closed"]
   MIG-VV["MIG-VV<br/>done"]
+  MT-ACTIVITY-ELIGIBILITY["MT-ACTIVITY-ELIGIBILITY<br/>in-progress"]
+  MT-ADMIN-LIFECYCLE-FIT["MT-ADMIN-LIFECYCLE-FIT<br/>in-progress"]
+  MT-ADMIN-ROLE-OWNERSHIP["MT-ADMIN-ROLE-OWNERSHIP<br/>in-progress"]
   MT-ANDROID-LAB["MT-ANDROID-LAB<br/>not-started"]
   MT-API-FIXED-ROSTER["MT-API-FIXED-ROSTER<br/>not-started"]
   MT-BENCH-BASELINE["MT-BENCH-BASELINE<br/>not-started"]
   MT-BENCH-CONTRAST["MT-BENCH-CONTRAST<br/>not-started"]
   MT-CONFIG-MIN["MT-CONFIG-MIN<br/>closed"]
   MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>done"]
+  MT-CONSUMER-STALE-RESELECT["MT-CONSUMER-STALE-RESELECT<br/>in-progress"]
   MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>in-progress"]
   MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>not-started"]
+  MT-EXPORT-EXPIRY["MT-EXPORT-EXPIRY<br/>in-progress"]
+  MT-INTERNAL-LISTENER["MT-INTERNAL-LISTENER<br/>in-progress"]
   MT-KEY-RETENTION["MT-KEY-RETENTION<br/>in-flight-upstream"]
   MT-M6A-JOIN["MT-M6A-JOIN<br/>in-flight-upstream"]
+  MT-M6B-JOIN["MT-M6B-JOIN<br/>in-flight-upstream"]
   MT-OIDC-NATIVE["MT-OIDC-NATIVE<br/>in-flight-upstream"]
+  MT-OIDC-SINGLE-PROVISION["MT-OIDC-SINGLE-PROVISION<br/>in-flight-upstream"]
+  MT-OWNER-LAST-GUARD["MT-OWNER-LAST-GUARD<br/>in-progress"]
   MT-OWNERSHIP-OPS["MT-OWNERSHIP-OPS<br/>in-flight-upstream"]
   MT-REALTIME-SHARDING["MT-REALTIME-SHARDING<br/>not-started"]
+  MT-ROOT-ADMIN-PARITY["MT-ROOT-ADMIN-PARITY<br/>in-progress"]
   MT-RUNTIME-PLAN["MT-RUNTIME-PLAN<br/>closed"]
   MT-SCALE-UNBOUND["MT-SCALE-UNBOUND<br/>not-started"]
   MT-SECRETS-CONTRACT["MT-SECRETS-CONTRACT<br/>closed"]
+  MT-TENANT-EXTENDED-SETTINGS["MT-TENANT-EXTENDED-SETTINGS<br/>in-progress"]
   MT-VAULT-TOKEN-FILE["MT-VAULT-TOKEN-FILE<br/>in-flight-upstream"]
   PLAT-SERVE["PLAT-SERVE<br/>merged-upstream"]
   ST-PG["ST-PG<br/>closed"]
@@ -123,19 +135,30 @@ flowchart LR
   ARCH-SEAM-COMPOSE --> ARCH-SEAM-CONSOLIDATE
   MT-M6A-JOIN --> DEPLOY-IDP-PROFILE
   DEPLOY-TRUST-PROBES --> DEPLOY-K8S-BINDING
+  MT-M6B-JOIN --> DEPLOY-TREE-HOME
   DEPLOY-VAULT-AGENT --> DEPLOY-TRUST-PROBES
   MT-VAULT-TOKEN-FILE --> DEPLOY-VAULT-AGENT
   MIG-VV --> MIG-RUNNER
+  MT-M6B-JOIN --> MT-ACTIVITY-ELIGIBILITY
+  MT-ADMIN-ROLE-OWNERSHIP --> MT-ADMIN-LIFECYCLE-FIT
+  MT-M6B-JOIN --> MT-ADMIN-ROLE-OWNERSHIP
   MT-M6A-JOIN --> MT-ANDROID-LAB
   MT-ENDPOINT-TRANSPORT --> MT-API-FIXED-ROSTER
   MT-M6A-JOIN --> MT-BENCH-BASELINE
   MT-BENCH-BASELINE --> MT-BENCH-CONTRAST
   MT-M6A-JOIN --> MT-CONNECTOR-SYNC
+  MT-M6B-JOIN --> MT-CONSUMER-STALE-RESELECT
   MT-BENCH-BASELINE --> MT-EVALUATOR-PARTITION
+  MT-M6B-JOIN --> MT-EXPORT-EXPIRY
+  MT-ENDPOINT-TRANSPORT --> MT-INTERNAL-LISTENER
   MT-M6A-JOIN --> MT-KEY-RETENTION
   MT-OIDC-NATIVE --> MT-M6A-JOIN
+  MT-M6A-JOIN --> MT-M6B-JOIN
+  MT-M6A-JOIN --> MT-OIDC-SINGLE-PROVISION
+  MT-M6B-JOIN --> MT-OWNER-LAST-GUARD
   MT-M6A-JOIN --> MT-OWNERSHIP-OPS
   MT-ENDPOINT-TRANSPORT --> MT-REALTIME-SHARDING
+  MT-OWNER-LAST-GUARD --> MT-ROOT-ADMIN-PARITY
   MT-BENCH-BASELINE --> MT-SCALE-UNBOUND
   MT-API-FIXED-ROSTER --> MT-SCALE-UNBOUND
   MT-REALTIME-SHARDING --> MT-SCALE-UNBOUND
@@ -189,6 +212,18 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="mt-scale-unbound"></a>**MT-SCALE-UNBOUND**: not-started | M7 / architecture proof | MT-BENCH-BASELINE (not-started), MT-API-FIXED-ROSTER (not-started), MT-REALTIME-SHARDING (not-started) | API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; horizontal realtime consumes endpoint transport and realtime sharding correctness, API scale consumes fixed roster; vertical baselines remain independent. |
 | <a id="mt-realtime-sharding"></a>**MT-REALTIME-SHARDING**: not-started | M7 / realtime placement and recovery | MT-ENDPOINT-TRANSPORT (in-progress) | Evaluate stable logical tenant shards with explicit edge/alarm mapping, owner incarnations, checkpoint continuity, subset-aware maintenance and controlled moves/rollback. Preserve separate evaluator/delivery responsibilities with optional measured co-location; no lease-only HA or implied alarm replay. |
 | <a id="mt-evaluator-partition"></a>**MT-EVALUATOR-PARTITION**: not-started | M7 / evaluator scaling | MT-BENCH-BASELINE (not-started) | Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control. |
+| <a id="mt-m6b-join"></a>**MT-M6B-JOIN**: in-flight-upstream | M6b / b70ad83f on #8898, CI green | MT-M6A-JOIN (in-flight-upstream) | Carried forward by the batch join (codex/batch-join-20261110), in acceptance. |
+| <a id="mt-oidc-single-provision"></a>**MT-OIDC-SINGLE-PROVISION**: in-flight-upstream | Single-site OIDC / joined at b70ad83f | MT-M6A-JOIN (in-flight-upstream) | Authoritative identity list decided 2026-11-10. Real provider interoperability and concurrent starts remain UNMEASURED. |
+| <a id="mt-owner-last-guard"></a>**MT-OWNER-LAST-GUARD**: in-progress | M6b / fixed on lane 65657a62 (BF-229); in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance on the batch candidate. |
+| <a id="mt-admin-role-ownership"></a>**MT-ADMIN-ROLE-OWNERSHIP**: in-progress | M6b / fixed on lane 1376c294; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance; port the ownership_operator grants to a nightscout-deploy overlay. |
+| <a id="mt-admin-lifecycle-fit"></a>**MT-ADMIN-LIFECYCLE-FIT**: in-progress | Admin role beside lifecycle / lane 66655756 (BF-230); in the batch join | MT-ADMIN-ROLE-OWNERSHIP (in-progress) | Joined acceptance; clinical logical restore with the admin role connected. |
+| <a id="mt-root-admin-parity"></a>**MT-ROOT-ADMIN-PARITY**: in-progress | Tenant API_SECRET parity / lane 165c13bf; in the batch join | MT-OWNER-LAST-GUARD (in-progress) | Joined acceptance; preview API boot with subject admin on real PostgreSQL and Vault, and the browser admin page. |
+| <a id="mt-internal-listener"></a>**MT-INTERNAL-LISTENER**: in-progress | serve.internal per role / lane 78ecba76; in the batch join | MT-ENDPOINT-TRANSPORT (in-progress) | Joined acceptance; real role processes over Compose (UNMEASURED in the lane). |
+| <a id="mt-activity-eligibility"></a>**MT-ACTIVITY-ELIGIBILITY**: in-progress | Pause/suspend / lane 07981b55; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance; isolation of one tenant's unreadable activity row; port activity grants to nightscout-deploy. |
+| <a id="mt-export-expiry"></a>**MT-EXPORT-EXPIRY**: in-progress | Key destruction removes the export / lane 701eba6f; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Production composition of the artifact remover and the operator UPDATE grant. |
+| <a id="mt-consumer-stale-reselect"></a>**MT-CONSUMER-STALE-RESELECT**: in-progress | Alarm path / lane 956d0940 (BF-231); in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance of content-change revisions, the repeat clock and the targeted wake. |
+| <a id="mt-tenant-extended-settings"></a>**MT-TENANT-EXTENDED-SETTINGS**: in-progress | Plugin extended settings / lane 2f1ae027 (BF-232); in the batch join | None recorded | Full suite, browser tier and prcheck on the joined candidate; owner editing of plugin alert enables after the first preview. |
+| <a id="deploy-tree-home"></a>**DEPLOY-TREE-HOME**: in-progress | M6c / nightscout-deploy branch 9387428, unpushed | MT-M6B-JOIN (in-flight-upstream) | Operator README and ownership-admin overlay; #8898 drops or shrinks deploy/multitenant to the fixture its tests boot. |
 
 ## Accepted slices and integration handoff
 
@@ -250,6 +285,16 @@ This ledger retains source-scoped checkpoints in chronological order; later acce
 | Nine-stage owner/OIDC native matrix through the disposable harness / [MT-OIDC-NATIVE](#mt-oidc-native) | **Locally accepted** | [`3b09131e`](../../../reports/tenancy/oidc-native-2026-11-09/README.md#per-stage-verdicts) | Reproduced 2026-11-09: all nine stages PASS (vault single/multi, mongo/pg sessions, mongo HTTPS, owner consumer/authority/browser/compatibility), zero leftovers, three mutant controls red then green, images by digest. Harness replaces the grant driver. Branch is local; full/browser/corpus/prcheck and the join to #8898 are MT-M6A-JOIN. |
 | Vault Agent sidecar overlay and core tokenFile read / [DEPLOY-VAULT-AGENT](#deploy-vault-agent) | **Locally accepted** | [`cda38265`](../../../reports/tenancy/vault-agent-2026-11-09/README.md#measured-run) | Reproduced 2026-11-09: renewal past a 2-minute TTL, stopped Agent fails closed with env tokens still present (no fallback), recovery after secret-id reissue, restore demo through the overlay. Core tokenFile on codex/vault-token-file-20261109 (0c547958). Imported tree unchanged. |
 | M6a joined candidate for draft #8898 / [MT-M6A-JOIN](#mt-m6a-join) | **Locally accepted** | [`74036ba6`](../../../reports/tenancy/m6a-join-2026-11-09/README.md#10-final-verification) | Reproduced 2026-11-09: OIDC matrix 9/9 with 3/3 controls; test:all 0 failing; browser 686/0; multitenant corpus 537/1/0; prcheck exit 0. Fast-forward of the PR branch; push awaits two maintainer decisions. |
+| M6b joined candidate for #8898 / [MT-M6B-JOIN](#mt-m6b-join) | **Integrated acceptance recorded** | [`b70ad83f`](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md#per-suite-results) | Reproduced 2026-11-10 on the frozen head: unit 3106, dom 205, integration 3643/547 pending, browser 686, multitenant corpus 550/1 pending, all 0 failing; OIDC matrix 9/9 with 3/3 controls; prcheck OK. Pushed by the maintainer; all 16 CI jobs green including CodeQL. |
+| Last usable owner cannot be revoked (BF-229) / [MT-OWNER-LAST-GUARD](#mt-owner-last-guard) | **Locally accepted** | [`65657a62`](../../../reports/tenancy/m6b-followups-2026-11-10/README.md#item-1-last-owner-revocation-reproduced-fixed) | Reproduced 2026-11-10: PostgreSQL 16 23/2 on b70ad83f, 25/0 with the fix; four ablations. Joins through the batch join, in acceptance. |
+| Ownership operations in the admin role / [MT-ADMIN-ROLE-OWNERSHIP](#mt-admin-role-ownership) | **Locally accepted** | [`1376c294`](../../../reports/tenancy/ownership-role-2026-11-10/README.md#commands-and-results-lane-head-1376c294-from-tool-output) | Reproduced 2026-11-10: native admin-role suite 11/0; unit admin-role 9/0; unit tier 3116 passing; eight controls red then restored. Joins through the batch join, in acceptance. |
+| Restore census, ownership phase and restore ledger (BF-230) / [MT-ADMIN-LIFECYCLE-FIT](#mt-admin-lifecycle-fit) | **Locally accepted** | [`66655756`](../../../reports/tenancy/admin-lifecycle-2026-11-10/README.md#addendum-2026-11-10-third-pass-bf-230-fixed-on-the-lane) | Reproduced 2026-11-10: the restore driver passes the retention ledger; controls B1 (driver drops the ledger) and B2 (operator grant removed) red 4/2. Joins through the batch join, in acceptance. |
+| Tenant API_SECRET admin tools parity / [MT-ROOT-ADMIN-PARITY](#mt-root-admin-parity) | **Locally accepted** | [`165c13bf`](../../../reports/tenancy/root-admin-parity-2026-11-10/README.md#results-at-165c13bf) | Reproduced 2026-11-10 with synthetic tenants on real PostgreSQL: role edit, rename and held-role refusals, last-owner guard, admin-role subjects; controls each red then restored. Joins through the batch join, in acceptance. |
+| One serve.internal per role and graceful shutdown / [MT-INTERNAL-LISTENER](#mt-internal-listener) | **Locally accepted** | [`78ecba76`](../../../reports/tenancy/internal-listener-2026-11-10/README.md#separated-processes-over-docker-compose-reproduced-78ecba76-dirty0) | Reproduced 2026-11-10: Compose instrument exit 0; early-drop and blanket-window controls exit 1; five source ablations red. Joins through the batch join, in acceptance. |
+| Pause/suspend drive serving and worker eligibility / [MT-ACTIVITY-ELIGIBILITY](#mt-activity-eligibility) | **Locally accepted** | [`07981b55`](../../../reports/tenancy/activity-eligibility-2026-11-10/README.md#checks-reproduced-at-07981b55) | Reproduced 2026-11-10: suspend refuses uploads and reads (423), pause refuses reads/UI and admits uploads, sockets disconnected, deletion request auto-pauses; controls red then green (23 passing). Joins through the batch join, in acceptance. |
+| Key destruction removes the export file / [MT-EXPORT-EXPIRY](#mt-export-expiry) | **Locally accepted** | [`701eba6f`](../../../reports/tenancy/export-expiry-2026-11-10/README.md#4-commands-and-results-from-tool-output-worktree) | Reproduced 2026-11-10: tenant-lifecycle unit 36/0, native key-retention 6 passing; two ablations red. Joins through the batch join, in acceptance. |
+| Content-change revision, alarm repeat clock and targeted wake (BF-231) / [MT-CONSUMER-STALE-RESELECT](#mt-consumer-stale-reselect) | **Locally accepted** | [`956d0940`](../../../reports/tenancy/consumer-refusal-2026-11-10/README.md#addendum-2026-11-10-second-revision-on-content-change-and-the-alarm-repeat-clock) | Reproduced 2026-11-10 at deployed intervals: deliveries per active alarm 60/min to 1/min, selections 360 to 125/min, 0 refusals; 150 ms churn 8/8 delivered. Joins through the batch join, in acceptance. |
+| Tenant plugin extended settings (BF-232) / [MT-TENANT-EXTENDED-SETTINGS](#mt-tenant-extended-settings) | **Locally accepted** | [`2f1ae027`](../../../reports/tenancy/tenant-extended-settings-2026-11-10/README.md#4-acceptance-measured-on-2f1ae027) | Reproduced 2026-11-10: unit 9 passing, HTTP status route 10 passing, unit tier 3115; four controls red. Joins through the batch join, in acceptance. |
 
 ## Deferred and separate lanes
 

@@ -10,8 +10,8 @@ owns claimed work state. A diagram is not deployment or capacity acceptance.*
 ## Read the diagrams
 
 The three plates answer different questions: the historical accepted deployment,
-the current implemented API contracts, and the proposed deployment/composition
-adjustment. Read downward through client ingress, edge, service destinations,
+the internal-listener composition in the batch join (in acceptance), and the proposed
+fixed-roster scale target. Read downward through client ingress, edge, service destinations,
 actual role processes and backing resources. Components sit on a grid; named
 terminals and a communication ledger replace long crossing connectors.
 
@@ -32,24 +32,21 @@ retains its separate-role restore and restart scope. The reference publishes lab
 HTTP and uses TLS for Vault. Those captured runs are not relabelled as new-head,
 OIDC, network transport, scaling or production measurements.
 
-### Current implemented internal API composition
+### Private API composition: one internal listener per role
 
-![Current internal API composition](diagrams/current-internal-api-topology.svg)
+![Private API composition, one internal listener per role](diagrams/current-internal-api-topology.svg)
 
 [PNG preview](diagrams/current-internal-api-topology.png) · [SVG source](diagrams/current-internal-api-topology.svg)
 
-The joined candidate `dc795bd1` contains shared transport, three executable service
-contracts, request/response schemas, named clients and endpoint configuration.
-The [joined acceptance record](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
-records its actual full/browser/enabled-corpus and OIDC campaign. The
-[implementation evidence](../../../reports/tenancy/internal-service-api-2026-11-09/README.md)
-records focused transport, schema, public/private separation and UDS controls.
+The plate draws the [internal-listener decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern)
+as built on lane `78ecba76` and joined, with the admin-role, activity and alarm-repeat lanes, on
+`codex/batch-join-20261110`. That join is **in acceptance, not pushed**; the
+[lane evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md) records its focused,
+Compose and break-it runs. Draft #8898 at `b70ad83f` still opens one listener per contract
+(`alarm.sock`, `cohort-<role>.sock`); its [joined acceptance](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)
+retains that source. The shared transport, contracts, schemas and named clients came with `dc795bd1`
+([acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)).
 These measurements do not qualify a remote HTTP deployment or multiple API replicas.
-
-The source homes are application `lib/server/internal-api/` and
-`docs/internal-service-api.md`. The current source-level topology clarification is
-on the same lane's documentation-only descendant `692bd507`; runtime measurements
-retain `dc795bd1`. The existing reference binding still uses Unix sockets.
 
 **Both application and lifecycle operations are private APIs.** The labels name
 purpose, not different networks or mandatory sockets:
@@ -61,12 +58,16 @@ purpose, not different networks or mandatory sockets:
 | Binding | HTTP over UDS or an explicitly selected TCP/HTTP origin, with a separately configurable bind address. The deployment chooses reachability and access policy. |
 | Instance addressing | Ordinary calls may target a service destination; maintenance must reach every actual participant and pin its incarnation. |
 
-Current listener allocation is one contract per listener. API has its consumer
-listener plus private socket-authority and lifecycle listeners; realtime has
-consumer Socket.IO plus private alarm-delivery and lifecycle listeners. Evaluator
-has lifecycle control without a consumer HTTP API. Its in-process `health()`
-result is not an implemented remote metrics endpoint. Tenant-admin retains its
-management audience and separate lifecycle listener.
+Each role process opens one `serve.internal`: API serves socket-authority and
+lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant; evaluator and
+tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
+unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
+listener finishes in-flight calls up to a deadline ([graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)).
+The `admin` role keeps its own operator-plane listener (`ADMIN_HOSTNAME`/`ADMIN_PORT`) for
+ownership operations, with its own `ownership_operator` database identity; it is not a lifecycle
+participant ([restore census](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
+[same address, different port](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-plane-same-address-different-port)). Evaluator's in-process
+`health()` result is not a remote metrics endpoint.
 
 The private application arrows are different calls, not a generic proxy chain:
 `evaluator → realtime` delivers notifications; `realtime → API` asks for current
@@ -75,17 +76,15 @@ owns Socket.IO semantics, subscriptions and fanout. It also checks recipients'
 current permissions during delivery. That synchronous authority dependency is
 read-derived; its latency, load and failure effects need measurement.
 
-### Proposed component-private listener and fixed-roster target
+### Proposed fixed-roster API-scale target
 
-![Proposed component-private listener and API scale target](diagrams/proposed-fixed-roster-network-topology.svg)
+![Proposed fixed-roster API scale target](diagrams/proposed-fixed-roster-network-topology.svg)
 
 [PNG preview](diagrams/proposed-fixed-roster-network-topology.png) · [SVG source](diagrams/proposed-fixed-roster-network-topology.svg)
 
-Keep public/management and private interfaces independently bound. Multiple
-explicit private contract modules may share a component's private listener; the
-current single-service dispatcher does not implement that composition. This is
-the proposed adjustment, not a new claim of accepted code. UDS versus TCP remains
-a deployment choice; a new socket is not required merely because a module is named.
+Keep public/management and internal listeners independently bound. The target starts from one
+`serve.internal` per role instance; an operational contract would be another module on that listener.
+Socket versus host/port remains a deployment choice.
 
 The target also shows two equivalent REST replicas behind a service destination,
 with directly addressable private instance endpoints for maintenance. It is not

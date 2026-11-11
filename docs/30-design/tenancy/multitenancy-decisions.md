@@ -134,6 +134,24 @@ orphan a tenant. The [later compatibility decision](../../../releases/cgm-remote
 drops the optional subject-reader clamping mode; it does not drop proposed-grant
 writer ceilings or permit breaking existing root/data clients.
 
+<a id="authority-split-diagram"></a>As decided on 2026-11-10 ([tenant-root-single-site-parity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-root-single-site-parity),
+[root-may-edit-owner-subjects](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#root-may-edit-owner-subjects),
+[root-grant-ceiling-default-all](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#root-grant-ceiling-default-all),
+[admin-role-subjects-use-admin-tools](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-role-subjects-use-admin-tools)), the three authorities split
+as drawn below; the decisions amend the "no implicit management privilege" sentence above for subject and
+role administration only. Built on lane `165c13bf`, in the batch join that is in acceptance.
+
+```mermaid
+flowchart LR
+  Root["Tenant API_SECRET (root)<br/>same as a single site"] --> Data["All tenant data"]
+  Root --> Subjects["Subjects and roles, admin tools<br/>grant up to tenant data *<br/>(operator may narrow)"]
+  AdminSubject["Subject granted<br/>admin:api:subjects:*<br/>with its own token"] --> Subjects
+  Owner["Owner subject<br/>(management audience)"] --> OwnerOps["Settings, export,<br/>deletion request, ownership,<br/>pause / unpause"]
+  Operator["Operator<br/>(private admin plane)"] --> OperatorOps["Provision, suspend, execute deletion,<br/>assisted ownership add / transfer / recover,<br/>infrastructure and runtime defaults"]
+  Subjects -. "may edit or delete owner subjects;<br/>removing the last usable owner is refused" .-> Owner
+  Root -. "never owner or operator authority;<br/>cannot make itself an owner" .-x OwnerOps
+```
+
 ### D22 policy and project floors
 
 Policy per setting has a default, `open`/`bounded`/`pinned` mode and constraint
@@ -204,6 +222,34 @@ to pause/suspend or the claim-bound restore window. Existing definitions above
 remain unchanged while the capability/transition policy is prepared.
 Deployment support-contact metadata remains a recommendation, not an adopted
 schema: its privacy/availability rationale is retained in the [journal](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#211-deployment-metadata-a-recommendation-not-a-decision).
+
+<a id="tenant-activity-states-diagram"></a>Activity states as decided on 2026-11-10
+([activity-is-pause-suspend](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend), [owner-may-pause](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-pause),
+[deletion-request-auto-pauses](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deletion-request-auto-pauses), [suspended-refusal-423](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#suspended-refusal-423),
+[activity-row-always-provisioned](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned)); they supersede the open review linked above.
+Built on lane `07981b55`, in the batch join that is in acceptance. Restore and restart preserve the state.
+
+```mermaid
+stateDiagram-v2
+  direction LR
+  [*] --> Active: provisioning writes the activity row
+  Active --> Paused: owner pauses, or requests deletion
+  Paused --> Active: owner unpauses, or cancels a deletion request made while active
+  Active --> Suspended: operator suspends
+  Paused --> Suspended: operator suspends, or executes the deletion
+  Suspended --> Active: operator unsuspends
+  Suspended --> Paused: operator unsuspends, owner pause kept
+  note right of Paused
+    Uploads stored; reads and UI refused 423 TENANT_PAUSED
+    Evaluator stopped: no alarms computed or delivered
+    Sockets disconnected; unpause recomputes before publishing
+  end note
+  note right of Suspended
+    Every request refused 423 TENANT_SUSPENDED, uploads included
+    Nothing runs; sockets disconnected
+    Owner cannot act; ownership operations refused
+  end note
+```
 
 ## 4. Typed controllers, provenance and compatibility
 

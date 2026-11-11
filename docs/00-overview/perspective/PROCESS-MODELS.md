@@ -559,35 +559,39 @@ The seven default roles are at [`storage.js:140-148`](https://github.com/nightsc
 This is the access model as the code and the README document it. It is not a security assessment
 of any release, and it does not show how well each part of the server enforces it.
 
-![3·identity as proposed: a hosting operator mints the tenant root credential from ns-admin on an unreachable port; the owner holds and rotates it and acts on ns-tenant-admin, a second socket; devices hold native per-subject credentials and per-tenant signed tokens; people log in through Ory Kratos (gated); a controller registration is bound to the subject that created it, and the owner can retire, block, release or transfer it](diagrams/3-identity--proposed.svg)
+![3·identity as proposed: in multitenant, each tenant's API_SECRET works as on a single site (data, subjects and roles); the owner holds settings, export, deletion, ownership and pause through the tenant-admin management listener; the multitenant operator provisions, suspends and makes assisted ownership changes on a private admin plane; devices hold native per-subject credentials and per-tenant signed tokens; people sign in through an OIDC provider; a controller registration is bound to the subject that created it, and the owner can retire, block, release or transfer it](diagrams/3-identity--proposed.svg)
 
-**As proposed** (hosted, `TENANCY_MODE=multi`; self-hosted single-tenant keeps `API_SECRET`, D1).
-The decisions are in the [execution plan §1](../../30-design/tenancy/multitenancy-decisions.md#1-decisions),
-§2.8 and §2.9:
-- **D13**: there is no deployment-wide secret. Each tenant holds its own root credential, which the
-  hosting operator mints through `ns-admin`. That port is unreachable from outside (**D7**), and
-  the owner can rotate the credential.
-- **D14**: a per-tenant signing key.
-- **D16**: three listeners. `ns-tenant-admin` is a second socket inside `ns-api`, decided
-  2026-10-16.
-- **D17**: devices keep a native credential, "never Ory". Ory Kratos for people is adopted in
-  principle and gated. Ory Hydra, for delegated access by third-party apps, is deferred.
+**As proposed** (multitenant; a self-hosted single-tenant site keeps `API_SECRET` as it is, D1).
+The decisions are in the [tenancy decisions](../../30-design/tenancy/multitenancy-decisions.md#operator-owner-and-data-authority),
+the [owner-authority contract](../../30-design/tenancy/owner-authority.md) and the
+[release decisions of 2026-11-10](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-root-single-site-parity):
+- **D13, with the 2026-11-10 root-parity decision**: there is no deployment-wide secret. Each tenant has its own
+  `API_SECRET`, which works as on a single site: all data, subjects, roles and the admin tools. It
+  never carries owner or operator authority.
+- **Owner authority** (settings, export, deletion, ownership, pause) belongs to owner subjects and is
+  exercised on the tenant-admin management listener.
+- **D7**: the operator plane is private. It provisions, suspends, executes deletion and makes
+  operator-assisted ownership changes.
+- **D17**: devices keep a native credential. People sign in through an OIDC identity provider and
+  receive a token Nightscout mints. Delegated access by third-party apps is deferred.
 
 A controller registration is bound to the subject that created it, "never the token". The owner may
 retire, block, release or transfer it ([hub-sync design §3.5](../../30-design/platform/nightscout-hub-sync-architecture-2026-09-11.md#35-negotiation)).
 Bindings made with the API secret move to the tenant root credential (walk-through 2026-10-16,
-row 12, commit `66403e0f`). None of the proposed boxes is built.
+row 12, commit `66403e0f`). The tenancy boxes are built on the unreleased multitenant preview (draft
+PR #8898, with the 2026-11-10 authority changes in a join that is in acceptance); controller
+registration is not built.
 
 *Interpretation.*
 
 1. **One secret is both a key and the root of trust today.** It grants every permission and every
    token derives from it.
-2. **The proposal separates the hoster, the owner and the data path** into separate credentials and
-   separate sockets.
+2. **The proposal separates the operator, the owner and the data path** into separate credentials and
+   separate listeners; the tenant secret keeps its single-site meaning.
 3. **Identity moves from a shared secret to a subject.** Registrations and tokens attach to who
    created them.
-4. **Delegation to people or agents is still undecided.** Hydra is deferred, and the grant model is
-   a design.
+4. **Delegation to people or agents is still undecided.** Third-party delegated access is deferred,
+   and the grant model is a design.
 
 ### 1·federation: one sign-in across regional zones
 
