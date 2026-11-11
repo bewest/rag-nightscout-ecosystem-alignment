@@ -92,33 +92,33 @@ flowchart LR
   DEPLOY-VAULT-AGENT["DEPLOY-VAULT-AGENT<br/>ready-to-push"]
   MIG-RUNNER["MIG-RUNNER<br/>closed"]
   MIG-VV["MIG-VV<br/>done"]
-  MT-ACTIVITY-ELIGIBILITY["MT-ACTIVITY-ELIGIBILITY<br/>in-progress"]
-  MT-ADMIN-LIFECYCLE-FIT["MT-ADMIN-LIFECYCLE-FIT<br/>in-progress"]
-  MT-ADMIN-ROLE-OWNERSHIP["MT-ADMIN-ROLE-OWNERSHIP<br/>in-progress"]
+  MT-ACTIVITY-ELIGIBILITY["MT-ACTIVITY-ELIGIBILITY<br/>ready-to-push"]
+  MT-ADMIN-LIFECYCLE-FIT["MT-ADMIN-LIFECYCLE-FIT<br/>ready-to-push"]
+  MT-ADMIN-ROLE-OWNERSHIP["MT-ADMIN-ROLE-OWNERSHIP<br/>ready-to-push"]
   MT-ANDROID-LAB["MT-ANDROID-LAB<br/>not-started"]
   MT-API-FIXED-ROSTER["MT-API-FIXED-ROSTER<br/>not-started"]
   MT-BENCH-BASELINE["MT-BENCH-BASELINE<br/>not-started"]
   MT-BENCH-CONTRAST["MT-BENCH-CONTRAST<br/>not-started"]
   MT-CONFIG-MIN["MT-CONFIG-MIN<br/>closed"]
   MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>done"]
-  MT-CONSUMER-STALE-RESELECT["MT-CONSUMER-STALE-RESELECT<br/>in-progress"]
+  MT-CONSUMER-STALE-RESELECT["MT-CONSUMER-STALE-RESELECT<br/>ready-to-push"]
   MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>in-progress"]
   MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>not-started"]
-  MT-EXPORT-EXPIRY["MT-EXPORT-EXPIRY<br/>in-progress"]
-  MT-INTERNAL-LISTENER["MT-INTERNAL-LISTENER<br/>in-progress"]
+  MT-EXPORT-EXPIRY["MT-EXPORT-EXPIRY<br/>ready-to-push"]
+  MT-INTERNAL-LISTENER["MT-INTERNAL-LISTENER<br/>ready-to-push"]
   MT-KEY-RETENTION["MT-KEY-RETENTION<br/>in-flight-upstream"]
   MT-M6A-JOIN["MT-M6A-JOIN<br/>in-flight-upstream"]
   MT-M6B-JOIN["MT-M6B-JOIN<br/>in-flight-upstream"]
   MT-OIDC-NATIVE["MT-OIDC-NATIVE<br/>in-flight-upstream"]
   MT-OIDC-SINGLE-PROVISION["MT-OIDC-SINGLE-PROVISION<br/>in-flight-upstream"]
-  MT-OWNER-LAST-GUARD["MT-OWNER-LAST-GUARD<br/>in-progress"]
+  MT-OWNER-LAST-GUARD["MT-OWNER-LAST-GUARD<br/>ready-to-push"]
   MT-OWNERSHIP-OPS["MT-OWNERSHIP-OPS<br/>in-flight-upstream"]
   MT-REALTIME-SHARDING["MT-REALTIME-SHARDING<br/>not-started"]
-  MT-ROOT-ADMIN-PARITY["MT-ROOT-ADMIN-PARITY<br/>in-progress"]
+  MT-ROOT-ADMIN-PARITY["MT-ROOT-ADMIN-PARITY<br/>ready-to-push"]
   MT-RUNTIME-PLAN["MT-RUNTIME-PLAN<br/>closed"]
   MT-SCALE-UNBOUND["MT-SCALE-UNBOUND<br/>not-started"]
   MT-SECRETS-CONTRACT["MT-SECRETS-CONTRACT<br/>closed"]
-  MT-TENANT-EXTENDED-SETTINGS["MT-TENANT-EXTENDED-SETTINGS<br/>in-progress"]
+  MT-TENANT-EXTENDED-SETTINGS["MT-TENANT-EXTENDED-SETTINGS<br/>ready-to-push"]
   MT-VAULT-TOKEN-FILE["MT-VAULT-TOKEN-FILE<br/>in-flight-upstream"]
   PLAT-SERVE["PLAT-SERVE<br/>merged-upstream"]
   ST-PG["ST-PG<br/>closed"]
@@ -214,15 +214,15 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="mt-evaluator-partition"></a>**MT-EVALUATOR-PARTITION**: not-started | M7 / evaluator scaling | MT-BENCH-BASELINE (not-started) | Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control. |
 | <a id="mt-m6b-join"></a>**MT-M6B-JOIN**: in-flight-upstream | M6b / b70ad83f on #8898, CI green | MT-M6A-JOIN (in-flight-upstream) | Carried forward by the batch join (codex/batch-join-20261110), in acceptance. |
 | <a id="mt-oidc-single-provision"></a>**MT-OIDC-SINGLE-PROVISION**: in-flight-upstream | Single-site OIDC / joined at b70ad83f | MT-M6A-JOIN (in-flight-upstream) | Authoritative identity list decided 2026-11-10. Real provider interoperability and concurrent starts remain UNMEASURED. |
-| <a id="mt-owner-last-guard"></a>**MT-OWNER-LAST-GUARD**: in-progress | M6b / fixed on lane 65657a62 (BF-229); in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance on the batch candidate. |
-| <a id="mt-admin-role-ownership"></a>**MT-ADMIN-ROLE-OWNERSHIP**: in-progress | M6b / fixed on lane 1376c294; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance; port the ownership_operator grants to a nightscout-deploy overlay. |
-| <a id="mt-admin-lifecycle-fit"></a>**MT-ADMIN-LIFECYCLE-FIT**: in-progress | Admin role beside lifecycle / lane 66655756 (BF-230); in the batch join | MT-ADMIN-ROLE-OWNERSHIP (in-progress) | Joined acceptance; clinical logical restore with the admin role connected. |
-| <a id="mt-root-admin-parity"></a>**MT-ROOT-ADMIN-PARITY**: in-progress | Tenant API_SECRET parity / lane 165c13bf; in the batch join | MT-OWNER-LAST-GUARD (in-progress) | Joined acceptance; preview API boot with subject admin on real PostgreSQL and Vault, and the browser admin page. |
-| <a id="mt-internal-listener"></a>**MT-INTERNAL-LISTENER**: in-progress | serve.internal per role / lane 78ecba76; in the batch join | MT-ENDPOINT-TRANSPORT (in-progress) | Joined acceptance; real role processes over Compose (UNMEASURED in the lane). |
-| <a id="mt-activity-eligibility"></a>**MT-ACTIVITY-ELIGIBILITY**: in-progress | Pause/suspend / lane 07981b55; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance; isolation of one tenant's unreadable activity row; port activity grants to nightscout-deploy. |
-| <a id="mt-export-expiry"></a>**MT-EXPORT-EXPIRY**: in-progress | Key destruction removes the export / lane 701eba6f; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Production composition of the artifact remover and the operator UPDATE grant. |
-| <a id="mt-consumer-stale-reselect"></a>**MT-CONSUMER-STALE-RESELECT**: in-progress | Alarm path / lane 956d0940 (BF-231); in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance of content-change revisions, the repeat clock and the targeted wake. |
-| <a id="mt-tenant-extended-settings"></a>**MT-TENANT-EXTENDED-SETTINGS**: in-progress | Plugin extended settings / lane 2f1ae027 (BF-232); in the batch join | None recorded | Full suite, browser tier and prcheck on the joined candidate; owner editing of plugin alert enables after the first preview. |
+| <a id="mt-owner-last-guard"></a>**MT-OWNER-LAST-GUARD**: ready-to-push | M6b / fixed on lane 65657a62 (BF-229); in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance on the batch candidate. |
+| <a id="mt-admin-role-ownership"></a>**MT-ADMIN-ROLE-OWNERSHIP**: ready-to-push | M6b / fixed on lane 1376c294; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance; port the ownership_operator grants to a nightscout-deploy overlay. |
+| <a id="mt-admin-lifecycle-fit"></a>**MT-ADMIN-LIFECYCLE-FIT**: ready-to-push | Admin role beside lifecycle / lane 66655756 (BF-230); in the batch join | MT-ADMIN-ROLE-OWNERSHIP (ready-to-push) | Joined acceptance; clinical logical restore with the admin role connected. |
+| <a id="mt-root-admin-parity"></a>**MT-ROOT-ADMIN-PARITY**: ready-to-push | Tenant API_SECRET parity / lane 165c13bf; in the batch join | MT-OWNER-LAST-GUARD (ready-to-push) | Joined acceptance; preview API boot with subject admin on real PostgreSQL and Vault, and the browser admin page. |
+| <a id="mt-internal-listener"></a>**MT-INTERNAL-LISTENER**: ready-to-push | serve.internal per role / lane 78ecba76; in the batch join | MT-ENDPOINT-TRANSPORT (in-progress) | Joined acceptance; real role processes over Compose (UNMEASURED in the lane). |
+| <a id="mt-activity-eligibility"></a>**MT-ACTIVITY-ELIGIBILITY**: ready-to-push | Pause/suspend / lane 07981b55; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance; isolation of one tenant's unreadable activity row; port activity grants to nightscout-deploy. |
+| <a id="mt-export-expiry"></a>**MT-EXPORT-EXPIRY**: ready-to-push | Key destruction removes the export / lane 701eba6f; in the batch join | MT-M6B-JOIN (in-flight-upstream) | Production composition of the artifact remover and the operator UPDATE grant. |
+| <a id="mt-consumer-stale-reselect"></a>**MT-CONSUMER-STALE-RESELECT**: ready-to-push | Alarm path / lane 956d0940 (BF-231); in the batch join | MT-M6B-JOIN (in-flight-upstream) | Joined acceptance of content-change revisions, the repeat clock and the targeted wake. |
+| <a id="mt-tenant-extended-settings"></a>**MT-TENANT-EXTENDED-SETTINGS**: ready-to-push | Plugin extended settings / lane 2f1ae027 (BF-232); in the batch join | None recorded | Full suite, browser tier and prcheck on the joined candidate; owner editing of plugin alert enables after the first preview. |
 | <a id="deploy-tree-home"></a>**DEPLOY-TREE-HOME**: in-progress | M6c / nightscout-deploy branch 9387428, unpushed | MT-M6B-JOIN (in-flight-upstream) | Operator README and ownership-admin overlay; #8898 drops or shrinks deploy/multitenant to the fixture its tests boot. |
 
 ## Accepted slices and integration handoff

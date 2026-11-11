@@ -124,7 +124,7 @@ Documentation follows source code analysis → research synthesis → domain und
   — Joint modernization review first, followed by proposed Connect, XState,
   reporting/API/PDF, embeddable UI and shared-testing work. Draft for maintainer discussion.
 
-- [Nightscout multitenancy: evidence and options](30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md)
+- [Nightscout multitenancy: evidence and options](archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.md)
   — Where cgm-remote-monitor's single-tenant assumptions live (`ddata`, cache, settings,
   sockets, storage); the cross-tenant hazards already in the code (including a
   process-global alarm map that is a safety blocker for any shared-process design); what

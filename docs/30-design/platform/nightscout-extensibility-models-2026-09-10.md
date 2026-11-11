@@ -9,7 +9,7 @@ Date: 2026-09-10. Companion to
 and to the
 [`x-aid-extensions` convention proposal](../../sdqctl-proposals/x-aid-extensions-convention-proposal.md);
 extends §6.5.1 of the
-[multitenancy discussion](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md).
+[multitenancy discussion](../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.md).
 
 **The deliverable is evidence.**
 
@@ -361,4 +361,4 @@ designs avoid:
   `src/Connectors/Nocturne.Connectors.Core/Constants/TreatmentTypes.cs`,
   `src/Core/Nocturne.Core.Models/TreatmentEventType.cs`
 * [`x-aid-extensions` convention proposal](../../sdqctl-proposals/x-aid-extensions-convention-proposal.md)
-* [Multitenancy discussion](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md) §6.5, §6.5.1, §7.4
+* [Multitenancy discussion](../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) §6.5, §6.5.1, §7.4

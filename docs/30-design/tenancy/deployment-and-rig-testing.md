@@ -24,7 +24,11 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 | Multi-host, orchestrated replicas or failover | Explore later deployment design | Proposed topology: the current private socket roster is a one-host contract, not distributed discovery or HA. |
 
 The [application Compose guide](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/README.md)
-owns runnable packaging instructions. The
+owns runnable packaging instructions at the ed2 reference. The Compose tree
+[lives in the sibling repository `nightscout-deploy`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-lives-in-nightscout-deploy)
+and is [its home from the next #8898 batch on](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-home-now); core
+then keeps only the fixture its own tests boot. The commands below describe the
+ed2 reference as accepted; run current packaging from `nightscout-deploy`. The
 [service-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes)
 owns the deployment requirement. Compose is implemented; a Jsonnet generator is
 an optional way to produce configuration, not another runtime component or a
@@ -265,8 +269,9 @@ refusal and restart evidence does not establish a recovery-time bound.
 The lab Vault credentials expire after 24 hours and restart does not renew them.
 The generated CA expires after 30 days. Preserve verification and prepare a fresh
 synthetic instance when appropriate; do not disable TLS checks. Vault sealing,
-key custody and eventual production service login remain governed by the
-[adopted trust contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md).
+key custody and production Vault connectivity (a [Vault Agent sidecar](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-agent-sidecar),
+maintained in `nightscout-deploy`) remain governed by the
+[adopted trust contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07).
 
 ## Stop, retain and report
 

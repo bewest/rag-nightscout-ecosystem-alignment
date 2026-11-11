@@ -82,9 +82,16 @@ read-derived; its latency, load and failure effects need measurement.
 
 [PNG preview](diagrams/proposed-fixed-roster-network-topology.png) · [SVG source](diagrams/proposed-fixed-roster-network-topology.svg)
 
-Keep public/management and internal listeners independently bound. The target starts from one
-`serve.internal` per role instance; an operational contract would be another module on that listener.
-Socket versus host/port remains a deployment choice.
+Keep public/management and private interfaces independently bound. The adopted
+shape ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern), 2026-11-10) gives each role
+process one private listener, `serve.internal`, serving the contract modules the
+role's code selects; configuration chooses only `host`/`port` or `socket`
+(default: a unix socket under a runtime directory) and cannot move or merge
+contracts. On SIGTERM it [drains in-flight calls up to a deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
+An operational contract would be another module on that listener. #8898 at
+`b70ad83f` still opens one listener per contract; the composition is built and
+accepted in the 2026-11-10 batch join (`MT-INTERNAL-LISTENER`, `MT-BATCH-JOIN-1110`),
+which is not pushed.
 
 The target also shows two equivalent REST replicas behind a service destination,
 with directly addressable private instance endpoints for maintenance. It is not
@@ -142,8 +149,9 @@ The [work plan](selectable-endpoints-and-api-scaling-plan.md#remaining-work-and-
 defines owners, integration boundaries and controls. It separates code already
 incorporated in `dc795bd1` from these remaining changes:
 
-1. Component-private listener composition and explicit lifetime policies; define
-   operational endpoints without pretending `/metrics` already exists.
+1. The adopted `serve.internal` listener per role, with graceful shutdown and
+   explicit lifetime policies; define operational endpoints without pretending
+   `/metrics` already exists.
 2. Deployment binding and remote UDS/HTTP parity, preserving the selected trust,
    actual acknowledgement and suspension semantics. Gateway hooks are an optional
    deployment integration, not a new authentication prerequisite.

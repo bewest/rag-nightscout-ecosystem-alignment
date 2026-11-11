@@ -6,6 +6,11 @@ published f0fac99a application unless a linked experiment says reproduced.
 own the adopted experiment direction and conditional preview pause allowance.
 This analysis adopts no schema, new cursor format or runtime admission.*
 
+*2026-11-10: the restore census now also [refuses a connected non-participant
+whose identity can write the insertion-order or write-clock tables](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-counter-writers);
+read-only identities stay exempt, and only the restore of the tenant being
+restored refuses. In the current design only `api` writes those counters.*
+
 ## Two independent mechanisms
 
 The transactional tenant history clock has one `tenant_write_clock` row per

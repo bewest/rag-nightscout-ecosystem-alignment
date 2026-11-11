@@ -19,8 +19,8 @@ their date and commit.
 
 | ref | document |
 |---|---|
-| **{M}** | [Nightscout multitenancy: evidence and options](../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) (snapshot) |
-| **{C}** | [Deployable components](../../30-design/tenancy/nightscout-deployable-components-2026-09-14.md) |
+| **{M}** | [Nightscout multitenancy: evidence and options](nightscout-multitenancy-discussion-2026-09-09.md) (snapshot) |
+| **{C}** | [Deployable components](nightscout-deployable-components-2026-09-14.md) |
 | **{S}** | [Storage seam interface](../../30-design/tenancy/nightscout-storage-seam-interface-2026-09-14.md) |
 | **{R}** | [What sets K](../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.md) |
 | **{DB}** | [A real database in the loop](../../60-research/tenancy/exp-mt-026-database-in-the-loop-2026-09-14.md) |

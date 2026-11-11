@@ -52,6 +52,18 @@ an admitted tenant operation for `last(tenant)` to expose it.
 [Evaluator acquisition][evaluator-acquisition], [runtime output][evaluator-runtime]
 and [durable snapshot/checkpoint][replay] implement these separate stages.
 
+**Adopted 2026-11-10, not in the inspected tree.** The [output revision changes
+only when the output content changes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change)
+(time-driven changes included); an identical cycle keeps its revision, and the
+realtime consumer is woken on real changes only for tenants with a pending alarm.
+The inspected code bumps the revision on every cycle (read-derived, cited in the
+decision). Alarm repetition is separate: an active, unacknowledged, unsnoozed alarm
+[repeats on its own clock equal to the single-site heartbeat](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock)
+(same setting, 60 s by default) and on new data, as on a single site. Both are
+BF-231 / `MT-CONSUMER-STALE-RESELECT` work. The evaluator only works tenants
+eligible under the [activity policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend): while a site
+is paused or suspended no alarms are computed or delivered.
+
 ```mermaid
 sequenceDiagram
     participant API as API process
