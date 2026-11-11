@@ -345,3 +345,114 @@ Checks: see the table appended below this section.
 | `test:tiers` | ok (633 files) | ok (637 files) |
 | `test:write-boundary` | — | all 9 entry points |
 | eslint `lib` | 0 errors (55 warnings; +1 `detect-non-literal-fs-filename` on the config `statSync`) | 0 errors |
+
+## Round 3, 2026-11-11 (06:00–07:00 local): consumers on change, gate at deployed settings, CPU profile
+
+*Decisions [write-clock-complete](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#write-clock-complete) (the
+digest scan retires once perf-db's complete clock lands; the signature stays opaque: `evaluator-runtime.js`
+`validSignature`/`same`, read through `component.signature()` → `postgres-durable-replay.js` `signature()`) and
+[incremental-refresh-realtime-only](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#incremental-refresh-realtime-only)
+(no incremental read for the evaluator) are noted; nothing in this round depends on them.*
+
+| what | value |
+|---|---|
+| lane head | `9c46b95e` (on `5ab35cad`): evaluator consumers on change |
+| join scratch head | `3b858586` (lane `9c46b95e` merged); image `ns-pev-perf:3b858586` label-checked, removed afterwards |
+
+### Consumers on change (`lib/server/serve/evaluator-consumers.js`)
+
+- The `pollIntervalMs`/`retryIntervalMs` loops visit only **active** tenants: a pending or refused request, or an armed
+  repeat clock (an alarm already delivered). Acks, snoozes and retries are seen as promptly as before where they can
+  matter; an ack reaches the consumer through its next selection, and only a tenant with a delivered alarm can be acked.
+- A newly alarming tenant is found by the evaluator's revision wake (`revised`); a repeat by its `arm` timer.
+- Every tenant is visited by the slow backstop, `backstopIntervalMs` (default 60,000). Every pass, including the start
+  pass, works at most `maxConcurrentTenants` (default 4) tenants at once. Both are optional consumer config fields;
+  `deploy/multitenant/config.js` is unchanged (its 1,000 ms intervals now apply to active tenants only).
+
+Gates (reproduced):
+
+| gate | result |
+|---|---|
+| affected suites incl. `evaluator-consumer-load` (repeat on the heartbeat, ack silence, changed-reading latency), `evaluator-consumers.integration` (retry with the same UUID after process death), timer churn | 223 passing, 0 failing (lane, before the retry test was added) |
+| idle tenant | 0 consumer passes in 3 s (`EV_CONSUMER_IDLE_NOT_POLLED`) |
+| new alarm on a tenant with none, 600 s backstop | delivered by the revision wake in 721 / 642 / 688 ms (`EV_CONSUMER_REVISION_WAKE`) |
+| delivery failure (sink loses the response), live process | the same request accepted 355 ms after the sink recovered, ≥ 2 attempts of one request id (`EV_CONSUMER_RETRY_PROMPT`) |
+| partition lab, join `3b858586` | **23/23** (repeat gates: standalone one alarm per tenant per 3 s repeat, two overlapping evaluators no duplicate, 2 members no duplicate, 2→3 no duplicate and delivery continuity within repeat + lease). The SIGKILL stale-socket case passes with perf-db's fix merged (`runs/partition-join-3b858586.txt`) |
+
+Controls (each red, then restored):
+
+| break | symptom |
+|---|---|
+| revision wake dropped (`revised` never enqueues) | `EV_CONSUMER_REVISION_WAKE delivered in null ms with a 600 s backstop`: the alarm waits for the backstop |
+| no tenant on the fast loop | `EV_CONSUMER_RETRY_PROMPT same request accepted null ms after the sink recovered`, one attempt only |
+| only "pending" removed from the active set | **green: vacuous**. The alarming tenant also has an armed repeat clock, which keeps it on the fast loop; the break broke nothing in that test |
+
+### Gate: per-tenant evaluation gap after an evaluator restart, 1,000 tenants, deployed settings (reproduced, `runs/eval-gap-run4/`)
+
+| run | code | healthy after | within 60 s | 5 min | 15 min | 25 min | not within 25 min | p50 | max | load avg |
+|---|---|---|---|---|---|---|---|---|---|---|
+| perf-db reference | polling evaluator | 54.5 s | 16 | 143 | 424 | 700 | 300 | 10.8 min | – | 15.8 → 9.3 |
+| 3 | join `41f9179a` | 12.2 s | 511 | 668 | 928 | 999 | 1 | 46 s | 23.4 min | 4.8 → 5.8 |
+| **4** | **join `3b858586`** | 9.9 s | **935** | **1,000** | 1,000 | 1,000 | **0** | **18.8 s** | **70.7 s** | 7.9 → 8.1 |
+
+Every tenant within 70.7 s: inside the 60–90 s target. Steady state after the gate (inspection): every tenant confirmed
+within 1,116 ms (p50 579, p90 1,019), no alert, no refusal; consumer passes 1–2 per tenant over the gate (not ~300);
+evaluator 81% CPU, 509 MiB; PostgreSQL 558% CPU, which is the per-tenant digest signature check once a second (the
+scan [write-clock-complete](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#write-clock-complete) retires).
+
+### Where an evaluation's CPU goes (reproduced, `runs/profile-{deploy,full}.txt`; measurement only)
+
+`tools/tenancy/perf-evaluator/profile.cjs`: one tenant with 24 h of entries and device status (576 rows), the actual
+component on actual PostgreSQL, 200 sequential cycles of each kind under the V8 sampling profiler (100 µs), self time
+grouped by source file. Load average 6.7–9.3, so absolute milliseconds run high; the shares are the finding.
+
+| per evaluation | time-only, deployed plugins | time-only, 22 plugins | acquisition, deployed | acquisition, 22 plugins |
+|---|---|---|---|---|
+| CPU-ms | 22.3 | 30.4 | 40.4 | 45.4 |
+| wall ms | 20.7 | 27.4 | 50.2 | 53.0 |
+| projection-read transactions (statements) | 11 (44) | 11 (44) | 22 (58) | 22 (58) |
+| DB exec ms | 3.9 | 4.4 | 12.6 | 12.3 |
+
+Share of the busy (non-idle) samples, time-only:
+
+| where | deployed | 22 plugins | what it is |
+|---|---|---|---|
+| views: materialise and data loader (`ddata.processRawDataForRuntime`, `idMergePreferNew`, `dataloader`) | 25% | 22% | rebuilding the working set from the retained input every cycle |
+| projection reads: pg driver row parsing + SQL build/translate/decode | 23% | 21% | `postgres-projection-read.js:44`: each view read sends the whole retained input as a `jsonb_to_recordset` parameter and parses the rows back, 11 transactions per cycle |
+| evaluator component closure (`tenant-projection-evaluator.js:60`) | 13% | 12% | `JSON.parse(retained)` and `JSON.stringify(input)` of the whole input every cycle, decode loop |
+| other app code (`cache.getData` JSON deep clone, 6–8%) | 12% | 11% | |
+| moment / moment-timezone | 3% | 13% | date parsing of created_at in the loader and plugins |
+| GC | 8% | 7% | |
+| **plugins** (`lib/plugins`) | **0.4%** | **1.3%** | the plugin pass itself is not the cost |
+| sandbox, notifications | 0.4% | 0.6% | |
+
+Acquisition adds the reconcile: pg row parsing (10%), `clone` of every row and the deep comparison of the saved
+projection (`postgres-durable-replay.js`, ~8%), and 12.6 DB-ms (six 100-row page scans 3.8 ms, the checkpoint row
+read 1.7 ms).
+
+Candidate changes (not built), with their clinical-equivalence risk:
+
+| candidate | removes (time-only) | equivalence risk | how to prove |
+|---|---|---|---|
+| A. serve the views' reads from the retained projection in process (an in-memory query over the same documents) instead of 11 `jsonb_to_recordset` round trips | ~23% of CPU, all 44 statements and ~4 DB-ms per time-only cycle; time-only cycles then touch no database at all | **medium–high**: the projection read deliberately reuses the SQL storage path so filter, typed identity, sort, limits and legacy translation stay identical; an in-process engine must match them (D8 names `mingo` as the differential oracle) | differential lab over the views-equality and views-replay corpora (every view query, typed twins, sort ties), plus this lane's equivalence lab |
+| B. keep the materialised working set between time-only cycles of the same input; re-cut only the time windows (60 h treatments, device-status look-back) at the new instant | ~25% (materialise, ddata processing) + much of the 13% closure | **medium**: plugins and ddata processing mutate the working set (the source comment says so), so it must be copied or frozen per cycle; window cuts must equal a fresh load at every instant | the equivalence lab (alarm set and full content at 1 s), views-equality harness, a mutation guard test |
+| C. drop the per-cycle `JSON.parse`/`stringify` of the retained input and `cache.getData`'s JSON deep clone (structured copy or immutable input) | ~10–20% | **low** if copies stay independent; the clone exists to stop plugin mutation leaking between cycles | the existing retained-input and mutation tests, equivalence lab |
+| D. parse document dates once (cache mills on the retained documents) | up to ~13% with the full plugin set | **low–medium**: must equal moment's ISO parsing, time zones included | equivalence lab, date-format corpus |
+| E. acquisition: avoid cloning and deep-comparing the whole projection in reconcile when the signature is unchanged; with the complete clock, skip storing the full projection | ~8–10% of an acquisition and part of 12.6 DB-ms | **low** for the evaluator (acquisitions now happen on change only); the checkpoint row's projection is part of the replay contract | durable-replay suites, current-state recovery proof |
+
+At the measured rates, A + B together would take a time-only cycle from about 16–22 CPU-ms to a few CPU-ms and to zero
+statements (derived, unmeasured). With work on change, time-only cycles run only at due times and for alarming tenants
+on the slow timer, so the remaining per-tenant cost at idle is the backstop check, not evaluation.
+
+### Checks at round 3 heads
+
+See the table appended below.
+
+| check (round 3) | lane `9c46b95e` | join `3b858586` |
+|---|---|---|
+| affected suites (all opt-ins, + this lane's new suites; join also tenant-readiness, pool-config, tenant-startup-admission) | 223 passing, 0 failing (before the retry test; the new file then 2/2) | **258 passing, 0 failing** |
+| unit tier | **3228 passing, 0 failing** | **3259 passing, 0 failing** |
+| `test:tiers` | ok (634 files) | ok (638 files) |
+| `test:write-boundary` | — | all 9 entry points |
+| eslint `lib` | 0 errors | 0 errors |
+| partition lab | — | 23/23 |
