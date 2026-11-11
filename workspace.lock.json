@@ -25,10 +25,10 @@
       "alias": "ns-connect",
       "name": "nightscout-connect",
       "url": "https://github.com/nightscout/nightscout-connect.git",
-      "ref": "b394411a39236b614beebffabf23ccc04f730a68",
+      "ref": "4dde1ecdcad1fd923e69d458e5e2faa7bc78e4f1",
       "description": "Nightscout Connect bridge for data sources",
-      "frozen_at": "2026-07-16T11:08:40.912581",
-      "frozen_from": "main"
+      "frozen_at": "2026-11-10T00:00:00",
+      "frozen_from": "v0.1.0"
     },
     {
       "alias": "aaps",
