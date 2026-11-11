@@ -6014,6 +6014,100 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#addendum-2026-11-10-second-revision-on-content-change-and-the-alarm-repeat-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 2026-11-10 (second): revision on content change and the alarm repeat clock
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Addendum 2026-11-10 (second): revision on content change and the alarm repeat clock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-changed-956d0940" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What changed (956d0940)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#content-between-cycles-over-unchanged-data-reproduced-before-this-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Content between cycles over unchanged data (reproduced, before this change)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measurements-deployed-intervals-deploymultitenantconfigjs96-103-two-tenants-each-with-an-active-low-random-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurements, deployed intervals (deploy/multitenant/config.js:96-103), two tenants each with an active low, random phase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controls-each-red-then-restored-by-copying-the-saved-file-back-cmp-identical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controls (each red, then restored by copying the saved file back; cmp identical)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oracles-changed-the-per-cycle-reliance-with-what-replaces-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oracles changed (the per-cycle reliance), with what replaces them
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checks-at-956d0940" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checks at 956d0940
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#found-on-the-way-not-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Found on the way (not changed)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -6032,7 +6126,7 @@
 
 
 <h1 id="realtime-consumer-refusal-under-evaluator-timer-churn">Realtime consumer refusal under evaluator timer churn<a class="headerlink" href="#realtime-consumer-refusal-under-evaluator-timer-churn" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>fee6e40e1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>de1643e1b</code>.</em></p>
 <p><em>Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Lane
 <code>codex/consumer-refusal-20261110</code>; local, unpushed. Settles the suspected pre-existing defect reported by the
 <a href="../activity-eligibility-2026-11-10/index.html">activity-eligibility lane</a> ("evaluator timers at 150 ms make the realtime
@@ -6430,6 +6524,205 @@ once per second per tenant, against legacy's once per heartbeat (60 s default).<
 <li>If repetition is kept, should the producer's <code>fresh</code> key be decoupled from the evaluator revision (for example, a
    repeat tick counter driven by a heartbeat), so the revision can still move only on content change?</li>
 </ol>
+<h2 id="addendum-2026-11-10-second-revision-on-content-change-and-the-alarm-repeat-clock">Addendum 2026-11-10 (second): revision on content change and the alarm repeat clock<a class="headerlink" href="#addendum-2026-11-10-second-revision-on-content-change-and-the-alarm-repeat-clock" title="Permanent link">&para;</a></h2>
+<p>Decisions <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change"><code>evaluator-revision-on-content-change</code></a>
+and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-repeat-clock"><code>alarm-repeat-clock</code></a> (alignment <code>main</code>
+<code>fee6e40e</code>). Lane <code>codex/consumer-refusal-20261110</code>: <code>1adb17f8</code> → <code>1d39c924</code> (telemetry) → <strong><code>956d0940</code></strong> (behaviour).
+PostgreSQL 16.15 disposable container (same digest), removed afterwards.</p>
+<h3 id="what-changed-956d0940">What changed (<code>956d0940</code>)<a class="headerlink" href="#what-changed-956d0940" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Evaluator</strong> (<code>lib/server/serve/evaluator-runtime.js</code>): content is a canonical SHA-256 digest of <code>checkpoint</code>,
+  <code>progress</code>, <code>emitted</code>, <code>requested</code> and <code>properties</code> (exported <code>CONTENT</code>, <code>contentDigest</code>). <code>now</code>,
+  <code>evaluationRevision</code> and <code>trigger</code> are per-cycle metadata. Identical content keeps <code>outputRevision</code> and the same
+  frozen <code>last</code> object. A new revision calls <code>onRevision(tenant)</code>. Health adds <code>cycles</code> (from <code>1d39c924</code>).</li>
+<li><strong>Producer</strong> (<code>lib/tenant-notifications/producer-state.js</code>, <code>producer.js</code>): when the current output requests any
+  notification (<code>armed</code>), the legacy processing of that output runs again once <code>at &gt;= repeatAt</code>, at time <code>at</code>.
+  <code>repeatAt = at + heartbeat</code> after each processing. <code>heartbeat</code> is the tenant's single-site setting in seconds
+  (<code>environment.js:13</code> CLIENT_KEYS; the owner catalogue carries it too). If it is unset or not a positive number, the
+  default is <code>lib/settings.js:38</code> (60). Silence is decided by <code>notifications.js:63</code> as before, and the
+  suppression check (<code>component.js:35</code>) still applies at handoff.</li>
+<li><strong>Consumer</strong> (<code>lib/server/serve/evaluator-consumers.js</code>, <code>evaluator-preview.js</code>): <code>revised(tenant)</code> wakes a tenant
+  with a pending request, an armed repeat clock or a current output that requests a notification. A one-shot wake
+  fires at the producer's <code>repeatAt</code>, with a 1 s floor for an overdue time. Health adds <code>passes</code>, <code>selections</code>
+  and <code>repeatAt</code> (the first two from <code>1d39c924</code>). The stale-selection retry from <code>1adb17f8</code> is kept.</li>
+</ul>
+<h3 id="content-between-cycles-over-unchanged-data-reproduced-before-this-change">Content between cycles over unchanged data (reproduced, before this change)<a class="headerlink" href="#content-between-cycles-over-unchanged-data-reproduced-before-this-change" title="Permanent link">&para;</a></h3>
+<p>Only <code>outputRevision</code>, <code>result.evaluationRevision</code>, <code>trigger</code> and <code>result.now</code> differed across ticks and
+acquisitions, including one 61 s later. With the stale-data plugin (single-site env shape, below), only time passing
+(20 min) adds a level-1 "Stale data, check rig?" request and drops <code>direction</code> from <code>properties</code>.</p>
+<h3 id="measurements-deployed-intervals-deploymultitenantconfigjs96-103-two-tenants-each-with-an-active-low-random-phase">Measurements, deployed intervals (<code>deploy/multitenant/config.js:96-103</code>), two tenants each with an active low, random phase<a class="headerlink" href="#measurements-deployed-intervals-deploymultitenantconfigjs96-103-two-tenants-each-with-an-active-low-random-phase" title="Permanent link">&para;</a></h3>
+<p>Test <code>tests/evaluator-consumer-load.integration.test.js</code>, <code>NS_CONSUMER_LOAD_HEARTBEAT_S=60 NS_CONSUMER_LOAD_WINDOW_MS=60000</code>,
+3 runs each. Values are per tenant per minute and were identical for both tenants.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>evaluator cycles</th>
+<th>output revisions</th>
+<th>consumer passes</th>
+<th>selections</th>
+<th>alarm deliveries per active alarm</th>
+<th>changed-reading latency</th>
+<th>refused</th>
+<th>stuck attempting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>before (<code>1d39c924</code> = <code>1adb17f8</code> + counters)</td>
+<td>118-120</td>
+<td>118-120</td>
+<td>119-120</td>
+<td>359-360</td>
+<td><strong>60</strong></td>
+<td>224, 1095, 1115 ms</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>after (<code>956d0940</code> code)</td>
+<td>120</td>
+<td><strong>0</strong></td>
+<td>121</td>
+<td><strong>125</strong></td>
+<td><strong>1</strong></td>
+<td>467, 1032, 1043 ms</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>At the CI setting (heartbeat 5 s, window 21 s), before: 120 revisions, 360 selections, 60 deliveries/min, latency 256 ms.
+After: 0 revisions, 177 selections, 11.4 deliveries/min (expected 12), latency 595 ms, refused 0, stuck 0.
+Passes stay at about 120/min after the change because the deployed consumer poll and retry timers (1000 ms each)
+dominate. The change removes the per-cycle writes and handoffs, not the polls. The changed reading is picked up by the
+evaluator's own recovery timer (no explicit trigger exists in production: no caller of <code>acquire</code> outside the IPC
+driver). At the deployed 1 s poll, its latency is bounded by the poll before and after.</p>
+<p><strong>150 ms churn</strong> (<code>tests/evaluator-consumer-timer-churn.integration.test.js</code>, delivery now required): changed reading
+delivered <strong>8/8</strong> (3 at phase 0, 5 random), 197-253 ms. Case "picked up only by the evaluator timers", with the
+fixture's 1,000,000 ms consumer timers and no trigger, so only the targeted wake can deliver: <strong>8/8</strong>, 290-373 ms.</p>
+<h3 id="controls-each-red-then-restored-by-copying-the-saved-file-back-cmp-identical">Controls (each red, then restored by copying the saved file back; <code>cmp</code> identical)<a class="headerlink" href="#controls-each-red-then-restored-by-copying-the-saved-file-back-cmp-identical" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>control</th>
+<th>edit</th>
+<th>red, exact symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bump the revision every cycle</td>
+<td>runtime <code>const changed = true</code></td>
+<td>unit <code>EVALUATOR_IDENTICAL_CONTENT_KEEPS_REVISION</code>; load <code>ALARM_REPEAT_ON_HEARTBEAT 1 delivered 21, expected about 4.2</code> (selections 451/min); native M5 case 1 red</td>
+</tr>
+<tr>
+<td>digest ignores a time-driven change</td>
+<td>digest over <code>checkpoint</code>,<code>progress</code> only</td>
+<td>unit <code>only time passed and the stale-data alarm appeared</code> (the held output hides the stale-data alarm from consumers) and <code>emitted is content</code></td>
+</tr>
+<tr>
+<td>remove the repeat clock</td>
+<td>producer-state <code>const repeat = false &amp;&amp; …</code></td>
+<td>unit <code>PRODUCER_REPEAT_ON_HEARTBEAT</code>, <code>EVALUATOR_CONSUMER_RT_POLICY alarm repeats on the heartbeat clock</code>, <code>EVALUATOR_CONSUMER_OUTPUT_POLL …</code>; load <code>ALARM_REPEAT_ON_HEARTBEAT 1 delivered 0</code> and <code>ALARM_REPEAT_OTHER_TENANT</code></td>
+</tr>
+<tr>
+<td>ack silence ignored</td>
+<td><code>notifications.js:63</code> → <code>if (true)</code></td>
+<td>unit <code>PRODUCER_ACK_SILENCE_HOLDS</code>. <strong>Native stayed green</strong> (0 acknowledged repeats): the outbox suppression check <code>allows</code> → <code>reader.allows</code> (<code>component.js:35</code>, <code>tenant-alarms/postgres.js:95</code>) is a second, independent gate. With both broken (<code>allows: async () =&gt; true</code> as well): <code>ALARM_ACK_SILENCE_HOLDS</code> with 3 acknowledged repeats</td>
+</tr>
+<tr>
+<td>remove the targeted wake</td>
+<td>preview <code>onRevision: undefined</code></td>
+<td>native <code>CONSUMER_TARGETED_WAKE_LATENCY</code> (latency null). The load test's latency assertion stays green at the deployed 1 s poll, as expected: the poll alone delivers within a second</td>
+</tr>
+</tbody>
+</table>
+<p>The repeat-clock control also showed a hot loop: with <code>repeatAt</code> left in the past, the one-shot re-armed at 0 ms
+(2368 passes/min). The real code always advances an overdue <code>repeatAt</code>; the 1 s floor added in <code>956d0940</code> bounds any
+regression. With the floor, the same broken state gives 120 passes/min.</p>
+<h3 id="oracles-changed-the-per-cycle-reliance-with-what-replaces-them">Oracles changed (the per-cycle reliance), with what replaces them<a class="headerlink" href="#oracles-changed-the-per-cycle-reliance-with-what-replaces-them" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>oracle</th>
+<th>was</th>
+<th>now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/evaluator-consumers.integration.test.js</code> case 1 <code>M5_CONSUMER_NEW_RT_CYCLE</code></td>
+<td><code>tick</code> over identical data delivers a second event</td>
+<td>tenant <code>heartbeat</code> 3 s; <code>tick</code> before the heartbeat delivers nothing (<code>M5_CONSUMER_IDENTICAL_CYCLE_NO_REPEAT</code>); the coordinator's repeat-clock wake delivers the second event with a new UUID</td>
+</tr>
+<tr>
+<td>same file, case 4 (<code>:87</code>), B independent</td>
+<td><code>tick</code> B over identical data delivers for B</td>
+<td>a new B reading plus <code>acquire</code> B delivers for B</td>
+</tr>
+<tr>
+<td><code>tests/evaluator-consumers.test.js</code> <code>EVALUATOR_CONSUMER_RT_POLICY</code>, <code>EVALUATOR_CONSUMER_OUTPUT_POLL</code>, B <code>requests + 1</code></td>
+<td>a <code>tick</code> repeats</td>
+<td>advance the fixture clock 60 s (default heartbeat), then the tick or poll repeats; adds <code>EVALUATOR_CONSUMER_NO_REPEAT_BEFORE_HEARTBEAT</code></td>
+</tr>
+<tr>
+<td>same file, "clinical cycle does not wait for delivery"</td>
+<td><code>outputRevision</code> increases</td>
+<td>evaluator <code>cycles</code> increases</td>
+</tr>
+<tr>
+<td><code>tests/evaluator-preview-runtime.test.js</code> "retries unchanged input"</td>
+<td>revision increases</td>
+<td><code>cycles</code> increases and the revision is unchanged</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Activity lane (not edited; for the join coordinator):</strong> <code>tests/tenant-activity.integration.test.js:128</code> on
+<code>codex/activity-eligibility-20261110</code> (<code>07981b55</code>). Replace
+<code>const bBefore = tenantHealth(await worker.call('health'), lab.B).outputRevision;</code> with
+<code>const bBefore = tenantHealth(await worker.call('health'), lab.B).cycles;</code>, and replace
+<code>assert.ok(tenantHealth(health, lab.B).outputRevision &gt; bBefore + 2, 'ACTIVITY_B_UNAFFECTED B kept cycling on the actual timers');</code>
+with <code>assert.ok(tenantHealth(health, lab.B).cycles &gt; bBefore + 2, 'ACTIVITY_B_UNAFFECTED B kept cycling on the actual timers');</code>.
+(<code>cycles</code> is reported by <code>evaluator-runtime.js</code> health from <code>1d39c924</code>. B's data does not change in that window, so
+its <code>outputRevision</code> now stays put by design.)</p>
+<h3 id="checks-at-956d0940">Checks at <code>956d0940</code><a class="headerlink" href="#checks-at-956d0940" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>check</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>unit/protocol: 16 files (evaluator-consumer<em>, evaluator-control-readiness, evaluator-preview-runtime, evaluator-runtime-content, multitenant-inventory, notification-producer</em>, tenant-operation-window, tenant-notifications, tenant-startup-admission, tenant-deployment-operations, realtime-evaluator-observer, tenant-projection-evaluator, tenant-maintenance-window)</td>
+<td>178 passing</td>
+</tr>
+<tr>
+<td>native: evaluator-consumers.integration, tenant-notifications.integration, tenant-notification-native-restoration, evaluator-consumer-timer-churn, evaluator-consumer-load</td>
+<td>17 passing</td>
+</tr>
+<tr>
+<td><code>node scripts/test-tiers.js check</code></td>
+<td><code>617 test files, 8 tiers: ok</code></td>
+</tr>
+<tr>
+<td>eslint on changed files</td>
+<td>0 errors; <code>npm run lint</code> 0 errors, 49 warnings</td>
+</tr>
+</tbody>
+</table>
+<h3 id="found-on-the-way-not-changed">Found on the way (not changed)<a class="headerlink" href="#found-on-the-way-not-changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>The stale-data alarm cannot be enabled for a multitenant tenant.</strong> <code>timeago</code> alerts need
+  <code>extendedSettings.timeago.enableAlerts</code> (<code>lib/plugins/timeago.js:20</code>). The tenant environment copies only
+  <code>extendedSettings.devicestatus</code> (<code>lib/server/tenant-app/environment.js:54-57</code>). The runtime test builds the
+  single-site env shape directly for that reason. Read-derived, not run against a tenant config.</li>
+<li>A tenant with no pending request, no armed repeat and a current output that requests no notification is not woken
+  on a content change; it waits for the consumer poll, as the decisions specify. A newly appearing alarm is covered
+  (its output requests a notification), and so is the clear when an alarm ends (the repeat clock was armed).</li>
+</ul>
 
 
 
