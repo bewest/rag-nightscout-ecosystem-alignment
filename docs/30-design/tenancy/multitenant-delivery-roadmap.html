@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3414,62 +3410,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5726,11 +5666,11 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
 <p><em>Contributor-facing living plan. Reconciled 2026-11-10 to the M6a/M6b joined acceptance records and adopted release decisions,
 without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5845,8 +5785,11 @@ must meet the same contract. A disposable Vault lab does not establish TLS,
 unseal/recovery, production identity, HA or operational suitability. Failures
 never fall back to plaintext, another tenant's key or an unapproved signer.
 The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deployment-and-trust-2026-11-07">deployment and trust decisions</a>
-keep Vault Transit at every stage, with a service-login adapter required before
-production use, and admit a deployment by trust record plus live probes.</p>
+keep Vault Transit at every stage and admit a deployment by trust record plus live
+probes. Connectivity is a <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-agent-sidecar">Vault Agent sidecar</a> with
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-one-approle-per-deployment">one AppRole per deployment</a>; core reads the
+token from the sink file per call (<code>MT-VAULT-TOKEN-FILE</code>) instead of carrying a
+service-login adapter.</p>
 <h2 id="tenant-identity-migrations-and-import">Tenant identity, migrations and import<a class="headerlink" href="#tenant-identity-migrations-and-import" title="Permanent link">&para;</a></h2>
 <p>Keep permanent or disposable public aliases, durable DNS-friendly internal names and stable
 tenant IDs distinct. Deployment-owned mapping binds internal name to ID; alias
@@ -5988,7 +5931,7 @@ implementation and destroy/after-window refusal evidence remain separate.</p>
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
 observations, not a fresh current-HEAD campaign. The later accepted ed2 reference is published on draft
-PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
+PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
 is distinct from dev merge, release and production/default admission.</p>
 <table>
 <thead>

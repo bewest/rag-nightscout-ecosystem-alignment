@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3381,62 +3377,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5660,7 +5600,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>d38055bc9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-10. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5768,11 +5708,43 @@ enhancements; that preference grants no production permission or criterion waive
 </tr>
 <tr>
 <td>M6 deployment and trust</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-ingress-peer-list-trust">Peer-list ingress trust, one list for tenant selection and client IP</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-secrets-ladder-vault-all-stages">Vault Transit at every stage, service-login adapter before production</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">generic OIDC adapter, Authentik intended reference subject to the Kratos proof</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">admission by trust record plus live probes</a>. Synthetic Compose edge/TLS Vault is measured at the reference scope; provider/service-login proof and production deployment remain UNMEASURED.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-ingress-peer-list-trust">Peer-list ingress trust, one list for tenant selection and client IP</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-secrets-ladder-vault-all-stages">Vault Transit at every stage</a>, connected through a <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-agent-sidecar">Vault Agent sidecar</a> with <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-one-approle-per-deployment">one AppRole per deployment</a> (this replaces the earlier service-login adapter as application work); <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">generic OIDC adapter, Authentik intended reference subject to the Kratos proof</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">admission by trust record plus live probes</a>. Synthetic Compose edge/TLS Vault is measured at the reference scope; Vault Agent renewal/rotation probes, provider proof and production deployment remain UNMEASURED.</td>
 </tr>
 <tr>
 <td>Single-site OIDC identity list</td>
 <td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#single-site-oidc-list-authoritative">Each start re-applies the list; list-managed people taken off it are removed</a>; fallback roles for unlisted people. <code>MT-OIDC-SINGLE-PROVISION</code> carries the implementation.</td>
+</tr>
+<tr>
+<td>Deployment tree home</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-home-now"><code>nightscout-deploy</code> holds the Compose tree from the next #8898 batch on</a>; core keeps only the fixture its own tests boot. Refines the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-lives-in-nightscout-deploy">2026-11-09 move</a>.</td>
+</tr>
+<tr>
+<td>Activity policy</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">Pause and suspend, no third state</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-may-pause">owner may pause</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deletion-request-auto-pauses">deletion request pauses</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-row-always-provisioned">activity row always provisioned</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#suspended-refusal-423">423 refusal codes</a>. The <a href="tenant-admission-and-activity.html">admission and activity guide</a> holds mechanism and acceptance; <code>MT-ACTIVITY-ELIGIBILITY</code> carries implementation.</td>
+</tr>
+<tr>
+<td>Root and admin tools</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-root-single-site-parity">Tenant <code>API_SECRET</code> has single-site parity</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-may-edit-owner-subjects">root may edit any subject, not the last owner</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-role-edit-delete">role edit/delete rules</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-grant-ceiling-default-all">grant ceiling <code>*</code> by default</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admin-role-subjects-use-admin-tools">admin-role subjects use the admin tools</a>. <a href="owner-authority.html">Owner authority</a> states the rules; <code>MT-ROOT-ADMIN-PARITY</code> carries implementation.</td>
+</tr>
+<tr>
+<td>Restore census and ownership phase</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase">Census admits identities whose grants exclude clinical tables; ownership operations need an active tenant</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-counter-writers">counter writers are refused too, ownership changes allowed during export</a>.</td>
+</tr>
+<tr>
+<td>Export removal at key destruction</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#key-destruction-removes-export">Key destruction removes the export file it knows by digest</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#export-removal-no-retry">no retry of a failed removal</a>.</td>
+</tr>
+<tr>
+<td>Admin listener address</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admin-plane-same-address-different-port">Same address as the public API on a different port is allowed</a>; never every interface; non-loopback still needs the acknowledgement.</td>
+</tr>
+<tr>
+<td>Internal listener</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">One <code>serve.internal</code> listener per role, Ory-style host/port or socket</a> with a socket default; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful shutdown with a deadline</a>. <code>MT-ENDPOINT-TRANSPORT</code> carries implementation.</td>
+</tr>
+<tr>
+<td>Evaluator revision and alarm repeat</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change">Revision changes only on content change; targeted consumer wake</a>; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-repeat-clock">active alarms repeat on their own clock equal to the single-site heartbeat</a>. BF-231, <code>MT-CONSUMER-STALE-RESELECT</code>.</td>
 </tr>
 <tr>
 <td>Legacy authority and management split</td>
@@ -5798,7 +5770,7 @@ M6 human session effects (idle scope, logout, renewal, transport) are settled.
 M6 deployment and trust (ingress peer-list trust, one-provider secrets ladder, generic OIDC adapter with Authentik as intended reference, probe-plus-record admission) are settled.
 Vault Agent scope is settled: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-one-approle-per-deployment">one AppRole per deployment</a>; tenant separation at Vault is not a goal.
 Evaluator partitioning is settled in direction: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">member count and ordinal flag with a pool-membership table</a>.</p>
-<p>Operator activity policy is settled (2026-11-10): <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">pause and suspend are the activity policy</a>, workers skip ineligible tenants, the evaluator stops while paused, and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-may-pause">an owner may pause</a>. The internal listener shape is settled the same day (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">Ory pattern</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>). No human-policy topic is open.</p>
+<p>The 2026-11-10 decisions (activity policy, root and admin tools, restore census, export removal, admin listener address, internal listener, evaluator revision and alarm repeat) are rows in the table above. No human-policy topic is open.</p>
 <p>The <a href="../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.html">owner lifecycle packet</a>
 retains source surveys and alternatives; its recommended grace periods, invitation
 lifetimes and self-service operations are not approved defaults. The <a href="../../archive/tenancy/multitenant-open-decisions-2026-11-06.html">earlier

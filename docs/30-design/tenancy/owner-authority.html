@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3392,62 +3388,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5682,11 +5622,11 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>50b424fab</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
-chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
+chat, 2026-11-05; current with the release decisions of 2026-11-10. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
-Queue homes: MT-OIDC-NATIVE and MT-M6A-JOIN (M6a), MT-OWNERSHIP-OPS (M6b), MT-OIDC-SINGLE-PROVISION;
+Queue homes: MT-OIDC-NATIVE and MT-M6A-JOIN (M6a), MT-OWNERSHIP-OPS (M6b), MT-OIDC-SINGLE-PROVISION, MT-ROOT-ADMIN-PARITY;
 the earlier MT-CONFIG-MIN, MT-SECRETS-CONTRACT, T30-WIRING and MT-IDENTITY-PLAN are closed as superseded.</em></p>
 <h2 id="authority-and-storage-boundaries">Authority and storage boundaries<a class="headerlink" href="#authority-and-storage-boundaries" title="Permanent link">&para;</a></h2>
 <p>PostgreSQL is authoritative for tenant status, identities/access grants, subject and
@@ -5841,7 +5781,17 @@ from the private operator plane. A tenant's root secret (<code>API_SECRET</code>
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-root-single-site-parity">single-site parity</a>:
 all data, subjects, roles and the admin tools, never owner or operator authority. It
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-may-edit-owner-subjects">may edit any subject</a>
-except removing the last usable owner, and cannot grant itself ownership. Unattended uploaders use revocable machine credentials
+except removing the last usable owner, and cannot grant itself ownership. In
+multitenant mode every subject write goes through the owner-aware writer that
+enforces that guard. Through the admin tools root <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-role-edit-delete">may edit a role's permissions,
+not rename it, and may not delete a role a subject holds</a>;
+it <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-grant-ceiling-default-all">may grant any tenant data permission (<code>*</code>) unless the operator narrows the
+list</a>, never owner or operator permissions.
+A subject whose roles grant <code>admin:api:subjects:*</code> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admin-role-subjects-use-admin-tools">uses the admin tools with its
+own token</a> under the same guard.
+Implementation is <code>MT-ROOT-ADMIN-PARITY</code>. An owner <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-may-revoke-subjects">may revoke subjects</a>
+and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-may-pause">may pause their own site</a>; only the operator suspends
+and deletes. Unattended uploaders use revocable machine credentials
 whose renewal does not require a human login.</p>
 <p>Adopted initial limits, subject to measured implementation acceptance:</p>
 <table>

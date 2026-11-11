@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3392,62 +3388,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5682,8 +5622,10 @@
 
 
 <h1 id="private-api-composition-deployment-bindings-and-fixed-roster-scaling">Private API composition, deployment bindings and fixed-roster scaling<a class="headerlink" href="#private-api-composition-deployment-bindings-and-fixed-roster-scaling" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>ac7d19f80</code>.</em></p>
-<p><em>Living contributor-facing implementation plan, refreshed 2026-11-10. Current
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
+<p><em>Living contributor-facing implementation plan, refreshed 2026-11-10 for the
+adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">internal listener shape</a> and
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>. Current
 mechanisms are </em><em>read-derived</em><em> from joined application <code>dc795bd1</code>; carried
 measurements retain their original source/instrument in the linked evidence.
 Remaining criteria are </em><em>UNMEASURED</em><em> until their instruments run. Queue homes:
@@ -5693,7 +5635,7 @@ Remaining criteria are </em><em>UNMEASURED</em><em> until their instruments run.
 from implementation or a diagram.</em></p>
 <h2 id="implemented-foundation-and-remaining-boundary">Implemented foundation and remaining boundary<a class="headerlink" href="#implemented-foundation-and-remaining-boundary" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../../reports/tenancy/internal-service-api-2026-11-09/index.html">internal API implementation</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de1643e1bda98eb1acf048af5e5125ebcc207b2d/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined dc795bd1 acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/276cc19a65ffefb50e702993a925ed9bbd1e3b07/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined dc795bd1 acceptance</a>
 carry the shared transport, three service registries, executable request/response
 schemas, named clients, strict public/private separation and consuming-role
 configuration. UDS and actual loopback HTTP tests exist; the joined regression,
@@ -5714,7 +5656,7 @@ browser, enabled-corpus and OIDC records have their own executed scope.</p>
 </tr>
 <tr>
 <td>Binding</td>
-<td>UDS or explicit <code>http:</code> origin; optional independent bind address. Existing UDS configuration is retained.</td>
+<td>UDS or explicit <code>http:</code> origin; optional independent bind address (per-contract references, replaced by <code>serve.internal</code>).</td>
 <td>Qualify a selected private network deployment, not merely a helper's loopback behavior. Direct <code>https:</code> is not implemented.</td>
 </tr>
 <tr>
@@ -5725,7 +5667,7 @@ browser, enabled-corpus and OIDC records have their own executed scope.</p>
 <tr>
 <td>Listener allocation</td>
 <td>One service contract per listener. Public/management interfaces are separate.</td>
-<td>Proposed one private listener per component, with server-owned module registration. More listeners remain possible where an actual policy/resource boundary requires them.</td>
+<td>Adopted 2026-11-10: one private listener per role process, <code>serve.internal</code>, whose contract set the role's code decides; configuration cannot move or merge contracts. The public listener stays separate.</td>
 </tr>
 <tr>
 <td>Worker operations</td>
@@ -5750,27 +5692,41 @@ services or deployment processes. Data/authorization/owner REST modules may
 co-locate under existing audience and credential rules. REST v1/v2/v3 remain
 version adapters inside one logical request-serving component.</p>
 <h2 id="endpoint-and-compatibility-contract">Endpoint and compatibility contract<a class="headerlink" href="#endpoint-and-compatibility-contract" title="Permanent link">&para;</a></h2>
-<p>The current source of truth is application <code>lib/server/internal-api/endpoint-config.js</code>
-and <code>transport.js</code>, with service descriptions under <code>contracts/</code> and usage in
-<code>docs/internal-service-api.md</code>. Deployment configuration uses environment references:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"socketPathEnv"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NS_INTERNAL_SOCKET"</span><span class="w"> </span><span class="p">}</span>
-</code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">"urlEnv"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NS_INTERNAL_URL"</span><span class="p">,</span><span class="w"> </span><span class="nt">"trust"</span><span class="p">:</span><span class="w"> </span><span class="s2">"network"</span><span class="p">,</span><span class="w"> </span><span class="nt">"bindHostEnv"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NS_INTERNAL_BIND"</span><span class="w"> </span><span class="p">}</span>
-</code></pre></div>
-<p><code>bindHostEnv</code> is optional. A Kubernetes Service DNS name can be the dial origin
-while a listener binds its own interface. A configured link-local/private address
-is supported; loopback is not an architectural restriction. The current parser
-accepts a legacy socket reference OR its endpoint-descriptor alternative, never
-both. Public request content cannot choose private destinations. Credentials in
-URLs, unexpected paths/query/fragment components, unsupported schemes and
-implicit trust/fallback refuse.</p>
+<p><strong>Adopted configuration (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">decision</a>, 2026-11-10,
+multitenant only).</strong> Each role process has one private listener, <code>serve.internal</code>,
+configured in the style of Ory Kratos/Hydra's <code>serve.public</code>/<code>serve.admin</code>:
+<code>host</code>/<code>port</code> or <code>socket</code>, each overridable from the environment
+(<code>NS_SERVE_INTERNAL_HOST</code>, <code>NS_SERVE_INTERNAL_PORT</code>, <code>NS_SERVE_INTERNAL_SOCKET</code>),
+with a default. The default is a unix socket under a runtime directory, because
+the internal listener trusts its network (<code>trust:'network'</code>) and has no
+authentication of its own; network exposure requires an explicit host/port.
+Callers receive peer addresses (for example <code>NS_API_INTERNAL_URL</code>). The preview is
+unreleased, so the change carries no compatibility shim.</p>
+<p><strong>Current code (<code>dc795bd1</code>, read-derived), which this replaces.</strong> Each contract has
+its own <code>socketPathEnv</code> or endpoint-descriptor reference with no default
+(<code>lib/server/internal-api/endpoint-config.js:11-30</code>; callers
+<code>realtime/private-config.js</code>, <code>serve/operation-cohort-config.js</code>,
+<code>serve/evaluator-consumer-config.js</code>), with service descriptions under
+<code>contracts/</code> and usage in <code>docs/internal-service-api.md</code>. A Kubernetes Service DNS
+name can be the dial origin while a listener binds its own interface; a configured
+link-local/private address is supported, and loopback is not an architectural
+restriction. Public request content cannot choose private destinations.
+Credentials in URLs, unexpected paths/query/fragment components, unsupported
+schemes and implicit trust/fallback refuse, and the adopted shape keeps those
+refusals.</p>
+<p><strong>Shutdown (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">decision</a>).</strong> On SIGTERM the
+internal listener stops accepting connections, lets in-flight calls finish and
+send their responses up to a configurable deadline below the platform's
+termination grace, then force-closes what remains; callers still treat a
+force-closed call as uncertain. Reproduced on the listener-composition lane
+(Compose, <code>d69b873a</code>): <code>close()</code> dropped a held call at 176 ms while the server
+still drained its handler.</p>
 <p>Private operation payloads retain current tenant, credential, RLS, ACK and
 lifecycle semantics. Current service/version headers require a coordinated
 internal-peer upgrade; preserving the public client protocol does not establish
 mixed-version peer compatibility. Listener consolidation must specify any header,
-operation-path or schema migration explicitly. Existing UDS settings must remain
-supported or have an explicit measured transition; a URL must not be inferred
-from a malformed socket field.</p>
+operation-path or schema migration explicitly; a URL must not be inferred from a
+malformed socket field.</p>
 <p>UDS-specific filesystem checks remain inside its adapter. HTTP reachability is
 supplied by the selected deployment policy. If established TLS termination or a
 service mesh is chosen, document its trust boundary and test the selected binding;
@@ -5793,8 +5749,8 @@ Keep each capability's helper, fixtures and meaningful controls in its lane.</p>
 <tbody>
 <tr>
 <td>Private API composition — <code>MT-ENDPOINT-TRANSPORT</code></td>
-<td>Build one explicit registry of supported <code>(method,path)</code> routes and contract modules per selected private listener. Enforce duplicate/missing/extra registration, schema/content-type and service/version ownership. Bind independently from public/management HTTP.</td>
-<td>Actual UDS and HTTP calls succeed only on their intended private routes; public routes return 404. Inject a duplicate route, foreign contract/header, extra handler, malformed request or response and show the corresponding assertion turns red before unauthorized effects.</td>
+<td>Build one explicit registry of supported <code>(method,path)</code> routes and contract modules on each role's <code>serve.internal</code> listener, configured as adopted above, with graceful shutdown. Enforce duplicate/missing/extra registration, schema/content-type and service/version ownership. Bind independently from public/management HTTP.</td>
+<td>Actual UDS and HTTP calls succeed only on their intended private routes; public routes return 404. Inject a duplicate route, foreign contract/header, extra handler, malformed request or response and show the corresponding assertion turns red before unauthorized effects. Shutdown: a held call's caller receives its response within the deadline; restoring the early drop turns that assertion red.</td>
 </tr>
 <tr>
 <td>Per-operation lifecycle policy — same owner, with restore integration</td>
@@ -5808,7 +5764,7 @@ Keep each capability's helper, fixtures and meaningful controls in its lane.</p>
 </tr>
 <tr>
 <td>Deployment binding — endpoint owner with deployment-companion owner</td>
-<td>Select UDS or private HTTP independently for application and direct-instance calls. Render actual service/dial and listen addresses, access policy and upgrade configuration; keep existing reference UDS settings valid.</td>
+<td>Select UDS or private HTTP independently for application and direct-instance calls. Render actual service/dial and listen addresses, access policy and upgrade configuration, using the adopted <code>serve.internal</code> settings (the preview carries no shim for the per-contract references).</td>
 <td>Run real separated processes on the selected network. Compare current authority, stored effects/absence, schema responses, byte/deadline/cancellation bounds, disconnect/no-retry behavior and shutdown. Remove the selected boundary/config check or synthesize an acknowledgement after commit/response loss: the intended refusal/uncertainty oracle must fail.</td>
 </tr>
 <tr>

@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3288,62 +3284,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../nightscout-seam-ordering-translation.html" class="md-nav__link">
         
   
@@ -3561,7 +3501,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_34" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_24_15_32" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -3584,8 +3524,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_34_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5_24_15_34">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_24_15_32_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_24_15_32">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5487,15 +5427,20 @@
 
 
 <h1 id="tenancy-topology-plates">Tenancy topology plates<a class="headerlink" href="#tenancy-topology-plates" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>8760ec6d0</code>.</em></p>
-<p><em>Contributor-facing architecture figures, 2026-11-10. Interpretation is
+<p><em>Living document, last changed 2026-11-10 at <code>a21a47f3e</code>.</em></p>
+<p><em>Contributor-facing architecture figures, 2026-11-10 (second refresh). Interpretation is
 read-derived; linked acceptance retains its actual source. Trust zones do not
 mean physical hosts, and logical endpoints do not imply additional processes.</em></p>
 <ul>
 <li><a href="accepted-one-host-topology.svg">Accepted one-host reference — SVG</a> / <a href="accepted-one-host-topology.png">PNG</a>: ed2 cold Compose/UI/restore and c23 native separate-role restart evidence, within the <a href="../../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>. Its public-facing synthetic origin uses HTTP; Vault uses TLS. No OIDC, external ingress TLS, capacity or production acceptance is added by the drawing.</li>
-<li><a href="current-internal-api-topology.svg">Current private API composition — SVG</a> / <a href="current-internal-api-topology.png">PNG</a>: read-derived current contracts/listeners at application <code>dc795bd1</code>. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de1643e1bda98eb1acf048af5e5125ebcc207b2d/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a> retains its executed source and scope. Each current private listener owns one named contract. The reference uses UDS; the shared adapter also accepts explicit HTTP endpoints with deployment-owned network trust. Beyond-loopback HTTP, cluster and multi-host admission remain unmeasured.</li>
-<li><a href="proposed-fixed-roster-network-topology.svg">Proposed private-listener and fixed-roster target — SVG</a> / <a href="proposed-fixed-roster-network-topology.png">PNG</a>: the <a href="../selectable-endpoints-and-api-scaling-plan.html">current implementation plan</a>. Explicit private contract modules may share one component listener, separate from consumer/management listeners. REST replica A/B are explicit instances of one REST component. Maintenance still uses every exact instance endpoint, not a load-balanced sample. Private-listener composition, operational APIs and fixed-roster scale acceptance remain open; optional gateway middleware is a separate contract. Evaluator partitioning is separately queued M7 work, not implied by API scale-out.</li>
+<li><a href="current-internal-api-topology.svg">Private API composition, one internal listener per role — SVG</a> / <a href="current-internal-api-topology.png">PNG</a>: read-derived from the 2026-11-10 lanes joined on <code>codex/batch-join-20261110</code> (internal listener <code>78ecba76</code>, admin role <code>1376c294</code>/<code>66655756</code>, activity <code>07981b55</code>, alarm repeat <code>956d0940</code>); that join is <strong>in acceptance, not pushed</strong>. Each role process opens one <code>serve.internal</code> (unix socket under the runtime directory by default, host/port by environment); role code fixes its contracts. The <code>admin</code> role keeps its own operator-plane listener for ownership operations. The <a href="../../../../reports/tenancy/internal-listener-2026-11-10/index.html">internal-listener evidence</a> and <a href="../../../../reports/tenancy/admin-lifecycle-2026-11-10/index.html">admin-lifecycle evidence</a> retain their lane sources. #8898 at <code>b70ad83f</code> still opens one listener per contract (<a href="../../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">its acceptance</a>). Beyond-loopback HTTP, cluster and multi-host admission remain unmeasured.</li>
+<li><a href="proposed-fixed-roster-network-topology.svg">Proposed fixed-roster API-scale target — SVG</a> / <a href="proposed-fixed-roster-network-topology.png">PNG</a>: the <a href="../selectable-endpoints-and-api-scaling-plan.html">current implementation plan</a>. It starts from one internal listener per role instance. REST replica A/B are explicit instances of one REST component. Maintenance still uses every exact instance endpoint, not a load-balanced sample. The operational contract, remote binding and fixed-roster scale acceptance remain open; optional gateway middleware is a separate contract. Evaluator partitioning is separately queued M7 work, not implied by API scale-out.</li>
 </ul>
+<p>Two mechanisms recorded on 2026-11-10 are drawn as Mermaid where they are defined:
+the <a href="../multitenancy-decisions.html#tenant-activity-states-diagram">tenant activity states</a>
+and the <a href="../multitenancy-decisions.html#authority-split-diagram">root, owner and operator authority split</a>.
+The <a href="../evaluator-realtime-communication.html#alarm-repeat-and-targeted-wake-diagram">alarm repeat and wake sequence</a>
+sits beside the earlier inspected notification path.</p>
 <p>Start with the <a href="../runtime-topology.html">runtime topology guide</a>, which owns the
 current reading path and work boundaries. The historical reference, current
 implementation and proposed composition are different views; no acceptance
@@ -5523,7 +5468,7 @@ retain their own binding and acceptance boundaries.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/site/render_tenancy_topologies.py<span class="w"> </span>--png
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>tools/site/render_tenancy_topologies.py<span class="w"> </span>--check
 </code></pre></div>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/tools/site/render_tenancy_topologies.py">renderer</a> uses Python's
 standard library for SVG and installed ImageMagick for PNG previews. These are
 repo-native vector diagrams. Rendering does not run application services or
 establish deployment acceptance.</p>

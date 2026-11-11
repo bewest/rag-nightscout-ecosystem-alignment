@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3381,62 +3377,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5660,12 +5600,16 @@
 
 
 <h1 id="counters-compatibility-and-tenant-restore-options">Counters, compatibility and tenant restore options<a class="headerlink" href="#counters-compatibility-and-tenant-restore-options" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-07 at <code>57bc4736b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
 <p><em>Living contributor-facing design analysis, 2026-11-07. Read-derived from the
 published f0fac99a application unless a linked experiment says reproduced.
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#allocator-preserving-restore-first">Release decisions</a>
 own the adopted experiment direction and conditional preview pause allowance.
 This analysis adopts no schema, new cursor format or runtime admission.</em></p>
+<p><em>2026-11-10: the restore census now also <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-counter-writers">refuses a connected non-participant
+whose identity can write the insertion-order or write-clock tables</a>;
+read-only identities stay exempt, and only the restore of the tenant being
+restored refuses. In the current design only <code>api</code> writes those counters.</em></p>
 <h2 id="two-independent-mechanisms">Two independent mechanisms<a class="headerlink" href="#two-independent-mechanisms" title="Permanent link">&para;</a></h2>
 <p>The transactional tenant history clock has one <code>tenant_write_clock</code> row per
 tenant. It coordinates admitted writes through commit so a reader cannot advance

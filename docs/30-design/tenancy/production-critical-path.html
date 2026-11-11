@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3381,62 +3377,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5660,7 +5600,7 @@
 
 
 <h1 id="from-accepted-one-host-preview-to-production">From accepted one-host preview to production<a class="headerlink" href="#from-accepted-one-host-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
 <p><em>Living contributor-facing decision-preparation guide, 2026-11-08; M6 rows 2026-11-10. This is a
 </em><em>read-derived</em><em> dependency analysis and prior-art survey, not production
 acceptance or an adopted topology/SLO decision. Existing requirements retain their
@@ -5757,13 +5697,13 @@ pending case remains UNMEASURED.</p>
 <tr>
 <td><strong>Production provisioning, ingress and secrets</strong> — required before production use</td>
 <td>Demo bootstrap seeds synthetic tenants and restricts its database; it is not a general production provisioner. Peer/client-IP trust unification and production Vault login/renewal/custody need implementation or live acceptance.</td>
-<td>Explicit operator provisioning and append-only migrations with effective grants/RLS/read-only readiness; safe partial-failure refusal and retry/inspection. Real TLS edge tests for host/selector conflict, spoof, unknown tenant, sockets, client IP and private owner/operator/database reachability. Vault service login, lease renewal/expiry/revocation, seal/outage, CA verification/rotation and recoverable unseal custody. Wrong or missing authority refuses without fallback.</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deployment-and-trust-2026-11-07">Deployment/trust decisions</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/CREDENTIALS.md">credential inventory</a>; source integration + deployment operator.</td>
+<td>Explicit operator provisioning and append-only migrations with effective grants/RLS/read-only readiness; safe partial-failure refusal and retry/inspection. Real TLS edge tests for host/selector conflict, spoof, unknown tenant, sockets, client IP and private owner/operator/database reachability. Vault Agent sidecar auto-auth (one AppRole per deployment), token-file renewal/expiry/revocation, seal/outage, CA verification/rotation and recoverable unseal custody. Wrong or missing authority refuses without fallback.</td>
+<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deployment-and-trust-2026-11-07">Deployment/trust decisions</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-agent-sidecar">Vault Agent sidecar</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-home-now">deploy-tree home</a> (<code>DEPLOY-VAULT-AGENT</code> in <code>nightscout-deploy</code>, <code>MT-VAULT-TOKEN-FILE</code> in core), <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/CREDENTIALS.md">ed2 credential inventory</a>; source integration + deployment operator.</td>
 </tr>
 <tr>
 <td><strong>Lifecycle, keys and recovery</strong> — M6b plus actual deployment recovery</td>
 <td>Bounded restore is accepted; key retention/destruction and operator-assisted ownership are in the M6b joined acceptance, while ownership in a serving role, the production key custodian and recoverable operation after unresolved suspension remain open. Fail-closed is safe refusal, not demonstrated eventual recovery.</td>
-<td>Actual provision/suspend/export/delete/ownership flows with race and current-authority controls; artifact/key-reference fidelity, cancellation vs execution, recovery within retention and destruction/after-window refusal. Rehearse interrupted restore/upgrade, lost acknowledgements, participant death and host/dependency replacement using supported operator procedures. Verify A state/history and independent B state. Record when recovery must stop; never clear orphans or replay uncertain activation blindly.</td>
+<td>Actual provision/pause/suspend/export/delete/ownership flows with race and current-authority controls, including the adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity policy</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase">restore census</a> and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#key-destruction-removes-export">export removal at key destruction</a>; artifact/key-reference fidelity, cancellation vs execution, recovery within retention and destruction/after-window refusal. Rehearse interrupted restore/upgrade, lost acknowledgements, participant death and host/dependency replacement using supported operator procedures. Verify A state/history and independent B state. Record when recovery must stop; never clear orphans or replay uncertain activation blindly.</td>
 <td><a href="multitenant-delivery-roadmap.html#m5m6-acceptance-families">M6 acceptance families</a>, <a href="deployment-and-rig-testing.html#credential-and-recovery-boundaries">recovery guide</a>; lifecycle/source owner + operator.</td>
 </tr>
 <tr>

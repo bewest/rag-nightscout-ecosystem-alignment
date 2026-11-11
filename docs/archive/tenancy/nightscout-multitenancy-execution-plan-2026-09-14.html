@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.html">
       
       
-        <link rel="prev" href="multitenant-open-decisions-2026-11-06.html">
+        <link rel="prev" href="nightscout-multitenancy-discussion-2026-09-09.html">
       
       
         <link rel="next" href="owner-lifecycle-decision-packet-2026-11-06.html">
@@ -2973,6 +2973,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -3126,6 +3130,62 @@
     
   
     Multitenant: the five decisions on the critical path (2026-11-06)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployable components: entrypoints, program structure, and what an operator actually runs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nightscout multitenancy: evidence and options
   
 
     
@@ -5494,7 +5554,7 @@ Current rules: <a href="../../30-design/tenancy/multitenancy-decisions.html">ten
 (Ory Kratos as one cohort-wide human-identity pool), which since 2026-10-12 is <strong>adopted in principle,
 gated</strong> on the edge's production conditions and the compliance question (<code>T30-ORY-PROOF</code> held; cookie scope E chosen). Each
 decision carries the evidence that settled it. Task definitions follow in §6. <strong>Item state lives
-in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
+in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a></strong> (rendered as
 <a href="../../../queue/QUEUE.html"><code>queue/QUEUE.md</code></a>, measured by <code>make queue-status</code>); defect facts live
 in the <a href="../../30-design/remedial/nightscout-backfix-register.html">backfix register</a>. Measured facts below name
 their date and commit.</p>
@@ -5508,11 +5568,11 @@ their date and commit.</p>
 <tbody>
 <tr>
 <td><strong>{M}</strong></td>
-<td><a href="../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.html">Nightscout multitenancy: evidence and options</a> (snapshot)</td>
+<td><a href="nightscout-multitenancy-discussion-2026-09-09.html">Nightscout multitenancy: evidence and options</a> (snapshot)</td>
 </tr>
 <tr>
 <td><strong>{C}</strong></td>
-<td><a href="../../30-design/tenancy/nightscout-deployable-components-2026-09-14.html">Deployable components</a></td>
+<td><a href="nightscout-deployable-components-2026-09-14.html">Deployable components</a></td>
 </tr>
 <tr>
 <td><strong>{S}</strong></td>
@@ -7017,7 +7077,7 @@ launcher.</p>
 </ol>
 <p>Work items: PLAT-ENTRY (the dispatcher with <code>single</code> and the operator tools, no behaviour
 change) and PLAT-SERVE (the multitenant roles, carved one at a time from <code>bootevent</code>'s factory chain,
-starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
+starting with <code>api</code>) in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/queue/work-queue.yaml"><code>queue/work-queue.yaml</code></a> and the
 <a href="../../30-design/platform/next-gen-platform-plan.html">next-gen platform plan</a> §4.4.</p>
 <p><strong>Amended 2026-10-27 (maintainer; CLI name amended 2026-11-03): the subcommand selects
 tenancy.</strong> <code>nightscout single</code> is single-tenant and every <code>nightscout multitenant</code> role is

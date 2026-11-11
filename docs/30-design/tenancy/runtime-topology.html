@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -2727,10 +2723,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#current-implemented-internal-api-composition" class="md-nav__link">
+  <a href="#private-api-composition-one-internal-listener-per-role" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current implemented internal API composition
+        Private API composition: one internal listener per role
       
     </span>
   </a>
@@ -2738,10 +2734,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposed-component-private-listener-and-fixed-roster-target" class="md-nav__link">
+  <a href="#proposed-fixed-roster-api-scale-target" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Proposed component-private listener and fixed-roster target
+        Proposed fixed-roster API-scale target
       
     </span>
   </a>
@@ -3409,62 +3405,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5628,10 +5568,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#current-implemented-internal-api-composition" class="md-nav__link">
+  <a href="#private-api-composition-one-internal-listener-per-role" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current implemented internal API composition
+        Private API composition: one internal listener per role
       
     </span>
   </a>
@@ -5639,10 +5579,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposed-component-private-listener-and-fixed-roster-target" class="md-nav__link">
+  <a href="#proposed-fixed-roster-api-scale-target" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Proposed component-private listener and fixed-roster target
+        Proposed fixed-roster API-scale target
       
     </span>
   </a>
@@ -5716,17 +5656,17 @@
 
 
 <h1 id="runtime-topology-zones-components-and-private-apis">Runtime topology: zones, components and private APIs<a class="headerlink" href="#runtime-topology-zones-components-and-private-apis" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>ac7d19f80</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
 <p><em>Living contributor-facing architecture guide, refreshed 2026-11-10. Structure is
 </em><em>read-derived</em><em>; measured acceptance retains its exact source in the linked
 records. This Markdown generates the site's <code>runtime-topology.html</code>. The
 <a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API work plan</a> owns remaining
-implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/queue/work-queue.yaml">queue</a>
+implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/queue/work-queue.yaml">queue</a>
 owns claimed work state. A diagram is not deployment or capacity acceptance.</em></p>
 <h2 id="read-the-diagrams">Read the diagrams<a class="headerlink" href="#read-the-diagrams" title="Permanent link">&para;</a></h2>
 <p>The three plates answer different questions: the historical accepted deployment,
-the current implemented API contracts, and the proposed deployment/composition
-adjustment. Read downward through client ingress, edge, service destinations,
+the internal-listener composition in the batch join (in acceptance), and the proposed
+fixed-roster scale target. Read downward through client ingress, edge, service destinations,
 actual role processes and backing resources. Components sit on a grid; named
 terminals and a communication ledger replace long crossing connectors.</p>
 <p>A trust zone is not a host or Pod. A logical API contract, bound listener and
@@ -5735,26 +5675,24 @@ the exact instance endpoints needed for maintenance are also different identitie
 <h3 id="historical-accepted-one-host-reference">Historical accepted one-host reference<a class="headerlink" href="#historical-accepted-one-host-reference" title="Permanent link">&para;</a></h3>
 <p><img alt="Historical accepted one-host reference" src="diagrams/accepted-one-host-topology.svg" /></p>
 <p><a href="diagrams/accepted-one-host-topology.png">PNG preview</a> · <a href="diagrams/accepted-one-host-topology.svg">SVG source</a></p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
 measures synthetic UI/socket/ordinary restore; the
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a>
 retains its separate-role restore and restart scope. The reference publishes lab
 HTTP and uses TLS for Vault. Those captured runs are not relabelled as new-head,
 OIDC, network transport, scaling or production measurements.</p>
-<h3 id="current-implemented-internal-api-composition">Current implemented internal API composition<a class="headerlink" href="#current-implemented-internal-api-composition" title="Permanent link">&para;</a></h3>
-<p><img alt="Current internal API composition" src="diagrams/current-internal-api-topology.svg" /></p>
+<h3 id="private-api-composition-one-internal-listener-per-role">Private API composition: one internal listener per role<a class="headerlink" href="#private-api-composition-one-internal-listener-per-role" title="Permanent link">&para;</a></h3>
+<p><img alt="Private API composition, one internal listener per role" src="diagrams/current-internal-api-topology.svg" /></p>
 <p><a href="diagrams/current-internal-api-topology.png">PNG preview</a> · <a href="diagrams/current-internal-api-topology.svg">SVG source</a></p>
-<p>The joined candidate <code>dc795bd1</code> contains shared transport, three executable service
-contracts, request/response schemas, named clients and endpoint configuration.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de1643e1bda98eb1acf048af5e5125ebcc207b2d/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance record</a>
-records its actual full/browser/enabled-corpus and OIDC campaign. The
-<a href="../../../reports/tenancy/internal-service-api-2026-11-09/index.html">implementation evidence</a>
-records focused transport, schema, public/private separation and UDS controls.
+<p>The plate draws the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">internal-listener decisions</a>
+as built on lane <code>78ecba76</code> and joined, with the admin-role, activity and alarm-repeat lanes, on
+<code>codex/batch-join-20261110</code>. That join is <strong>in acceptance, not pushed</strong>; the
+<a href="../../../reports/tenancy/internal-listener-2026-11-10/index.html">lane evidence</a> records its focused,
+Compose and break-it runs. Draft #8898 at <code>b70ad83f</code> still opens one listener per contract
+(<code>alarm.sock</code>, <code>cohort-&lt;role&gt;.sock</code>); its <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">joined acceptance</a>
+retains that source. The shared transport, contracts, schemas and named clients came with <code>dc795bd1</code>
+(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/276cc19a65ffefb50e702993a925ed9bbd1e3b07/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">acceptance</a>).
 These measurements do not qualify a remote HTTP deployment or multiple API replicas.</p>
-<p>The source homes are application <code>lib/server/internal-api/</code> and
-<code>docs/internal-service-api.md</code>. The current source-level topology clarification is
-on the same lane's documentation-only descendant <code>692bd507</code>; runtime measurements
-retain <code>dc795bd1</code>. The existing reference binding still uses Unix sockets.</p>
 <p><strong>Both application and lifecycle operations are private APIs.</strong> The labels name
 purpose, not different networks or mandatory sockets:</p>
 <table>
@@ -5783,26 +5721,35 @@ purpose, not different networks or mandatory sockets:</p>
 </tr>
 </tbody>
 </table>
-<p>Current listener allocation is one contract per listener. API has its consumer
-listener plus private socket-authority and lifecycle listeners; realtime has
-consumer Socket.IO plus private alarm-delivery and lifecycle listeners. Evaluator
-has lifecycle control without a consumer HTTP API. Its in-process <code>health()</code>
-result is not an implemented remote metrics endpoint. Tenant-admin retains its
-management audience and separate lifecycle listener.</p>
+<p>Each role process opens one <code>serve.internal</code>: API serves socket-authority and
+lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant; evaluator and
+tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
+unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
+listener finishes in-flight calls up to a deadline (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>).
+The <code>admin</code> role keeps its own operator-plane listener (<code>ADMIN_HOSTNAME</code>/<code>ADMIN_PORT</code>) for
+ownership operations, with its own <code>ownership_operator</code> database identity; it is not a lifecycle
+participant (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase">restore census</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admin-plane-same-address-different-port">same address, different port</a>). Evaluator's in-process
+<code>health()</code> result is not a remote metrics endpoint.</p>
 <p>The private application arrows are different calls, not a generic proxy chain:
 <code>evaluator → realtime</code> delivers notifications; <code>realtime → API</code> asks for current
 permissions and forwards authorized client writes/acknowledgements. Realtime
 owns Socket.IO semantics, subscriptions and fanout. It also checks recipients'
 current permissions during delivery. That synchronous authority dependency is
 read-derived; its latency, load and failure effects need measurement.</p>
-<h3 id="proposed-component-private-listener-and-fixed-roster-target">Proposed component-private listener and fixed-roster target<a class="headerlink" href="#proposed-component-private-listener-and-fixed-roster-target" title="Permanent link">&para;</a></h3>
-<p><img alt="Proposed component-private listener and API scale target" src="diagrams/proposed-fixed-roster-network-topology.svg" /></p>
+<h3 id="proposed-fixed-roster-api-scale-target">Proposed fixed-roster API-scale target<a class="headerlink" href="#proposed-fixed-roster-api-scale-target" title="Permanent link">&para;</a></h3>
+<p><img alt="Proposed fixed-roster API scale target" src="diagrams/proposed-fixed-roster-network-topology.svg" /></p>
 <p><a href="diagrams/proposed-fixed-roster-network-topology.png">PNG preview</a> · <a href="diagrams/proposed-fixed-roster-network-topology.svg">SVG source</a></p>
-<p>Keep public/management and private interfaces independently bound. Multiple
-explicit private contract modules may share a component's private listener; the
-current single-service dispatcher does not implement that composition. This is
-the proposed adjustment, not a new claim of accepted code. UDS versus TCP remains
-a deployment choice; a new socket is not required merely because a module is named.</p>
+<p>Keep public/management and private interfaces independently bound. The adopted
+shape (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">decision</a>, 2026-11-10) gives each role
+process one private listener, <code>serve.internal</code>, serving the contract modules the
+role's code selects; configuration chooses only <code>host</code>/<code>port</code> or <code>socket</code>
+(default: a unix socket under a runtime directory) and cannot move or merge
+contracts. On SIGTERM it <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">drains in-flight calls up to a deadline</a>.
+An operational contract would be another module on that listener. #8898 at
+<code>b70ad83f</code> still opens one listener per contract; the composition is built and
+accepted in the 2026-11-10 batch join (<code>MT-INTERNAL-LISTENER</code>, <code>MT-BATCH-JOIN-1110</code>),
+which is not pushed.</p>
 <p>The target also shows two equivalent REST replicas behind a service destination,
 with directly addressable private instance endpoints for maintenance. It is not
 an accepted multihost or Kubernetes deployment. Realtime tenant placement and recovery have their own
@@ -5876,8 +5823,9 @@ credential-renewal system or mandatory gateway is implied by these diagrams.</p>
 defines owners, integration boundaries and controls. It separates code already
 incorporated in <code>dc795bd1</code> from these remaining changes:</p>
 <ol>
-<li>Component-private listener composition and explicit lifetime policies; define
-   operational endpoints without pretending <code>/metrics</code> already exists.</li>
+<li>The adopted <code>serve.internal</code> listener per role, with graceful shutdown and
+   explicit lifetime policies; define operational endpoints without pretending
+   <code>/metrics</code> already exists.</li>
 <li>Deployment binding and remote UDS/HTTP parity, preserving the selected trust,
    actual acknowledgement and suspension semantics. Gateway hooks are an optional
    deployment integration, not a new authentication prerequisite.</li>
@@ -5894,7 +5842,7 @@ is corrected in place rather than kept as a second current design. The
 owns platform/binding examples. This page owns topology interpretation; the work
 plan owns the acceptance matrix; the queue owns work state.</p>
 <p>Figures are generated by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/de1643e1bda98eb1acf048af5e5125ebcc207b2d/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
 Use <code>--png</code> to render previews and <code>--check</code> to detect stale vector outputs. Review
 the figures with contract/listener or deployment changes. Rendering checks
 freshness and layout, not application runtime acceptance.</p>

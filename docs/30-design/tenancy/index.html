@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3268,62 +3264,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5464,10 +5404,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-can-inform-a-decision-now" class="md-nav__link">
+  <a href="#state-sequencing-and-decisions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What can inform a decision now
+        State, sequencing and decisions
       
     </span>
   </a>
@@ -5475,10 +5415,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#start-with-the-task" class="md-nav__link">
+  <a href="#decisions-and-contracts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Start with the task
+        Decisions and contracts
       
     </span>
   </a>
@@ -5486,10 +5426,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#specialist-references" class="md-nav__link">
+  <a href="#architecture-guides" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Specialist references
+        Architecture guides
       
     </span>
   </a>
@@ -5497,10 +5437,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#source-backed-architecture-guides" class="md-nav__link">
+  <a href="#deployment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Source-backed architecture guides
+        Deployment
       
     </span>
   </a>
@@ -5508,10 +5448,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#historical-evidence-and-earlier-proposals" class="md-nav__link">
+  <a href="#dispatch-era-plans-still-cited-by-release-records" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Historical evidence and earlier proposals
+        Dispatch-era plans still cited by release records
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#earlier-analyses-cited-by-platform-specifications-and-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Earlier analyses cited by platform specifications and gates
       
     </span>
   </a>
@@ -5547,241 +5498,219 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>0fb666fca</code>.</em></p>
-<p><em>Contributor-facing living reading guide. The current documents below own rules,
-coordination and recorded acceptance. The complete long execution journals are
-retained in the <a href="../../archive/tenancy/index.html">tenancy archive</a>; dates in a
-filename do not establish currency. Reconciled 2026-11-10: M6 is split into M6a–M6d and M7, the deployment tree lives in <code>nightscout-deploy</code>, native acceptance runs in a disposable harness (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#plan-restructuring-and-process-simplification-2026-11-09">decisions</a>); the answered November 6 decision and review packets are archived.</em></p>
-<h2 id="what-can-inform-a-decision-now">What can inform a decision now<a class="headerlink" href="#what-can-inform-a-decision-now" title="Permanent link">&para;</a></h2>
+<p><em>Living document, last changed 2026-11-10 at <code>3ec0260a0</code>.</em></p>
+<p><em>Contributor-facing living reading guide, current with the release decisions of
+2026-11-10. Each document below owns one kind of fact; it links to the others
+rather than restating them. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">Release decisions</a>
+own adopted policy, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/queue/work-queue.yaml">queue</a> owns claimed item
+state and the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
+own merges, acceptance and publication. Retired journals, answered packets and
+superseded analyses are in the <a href="../../archive/tenancy/index.html">tenancy archive</a>;
+a date in a filename does not establish currency.</em></p>
 <p>For a diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">multitenant database and component ownership
-page</a>. Its grid and static
-diagrams are rendered from the current SQL guide; source revision and evidence
-limits remain visible beside the diagrams.</p>
-<p>Start with the <a href="deployment-and-rig-testing.html">deployment models and fault domains</a>
-and <a href="single-and-multitenant-architecture.html">architecture comparison</a>. The published
-one-host reference answers bounded component, tenant isolation and recovery questions.
-The dashboard distinguishes accepted M0–M5 criteria from the M6a–M6d and M7
-capability items; the platform map is a dependency guide, not a production
-readiness score.</p>
-<p>Use the <a href="m5-m6-decision-list.html">current decision list</a> to separate already adopted
-policy from implementation and evidence still needed. Archived journals and packets
-keep rationale and failed predictions; their “next” does not assign current work.</p>
-<p>For the path beyond the accepted preview, read the
-<a href="production-critical-path.html">production critical path</a>: blockers, closing evidence,
-conditional HA deferrals and prior art from node-multienv and the gateway projects.
-Its initial topology and operating envelope are proposals for review.</p>
-<p>The <a href="runtime-topology.html">grid topology guide</a> shows public/DMZ through backing
-stores across the historical accepted one-host reference, current <code>dc795bd1</code>
-private API contracts and proposed component-private/fixed-roster target.
-The <a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API implementation plan</a>
-separates implemented UDS/HTTP/schema/client work from listener composition,
-operational APIs, remote binding and multi-API acceptance still needed. Kubernetes
-proof and Jsonnet remain deployment work; evaluator partitioning is separately
-queued M7 work.</p>
-<p>The <a href="realtime-sharding-plan.html">realtime sharding and recovery proposal</a> owns the
-separate tenant-placement capability and compares evaluator/realtime co-location
-with independent pools. Neither extra processes nor process merging alone supply
-assignment, notification delivery or failover correctness.</p>
-<p>For REST-module/process placement and operator inactivity versus recovery, read
-the <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/worker map</a>
-and <a href="tenant-admission-and-activity.html">tenant-admission review</a>. The latter is an
-open policy proposal with source-backed implementation limits, not an admitted
-inactive-tenant feature.</p>
-<h2 id="start-with-the-task">Start with the task<a class="headerlink" href="#start-with-the-task" title="Permanent link">&para;</a></h2>
+page</a>, rendered from the SQL
+guide below.</p>
+<h2 id="state-sequencing-and-decisions">State, sequencing and decisions<a class="headerlink" href="#state-sequencing-and-decisions" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>You need</th>
-<th>Read</th>
-<th>What stays current</th>
+<th>Document</th>
+<th>Owns</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>What is accepted, blocked, or next</td>
 <td><a href="multitenant-delivery-dashboard.html">Delivery dashboard</a></td>
-<td>Generated queue claims and dated acceptance metadata; not live branch monitoring. Edit the queue/status sources, then <code>make queue</code>.</td>
+<td>Generated milestone claims and the acceptance ledger. Edit the queue and <code>multitenant-delivery-status.json</code>, then <code>make queue</code>.</td>
 </tr>
 <tr>
-<td>What to implement and how to join it</td>
-<td><a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">Completion schedule</a></td>
-<td>A–C sequence, ownership and verification boundaries. Its sections 1 and 4 retain the original dispatch.</td>
-</tr>
-<tr>
-<td>What a milestone must prove</td>
 <td><a href="multitenant-delivery-roadmap.html#milestones-and-continuous-integration">Delivery roadmap</a></td>
-<td>Delivery boundaries and M0–M5, M6a–M6d and M7 criteria, including later promotion-bar decisions. Claims remain in the dashboard.</td>
+<td>Delivery boundaries and the M0–M5, M6a–M6d and M7 promotion criteria.</td>
 </tr>
 <tr>
-<td>Deployment packaging, edge, identity-provider profiles, Vault Agent</td>
-<td><code>nightscout-deploy</code> (sibling repository; local <code>/home/bewest/src/nightscout-deploy</code>), <a href="claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private">scope split</a></td>
-<td>The Compose tree moved there with history on 2026-11-09. Core keeps application code and the Dockerfile.</td>
+<td><a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">Completion schedule</a></td>
+<td>Batch sequence, lane ownership and <a href="multitenant-integration-batching-plan-2026-11-06.html#completion-focused-coordination">completion-focused coordination</a>.</td>
 </tr>
 <tr>
-<td>Why the architecture is this way</td>
-<td><a href="multitenancy-decisions.html#1-decisions">Tenancy decisions</a></td>
-<td>D1–D23, hard qualifications and links to detailed contracts. Old per-commit tasks belong to the archive.</td>
+<td><a href="m5-m6-decision-list.html">M5/M6 decision index</a></td>
+<td>Every settled policy topic with its decision row; no human-policy topic is open.</td>
 </tr>
 <tr>
-<td>Current promotion bars and compatibility direction</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">Promotion decisions</a></td>
-<td>Reader mode withdrawn; writer policy retained. M2 cell/M6 lifecycle and deferred M1 budgets/Android lab retain their adopted scope. No new promotion.</td>
-</tr>
-<tr>
-<td>Owner, delegation and token rules; shared optional OIDC</td>
-<td><a href="owner-authority.html">Owner authority</a>, <a href="owner-authority.html#shared-oidc-integration">shared integration</a></td>
-<td>Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters. Joined acceptance: <a href="../../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>, <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a>.</td>
-</tr>
-<tr>
-<td>What needs a maintainer decision</td>
-<td><a href="m5-m6-decision-list.html">Current M5/M6 decision list</a></td>
-<td>Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; archived packets supply background only.</td>
-</tr>
-<tr>
-<td>Durable consumers and recovery</td>
-<td><a href="durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">Durable event contract</a></td>
-<td>Adopted B7 direction; runtime evidence retains its actual tree and limits.</td>
-</tr>
-<tr>
-<td>Separate service processes and restore coordination</td>
-<td><a href="single-and-multitenant-architecture.html#current-service-composition-and-restore-integration-2026-11-07">Current composition diagram</a></td>
-<td>Fixed cross-process cohort and source-attributed restore evidence; native tenant-local shared-role restart is accepted on c23; cold Compose restore is accepted on ed2.</td>
-</tr>
-<tr>
-<td>Express the same deployment with Kubernetes/Jsonnet, public aliases and group policy</td>
-<td><a href="deployment-bindings-and-public-names.html">Deployment bindings and public names</a></td>
-<td>Public requirements, candidate resource translation, transport/replacement boundaries and load-herd experiments; implementation and policy defaults remain unmeasured.</td>
-</tr>
-<tr>
-<td>Deploy a synthetic prototype or connect a rig</td>
-<td><a href="deployment-and-rig-testing.html">Deployment and rig testing</a></td>
-<td>Runnable Compose preparation, ingress/credential boundaries, client setup, restore/restart scenarios and evidence limits.</td>
-</tr>
-<tr>
-<td>Follow evaluator and socket messages</td>
-<td><a href="evaluator-realtime-communication.html">Evaluator/realtime communication</a></td>
-<td>Independent clinical projections, durable notification handoff, private API forwarding, current authority and operation lifetimes.</td>
-</tr>
-<tr>
-<td>Understand SQL and recovery</td>
-<td><a href="sql-and-migration-architecture.html">SQL/migration architecture</a></td>
-<td>Table families, RLS and grants, tenant clock/order, catalogue migration/readiness and restore inclusion/exclusion.</td>
-</tr>
-<tr>
-<td>A picture of the system</td>
-<td><a href="../platform/next-gen-platform-plan.html#3-the-map">Platform map</a>, then <a href="single-and-multitenant-architecture.html">architecture comparison</a></td>
-<td>Map summarizes bounded components. Architecture diagrams retain their named source scope. Neither promotes a milestone.</td>
-</tr>
-<tr>
-<td>What ran and on which tree</td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html">Integration record</a>, then the named capture</td>
-<td>Executed heads, failed predictions, red/restored controls and reuse limits. A prior green campaign is not a new-head execution.</td>
-</tr>
-<tr>
-<td>Release or publication status</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">Release contents</a></td>
-<td>Dated programme updates. Local acceptance, merge and release are distinct.</td>
+<td><a href="production-critical-path.html">Production critical path</a></td>
+<td>Blockers between the accepted one-host preview and production, closing evidence and prior art; its topology and HA deferrals are proposals.</td>
 </tr>
 </tbody>
 </table>
-<p>Follow <a href="multitenant-integration-batching-plan-2026-11-06.html#completion-focused-coordination">completion-focused coordination</a>:
-one capability/criterion per lane, focused checks during implementation and one
-comprehensive campaign on the coherent frozen batch. Report closure and blockers.</p>
-<p>For a new lane, read the dashboard, the applicable completion batch and the
-specific contract it touches, then inspect its evidence. Confirm current ownership
-and task state before starting; a dated handoff's “next” is not a new assignment.</p>
-<h2 id="specialist-references">Specialist references<a class="headerlink" href="#specialist-references" title="Permanent link">&para;</a></h2>
-<p>Open only the section needed for the change; use the dashboard and completion
-schedule for work state.</p>
+<h2 id="decisions-and-contracts">Decisions and contracts<a class="headerlink" href="#decisions-and-contracts" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Reference</th>
-<th>Purpose and scope</th>
+<th>Document</th>
+<th>Owns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="multitenancy-decisions.html#1-decisions">Tenancy decisions</a></td>
+<td>D1–D23, hard qualifications, pause/suspend meanings and the operator listener rule.</td>
+</tr>
+<tr>
+<td><a href="owner-authority.html">Owner authority</a></td>
+<td>Owner, root (<code>API_SECRET</code>) and admin-tool authority, token verification, shared optional OIDC and management lifetimes.</td>
+</tr>
+<tr>
+<td><a href="tenant-admission-and-activity.html">Tenant admission and activity</a></td>
+<td>The REST component boundary, restore-aware APIs and the adopted pause/suspend activity policy with its acceptance criteria.</td>
+</tr>
+<tr>
+<td><a href="durable-event-delivery-contract-2026-11-06.html#11-maintainer-acceptance-and-experiments">Durable event contract</a></td>
+<td>B7 consumer, checkpoint and recovery rules and the experiment contract.</td>
+</tr>
+<tr>
+<td><a href="write-contract-spec-2026-10-07.html#9-current-shared-intent-and-backend-capabilities-2026-11-05">Write contract §9</a></td>
+<td>Current admitted write implementation; earlier sections keep their baseline.</td>
+</tr>
+<tr>
+<td><a href="nightscout-storage-seam-interface-2026-09-14.html#11-current-admitted-ports-and-independent-scopes-2026-11-05">Storage seam §11</a></td>
+<td>Current admitted ports; earlier sections keep the old-seam census.</td>
+</tr>
+<tr>
+<td><a href="tenant-config-schema-2026-10-27.html">Tenant config schema</a></td>
+<td>The bounded configuration schema candidate and its lab evidence.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-guides">Architecture guides<a class="headerlink" href="#architecture-guides" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Owns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="single-and-multitenant-architecture.html">Single and multitenant architecture</a></td>
+<td>Mode comparison, compatibility and the <a href="single-and-multitenant-architecture.html#current-service-composition-and-restore-integration-2026-11-07">current service composition and restore integration</a>.</td>
+</tr>
+<tr>
+<td><a href="runtime-topology.html">Runtime topology</a></td>
+<td>Zones, components, private APIs and the <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/worker map</a>.</td>
+</tr>
+<tr>
+<td><a href="selectable-endpoints-and-api-scaling-plan.html">Private API composition and scaling plan</a></td>
+<td>The adopted <code>serve.internal</code> listener, graceful shutdown, fixed-roster API replicas and their acceptance matrix.</td>
+</tr>
+<tr>
+<td><a href="realtime-sharding-plan.html">Realtime sharding plan</a></td>
+<td>Proposed realtime tenant placement, recovery and co-location comparison.</td>
+</tr>
+<tr>
+<td><a href="evaluator-realtime-communication.html">Evaluator/realtime communication</a></td>
+<td>Clinical projections, notification handoff, private API forwarding, output revisions and alarm repeat.</td>
+</tr>
+<tr>
+<td><a href="sql-and-migration-architecture.html">SQL and migration architecture</a></td>
+<td>Table families, RLS and grants, tenant clock/order, migrations and restore inclusion.</td>
+</tr>
+<tr>
+<td><a href="counter-and-restore-options.html">Counter and restore options</a></td>
+<td>History clock versus insertion order, restore alternatives and the census counter-writer rule.</td>
+</tr>
+<tr>
+<td><a href="postgres-tenant-clock-proof.html">Clock proof plan</a></td>
+<td>Tenant clock invariants and experiment design; acceptance records keep their own scope.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="deployment">Deployment<a class="headerlink" href="#deployment" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Owns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nightscout-deploy</code> (sibling repository; local <code>/home/bewest/src/nightscout-deploy</code>)</td>
+<td>The Compose tree, edge, identity-provider profiles and Vault Agent overlay, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-home-now">from the next #8898 batch on</a>; see the <a href="claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private">scope split</a>.</td>
+</tr>
+<tr>
+<td><a href="deployment-and-rig-testing.html">Deployment and rig testing</a></td>
+<td>Fault domains, the ed2 Compose runbook, client and rig setup, restore/restart scenarios.</td>
+</tr>
+<tr>
+<td><a href="deployment-bindings-and-public-names.html">Deployment bindings and public names</a></td>
+<td>Kubernetes/Jsonnet resource translation, public-name lifetimes, transports and load-herd experiments.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dispatch-era-plans-still-cited-by-release-records">Dispatch-era plans still cited by release records<a class="headerlink" href="#dispatch-era-plans-still-cited-by-release-records" title="Permanent link">&para;</a></h2>
+<p>These keep their route/domain design, seam plans and dated checkpoints; their
+heads and "next" statements describe the original dispatch. Current sequencing is
+in the completion schedule above.</p>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Retained for</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><a href="multitenant-rest-api-delivery-plan-2026-11-04.html">REST delivery plan</a></td>
-<td>Route/domain coverage and handler reuse; original lane packets are historical dispatch.</td>
+<td>Route/domain coverage and handler reuse.</td>
 </tr>
 <tr>
 <td><a href="architecture-seams-execution-plan-2026-11-05.html">Architecture seams plan</a></td>
-<td>Port composition, consolidation and caller-policy distinctions; dated checkpoints keep their captured scope.</td>
+<td>Port composition, consolidation and caller-policy distinctions (<code>ARCH-*</code> items).</td>
 </tr>
 <tr>
-<td><a href="nightscout-storage-seam-interface-2026-09-14.html#11-current-admitted-ports-and-independent-scopes-2026-11-05">Storage seam §11</a></td>
-<td>Current admitted ports; earlier sections retain old-seam census and implementation evidence.</td>
+<td><a href="derived-output-boundary-2026-11-07.html">Derived output boundary</a></td>
+<td>Output-publication ownership for <code>ARCH-DERIVED-FRAME</code>.</td>
 </tr>
 <tr>
-<td><a href="write-contract-spec-2026-10-07.html#9-current-shared-intent-and-backend-capabilities-2026-11-05">Write contract §9</a></td>
-<td>Current admitted implementation; original matrices retain their baseline.</td>
-</tr>
-<tr>
-<td><a href="tenant-config-schema-2026-10-27.html">Config schema candidate</a></td>
-<td>Bounded schema; owner authority owns later management/session/delegation rules.</td>
-</tr>
-<tr>
-<td><a href="postgres-tenant-clock-proof.html">Clock proof plan</a></td>
-<td>Invariants and experiment design. Correctness, descriptive timing and capacity acceptance retain separate records.</td>
-</tr>
-<tr>
-<td><a href="nightscout-deployable-components-2026-09-14.html">Deployable components</a></td>
-<td>Original decomposition/rationale; apply current tenancy decisions, CLI amendments and B7.</td>
+<td><a href="m4-client-binary-lab-packet-2026-11-06.html">M4 client dispatch</a></td>
+<td>Lab hypotheses for the pinned-client campaign; the campaign record owns results.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="source-backed-architecture-guides">Source-backed architecture guides<a class="headerlink" href="#source-backed-architecture-guides" title="Permanent link">&para;</a></h2>
-<p>The guides above provide the requested <strong>MT-DOC-DEPLOY</strong>, <strong>MT-DOC-REALTIME</strong> and
-<strong>MT-DOC-SQL</strong> documentation. Their source inspection, diagrams and structural
-checks are separate from runtime acceptance. Each links executed evidence at its
-actual source; accepted cold Compose and restart proofs retain their executed sources; wider rig, identity and capacity experiments remain explicit. The queue owns documentation status, and release records own accepted
-application behavior.</p>
-<h2 id="historical-evidence-and-earlier-proposals">Historical evidence and earlier proposals<a class="headerlink" href="#historical-evidence-and-earlier-proposals" title="Permanent link">&para;</a></h2>
-<p>These retain distinct evidence or alternatives; they are not current work instructions.</p>
+<h2 id="earlier-analyses-cited-by-platform-specifications-and-gates">Earlier analyses cited by platform specifications and gates<a class="headerlink" href="#earlier-analyses-cited-by-platform-specifications-and-gates" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Read only for this purpose</th>
-<th>Current successor / boundary</th>
+<th>Document</th>
+<th>Retained for</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="../../archive/tenancy/index.html">Tenancy archive</a></td>
-<td>Execution journals (decision detail, seam tasks, dispatches, failures, controls, checkpoints) and the November 6 critical-path note, owner lifecycle packet and M0–M3 promotion review. Current rules live above.</td>
+<td><a href="nightscout-configuration-and-delegation-2026-09-10.html">Configuration and delegation</a></td>
+<td>Delegation requirements carried as DR1–DR7 in the <a href="../platform/spec/authority.html">authority specification</a>.</td>
 </tr>
 <tr>
-<td><a href="nightscout-multitenancy-discussion-2026-09-09.html">September multitenancy discussion</a></td>
-<td>Original options/evidence; decisions superseded by the current decision reference.</td>
-</tr>
-<tr>
-<td><a href="tenant-owner-config-surface-2026-09-15.html">Owner configuration census</a></td>
-<td>Historical census/DDL; later <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">dev census</a>, config candidate and owner authority have separate scopes.</td>
-</tr>
-<tr>
-<td><a href="nightscout-configuration-and-delegation-2026-09-10.html">Configuration/delegation questions</a>, <a href="nightscout-control-plane-reconciliation-2026-09-11.html">control-plane reconciliation</a></td>
-<td>Historical analysis and supersession map; not a replacement backlog.</td>
+<td><a href="nightscout-control-plane-reconciliation-2026-09-11.html">Control-plane reconciliation</a></td>
+<td>Supersession map from the earlier cgm-remote-monitor control-plane draft to the platform specifications.</td>
 </tr>
 <tr>
 <td><a href="nightscout-seam-ordering-translation.html">Ordering translation</a></td>
-<td>Old-seam proposal; current ports, write contract and backend measurements govern admission.</td>
+<td>How ordering crosses the storage seam; cited by the backfix register.</td>
 </tr>
 <tr>
-<td><a href="m4-client-binary-lab-packet-2026-11-06.html">M4 client dispatch</a></td>
-<td>Lab hypotheses for the pinned-client campaign. Later integration records own actual acceptance.</td>
+<td><a href="tenant-owner-config-surface-2026-09-15.html">Owner configuration census</a></td>
+<td>The 2026-09-15 census and DDL that <code>T30-*</code> gates read; the <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">dev census</a> re-measured it.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="keeping-this-path-useful">Keeping this path useful<a class="headerlink" href="#keeping-this-path-useful" title="Permanent link">&para;</a></h2>
-<p>Correct current rules in their decision/contract home. Record acceptance in the
-integration/release records and status sources. Do not append execution journals
-to the roadmap or decision reference, or copy their checkpoints into the platform
-map. The archive preserves scope and successors; Git retains intermediate revisions.</p>
-<p>Future consolidation follows <a href="../../00-overview/DOCUMENT-CONTROL.html#35-changing-a-document">document control</a>:
-read a cluster in full, preserve unique content and evidence, rewrite links, then
-remove superseded material from the active reading path. Correspondence drafts
-belong to their owning session and are outside this controlled inventory.</p>
+<p>Correct a rule in its decision or contract home and record acceptance in the
+release records and status sources. Do not append execution journals to the
+roadmap or the decision reference. When a document here is superseded, follow
+<a href="../../00-overview/DOCUMENT-CONTROL.html#35-changing-a-document">document control</a>:
+move it to the archive with a retention note and an index row, and repoint every
+inbound link. Correspondence drafts belong to their owning session and are
+outside this index.</p>
 
 
 

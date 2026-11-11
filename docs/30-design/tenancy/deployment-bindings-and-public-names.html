@@ -2579,10 +2579,6 @@
       
         
       
-        
-      
-        
-      
     
     
     
@@ -3404,62 +3400,6 @@
     
   
     The earlier control-plane draft and the specifications proposed to supersede it
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-deployable-components-2026-09-14.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Deployable components: entrypoints, program structure, and what an operator actually runs
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="nightscout-multitenancy-discussion-2026-09-09.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nightscout multitenancy: evidence and options
   
 
     
@@ -5706,7 +5646,7 @@
 
 
 <h1 id="deployment-bindings-public-names-and-load-behavior">Deployment bindings, public names and load behavior<a class="headerlink" href="#deployment-bindings-public-names-and-load-behavior" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>8760ec6d0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
 <p><em>Living contributor-facing requirements and decision-preparation guide, refreshed 2026-11-10.
 The maintainer clarified the target: ordinary Kubernetes resources should be able
 to express the bounded deployment, public-name lifetime must be distinct from
@@ -5841,18 +5781,21 @@ caches, in-flight responses or restore obligations.</p>
 <p>The current joined <code>dc795bd1</code> implementation has a shared HTTP/JSON transport,
 service schemas and named clients with selectable UDS or explicit TCP/HTTP
 endpoints. The <a href="../../../reports/tenancy/internal-service-api-2026-11-09/index.html">implementation record</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/de1643e1bda98eb1acf048af5e5125ebcc207b2d/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/276cc19a65ffefb50e702993a925ed9bbd1e3b07/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined acceptance</a>
 retain their actual source and tested scope. The reference Compose binding still
 uses UDS; remote HTTP beyond loopback and replicated API behavior are not qualified
 by those records.</p>
-<p>Use the actual environment-reference descriptors in the
-<a href="selectable-endpoints-and-api-scaling-plan.html#endpoint-and-compatibility-contract">endpoint contract</a>:
-legacy socket references remain valid, or an explicit <code>urlEnv</code> with <code>trust: network</code>
-and optional <code>bindHostEnv</code> selects HTTP. A dial service name can differ from the
+<p>Bindings render the adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern"><code>serve.internal</code> listener</a>
+described in the <a href="selectable-endpoints-and-api-scaling-plan.html#endpoint-and-compatibility-contract">endpoint contract</a>:
+one private listener per role process, a unix socket by default or an explicit
+<code>NS_SERVE_INTERNAL_HOST</code>/<code>_PORT</code> for network exposure, and peer addresses such as
+<code>NS_API_INTERNAL_URL</code> for callers. A dial service name can differ from the
 listener's bind interface. Public/management listeners remain separate from the
-private contracts. The current transport binds one contract per listener; shared
-component-private module composition is a remaining code adjustment, not a reason
-to multiply mandatory deployment services.</p>
+private contracts. The current <code>dc795bd1</code> transport still binds one contract per
+listener through per-contract references; the adopted composition is
+<code>MT-ENDPOINT-TRANSPORT</code> work, not a reason to multiply mandatory deployment
+services. The termination grace a binding sets must exceed the listener's
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful-shutdown deadline</a>.</p>
 <p>The current adapter supports <code>http:</code>, not direct <code>https:</code>. The deployment owns
 network reachability and any selected standard TLS proxy/mesh boundary; contract
 and version headers are not credentials or proof of process identity. No new

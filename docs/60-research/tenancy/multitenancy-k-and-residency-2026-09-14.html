@@ -8034,7 +8034,7 @@ loop</strong> — these are event-loop CPU and heap measurements, not capacity r
 <strong>Confidence</strong>: <strong>measured</strong> (committed scripts, re-run on a second pass, headline numbers
 reproduced within 4 %)</p>
 <p>Answers the question put to
-<a href="../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.html">the multitenancy discussion</a>
+<a href="../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.html">the multitenancy discussion</a>
 §5: of candidate architectures <strong>B</strong> (context per tenant, resident), <strong>C</strong> (B plus residency
 tiering), <strong>D</strong> (stateless, storage-resident) and <strong>E</strong> (K tenants per process, M
 processes) — which to commit to, and what order K and M take.</p>
@@ -8819,7 +8819,7 @@ functions all along.</p>
 <p>The storage component's scaling properties are well documented by both engines' own
 projects, and re-deriving them on a shared development machine with no representative
 working set would produce numbers worse than the published ones. The
-<a href="../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.html#67-storage-decision-a-ladder-and-the-number-that-decides-the-last-rung">storage ladder</a>
+<a href="../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.html#67-storage-decision-a-ladder-and-the-number-that-decides-the-last-rung">storage ladder</a>
 already sets the direction; what remains genuinely project-specific is <strong>N*</strong>, the tenant
 count at which database-per-tenant on one MongoDB cluster degrades, because that depends on
 Nightscout's own index set — <strong>35 secondary indexes per tenant database</strong>, counted from
