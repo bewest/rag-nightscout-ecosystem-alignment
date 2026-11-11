@@ -26349,6 +26349,36 @@ items:
       tenant-admin exits 1 on the mixed base (read-derived cause). Fix is one final re-import from the joined #8898
       candidate, after which the deploy repo is canonical and core keeps the fixture (core half, at the join).
 
+  - id: MT-CONSUMER-STALE-RESELECT
+    title: "Alarm consumer survives evaluator timer publications during selection (BF-231)"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/consumer-refusal-20261110
+    worktree: externals/work/crm-consumer-refusal-20261110
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: in-progress
+    blast_radius: >
+      lib/tenant-notifications/producer.js select re-runs on NOTIFICATION_PRODUCER_STALE (up to 3); multitenant
+      evaluator preview only.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: fix to an unreleased preview behaviour
+    register: [BF-231]
+    gates:
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/notification-producer.test.js
+        cwd: externals/work/crm-consumer-refusal-20261110
+        kind: unit
+        describe: >
+          Producer tests including two controlled-interleaving stale cases: 7 passing on 1adb17f8; red on b70ad83f and
+          under the no-reselect control. Native evaluator-consumers 5, tenant-notifications 7, churn 1 passing.
+    blocks_on:
+      - MT-M6B-JOIN
+    evidence:
+      - reports/tenancy/consumer-refusal-2026-11-10/README.md
+    notes: >
+      2026-11-10 (reproduced): 1adb17f8 on b70ad83f. Open: the outputRevision freshness-gate path (component.js:38-43)
+      needs a maintainer decision (wake the consumer on timer publications, or compare effects).
   - id: MT-OWNER-LAST-GUARD
     title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
     parcel: tenancy

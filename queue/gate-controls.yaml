@@ -3366,3 +3366,11 @@ controls:
     cwd: externals/work/crm-root-admin-parity-20261110
     control-exempt: >
       2026-11-10, root-admin lane on cfae532c: controls C1-C4 (guard skipped on root plane, owner routes accept root, secret verified against any tenant, root check dropped in rootLegacyTokens) each red with recorded symptom and restored. reports/tenancy/root-admin-parity-2026-11-10/README.md.
+
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/notification-producer.test.js
+    cwd: externals/work/crm-consumer-refusal-20261110
+    control-exempt: >
+      2026-11-10, consumer-refusal lane on 1adb17f8: the two stale cases go red on b70ad83f and with STALE_RESELECTS = 0
+      (NOTIFICATION_PRODUCER_STALE), restored to 7 passing; recorded in reports/tenancy/consumer-refusal-2026-11-10/README.md.
+      Automating the ablation would write into the lane worktree.
+
