@@ -448,3 +448,139 @@ Not verified:
 | eslint on changed files | 0 errors |
 | affected selection since `540d3998` (58 files) | exit 0: 396 + 27 + 11 passing, 198 pending (opt-in labs) |
 | full integration tier (dedicated `mongo:7.0.43`, `nofile=64000`) | exit 0: 3643 passing, 650 pending |
+
+## Resumed, 2026-11-11 (morning): the write clock is complete
+
+Decision [write-clock-complete](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#write-clock-complete). Captured 2026-11-11 06:00–07:00 PST; appended, the sections above are unchanged.
+
+### Anchors
+
+| what | value |
+|---|---|
+| commits | `4851847b3c2f06f4a0f55e5ab8f35d4784a8fb65` acceptance processes run with `NS_TENANT_READINESS=all`; `03661f228322cdd317ef50a24b7aeeefe2a7d58d` write clock complete (parent chain from `86617644`). Head: `03661f22`. Not pushed |
+| PostgreSQL | disposable `ns-pdb-pg`, postgres 16 (`@sha256:9e2cf628…`, the suites' pinned image), `pg_stat_statements` in the `postgres` database; removed afterwards |
+
+### Change
+
+- **Where every write goes.** All supported PostgreSQL clinical and settings writes go through one writer, `lib/storage/postgres-entries-write.js`. The v3 and v1 ports, the activity port and the socket order ports all build on it. In that writer, every mutating statement now calls `srv-dates` `recordWrite` in the same transaction:
+  - `insert`, and `update` / `replace` when a row changed: `recordWrite()`;
+  - `remove`, the hard delete, when a row was removed: `recordWrite({ deleted: true })`.
+- **Clock side** (`lib/storage/postgres-write-clock.js`):
+  - a change without an allocated stamp takes one, so the event stamp is no longer null for hard deletes and activity writes;
+  - a hard delete also sets `last_delete_stamp` to the transaction's commit stamp in the same `UPDATE`.
+- **Rolled-back writes:** a rolled-back transaction changes nothing. A savepoint that rolls back inside a committed transaction may still advance the clock. That can only cause an extra wake or an extra full reconcile, never a missed change.
+- **Migration** `0002_tenant_write_clock_delete_stamp` (`migrations/candidates/postgres-write-clock-v1.json`) adds `last_delete_stamp bigint NOT NULL DEFAULT 0` with a range check, plus a constraint that it is never above `last_stamp`.
+- **Grants and serving checks:**
+  - the api identity gets `UPDATE(last_stamp, last_delete_stamp)` (`deploy/multitenant/config.js`);
+  - serving refuses to start without the second column privilege (`postgres-domains.js`);
+  - logical restore accepts the three-column clock shape and still leaves the clock row untouched (`liveFloorAfter = liveFloor`);
+  - older artifacts, whose clock ledger has only `0001`, still pass `assertCapturedFloor`, which compares the artifact ledger as a prefix.
+- **Contract** is written at the top of `postgres-write-clock.js`: a reader that remembers `(last_stamp, last_delete_stamp)` reads changed rows when `last_stamp` moves and reconciles in full when `last_delete_stamp` moves.
+
+### Change-stamp function: contract defined here, function change left to the join
+
+**Decision:** I did not take the realtime lane's `lib/change-stamps` catalogue into this branch. It is on hold at `20a49aab` and not on this branch, so taking it would duplicate it. This branch defines the column contract above. At the join, the realtime lane's catalogue needs these changes:
+
+- **Catalogue migration `0002`:**
+  ```sql
+  DROP FUNCTION tenant_change_stamps(uuid[]);
+  CREATE FUNCTION tenant_change_stamps(tenants uuid[])
+    RETURNS TABLE (tenant_id uuid, last_stamp bigint, last_delete_stamp bigint) ...
+  ```
+  - The body is the same, but it selects `c.tenant_id, c.last_stamp, c.last_delete_stamp`.
+  - Keep `REVOKE ALL ... FROM PUBLIC`.
+  - A changed result type needs the `DROP`: `CREATE OR REPLACE` cannot change it.
+- **Reader code** (`lib/change-stamps/postgres.js`):
+  - `RESULT` becomes `TABLE(tenant_id uuid, last_stamp bigint, last_delete_stamp bigint)`;
+  - `BODY` follows the new catalogue;
+  - the reader selects `s.last_delete_stamp::text`.
+- **Grants:** re-grant `EXECUTE` to the realtime and evaluator identities, because the `DROP` removes it.
+- **Ordering:** the function's catalogue depends on the clock catalogue's `0002`, so clock migrations run first.
+
+### Write-boundary gate (`npm run test:write-boundary`)
+
+- **How the gate already found write paths:** it parses the Mongo-era adapter entry points listed in `ADAPTERS` (writes must go through `writeStep.collection`).
+- **What it now also checks** (`scripts/check-write-boundary.js` `checkClock` / `checkClockInventory`):
+  - every function in `CLOCK_WRITERS` (`lib/storage/postgres-entries-write.js`) that issues a mutating statement must call `recordWrite` itself. A statement counts as mutating if it starts with `INSERT`/`UPDATE`/`DELETE`, or holds one in a `WITH ... AS (...)` clause. Comments, quoted literals and `FOR [NO KEY] UPDATE` are ignored. A `DELETE` must pass `{ deleted: true }`;
+  - every `lib/storage/postgres-*.js` module with mutating SQL must be either a clock writer or listed in `CLOCK_EXEMPT` with a reason. Today the exempt list is the clock row itself and the replay checkpoint.
+- **Result:** the gate sees exactly four statements (`insert`, `update`, `remove`, `replace`). A writer with no mutating statement fails as vacuous.
+
+**Break-it controls (reproduced; each restored afterwards):**
+
+| break | gate output |
+|---|---|
+| remove `recordWrite({ deleted: true })` from `remove` | exit 1: `lib/storage/postgres-entries-write.js: remove (line 184) issues DELETE without advancing the tenant write clock: call recordWrite({ deleted: true }) in the same function` |
+| `remove` calls `recordWrite()` without `deleted` | exit 1: `... remove (line 184) issues DELETE without advancing last_delete_stamp: call recordWrite({ deleted: true })` |
+| `postgres-durable-replay.js` taken off the exempt list | `mutating SQL at line 139 / 213 in an unclassified PostgreSQL storage module` |
+| restored | exit 0 |
+
+The same controls run in CI as `tests/write-boundary-clock.test.js` (6 passing).
+
+### Controls on actual PostgreSQL (`tests/tenant-write-clock-complete.integration.test.js`, 6 passing)
+
+**What each test checks:**
+- **Hard delete:** `v3 delete permanent` advances `last_stamp`, sets `last_delete_stamp` equal to it, and a later ordinary write leaves `last_delete_stamp` alone.
+- **Empty delete:** a delete that removes nothing advances nothing.
+- **Activity:** an insert and an edit each advance `last_stamp`.
+- **Rollback:** a rolled-back hard delete advances nothing and deletes nothing.
+- **Concurrency:** 20 creates, 7 hard deletes and 20 activity writes from two workers, sampled every 5 ms:
+  - `last_stamp` and `last_delete_stamp` never move back;
+  - `last_delete_stamp` never exceeds `last_stamp`;
+  - the other tenant is untouched.
+- **Stamp-only detection:** the equivalent of the evaluator lane's C2 and the realtime lane's `RT_HARD_DELETE_STAMP_ONLY`.
+  - A reader that only remembers the clock pair sees the hard delete as a `last_stamp` change and a `last_delete_stamp` change.
+  - It reconciles, and the deleted reading leaves the view.
+
+**Break-it controls (reproduced):**
+
+| break | result |
+|---|---|
+| `remove` without `recordWrite` | 3 failing: `last_stamp advanced`; `deletes recorded`; `STAMP_ONLY: the hard delete is visible as a stamp change` |
+| writer with no `recordWrite` at all (behaviour before the change) | 4 failing, adding `activity insert advanced the clock` (activity writes really were unstamped) |
+| restored | 6 passing |
+
+The rollback and empty-delete tests pass in both states; they guard against over-advancing.
+
+### Restore, replay, recovery and acceptance suites at `03661f22`
+
+| suite | result |
+|---|---|
+| tenant-commit-clock-port (`NS_TENANT_COMMIT_CLOCK_TEST`) | 9 passing |
+| tenant-durable-replay (`NS_TENANT_DURABLE_REPLAY_TEST`) | 7 passing |
+| tenant-current-state-recovery-proof (`NS_M5_CURRENT_STATE_PROOF_TEST=1`) | 12 passing, after updating its recorded hypotheses (below) |
+| tenant-operations (`NS_TENANT_OPERATIONS_PG_TEST`) | 5 passing |
+| tenant-commit-clock-http (`NS_TENANT_COMMIT_CLOCK_HTTP_DOCKER_TEST`) | 7 passing, 1 pending |
+| multitenant-preview-replicas, owner-preview, tenant-rest-client-replay, multitenant-preview-process | 5, 9, 6, 16 passing |
+| admin-lifecycle-fit, key-retention, operation-window-epoch, admin-role-ownership | 6, 6, 47, 11 passing |
+| `npm run test:unit` | 3259 passing |
+| full integration tier (dedicated `mongo:7.0.43`, `nofile=64000`) | exit 0, 3643 passing, 656 pending |
+| affected selection since `86617644` (282 files) | exit 0, 1264 + 66 + 27 + 3270 + 18 passing |
+| tier check, eslint on changed files | 637 files ok; 0 errors |
+
+**Recovery-proof assertions changed on purpose.** Four assertions recorded the old behaviour as `M5_HARD_DELETE_HYPOTHESIS` / `M5_ACTIVITY_HYPOTHESIS`:
+- unchanged durable floor and null event stamp for a hard delete;
+- unchanged floor and null event stamp for an activity create or update;
+- an unchanged floor after the evaluator backstop test's delete and activity writes.
+
+They now assert `M5_HARD_DELETE_CLOCK` / `M5_ACTIVITY_CLOCK`: the floor advances and the event carries the commit stamp. Unchanged:
+- activity rows still carry no `srvModified`;
+- replay of an unstamped row is still refused (`REPLAY_UNSTAMPED_OR_UNFENCED_ROW`);
+- snapshot recovery still reconciles.
+
+**Readiness regression found and fixed (`4851847b`).** The commit-clock HTTP suite failed 6 of 8 with `listener must answer through current anonymous authority: 503 !== 403`.
+- **Cause:** the serve-then-warm default (`a52bc33b`). The api CLI fixtures expected served requests as soon as the listener answered.
+- **Fix:** they now start the api with `NS_TENANT_READINESS=all`, as the decision provides for acceptance.
+- **Earlier miss:** these suites are opt-in, so the earlier integration-tier runs had them pending.
+
+### Cost per hard delete and per activity write (reproduced; lab, 300 operations per run, two runs per mode, load average 4.7–6.6)
+
+The `off` rows use the same code with `recordWrite` disabled, which is the behaviour before the change.
+
+| operation | statements per op, off → on | clock `UPDATE` DB-ms per op | total DB-ms per op, off → on | wall ms per op, off → on |
+|---|---|---|---|---|
+| hard delete | 6 → 7 | 0.031–0.037 | 0.52–0.66 → 0.33–0.54 | 6.4–8.2 → 4.2–6.5 |
+| activity insert | 11 → 12 | 0.030–0.035 | 0.35–0.43 → 0.38–0.46 | 4.3–7.5 → 4.4–6.7 |
+
+- **Extra cost:** one `UPDATE` of the already-locked clock row per transaction, about 0.03–0.04 DB-ms.
+- **Totals:** the differences in total DB-ms and wall time are within run-to-run noise.
+- **Write ordering:** unchanged. Every write already took the clock row `FOR UPDATE`.
