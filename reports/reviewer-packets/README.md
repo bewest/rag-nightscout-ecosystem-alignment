@@ -37,7 +37,9 @@ repository.
 | [`MT-ADMIN-LIFECYCLE-FIT`](mt-admin-lifecycle-fit-codex-admin-lifecycle-20261110.md) | &mdash; | `in-flight-upstream` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port |
 | [`MT-ADMIN-ROLE-OWNERSHIP`](mt-admin-role-ownership-codex-ownership-role-20261110.md) | &mdash; | `in-flight-upstream` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity |
 | [`MT-BATCH-JOIN-1110`](mt-batch-join-1110-codex-batch-join-20261110.md) | &mdash; | `in-flight-upstream` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance |
+| [`MT-CONNECTOR-REVERSE`](mt-connector-reverse-codex-connector-reverse-20261110.md) | &mdash; | `ready-to-push` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant |
 | [`MT-CONSUMER-STALE-RESELECT`](mt-consumer-stale-reselect-codex-consumer-refusal-20261110.md) | &mdash; | `in-flight-upstream` | Alarm consumer survives evaluator timer publications during selection (BF-231) |
+| [`MT-EVALUATOR-PARTITION`](mt-evaluator-partition-codex-evaluator-partition-20261110.md) | &mdash; | `ready-to-push` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table |
 | [`MT-EXPORT-EXPIRY`](mt-export-expiry-codex-export-expiry-20261110.md) | &mdash; | `in-flight-upstream` | Key destruction removes the export artifact file in the same audited step |
 | [`MT-INTERNAL-LISTENER`](mt-internal-listener-codex-internal-listener-20261110.md) | &mdash; | `in-flight-upstream` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline |
 | [`MT-KEY-RETENTION`](mt-key-retention-codex-key-retention-20261110.md) | &mdash; | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal |
@@ -47,6 +49,7 @@ repository.
 | [`MT-OIDC-SINGLE-PROVISION`](mt-oidc-single-provision-codex-oidc-single-provision-20261110.md) | &mdash; | `in-flight-upstream` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers |
 | [`MT-OWNER-LAST-GUARD`](mt-owner-last-guard-codex-m6b-followups-20261110.md) | &mdash; | `in-flight-upstream` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) |
 | [`MT-OWNERSHIP-OPS`](mt-ownership-ops-codex-ownership-ops-20261110.md) | &mdash; | `in-flight-upstream` | M6b: operator-assisted ownership add, transfer and recovery |
+| [`MT-POOL-PRIMITIVE`](mt-pool-primitive-codex-pool-primitive-20261110.md) | &mdash; | `ready-to-push` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice) for evaluator and vcpool |
 | [`MT-ROOT-ADMIN-PARITY`](mt-root-admin-parity-codex-root-admin-parity-20261110.md) | &mdash; | `in-flight-upstream` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools |
 | [`MT-TENANT-EXTENDED-SETTINGS`](mt-tenant-extended-settings-codex-tenant-extended-settings-20261110.md) | &mdash; | `in-flight-upstream` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) |
 | [`MT-VAULT-TOKEN-FILE`](mt-vault-token-file-codex-vault-token-file-20261109.md) | &mdash; | `in-flight-upstream` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) |

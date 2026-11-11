@@ -26902,9 +26902,9 @@ items:
     title: "M7: evaluator partitioning by member count and ordinal, with a pool-membership table"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/evaluator-partition
+    branch: codex/evaluator-partition-20261110
     base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
-    state: in-progress
+    state: ready-to-push
     blast_radius: >
       Evaluator role only. Two environment variables (member count, this worker's
       ordinal) behind a feature flag select the tenant slice by hash; flag off keeps
