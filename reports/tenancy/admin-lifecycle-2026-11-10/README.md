@@ -267,3 +267,75 @@ the logical restore of A ran to `activated` with the admin role connected: summa
 deleted 1, created 0`; A's current rows equal the captured ones; B's unchanged (1 passing, run with
 `-g logically`). Which grant the operator should hold, and the driver fix, belong to the key-retention /
 deploy owners; these are the coordinator's to route.
+
+## Addendum 2026-11-10 (third pass): BF-230 fixed on the lane
+
+Started from `9ef3ffa4`, worktree clean. BF-230 (register, alignment `main`): the Compose restore driver
+leaves the tenant suspended.
+
+| commit | what |
+|---|---|
+| `565a96aa70217a92959e3f9c5e6ccae4d4425482` | `deploy/multitenant/config.js` only: the plan's `operator` gets the restore's key-retention columns (ports as an overlay to nightscout-deploy) |
+| `666557564fab7f9c8ad8ae7fcacaab09cd0d5f00` | `deploy/multitenant/restore.js` passes `ledgerNamespace: config.control.namespace`; native regression test |
+
+**Ledger namespace.** In the plan's layout `control` (`<prefix>_control`) is the namespace the lifecycle
+candidate is applied to (`plan.catalogues().control`), so it holds `tenant_lifecycle_key_retention`;
+`plan.lifecycle(l).namespaces` excludes it and the driver's config carries it as `control.namespace`.
+
+**Derived grant** (from the SQL the restore path runs on the ledger, `key-retention.js`):
+`admitRestore` → `SELECT request_id, phase, retained_at, retain_until FROM … WHERE tenant_id=$1 FOR UPDATE`;
+`markRestored` → `UPDATE … SET phase=$3, restored_at=$4 WHERE request_id=$1 AND tenant_id=$2 AND phase=$5`.
+
+```sql
+GRANT SELECT(request_id,tenant_id,phase,retained_at,retain_until),UPDATE(phase,restored_at)
+  ON "<prefix>_control"."tenant_lifecycle_key_retention" TO "<prefix>_operator"
+```
+
+No table-level SELECT (so not `key_names`, `key_references`, destroy columns), no INSERT/DELETE. The probe
+of the second pass used table-level SELECT; this is narrower.
+
+**Regression test** (fit suite, now 6 cases): synthetic entries for A and B with a write-clock floor;
+`capture` of A through the shipped driver; A altered (one row changed, one added); A given an executed
+deletion request and a `retained` key-retention record inside its window; admin role connected; shipped
+`restore()` under the plan's grants → `activated`; summary `created 0, replaced 1, deleted 1`; A's current
+rows equal the captured ones; B's unchanged; A `active`; the retention record `restored`.
+
+| check (head `66655756`) | result |
+|---|---|
+| focused family (as above, plus `tenant-lifecycle.test.js`, `tenant-insertion-lifecycle.test.js`) | **228 passing, 0 failing**, exit 0; no container left |
+| fit suite alone | 6 passing |
+| `node --test deploy/multitenant/bootstrap.test.js deploy/multitenant/restore.test.js` | pass 10, fail 0 |
+| `test-tiers.js check` | `617 test files, 8 tiers: ok` |
+| `npm run lint` | 0 errors, 51 warnings |
+
+Controls (`controls-run-3.py`, `controls-3.json`; each restored 6/0, tree clean, no container left):
+
+| control | mutation | mutated | exact symptom |
+|---|---|---|---|
+| B1 | driver drops `ledgerNamespace` | **red** 4/2 | `LIFECYCLE_RETENTION_LEDGER_REQUIRED`; the next case reads A's phase `'suspended'` (left suspended) |
+| B2 | operator retention grant removed | **red** 4/2 | `permission denied for table tenant_lifecycle_key_retention` (SQLSTATE 42501) in `tenantRecords`/`admitRestore`; A left `'suspended'` |
+| L1 | grant without `UPDATE(restored_at)` | **red** 4/2 | 42501 in `markRestored` |
+| L2 | grant without `SELECT(retain_until)` | **red** 4/2 | 42501 in `tenantRecords` |
+| L3 | grant without `SELECT(tenant_id)` | **red** 4/2 | 42501 in `tenantRecords` |
+| L4 | SELECT columns only, no UPDATE | **red** 4/2 | 42501 in `tenantRecords` (`FOR UPDATE` needs an UPDATE column) |
+
+L1–L4 show each column of the grant is required by a statement the restore runs. Every refusal is inside
+the claim, so the tenant stays suspended by design (no automatic reopen).
+
+**Other callers without `ledgerNamespace`** (`git grep` for `restoreLogical`, `importArtifact(`,
+`logical-restore').restore`):
+- `deploy/multitenant/restore.js:111`: fixed here; `deploy/multitenant/demo.js` reaches restore only through it.
+- `lib/tenant-lifecycle/README.md` (example block under "Obtain its connection and opaque claim"): the
+  `importArtifact` call omits `ledgerNamespace`, although the prose above it and the "Restore gate" bullet
+  require it. Copied as written it would refuse `LIFECYCLE_RETENTION_LEDGER_REQUIRED`. Not edited.
+- `tools/lab/tenant-whole-c/core.js:619`: `importArtifact` without it, expecting
+  `LIFECYCLE_IDENTITY_IMPORT_UNSUPPORTED`, which `importArtifact` raises before the retention admission
+  (read-derived, not run).
+- `tests/tenant-insertion-lifecycle.test.js:71,91`: without it on purpose; they expect
+  `LIFECYCLE_MAINTENANCE_REQUIRED` and `LIFECYCLE_RESTORE_CLAIM_INVALID`, which come first (both pass in the
+  focused run).
+- Every other caller (`tests/tenant-lifecycle.test.js`, `tests/tenant-logical-restore.test.js`,
+  `tests/tenant-key-retention.integration.test.js`) passes it.
+
+The "clinical logical restore with admin connected" item in the second-pass addendum is now measured by
+this regression test under the plan's grants.

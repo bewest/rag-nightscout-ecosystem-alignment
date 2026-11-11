@@ -26308,6 +26308,10 @@ items:
       insertion-ordinal or write-clock tables (controls K1-K4). Clinical logical restore with admin connected is
       blocked by BF-230 (driver omits ledgerNamespace; operator lacks the key-retention grant); a probe with both
       fixed ran to activated. Fix routed to this lane.
+      2026-11-10 third pass (reproduced): 66655756 fixes BF-230 (565a96aa operator column grant, ports to
+      nightscout-deploy); native fit suite 6 passing, focused family 228/0. Join note: the example in
+      lib/tenant-lifecycle/README.md calls importArtifact without ledgerNamespace (the export-expiry lane also
+      edits that README); fix at the join.
 
   - id: DEPLOY-TREE-HOME
     title: "Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README"

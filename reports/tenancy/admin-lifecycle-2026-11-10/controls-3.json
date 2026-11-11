@@ -1,0 +1,165 @@
+[
+ {
+  "id": "B1",
+  "mutation": "driver drops ledgerNamespace",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 4,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "Error: LIFECYCLE_RETENTION_LEDGER_REQUIRED",
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 6,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "B2",
+  "mutation": "operator retention grant removed",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 4,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 6,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "L1",
+  "mutation": "grant without UPDATE(restored_at)",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 4,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 6,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "L2",
+  "mutation": "grant without SELECT(retain_until)",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 4,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 6,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "L3",
+  "mutation": "grant without SELECT(tenant_id)",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 4,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 6,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "L4",
+  "mutation": "grant without any UPDATE",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 4,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 6,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ }
+]
