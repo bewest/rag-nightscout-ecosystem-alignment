@@ -1,0 +1,45 @@
+[0.1m] INFO tenant api port 34993
+[0.1m] PASS admin tools: create reader role :: HTTP 200 {"_id":"syncreader","name":"syncreader","permissions":["api:entries:read","api:treatments:read","api:devicestatus:read","api:profile:read"]}
+[0.1m] PASS admin tools: create reader subject :: HTTP 200
+[0.1m] PASS reader exchange :: HTTP 200 ttl 28800s
+[0.1m] PASS reader cannot write (read-only role) :: HTTP 401
+[0.1m] FINDING pin token-only configuration: process outcome :: exited {"code":1,"signal":null}; TypeError [ERR_INVALID_ARG_TYPE]: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined at encode_api_secret (<pin>/lib/sources/nightscout.js:12:10)
+[0.1m] INFO destinations pin 31126 emb 44194
+[0.1m] PASS GATE pin: first pull matches tenant store for all four collections :: entries 30/30; treatments 6/6; devicestatus 6/6; profile 2/2 after 0.0m
+[0.2m] PASS GATE emb: first pull matches tenant store for all four collections :: entries 30/30; treatments 6/6; devicestatus 6/6; profile 2/2 after 0.1m
+[0.2m] PASS BREAK-IT drop one treatment from oracle copy -> red :: {"ok":false,"missing":0,"extra":1,"expected":5,"actual":6}
+[0.2m] PASS BREAK-IT alter one devicestatus -> red :: {"ok":false,"missing":1,"extra":1,"expected":6,"actual":6}
+[0.2m] PASS BREAK-IT alter one profile -> red :: {"ok":false,"missing":1,"extra":1,"expected":2,"actual":2}
+[0.2m] PASS BREAK-IT alter one sgv -> red :: {"ok":false,"missing":1,"extra":1,"expected":30,"actual":30}
+[0.2m] PASS oracle restored -> green :: entries 30/30; treatments 6/6; devicestatus 6/6; profile 2/2
+[0.2m] PASS destination dest-pin: every synced document carries srvModified :: {"entries":"30/30","treatments":"6/6","devicestatus":"6/6","profile":"2/2"}
+[0.2m] PASS BREAK-IT srvModified check with one unstamped document -> red :: n=7
+[0.2m] PASS destination dest-emb: every synced document carries srvModified :: {"entries":"30/30","treatments":"6/6","devicestatus":"6/6","profile":"2/2"}
+[0.2m] PASS BREAK-IT srvModified check with one unstamped document -> red :: n=7
+[0.2m] PASS destination dest-pin: v3 history returns every synced document :: {"entries":"30/30(sgv)","treatments":"6/6","devicestatus":"6/6","profile":"2/2"}
+[0.2m] PASS destination dest-emb: v3 history returns every synced document :: {"entries":"30/30(sgv)","treatments":"6/6","devicestatus":"6/6","profile":"2/2"}
+[0.2m] FINDING pin connector stdout: credential occurrences before redaction :: source token occurrences 4, destination secret occurrences 4
+[0.2m] PASS emb connector logs carry no credential before redaction :: source token occurrences 0
+[5.5m] PASS GATE emb steady: new batch delivered at the connector cadence :: entries 31/31; treatments 7/7; devicestatus 7/7; profile 2/2 after 5.3m
+[10.7m] PASS pin: rows seeded after its 5-minute STOP are not delivered (process exited {"code":0,"signal":null}, age 10.6m) :: D_pin entries 30/32 (missing 2, extra 0); treatments 6/8 (missing 2, extra 0); devicestatus 6/8 (missing 2, extra 0); profile 2/2; before {"entries":30,"treatments":6,"devicestatus":6,"profile":2}
+[10.7m] PASS CONTROL same rows reach the embedded connector :: entries 32/32; treatments 8/8; devicestatus 8/8; profile 2/2 after 4.5m
+[10.7m] PASS admin tools: revoke (PUT subject roles []) :: HTTP 200
+[10.7m] PASS CONTROL issued bearer refused after revoke :: HTTP 401
+[21.7m] PASS CONTROL revoked: embedded connector adds zero rows over ~2 cycles :: before {"entries":32,"treatments":8,"devicestatus":8,"profile":2} after {"entries":32,"treatments":8,"devicestatus":8,"profile":2}; log lines: 5 e.g. SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so
+[21.7m] PASS admin tools: restore (PUT subject roles [syncreader]) :: HTTP 200
+[45.2m] PASS restore -> same running connector delivers the withheld rows (no restart) :: entries 33/33; treatments 9/9; devicestatus 9/9; profile 2/2 after 23.5m
+[45.2m] PASS paused: reader GET refused 423 TENANT_PAUSED; exchange admitted :: GET 423 {"error":"TENANT_PAUSED"}; exchange 200
+[45.2m] PASS paused: uploads stored :: {"entries":200,"treatments":200,"devicestatus":200}
+[56.2m] PASS CONTROL paused: embedded connector adds zero rows over ~2 cycles :: before {"entries":33,"treatments":9,"devicestatus":9,"profile":2} after {"entries":33,"treatments":9,"devicestatus":9,"profile":2}; log lines: 9 e.g. SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so
+[74.0m] PASS unpause -> rows uploaded while paused delivered by the running connector :: entries 34/34; treatments 10/10; devicestatus 10/10; profile 2/2 after 17.8m
+[74.0m] PASS suspended: read, exchange and upload all refused 423 TENANT_SUSPENDED :: GET 423, exchange 423, upload 423 {"error":"TENANT_SUSPENDED"}
+[85.0m] PASS CONTROL suspended: embedded connector adds zero rows over ~2 cycles :: before {"entries":34,"treatments":10,"devicestatus":10,"profile":2} after {"entries":34,"treatments":10,"devicestatus":10,"profile":2}; log lines: 13 e.g. SECURITY: failed-authentication throttling is keyed on the client address, and TRUST_PROXY is not set, so that address is read from request headers (X-Forwarded-For and similar) that any caller can set. A caller who changes them, and the password or token tried, on every attempt is never delayed, so
+[85.1m] INFO after unsuspend state paused
+[85.1m] INFO after unpause state active
+[108.3m] PASS unsuspend + unpause -> rows stored before suspension delivered by the running connector :: entries 35/35; treatments 11/11; devicestatus 11/11; profile 2/2 after 23.2m
+[108.3m] PASS admin tools: delete reader subject :: HTTP 200
+[108.3m] PASS deleted: exchange and issued bearer refused :: exchange 401, bearer GET 401
+[115.3m] PASS CONTROL deleted: embedded connector adds zero rows :: before {"entries":35,"treatments":11,"devicestatus":11,"profile":2} after {"entries":35,"treatments":11,"devicestatus":11,"profile":2}; log lines: 17
+[115.3m] PASS tenant B untouched and absent from both destinations :: B {"entries":10,"treatments":1}; B rows in destinations 0
+
+SUMMARY 37 checks, 0 failing, 2 findings; logs <scratch>/rep2

@@ -32,7 +32,7 @@ node tools/tenancy/connector-sync/out.cjs
 **Cadence.** The connector has no setting that shortens it. The Nightscout source fixes `expected_data_interval_ms` at 5 minutes and aligns the next poll to the last entry plus 5 minutes plus 18–36 s (`lib/sources/nightscout.js` `align_to_glucose`). After a failed frame it adds `backoff({interval_ms: 2.5 min})`. So the loop ran at its normal cadence.
 
 ## Results: 3 full repetitions
-Each repetition printed `SUMMARY 37 checks, 0 failing, 2 findings`. Logs: [rep1.log](rep1.log), [rep2.log](rep2.log), [rep3.log](rep3.log).
+Each repetition printed `SUMMARY 37 checks, 0 failing, 2 findings`. Logs: [rep1.txt](rep1.txt), [rep2.txt](rep2.txt), [rep3.txt](rep3.txt).
 
 | check | rep1 | rep2 | rep3 |
 |---|---|---|---|
