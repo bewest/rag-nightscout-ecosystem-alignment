@@ -179,3 +179,149 @@ is UNMEASURED.
 - **Operator CLI/deploy wiring** for `provision`/`suspend` and the `grants()` statements: not added
   (`deploy/multitenant/config.js` belongs to the internal-listener lane).
 - `deploy`/`site` docs, OpenAPI for the new owner routes: not written.
+
+## Addendum, 2026-11-10 (second capture): adopted semantics, always-provisioned rows, deletion auto-pause
+
+Implements [`activity-adopted-semantics-wiring`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-adopted-semantics-wiring),
+[`activity-row-always-provisioned`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned) and
+[`deletion-request-auto-pauses`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deletion-request-auto-pauses)
+(alignment `main` `c7370e961` when briefed). The consumer refusal at 150 ms timers is left to its own lane.
+
+| tree | ref | commit |
+|---|---|---|
+| lane head | `codex/activity-eligibility-20261110` | `07981b55b76779ee25e023ebc0e0c9c2b9bce2f2` (one commit on `8f3e3c60`, 24 files) |
+| previous lane head | | `8f3e3c6018cd7accad2d959a094ecd883da4ca00` (confirmed head, clean worktree, before starting) |
+| `official/dev` | | `4a482627bfdafb1fef8dcbe0ac6c484811cae563` |
+| alignment `main` at writing | | `3efd647a492c84763eae09cf8fe8b1f44f62e1f8` |
+
+### Design change: the activity tables moved into the lifecycle (control) namespace
+
+A backfill migration must read the tenant inventory, and catalogue SQL is static: a separate activity
+namespace cannot name the control namespace. The tables are therefore migration `0007_tenant_activity` of
+`lib/tenant-lifecycle/postgres-candidate.json` (checksum `04e34feac301aa516bfe1bbac7355e413db26a2a5ccf4c03be652176d718b84e`);
+`lib/tenant-activity/postgres-candidate.json` is deleted. Consequences:
+
+- `tenant_activity.tenant_id` references `tenant_lifecycle_windows`; a tenant is "provisioned" when it has a
+  window row, the same definition the admin-lifecycle lane's `tenantPhase` uses.
+- Backfill: `INSERT … SELECT FROM tenant_lifecycle_windows` plus an audit row
+  (`provision/operator/migration/backfill-0007`). `tenant_lifecycle_windows` has FORCE ROW LEVEL SECURITY, so a
+  non-superuser schema owner would see no rows; the migration runs `NO FORCE` → backfill → `FORCE` inside its
+  own transaction. A runner that is not the windows' owner fails the migration (loud), it does not backfill nothing.
+- `LEDGER_TABLES` (derived from the catalogue) now includes both tables, so the ceremony and key-retention
+  relation inventories and the whole-deployment census include them automatically (census 47→49, 48→50 with
+  the profile successor; seed rows added).
+- **Numbering:** the export-expiry lane adds `0006_tenant_lifecycle_artifact_removal` to the same catalogue.
+  This lane uses `0007` so either join order keeps names lexically ordered; neither is released.
+- New columns `deletion_request_id`, `paused_before_deletion` (both null or both set). New grant set
+  `grants({ceremony})`: `UPDATE(version, paused, suspended, deletion_request_id, paused_before_deletion)`, audit `INSERT`.
+
+### What is wired now
+
+| behaviour | where | measured |
+|---|---|---|
+| suspend refuses uploads and reads | API `prepareTenant(tenant, req)` → `lib/tenant-activity/serving.js`; `423 TENANT_SUSPENDED`; forwarded socket operations are admitted as uploads, so they refuse too | reproduced, tenant-app composition |
+| pause refuses reads and UI, admits uploads | uploads = POST/PUT/PATCH/DELETE, OPTIONS, `GET /api/v2/authorization/request/:token`; everything else is a read → `423 TENANT_PAUSED` | reproduced, tenant-app composition |
+| unreadable state on API | `503 TENANT_ACTIVITY_UNAVAILABLE` | reproduced, unit |
+| sockets disconnected on pause and suspend | `serving.gateReadCurrent` wraps realtime `readCurrent`; ineligible → `protocol.invalidateTenant` + disabled | reproduced, actual realtime protocol/runtime with synthetic sockets |
+| every tenant has a row | migration backfill; `provisionInTransaction` (Compose `bootstrap.js` calls it in the tenant transaction) | reproduced, native |
+| unreadable row stops only that tenant | evaluator `EVALUATOR_ACTIVITY_UNAVAILABLE` / `…_NOT_PROVISIONED`, one `console.warn` per change | reproduced, native + unit |
+| deletion request pauses; cancel restores; execution suspends | `lib/tenant-activity/deletion.js`, called inside `ceremony.js` request/cancel/claim/execute transactions | reproduced, native, actual ceremony on PostgreSQL |
+| owner may pause/unpause while a request is pending | owner store unchanged; no phase check | reproduced, native |
+
+Configuration: API `preview-config.js` and realtime `realtime/config.js` accept an optional
+`activity: {connectionEnv, namespace}` (namespace = the control namespace). Without it behaviour is unchanged.
+The internal-api endpoint config is not touched. `realtime/config.js` and `preview-api.js` are also edited by the
+internal-listener and root-admin-parity lanes; expect one-line merges at the `c.exact(...)`/`fields(...)` lists
+and the `createTenantApp` call.
+
+### Owner-facing text, as now written (`policy.OWNER_NOTICE`)
+
+> **pause:** While your site is paused, alarms are not computed or delivered, and your site and its data cannot be
+> viewed. Uploads from your devices are still stored. Nightscout will not warn you about high or low glucose, stale
+> data or anything else until you unpause. If you rely on Nightscout alarms, make sure you have another way to be
+> alerted before you pause.
+>
+> **unpause:** (unchanged) When you unpause, Nightscout recalculates from your current data before it shows or sends any alarm.
+>
+> **suspended:** Your site is suspended by the operator. Nothing runs for your site: uploads are refused, your site
+> and its data cannot be viewed, and alarms are not computed or delivered. Contact your operator.
+>
+> **deletion** (returned as `notice` by `requestDeletion`): You have asked to delete your site. Alarms stop now: from
+> this moment alarms are not computed or delivered, and your site and its data cannot be viewed. Uploads from your
+> devices are still stored until the operator carries out the deletion. If you cancel the request, your site goes
+> back to how it was before you asked. If you rely on Nightscout alarms, make sure you have another way to be alerted now.
+
+There is no owner HTTP route for deletion in this tree; any owner UI that requests deletion must show `notice`.
+
+### Checks (reproduced, at `07981b55`)
+
+PostgreSQL 16.15 `postgres@sha256:721873c3…80ea` (disposable, removed; `docker ps -a` count 0), Node v22.23.4.
+
+| check | result |
+|---|---|
+| `tests/tenant-activity.test.js` | 16 passing |
+| non-native tests touching the changed modules (47 files by name match) | 559 passing, 10 failing: `api.count-where`, `authdelay`, `api3.alarm-socket.*` need a MongoDB-backed single-site boot; the same 10 fail identically on `8f3e3c60` in this environment |
+| `tenant-lifecycle`, `tenant-deployment-operations`, `tenant-operations`, `tenant-insertion-lifecycle` | 31, 28, 42 (with insertion) passing |
+| native: tenant-activity (7), evaluator-consumers, owner-preview, current-state-recovery | 33 passing |
+| `NS_KEY_RETENTION_DOCKER_TEST=1 tenant-key-retention.integration` (Vault `@sha256:962a9287…`) | 6 passing (fixture now provisions windows + activity and grants the ceremony role) |
+| `NS_TENANT_OPERATIONS_PG_TEST=1 tenant-operations.integration` | 5 passing |
+| `NS_MULTITENANT_PREVIEW_PROCESS_DOCKER_TEST=1 multitenant-preview-process.integration` | 16 passing |
+| `deploy/multitenant/*.test.js` (node test runner) | 10 pass |
+| `test-tiers.js check` / `npm run lint` | ok / 0 errors, 49 warnings (unchanged) |
+
+Native acceptance observed (synthetic A/B):
+
+- Backfill: A and B `version 1, active`, audit `provision/operator/migration/backfill-0007`, windows FORCE restored.
+- Provisioning: tenant C committed with its window has an active row; tenant D whose transaction failed after
+  the activity insert has neither row; an activity row without a window is refused `23503`.
+- Unreadable A (a restrictive policy that raises division-by-zero on A's row only): A `EVALUATOR_ACTIVITY_UNAVAILABLE`,
+  checkpoint unchanged, 0 A effects, exactly one stderr warning naming A; B outputRevision rose over three
+  acquisitions, B ready, B low alarm delivered.
+- Deletion: request → A paused (evaluator `EVALUATOR_TENANT_PAUSED`), B active, notice contains "Alarms stop now";
+  owner unpause then pause during the pending request both succeed; cancel → active (the pre-request state);
+  paused-before-request → cancel → still paused; request → confirm → claim → suspended, owner unpause refused
+  `ACTIVITY_SUSPENDED`, evaluator `EVALUATOR_TENANT_SUSPENDED`. Audit sequence: `deletion-request:owner,
+  unpause:owner, pause:owner, deletion-cancel:owner, pause:owner, deletion-request:owner, deletion-cancel:owner,
+  unpause:owner, deletion-request:owner, deletion-execute:operator`.
+- HTTP matrix (actual `createTenantApp` + actual reader store; data routes are a stub router):
+
+  | | A read | A upload | A exchange | B (all) |
+  |---|---|---|---|---|
+  | active | 200 | 201 | 200 | 200/201/200 |
+  | A paused | 423 TENANT_PAUSED | 201 | 200 | unchanged |
+  | A suspended | 423 TENANT_SUSPENDED | 423 TENANT_SUSPENDED | 423 | unchanged |
+
+### Break-it controls (each red, then restored from a saved copy, `cmp` identical, green rerun 23 passing)
+
+| control | edit | red, exact symptom |
+|---|---|---|
+| pause does not gate reads | `serving.operationOf` returns `ingest` always | `ACTIVITY_HTTP_PAUSED`: `A read` `200` where `423 TENANT_PAUSED` expected |
+| suspend admits uploads | policy `ingest` includes `suspended` | `ACTIVITY_HTTP_SUSPENDED`: `A upload` `201`, `A exchange` `200` where `423` expected |
+| sockets not disconnected | `gateReadCurrent` returns null without `invalidate` | both realtime cases: `ACTIVITY_SOCKET_DISCONNECTED` |
+| backfill blind to RLS | drop the `NO FORCE` statement from 0007 (checksums recomputed) | `ACTIVITY_BACKFILL`: actual `[]`, expected A and B rows |
+| provisioning omits the row | `provisionInTransaction` writes nothing | `ACTIVITY_PROVISIONED_WITH_TENANT`: actual `[]`, expected C's row |
+| unreadable row stops everyone | evaluator deactivates every tenant on `ACTIVITY_UNAVAILABLE` | unit `ACTIVITY_UNREADABLE_B_CONTINUES` (B thrashes `close/create` instead of cycling); native: B alarm never delivered (`Evaluator native condition watchdog` at the B-delivery wait) |
+| request does not pause | ceremony skips `activity.requested` | `ACTIVITY_DELETION_REQUEST_PAUSES`: `'active' !== 'paused'` |
+| cancel does not restore | ceremony skips `activity.cancelled` | `ACTIVITY_DELETION_CANCEL_RESTORES (active)`: `'paused' !== 'active'` |
+| execution does not suspend | `deletion.executing` returns without writing | `ACTIVITY_DELETION_EXECUTION_SUSPENDS`: `'paused' !== 'suspended'` |
+
+### Not measured or open after this addendum
+
+- The API admission is measured in the actual tenant-app composition with stub data routes; the full API role
+  (`preview-api` boot with `activity` selected) and the realtime role process are not run with activity
+  selected. `multitenant-preview-process` (16 passing) runs without the selection.
+- Per-request activity read on the API: one extra query per request; overhead UNMEASURED.
+- 423 for refusals is a choice: uploaders that treat 4xx as final may drop data uploaded during suspension; 503
+  would invite retries. The human-session (OIDC) routes are mounted before `createTenantApp` and are not gated.
+- Cancel restores the state from before the *first* pending request, overriding owner pause/unpause made while
+  pending (the decision's wording). Deletion execution leaves the row suspended; restoring a deleted tenant's
+  data does not unsuspend it.
+- Deploy wiring (activity selections, the four roles' grants) remains with the deploy/internal-listener owner.
+
+**Shared password file (re-run).** Both rounds wrote the PostgreSQL password to the session scratchpad's shared
+`pgpw`, and deleted it at the end of each round. That overwrote and removed another lane's file. The runs recorded
+above authenticated against this lane's own container on port 55437, so the password they read was this lane's.
+They were re-run anyway at `07981b55` with a private `scratchpad/activity-lane/pgpw` (mode 600) and a fresh container
+(same digest, port 55447, removed afterwards). Unit `tenant-activity` plus native tenant-activity,
+evaluator-consumers, owner-preview and current-state-recovery: **49 passing** (16 + 33), unchanged. The break-it
+controls were not re-run. Their recorded symptoms are assertion failures, which need an authenticated connection.

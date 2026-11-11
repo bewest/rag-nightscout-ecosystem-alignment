@@ -26238,7 +26238,7 @@ items:
         cwd: externals/work/crm-activity-eligibility-20261110
         kind: unit
         describe: >
-          Activity policy and store unit tests: 12 passing on 8f3e3c60. Native evaluator acceptance (29 passing across four suites) in the evidence.
+          Activity policy and store unit tests: 16 passing on 07981b55 (12 on 8f3e3c60). Native evaluator acceptance (29 passing across four suites) in the evidence.
     blocks_on: [MT-M6B-JOIN]
     evidence:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
@@ -26246,6 +26246,13 @@ items:
     notes: >
       Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner-facing text says alarms stop while paused.
       2026-11-10 (reproduced in lane): 8f3e3c60 on b70ad83f. New lib/tenant-activity (migration 0001, paused/suspended flags, audit); evaluator and realtime consumers skip ineligible tenants; owner pause/unpause routes with audit. Not wired: API ingest/serving refusal under suspend, read blocking under pause, socket disconnect on suspend; owner-facing suspend text currently overstates (says uploads stop).
+      2026-11-10 second pass (reproduced): 07981b55. Suspend refuses uploads and reads (423 TENANT_SUSPENDED) and
+      disconnects sockets; pause refuses reads/UI (423 TENANT_PAUSED), admits uploads and the credential exchange;
+      activity tables moved to the lifecycle catalogue as migration 0007_tenant_activity with backfill (number
+      provisional; export-expiry adds 0006, root-admin-parity an authorization 0007); provisioning writes the row in
+      the tenant's transaction; unreadable row stops only that tenant (measured: B kept delivering); deletion request
+      pauses, cancel restores, execution suspends. Native 33 passing; nine controls. Open: 423 vs 503 for refused
+      uploads; deploy wiring and grants; full API/realtime role runs with activity selected; per-request read cost.
 
   - id: MT-EXPORT-EXPIRY
     title: "Key destruction removes the export artifact file in the same audited step"
