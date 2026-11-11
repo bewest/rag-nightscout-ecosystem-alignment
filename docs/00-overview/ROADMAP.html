@@ -2414,7 +2414,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>2449abe67</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>812ac77cb</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2838,7 +2838,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">1</td>
 <td><code>MT-BATCH-JOIN-1110</code></td>
 <td>Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -2857,9 +2857,16 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">1</td>
+<td><code>MT-POOL-PRIMITIVE</code></td>
+<td>Shared pool-membership primitive (pool kind, member count, ordinal, ring slice)</td>
+<td><code>not-started</code></td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
 <td><code>MT-TENANT-EXTENDED-SETTINGS</code></td>
 <td>Tenant environment carries plugin extended settings so the stale-data alarm can</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td>&mdash;</td>
 </tr>
 <tr>
@@ -3025,9 +3032,16 @@ handoff are measured; live provider/device delivery remains separately gated by
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
+<td><code>MT-CONNECTOR-REVERSE</code></td>
+<td>M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in</td>
+<td><code>not-started</code></td>
+<td><code>MT-POOL-PRIMITIVE</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
 <td><code>MT-INTERNAL-LISTENER</code></td>
 <td>Internal listener: one serve.internal per role (Ory pattern, socket default) and</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-ENDPOINT-TRANSPORT</code></td>
 </tr>
 <tr>
@@ -3083,7 +3097,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">3</td>
 <td><code>MT-BENCH-BASELINE</code></td>
 <td>M7: benchmark the one-host reference and publish the numbers</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td><code>MT-M6A-JOIN</code></td>
 </tr>
 <tr>
@@ -3125,7 +3139,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">4</td>
 <td><code>DEPLOY-K8S-BINDING</code></td>
 <td>M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td><code>DEPLOY-TRUST-PROBES</code></td>
 </tr>
 <tr>
@@ -3139,14 +3153,14 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">4</td>
 <td><code>MT-ACTIVITY-ELIGIBILITY</code></td>
 <td>Pause/suspend drive worker eligibility; evaluator stops while paused; owner may</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-M6B-JOIN</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
 <td><code>MT-ADMIN-ROLE-OWNERSHIP</code></td>
 <td>M6b: compose ownership operations into the multitenant admin role with an owners</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-M6B-JOIN</code></td>
 </tr>
 <tr>
@@ -3160,7 +3174,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">4</td>
 <td><code>MT-CONSUMER-STALE-RESELECT</code></td>
 <td>Alarm consumer survives evaluator timer publications during selection (BF-231)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-M6B-JOIN</code></td>
 </tr>
 <tr>
@@ -3174,14 +3188,14 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">4</td>
 <td><code>MT-EXPORT-EXPIRY</code></td>
 <td>Key destruction removes the export artifact file in the same audited step</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-M6B-JOIN</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">4</td>
 <td><code>MT-OWNER-LAST-GUARD</code></td>
 <td>M6b follow-up: refuse revoking the last usable owner's subject (BF-229)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-M6B-JOIN</code></td>
 </tr>
 <tr>
@@ -3195,14 +3209,14 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">5</td>
 <td><code>MT-ADMIN-LIFECYCLE-FIT</code></td>
 <td>Restore census accepts non-clinical identities; ownership refuses on non-active</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-ADMIN-ROLE-OWNERSHIP</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
 <td><code>MT-ROOT-ADMIN-PARITY</code></td>
 <td>Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-flight-upstream</code></td>
 <td><code>MT-OWNER-LAST-GUARD</code></td>
 </tr>
 </tbody>

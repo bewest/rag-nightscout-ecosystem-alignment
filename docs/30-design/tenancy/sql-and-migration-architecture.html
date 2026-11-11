@@ -2966,10 +2966,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shared-resources-and-remaining-fences" class="md-nav__link">
+  <a href="#activity-retention-and-the-admin-identity-at-16a1fc2d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shared resources and remaining fences
+        Activity, retention and the admin identity at 16a1fc2d
       
     </span>
   </a>
@@ -5938,10 +5938,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shared-resources-and-remaining-fences" class="md-nav__link">
+  <a href="#activity-retention-and-the-admin-identity-at-16a1fc2d" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shared resources and remaining fences
+        Activity, retention and the admin identity at 16a1fc2d
       
     </span>
   </a>
@@ -5966,7 +5966,7 @@
 
 
 <h1 id="sql-migrations-and-tenant-recovery-architecture">SQL, migrations and tenant recovery architecture<a class="headerlink" href="#sql-migrations-and-tenant-recovery-architecture" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>4fb6f4ed9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>a2dacd669</code>.</em></p>
 <p><em>Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>
 (tree <code>3bb46431a19e604dc028768f0e72e6ad29616c26</code>). Mechanisms and diagrams below are
@@ -5980,6 +5980,14 @@ Ownership/API guidance updated 2026-11-08 under the maintainer's exclusive
 application ownership decision. Design recommendations and Kubernetes scale-out
 assessment are </em><em>read-derived</em><em>; no new runtime or cluster campaign was run.
 This guide explains their SQL implementation and does not promote M6.</em></p>
+<p><em>Refreshed 2026-11-10 against draft PR #8898 head
+<code>16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1</code>: <a href="#tenant-activity-pause-and-suspend">tenant activity</a>,
+<a href="#key-retention-and-export-file-removal">key retention and export-file removal</a>,
+the <a href="#restore-census-and-non-clinical-identities">restore census</a> and the
+<a href="#the-ownership_operator-identity"><code>ownership_operator</code> identity</a>. Links in those
+sections are pinned to <code>16a1fc2d</code>; the other sections keep their <code>151de024</code>
+reading. The refresh is read-derived from source; acceptance of that head lives
+in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.</em></p>
 <h2 id="scope-and-evidence">Scope and evidence<a class="headerlink" href="#scope-and-evidence" title="Permanent link">&para;</a></h2>
 <p>For diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">database and component ownership visual
 review</a>. It renders the
@@ -6012,7 +6020,7 @@ own admitted port behavior.</p>
 <td>Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound.</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/477f215c25864f94aaa3b91489d70ca4ec412165/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td><strong>Reproduced:</strong> packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure.</td>
 <td>Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate.</td>
 </tr>
@@ -6082,13 +6090,13 @@ owns the broader component explanation.</p>
 <p>The existing claim/generation-bound maintenance window determines whether an
 operation can run safely during recovery. Operator-controlled resource/activity
 policy asks which serving, ingestion, evaluation or connector work should run at
-all; that policy remains <strong>proposed and undecided</strong> in the
-<a href="tenant-admission-and-activity.html">tenant-admission review</a>. A maintenance phase
-named <code>active</code> is not evidence of operator enablement or background-work
-eligibility. Preserve the existing pause/suspend meanings and captured restore
-behavior; no activity field, transition or automatic inactive-tenant resource
-control is implemented by this database design. Observed health is a further
-separate fact. No new activity-policy gate is claimed by the diagrams below.</p>
+all. That policy is decided as two durable flags, pause and suspend
+(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity-is-pause-suspend</a>),
+and stored in <code>tenant_activity</code> beside, not inside, the maintenance window; see
+<a href="#tenant-activity-pause-and-suspend">tenant activity</a>. A maintenance phase named
+<code>active</code> is not evidence of activity eligibility, and clearing the restore hold
+never changes the activity flags (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/policy.js#L13-L15">policy module</a>). Observed
+health is a further separate fact.</p>
 <h2 id="component-ownership-and-internal-application-apis">Component ownership and internal application APIs<a class="headerlink" href="#component-ownership-and-internal-application-apis" title="Permanent link">&para;</a></h2>
 <p><strong>Read-derived architecture direction:</strong> place commands at the component that
 owns their semantics, and let that component persist its state. An internal API
@@ -6326,6 +6334,16 @@ new client record identity. See the <a href="https://github.com/nightscout/cgm-r
 <td><code>tenant_lifecycle_requests</code>, <code>tenant_lifecycle_ceremony</code>.</td>
 <td>Separate requested/confirmed/cancelled/executing/executed deletion workflow; ceremony references request plus tenant. A restore claim does not itself authorize deletion.</td>
 </tr>
+<tr>
+<td>Tenant activity</td>
+<td><code>tenant_activity(tenant_id,version,paused,suspended,deletion_request_id,paused_before_deletion)</code>, <code>tenant_activity_audit</code>.</td>
+<td>Control namespace, migration <code>0007_tenant_activity</code>. One row per tenant, referencing its window row; audit rows reference the activity row. Operator/owner policy, not clinical payload: a restore neither rewinds nor clears it.</td>
+</tr>
+<tr>
+<td>Key retention</td>
+<td><code>tenant_lifecycle_key_retention</code> with <code>artifact_removal</code>, <code>artifact_removal_code</code>.</td>
+<td>Control namespace, migrations <code>0005</code> and <code>0006</code>. One record per deletion request: retained → destroying → destroyed, or restored. The destroyed row records the export-file removal outcome.</td>
+</tr>
 </tbody>
 </table>
 <p>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/config.js#L131">preview lifecycle mapping</a> explicitly extends the
@@ -6356,7 +6374,9 @@ transitions; the restore sequence below describes the admitted protocol.</p>
 <pre class="mermaid"><code>flowchart BT
   operation["tenant_lifecycle_operations"] --&gt;|"tenant_id FK"| window["tenant_lifecycle_windows"]
   authority["tenant_lifecycle_restore_authority"] --&gt;|"tenant_id FK"| window
-  audit["tenant_lifecycle_restore_audit"] --&gt;|"tenant_id FK"| window</code></pre>
+  audit["tenant_lifecycle_restore_audit"] --&gt;|"tenant_id FK"| window
+  activity["tenant_activity"] --&gt;|"tenant_id FK"| window
+  activityAudit["tenant_activity_audit"] --&gt;|"tenant_id FK"| activity</code></pre>
 <pre class="mermaid"><code>flowchart LR
   ceremony["tenant_lifecycle_ceremony"] --&gt;|"request_id + tenant_id FK"| request["tenant_lifecycle_requests"]</code></pre>
 <h2 id="binding-forced-rls-and-privileges">Binding, forced RLS and privileges<a class="headerlink" href="#binding-forced-rls-and-privileges" title="Permanent link">&para;</a></h2>
@@ -6543,11 +6563,132 @@ those distinctions. This preview provides no automatic orphan clearance or
 supported suspended-restore resume command. Operator-verified recovery remains
 separate work; no deterministic recovery-time bound follows from the
 refusal/restart evidence.</p>
+<h2 id="activity-retention-and-the-admin-identity-at-16a1fc2d">Activity, retention and the admin identity at <code>16a1fc2d</code><a class="headerlink" href="#activity-retention-and-the-admin-identity-at-16a1fc2d" title="Permanent link">&para;</a></h2>
+<p><strong>Read-derived from the <code>16a1fc2d</code> source.</strong> The four mechanisms below joined</p>
+<h1 id="8898-in-the-2026-11-10-batch-each-anchor-is-pinned-to-that-head">8898 in the 2026-11-10 batch. Each anchor is pinned to that head.<a class="headerlink" href="#8898-in-the-2026-11-10-batch-each-anchor-is-pinned-to-that-head" title="Permanent link">&para;</a></h1>
+<h3 id="tenant-activity-pause-and-suspend">Tenant activity: pause and suspend<a class="headerlink" href="#tenant-activity-pause-and-suspend" title="Permanent link">&para;</a></h3>
+<p>Migration <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L89"><code>0007_tenant_activity</code></a> in the lifecycle control catalogue
+creates <code>tenant_activity</code> (primary key <code>tenant_id</code>, referencing
+<code>tenant_lifecycle_windows</code>; a positive <code>version</code>; <code>paused</code> and <code>suspended</code>
+booleans; a <code>deletion_request_id</code>/<code>paused_before_deletion</code> pair that is set or
+null together) and an append-only <code>tenant_activity_audit</code> whose <code>verb</code> is one of
+<code>provision</code>, <code>pause</code>, <code>unpause</code>, <code>suspend</code>, <code>unsuspend</code>, <code>deletion-request</code>,
+<code>deletion-cancel</code> or <code>deletion-execute</code>, with <code>authority</code> <code>owner</code> or <code>operator</code>.
+Both tables use enabled and forced RLS on <code>app.current_tenant_id</code>, and <code>PUBLIC</code>
+has no rights.</p>
+<p><strong>A row for every tenant.</strong> The same migration <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L93-L96">backfills</a> one
+active row (<code>version</code> 1, both flags false) for every existing window row, with a
+<code>provision</code> audit row attributed to principal <code>migration</code>, consumer
+<code>backfill-0007</code>. It lifts <code>FORCE ROW LEVEL SECURITY</code> on <code>tenant_lifecycle_windows</code>
+for the two backfill statements and restores it before the migration commits;
+migration and ledger entry are one transaction (see
+<a href="#upgrade-and-readiness-sequence">upgrade and readiness</a>). New tenants get their
+row from <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/provisioning.js#L10"><code>provisionInTransaction</code></a>, which the Compose
+bootstrap calls <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/deploy/multitenant/bootstrap.js#L145-L148">in the same transaction</a> that inserts the
+window row (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-row-always-provisioned">activity-row-always-provisioned</a>).</p>
+<p><strong>Two flags, three states.</strong> The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/policy.js#L3-L29">policy module</a> defines
+<code>active</code>, <code>paused</code> and <code>suspended</code>, with suspended taking precedence. Paused
+admits uploads and connector polling and stops the evaluator, so alarms are not
+computed or delivered; suspended admits nothing. The column grants enforce who
+sets which flag (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/postgres.js#L26-L45">grant set</a>): the owner identity may update
+<code>version</code> and <code>paused</code> only, the operator identity <code>version</code>, <code>paused</code> and
+<code>suspended</code>, and the deletion-ceremony identity also the deletion pair. The
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/deletion.js#L3-L10">ceremony effects</a> pause on a deletion request, restore the
+earlier pause state on cancel, and suspend on execution, each inside the
+ceremony's transaction
+(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deletion-request-auto-pauses">deletion-request-auto-pauses</a>).</p>
+<p><strong>Where it is read.</strong> Each consumer reads the row afresh through a <code>reader</code>
+store, after a <code>check</code> of the control catalogue ledger:</p>
+<table>
+<thead>
+<tr>
+<th>Consumer</th>
+<th>Effect</th>
+<th>Anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API (HTTP)</td>
+<td>Write methods, <code>OPTIONS</code> and the v2 credential exchange count as uploads; everything else is a read. Refusals are 423 <code>TENANT_PAUSED</code> / <code>TENANT_SUSPENDED</code>; an unreadable row is 503 <code>TENANT_ACTIVITY_UNAVAILABLE</code>.</td>
+<td><a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/serving.js#L3-L28">serving gate</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/preview-api.js#L123-L131">API wiring</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/tenant-app/index.js#L11-L15">status map</a></td>
+</tr>
+<tr>
+<td>Realtime</td>
+<td>Every current-state read checks eligibility; an ineligible tenant reads as disabled and its sockets are invalidated.</td>
+<td><a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/preview-realtime.js#L38-L44">realtime gate</a></td>
+</tr>
+<tr>
+<td>Evaluator</td>
+<td>Work lists are built from tenants eligible now; an unreadable or missing row makes that tenant ineligible with its own code (<code>ACTIVITY_UNAVAILABLE</code>, <code>ACTIVITY_NOT_PROVISIONED</code>).</td>
+<td><a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/eligibility.js#L4-L26">eligibility</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/evaluator-preview.js#L41-L45">evaluator wiring</a></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>activity</code> block is optional in each role's configuration; without it the
+role does not consult the table. The in-tree Compose plan at <code>16a1fc2d</code>
+provisions rows but grants no role the activity tables
+(<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/deploy/multitenant/config.js#L87-L97">deployment grants</a> contain no <code>tenant_activity</code>
+grant), so its roles run without activity admission.</p>
+<h3 id="key-retention-and-export-file-removal">Key retention and export-file removal<a class="headerlink" href="#key-retention-and-export-file-removal" title="Permanent link">&para;</a></h3>
+<p>Migration <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L70"><code>0005_tenant_lifecycle_key_retention</code></a> keeps one record per
+deletion request: the export artifact's 64-hex digest, the retained key names
+and a phase of <code>retained</code>, <code>restored</code>, <code>destroying</code> or <code>destroyed</code>. Migration
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L82"><code>0006_tenant_lifecycle_artifact_removal</code></a> adds <code>artifact_removal</code>
+(<code>removed</code>, <code>absent</code> or <code>failed</code>) and <code>artifact_removal_code</code>, with a CHECK that a
+removal outcome is present exactly when the phase is <code>destroyed</code> and a code is
+present exactly when the outcome is <code>failed</code>.</p>
+<p><a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/key-retention.js#L190-L193"><code>destroyRetainedKeys</code></a> refuses <code>LIFECYCLE_ARTIFACT_REMOVER_REQUIRED</code>
+before any state change when no remover is composed. It commits <code>destroying</code>,
+has the key custodian delete and confirm the absence of every key, then
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/key-retention.js#L175-L184">removes the export file</a> by digest and records the outcome
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/key-retention.js#L226-L235">in the same row update</a> that commits <code>destroyed</code>. A missing or
+unremovable file never blocks key destruction; a repeat call on a <code>destroyed</code>
+record reports the recorded outcome without retrying. The
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/filesystem-artifact.js#L52-L86">filesystem remover</a> builds the path only from the configured
+private directory and the recorded digest (<code>tenant-artifact-&lt;digest&gt;</code>), and
+refuses a symlink or non-directory at that name. Copies outside that directory
+are the operator's responsibility
+(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#key-destruction-removes-export">key-destruction-removes-export</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#export-removal-no-retry">export-removal-no-retry</a>).</p>
+<h3 id="restore-census-and-non-clinical-identities">Restore census and non-clinical identities<a class="headerlink" href="#restore-census-and-non-clinical-identities" title="Permanent link">&para;</a></h3>
+<p>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/operation-cohort.js#L97-L124">actor census</a> in <code>assertComplete</code> reads every other client
+backend in the database whose identity holds any privilege, direct, inherited or
+by ownership, in the protected namespaces. A backend matching a pinned
+participant's PID, birth and role passes. Any other backend is
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/operation-cohort.js#L125-L132">exempt</a> only when its identity holds no privilege on any
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/clinical-catalogue.js#L7-L14">clinical table</a> (<code>entries</code>, <code>treatments</code>, <code>devicestatus</code>,
+<code>profile</code>, <code>food</code>, <code>settings</code>, <code>activity</code>) and no write privilege on
+<code>tenant_insertion_ordinal</code> or <code>tenant_write_clock</code>; otherwise the census refuses
+<code>RESTORE_COHORT_UNKNOWN_BACKEND</code>. Grants read from the catalogue in the census
+statement decide; role names and <code>application_name</code> do not. Read-only identities
+and the admin role's <code>ownership_operator</code> are therefore accepted while connected
+(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase">restore-census-and-ownership-phase</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-counter-writers">restore-census-counter-writers</a>).
+The exemption is a configuration check of connected identities, not a check of
+live writes. The disposable-PostgreSQL integration test
+<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/tests/admin-lifecycle-fit.integration.test.js#L248-L262"><code>admin-lifecycle-fit</code></a> exercises the admin role beside a
+restore, including granting it a clinical table to make the census refuse.</p>
+<h3 id="the-ownership_operator-identity">The <code>ownership_operator</code> identity<a class="headerlink" href="#the-ownership_operator-identity" title="Permanent link">&para;</a></h3>
+<p>The deployment plan <a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/deploy/multitenant/config.js#L87-L97">declares</a> a separate
+<code>&lt;prefix&gt;_ownership_operator</code> database identity for the admin role's ownership
+operations. In the authorization namespace it may read and row-lock
+<code>tenant_authorization_config</code> and <code>tenant_owner_policy</code> through
+<code>UPDATE(owner_fence)</code>, insert and update <code>active</code>, <code>can_update</code> and <code>delegable</code>
+on <code>tenant_owner_actors</code>, read <code>tenant_authorization_subjects</code> and insert into
+<code>tenant_subject_admin_audit</code>. In the control namespace it gets only <code>SELECT</code> on
+the window, request and ceremony tables (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/tenant-phase.js#L63-L68">phase grants</a>). It holds
+no clinical grant and no counter grant, so the census above accepts it. Each
+ownership change reads the tenant phase under the shared window lock before any
+ownership row lock and refuses <code>OWNERSHIP_TENANT_INACTIVE</code> unless the tenant is
+active (<a href="https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-ownership/postgres.js#L141-L148">ownership check</a>). The admin role is not a lifecycle
+cohort participant.</p>
 <h2 id="shared-resources-and-remaining-fences">Shared resources and remaining fences<a class="headerlink" href="#shared-resources-and-remaining-fences" title="Permanent link">&para;</a></h2>
 <p>The fixed cohort uses private same-UID sockets and trusted credential custody.
 It compares actual backend PID, birth, role and datastore identity; application
 names are not membership. The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/server/serve/operation-cohort.js#L118">actor census</a> refreshes PostgreSQL's
-statistics snapshot on the same operator client before reading actors. It remains
+statistics snapshot on the same operator client before reading actors; at
+<code>16a1fc2d</code> it also <a href="#restore-census-and-non-clinical-identities">accepts non-clinical identities</a>. It remains
 a diagnostic/refusal check, not a physical database fence against a newly opened
 raw client with already-authorized DATA credentials. Such external writers are
 unsupported under the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">application ownership contract</a>;
@@ -6560,7 +6701,7 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#L74">application cohort guide</a>.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/276cc19a65ffefb50e702993a925ed9bbd1e3b07/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/477f215c25864f94aaa3b91489d70ca4ec412165/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
 adds the packaged ordinary-restore/UI/B-continuity scope. HA, multihost
 membership, capacity and whole M6 retain separate admission criteria. The
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>
