@@ -21,7 +21,7 @@ acceptance**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/batch-join-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-BATCH-JOIN-1110` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-BATCH-JOIN-1110` is the measurement |
 | semver | `n/a` |
 | register entries | `BF-229`, `BF-230`, `BF-231`, `BF-232` |
 

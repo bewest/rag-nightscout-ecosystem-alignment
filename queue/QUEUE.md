@@ -31,22 +31,22 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 399 |
+| items | 401 |
 | runnable gates | 452 |
-| explicit `no-gate:` markers | 400 |
+| explicit `no-gate:` markers | 402 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 852 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 402 of the 854 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 17 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, DEPLOY-TREE-HOME |
+| `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE |
+| `in-progress` | 19 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, DEPLOY-TREE-HOME, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 12 | WS-LAB, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, DEPLOY-VAULT-AGENT |
+| `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
-| `in-flight-upstream` | 11 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE |
+| `in-flight-upstream` | 21 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
 | `needs-decision` | 7 | BFQ-ENV, BFQ-95, ADV-XSS-META, ADV-CONFIG, DEPENDABOT-CONFIG, MOD-WRITE-VALIDATION-READ, MOD-UNITS-CANONICAL |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 99 items
+`parcel: tenancy` &mdash; 101 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8452,30 +8452,32 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 | `in-flight-upstream` | `codex/m6b-join-20261110` | minor | 1 run |
 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers | `in-flight-upstream` | `codex/oidc-single-provision-20261110` | minor | 1 run |
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-flight-upstream` | `codex/ownership-ops-20261110` | minor | 1 run |
-| `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity | `ready-to-push` | `codex/ownership-role-20261110` | n/a | 1 run |
-| `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `ready-to-push` | `codex/root-admin-parity-20261110` | n/a | 1 run |
-| `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline | `ready-to-push` | `codex/internal-listener-20261110` | n/a | 1 run |
-| `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause | `ready-to-push` | `codex/activity-eligibility-20261110` | n/a | 1 run |
-| `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `ready-to-push` | `codex/export-expiry-20261110` | n/a | 1 run |
-| `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `ready-to-push` | `codex/admin-lifecycle-20261110` | n/a | 1 run |
+| `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity | `in-flight-upstream` | `codex/ownership-role-20261110` | n/a | 1 run |
+| `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `in-flight-upstream` | `codex/root-admin-parity-20261110` | n/a | 1 run |
+| `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline | `in-flight-upstream` | `codex/internal-listener-20261110` | n/a | 1 run |
+| `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause | `in-flight-upstream` | `codex/activity-eligibility-20261110` | n/a | 1 run |
+| `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `in-flight-upstream` | `codex/export-expiry-20261110` | n/a | 1 run |
+| `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `in-flight-upstream` | `codex/admin-lifecycle-20261110` | n/a | 1 run |
 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README | `in-progress` | `docs/operator-readme-20261110` | n/a | 0 run + 1 no-gate |
-| `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `ready-to-push` | `codex/consumer-refusal-20261110` | n/a | 1 run |
-| `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) | `ready-to-push` | `codex/tenant-extended-settings-20261110` | n/a | 1 run |
-| `MT-BATCH-JOIN-1110` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance | `ready-to-push` | `codex/batch-join-20261110` | n/a | 1 run |
-| `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `ready-to-push` | `codex/m6b-followups-20261110` | n/a | 1 run |
+| `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `in-flight-upstream` | `codex/consumer-refusal-20261110` | n/a | 1 run |
+| `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) | `in-flight-upstream` | `codex/tenant-extended-settings-20261110` | n/a | 1 run |
+| `MT-BATCH-JOIN-1110` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance | `in-flight-upstream` | `codex/batch-join-20261110` | n/a | 1 run |
+| `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-flight-upstream` | `codex/m6b-followups-20261110` | n/a | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-flight-upstream` | `codex/key-retention-20261110` | minor | 1 run |
 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | `codex/vault-token-file-20261109` | minor | 1 run |
 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `main` | n/a | 1 run |
 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-TRUST-PROBES` | M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `done` | `main` | n/a | 1 run |
-| `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `not-started` | `codex/realtime-sharding` | minor | 0 run + 1 no-gate |
 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table | `not-started` | `codex/evaluator-partition` | minor | 0 run + 1 no-gate |
 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
-| `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `not-started` | `main` | n/a | 0 run + 1 no-gate |
+| `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
+| `MT-POOL-PRIMITIVE` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice) for evaluator and vcpool | `not-started` | `codex/pool-primitive-20261110` | n/a | 0 run + 1 no-gate |
+| `MT-CONNECTOR-REVERSE` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant | `not-started` | `codex/connector-reverse` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -10877,7 +10879,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/ownership-role-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -10907,7 +10909,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/root-admin-parity-20261110` |
 | base | `codex/m6b-followups-20261110@65657a62a1e26dde9e245f9a7651d2593da0208a` |
@@ -10938,7 +10940,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/internal-listener-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -10969,7 +10971,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/activity-eligibility-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11000,7 +11002,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/export-expiry-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11031,7 +11033,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/admin-lifecycle-20261110` |
 | base | `codex/ownership-role-20261110@1376c2946ce71078b477d4e0f2e4d428f29778ed` |
@@ -11092,7 +11094,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/consumer-refusal-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11123,7 +11125,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/tenant-extended-settings-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11153,7 +11155,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/batch-join-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11183,7 +11185,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-flight-upstream` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/m6b-followups-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11392,7 +11394,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `rag-nightscout-ecosystem-alignment` |
 | branch | `main` |
 | base | `main@2ea470f16` |
@@ -11571,7 +11573,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `nightscout-deploy` |
 | branch | `main` |
 | base | `main@75f0f61` |
@@ -11594,7 +11596,64 @@ alarm-readiness items, and the seam branch refresh.
 
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
 
-**Notes.** Deploy roadmap wave 4.
+**Notes.** Deploy roadmap wave 4. 2026-11-10: maintainer allows a Tanka-style Jsonnet binding in parallel with the Compose baseline (decisions.md#tanka-binding- parallel); the trust-probe prerequisite applies to the equivalence claim, not to starting the Jsonnet tree on a local cluster.
+
+### `MT-POOL-PRIMITIVE` &mdash; Shared pool-membership primitive (pool kind, member count, ordinal, ring slice) for evaluator and vcpool
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/pool-primitive-20261110` |
+| base | `official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture review |
+
+**Blast radius.** Multitenant only. One PostgreSQL pool-membership table keyed by pool kind and ordinal, plus one slice function (tenant ID hashed onto the member count). The evaluator pool and the vcpool connector pool use the same table and function but never share a pool: a member of one kind is invisible to the other. Flag off keeps one owner of every tenant, as today. The evaluator adopts it flag- off in this item; its scale-event acceptance stays with MT-EVALUATOR- PARTITION.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED until implemented. Gate: two kinds with overlapping ordinals stay independent; a member count disagreement or duplicate ordinal within one kind stops that kind's members and raises the alert; flag off selects every tenant. Control: key the table without pool kind and show the cross-kind test go red.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** 2026-11-10: decided (decisions.md#pool-primitive-shared), built now ahead of M7.
+
+### `MT-CONNECTOR-REVERSE` &mdash; M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/connector-reverse` |
+| base | `official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-POOL-PRIMITIVE` |
+
+**Blast radius.** Multitenant only. A vcpool role runs the existing nightscout-connect Nightscout source driver per tenant and writes through the tenant's own API as a tenant-bound subject; endpoint and source secret are operator-entered tenant secrets. Tenants are assigned by the shared pool primitive (kind vcpool, keyed by tenant ID, flag off in the preview). Paused tenants keep ingesting; suspended tenants do not.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; UNMEASURED: lab sync from a local single-site Nightscout into tenant A with an independent stored-state oracle, tenant B untouched, revocation of the source secret stops the pull, suspend stops it and pause does not.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** 2026-11-10: partitioning decided (decisions.md#pool-primitive-shared); egress capacity is a deployment constraint (decisions.md#vcpool-egress-capacity).
 
 ---
 

@@ -21,7 +21,7 @@ admin tools**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/root-admin-parity-20261110` |
 | base | `codex/m6b-followups-20261110@65657a62a1e26dde9e245f9a7651d2593da0208a` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-ROOT-ADMIN-PARITY` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-ROOT-ADMIN-PARITY` is the measurement |
 | semver | `n/a` |
 
 ## What this changes

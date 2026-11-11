@@ -33,22 +33,22 @@ repository.
 | [`LOOP-UPSTREAM-CARB-EDIT`](loop-upstream-carb-edit.md) | &mdash; | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cache (raised with the Loop maintainers) |
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |
-| [`MT-ACTIVITY-ELIGIBILITY`](mt-activity-eligibility-codex-activity-eligibility-20261110.md) | &mdash; | `ready-to-push` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause |
-| [`MT-ADMIN-LIFECYCLE-FIT`](mt-admin-lifecycle-fit-codex-admin-lifecycle-20261110.md) | &mdash; | `ready-to-push` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port |
-| [`MT-ADMIN-ROLE-OWNERSHIP`](mt-admin-role-ownership-codex-ownership-role-20261110.md) | &mdash; | `ready-to-push` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity |
-| [`MT-BATCH-JOIN-1110`](mt-batch-join-1110-codex-batch-join-20261110.md) | &mdash; | `ready-to-push` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance |
-| [`MT-CONSUMER-STALE-RESELECT`](mt-consumer-stale-reselect-codex-consumer-refusal-20261110.md) | &mdash; | `ready-to-push` | Alarm consumer survives evaluator timer publications during selection (BF-231) |
-| [`MT-EXPORT-EXPIRY`](mt-export-expiry-codex-export-expiry-20261110.md) | &mdash; | `ready-to-push` | Key destruction removes the export artifact file in the same audited step |
-| [`MT-INTERNAL-LISTENER`](mt-internal-listener-codex-internal-listener-20261110.md) | &mdash; | `ready-to-push` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline |
+| [`MT-ACTIVITY-ELIGIBILITY`](mt-activity-eligibility-codex-activity-eligibility-20261110.md) | &mdash; | `in-flight-upstream` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause |
+| [`MT-ADMIN-LIFECYCLE-FIT`](mt-admin-lifecycle-fit-codex-admin-lifecycle-20261110.md) | &mdash; | `in-flight-upstream` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port |
+| [`MT-ADMIN-ROLE-OWNERSHIP`](mt-admin-role-ownership-codex-ownership-role-20261110.md) | &mdash; | `in-flight-upstream` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity |
+| [`MT-BATCH-JOIN-1110`](mt-batch-join-1110-codex-batch-join-20261110.md) | &mdash; | `in-flight-upstream` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance |
+| [`MT-CONSUMER-STALE-RESELECT`](mt-consumer-stale-reselect-codex-consumer-refusal-20261110.md) | &mdash; | `in-flight-upstream` | Alarm consumer survives evaluator timer publications during selection (BF-231) |
+| [`MT-EXPORT-EXPIRY`](mt-export-expiry-codex-export-expiry-20261110.md) | &mdash; | `in-flight-upstream` | Key destruction removes the export artifact file in the same audited step |
+| [`MT-INTERNAL-LISTENER`](mt-internal-listener-codex-internal-listener-20261110.md) | &mdash; | `in-flight-upstream` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline |
 | [`MT-KEY-RETENTION`](mt-key-retention-codex-key-retention-20261110.md) | &mdash; | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal |
 | [`MT-M6A-JOIN`](mt-m6a-join-codex-m6a-join-20261109.md) | &mdash; | `in-flight-upstream` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign |
 | [`MT-M6B-JOIN`](mt-m6b-join-codex-m6b-join-20261110.md) | &mdash; | `in-flight-upstream` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 |
 | [`MT-OIDC-NATIVE`](mt-oidc-native-codex-oidc-native-harness-20261109.md) | &mdash; | `in-flight-upstream` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness |
 | [`MT-OIDC-SINGLE-PROVISION`](mt-oidc-single-provision-codex-oidc-single-provision-20261110.md) | &mdash; | `in-flight-upstream` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers |
-| [`MT-OWNER-LAST-GUARD`](mt-owner-last-guard-codex-m6b-followups-20261110.md) | &mdash; | `ready-to-push` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) |
+| [`MT-OWNER-LAST-GUARD`](mt-owner-last-guard-codex-m6b-followups-20261110.md) | &mdash; | `in-flight-upstream` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) |
 | [`MT-OWNERSHIP-OPS`](mt-ownership-ops-codex-ownership-ops-20261110.md) | &mdash; | `in-flight-upstream` | M6b: operator-assisted ownership add, transfer and recovery |
-| [`MT-ROOT-ADMIN-PARITY`](mt-root-admin-parity-codex-root-admin-parity-20261110.md) | &mdash; | `ready-to-push` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools |
-| [`MT-TENANT-EXTENDED-SETTINGS`](mt-tenant-extended-settings-codex-tenant-extended-settings-20261110.md) | &mdash; | `ready-to-push` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) |
+| [`MT-ROOT-ADMIN-PARITY`](mt-root-admin-parity-codex-root-admin-parity-20261110.md) | &mdash; | `in-flight-upstream` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools |
+| [`MT-TENANT-EXTENDED-SETTINGS`](mt-tenant-extended-settings-codex-tenant-extended-settings-20261110.md) | &mdash; | `in-flight-upstream` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) |
 | [`MT-VAULT-TOKEN-FILE`](mt-vault-token-file-codex-vault-token-file-20261109.md) | &mdash; | `in-flight-upstream` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) |
 | [`WS-LAB`](ws-lab-main.md) | &mdash; | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) |
 

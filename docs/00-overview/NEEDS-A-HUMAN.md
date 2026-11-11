@@ -37,12 +37,22 @@ every item that was `merged-upstream` then is `released`.
 | `BFQ-212` | `in-flight-upstream` | BF-212 - a chart-drag split leaves two treatments with one client identity; a re | #8878 |
 | `BFQ-225` | `in-flight-upstream` | BF-225 - socket re-sends that #8877 changed from one stored treatment to two (v3 | #8888 |
 | `LOOP-UPSTREAM-CARB-EDIT` | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cac | &mdash; |
+| `MT-ACTIVITY-ELIGIBILITY` | `in-flight-upstream` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | &mdash; |
+| `MT-ADMIN-LIFECYCLE-FIT` | `in-flight-upstream` | Restore census accepts non-clinical identities; ownership refuses on non-active  | &mdash; |
+| `MT-ADMIN-ROLE-OWNERSHIP` | `in-flight-upstream` | M6b: compose ownership operations into the multitenant admin role with an owners | &mdash; |
+| `MT-BATCH-JOIN-1110` | `in-flight-upstream` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | &mdash; |
+| `MT-CONSUMER-STALE-RESELECT` | `in-flight-upstream` | Alarm consumer survives evaluator timer publications during selection (BF-231) | &mdash; |
+| `MT-EXPORT-EXPIRY` | `in-flight-upstream` | Key destruction removes the export artifact file in the same audited step | &mdash; |
+| `MT-INTERNAL-LISTENER` | `in-flight-upstream` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | &mdash; |
 | `MT-KEY-RETENTION` | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal | &mdash; |
 | `MT-M6A-JOIN` | `in-flight-upstream` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | &mdash; |
 | `MT-M6B-JOIN` | `in-flight-upstream` | Join M6b ownership/retention, single-site OIDC provisioning, listener compositio | &mdash; |
 | `MT-OIDC-NATIVE` | `in-flight-upstream` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | &mdash; |
 | `MT-OIDC-SINGLE-PROVISION` | `in-flight-upstream` | Single-site OIDC: declarative identity-to-role list and a role for signed-in str | &mdash; |
+| `MT-OWNER-LAST-GUARD` | `in-flight-upstream` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | &mdash; |
 | `MT-OWNERSHIP-OPS` | `in-flight-upstream` | M6b: operator-assisted ownership add, transfer and recovery | &mdash; |
+| `MT-ROOT-ADMIN-PARITY` | `in-flight-upstream` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | &mdash; |
+| `MT-TENANT-EXTENDED-SETTINGS` | `in-flight-upstream` | Tenant environment carries plugin extended settings so the stale-data alarm can  | &mdash; |
 | `MT-VAULT-TOKEN-FILE` | `in-flight-upstream` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | &mdash; |
 | `PLAT-ENTRY` | `in-flight-upstream` | One executable (D21): bin/nightscout.js with `single` and the operator tools; im | #8862 |
 | `ADV-CONFIG` | `needs-decision` | The readable-by-world warning, the careportal role, and the two settings behind  | #8746 |
@@ -53,16 +63,6 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `DEPLOY-VAULT-AGENT` | `ready-to-push` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | &mdash; |
-| `MT-ACTIVITY-ELIGIBILITY` | `ready-to-push` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | &mdash; |
-| `MT-ADMIN-LIFECYCLE-FIT` | `ready-to-push` | Restore census accepts non-clinical identities; ownership refuses on non-active  | &mdash; |
-| `MT-ADMIN-ROLE-OWNERSHIP` | `ready-to-push` | M6b: compose ownership operations into the multitenant admin role with an owners | &mdash; |
-| `MT-BATCH-JOIN-1110` | `ready-to-push` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | &mdash; |
-| `MT-CONSUMER-STALE-RESELECT` | `ready-to-push` | Alarm consumer survives evaluator timer publications during selection (BF-231) | &mdash; |
-| `MT-EXPORT-EXPIRY` | `ready-to-push` | Key destruction removes the export artifact file in the same audited step | &mdash; |
-| `MT-INTERNAL-LISTENER` | `ready-to-push` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | &mdash; |
-| `MT-OWNER-LAST-GUARD` | `ready-to-push` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | &mdash; |
-| `MT-ROOT-ADMIN-PARITY` | `ready-to-push` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | &mdash; |
-| `MT-TENANT-EXTENDED-SETTINGS` | `ready-to-push` | Tenant environment carries plugin extended settings so the stale-data alarm can  | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item

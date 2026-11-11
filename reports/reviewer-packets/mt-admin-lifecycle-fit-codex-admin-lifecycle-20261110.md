@@ -21,7 +21,7 @@ active tenants; admin plane rule allows same address on a different port**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/admin-lifecycle-20261110` |
 | base | `codex/ownership-role-20261110@1376c2946ce71078b477d4e0f2e4d428f29778ed` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-ADMIN-LIFECYCLE-FIT` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-ADMIN-LIFECYCLE-FIT` is the measurement |
 | semver | `n/a` |
 | register entries | `BF-230` |
 

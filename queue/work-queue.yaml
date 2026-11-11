@@ -26128,7 +26128,7 @@ items:
     branch: codex/ownership-role-20261110
     worktree: externals/work/crm-ownership-role-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       New multitenant admin role start (lib/server/serve/admin-config.js, admin-preview.js, roles.js, serve/index.js,
       cli multitenant command); admin listener serves only ownership-operations v1; deploy plan gains the
@@ -26162,7 +26162,7 @@ items:
     branch: codex/root-admin-parity-20261110
     worktree: externals/work/crm-root-admin-parity-20261110
     base: codex/m6b-followups-20261110@65657a62a1e26dde9e245f9a7651d2593da0208a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Multitenant DATA API: restore the admin-tools authorization routes for a tenant's root principal, writing
       through the owner-aware subject writer (last-owner guard), under RLS. No owner or operator authority for root.
@@ -26199,7 +26199,7 @@ items:
     branch: codex/internal-listener-20261110
     worktree: externals/work/crm-internal-listener-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Replace per-contract socketPathEnv/endpoint config (internal-api/endpoint-config.js and its three callers) with serve.internal host/port/socket plus NS_SERVE_INTERNAL_* overrides; peers get NS_*_INTERNAL_URL; transport close() waits for in-flight responses up to a deadline.
     review: maintainer
@@ -26229,7 +26229,7 @@ items:
     branch: codex/activity-eligibility-20261110
     worktree: externals/work/crm-activity-eligibility-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Evaluator (and future connector workers) build work lists from tenants eligible under pause/suspend instead of configured presence (evaluator-runtime.js:101,152); owner-API pause verb with audit; restore/restart preserve state.
     review: maintainer
@@ -26266,7 +26266,7 @@ items:
     branch: codex/export-expiry-20261110
     worktree: externals/work/crm-export-expiry-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Tenant lifecycle key destruction (key-retention custodian) also deletes tenant-artifact-<digest>; one audit entry.
     review: maintainer
@@ -26301,7 +26301,7 @@ items:
     branch: codex/admin-lifecycle-20261110
     worktree: externals/work/crm-admin-lifecycle-20261110
     base: codex/ownership-role-20261110@1376c2946ce71078b477d4e0f2e4d428f29778ed
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       operation-cohort.js assertComplete (grant-checked exemption), ownership operations phase check, listeners.js plane rule.
     review: maintainer
@@ -26370,7 +26370,7 @@ items:
     branch: codex/consumer-refusal-20261110
     worktree: externals/work/crm-consumer-refusal-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       lib/tenant-notifications/producer.js select re-runs on NOTIFICATION_PRODUCER_STALE (up to 3); multitenant
       evaluator preview only.
@@ -26407,7 +26407,7 @@ items:
     branch: codex/tenant-extended-settings-20261110
     worktree: externals/work/crm-tenant-extended-settings-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       lib/server/tenant-app/environment.js projection of extendedSettings; owner settings surface for plugin alert
       settings; multitenant only.
@@ -26440,7 +26440,7 @@ items:
     branch: codex/batch-join-20261110
     worktree: externals/work/crm-batch-join-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Fast-forward of #8898 by 37 commits: internal listener, pause/suspend, export expiry, admin lifecycle fit (BF-230),
       root admin parity (BF-229), consumer revision and repeat clock (BF-231), tenant extended settings (BF-232), and
@@ -26474,7 +26474,7 @@ items:
     branch: codex/m6b-followups-20261110
     worktree: externals/work/crm-m6b-followups-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Owner-plane subject revocation in lib/subject-admin/postgres.js remove(); multitenant preview only.
       Refuses with SUBJECT_ADMIN_LAST_OWNER (409) when the target is the last usable owner; legacy
@@ -26726,7 +26726,7 @@ items:
     repo: rag-nightscout-ecosystem-alignment
     branch: main
     base: main@2ea470f16
-    state: not-started
+    state: in-progress
     blast_radius: >
       Measurement only, on the accepted Compose reference with synthetic tenants.
       Established load tooling (k6 or autocannon) drives pinned uploader/follower
@@ -26991,7 +26991,7 @@ items:
     repo: nightscout-deploy
     branch: main
     base: main@75f0f61
-    state: not-started
+    state: in-progress
     blast_radius: >
       bindings/kubernetes: ordinary resources only; equivalence table against the
       public-name contract; no autoscaling or dynamic membership.
@@ -27009,4 +27009,69 @@ items:
     evidence:
       - docs/30-design/tenancy/deployment-bindings-and-public-names.md
     notes: >
-      Deploy roadmap wave 4.
+      Deploy roadmap wave 4. 2026-11-10: maintainer allows a Tanka-style Jsonnet
+      binding in parallel with the Compose baseline (decisions.md#tanka-binding-parallel);
+      the trust-probe prerequisite applies to the equivalence claim, not to starting
+      the Jsonnet tree on a local cluster.
+
+  - id: MT-POOL-PRIMITIVE
+    title: "Shared pool-membership primitive (pool kind, member count, ordinal, ring slice) for evaluator and vcpool"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/pool-primitive-20261110
+    base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
+    state: not-started
+    blast_radius: >
+      Multitenant only. One PostgreSQL pool-membership table keyed by pool kind and
+      ordinal, plus one slice function (tenant ID hashed onto the member count). The
+      evaluator pool and the vcpool connector pool use the same table and function
+      but never share a pool: a member of one kind is invisible to the other. Flag off
+      keeps one owner of every tenant, as today. The evaluator adopts it flag-off in
+      this item; its scale-event acceptance stays with MT-EVALUATOR-PARTITION.
+    review: maintainer; architecture review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED until implemented. Gate: two kinds with overlapping ordinals stay
+          independent; a member count disagreement or duplicate ordinal within one kind
+          stops that kind's members and raises the alert; flag off selects every tenant.
+          Control: key the table without pool kind and show the cross-kind test go red.
+    blocks_on: []
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      2026-11-10: decided (decisions.md#pool-primitive-shared), built now ahead of M7.
+
+  - id: MT-CONNECTOR-REVERSE
+    title: "M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/connector-reverse
+    base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
+    state: not-started
+    blast_radius: >
+      Multitenant only. A vcpool role runs the existing nightscout-connect Nightscout
+      source driver per tenant and writes through the tenant's own API as a tenant-bound
+      subject; endpoint and source secret are operator-entered tenant secrets. Tenants
+      are assigned by the shared pool primitive (kind vcpool, keyed by tenant ID, flag
+      off in the preview). Paused tenants keep ingesting; suspended tenants do not.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          UNMEASURED: lab sync from a local single-site Nightscout into tenant A with an
+          independent stored-state oracle, tenant B untouched, revocation of the source
+          secret stops the pull, suspend stops it and pause does not.
+    blocks_on:
+      - MT-POOL-PRIMITIVE
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      2026-11-10: partitioning decided (decisions.md#pool-primitive-shared); egress
+      capacity is a deployment constraint (decisions.md#vcpool-egress-capacity).
