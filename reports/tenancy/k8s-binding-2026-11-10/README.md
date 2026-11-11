@@ -144,3 +144,87 @@ refuse to serve. Then `kind delete cluster` and `docker image prune` for the loa
   the README lane (`docs/operator-readme-20261110`) also edits: expect a one-file conflict there.
 - This record, committed alone on alignment `main`. Queue, `decisions.md` and `contents.md` are
   not edited.
+
+## 2026-11-10 (evening): cluster smoke on kind
+
+*Appended after capture of the sections above, which stand as recorded. Figures from tool output in
+this session.*
+
+### Anchors
+
+| tree or tool | value |
+|---|---|
+| nightscout-deploy `main` (branch base; pushed, includes the compose sync and lane K) | `16fe4d4` |
+| nightscout-deploy `k8s/cluster-smoke-20261110` (this smoke; local, unpushed) | `65f55c1` |
+| core rendered and built | `16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
+| image | `git archive 16a1fc2d` with `deploy/multitenant` replaced by `bindings/compose/multitenant` at `16fe4d4`, built with that tree's Dockerfile and revision label; image id `sha256:9188bf0fa23a…` |
+| kind | v0.27.0, cluster `ns-k8s-smoke`, one node |
+| `kubectl` client / server | v1.32.2 / v1.32.2 |
+| `tk` | v0.20.0 |
+| golden render at the branch head | sha256 `2f3e51a18fe5eabf64ef369dd048cb2395fd63920fec0e05a6d7568293ba5b52` |
+
+Disk before loading: `/` 56 % (190 GB free, Docker's root), `/home` 92 % (40 GB free). The cluster was
+deleted at the end, and the built image and kind node image were removed.
+
+### Smoke table
+
+| step | result (quoted from output) |
+|---|---|
+| apply | `tk apply` panicked: `slice bounds out of range [:192] with length 189` in `client.splitRow` (tk v0.20.0 reading `kubectl` v1.32 output). The committed render was applied with `kubectl apply -f check/golden/preview.yaml`: 31 objects created. The server accepted every object, so server-side schema validation passed |
+| `secrets.sh seed` | `{"state":"seeded","secrets":["ns-postgres-password","ns-vault-tls","ns-ca"],"configMaps":["ownership-grants"]}` |
+| vault Ready | **binding defect 1**: never Ready. The probe dialled `https://vault:8200`, and that Service has no endpoint until the probe passes. Fixed to loopback with `-tls-server-name=vault`. `OrderedReady` would not replace the unready Pod (`currentRevision` ≠ `updateRevision`), so `vault-0` was deleted by hand; Ready after |
+| Job `provision` | `bootstrap`: `{"state":"synthetic-demo-provisioned",…}`; `vault-kubernetes-auth`: `{"state":"vault-agent-provisioned","method":"kubernetes","role":"nsdemo_vault_agent",…}`; `ownership-grants`: `{"state":"ownership-grants-provisioned","role":"nsdemo_ownership_operator","grants":10}`; `done`: `{"state":"provisioned"}` |
+| `secrets.sh publish` | `{"state":"published","secrets":["ns-config-api","ns-config-realtime","ns-config-evaluator","ns-config-tenant-admin","ns-config-ui","ns-config-admin"]}` |
+| Vault Agent sidecar | `authentication successful, sending token to sinks`; `token written: path=/run/ns-vault/token`; `renewed auth token`. The sink is `-rw------- owner=1000 group=1000` |
+| cohort roles, first start | all four exited: `could not start: preview startup failed`. **Binding defect 2**: an `emptyDir` root is `3777 0:1000` (measured with a probe Pod), and core requires a socket directory owned by the process uid with no group or other bits (`transport.js:115`). Fixed by an init-made 0700 subdirectory mounted with `subPath: d`. After the fix: tenant-admin `Listening … 0.0.0.0:1341`; evaluator `Evaluator preview started; configured tenants: 2` |
+| api | **Compose-tree defect A** (reproduces the bench lane's finding): `preview readiness or storage initialization refused`. A debug Pod showed `LIFECYCLE_WINDOW_SCHEMA_UNSAFE` inside the subject-admin store's transaction, then `SUBJECT_ADMIN_STORE_UNSAFE`. `config.js` excludes `root_writer` from the control-schema reads. With bench fix 1's grants applied by hand in the disposable database: `Listening for role api on 0.0.0.0:1337` |
+| realtime | `Listening for role realtime on 0.0.0.0:1339`, after one exit 78 (`realtime preview readiness or initialization refused`) when it started before api. The in-place restart then served |
+| cohort Ready | `cohort-0 5/5 Running` |
+| admin | **Compose-tree defect B** (ownership overlay): `invalid explicit admin operator configuration`. `admin.json` keys are `connectionEnv, namespace, operator, tenants`, but core's `admin-config.js` requires `lifecycleNamespace`. With the key added to the Secret by hand: `Listening for role admin on 10.244.0.26:1342` |
+| entry round-trip through `edge` → `api` (synthetic tenant A) | `exchangeA 200, putA 201, getA 200, roundTrip true` |
+| tenant isolation (same entry) | read with tenant B's own token on B's host: `404`; tenant A's token on B's host: `401` |
+| realtime connects through `edge` | Engine.IO polling `200`, open `true`, upgrades `["websocket"]`; WebSocket frames `open, 0{, 40`, namespace `connected` |
+| admin from an operator-labelled Pod | `admin:1342=connected … listOwners=listed owners=1` |
+| admin from an unlabelled Pod | `admin:1342=timeout`. The same Pod: `api:1337=timeout realtime:1339=timeout postgres:5432=timeout edge:8080=connected` |
+| NetworkPolicy control | with `default-deny-ingress` and `admin-from-operator` deleted, an unlabelled Pod got `admin:1342=connected`. With them restored: `admin:1342=timeout`. kindnet enforces NetworkPolicy |
+| **two-Pod refusal control** | **red.** `kubectl scale sts cohort --replicas=2` made `cohort-1` `5/5 Running`. Its api, realtime and tenant-admin are listening and its evaluator reports `configured tenants: 2`. Endpoints `api 10.244.0.25:1337,10.244.0.34:1337`, and `realtime` the same. Two cohorts served at once and nothing refused. Scaled back to 1; the round-trip and realtime smoke then repeated with the same results |
+| update without overlap | `rollout restart sts/cohort`: `delete Pod cohort-0` 03:51:52Z, then `create Pod cohort-0` 03:51:53Z, with a new uid |
+| restore operator (`demo`) | not run. The API refused an ephemeral container with `subPath` ("cannot be set for an Ephemeral Container"), and core refuses the volume root as socket directory. The Compose `demo` therefore has no Kubernetes counterpart yet |
+
+### Controls after the smoke
+
+The branch has 9 invariants with 0 failures, and 12 controls, all red as expected.
+- New invariant `private-directories`. Mounting `ns-ipc` at its root gives `container api mounts ns-ipc at its root; mount the 0700 subdirectory (subPath d)`.
+- `evaluator-statefulset` reworked:
+  - an ordinal with the partition off gives `partition is off but the evaluator sets MULTITENANT_POOL_EVALUATOR_ORDINAL`;
+  - partition on with `metadata.name` gives `… ORDINAL must come from the StatefulSet pod-index label`;
+  - an extra readiness argument gives `evaluator readiness must be the role health check only`.
+
+Golden current. Vault step test 3/3.
+
+### Pool variables (canonical names)
+
+The binding now uses core's `MULTITENANT_POOL_EVALUATOR_{PARTITION,MEMBERS,ORDINAL,LEASE_MS,DATABASE_URL,NAMESPACE}`. The provisional names map as `NS_EVALUATOR_POOL_ORDINAL` → `ORDINAL` and `NS_EVALUATOR_POOL_MEMBERS` → `MEMBERS`.
+
+**Mismatch with the coordinator's instruction ("render only the ordinal").** On core `codex/pool-primitive-20261110` `5a789903`, `lib/pool-membership/config.js` `fromEnvironment` refuses an ordinal while the partition is off:
+- `{ORDINAL: "0"}` gives `partition is off but MULTITENANT_POOL_EVALUATOR_ORDINAL set`;
+- `{PARTITION: "on", ORDINAL: "0"}` gives `MULTITENANT_POOL_EVALUATOR_MEMBERS must be a non-negative integer`.
+
+The binding therefore renders no pool variable with the partition off, which is the preview. With `partition: 'on'` it renders `PARTITION=on` plus `ORDINAL` from the pod-index label and no `MEMBERS`, per the decision that the count lives in the pool table. Core at `5a789903` still requires `MEMBERS` when on, so that combination refuses until core follows the decision. Readiness stays the role health check.
+
+### Equivalence summary after the smoke
+
+The table is in `bindings/kubernetes/README.md` at `65f55c1`. Of 23 rows:
+- 18 smoked. 2 of those (api and admin) needed the lab workarounds for Compose-tree defects A and B.
+- 1 smoked difference: start order.
+- 1 rendered only: PostgreSQL identities.
+- 1 **control red**: two cohorts both serve.
+- 2 UNMEASURED: the restore operator, and container-restart semantics beyond the observed realtime restart.
+
+### Lab interventions (disposable cluster only, not in any tree)
+
+- Bench fix 1's three `GRANT`s for `nsdemo_root_writer`, run as the PostgreSQL superuser.
+- `ownership.lifecycleNamespace` added to `ns-config-admin`'s `admin.json`.
+- `vault-0` deleted once so the fixed probe could roll.
+- Debug and probe Pods, labelled outside the StatefulSet selector.
+- `docker image prune -f` at teardown reclaimed 3.746 GB of dangling images host-wide, the kind node image among them.
