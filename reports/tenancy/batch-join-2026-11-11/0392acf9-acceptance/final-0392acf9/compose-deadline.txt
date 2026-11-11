@@ -1,0 +1,7 @@
+2026-11-11T17:11:57Z project=ns-lc-20261111t171157z-243368 source=externals/work/crm-batch-join-20261111 control=none api-shutdown-ms=500 head=0392acf97c720a7e121eea47a9d42a0c8dbe9e73 dirty=0
+SCENARIO_PASS {"baseline":{"A":{"ok":3,"refused":0},"B":{"ok":3,"refused":0}},"revokedA":{"A":{"ok":0,"refused":3},"B":{"ok":3,"refused":0}},"suspendedA":{"A":{"ok":0,"refused":3},"B":{"ok":3,"refused":0},"directA"…
+2026-11-11T17:12:03Z api running during hold after SIGTERM: true; WINDOW_DRAINED lines: 0
+DRAIN {"apiShutdownMs":500,"holdMs":1500,"runningDuringHold":true,"drainedLinesDuringHold":0,"apiExit":0,"heldCall":["start","finish"],"windowOperations":29,"allFinished":true,"drainedMs":1565,"client":{"error":"SOCKET_IPC_UNAVAILABLE","elapsedMs":673},"expected":"SOCKET_IPC_UNAVAILABLE"}
+2026-11-11T17:12:04Z containers remaining for project ns-lc-20261111t171157z-243368: 0
+2026-11-11T17:12:04Z networks remaining for project ns-lc-20261111t171157z-243368: 0
+2026-11-11T17:12:04Z exit 0

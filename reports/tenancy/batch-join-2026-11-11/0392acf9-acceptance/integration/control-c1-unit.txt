@@ -1,0 +1,8 @@
+    1) reads once per pass for every admitted tenant and acquires only a tenant whose pair moved
+    2) a refused read checks no tenant that pass; a tenant missing from the read acquires
+  3 passing (12ms)
+  2 failing
+  1) evaluator backstop: one write clock read per pass
+      AssertionError [ERR_ASSERTION]: EV_STAMPS_CHANGED_ACQUIRES
+  2) evaluator backstop: one write clock read per pass
+      AssertionError [ERR_ASSERTION]: the next pass finds the change

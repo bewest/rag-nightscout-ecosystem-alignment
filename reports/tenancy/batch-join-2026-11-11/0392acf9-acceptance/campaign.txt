@@ -1,0 +1,29 @@
+16:50:56 head 2f1acc71b00fe7d53e5d3fbabf594910d77c20a8 porcelain=0
+16:50:56 start bundle
+16:51:04 bundle exit 0
+16:51:04 start test:all
+16:54:43 test:all exit 0
+16:54:43 start test:browser
+16:58:32 test:browser exit 0
+16:58:32 start corpus
+17:05:59 corpus exit 1
+17:05:59 start oidc matrix
+17:06:17 oidc matrix exit 0
+17:06:17 start oidc controls
+17:06:34 oidc controls exit 0
+17:06:34 start compose final
+17:10:27 compose final exit 137
+17:10:27 start compose deadline
+17:11:57 resume head 0392acf97c720a7e121eea47a9d42a0c8dbe9e73 porcelain=0
+17:11:57 compose final (rerun on 0392acf9) exit 0
+17:11:57 start compose deadline
+17:12:04 compose deadline exit 0
+17:12:04 start compose early-drop
+17:12:10 compose early-drop exit 1
+17:12:10 start compose blanket
+17:12:13 compose blanket exit 1
+17:12:13 start static
+17:12:19 static done
+17:12:19 start corpus (rerun)
+17:19:49 corpus rerun exit 0
+17:19:49 done porcelain=0 containers=0 nslc=0

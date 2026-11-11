@@ -1,0 +1,2 @@
+2026-11-11T17:10:27Z exit 137
+every component (api, evaluator, realtime, tenant-admin) exited 1: TypeError: Invalid fixed participant manifest at lib/server/serve/operation-cohort-manifest.js:14 (from tests/native/internal-api-compose/component.cjs:38); driver waited until removed at 17:10:27Z (exit 137)

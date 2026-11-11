@@ -1,0 +1,10 @@
+LAB hours=12 drop=rawbg,timeago,ar2,errorcodes,cage,sage,iage,bage,pump,loop,upbat,iob,cob,bwp,basal,profile,devicestatus records=200 load=1.66 1.77 1.73
+RUN base {"cycles":46801,"acquisitions":{"n":198,"cpuMsMean":4.68,"cpuMsP50":3.93,"cpuMsP95":9.91,"wallMsP50":3.25,"wallMsP95":5.36},"timeOnly":{"n":46603,"cpuMsMean":1.03,"cpuMsP50":0.82,"cpuMsP95":3.58,"wallMsP50":0.81,"wallMsP95":1.6},"alarmTransitions":17,"contentTransitions":19} elapsed_s=40.4
+RUN due slow=1000 {"cycles":6093,"acquisitions":{"n":198,"cpuMsMean":4,"cpuMsP50":3.67,"cpuMsP95":8.15,"wallMsP50":3.03,"wallMsP95":5.28},"timeOnly":{"n":5895,"cpuMsMean":0.91,"cpuMsP50":0.66,"cpuMsP95":3.15,"wallMsP50":0.66,"wallMsP95":1.33},"alarmTransitions":17,"contentTransitions":19} elapsed_s=
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=1000 :: 19 base content transitions, 19 due
+CYCLES slow=1000 base 46801 due 6093 (7.7x fewer)
+RUN due slow=60000 {"cycles":288,"acquisitions":{"n":198,"cpuMsMean":3.74,"cpuMsP50":3.1,"cpuMsP95":8.56,"wallMsP50":2.99,"wallMsP95":5.44},"timeOnly":{"n":90,"cpuMsMean":0.95,"cpuMsP50":0.72,"cpuMsP95":3.54,"wallMsP50":0.72,"wallMsP95":1.68},"alarmTransitions":17,"contentTransitions":19} elapsed_s=
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=60000 :: 19 base content transitions, 19 due
+CYCLES slow=60000 base 46801 due 288 (162.5x fewer)

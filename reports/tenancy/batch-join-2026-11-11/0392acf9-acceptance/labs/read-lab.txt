@@ -1,0 +1,12 @@
+PART scenarios {"reads":1680,"equal":1500,"orderOnly":180,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":350,"mingoMembershipDiffer":0,"mingoOrder":1680,"mingoOrderDiffer":178,"instants":140,"workingSetEqual":136,"outputEqual":136,"totalEqual":1680,"totalDifferent":0,"mongoMatchesToday":0,"mongoMatchesTotal":178,"mongoBoth":0,"mongoNeither":2,"totalPathsOutputEqual":140,"outputChangedWithoutTie":0}
+PART timelines {"reads":5472,"equal":5078,"orderOnly":394,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":1140,"mingoMembershipDiffer":0,"mingoOrder":5472,"mingoOrderDiffer":392,"instants":456,"workingSetEqual":428,"outputEqual":446,"totalEqual":5472,"totalDifferent":0,"mongoMatchesToday":0,"mongoMatchesTotal":392,"mongoBoth":0,"mongoNeither":2,"totalPathsOutputEqual":456,"outputChangedWithoutTie":0}
+PART corpus sets=7 {"reads":5976,"equal":5574,"orderOnly":402,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":1245,"mingoMembershipDiffer":0,"mingoOrder":5976,"mingoOrderDiffer":400,"instants":498,"workingSetEqual":470,"outputEqual":488,"totalEqual":5976,"totalDifferent":0,"mongoMatchesToday":0,"mongoMatchesTotal":400,"mongoBoth":0,"mongoNeither":2,"totalPathsOutputEqual":498,"outputChangedWithoutTie":0}
+MONGO_NEITHER 2 entries findFiltered sort {"date":-1} limit 12
+CHANGE 2 working set properties $.sgvs.[].mgdl (number/number)
+CHANGE 2 output properties twins-and-ties $.emitted.[].clear
+CHANGE 2 working set alarms $.sgvs.[].mgdl (number/number)
+CHANGE 2 output alarms twins-and-ties $.emitted.[].clear
+CHANGE 24 working set properties $.sgvs.[]._id (string/string)
+CHANGE 4 output properties timeline:twoUploaders $.properties.bgnow.sgvs.[]._id
+CHANGE 2 output properties timeline:twoUploaders $.properties.delta.previous.sgvs.[]._id
+PASS A_READ_DIFFERENTIAL {"reads":5976,"equal":5574,"orderOnly":402,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":1245,"mingoMembershipDiffer":0,"mingoOrder":5976,"mingoOrderDiffer":400,"instants":498,"workingSetEqual":470,"outputEqual":488,"totalEqual":5976,"totalDifferent":0,"mongoMatchesToday":0,"mongoMatchesTotal":400,"mongoBoth":0,"mongoNeither":2,"totalPathsOutputEqual":498,"outputChangedWithoutTie":0} elapsed_s=115.3 load=1.48 1.47 1.59

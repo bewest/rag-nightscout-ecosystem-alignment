@@ -1,0 +1,143 @@
+{
+  "id": "00ddebc4db76",
+  "startedAt": "2026-11-11T17:12:21.002Z",
+  "suites": [
+    "tests/tenant-insertion-upgrade.integration.test.js",
+    "tests/tenant-insertion-readiness.integration.test.js",
+    "tests/owner-configuration.integration.test.js",
+    "tests/owner-preview.integration.test.js",
+    "tests/tenant-socket-order-capability.integration.test.js",
+    "tests/tenant-socket-data-forwarding.integration.test.js",
+    "tests/postgres-connection.test.js",
+    "tests/entries-importer-postgres.integration.test.js",
+    "tests/postgres-entries-read.test.js",
+    "tests/postgres-entries-write.test.js",
+    "tests/api3.entries-crud.http.test.js",
+    "tests/tenant-rest-entries.integration.test.js",
+    "tests/tenant-rest-identifier-race.integration.test.js",
+    "tests/tenant-rest-identity-differential.integration.test.js",
+    "tests/tenant-frame-concurrency.integration.test.js",
+    "tests/tenant-durable-replay.integration.test.js",
+    "tests/tenant-projection-evaluator.integration.test.js",
+    "tests/tenant-current-state-recovery-proof.integration.test.js",
+    "tests/tenant-alarm-state.integration.test.js",
+    "tests/tenant-notifications.integration.test.js",
+    "tests/evaluator-consumers.integration.test.js",
+    "tests/tenant-activity.integration.test.js",
+    "tests/evaluator-consumer-timer-churn.integration.test.js",
+    "tests/evaluator-consumer-load.integration.test.js",
+    "tests/change-stamps.integration.test.js",
+    "tests/postgres-tenant-scan.integration.test.js",
+    "tests/pool-membership.integration.test.js",
+    "tests/incremental-view.integration.test.js",
+    "tests/tenant-write-clock-complete.integration.test.js",
+    "tests/evaluator-wake.integration.test.js",
+    "tests/evaluator-cost.integration.test.js",
+    "tests/views-keep.integration.test.js",
+    "tests/projection-total-order.integration.test.js",
+    "tests/evaluator-consumer-wake.integration.test.js",
+    "tests/operation-window-epoch.integration.test.js",
+    "tests/tenant-operations.integration.test.js",
+    "tests/tenant-commit-clock-port.integration.test.js",
+    "tests/tenant-commit-clock-http.integration.test.js",
+    "tests/multitenant-preview-replicas.integration.test.js",
+    "tests/tenant-rest-derived.integration.test.js",
+    "tests/tenant-rest-treatments.integration.test.js",
+    "tests/tenant-rest-context.integration.test.js",
+    "tests/tenant-rest-device-activity.integration.test.js",
+    "tests/tenant-rest-profile-food.integration.test.js",
+    "tests/tenant-rest-settings-differential.integration.test.js",
+    "tests/postgres-migrations.integration.test.js",
+    "tests/mongodb-migrations.integration.test.js",
+    "tests/postgres-secrets.integration.test.js",
+    "tests/vault-secrets.integration.test.js",
+    "tests/tenant-key-retention.integration.test.js",
+    "tests/tenant-runtime-vault.integration.test.js",
+    "tests/tenant-entries-http.integration.test.js",
+    "tests/tenant-credential-http.integration.test.js",
+    "tests/tenant-authorization-postgres.integration.test.js",
+    "tests/subject-management-http.integration.test.js",
+    "tests/subject-admin-postgres.integration.test.js",
+    "tests/tenant-ownership-postgres.integration.test.js",
+    "tests/admin-role-ownership.integration.test.js",
+    "tests/admin-lifecycle-fit.integration.test.js",
+    "tests/owner-subject-policy.integration.test.js",
+    "tests/tenant-rest-authority-review.test.js",
+    "tests/storage-port-contract.integration.test.js",
+    "tests/tenant-frame-acquisition.integration.test.js",
+    "tests/tenant-rest-client-replay.integration.test.js",
+    "tests/multitenant-preview-process.integration.test.js"
+  ],
+  "created": [
+    {
+      "kind": "postgres",
+      "id": "c71f79b296ab446236b6230372ff07bc06fc08a1f6b5f20b4d9fe0b5748e7caa",
+      "volumes": [
+        "eb03e2eff29696dff31a7f1811e8b5eb718f6653a93f2558f83ff6a5727a7851"
+      ],
+      "image": "postgres@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
+    },
+    {
+      "kind": "mongo",
+      "id": "d151c1fdc3b1a73bd97b72ba744a28b7973efc3551de2a2b53fedd4d15ff7af1",
+      "volumes": [
+        "8d65d3f28335ef9f174f32ef7ed26d21895ae21f73bb9108741082f8affa48d8",
+        "ce8ae6c55db1d6913d5cd7c5c757d33576132fd384dccc35051134e79ec83e10"
+      ],
+      "image": "mongo@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b"
+    },
+    {
+      "kind": "vault",
+      "id": "ce01952ca0afdaee339655b7757db6c9e869889de66779de0f986f6ba4eb5345",
+      "volumes": [
+        "d7ebc91a228143e36bf197f2b601bd9ae7bb5e01e1280a5c88ebc0f0f500bdc9",
+        "f0aef356db42d41865ebc9858897c9a2b1019b51a93e6038fee08da8fcc4eba8"
+      ],
+      "image": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2"
+    }
+  ],
+  "removed": [
+    {
+      "kind": "vault",
+      "id": "ce01952ca0afdaee339655b7757db6c9e869889de66779de0f986f6ba4eb5345",
+      "volumes": [
+        "d7ebc91a228143e36bf197f2b601bd9ae7bb5e01e1280a5c88ebc0f0f500bdc9",
+        "f0aef356db42d41865ebc9858897c9a2b1019b51a93e6038fee08da8fcc4eba8"
+      ],
+      "verifiedAbsent": true
+    },
+    {
+      "kind": "mongo",
+      "id": "d151c1fdc3b1a73bd97b72ba744a28b7973efc3551de2a2b53fedd4d15ff7af1",
+      "volumes": [
+        "8d65d3f28335ef9f174f32ef7ed26d21895ae21f73bb9108741082f8affa48d8",
+        "ce8ae6c55db1d6913d5cd7c5c757d33576132fd384dccc35051134e79ec83e10"
+      ],
+      "verifiedAbsent": true
+    },
+    {
+      "kind": "postgres",
+      "id": "c71f79b296ab446236b6230372ff07bc06fc08a1f6b5f20b4d9fe0b5748e7caa",
+      "volumes": [
+        "eb03e2eff29696dff31a7f1811e8b5eb718f6653a93f2558f83ff6a5727a7851"
+      ],
+      "verifiedAbsent": true
+    }
+  ],
+  "env": {
+    "NS_TEST_POSTGRES_ADMIN_URI": "disposable",
+    "CUSTOMCONNSTR_mongo": "disposable",
+    "NS_PROFILE_FOOD_VAULT_ADDRESS": "disposable",
+    "NS_SETTINGS_VAULT_ADDRESS": "disposable"
+  },
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 706,
+    "pending": 1,
+    "failing": 0
+  },
+  "finishedAt": "2026-11-11T17:19:49.261Z",
+  "remaining": [],
+  "status": 0
+}

@@ -1,0 +1,17 @@
+# unit: 258 test files
+  3315 passing (1m)
+  1 pending
+# dom: 19 test files
+  205 passing (7s)
+# dependency: 32 test files
+  368 passing (10s)
+  2 pending
+# core: 26 test files
+  319 passing (749ms)
+# harness: 10 test files
+  99 passing (5s)
+# integration: 266 test files
+  3643 passing (2m)
+  703 pending
+# stress: 1 test files
+  18 passing (1s)

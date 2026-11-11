@@ -1,0 +1,5 @@
+2026-11-11T17:12:10Z project=ns-lc-20261111t171210z-246419 source=/tmp/ns-lc-J24huagM/src control=blanket-window api-shutdown-ms=5000 head=0392acf97c720a7e121eea47a9d42a0c8dbe9e73 dirty=0
+DRIVER_FAILED lifecycle invalidation of suspended A on api: SOCKET_IPC_UNAVAILABLE
+2026-11-11T17:12:13Z containers remaining for project ns-lc-20261111t171210z-246419: 0
+2026-11-11T17:12:13Z networks remaining for project ns-lc-20261111t171210z-246419: 0
+2026-11-11T17:12:13Z exit 1

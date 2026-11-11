@@ -1,0 +1,30 @@
+PASS GATE A holds exactly source A rows (PG direct vs Mongo direct) :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":30,"actual":30}
+PASS GATE B holds exactly source B rows :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":13,"actual":13}
+PASS GATE B untouched by A: no source-A row in B, no source-B row in A :: A 30 B 13
+PASS BREAK-IT oracle: drop one tenant row from the oracle copy -> red :: {"ok":false,"missing":1,"extra":0,"duplicates":0,"expected":30,"actual":29}
+PASS BREAK-IT oracle: alter one tenant row -> red :: {"ok":false,"missing":1,"extra":1,"duplicates":0,"expected":30,"actual":30}
+PASS oracle restored -> green :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":30,"actual":30}
+PASS GATE flag off: one standalone member owns every tenant, no membership row :: {"mode":"standalone","eligible":true,"tenants":[["polling",1],["polling",1]],"poolRows":0}
+PASS GATE egress: every source request went through the member proxy, none to the tenant API :: {"127.0.0.1:46828":3,"127.0.0.1:31396":3}
+PASS GATE incremental pull (5 entries, 2 treatments) matches :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":37,"actual":37}
+PASS GATE paused: the pull continues (3 entries, 1 treatment arrive) :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":41,"actual":41} api read while paused HTTP 423
+PASS GATE suspended: no source request for A and no row written :: source-A requests during suspension 0; A rows 41 -> 41; status skipped TENANT_SUSPENDED
+PASS GATE B keeps pulling while A is suspended :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":15,"actual":15}
+PASS GATE unsuspend: resumes with no gap and no duplicate :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":46,"actual":46}
+PASS GATE revoked source credential: pull stops :: A rows 46 -> 46; source holds 49
+PASS GATE refusal visible in the inspection read (per tenant and per member) and the log :: {"a":{"status":"refused","code":"CONNECTOR_SOURCE_FETCH_FAILED","lastRefusal":{"phase":"source","status":401,"code":"ERR_BAD_REQUEST","at":"2026-11-11T16:49:28.474Z"},"refusals":[{"key":"source:401","count":1}]},"member":[{"key":"source:401","count":1}],"b":[]}
+PASS GATE rotated credential entered: withheld rows arrive, no gap, no duplicate :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":49,"actual":49}
+PASS CONTROL A credential sent to B (B grants the same subject id): refused, B unchanged :: {"a":[{"key":"write:401","count":12}],"code":"CONNECTOR_GAP_FAILED","bRows":[15,15]}
+OBSERVE A connector credential presented to B directly :: HTTP 401
+PASS CONTROL tenant binding: the serving identity scoped to A cannot insert a B entries row :: 42501 TENANT_ORDINAL_BINDING_REQUIRED
+PASS CONTROL RLS: the vcpool secrets identity scoped to A reads none of B's records and cannot insert one :: B records visible to A scope 0 of 4; insert: 42501 new row violates row-level security policy for table "secret_records"
+PASS control restored: A catches up with no duplicate, B unchanged :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":51,"actual":51}
+PASS GATE a partitioned vcpool started before its count is set boots, alerts POOL_COUNT_UNSET and works no tenant :: {"sourceRequestsWhileWaiting":0,"exit":null,"member":{"eligible":false,"reason":"POOL_COUNT_UNSET","cycles":3},"alert":true,"tenants":[["member-refused","POOL_COUNT_UNSET"],["member-refused","POOL_COUNT_UNSET"]]}
+PASS GATE partitioned member (1 of 1) pulls; an evaluator-kind row with another count does not affect it :: {"sync":{"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":54,"actual":54},"member":{"mode":"partitioned","eligible":true,"live":[0]},"tenants":[["polling",null],["polling",null]]}
+PASS GATE a second process with the same ordinal is refused by the pool: both members refuse and alert, the second keeps running :: {"secondExit":null,"first":"POOL_DUPLICATE_ORDINAL","second":"POOL_DUPLICATE_ORDINAL"}
+PASS first member keeps (or regains) eligibility once the duplicate exits; one vcpool row :: eligible true rows 1 alerts: refused:POOL_COUNT_UNSET,recovered:POOL_COUNT_UNSET,refused:POOL_DUPLICATE_ORDINAL,recovered:POOL_DUPLICATE_ORDINAL
+OBSERVE create-only connector grants (entries/treatments create, no read) :: {"status":"refused","code":"CONNECTOR_GAP_FAILED","refusals":[{"key":"write:401","count":6}]}
+PASS final: A and B each hold exactly their own source :: {"A":{"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":55,"actual":55},"B":{"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":15,"actual":15}}
+OBSERVE vcpool restarted while A is paused :: {"rows":[55,55],"source":56,"status":"refused","code":"CONNECTOR_GAP_FAILED","refusals":[{"key":"write:423","count":24}]}
+OBSERVE after unpause :: {"ok":true,"missing":0,"extra":0,"duplicates":0,"expected":56,"actual":56}
+SUMMARY 25 checks, 0 failing

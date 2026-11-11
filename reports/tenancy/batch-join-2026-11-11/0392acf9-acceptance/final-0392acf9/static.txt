@@ -1,0 +1,13 @@
+# 654 test files, 8 tiers: ok
+tiers exit 0
+Write intent: 13 enrolled module(s) write only through write(intent); 3 read(s) by identifier-match
+write-intent exit 0
+> node scripts/check-write-boundary.js
+
+Write boundary: all 9 adapter entry points and canonical socket delegation checked; tenant write clock advanced by every mutating statement in lib/storage/postgres-entries-write.js
+write-boundary exit 0
+  170:24  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+✖ 58 problems (0 errors, 58 warnings)
+
+lint exit 0

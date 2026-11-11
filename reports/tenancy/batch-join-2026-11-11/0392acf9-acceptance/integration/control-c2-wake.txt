@@ -1,0 +1,12 @@
+    1) lost wake: the backstop finds a write that no wake announced, within one pass (one stamp read per pass)
+    2) a hard delete advances the write clock pair and is re-evaluated by the backstop (one stamp read per pass)
+    3) an in-place update to an unstamped domain advances the write clock and is re-evaluated by the backstop (one stamp read per pass)
+  8 passing (4s)
+  3 failing
+  1) evaluator work on change: backstop, wake seam and change signature on actual PostgreSQL
+      AssertionError [ERR_ASSERTION]: EV_LOST_WAKE_BACKSTOP the write is evaluated by the next pass
+  2) evaluator work on change: backstop, wake seam and change signature on actual PostgreSQL
+      AssertionError [ERR_ASSERTION]: EV_HARD_DELETE_REEVALUATED
+  3) evaluator work on change: backstop, wake seam and change signature on actual PostgreSQL
+      AssertionError [ERR_ASSERTION]: EV_UNSTAMPED_UPDATE_REEVALUATED
+# multitenant: mocha exited 3 (8 passing, 0 pending, 3 failing)

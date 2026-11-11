@@ -1,0 +1,3 @@
+    [32m✔[39m refuses the restore, before suspending A, when the ownership identity holds one clinical table at census time (230ms)
+  53 passing (14s)
+# multitenant: 53 passing, 0 pending, 0 failing

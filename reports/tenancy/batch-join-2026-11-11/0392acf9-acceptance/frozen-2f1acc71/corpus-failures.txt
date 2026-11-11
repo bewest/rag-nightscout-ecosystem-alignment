@@ -1,0 +1,13 @@
+    1) "before all" hook for "admits data transactions and operations of an active tenant"
+    2) "before all" hook for "starts the admin role on the consumer listener's address at another port, and refuses its port"
+  653 passing (7m)
+  1 pending
+  2 failing
+  1) operation-window fence and catalogue epoch (disposable PostgreSQL, deployment grants)
+     error: function nswep_change_stamps.tenant_change_stamps() does not exist
+  2) admin role beside a tenant restore (disposable PostgreSQL, deployment grants)
+     error: function nsfit_change_stamps.tenant_change_stamps() does not exist
+TEST_EXECUTION: no test body completed in tests/operation-window-epoch.integration.test.js
+TEST_EXECUTION: no test body completed in tests/admin-lifecycle-fit.integration.test.js
+# multitenant: mocha exited 4 (653 passing, 1 pending, 2 failing)
+# multitenant: every container and volume this run created is verified absent
