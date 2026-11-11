@@ -66,7 +66,7 @@ maintainer
 ## Evidence
 
 - [`docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../../docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md)
-- [`docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md`](../../docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md)
+- [`docs/archive/tenancy/nightscout-deployable-components-2026-09-14.md`](../../docs/archive/tenancy/nightscout-deployable-components-2026-09-14.md)
 
 ## Notes carried on the item
 

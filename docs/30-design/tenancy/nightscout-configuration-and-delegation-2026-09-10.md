@@ -333,4 +333,4 @@ should not be read as having answered it.
 * `externals/LoopAlgorithm/Sources/LoopAlgorithm/AlgorithmInput.swift`
 * `docs/10-domain/authority-model.md`, `docs/90-decisions/adr-003-no-custom-credentials.md`
 * `externals/cgm-remote-monitor-official/lib/authorization/storage.js` — the role table
-* [Multitenancy discussion](./nightscout-multitenancy-discussion-2026-09-09.md) §6.1 (RLS, measured), §6.5 (unbounded query cost)
+* [Multitenancy discussion](../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) §6.1 (RLS, measured), §6.5 (unbounded query cost)

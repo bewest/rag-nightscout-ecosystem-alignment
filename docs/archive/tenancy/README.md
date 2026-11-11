@@ -4,7 +4,9 @@
 alignment `072ef9e37b6643d66d00248308fa6979d75f559b` on 2026-11-06; the batching
 journal was captured from `8792fc7a3d62f59629ed94bac168dcad5d9aa3c7` on 2026-11-08;
 the three November 6 decision and review packets were captured from
-`c53105eeeb04225910e3c6871629fed5c7b78853` on 2026-11-10.
+`c53105eeeb04225910e3c6871629fed5c7b78853` on 2026-11-10; the September
+multitenancy discussion and deployable-components analysis were captured from
+`e1bd75b80d71627a1bd68e9ee8741a02e65c91ad` on 2026-11-10.
 These journals preserve the original
 narrative, design alternatives, commands, failed predictions, controls and
 source-scoped measurements. They are not current plans or lane assignments.*
@@ -19,6 +21,8 @@ source-scoped measurements. They are not current plans or lane assignments.*
 | [Critical-path decision note](multitenant-open-decisions-2026-11-06.md) | The five November 6 questions (owner mode, M2 bar, numeric budgets, M4 client execution, batch C ownership) as asked, with mechanisms and recommendations. Each has a recorded decision or deferral. | [Release decisions, promotion bars](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06); [M5/M6 decision list](../../30-design/tenancy/m5-m6-decision-list.md) |
 | [Owner lifecycle decision packet](owner-lifecycle-decision-packet-2026-11-06.md) | Published-source survey and alternatives for owner identity, sessions, issuer/audience split, existing-grant authority and ownership lifecycle; draft recommended defaults that were not adopted as written. | [Owner authority](../../30-design/tenancy/owner-authority.md); session and ownership rows in release decisions |
 | [M0–M3 promotion review](milestone-promotion-review-2026-11-06.md) | Read-derived mapping of M0–M3 acceptance cells to R24–R55, with the ranked gaps of that date. | [Delivery dashboard](../../30-design/tenancy/multitenant-delivery-dashboard.md) and [integration record](../../30-design/remedial/rc-16.0.0-integration-record.md) |
+| [September multitenancy discussion](nightscout-multitenancy-discussion-2026-09-09.md) | The 2026-09-09/14 single-tenant assumption map, candidate architectures, storage ladder and EXP-MT experiments, with in-place notes where a later decision contradicts a recommendation. | [Tenancy decisions](../../30-design/tenancy/multitenancy-decisions.md) |
+| [Deployable components](nightscout-deployable-components-2026-09-14.md) | The 2026-09-14 entrypoint/program decomposition and its measurements, adopted as D5/D6 and extended by D7, D16 and D21. | [Tenancy decisions](../../30-design/tenancy/multitenancy-decisions.md); [runtime topology](../../30-design/tenancy/runtime-topology.md) |
 
 Use the [tenancy reading guide](../../30-design/tenancy/README.md) for current
 work. The [dashboard](../../30-design/tenancy/multitenant-delivery-dashboard.md)

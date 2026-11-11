@@ -5,7 +5,7 @@ specification](spec/records.md); leads to [primitive
 coverage](nightscout-primitive-coverage-2026-09-11.md).* **Snapshot — describes 2026-09-10. Status: current — the measurements stand.** Current decisions: [execution plan §1](../tenancy/multitenancy-decisions.md#1-decisions).
 
 Date: 2026-09-10. Companion to
-[Nightscout multitenancy: evidence and options](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md)
+[Nightscout multitenancy: evidence and options](../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.md)
 (§6.4 in particular) and to the
 [`x-aid-extensions` convention proposal](../../sdqctl-proposals/x-aid-extensions-convention-proposal.md).
 
@@ -617,7 +617,7 @@ from the model.
 
 ## 12. References
 
-* [Nightscout multitenancy: evidence and options](../tenancy/nightscout-multitenancy-discussion-2026-09-09.md) — §6.4 schemas and ODMs, §6.5 query cost, §8.3 EXP-MT-013 and EXP-MT-046
+* [Nightscout multitenancy: evidence and options](../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) — §6.4 schemas and ODMs, §6.5 query cost, §8.3 EXP-MT-013 and EXP-MT-046
 * [`x-aid-extensions` convention proposal](../../sdqctl-proposals/x-aid-extensions-convention-proposal.md)
 * [Nightscout modernization review and proposed next steps](../../60-research/modernization/nightscout-modernization-next-steps-2026-09-09.md)
 * [Tooling evaluation: keyv, mongoose, zod, WASM](../../reports/nightscout-release-planning-2026-09/tooling-evaluation-keyv-mongoose-zod-wasm.md)

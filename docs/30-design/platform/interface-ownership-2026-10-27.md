@@ -5,7 +5,7 @@ their heads (#8857 `f7a43fed`, #8865 `1dafe2a5`). Drafted by session -ee's resea
 sources listed below; two code claims re-checked by -ee (#8857's `INSTANCES_HREF`, #8865's `serve api`
 mounts). Nothing here is decided beyond what its sources record; §5's questions are for the
 maintainer. "Read" means read from the path given. "{C}" is the
-[deployable components](../tenancy/nightscout-deployable-components-2026-09-14.md) document, "exec
+[deployable components](../../archive/tenancy/nightscout-deployable-components-2026-09-14.md) document, "exec
 plan" the [execution plan](../tenancy/multitenancy-decisions.md), "v4 doc"
 the [v4 surface](v4-surface-and-nocturne-2026-10-26.md), "§F.1" the
 [tenant-owner configuration surface](../tenancy/tenant-owner-config-surface-2026-09-15.md).*

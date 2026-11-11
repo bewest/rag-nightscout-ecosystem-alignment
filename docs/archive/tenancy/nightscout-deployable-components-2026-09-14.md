@@ -1,17 +1,25 @@
 # Deployable components: entrypoints, program structure, and what an operator actually runs
 
+*Retained record, archived 2026-11-10 from alignment `e1bd75b80d71627a1bd68e9ee8741a02e65c91ad`. The captured
+text below preserves the original entrypoint/component decomposition and its
+measurements; its links were rewritten for the new location and nothing else
+changed. Its recommendation became D5, D6, D7, D16 and D21 in [tenancy
+decisions](../../30-design/tenancy/multitenancy-decisions.md); current component
+placement is in the [runtime topology](../../30-design/tenancy/runtime-topology.md)
+and the [admission and activity guide](../../30-design/tenancy/tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process).*
+
 *Contributor-facing.* **Snapshot, written 2026-09-14.** Its recommendation was adopted as **D5** (four hosted
 entrypoints plus `single`) and **D6** (the change feed), and is extended by **D7** (`ns-admin`,
-the platform-admin plane) and **D16** (three listeners by audience) — [execution plan §1](multitenancy-decisions.md#1-decisions).
+the platform-admin plane) and **D16** (three listeners by audience) — [execution plan §1](../../30-design/tenancy/multitenancy-decisions.md#1-decisions).
 Task state lives in [`queue/QUEUE.md`](../../../queue/QUEUE.md). Measurements carry their own dates
 and are post-#8733. Companion to [Nightscout multitenancy: evidence and options](nightscout-multitenancy-discussion-2026-09-09.md)
 and [What sets K](../../60-research/tenancy/multitenancy-k-and-residency-2026-09-14.md).
 
 **Current component interpretation, 2026-11-08:** the
-[REST component contract](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
+[REST component contract](../../30-design/tenancy/tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
 keeps version-specific v1/v2/v3 adapters together in one stateless REST API
 component. Replica count and physical deployment are separate from versioning;
-current accepted placement is in the [runtime topology](runtime-topology.md).
+current accepted placement is in the [runtime topology](../../30-design/tenancy/runtime-topology.md).
 The snapshot below retains its original measurements and recommendations; it does
 not independently admit scaling, scale-to-zero or complete route coverage.
 
@@ -23,7 +31,7 @@ talk to each other, and which arrangement is cheapest for an operator to run.
 two quadratic scans over the treatment window, with differential tests over 636 randomised
 fixtures and a measured 6.3×–43× improvement — is the baseline. It is **merged** to `dev`
 (2026-09-17) and not released (`origin/master` = `15.0.8`). Every number below is post-#8733.
-This document is the *why*; the [execution plan](multitenancy-decisions.md) is the decisions and the tasks.
+This document is the *why*; the [execution plan](../../30-design/tenancy/multitenancy-decisions.md) is the decisions and the tasks.
 
 **Objective function, as stated by the maintainer: minimise operator cost first, then
 maximise performance.** So the units here are processes, gigabytes and database operations
@@ -56,7 +64,7 @@ latency, decide it:
 
 **The two things that made residency look necessary both dissolve on measurement.** Alarms
 for idle tenants need a small **transient** working set — measured at **32.7 KB and 1.94 ms p50 per
-tenant per evaluation** (2026-09-15, [plan §7b](multitenancy-decisions.md)), not a resident `ddata` — and its
+tenant per evaluation** (2026-09-15, [plan §7b](../../30-design/tenancy/multitenancy-decisions.md)), not a resident `ddata` — and its
 only durable part is ack/snooze state, a few hundred bytes that belong in storage anyway. The
 socket delta needs a *change*, which both storage engines already produce.
 
@@ -310,7 +318,7 @@ bin/
   vcpool.js             ns-vcpool    — connect actors + egress proxy
 ```
 
-*Amended 2026-10-26 and 2026-11-03 by **D21**: the roles below are started by one executable. `nightscout single` remains the single-tenant monolith; `nightscout multitenant <roles>` names the separate PostgreSQL/RLS multitenant target. This changes neither the role decomposition nor which factories each role calls ([execution plan §2.12](multitenancy-decisions.md#2-storage-resolution-and-profiles)).*
+*Amended 2026-10-26 and 2026-11-03 by **D21**: the roles below are started by one executable. `nightscout single` remains the single-tenant monolith; `nightscout multitenant <roles>` names the separate PostgreSQL/RLS multitenant target. This changes neither the role decomposition nor which factories each role calls ([execution plan §2.12](../../30-design/tenancy/multitenancy-decisions.md#2-storage-resolution-and-profiles)).*
 
 **Four multitenant service roles and one legacy entrypoint, over one `package.json` and one CI
 pipeline** — not five repositories. {M} §10.5 already argued this and it holds: these are

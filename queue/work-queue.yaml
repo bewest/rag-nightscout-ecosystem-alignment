@@ -24906,7 +24906,7 @@ items:
     blocks_on: []
     evidence:
       - docs/archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md
-      - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
+      - docs/archive/tenancy/nightscout-deployable-components-2026-09-14.md
     notes: >
       2026-10-26, later: draft #8862 opened at 4c7d678d; b63d9b7f removed the
       image HEALTHCHECK after the maintainer asked whether it would hide the
@@ -24954,7 +24954,7 @@ items:
           4a482627); measures inclusion, not immunity to a later revert
     blocks_on: [PLAT-ENTRY, ST-FILTER-READS]
     evidence:
-      - docs/30-design/tenancy/nightscout-deployable-components-2026-09-14.md
+      - docs/archive/tenancy/nightscout-deployable-components-2026-09-14.md
       - tools/lab/image-start-forms/README.md
     notes: >
       2026-11-03: D21's command-name follow-up merged as #8899 at

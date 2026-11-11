@@ -1,127 +1,89 @@
 # Tenancy: what to read and maintain
 
-*Contributor-facing living reading guide. The current documents below own rules,
-coordination and recorded acceptance. The complete long execution journals are
-retained in the [tenancy archive](../../archive/tenancy/README.md); dates in a
-filename do not establish currency. Reconciled 2026-11-10: M6 is split into M6a–M6d and M7, the deployment tree lives in `nightscout-deploy`, native acceptance runs in a disposable harness ([decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09)); the answered November 6 decision and review packets are archived.*
-
-## What can inform a decision now
+*Contributor-facing living reading guide, current with the release decisions of
+2026-11-10. Each document below owns one kind of fact; it links to the others
+rather than restating them. [Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md)
+own adopted policy, the [queue](../../../queue/work-queue.yaml) owns claimed item
+state and the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
+own merges, acceptance and publication. Retired journals, answered packets and
+superseded analyses are in the [tenancy archive](../../archive/tenancy/README.md);
+a date in a filename does not establish currency.*
 
 For a diagram-first review, open the [multitenant database and component ownership
-page](../../../site/pages/multitenant-database-design.html). Its grid and static
-diagrams are rendered from the current SQL guide; source revision and evidence
-limits remain visible beside the diagrams.
+page](../../../site/pages/multitenant-database-design.html), rendered from the SQL
+guide below.
 
-Start with the [deployment models and fault domains](deployment-and-rig-testing.md)
-and [architecture comparison](single-and-multitenant-architecture.md). The published
-one-host reference answers bounded component, tenant isolation and recovery questions.
-The dashboard distinguishes accepted M0–M5 criteria from the M6a–M6d and M7
-capability items; the platform map is a dependency guide, not a production
-readiness score.
+## State, sequencing and decisions
 
-Use the [current decision list](m5-m6-decision-list.md) to separate already adopted
-policy from implementation and evidence still needed. Archived journals and packets
-keep rationale and failed predictions; their “next” does not assign current work.
-
-For the path beyond the accepted preview, read the
-[production critical path](production-critical-path.md): blockers, closing evidence,
-conditional HA deferrals and prior art from node-multienv and the gateway projects.
-Its initial topology and operating envelope are proposals for review.
-
-The [grid topology guide](runtime-topology.md) shows public/DMZ through backing
-stores across the historical accepted one-host reference, current `dc795bd1`
-private API contracts and proposed component-private/fixed-roster target.
-The [endpoint/API implementation plan](selectable-endpoints-and-api-scaling-plan.md)
-separates implemented UDS/HTTP/schema/client work from listener composition,
-operational APIs, remote binding and multi-API acceptance still needed. Kubernetes
-proof and Jsonnet remain deployment work; evaluator partitioning is separately
-queued M7 work.
-
-The [realtime sharding and recovery proposal](realtime-sharding-plan.md) owns the
-separate tenant-placement capability and compares evaluator/realtime co-location
-with independent pools. Neither extra processes nor process merging alone supply
-assignment, notification delivery or failover correctness.
-
-For REST-module/process placement and operator inactivity versus recovery, read
-the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
-and [tenant-admission review](tenant-admission-and-activity.md). The latter is an
-open policy proposal with source-backed implementation limits, not an admitted
-inactive-tenant feature.
-
-## Start with the task
-
-| You need | Read | What stays current |
-|---|---|---|
-| What is accepted, blocked, or next | [Delivery dashboard](multitenant-delivery-dashboard.md) | Generated queue claims and dated acceptance metadata; not live branch monitoring. Edit the queue/status sources, then `make queue`. |
-| What to implement and how to join it | [Completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) | A–C sequence, ownership and verification boundaries. Its sections 1 and 4 retain the original dispatch. |
-| What a milestone must prove | [Delivery roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration) | Delivery boundaries and M0–M5, M6a–M6d and M7 criteria, including later promotion-bar decisions. Claims remain in the dashboard. |
-| Deployment packaging, edge, identity-provider profiles, Vault Agent | `nightscout-deploy` (sibling repository; local `/home/bewest/src/nightscout-deploy`), [scope split](claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private) | The Compose tree moved there with history on 2026-11-09. Core keeps application code and the Dockerfile. |
-| Why the architecture is this way | [Tenancy decisions](multitenancy-decisions.md#1-decisions) | D1–D23, hard qualifications and links to detailed contracts. Old per-commit tasks belong to the archive. |
-| Current promotion bars and compatibility direction | [Promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06) | Reader mode withdrawn; writer policy retained. M2 cell/M6 lifecycle and deferred M1 budgets/Android lab retain their adopted scope. No new promotion. |
-| Owner, delegation and token rules; shared optional OIDC | [Owner authority](owner-authority.md), [shared integration](owner-authority.md#shared-oidc-integration) | Equivalent single/multitenant human auth, provider-backed renewal and separate authority adapters. Joined acceptance: [M6a](../../../reports/tenancy/m6a-join-2026-11-09/README.md), [M6b](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md). |
-| What needs a maintainer decision | [Current M5/M6 decision list](m5-m6-decision-list.md) | Settled choices, next policy questions and measurement prerequisites. Release decisions own answers; archived packets supply background only. |
-| Durable consumers and recovery | [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | Adopted B7 direction; runtime evidence retains its actual tree and limits. |
-| Separate service processes and restore coordination | [Current composition diagram](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07) | Fixed cross-process cohort and source-attributed restore evidence; native tenant-local shared-role restart is accepted on c23; cold Compose restore is accepted on ed2. |
-| Express the same deployment with Kubernetes/Jsonnet, public aliases and group policy | [Deployment bindings and public names](deployment-bindings-and-public-names.md) | Public requirements, candidate resource translation, transport/replacement boundaries and load-herd experiments; implementation and policy defaults remain unmeasured. |
-| Deploy a synthetic prototype or connect a rig | [Deployment and rig testing](deployment-and-rig-testing.md) | Runnable Compose preparation, ingress/credential boundaries, client setup, restore/restart scenarios and evidence limits. |
-| Follow evaluator and socket messages | [Evaluator/realtime communication](evaluator-realtime-communication.md) | Independent clinical projections, durable notification handoff, private API forwarding, current authority and operation lifetimes. |
-| Understand SQL and recovery | [SQL/migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, catalogue migration/readiness and restore inclusion/exclusion. |
-| A picture of the system | [Platform map](../platform/next-gen-platform-plan.md#3-the-map), then [architecture comparison](single-and-multitenant-architecture.md) | Map summarizes bounded components. Architecture diagrams retain their named source scope. Neither promotes a milestone. |
-| What ran and on which tree | [Integration record](../remedial/rc-16.0.0-integration-record.md), then the named capture | Executed heads, failed predictions, red/restored controls and reuse limits. A prior green campaign is not a new-head execution. |
-| Release or publication status | [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) | Dated programme updates. Local acceptance, merge and release are distinct. |
-
-Follow [completion-focused coordination](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination):
-one capability/criterion per lane, focused checks during implementation and one
-comprehensive campaign on the coherent frozen batch. Report closure and blockers.
-
-For a new lane, read the dashboard, the applicable completion batch and the
-specific contract it touches, then inspect its evidence. Confirm current ownership
-and task state before starting; a dated handoff's “next” is not a new assignment.
-
-## Specialist references
-
-Open only the section needed for the change; use the dashboard and completion
-schedule for work state.
-
-| Reference | Purpose and scope |
+| Document | Owns |
 |---|---|
-| [REST delivery plan](multitenant-rest-api-delivery-plan-2026-11-04.md) | Route/domain coverage and handler reuse; original lane packets are historical dispatch. |
-| [Architecture seams plan](architecture-seams-execution-plan-2026-11-05.md) | Port composition, consolidation and caller-policy distinctions; dated checkpoints keep their captured scope. |
-| [Storage seam §11](nightscout-storage-seam-interface-2026-09-14.md#11-current-admitted-ports-and-independent-scopes-2026-11-05) | Current admitted ports; earlier sections retain old-seam census and implementation evidence. |
-| [Write contract §9](write-contract-spec-2026-10-07.md#9-current-shared-intent-and-backend-capabilities-2026-11-05) | Current admitted implementation; original matrices retain their baseline. |
-| [Config schema candidate](tenant-config-schema-2026-10-27.md) | Bounded schema; owner authority owns later management/session/delegation rules. |
-| [Clock proof plan](postgres-tenant-clock-proof.md) | Invariants and experiment design. Correctness, descriptive timing and capacity acceptance retain separate records. |
-| [Deployable components](nightscout-deployable-components-2026-09-14.md) | Original decomposition/rationale; apply current tenancy decisions, CLI amendments and B7. |
+| [Delivery dashboard](multitenant-delivery-dashboard.md) | Generated milestone claims and the acceptance ledger. Edit the queue and `multitenant-delivery-status.json`, then `make queue`. |
+| [Delivery roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration) | Delivery boundaries and the M0–M5, M6a–M6d and M7 promotion criteria. |
+| [Completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) | Batch sequence, lane ownership and [completion-focused coordination](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination). |
+| [M5/M6 decision index](m5-m6-decision-list.md) | Every settled policy topic with its decision row; no human-policy topic is open. |
+| [Production critical path](production-critical-path.md) | Blockers between the accepted one-host preview and production, closing evidence and prior art; its topology and HA deferrals are proposals. |
 
-## Source-backed architecture guides
+## Decisions and contracts
 
-The guides above provide the requested **MT-DOC-DEPLOY**, **MT-DOC-REALTIME** and
-**MT-DOC-SQL** documentation. Their source inspection, diagrams and structural
-checks are separate from runtime acceptance. Each links executed evidence at its
-actual source; accepted cold Compose and restart proofs retain their executed sources; wider rig, identity and capacity experiments remain explicit. The queue owns documentation status, and release records own accepted
-application behavior.
-
-## Historical evidence and earlier proposals
-
-These retain distinct evidence or alternatives; they are not current work instructions.
-
-| Read only for this purpose | Current successor / boundary |
+| Document | Owns |
 |---|---|
-| [Tenancy archive](../../archive/tenancy/README.md) | Execution journals (decision detail, seam tasks, dispatches, failures, controls, checkpoints) and the November 6 critical-path note, owner lifecycle packet and M0–M3 promotion review. Current rules live above. |
-| [September multitenancy discussion](nightscout-multitenancy-discussion-2026-09-09.md) | Original options/evidence; decisions superseded by the current decision reference. |
-| [Owner configuration census](tenant-owner-config-surface-2026-09-15.md) | Historical census/DDL; later [dev census](../../60-research/tenancy/t30-census-dev-2026-10-27.md), config candidate and owner authority have separate scopes. |
-| [Configuration/delegation questions](nightscout-configuration-and-delegation-2026-09-10.md), [control-plane reconciliation](nightscout-control-plane-reconciliation-2026-09-11.md) | Historical analysis and supersession map; not a replacement backlog. |
-| [Ordering translation](nightscout-seam-ordering-translation.md) | Old-seam proposal; current ports, write contract and backend measurements govern admission. |
-| [M4 client dispatch](m4-client-binary-lab-packet-2026-11-06.md) | Lab hypotheses for the pinned-client campaign. Later integration records own actual acceptance. |
+| [Tenancy decisions](multitenancy-decisions.md#1-decisions) | D1–D23, hard qualifications, pause/suspend meanings and the operator listener rule. |
+| [Owner authority](owner-authority.md) | Owner, root (`API_SECRET`) and admin-tool authority, token verification, shared optional OIDC and management lifetimes. |
+| [Tenant admission and activity](tenant-admission-and-activity.md) | The REST component boundary, restore-aware APIs and the adopted pause/suspend activity policy with its acceptance criteria. |
+| [Durable event contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments) | B7 consumer, checkpoint and recovery rules and the experiment contract. |
+| [Write contract §9](write-contract-spec-2026-10-07.md#9-current-shared-intent-and-backend-capabilities-2026-11-05) | Current admitted write implementation; earlier sections keep their baseline. |
+| [Storage seam §11](nightscout-storage-seam-interface-2026-09-14.md#11-current-admitted-ports-and-independent-scopes-2026-11-05) | Current admitted ports; earlier sections keep the old-seam census. |
+| [Tenant config schema](tenant-config-schema-2026-10-27.md) | The bounded configuration schema candidate and its lab evidence. |
+
+## Architecture guides
+
+| Document | Owns |
+|---|---|
+| [Single and multitenant architecture](single-and-multitenant-architecture.md) | Mode comparison, compatibility and the [current service composition and restore integration](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07). |
+| [Runtime topology](runtime-topology.md) | Zones, components, private APIs and the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement). |
+| [Private API composition and scaling plan](selectable-endpoints-and-api-scaling-plan.md) | The adopted `serve.internal` listener, graceful shutdown, fixed-roster API replicas and their acceptance matrix. |
+| [Realtime sharding plan](realtime-sharding-plan.md) | Proposed realtime tenant placement, recovery and co-location comparison. |
+| [Evaluator/realtime communication](evaluator-realtime-communication.md) | Clinical projections, notification handoff, private API forwarding, output revisions and alarm repeat. |
+| [SQL and migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, migrations and restore inclusion. |
+| [Counter and restore options](counter-and-restore-options.md) | History clock versus insertion order, restore alternatives and the census counter-writer rule. |
+| [Clock proof plan](postgres-tenant-clock-proof.md) | Tenant clock invariants and experiment design; acceptance records keep their own scope. |
+
+## Deployment
+
+| Document | Owns |
+|---|---|
+| `nightscout-deploy` (sibling repository; local `/home/bewest/src/nightscout-deploy`) | The Compose tree, edge, identity-provider profiles and Vault Agent overlay, [from the next #8898 batch on](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-home-now); see the [scope split](claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private). |
+| [Deployment and rig testing](deployment-and-rig-testing.md) | Fault domains, the ed2 Compose runbook, client and rig setup, restore/restart scenarios. |
+| [Deployment bindings and public names](deployment-bindings-and-public-names.md) | Kubernetes/Jsonnet resource translation, public-name lifetimes, transports and load-herd experiments. |
+
+## Dispatch-era plans still cited by release records
+
+These keep their route/domain design, seam plans and dated checkpoints; their
+heads and "next" statements describe the original dispatch. Current sequencing is
+in the completion schedule above.
+
+| Document | Retained for |
+|---|---|
+| [REST delivery plan](multitenant-rest-api-delivery-plan-2026-11-04.md) | Route/domain coverage and handler reuse. |
+| [Architecture seams plan](architecture-seams-execution-plan-2026-11-05.md) | Port composition, consolidation and caller-policy distinctions (`ARCH-*` items). |
+| [Derived output boundary](derived-output-boundary-2026-11-07.md) | Output-publication ownership for `ARCH-DERIVED-FRAME`. |
+| [M4 client dispatch](m4-client-binary-lab-packet-2026-11-06.md) | Lab hypotheses for the pinned-client campaign; the campaign record owns results. |
+
+## Earlier analyses cited by platform specifications and gates
+
+| Document | Retained for |
+|---|---|
+| [Configuration and delegation](nightscout-configuration-and-delegation-2026-09-10.md) | Delegation requirements carried as DR1–DR7 in the [authority specification](../platform/spec/authority.md). |
+| [Control-plane reconciliation](nightscout-control-plane-reconciliation-2026-09-11.md) | Supersession map from the earlier cgm-remote-monitor control-plane draft to the platform specifications. |
+| [Ordering translation](nightscout-seam-ordering-translation.md) | How ordering crosses the storage seam; cited by the backfix register. |
+| [Owner configuration census](tenant-owner-config-surface-2026-09-15.md) | The 2026-09-15 census and DDL that `T30-*` gates read; the [dev census](../../60-research/tenancy/t30-census-dev-2026-10-27.md) re-measured it. |
 
 ## Keeping this path useful
 
-Correct current rules in their decision/contract home. Record acceptance in the
-integration/release records and status sources. Do not append execution journals
-to the roadmap or decision reference, or copy their checkpoints into the platform
-map. The archive preserves scope and successors; Git retains intermediate revisions.
-
-Future consolidation follows [document control](../../00-overview/DOCUMENT-CONTROL.md#35-changing-a-document):
-read a cluster in full, preserve unique content and evidence, rewrite links, then
-remove superseded material from the active reading path. Correspondence drafts
-belong to their owning session and are outside this controlled inventory.
+Correct a rule in its decision or contract home and record acceptance in the
+release records and status sources. Do not append execution journals to the
+roadmap or the decision reference. When a document here is superseded, follow
+[document control](../../00-overview/DOCUMENT-CONTROL.md#35-changing-a-document):
+move it to the archive with a retention note and an index row, and repoint every
+inbound link. Correspondence drafts belong to their owning session and are
+outside this index.

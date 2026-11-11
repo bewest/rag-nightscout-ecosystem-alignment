@@ -28,7 +28,7 @@ This closes one row of the execution plan's *"What is still unmeasured"* table:
 |---|---|
 | **{P}** | [multitenancy execution plan](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md) — §7 the unmeasured table, and the `is_local` vacuity note above it |
 | **{T}** | [T2.5 PostgreSQL backend verification](t25-postgres-backend-verification-2026-09-15.md) — house style, and the run this one follows |
-| **{M}** | [Nightscout multitenancy: evidence and options](../../30-design/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) — §6.7, the claim this checks |
+| **{M}** | [Nightscout multitenancy: evidence and options](../../archive/tenancy/nightscout-multitenancy-discussion-2026-09-09.md) — §6.7, the claim this checks |
 | **{B}** | [backfix register](../../30-design/remedial/nightscout-backfix-register.md) |
 
 ---
