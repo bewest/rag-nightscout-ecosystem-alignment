@@ -11772,7 +11772,12 @@ alarm-readiness items, and the seam branch refresh.
 
 - **NO GATE** &mdash; Focused tests and break-it controls in the lane records; the 3k/5k/10k capacity campaign runs on the rebuilt image.
 
-**Notes.** 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry).
+**Evidence.**
+
+- `reports/tenancy/capacity-fixes-2026-11-11/README.md`
+- `reports/tenancy/deploy-capacity-fixes-2026-11-11/README.md`
+
+**Notes.** 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry). Core 5517cb6c (MULTITENANT_CONFIG_MAX_BYTES, distinct CONFIG_FILE_* refusals, SOCKET_IPC_NOT_READY and the realtime warm retry NS_TENANT_WARM_RETRY_MS); deploy 4ebd7ef4. Open: deploy load-env.js bound, edge waits on api and realtime only.
 
 ### `MT-TENANT-REGISTRY` &mdash; Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming
 
