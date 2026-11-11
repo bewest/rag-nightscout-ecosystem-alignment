@@ -3374,3 +3374,10 @@ controls:
       (NOTIFICATION_PRODUCER_STALE), restored to 7 passing; recorded in reports/tenancy/consumer-refusal-2026-11-10/README.md.
       Automating the ablation would write into the lane worktree.
 
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-extended-settings.test.js
+    cwd: externals/work/crm-tenant-extended-settings-20261110
+    control-exempt: >
+      2026-11-10, extended-settings lane on 2f1ae027: controls C1 (projection dropped, 7 failing), C2 (shared object leaks A
+      into B, 8 failing), C3 (unknown keys accepted) and C4 (status projection removed), each restored by file copy with the
+      hash checked; reports/tenancy/tenant-extended-settings-2026-11-10/README.md. Automating them would write into the lane worktree.
+

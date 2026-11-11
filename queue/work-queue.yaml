@@ -26396,9 +26396,10 @@ items:
     title: "Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232)"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/multitenant-20261102
+    branch: codex/tenant-extended-settings-20261110
+    worktree: externals/work/crm-tenant-extended-settings-20261110
     base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
-    state: not-started
+    state: in-progress
     blast_radius: >
       lib/server/tenant-app/environment.js projection of extendedSettings; owner settings surface for plugin alert
       settings; multitenant only.
@@ -26408,12 +26409,21 @@ items:
     semver_reason: unreleased preview
     register: [BF-232]
     gates:
-      - no-gate: "not started; gate reproduces the stale-data alarm for a tenant with timeago.enableAlerts set, with a control that drops the projection"
+      - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-extended-settings.test.js
+        cwd: externals/work/crm-tenant-extended-settings-20261110
+        kind: unit
+        describe: >
+          Tenant extended-settings catalogue, isolation and refusal tests: 9 passing on 2f1ae027. HTTP and evaluator
+          integration (tenant-rest-context 10, projection/derived/recovery 25) in the evidence.
     blocks_on: []
     evidence:
-      - reports/tenancy/consumer-refusal-2026-11-10/README.md
+      - reports/tenancy/tenant-extended-settings-2026-11-10/README.md
     notes: >
       Read-derived 2026-11-10. Survey every plugin's extended-settings reads first.
+      2026-11-10 (reproduced): 2f1ae027 on b70ad83f; joins the next batch. Open: owner editing of plugin alert enables
+      after the first preview (documents settle only the first preview); devicestatus.advanced defaults true on a single
+      site but is unset for a tenant (read-derived, env.js:396 vs receiveddata.js:159).
+
   - id: MT-OWNER-LAST-GUARD
     title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
     parcel: tenancy
