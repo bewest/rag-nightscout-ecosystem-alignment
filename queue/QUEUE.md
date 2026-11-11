@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 401 |
+| items | 404 |
 | runnable gates | 452 |
-| explicit `no-gate:` markers | 402 |
+| explicit `no-gate:` markers | 405 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 402 of the 854 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 405 of the 857 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 79 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
-| `in-progress` | 19 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, DEPLOY-TREE-HOME, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING |
+| `in-progress` | 22 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, DEPLOY-TREE-HOME, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 5 | WS-LAB, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 101 items
+`parcel: tenancy` &mdash; 104 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8478,6 +8478,9 @@ alarm-readiness items, and the seam branch refresh.
 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-POOL-PRIMITIVE` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice) for evaluator and vcpool | `ready-to-push` | `codex/pool-primitive-20261110` | n/a | 0 run + 1 no-gate |
 | `MT-CONNECTOR-REVERSE` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant | `ready-to-push` | `codex/connector-reverse-20261110` | n/a | 0 run + 1 no-gate |
+| `MT-PERF-DB` | Restore-fence epoch admission, bounded startup warm, pool configuration, serve-then-warm readiness | `in-progress` | `codex/perf-db-20261110` | n/a | 0 run + 1 no-gate |
+| `MT-PERF-REALTIME` | Realtime publishes on change; event-driven authorization; queued connects under pool pressure | `in-progress` | `codex/perf-realtime-20261110` | n/a | 0 run + 1 no-gate |
+| `MT-PERF-EVALUATOR` | Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll | `in-progress` | `codex/perf-evaluator-20261110` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -11654,6 +11657,94 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
 **Notes.** 2026-11-10: partitioning decided (decisions.md#pool-primitive-shared); egress capacity is a deployment constraint (decisions.md#vcpool-egress-capacity).
+
+### `MT-PERF-DB` &mdash; Restore-fence epoch admission, bounded startup warm, pool configuration, serve-then-warm readiness
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/perf-db-20261110` |
+| base | `official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture review |
+| blocks on | `MT-EVALUATOR-PARTITION` |
+
+**Blast radius.** Multitenant only. In-transaction catalogue epoch replaces per-transaction window admission; bounded warm; pool sizes from configuration; per-tenant readiness with an all-tenants flag.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured in the lane record; frozen-head acceptance at the next #8898 batch join.
+
+**Evidence.**
+
+- `reports/tenancy/perf-db-2026-11-10/README.md`
+
+**Notes.** 2026-11-10: 1,000 tenants start (baseline failed at 100). Resumed for readiness-serve-then-warm and admission-epoch-everywhere.
+
+### `MT-PERF-REALTIME` &mdash; Realtime publishes on change; event-driven authorization; queued connects under pool pressure
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/perf-realtime-20261110` |
+| base | `official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture review |
+| register | `BF-233` |
+| blocks on | `MT-EVALUATOR-PARTITION` |
+
+**Blast radius.** Multitenant only. Change detection by tenant write clock per interval, frames only on view change, authorization at connect, expiry and events, connects queued instead of disconnected.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured in the lane record; frozen-head acceptance at the next #8898 batch join.
+
+**Evidence.**
+
+- `reports/tenancy/perf-realtime-2026-11-10/README.md`
+
+**Notes.** 2026-11-10: lane head 6f31c94b; idle frames 20 to 0 per socket-minute, realtime DB-ms 1,307 to 8 per minute at 1x20. BF-233 open.
+
+### `MT-PERF-EVALUATOR` &mdash; Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/perf-evaluator-20261110` |
+| base | `official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer; architecture review |
+| blocks on | `MT-EVALUATOR-PARTITION` |
+
+**Blast radius.** Multitenant only. Evaluation on change stamp past checkpoint plus per-tenant due-time timers for time-driven alarms; backstop per D6.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; Measured in the lane record; frozen-head acceptance at the next #8898 batch join.
+
+**Evidence.**
+
+- `releases/cgm-remote-monitor-16.0.0/decisions.md`
+
+**Notes.** 2026-11-10: lane running.
 
 ---
 

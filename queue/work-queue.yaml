@@ -27077,3 +27077,75 @@ items:
     notes: >
       2026-11-10: partitioning decided (decisions.md#pool-primitive-shared); egress
       capacity is a deployment constraint (decisions.md#vcpool-egress-capacity).
+
+  - id: MT-PERF-DB
+    title: "Restore-fence epoch admission, bounded startup warm, pool configuration, serve-then-warm readiness"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/perf-db-20261110
+    base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
+    state: in-progress
+    blast_radius: >
+      Multitenant only. In-transaction catalogue epoch replaces per-transaction window admission; bounded warm; pool sizes from configuration; per-tenant readiness with an all-tenants flag.
+    review: maintainer; architecture review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Measured in the lane record; frozen-head acceptance at the next #8898 batch join.
+    blocks_on:
+      - MT-EVALUATOR-PARTITION
+    evidence:
+      - reports/tenancy/perf-db-2026-11-10/README.md
+    notes: >
+      2026-11-10: 1,000 tenants start (baseline failed at 100). Resumed for readiness-serve-then-warm and admission-epoch-everywhere.
+
+  - id: MT-PERF-REALTIME
+    title: "Realtime publishes on change; event-driven authorization; queued connects under pool pressure"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/perf-realtime-20261110
+    base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
+    state: in-progress
+    blast_radius: >
+      Multitenant only. Change detection by tenant write clock per interval, frames only on view change, authorization at connect, expiry and events, connects queued instead of disconnected.
+    review: maintainer; architecture review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: [BF-233]
+    gates:
+      - no-gate: >
+          Measured in the lane record; frozen-head acceptance at the next #8898 batch join.
+    blocks_on:
+      - MT-EVALUATOR-PARTITION
+    evidence:
+      - reports/tenancy/perf-realtime-2026-11-10/README.md
+    notes: >
+      2026-11-10: lane head 6f31c94b; idle frames 20 to 0 per socket-minute, realtime DB-ms 1,307 to 8 per minute at 1x20. BF-233 open.
+
+  - id: MT-PERF-EVALUATOR
+    title: "Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/perf-evaluator-20261110
+    base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
+    state: in-progress
+    blast_radius: >
+      Multitenant only. Evaluation on change stamp past checkpoint plus per-tenant due-time timers for time-driven alarms; backstop per D6.
+    review: maintainer; architecture review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Measured in the lane record; frozen-head acceptance at the next #8898 batch join.
+    blocks_on:
+      - MT-EVALUATOR-PARTITION
+    evidence:
+      - releases/cgm-remote-monitor-16.0.0/decisions.md
+    notes: >
+      2026-11-10: lane running.
