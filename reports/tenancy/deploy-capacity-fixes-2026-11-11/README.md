@@ -199,3 +199,71 @@ deleted; my two core overlay worktrees removed; image `nsdeployfix:9fd2a81` remo
   (observed only; the peer lane's realtime warm retry).
 - The capacity harness can switch to `tools/compose-overlay.sh` + `demo.sh prepare/build` (harness not
   edited here).
+
+## Follow-up (same day): config bound through Compose, load-env.js bound, edge readiness
+
+*Captured 2026-11-11 after the coordinator's follow-up. This supersedes the "cap plumbing" paragraph
+in section 2 and the edge part of section 4.*
+
+| anchor | value |
+|---|---|
+| nightscout-deploy head | `ab950a2384ba825dff14ebab0dd84778ac0c6a39` (`bf2f479` + `ab950a2` on top of `4ebd7ef`); Compose tree `85d27fb4fc970f599a87d92473a2ef76f3ebbdee` |
+| core under test | lane `workspace/capacity-fixes-20261111` `5517cb6c74f2906383a436d034b86be86a0f743a` (`MULTITENANT_CONFIG_MAX_BYTES`, `lib/server/serve/config-file.js`, 65,536..67,108,864, default 1 MiB); its `deploy/multitenant` is the same as at `0392acf9` |
+| image | `nsdeployfix:ab950a2`, built by `demo.sh build` on an overlay of core `5517cb6c` (marker written by hand, since `compose-overlay.sh` uses SOURCE.md's `0392acf9`); labels core `5517cb6c…`, deploy `ab950a2…`; removed afterwards |
+
+**What changed.**
+- `NS_BOOTSTRAP_CONFIG_MAX_BYTES` now reaches api, realtime, evaluator and tenant-admin (through the
+  shared `x-app` environment) and the ownership overlay's admin as `MULTITENANT_CONFIG_MAX_BYTES` in
+  the Compose `environment:` block. Measured with `compose config`: those four roles get the value;
+  the bootstrap gets only the option; ui, nginx and demo get neither. It is no longer written into
+  `env.json`, and `load-env.js` refuses an `env.json` that sets it. The bootstrap accepts only core's
+  range and validates its written files against the value.
+- `load-env.js` takes its `env.json` bound from core's `config-file.maxBytes(process.env)`, keeps the
+  lstat, symlink and mode checks, and on refusal names `CONFIG_FILE_TOO_LARGE` with the size and the
+  limit, or `CONFIG_FILE_LIMIT_INVALID`. With a core that has no `config-file.js` (the recorded
+  `0392acf9`), it keeps the fixed 1 MiB bound and says so ("fixed: this core has no configurable
+  bound"). It does not change behaviour at the recorded commit.
+- nginx waits for api, realtime and ui only. `check-compose.js` asserts that nginx does not wait for
+  evaluator or tenant-admin; the edge-gating control (evaluator added back) fails with "nginx must not
+  wait for evaluator", and so did the same edit made to `compose.yaml` itself. The start-order control
+  now drops `nginx → realtime`.
+
+**3,000-tenant bootstrap on core `5517cb6c` (bootstrap only, then `down -v`; reproduced):**
+
+| run | option | result | time |
+|---|---|---|---|
+| set | `NS_BOOTSTRAP_CONFIG_MAX_BYTES=4194304` | `{"state":"synthetic-demo-provisioned",…}`, exit 0 | 56 s |
+| unset | empty | exit 1: `{"error":"CONFIG_FILE_TOO_LARGE","detail":"MULTITENANT_PREVIEW_CONFIG is too large: 1232739 bytes, over the limit of 1048576 bytes (MULTITENANT_CONFIG_MAX_BYTES)","at":["refuse (lib/server/serve/config-file.js:41:89)","tooLarge (lib/server/serve/config-file.js:63:10)","read (lib/server/serve/config-file.js:79:32)"]}` | 60 s |
+
+Core now gives the error a code, so the stable `error` field carries `CONFIG_FILE_TOO_LARGE` itself.
+Sizes written at N=3000 (compact), the same in both runs: api `config.json` 1,232,739,
+`evaluator-metadata.json` 481,165, `env.json` 342,249, `admission.json` 280,952,
+`operation.json` 196,183 bytes. `env.json` contains the variable 0 times.
+
+**load-env.js, offline** (a synthetic 1,638,891-byte `env.json`; reproduced):
+
+| case | result |
+|---|---|
+| core reader, bound unset | exit 78, `CONFIG_FILE_TOO_LARGE: 1638891 bytes, over the limit of 1048576 bytes` |
+| core reader, bound 2097152 | loaded |
+| core reader, bound 100 | exit 78, `CONFIG_FILE_LIMIT_INVALID` |
+| `env.json` sets `MULTITENANT_CONFIG_MAX_BYTES` / mode 0644 / symlink | exit 78, refused (generic message, as before) |
+| no core reader, bound 2097152 | exit 78, `… 1048576 bytes, fixed: this core has no configurable bound` |
+| **control:** `fe36212` `load-env.js`, bound 2097152 | exit 78, "missing or invalid": the fixed 1 MiB limit, so red as expected |
+
+**Edge readiness at runtime, N=2** (project `nsdeployfix-edge`; reproduced): with an override that
+makes the evaluator healthcheck always fail, `up` started nginx while the evaluator was still
+`health: starting`. Through the edge, an api request without a token answered 401, which shows the
+edge reached api. Before this change, nginx would have waited for the evaluator to be healthy (that
+case was not run).
+
+**Checks at `ab950a2`:**
+- `npm test` passes.
+- The identity check passes: tree `85d27fb4…`.
+- `check-compose.js` passes with 8 controls rejected.
+- Kubernetes: the golden render is current; 11 checks, 0 failures; 15 controls as expected.
+- `bootstrap.test.js` and `restore.test.js` on the `5517cb6c` overlay: 13/13.
+
+**Teardown:**
+- Projects `nsdeployfix-set`, `nsdeployfix-unset` and `nsdeployfix-edge` were brought down with `down -v`; no containers, volumes or networks with the `nsdeployfix` prefix are left.
+- The private state directories are deleted, the `5517cb6c` overlay worktree is removed, and the image `nsdeployfix:ab950a2` is removed.
