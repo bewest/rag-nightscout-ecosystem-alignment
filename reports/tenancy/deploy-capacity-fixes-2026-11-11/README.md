@@ -267,3 +267,76 @@ case was not run).
 **Teardown:**
 - Projects `nsdeployfix-set`, `nsdeployfix-unset` and `nsdeployfix-edge` were brought down with `down -v`; no containers, volumes or networks with the `nsdeployfix` prefix are left.
 - The private state directories are deleted, the `5517cb6c` overlay worktree is removed, and the image `nsdeployfix:ab950a2` is removed.
+
+## Second follow-up (same day): ui tenant ceiling, realtime sockets, ui validated at bootstrap
+
+*Captured 2026-11-11. Appended; earlier sections unchanged.*
+
+| anchor | value |
+|---|---|
+| nightscout-deploy head | `d1c7aca4f95998ae68d0fc42e3f236d68991b740` (on top of `ab950a2`); Compose tree `d4fd72567e4d940d1723224c2b4aba91bdd1f9b5` |
+| core under test | lane `workspace/capacity-fixes-20261111` `5c60aec669362b032a10d6dd7ac368e9c61e8003` (`tenant-ceiling.js` `PREVIEW_MAX_TENANTS = 10000`; `ui.js` through `config-file.js`) |
+| image | `nsdeployfix:d1c7aca`, built by `demo.sh build` on an overlay of `5c60aec6` with the marker written by hand; labels core `5c60aec6…`, deploy `d1c7aca…`; removed afterwards |
+
+**What changed.**
+- **ui.js** is core `5c60aec6`'s, plus one deploy addition. **It is not byte for byte:** the brief
+  asked for both a byte-for-byte copy and a fallback when the modules are missing, and core's file
+  requires `tenant-ceiling.js` at load time, so it cannot do both. The addition is small:
+  - With a core that lacks `tenant-ceiling.js` or `config-file.js`, it keeps that module's former
+    behaviour (the 1,000-tenant ceiling, the fixed 1 MiB read) and says so on stderr.
+  - The diff against core `5c60aec6` is that helper and two call sites.
+  - The recorded core `0392acf9` has neither module, and the Kubernetes binding renders that commit
+    with this tree's `ui.js` (unchanged binding). Without the fallback, the ui would fail to load there.
+- **config.js `tenantCount`:** the bound is `PREVIEW_MAX_TENANTS`. Without the module, the former
+  10,000 applies and stderr says so.
+- **Realtime `maxSockets`:** `max(100, tenants × NS_DEMO_SOCKETS_PER_TENANT)`, with the setting from
+  1 to 100 and a default of 2, set on the bootstrap service.
+  - **The floor of 100 is an addition to the brief.** It keeps the default two-tenant documents
+    unchanged (`maxSockets` 100 at N=2, measured).
+  - The limit counts each Socket.IO namespace binding, so a plain 2 × N would give the default
+    demonstration 4.
+- **Ui validated at bootstrap:** `validateFiles` runs `ui.js` `parseConfig` on the written ui config,
+  and the bootstrap now writes that file before validating. The ui container also gets
+  `MULTITENANT_CONFIG_MAX_BYTES`.
+- **`SOURCE.delta.patch`** now covers `config.js` and `ui.js` against core `0392acf9`'s fixture. The
+  identity check passes (5 files).
+
+**3,000 tenants on core `5c60aec6`** (`NS_BOOTSTRAP_CONFIG_MAX_BYTES=4194304`, project
+`nsdeployfix-ui`; reproduced):
+- **Bootstrap:** exit 0 in 59 s.
+- **Generated files:** realtime `maxSockets` 6000 (3,000 × 2); realtime tenants 3,000; ui tenants
+  3,000; ui `config.json` 157,918 bytes.
+- **Bring-up:** `up --wait` of api, realtime, evaluator, tenant-admin, ui and nginx returned in
+  30 s, with every role healthy. nginx has no healthcheck; it was up and serving.
+- **Pages through the edge:** 200 for `one.example.test` and `t2999.example.test`.
+- **API requests without a token:** 401 for tenants 0, 1500 and 2999. Tenant 2999 first answered 503,
+  then 401 seconds later (warming).
+
+**Controls (each red, then restored):**
+
+| control | red | restored |
+|---|---|---|
+| `0392acf9` `ui.js` mounted over the image's, same 3,000-tenant ui config | `UI_STARTUP_REFUSED`, exit 78 | the service ui (new `ui.js`) is healthy; a fresh one-off ui container running, `health.js ui` ok |
+| bootstrap ui validation removed from `validateFiles`, test with a ui config of 10,001 tenants | `not ok … Missing expected exception` | `ok` (`UI_PUBLIC_CONFIG_INVALID`) |
+
+`tenantCount` caps at 10,000, so a real bootstrap cannot generate a 10,001-tenant ui config. That
+control therefore runs through `validateFiles` with the written role files and a substituted
+`docs.ui`.
+
+**Fallback at the recorded core `0392acf9`** (overlay by `compose-overlay.sh`):
+- `bootstrap.test.js` + `restore.test.js` pass 15/15.
+- stderr shows `config: core has no tenant-ceiling module; using the former bound of 10000 tenants`
+  and `UI: core has no tenant-ceiling module; using the former fixed ceiling of 1000 tenants`.
+- At that core a bootstrap above 1,000 tenants now refuses at bootstrap (ui parser), not at ui start.
+  That is read from the code; no bootstrap was run at that core.
+
+**Checks at `d1c7aca`:**
+- `npm test` passes.
+- The identity check passes: tree, upstream tree, 5 fixture files with the new delta.
+- `check-compose.js` passes.
+- Kubernetes: the golden render is current; 11 checks, 0 failures; 15 controls as expected.
+- On the `5c60aec6` overlay, the tree tests pass 15/15.
+
+**Teardown:**
+- `nsdeployfix-ui` was brought down with `down -v`; no `nsdeployfix` containers, volumes or networks remain.
+- The state is deleted, the `5c60aec6` and `0392acf9` overlay worktrees are removed, and the image `nsdeployfix:d1c7aca` is removed.
