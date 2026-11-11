@@ -1,0 +1,14 @@
+# Bench overlay for the core deploy/multitenant Compose file at the recorded commit.
+# It changes no serving image: the bootstrap container reads the N-tenant plan
+# (nightscout-deploy bench/compose-baseline-20261110) mounted over the image's copy,
+# and PostgreSQL loads pg_stat_statements for per-role statement timing.
+services:
+  bootstrap:
+    environment:
+      NS_DEMO_TENANTS: ${NS_DEMO_TENANTS:?set NS_DEMO_TENANTS}
+    volumes:
+      - ${NS_BENCH_OVERLAY:?set NS_BENCH_OVERLAY}/config.js:/opt/app/deploy/multitenant/config.js:ro
+      - ${NS_BENCH_OVERLAY}/bootstrap.js:/opt/app/deploy/multitenant/bootstrap.js:ro
+  postgres:
+    command: [postgres, -c, shared_preload_libraries=pg_stat_statements, -c, pg_stat_statements.track=top,
+              -c, track_io_timing=on, -c, log_lock_waits=on, -c, deadlock_timeout=200ms]

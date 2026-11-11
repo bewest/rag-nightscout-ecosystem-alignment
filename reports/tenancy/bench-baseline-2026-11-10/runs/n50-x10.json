@@ -1,0 +1,410 @@
+{
+  "tenants": 50,
+  "runid": "bench-1794368763",
+  "workload": {
+    "duration": 120,
+    "accel": 10,
+    "hotFactor": 10,
+    "k6Image": "grafana/k6:1.3.0",
+    "socketsHot": 20,
+    "socketsCold": 40,
+    "probeIntervalMs": 5000,
+    "baseUrl": "http://127.0.0.1:18450"
+  },
+  "host": {
+    "before": {
+      "date_utc": "2026-11-11T03:46:03Z",
+      "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+      "cores": "16",
+      "mem_total_kb": "65683804",
+      "disk": "/dev/nvme1n1p2 size=453G avail=189G use=57%",
+      "docker": "29.1.3",
+      "compose": "2.40.3+ds1-0ubuntu1~24.04.1",
+      "kernel": "6.18.7-76061807-generic",
+      "loadavg": "12.36 13.92 12.28",
+      "containers_running": "53",
+      "containers_other": "46"
+    },
+    "after": {
+      "date_utc": "2026-11-11T03:53:19Z",
+      "cpu": "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+      "cores": "16",
+      "mem_total_kb": "65683804",
+      "disk": "/dev/nvme1n1p2 size=453G avail=189G use=57%",
+      "docker": "29.1.3",
+      "compose": "2.40.3+ds1-0ubuntu1~24.04.1",
+      "kernel": "6.18.7-76061807-generic",
+      "loadavg": "11.56 13.68 13.05",
+      "containers_running": "53",
+      "containers_other": "46"
+    }
+  },
+  "deploy": {
+    "tenants": 50,
+    "port": 18450,
+    "bootstrapSeconds": 7.1,
+    "startSeconds": 29.4
+  },
+  "phases": {
+    "idle_start": 1794368764.8285115,
+    "idle_end": 1794368794.8310852,
+    "load_start": 1794368795.3658893,
+    "load_end": 1794368932.2791586,
+    "reconnect_end": 1794369198.8240635
+  },
+  "k6": {
+    "shapes": {
+      "r_devicestatus": {
+        "latencyMs": {
+          "p50": 5004.1,
+          "p95": 6514.1,
+          "p99": 6668.1,
+          "max": 6783,
+          "n": 234
+        },
+        "failedRate": 0.7777777777777778
+      },
+      "w_sgv": {
+        "failedRate": 0.7957446808510639,
+        "latencyMs": {
+          "p50": 5004.3,
+          "p95": 6569.9,
+          "p99": 6763.3,
+          "max": 6935.2,
+          "n": 235
+        }
+      },
+      "w_treatments_v3": {
+        "latencyMs": {
+          "p50": 5004.1,
+          "p95": 5390.7,
+          "p99": 5622.7,
+          "max": 5757.4,
+          "n": 235
+        },
+        "failedRate": 0.774468085106383
+      },
+      "w_devicestatus": {
+        "failedRate": 0.8333333333333334,
+        "latencyMs": {
+          "p50": 5004.4,
+          "p95": 6533.4,
+          "p99": 6720.3,
+          "max": 6954.4,
+          "n": 234
+        }
+      },
+      "r_status": {
+        "latencyMs": {
+          "p50": 5004.1,
+          "p95": 7045.6,
+          "p99": 7316.3,
+          "max": 7416.2,
+          "n": 234
+        },
+        "failedRate": 0.7649572649572649
+      },
+      "r_treatments": {
+        "latencyMs": {
+          "p50": 5004.3,
+          "p95": 6524.2,
+          "p99": 6742.1,
+          "max": 6793.4,
+          "n": 233
+        },
+        "failedRate": 0.7510729613733905
+      },
+      "r_sgv": {
+        "latencyMs": {
+          "p50": 5003.2,
+          "p95": 6561.9,
+          "p99": 6765.4,
+          "max": 6917.2,
+          "n": 1148
+        },
+        "failedRate": 0.6681184668989547
+      }
+    },
+    "requests": 2603,
+    "rps": 19.1,
+    "droppedIterations": 47,
+    "writesOk": 140,
+    "writesUncertain": 564,
+    "writesRefused": 0,
+    "overall": {
+      "p50": 5003.7,
+      "p95": 6593.9,
+      "p99": 6910.4
+    }
+  },
+  "fanout": {
+    "initial": {
+      "sockets": 60,
+      "primed": 0,
+      "primeMs": 30062
+    },
+    "probeWrites": {
+      "ok": 10,
+      "failed": 5,
+      "byTenant": {
+        "22222222-2222-4222-8222-222222222222": 1,
+        "30000002-3333-4333-8333-000000000002": 1,
+        "30000006-3333-4333-8333-000000000006": 1,
+        "30000008-3333-4333-8333-000000000008": 1,
+        "30000009-3333-4333-8333-000000000009": 1,
+        "3000000a-3333-4333-8333-00000000000a": 1,
+        "3000000b-3333-4333-8333-00000000000b": 1,
+        "3000000c-3333-4333-8333-00000000000c": 1,
+        "3000000d-3333-4333-8333-00000000000d": 1,
+        "3000000e-3333-4333-8333-00000000000e": 1
+      }
+    },
+    "fanout": {
+      "hot": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "max": null
+      },
+      "cold": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "max": null
+      },
+      "expectedDeliveries": 34,
+      "delivered": 0
+    },
+    "recovery": {
+      "sockets": 60,
+      "restartCommandMs": 459,
+      "stockWindowMs": 30000,
+      "stockRecovered": 0,
+      "stockAllRecoveredMs": null,
+      "retried": 60,
+      "retryReconnects": 0,
+      "retryRecovered": 0,
+      "retryAllRecoveredMs": null,
+      "limitMs": 180000
+    },
+    "socketsConfigured": {
+      "hot": 20,
+      "cold": 40
+    },
+    "connects": 0,
+    "reasons": {
+      "connect_error:xhr poll error": 2999
+    }
+  },
+  "cpuRss": {
+    "nginx": {
+      "idle": {
+        "cpuPctMean": 0,
+        "cpuPctMax": 0.1,
+        "rssMiBMax": 15,
+        "samples": 8
+      },
+      "load": {
+        "cpuPctMean": 0.7,
+        "cpuPctMax": 1,
+        "rssMiBMax": 19.3,
+        "samples": 32
+      }
+    },
+    "evaluator": {
+      "idle": {
+        "cpuPctMean": 74.7,
+        "cpuPctMax": 83.3,
+        "rssMiBMax": 319.5,
+        "samples": 8
+      },
+      "load": {
+        "cpuPctMean": 71.8,
+        "cpuPctMax": 91.4,
+        "rssMiBMax": 330.8,
+        "samples": 32
+      }
+    },
+    "ui": {
+      "idle": {
+        "cpuPctMean": 2.1,
+        "cpuPctMax": 14.3,
+        "rssMiBMax": 24,
+        "samples": 8
+      },
+      "load": {
+        "cpuPctMean": 8.9,
+        "cpuPctMax": 20.7,
+        "rssMiBMax": 41.1,
+        "samples": 32
+      }
+    },
+    "api": {
+      "idle": {
+        "cpuPctMean": 3.2,
+        "cpuPctMax": 25.9,
+        "rssMiBMax": 97.5,
+        "samples": 8
+      },
+      "load": {
+        "cpuPctMean": 64.4,
+        "cpuPctMax": 81.5,
+        "rssMiBMax": 436.1,
+        "samples": 32
+      }
+    },
+    "tenant-admin": {
+      "idle": {
+        "cpuPctMean": 3.1,
+        "cpuPctMax": 13.1,
+        "rssMiBMax": 50.2,
+        "samples": 8
+      },
+      "load": {
+        "cpuPctMean": 7,
+        "cpuPctMax": 15.4,
+        "rssMiBMax": 39.6,
+        "samples": 32
+      }
+    },
+    "postgres": {
+      "idle": {
+        "cpuPctMean": 463.2,
+        "cpuPctMax": 544.7,
+        "rssMiBMax": 152.2,
+        "samples": 8
+      },
+      "load": {
+        "cpuPctMean": 765.3,
+        "cpuPctMax": 940.7,
+        "rssMiBMax": 223.6,
+        "samples": 32
+      }
+    },
+    "vault": {
+      "idle": {
+        "cpuPctMean": 3.2,
+        "cpuPctMax": 13.1,
+        "rssMiBMax": 52.8,
+        "samples": 8
+      },
+      "load": {
+        "cpuPctMean": 9.2,
+        "cpuPctMax": 20.8,
+        "rssMiBMax": 77.4,
+        "samples": 32
+      }
+    }
+  },
+  "pg": {
+    "activeBackendsByWaitDuringLoad": {
+      "CPU:-": 7.3,
+      "Client:ClientRead": 0.7,
+      "IO:WALSync": 0.2,
+      "LWLock:WALWrite": 0.1
+    },
+    "locks": {
+      "ungrantedMax": 0,
+      "ungrantedMean": 0,
+      "backendsMax": 40
+    },
+    "phases": {
+      "idle": {
+        "seconds": 30,
+        "dbMsPerSecTotal": 1130.2,
+        "roles": {
+          "evaluator": {
+            "statementsPerSec": 3224.9,
+            "dbMsPerSec": 546.6
+          },
+          "lifetime_evaluator": {
+            "statementsPerSec": 561,
+            "dbMsPerSec": 348.5
+          },
+          "outbox": {
+            "statementsPerSec": 660.6,
+            "dbMsPerSec": 129.2
+          },
+          "suppression": {
+            "statementsPerSec": 397,
+            "dbMsPerSec": 105.9
+          }
+        },
+        "windowOps": {
+          "lifetime_evaluator": {
+            "opsPerSec": 25.6,
+            "opsPerTenantPerSec": 0.51
+          }
+        }
+      },
+      "load": {
+        "seconds": 137.4,
+        "dbMsPerSecTotal": 2017.5,
+        "roles": {
+          "api": {
+            "statementsPerSec": 3289.2,
+            "dbMsPerSec": 828
+          },
+          "evaluator": {
+            "statementsPerSec": 1997.5,
+            "dbMsPerSec": 492.6
+          },
+          "lifetime_evaluator": {
+            "statementsPerSec": 362.6,
+            "dbMsPerSec": 343.5
+          },
+          "outbox": {
+            "statementsPerSec": 429.9,
+            "dbMsPerSec": 125.4
+          },
+          "lifetime_api": {
+            "statementsPerSec": 124.8,
+            "dbMsPerSec": 123
+          },
+          "suppression": {
+            "statementsPerSec": 258,
+            "dbMsPerSec": 105
+          }
+        },
+        "windowOps": {
+          "lifetime_api": {
+            "opsPerSec": 5.7,
+            "opsPerTenantPerSec": 0.11
+          },
+          "lifetime_evaluator": {
+            "opsPerSec": 16.5,
+            "opsPerTenantPerSec": 0.33
+          }
+        }
+      }
+    }
+  },
+  "disk": {
+    "perDomain": {
+      "entries": {
+        "rows": 58,
+        "tableGrowthBytes": 122880,
+        "bytesPerRow": 2119,
+        "docBytesPerRow": 446
+      },
+      "devicestatus": {
+        "rows": 39,
+        "tableGrowthBytes": 90112,
+        "bytesPerRow": 2311,
+        "docBytesPerRow": 1602
+      },
+      "treatments": {
+        "rows": 53,
+        "tableGrowthBytes": 81920,
+        "bytesPerRow": 1546,
+        "docBytesPerRow": 446
+      }
+    },
+    "bytesPerTenantDay": 1721088,
+    "databaseGrowthBytes": 2990080,
+    "databaseBytes": 19717143
+  },
+  "oracle": "ORACLE GREEN: tenants 50, mismatched 0, stored 140, accepted 140, uncertain 564"
+}
