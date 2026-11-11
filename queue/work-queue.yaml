@@ -27198,6 +27198,29 @@ items:
     evidence: []
     notes: >
       2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it.
+  - id: MT-TENANT-LIVE-ADD
+    title: "Running evaluator and realtime pick up newly provisioned tenants without a restart"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: ''
+    state: blocked
+    blast_radius: >
+      Multitenant evaluator and realtime runtimes (clinical path): adding a tenant to the runtime, consumers, startup cells,
+      pool slice and socket admission while running (decisions.md#tenant-live-add).
+    review: maintainer; clinical-path review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          To be defined: time from provisioning to a new tenant's first alarm; no alarm gap for existing tenants; break-it controls.
+    blocks_on:
+      - MT-TENANT-REGISTRY
+    evidence: []
+    notes: >
+      2026-11-11: decided; starts after the registry's step (a) lands.
   - id: MT-EVAL-COST
     title: "Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order"
     parcel: tenancy

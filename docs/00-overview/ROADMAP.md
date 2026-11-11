@@ -235,6 +235,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 3 | `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener compositio | `in-flight-upstream` | `MT-M6A-JOIN` |
 | 3 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in str | `in-flight-upstream` | `MT-M6A-JOIN` |
 | 3 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-flight-upstream` | `MT-M6A-JOIN` |
+| 3 | `MT-TENANT-LIVE-ADD` | Running evaluator and realtime pick up newly provisioned tenants without a resta | `blocked` | `MT-TENANT-REGISTRY` |
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
 | 4 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up | `in-progress` | `DEPLOY-TRUST-PROBES` |
 | 4 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;  | `ready-to-push` | `MT-M6B-JOIN` |
