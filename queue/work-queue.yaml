@@ -27084,7 +27084,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/perf-db-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: in-progress
+    state: ready-to-push
     blast_radius: >
       Multitenant only. In-transaction catalogue epoch replaces per-transaction window admission; bounded warm; pool sizes from configuration; per-tenant readiness with an all-tenants flag.
     review: maintainer; architecture review
@@ -27108,7 +27108,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/perf-realtime-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: in-progress
+    state: ready-to-push
     blast_radius: >
       Multitenant only. Change detection by tenant write clock per interval, frames only on view change, authorization at connect, expiry and events, connects queued instead of disconnected.
     review: maintainer; architecture review
@@ -27132,7 +27132,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/perf-evaluator-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: in-progress
+    state: ready-to-push
     blast_radius: >
       Multitenant only. Evaluation on change stamp past checkpoint plus per-tenant due-time timers for time-driven alarms; backstop per D6.
     review: maintainer; architecture review
@@ -27149,3 +27149,29 @@ items:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       2026-11-10: lane running.
+
+  - id: MT-EVAL-COST
+    title: "Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: codex/eval-cost-20261111
+    base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
+    state: ready-to-push
+    blast_radius: >
+      Multitenant evaluator only. Steps C/D/E, B and A of decisions.md#evaluation-cost-candidates;
+      ties break on the insertion ordinal on both paths (decisions.md#view-reads-total-order).
+    review: maintainer; clinical-path review
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Measured in reports/tenancy/eval-cost-2026-11-11/; frozen-head acceptance at the 2026-11-11 batch join.
+    blocks_on:
+      - MT-PERF-EVALUATOR
+    evidence:
+      - reports/tenancy/eval-cost-2026-11-11/README.md
+    notes: >
+      2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms.
+      Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.

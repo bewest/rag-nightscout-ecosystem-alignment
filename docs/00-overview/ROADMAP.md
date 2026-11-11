@@ -244,10 +244,11 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 4 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-flight-upstream` | `MT-M6B-JOIN` |
 | 4 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no  | `not-started` | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING` |
 | 5 | `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active  | `in-flight-upstream` | `MT-ADMIN-ROLE-OWNERSHIP` |
-| 5 | `MT-PERF-DB` | Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t | `in-progress` | `MT-EVALUATOR-PARTITION` |
-| 5 | `MT-PERF-EVALUATOR` | Evaluator works on change: per-member change query and due-time timers replace t | `in-progress` | `MT-EVALUATOR-PARTITION` |
-| 5 | `MT-PERF-REALTIME` | Realtime publishes on change; event-driven authorization; queued connects under  | `in-progress` | `MT-EVALUATOR-PARTITION` |
+| 5 | `MT-PERF-DB` | Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t | `ready-to-push` | `MT-EVALUATOR-PARTITION` |
+| 5 | `MT-PERF-EVALUATOR` | Evaluator works on change: per-member change query and due-time timers replace t | `ready-to-push` | `MT-EVALUATOR-PARTITION` |
+| 5 | `MT-PERF-REALTIME` | Realtime publishes on change; event-driven authorization; queued connects under  | `ready-to-push` | `MT-EVALUATOR-PARTITION` |
 | 5 | `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | `in-flight-upstream` | `MT-OWNER-LAST-GUARD` |
+| 6 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work | `ready-to-push` | `MT-PERF-EVALUATOR` |
 
 <!-- END GENERATED: road-tenancy -->
 
