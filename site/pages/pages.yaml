@@ -21,7 +21,7 @@ pages:
   multitenant-database-design.html:
     kind: living
     sources: [docs/30-design/tenancy/sql-and-migration-architecture.md, tools/site/render_database.py]
-    source_commit: 4fb6f4ed934f598abd1736378ac0243b0a9d3c96
+    source_commit: a2dacd669c920f095a982f18e95e04722246a850
     render: tools/site/render_database.py
   nightscout-ecosystem-programme.html:
     kind: living

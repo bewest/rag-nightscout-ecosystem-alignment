@@ -14,6 +14,15 @@ application ownership decision. Design recommendations and Kubernetes scale-out
 assessment are **read-derived**; no new runtime or cluster campaign was run.
 This guide explains their SQL implementation and does not promote M6.*
 
+*Refreshed 2026-11-10 against draft PR #8898 head
+`16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1`: [tenant activity](#tenant-activity-pause-and-suspend),
+[key retention and export-file removal](#key-retention-and-export-file-removal),
+the [restore census](#restore-census-and-non-clinical-identities) and the
+[`ownership_operator` identity](#the-ownership_operator-identity). Links in those
+sections are pinned to `16a1fc2d`; the other sections keep their `151de024`
+reading. The refresh is read-derived from source; acceptance of that head lives
+in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).*
+
 ## Scope and evidence
 
 For diagram-first review, open the [database and component ownership visual
@@ -102,13 +111,13 @@ owns the broader component explanation.
 The existing claim/generation-bound maintenance window determines whether an
 operation can run safely during recovery. Operator-controlled resource/activity
 policy asks which serving, ingestion, evaluation or connector work should run at
-all; that policy remains **proposed and undecided** in the
-[tenant-admission review](tenant-admission-and-activity.md). A maintenance phase
-named `active` is not evidence of operator enablement or background-work
-eligibility. Preserve the existing pause/suspend meanings and captured restore
-behavior; no activity field, transition or automatic inactive-tenant resource
-control is implemented by this database design. Observed health is a further
-separate fact. No new activity-policy gate is claimed by the diagrams below.
+all. That policy is decided as two durable flags, pause and suspend
+([activity-is-pause-suspend](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend)),
+and stored in `tenant_activity` beside, not inside, the maintenance window; see
+[tenant activity](#tenant-activity-pause-and-suspend). A maintenance phase named
+`active` is not evidence of activity eligibility, and clearing the restore hold
+never changes the activity flags ([policy module](https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/policy.js#L13-L15)). Observed
+health is a further separate fact.
 
 ## Component ownership and internal application APIs
 
@@ -232,6 +241,8 @@ new client record identity. See the [entries candidate][entries-schema] and
 | Alarm acknowledgement | `tenant_alarm_suppression(tenant_id,alarm_group,alarm_level,acked_at,expires_at)`. | Current suppression state is retained; fresh eligibility reads remain tenant-bound. |
 | Restore control | `tenant_lifecycle_windows`, `tenant_lifecycle_operations`, `tenant_lifecycle_restore_authority`, `tenant_lifecycle_restore_audit`. | Durable phase/generation/claim, unfinished operations, authorized maintenance roles and audit. Operations, authority and audit reference window tenant rows. These are control authority, not clinical restore payload. |
 | Deletion ceremony | `tenant_lifecycle_requests`, `tenant_lifecycle_ceremony`. | Separate requested/confirmed/cancelled/executing/executed deletion workflow; ceremony references request plus tenant. A restore claim does not itself authorize deletion. |
+| Tenant activity | `tenant_activity(tenant_id,version,paused,suspended,deletion_request_id,paused_before_deletion)`, `tenant_activity_audit`. | Control namespace, migration `0007_tenant_activity`. One row per tenant, referencing its window row; audit rows reference the activity row. Operator/owner policy, not clinical payload: a restore neither rewinds nor clears it. |
+| Key retention | `tenant_lifecycle_key_retention` with `artifact_removal`, `artifact_removal_code`. | Control namespace, migrations `0005` and `0006`. One record per deletion request: retained → destroying → destroyed, or restored. The destroyed row records the export-file removal outcome. |
 
 The [preview lifecycle mapping][deployment-lifecycle] explicitly extends the
 reviewed catalogue with both checkpoint namespaces, outbox and suppression. The
@@ -276,6 +287,8 @@ flowchart BT
   operation["tenant_lifecycle_operations"] -->|"tenant_id FK"| window["tenant_lifecycle_windows"]
   authority["tenant_lifecycle_restore_authority"] -->|"tenant_id FK"| window
   audit["tenant_lifecycle_restore_audit"] -->|"tenant_id FK"| window
+  activity["tenant_activity"] -->|"tenant_id FK"| window
+  activityAudit["tenant_activity_audit"] -->|"tenant_id FK"| activity
 ```
 
 ```mermaid
@@ -477,12 +490,128 @@ supported suspended-restore resume command. Operator-verified recovery remains
 separate work; no deterministic recovery-time bound follows from the
 refusal/restart evidence.
 
+## Activity, retention and the admin identity at `16a1fc2d`
+
+**Read-derived from the `16a1fc2d` source.** The four mechanisms below joined
+#8898 in the 2026-11-10 batch. Each anchor is pinned to that head.
+
+### Tenant activity: pause and suspend
+
+Migration [`0007_tenant_activity`][m0007] in the lifecycle control catalogue
+creates `tenant_activity` (primary key `tenant_id`, referencing
+`tenant_lifecycle_windows`; a positive `version`; `paused` and `suspended`
+booleans; a `deletion_request_id`/`paused_before_deletion` pair that is set or
+null together) and an append-only `tenant_activity_audit` whose `verb` is one of
+`provision`, `pause`, `unpause`, `suspend`, `unsuspend`, `deletion-request`,
+`deletion-cancel` or `deletion-execute`, with `authority` `owner` or `operator`.
+Both tables use enabled and forced RLS on `app.current_tenant_id`, and `PUBLIC`
+has no rights.
+
+**A row for every tenant.** The same migration [backfills][m0007-backfill] one
+active row (`version` 1, both flags false) for every existing window row, with a
+`provision` audit row attributed to principal `migration`, consumer
+`backfill-0007`. It lifts `FORCE ROW LEVEL SECURITY` on `tenant_lifecycle_windows`
+for the two backfill statements and restores it before the migration commits;
+migration and ledger entry are one transaction (see
+[upgrade and readiness](#upgrade-and-readiness-sequence)). New tenants get their
+row from [`provisionInTransaction`][activity-provision], which the Compose
+bootstrap calls [in the same transaction][bootstrap-activity] that inserts the
+window row ([activity-row-always-provisioned](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned)).
+
+**Two flags, three states.** The [policy module][activity-policy] defines
+`active`, `paused` and `suspended`, with suspended taking precedence. Paused
+admits uploads and connector polling and stops the evaluator, so alarms are not
+computed or delivered; suspended admits nothing. The column grants enforce who
+sets which flag ([grant set][activity-grants]): the owner identity may update
+`version` and `paused` only, the operator identity `version`, `paused` and
+`suspended`, and the deletion-ceremony identity also the deletion pair. The
+[ceremony effects][activity-deletion] pause on a deletion request, restore the
+earlier pause state on cancel, and suspend on execution, each inside the
+ceremony's transaction
+([deletion-request-auto-pauses](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deletion-request-auto-pauses)).
+
+**Where it is read.** Each consumer reads the row afresh through a `reader`
+store, after a `check` of the control catalogue ledger:
+
+| Consumer | Effect | Anchor |
+|---|---|---|
+| API (HTTP) | Write methods, `OPTIONS` and the v2 credential exchange count as uploads; everything else is a read. Refusals are 423 `TENANT_PAUSED` / `TENANT_SUSPENDED`; an unreadable row is 503 `TENANT_ACTIVITY_UNAVAILABLE`. | [serving gate][activity-serving], [API wiring][activity-api], [status map][activity-status] |
+| Realtime | Every current-state read checks eligibility; an ineligible tenant reads as disabled and its sockets are invalidated. | [realtime gate][activity-realtime] |
+| Evaluator | Work lists are built from tenants eligible now; an unreadable or missing row makes that tenant ineligible with its own code (`ACTIVITY_UNAVAILABLE`, `ACTIVITY_NOT_PROVISIONED`). | [eligibility][activity-eligibility], [evaluator wiring][activity-evaluator] |
+
+The `activity` block is optional in each role's configuration; without it the
+role does not consult the table. The in-tree Compose plan at `16a1fc2d`
+provisions rows but grants no role the activity tables
+([deployment grants][deploy-ownership-operator] contain no `tenant_activity`
+grant), so its roles run without activity admission.
+
+### Key retention and export-file removal
+
+Migration [`0005_tenant_lifecycle_key_retention`][m0005] keeps one record per
+deletion request: the export artifact's 64-hex digest, the retained key names
+and a phase of `retained`, `restored`, `destroying` or `destroyed`. Migration
+[`0006_tenant_lifecycle_artifact_removal`][m0006] adds `artifact_removal`
+(`removed`, `absent` or `failed`) and `artifact_removal_code`, with a CHECK that a
+removal outcome is present exactly when the phase is `destroyed` and a code is
+present exactly when the outcome is `failed`.
+
+[`destroyRetainedKeys`][destroy-keys] refuses `LIFECYCLE_ARTIFACT_REMOVER_REQUIRED`
+before any state change when no remover is composed. It commits `destroying`,
+has the key custodian delete and confirm the absence of every key, then
+[removes the export file][remove-export] by digest and records the outcome
+[in the same row update][destroy-record] that commits `destroyed`. A missing or
+unremovable file never blocks key destruction; a repeat call on a `destroyed`
+record reports the recorded outcome without retrying. The
+[filesystem remover][artifact-remover] builds the path only from the configured
+private directory and the recorded digest (`tenant-artifact-<digest>`), and
+refuses a symlink or non-directory at that name. Copies outside that directory
+are the operator's responsibility
+([key-destruction-removes-export](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#key-destruction-removes-export),
+[export-removal-no-retry](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#export-removal-no-retry)).
+
+### Restore census and non-clinical identities
+
+The [actor census][census-actors] in `assertComplete` reads every other client
+backend in the database whose identity holds any privilege, direct, inherited or
+by ownership, in the protected namespaces. A backend matching a pinned
+participant's PID, birth and role passes. Any other backend is
+[exempt][census-exempt] only when its identity holds no privilege on any
+[clinical table][clinical-catalogue] (`entries`, `treatments`, `devicestatus`,
+`profile`, `food`, `settings`, `activity`) and no write privilege on
+`tenant_insertion_ordinal` or `tenant_write_clock`; otherwise the census refuses
+`RESTORE_COHORT_UNKNOWN_BACKEND`. Grants read from the catalogue in the census
+statement decide; role names and `application_name` do not. Read-only identities
+and the admin role's `ownership_operator` are therefore accepted while connected
+([restore-census-and-ownership-phase](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
+[restore-census-counter-writers](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-counter-writers)).
+The exemption is a configuration check of connected identities, not a check of
+live writes. The disposable-PostgreSQL integration test
+[`admin-lifecycle-fit`][admin-lifecycle-fit] exercises the admin role beside a
+restore, including granting it a clinical table to make the census refuse.
+
+### The `ownership_operator` identity
+
+The deployment plan [declares][deploy-ownership-operator] a separate
+`<prefix>_ownership_operator` database identity for the admin role's ownership
+operations. In the authorization namespace it may read and row-lock
+`tenant_authorization_config` and `tenant_owner_policy` through
+`UPDATE(owner_fence)`, insert and update `active`, `can_update` and `delegable`
+on `tenant_owner_actors`, read `tenant_authorization_subjects` and insert into
+`tenant_subject_admin_audit`. In the control namespace it gets only `SELECT` on
+the window, request and ceremony tables ([phase grants][phase-grants]). It holds
+no clinical grant and no counter grant, so the census above accepts it. Each
+ownership change reads the tenant phase under the shared window lock before any
+ownership row lock and refuses `OWNERSHIP_TENANT_INACTIVE` unless the tenant is
+active ([ownership check][ownership-phase]). The admin role is not a lifecycle
+cohort participant.
+
 ## Shared resources and remaining fences
 
 The fixed cohort uses private same-UID sockets and trusted credential custody.
 It compares actual backend PID, birth, role and datastore identity; application
 names are not membership. The [actor census][actor-census] refreshes PostgreSQL's
-statistics snapshot on the same operator client before reading actors. It remains
+statistics snapshot on the same operator client before reading actors; at
+`16a1fc2d` it also [accepts non-clinical identities](#restore-census-and-non-clinical-identities). It remains
 a diagnostic/refusal check, not a physical database fence against a newly opened
 raw client with already-authorized DATA credentials. Such external writers are
 unsupported under the [application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership);
@@ -531,3 +660,29 @@ owns the distinct browser, cold Compose, client, regression and corpus verdicts.
 [tenant-operations]: https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/tenant-operations/restore.js#L3
 [actor-census]: https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/server/serve/operation-cohort.js#L118
 [cohort-guide]: https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#L74
+[m0005]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L70
+[m0006]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L82
+[m0007]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L89
+[m0007-backfill]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/postgres-candidate.json#L93-L96
+[activity-provision]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/provisioning.js#L10
+[bootstrap-activity]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/deploy/multitenant/bootstrap.js#L145-L148
+[activity-policy]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/policy.js#L3-L29
+[activity-grants]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/postgres.js#L26-L45
+[activity-deletion]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/deletion.js#L3-L10
+[activity-serving]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/serving.js#L3-L28
+[activity-api]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/preview-api.js#L123-L131
+[activity-status]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/tenant-app/index.js#L11-L15
+[activity-realtime]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/preview-realtime.js#L38-L44
+[activity-eligibility]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-activity/eligibility.js#L4-L26
+[activity-evaluator]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/evaluator-preview.js#L41-L45
+[destroy-keys]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/key-retention.js#L190-L193
+[remove-export]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/key-retention.js#L175-L184
+[destroy-record]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/key-retention.js#L226-L235
+[artifact-remover]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/filesystem-artifact.js#L52-L86
+[census-actors]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/operation-cohort.js#L97-L124
+[census-exempt]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/server/serve/operation-cohort.js#L125-L132
+[clinical-catalogue]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/clinical-catalogue.js#L7-L14
+[admin-lifecycle-fit]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/tests/admin-lifecycle-fit.integration.test.js#L248-L262
+[deploy-ownership-operator]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/deploy/multitenant/config.js#L87-L97
+[phase-grants]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-lifecycle/tenant-phase.js#L63-L68
+[ownership-phase]: https://github.com/nightscout/cgm-remote-monitor/blob/16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1/lib/tenant-ownership/postgres.js#L141-L148
