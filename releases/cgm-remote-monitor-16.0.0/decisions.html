@@ -2188,7 +2188,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>812ac77cb</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>c6927c7b8</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3660,7 +3660,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/477f215c25864f94aaa3b91489d70ca4ec412165/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c6927c7b8a28090849a0e52ce763743afb28b64b/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -3842,6 +3842,30 @@ deployment has run.</p>
 <td>maintainer, 2026-11-10</td>
 <td><code>MT-BENCH-BASELINE</code></td>
 <td>Shape and bottlenecks, not portable limits; limits are set from later measurements.</td>
+</tr>
+<tr>
+<td><a id="tenant-devicestatus-status-parity"></a><strong>A tenant reports <code>devicestatus: {advanced: true, days: 1}</code> in its status, as a single site does by default; the operator's per-tenant configuration may override it.</strong></td>
+<td>maintainer, 2026-11-10 ("report it for parity")</td>
+<td><code>MT-TENANT-EXTENDED-SETTINGS</code> follow-up, next #8898 batch</td>
+<td>Display parity only while tenant realtime frames stay full (<code>delta:false</code>, <code>lib/server/realtime/projection.js:29</code>), where merge and replace agree; measured in <code>reports/tenancy/devicestatus-advanced-2026-11-10/README.md</code>. If tenant frames become incremental, <code>advanced:true</code> keeps deleted statuses in the client, as on a single site.</td>
+</tr>
+<tr>
+<td><a id="census-operational-list"></a><strong>The tenant-operations census keeps seeing every catalogue under <code>lib/</code>; operational (non-tenant) catalogues such as <code>pool_membership</code> are named in an explicit <code>OPERATIONAL</code> list, pinned by digest and excluded from per-tenant restore, export and deletion.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-POOL-PRIMITIVE</code> (<code>5a789903</code>)</td>
+<td>One inventory, so a new table cannot sit outside both; a changed operational catalogue refuses with <code>OPERATIONS_CENSUS_OPERATIONAL_CHANGED</code>. The pool row key is <code>(pool_kind, ordinal, member_id)</code>: the member incarnation is in the key so two processes claiming one ordinal appear as two rows and the duplicate is detectable (refines <a href="#pool-primitive-shared">pool-primitive-shared</a>).</td>
+</tr>
+<tr>
+<td><a id="evaluator-partition-now"></a><strong>Evaluator partitioning is built now, ahead of the M7 benchmarks: the refusal of <code>MULTITENANT_POOL_EVALUATOR_PARTITION=on</code> is lifted once per-cycle agreement checks, empty-slice handling, the operational inspection read and the scale-event control are in place.</strong></td>
+<td>maintainer, 2026-11-10 ("Do MT-EVALUATOR-PARTITION now")</td>
+<td><code>MT-EVALUATOR-PARTITION</code></td>
+<td>Stacked on the reverse-connector branch for the next #8898 batch. Stale-slice takeover stays undecided; the gap is measured.</td>
+</tr>
+<tr>
+<td><a id="connector-pause-gap-accepted"></a><strong>For the preview, a <code>vcpool</code> connector that starts while its tenant is paused does not pull until unpause; one already running keeps pulling. No data is lost: the source keeps everything and the pull catches up on unpause.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-CONNECTOR-REVERSE</code> (<code>1792063a</code>)</td>
+<td>Mechanism: the connector reads the tenant to find its resume point and the paused api refuses reads with 423. Measured: 55 of 56 while paused, <code>CONNECTOR_GAP_FAILED</code>, <code>write:423</code> ×30; 56/56 after unpause, no duplicate. Visible in the connector inspection read. Revisit options: admit a precise list of uploader reads while paused, or a durable operational bookmark. Also recorded from the lane: v1 requires read on a collection for every request, so the connector subject holds read+create, not create-only (<code>data-access.js:52,57,147</code>).</td>
 </tr>
 </tbody>
 </table>
