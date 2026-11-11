@@ -27150,6 +27150,54 @@ items:
     notes: >
       2026-11-10: lane running.
 
+  - id: MT-CAPACITY-FIXES
+    title: "Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/capacity-fixes-20261111
+    base: workspace/multitenant-20261102@0392acf9
+    state: in-progress
+    blast_radius: >
+      Multitenant preview only. Core: one bounded, operator-set size cap for role config files, with distinct
+      refusal errors; realtime startup warm retries an api that is not ready. nightscout-deploy
+      (deploy/capacity-fixes-20261111): bootstrap error detail, compact JSON, nginx Docker DNS re-resolve,
+      health-ordered start, overlay build path.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Focused tests and break-it controls in the lane records; the 3k/5k/10k capacity campaign runs on the rebuilt image.
+    blocks_on: []
+    evidence: []
+    notes: >
+      2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry).
+  - id: MT-TENANT-REGISTRY
+    title: "Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: ''
+    state: blocked
+    blast_radius: >
+      Multitenant only. Replaces the static tenant list in role configs (decisions.md#tenant-registry,
+      decisions.md#provisioning-split).
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Design and acceptance to be defined; isolation (the definer function reveals only host-to-tenant mapping) and
+          the startup-only re-measure at 1k/3k are the expected gates.
+    blocks_on:
+      - MT-CAPACITY-FIXES
+    evidence: []
+    notes: >
+      2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it.
   - id: MT-EVAL-COST
     title: "Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order"
     parcel: tenancy

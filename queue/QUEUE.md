@@ -31,21 +31,21 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 405 |
+| items | 407 |
 | runnable gates | 452 |
-| explicit `no-gate:` markers | 406 |
+| explicit `no-gate:` markers | 408 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 406 of the 858 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 408 of the 860 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 79 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
-| `in-progress` | 18 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING |
+| `in-progress` | 19 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 10 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
-| `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
+| `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, MT-TENANT-REGISTRY |
 | `in-flight-upstream` | 21 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 105 items
+`parcel: tenancy` &mdash; 107 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8481,6 +8481,8 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-PERF-DB` | Restore-fence epoch admission, bounded startup warm, pool configuration, serve-then-warm readiness | `ready-to-push` | `codex/perf-db-20261110` | n/a | 0 run + 1 no-gate |
 | `MT-PERF-REALTIME` | Realtime publishes on change; event-driven authorization; queued connects under pool pressure | `ready-to-push` | `codex/perf-realtime-20261110` | n/a | 0 run + 1 no-gate |
 | `MT-PERF-EVALUATOR` | Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll | `ready-to-push` | `codex/perf-evaluator-20261110` | n/a | 0 run + 1 no-gate |
+| `MT-CAPACITY-FIXES` | Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering | `in-progress` | `workspace/capacity-fixes-20261111` | n/a | 0 run + 1 no-gate |
+| `MT-TENANT-REGISTRY` | Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming | `blocked` | `-` | n/a | 0 run + 1 no-gate |
 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order | `ready-to-push` | `codex/eval-cost-20261111` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
@@ -11746,6 +11748,55 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 
 **Notes.** 2026-11-10: lane running.
+
+### `MT-CAPACITY-FIXES` &mdash; Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/capacity-fixes-20261111` |
+| base | `workspace/multitenant-20261102@0392acf9` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Multitenant preview only. Core: one bounded, operator-set size cap for role config files, with distinct refusal errors; realtime startup warm retries an api that is not ready. nightscout-deploy (deploy/capacity-fixes-20261111): bootstrap error detail, compact JSON, nginx Docker DNS re-resolve, health- ordered start, overlay build path.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; Focused tests and break-it controls in the lane records; the 3k/5k/10k capacity campaign runs on the rebuilt image.
+
+**Notes.** 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry).
+
+### `MT-TENANT-REGISTRY` &mdash; Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming
+
+| | |
+|---|---|
+| state (claimed) | `blocked` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `-` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| blocks on | `MT-CAPACITY-FIXES` |
+
+**Blast radius.** Multitenant only. Replaces the static tenant list in role configs (decisions.md#tenant-registry, decisions.md#provisioning-split).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; Design and acceptance to be defined; isolation (the definer function reveals only host-to-tenant mapping) and the startup-only re-measure at 1k/3k are the expected gates.
+
+**Notes.** 2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it.
 
 ### `MT-EVAL-COST` &mdash; Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order
 

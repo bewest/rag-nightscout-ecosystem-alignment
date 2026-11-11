@@ -192,6 +192,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
 | 1 | `MT-BATCH-JOIN-1110` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | `in-flight-upstream` | &mdash; |
+| 1 | `MT-CAPACITY-FIXES` | Capacity campaign fixes: operator-set config size cap, realtime warm retry, boot | `in-progress` | &mdash; |
 | 1 | `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | &mdash; |
 | 1 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | &mdash; |
 | 1 | `MT-POOL-PRIMITIVE` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice)  | `ready-to-push` | &mdash; |
@@ -223,6 +224,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | `in-flight-upstream` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `MT-OIDC-NATIVE` |
 | 2 | `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `not-started` | `MT-ENDPOINT-TRANSPORT` |
+| 2 | `MT-TENANT-REGISTRY` | Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab pri | `blocked` | `MT-CAPACITY-FIXES` |
 | 3 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
 | 3 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `in-progress` | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
 | 3 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `MT-M6A-JOIN` |
