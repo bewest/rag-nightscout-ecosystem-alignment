@@ -455,10 +455,22 @@ const setActivity = (tenant, column, value) => admin.query(`UPDATE ${LIFECYCLE}.
     // Pool partitioned: one member, a cross-kind row, a duplicate ordinal.
     await stop(vc);
     const poolOperator = await membership.operator({ connectionString: urls.pool_operator, namespace: POOL, kinds: ['vcpool', 'evaluator'] });
-    await poolOperator.setMembers('vcpool', 1); await poolOperator.setMembers('evaluator', 2);
+    await poolOperator.setMembers('evaluator', 2);
     const poolEnv = { MULTITENANT_POOL_VCPOOL_PARTITION: 'on', MULTITENANT_POOL_VCPOOL_ORDINAL: '0',
       MULTITENANT_POOL_VCPOOL_LEASE_MS: '3000', MULTITENANT_POOL_VCPOOL_DATABASE_URL: urls.vc_pool, MULTITENANT_POOL_VCPOOL_NAMESPACE: POOL };
+    // Boot before the operator sets the vcpool count: the member boots, alerts and waits (decision pool-member-hygiene).
+    const proxiedAll = () => [...egress.byTarget.values()].reduce((n, v) => n + v, 0);
+    const proxiedBefore = proxiedAll();
     vc = await startVcpool(api, { overrides: { credential: { [A]: 'connector-source-credential-2' } }, pool: poolEnv });
+    let waiting;
+    await until(async () => { waiting = await vc.inspect(); return waiting.member.cycles > 2; }, null, 10000);
+    const unsetAlert = /Pool membership alert: .*POOL_COUNT_UNSET/.test(vc.stderr);
+    note('GATE a partitioned vcpool started before its count is set boots, alerts POOL_COUNT_UNSET and works no tenant',
+      vc.exit === null && waiting.member.eligible === false && waiting.member.reason === 'POOL_COUNT_UNSET' && unsetAlert &&
+      waiting.tenants.every(t => t.status === 'member-refused') && proxiedAll() === proxiedBefore,
+      JSON.stringify({ sourceRequestsWhileWaiting: proxiedAll() - proxiedBefore, exit: vc.exit, member: { eligible: waiting.member.eligible, reason: waiting.member.reason, cycles: waiting.member.cycles },
+        alert: unsetAlert, tenants: waiting.tenants.map(t => [t.status, t.code]) }));
+    await poolOperator.setMembers('vcpool', 1);
     const evaluatorMember = await membership.member({ kind: 'evaluator', partitioned: true, ordinal: 0, leaseMs: 30000, connectionString: urls.ev_pool, namespace: POOL }, { onAlert: () => {} });
     await evaluatorMember.register();
     await seedSource(src[0], 2, 1);
@@ -467,9 +479,16 @@ const setActivity = (tenant, column, value) => admin.query(`UPDATE ${LIFECYCLE}.
     note('GATE partitioned member (1 of 1) pulls; an evaluator-kind row with another count does not affect it',
       gp.ok && view.member.mode === 'partitioned' && view.member.eligible === true && view.tenants.every(t => t.status === 'polling'),
       JSON.stringify({ sync: gp, member: { mode: view.member.mode, eligible: view.member.eligible, live: view.member.liveOrdinals }, tenants: view.tenants.map(t => [t.status, t.code]) }));
-    const second = await startVcpool(api, { overrides: { credential: { [A]: 'connector-source-credential-2' } }, pool: poolEnv, expectRefusal: true });
-    note('GATE a second process with the same ordinal is refused by the pool', second.exit && second.exit.code === 78 && /POOL_DUPLICATE_ORDINAL/.test(second.stderr),
-      'exit ' + JSON.stringify(second.exit) + ' stderr: ' + second.stderr.trim().split('\n').slice(-1)[0]);
+    // A second process with the same ordinal boots and waits; the duplicate stops both (the whole kind).
+    const second = await startVcpool(api, { overrides: { credential: { [A]: 'connector-source-credential-2' } }, pool: poolEnv });
+    let firstView, secondView;
+    await until(async () => { firstView = await vc.inspect(); secondView = await second.inspect();
+      return firstView.member.reason === 'POOL_DUPLICATE_ORDINAL' && secondView.member.reason === 'POOL_DUPLICATE_ORDINAL'; }, null, 15000);
+    note('GATE a second process with the same ordinal is refused by the pool: both members refuse and alert, the second keeps running',
+      second.exit === null && /Pool membership alert: .*POOL_DUPLICATE_ORDINAL/.test(second.stderr) && /Pool membership alert: .*POOL_DUPLICATE_ORDINAL/.test(vc.stderr) &&
+      firstView.tenants.every(t => t.status === 'member-refused') && secondView.tenants.every(t => t.status === 'member-refused'),
+      JSON.stringify({ secondExit: second.exit, first: firstView.member.reason, second: secondView.member.reason }));
+    await stop(second);
     let recovered;
     await until(async () => { recovered = await vc.inspect(); return recovered.member.eligible === true; }, null, 10000);
     const rowsAfter = Number((await admin.query(`SELECT count(*) FROM ${POOL}.pool_membership WHERE pool_kind='vcpool'`)).rows[0].count);

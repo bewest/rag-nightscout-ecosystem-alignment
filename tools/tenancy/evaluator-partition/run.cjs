@@ -356,12 +356,13 @@ const freePort = () => new Promise(resolve => { const s = net.createServer().lis
       if (PHASES.has('kill') && members.has('m2')) {
         sampling = true; const sampling3 = startSampling(); await delay(1000);
         const tKill = Date.now(); const ek0 = await lab.epoch(); await stop('m2', 'SIGKILL');
-        // A killed process leaves its serve.internal socket file; the listener
-        // refuses an existing path (SOCKET_IPC_PATH_EXISTS, observed). A
-        // replacement Pod starts with a fresh runtime directory: model that.
-        observe('killed member left its socket file', String(fs.existsSync(path.join(sockets, 'm2.sock'))));
-        fs.rmSync(path.join(sockets, 'm2.sock'), { force: true });
+        // A killed process leaves its serve.internal socket file. The restart in
+        // place reclaims it (nothing answers there) instead of refusing it
+        // (decision pool-member-hygiene); the file is not removed here.
+        const leftSocket = fs.existsSync(path.join(sockets, 'm2.sock'));
         const m2b = await start('m2', { ordinal: 2 }); const tUp = Date.now();
+        note('CHECK member killed with SIGKILL restarts in place over its stale socket and serves', leftSocket && members.has('m2') && !m2b.worker.startup.bootError,
+          fmt({ socketLeftByKilledMember: leftSocket, bootError: m2b.worker.startup.bootError || null }));
         const back = await waitFor(async () => { const v = await m2b.inspect(); return v.gate.eligible && v.tenants.filter(t => t.admitted).length ? true : null; }, 15000);
         const tBack = Date.now();
         await delay(6000); sampling = false; await sampling3;

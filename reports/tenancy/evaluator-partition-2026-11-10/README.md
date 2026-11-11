@@ -295,3 +295,42 @@ for all six files.
   Database failover, clock behaviour across replicas, lease and pass values at scale. Each lab figure comes from one
   run (the earlier development runs agree, but run-to-run variance was not computed).
 - Stale-slice takeover is still undecided. Its gap was measured above only for a member that comes back.
+
+## Pool member hygiene, 2026-11-10
+
+*Appended after the maintainer adopted the three follow-ups above
+([pool-member-hygiene](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-member-hygiene)).*
+
+Lane head: `codex/evaluator-partition-20261110` at **`d6560468`**, one commit on `cb1b751d`. It touches 4 files:
+`lib/server/internal-api/transport.js`, `lib/server/serve/vcpool-preview.js`,
+`tests/internal-api-stale-socket.test.js` (new) and `tests/tiers.json`. Local and unpushed. Alignment `main` was
+`768dea8b5` when the measurements ran. One dedicated `postgres:16` container (`ns-ep-pg-*`) was used and then removed.
+The labs ran on the uncommitted tree that became `d6560468`; nothing changed between the run and the commit.
+
+| follow-up | change | evidence |
+|---|---|---|
+| 1. stale socket reclaim | Before binding, `reclaimStale` (`transport.js`) does an `lstat` on the path. It refuses anything that is not a socket and never follows or removes it. It then connects: `ECONNREFUSED` or `ENOENT` → re-check the same inode, unlink, bind. A connection that answers, a 1000 ms timeout or any other error → `SOCKET_IPC_PATH_EXISTS`. | `tests/internal-api-stale-socket.test.js`, 3 passing. (a) A child serving the lifecycle contract is killed with SIGKILL; its socket file remains; a new child on the same path serves. (b) A live second listener is refused and left on the same inode. (c) A regular file and a symlink are refused and left untouched. Evaluator lab: `CHECK member killed with SIGKILL restarts in place over its stale socket and serves`, `{"socketLeftByKilledMember":true,"bootError":null}`. The lab no longer removes the file. The existing realtime-preview fixture refusal of file, symlink and live socket keeps its expectations. |
+| 2. vcpool boots and waits | `vcpool-preview.js`: a refusal at boot logs `waiting: <reason>` instead of exiting 78; each cycle works no tenant until membership agrees. | Connector lab, new gate: `a partitioned vcpool started before its count is set boots, alerts POOL_COUNT_UNSET and works no tenant`, `{"sourceRequestsWhileWaiting":0,"exit":null,"member":{"eligible":false,"reason":"POOL_COUNT_UNSET","cycles":3},"alert":true}`. It then pulls once the count is set. The duplicate-ordinal gate now reads: the second process keeps running, both members refuse `POOL_DUPLICATE_ORDINAL` and alert. After the second process stops, the first is eligible again with one row; alerts `refused:POOL_COUNT_UNSET, recovered:POOL_COUNT_UNSET, refused:POOL_DUPLICATE_ORDINAL, recovered:POOL_DUPLICATE_ORDINAL`. |
+| 3. admin pools without ownership | Already in `cb1b751d`. | `tests/admin-role.test.js` covers pools only, ownership only (the existing composition test) and ownership plus pools, and refuses the empty composition. Part of the unit tier below. |
+
+Break-it controls for follow-up 1, each run and then restored. The file's sha256 matched its pre-control copy.
+
+| control | symptom |
+|---|---|
+| always unlink (no liveness check) | **red**: `Missing expected rejection: LIVE_SOCKET_REFUSED` (the live-process test) |
+| no reclaim (the previous rule) | **red**: `STALE_SOCKET_RECLAIMED SOCKET_IPC_PATH_EXISTS` (the kill -9 test) |
+
+Checks at the committed tree:
+
+| check | result |
+|---|---|
+| `npm run test:unit` | 3222 passing, exit 0 |
+| `npm run test:tiers` | `631 test files, 8 tiers: ok` |
+| `npm run test:write-boundary` | all 9 adapter entry points checked |
+| integration on PostgreSQL 16: the seven suites of the resumed section, plus `tenant-projection-evaluator` | 52 passing, exit 0 |
+| eslint on the 3 changed JS files | 0 errors; 26 warnings, all `security/detect-non-literal-fs-filename`. `transport.js` has 17, against 15 at `cb1b751d`; the new ones are the reclaim's `lstat` and `unlink`. |
+| evaluator lab (`tools/tenancy/evaluator-partition/run.cjs`) | `SUMMARY 23 checks, 0 failing` (22 earlier plus the restart-in-place check). The kill-and-restart measure this run: eligible 2048 ms after the kill, unowned 1400–1900 ms, worst delivery gap 5819 ms, duplicates 0. |
+| connector lab (`tools/tenancy/connector-reverse/run.cjs`) | `SUMMARY 25 checks, 0 failing` (24 plus the boot-before-count gate) |
+
+Not run: `multitenant-preview-process.integration` (it creates its own containers), the full suite, the browser and
+dom tiers, and `prcheck`.
