@@ -215,9 +215,9 @@ The binding therefore renders no pool variable with the partition off, which is 
 ### Equivalence summary after the smoke
 
 The table is in `bindings/kubernetes/README.md` at `65f55c1`. Of 23 rows:
-- 18 smoked. 2 of those (api and admin) needed the lab workarounds for Compose-tree defects A and B.
+- 17 smoked. 2 of those (api and admin) needed the lab workarounds for Compose-tree defects A and B.
 - 1 smoked difference: start order.
-- 1 rendered only: PostgreSQL identities.
+- 2 rendered only: the PostgreSQL identity inventory (the identities connected), and the evaluator worker index (off in the preview).
 - 1 **control red**: two cohorts both serve.
 - 2 UNMEASURED: the restore operator, and container-restart semantics beyond the observed realtime restart.
 
