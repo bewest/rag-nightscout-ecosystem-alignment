@@ -1,8 +1,8 @@
 {
   "as_of": "2026-11-10",
   "integration": "workspace/multitenant-20261102 (draft PR #8898)",
-  "observed_tip": "b70ad83fa4cdaeb7e6023137a05bd811d7db606a",
-  "integration_note": "Draft #8898 carries the accepted ed2 one-host reference, the M6a owner/OIDC and internal service API candidate (dc795bd1) and the M6b join: listener composition, key retention, ownership operations, single-site OIDC provisioning and the CodeQL 150 fix. Read from GitHub 2026-11-10 20:54 UTC: head b70ad83f, open draft, 17 checks pass and 3 skipped (CodeQL and the multitenant opt-in corpus included). The frozen-head acceptance is reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md. The next batch (codex/batch-join-20261110) joins the 2026-11-10 lanes: last-owner guard (BF-229), root admin parity, ownership in the admin role with the lifecycle fit (BF-230), one serve.internal per role with graceful shutdown, pause/suspend activity, export-file removal on key destruction, content-change revisions with the alarm repeat clock (BF-231) and tenant extended settings (BF-232). That join is in acceptance and not pushed; the lanes below record their own focused evidence. On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moved to a Vault Agent sidecar and native acceptance runs through a disposable harness (release decisions, 2026-11-09). No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
+  "observed_tip": "16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1",
+  "integration_note": "Draft #8898 is at 16a1fc2d. Read from GitHub 2026-11-11 02:20 UTC: head 16a1fc2d, open draft, 17 checks pass and 3 skipped, none pending (CodeQL and the multitenant opt-in corpus included). 16a1fc2d is the 2026-11-10 batch join, a fast-forward of b70ad83f by 37 commits: last-owner guard (BF-229), root admin parity, ownership in the admin role with the lifecycle fit (BF-230), one serve.internal per role with graceful shutdown, pause/suspend activity, export-file removal on key destruction, content-change revisions with the alarm repeat clock (BF-231) and tenant extended settings (BF-232). Its acceptance (full campaign on frozen 3cd1c487, delta campaign on 16a1fc2d) is reports/tenancy/batch-join-2026-11-10/16a1fc2d-acceptance/README.md. The previous head b70ad83f carried the ed2 one-host reference, the M6a owner/OIDC and internal service API candidate (dc795bd1) and the M6b join (reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md). On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moved to a Vault Agent sidecar and native acceptance runs through a disposable harness (release decisions, 2026-11-09). No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
   "milestones": [
     {
       "id": "M0",
@@ -323,7 +323,7 @@
     {
       "id": "MT-M6B-JOIN",
       "lane": "M6b / b70ad83f on #8898, CI green",
-      "next": "Carried forward by the batch join (codex/batch-join-20261110), in acceptance."
+      "next": "Carried forward by the batch join, accepted and pushed to #8898 at 16a1fc2d."
     },
     {
       "id": "MT-OIDC-SINGLE-PROVISION",
@@ -332,48 +332,48 @@
     },
     {
       "id": "MT-OWNER-LAST-GUARD",
-      "lane": "M6b / fixed on lane 65657a62 (BF-229); in the batch join",
-      "next": "Joined acceptance on the batch candidate."
+      "lane": "M6b / fixed on lane 65657a62 (BF-229); joined at 16a1fc2d (#8898)",
+      "next": "Joined and accepted at 16a1fc2d; no lane action remains recorded."
     },
     {
       "id": "MT-ADMIN-ROLE-OWNERSHIP",
-      "lane": "M6b / fixed on lane 1376c294; in the batch join",
-      "next": "Joined acceptance; port the ownership_operator grants to a nightscout-deploy overlay."
+      "lane": "M6b / fixed on lane 1376c294; joined at 16a1fc2d (#8898)",
+      "next": "Port the ownership_operator grants to a nightscout-deploy overlay."
     },
     {
       "id": "MT-ADMIN-LIFECYCLE-FIT",
-      "lane": "Admin role beside lifecycle / lane 66655756 (BF-230); in the batch join",
-      "next": "Joined acceptance; clinical logical restore with the admin role connected."
+      "lane": "Admin role beside lifecycle / lane 66655756 (BF-230); joined at 16a1fc2d (#8898)",
+      "next": "Clinical logical restore with the admin role connected; the restore census with the api role holding a root_writer backend (UNMEASURED at 16a1fc2d)."
     },
     {
       "id": "MT-ROOT-ADMIN-PARITY",
-      "lane": "Tenant API_SECRET parity / lane 165c13bf; in the batch join",
-      "next": "Joined acceptance; preview API boot with subject admin on real PostgreSQL and Vault, and the browser admin page."
+      "lane": "Tenant API_SECRET parity / lane 165c13bf; joined at 16a1fc2d (#8898)",
+      "next": "Preview API boot with subject admin on real PostgreSQL and Vault, and the browser admin page."
     },
     {
       "id": "MT-INTERNAL-LISTENER",
-      "lane": "serve.internal per role / lane 78ecba76; in the batch join",
-      "next": "Joined acceptance; real role processes over Compose (UNMEASURED in the lane)."
+      "lane": "serve.internal per role / lane 78ecba76; joined at 16a1fc2d (#8898)",
+      "next": "Real role processes over Compose (UNMEASURED: the instrument uses stand-ins)."
     },
     {
       "id": "MT-ACTIVITY-ELIGIBILITY",
-      "lane": "Pause/suspend / lane 07981b55; in the batch join",
-      "next": "Joined acceptance; isolation of one tenant's unreadable activity row; port activity grants to nightscout-deploy."
+      "lane": "Pause/suspend / lane 07981b55; joined at 16a1fc2d (#8898)",
+      "next": "Isolation of one tenant's unreadable activity row; activity selections and grants in the deploy demo and nightscout-deploy."
     },
     {
       "id": "MT-EXPORT-EXPIRY",
-      "lane": "Key destruction removes the export / lane 701eba6f; in the batch join",
+      "lane": "Key destruction removes the export / lane 701eba6f; joined at 16a1fc2d (#8898)",
       "next": "Production composition of the artifact remover and the operator UPDATE grant."
     },
     {
       "id": "MT-CONSUMER-STALE-RESELECT",
-      "lane": "Alarm path / lane 956d0940 (BF-231); in the batch join",
-      "next": "Joined acceptance of content-change revisions, the repeat clock and the targeted wake."
+      "lane": "Alarm path / lane 956d0940 (BF-231); joined at 16a1fc2d (#8898)",
+      "next": "No lane action remains recorded beyond the joined acceptance at 16a1fc2d."
     },
     {
       "id": "MT-TENANT-EXTENDED-SETTINGS",
-      "lane": "Plugin extended settings / lane 2f1ae027 (BF-232); in the batch join",
-      "next": "Full suite, browser tier and prcheck on the joined candidate; owner editing of plugin alert enables after the first preview."
+      "lane": "Plugin extended settings / lane 2f1ae027 (BF-232); joined at 16a1fc2d (#8898)",
+      "next": "Owner editing of plugin alert enables after the first preview; the browser tier on 16a1fc2d (carried over from 3cd1c487)."
     },
     {
       "id": "DEPLOY-TREE-HOME",
