@@ -176,3 +176,96 @@ closed by construction (case 8, C1) and measured on the root plane (race case).
   lifecycle fit lane; read-derived risk: the census refuses backends it cannot attribute).
 - Native `tests/native/oidc-matrix` authority races against the changed owner policy.
 - Browser run of the admin tools page against the DATA listener.
+
+## Addendum 2026-11-10 (second pass): maintainer answers to Q1–Q3
+
+*Decisions `root-role-edit-delete`, `root-grant-ceiling-default-all` and
+`admin-role-subjects-use-admin-tools`, recorded in the 16.0.0 release decisions (alignment
+`main` `c7370e9618748b9844774e36ab80cf4b05f7df52`). Q4 stays as built: a tenant without an owner
+policy row gets 403 on every admin tools call, and operators provision the row (now measured,
+below).*
+
+### Anchors
+
+| ref | commit |
+|---|---|
+| started from (clean worktree) | `cfae532c362cc125147843d965603af3293c1d94` |
+| commit 3: code, migration, tests | `df7252d19a1f2eb5ca44bf1798ab02945981f31b` |
+| commit 4: deploy only (`config.js`, `bootstrap.js`) | `165c13bf57a2d3d8ed0f6c504dc69f66e3715101` (lane head) |
+
+### Changes (reproduced unless marked)
+
+| decision | change |
+|---|---|
+| root-role-edit-delete | `PUT /roles` edits permissions within catalogue ∩ ceiling (`update-role` audit); `_id` ≠ `name` → 400 `ROLE_RENAME_REFUSED`; `DELETE /roles/:_id` → 409 `SUBJECT_ADMIN_ROLE_IN_USE` while any subject holds the role, else deletes (`remove-role` audit); unknown role → 404. The role row is locked `FOR UPDATE`, so a concurrent assignment's `FOR SHARE` waits and then refuses `SUBJECT_ADMIN_UNKNOWN_ROLE` (read-derived; no race test). The root plane only; the owner plane refuses. |
+| (same) | **Migration `0007_root_role_administration`** in `lib/tenant-authorization/postgres-candidate.json`: replaces the audit operation check with one that also admits `update-role`, `remove-role` (checksum `accf6ad899bec84c5be0c1bda8237caed28f1c3bb5744196135f18ae6c7bc9bd`). The number is provisional; the coordinator allocates it at the join. Append-only: earlier migrations byte-identical. |
+| (same) | Grants, root writer only: `DELETE` and `UPDATE(permissions)` on roles. The privilege screen now expects exactly that on the root plane (and still no role DELETE or permission UPDATE on the owner plane). |
+| root-grant-ceiling-default-all | Preview `subjectAdmin.ownerPolicy` is optional; the catalogue defaults to `['*']`. Compose demo: owner and root catalogue, ceiling and owner delegation become `['*']`. The tenant permission language has no owner or operator permission (owner authority is an actor row plus a management credential; operator authority is the private plane; read-derived from `lib/`, where no `owner:`/`operator:` permission string exists), so `*` grants tenant data and the admin tools only. |
+| admin-role-subjects-use-admin-tools | Each route requires its single-site permission from the subject's current roles: `admin:api:subjects:read/create/update/delete`, `admin:api:roles:list/create/update/delete` (as `lib/authorization/endpoints.js`). Accepted credentials, verified against the resolved tenant: bearer JWT, `?token=` (exchanged), or the token in `api-secret`; mixed secret and token refuse. Same writer path as root (catalogue ∩ ceiling, last-owner guard, no owner or operator route). Audit rows `<subject id>/<data consumer>`. `secrets.adminLegacyTokens` derives the listed tokens only after the caller's current `admin:api:subjects:read` check returns `true`. A subject whose id is literally `root` is refused, so audit stays unambiguous. Human sessions and new-format access tokens are not accepted on these routes. |
+
+### Results at `165c13bf`
+
+| check | result |
+|---|---|
+| `owner-subject-policy` (PostgreSQL 16.15, `postgres@sha256:9e2cf628…`) | **38 passing, 0 failing** (33 before; 5 added) |
+| `subject-admin-postgres` (migration list now ends in 0007) | 10/0 |
+| `subject-management-http` | 13/0 |
+| `tenant-authorization-postgres` | 8/0 |
+| `tenant-ownership-postgres` | 7/0 |
+| `owner-preview.integration` (dedicated PostgreSQL by digest) | 9/0 |
+| focused unit set (22 files) | 220 passing, 5 pending (opt-in), 0 failing |
+| deploy tests | 47/0 |
+| `deploy-grants.check.js` on real PostgreSQL | root plane builds on the plan's `root_writer` grants; crossing planes, actor fence added, actor read removed → `SUBJECT_ADMIN_STORE_UNSAFE`; restored → builds |
+| `test-tiers.js check` | `615 test files, 8 tiers: ok` |
+| lint | 0 errors |
+| native mutant anchors (`authority-races-controls.cjs`) | all 8 materialize (not executed) |
+
+Single-site files (`lib/authorization/`, `lib/admin_plugins/`, `lib/api/`) are still unchanged, so
+the single-site run (42/0 on `cfae532c`) was not repeated.
+
+New acceptance cases:
+
+| case | result |
+|---|---|
+| root edits `reader` permissions (B's twin unchanged), rename → 400 `ROLE_RENAME_REFUSED`, `*` → 403, unknown → 404, held `reader` delete → 409 `SUBJECT_ADMIN_ROLE_IN_USE`, unheld `uploader` delete → `{}` (B's twin kept), B's root on A's roles → 401; audit `update-role`, `remove-role` by `root` | pass; every refusal leaves roles, subjects, links, credentials and audit unchanged |
+| admin-role subject (role `admin:api:subjects:*`, `admin:api:roles:*`) with a bearer JWT: lists subjects with tokens, creates, edits and deletes a subject, creates, edits, lists and deletes a role; `?token=` works; audit only `<its id>/tenant-api`; `*` role → 403 | pass |
+| admin-role subject: last owner → 409 `SUBJECT_ADMIN_LAST_OWNER`; owner routes with its bearer → 401, no owner service reached | pass |
+| subject without admin permission (bearer and `api-secret` forms) on five routes → 401, nothing changes; with only `admin:api:subjects:read` it can list but delete → 401; tenant B's admin-role subject (bearer and `api-secret`) on five A routes → 401 | pass |
+| Q4: A's policy and actor rows removed → `GET/GET roles/DELETE/POST roles` all 403 `SUBJECT_ADMIN_FORBIDDEN` with no effect; B unaffected | pass |
+| `tenant-legacy-credentials`: `adminLegacyTokens` returns the shipping tokens only when the check returns `true`; for `false/undefined/'true'/1` it returns `null` with no decrypt audited | pass (10/0) |
+
+### Controls (each red, then restored by copying the saved clean file; `cmp`-identical afterwards)
+
+| control | edit | result | symptom |
+|---|---|---|---|
+| C1 (re-run) | last-owner check skipped on the root plane | 35/2 | root and admin-subject last-owner cases: `200 !== 409` |
+| C2 (re-run) | owner routes accept an admin tools session | 35/2 | root and admin-subject owner-route cases: `200 !== 401` |
+| C3 (re-run) | credential verified against any bound tenant | 34/3 | B's root on A: `200 !== 401` (A's list returned); B's root edits A's `reader` role: `200 !== 401`; B's admin subject on A also red |
+| **C5** (requested) | admin permission check dropped | 35/2 | non-admin subject: `200 !== 401`, A's full subject list returned; also the subject-token-as-api-secret case in the cross-tenant test |
+| C6 | held-role refusal dropped | 36/1 | `503 !== 409`, `SUBJECT_ADMIN_STORE_UNAVAILABLE`: the foreign key still stops the delete, but without a clear code |
+| C7 | rename refusal dropped | 36/1 | `404 !== 400`, `SUBJECT_ADMIN_NOT_FOUND` |
+| C4 (re-run) | root check dropped in `rootLegacyTokens` | 9/1 | another secret received the token map |
+| C8 | authority check dropped in `adminLegacyTokens` | 9/1 | a refused check received the token map |
+
+Process note: the first control batch restored files with `git stash push -- <file>; git stash drop`,
+which reset three files to the committed head and discarded their uncommitted edits. Those runs (C1
+35/2, then C2 and C3 0/1 against the half-reverted tree) are void. The files were recovered from the
+dropped stash commits, the ablations reversed, the suite re-run green (37/0), and every control
+re-run with copy-based restore. Those re-runs are the results in the table.
+
+### Notes for the coordinator and maintainer
+
+- **Owners also get `*` in the Compose demo.** Owner and root share one policy row, and the
+  store checks its digest, so their catalogue cannot differ. The demo's owner ceiling and
+  delegation are therefore `['*']` too. A deployment that narrows the list narrows both.
+- **Role routes need `admin:api:roles:*`.** A subject holding only `admin:api:subjects:*` can
+  manage subjects but not roles, as on a single site (per-route permissions copied from
+  `endpoints.js`). The decision row names `admin:api:subjects:*`; the default `admin` role (`*`)
+  holds both.
+- The migration number (0007) must be allocated at the join.
+
+### Still unmeasured
+
+Preview API boot with `subjectAdmin` on real PostgreSQL and Vault; the restore census with a
+`root_writer` connection; the native `oidc-matrix` races; a browser run of the admin page; a
+concurrent role delete racing a role assignment.
