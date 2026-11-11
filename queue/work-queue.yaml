@@ -26904,7 +26904,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/evaluator-partition
     base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
-    state: not-started
+    state: in-progress
     blast_radius: >
       Evaluator role only. Two environment variables (member count, this worker's
       ordinal) behind a feature flag select the tenant slice by hash; flag off keeps
@@ -27020,7 +27020,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/pool-primitive-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: not-started
+    state: ready-to-push
     blast_radius: >
       Multitenant only. One PostgreSQL pool-membership table keyed by pool kind and
       ordinal, plus one slice function (tenant ID hashed onto the member count). The
@@ -27049,9 +27049,9 @@ items:
     title: "M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/connector-reverse
+    branch: codex/connector-reverse-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: not-started
+    state: ready-to-push
     blast_radius: >
       Multitenant only. A vcpool role runs the existing nightscout-connect Nightscout
       source driver per tenant and writes through the tenant's own API as a tenant-bound
