@@ -119,3 +119,85 @@ An earlier version started the api's warm before its listener. Under C5 it staye
    - `lib/human-session/private-setting.js`: private secret files, own bound;
    - `deploy/multitenant/ui.js`: public UI configuration, no roster;
    - message-size limits (`maxMessageBytes`).
+
+## Follow-up: Compose fixture limits (2026-11-11, branch head `12fa221d9c1ff1eb7f8d3b5844b17e70adc477b3`)
+
+Started from `5517cb6c`. One commit added (`12fa221d`). Items 1 and 3 are stopped on a mismatch, reported below.
+
+### Mismatch: core's fixture `config.js` is not the deploy copy
+
+The brief says `deploy/multitenant/config.js` has a `tenantCount` that accepts 1..10000, and that nightscout-deploy keeps the fixture byte-identical. At `5517cb6c` neither holds for `config.js`:
+
+| tree | `deploy/multitenant/config.js` / `bindings/compose/multitenant/config.js` |
+|---|---|
+| core `5517cb6c` (this branch) | no `tenantCount`, no `NS_DEMO_TENANTS`; fixed tenants `[A,B]`, `maxTenants:2`, realtime `maxSockets:100`. It was shrunk in f3dc10c8 to the fixture core's tests load, and has the newer grants (ownership_operator, change_stamps) |
+| nightscout-deploy `main` `9de244df` | `tenantCount` from `NS_DEMO_TENANTS`, 1..1000 |
+| nightscout-deploy `deploy/capacity-fixes-20261111` `ab950a23`, and `deploy/sync-0392acf9-20261111` | `tenantCount` 1..10000 |
+| capacity overlays `crm-overlay-0392acf9-capacity`, `crm-overlay-5517cb6c-capacity` | the deploy copy with 1..10000, overlaid on core |
+
+The deploy `config.js` differs from core's in 41 lines. `ui.js`, `health.js`, `restore.js` and `demo.js` are identical. So `tenantCount` and the ceiling live in the deploy copy, not in core. Two of the items depend on which direction the copy goes:
+- The shared constant (item 1) and a tenant-derived `maxSockets` (item 3) need a tenant count in core's `config.js`, and there is none to share.
+- Adding one would mean porting the deploy `tenantCount` into core.
+- If the deploy lane then copied core over its own copy byte for byte, it would replace its own copy rather than receive a fix.
+
+Decision for the coordinator: either port `tenantCount` (1..10000) into core's fixture, so that core becomes the source of the whole `config.js`, or keep the ceiling in the deploy copy and make the ui read it from there.
+
+### Item 2, done: the ui refusal names its cause
+
+`deploy/multitenant/ui.js` `main` now reads `UI_PUBLIC_CONFIG` through `lib/server/serve/config-file.js`. Before this, the read had no size limit and a fixed 1 MiB check followed it. The size limit is now `MULTITENANT_CONFIG_MAX_BYTES`. The entrypoint prints `UI_STARTUP_REFUSED: <code>`, plus the reader's message for a read refusal. The configuration's contents and path are never printed. Measured with the real entrypoint (`spawnSync`, exit 78):
+- `UI_STARTUP_REFUSED: CONFIG_FILE_TOO_LARGE: UI_PUBLIC_CONFIG is too large: <n> bytes, over the limit of 1048576 bytes (MULTITENANT_CONFIG_MAX_BYTES)`
+- `UI_STARTUP_REFUSED: CONFIG_FILE_INVALID_JSON: UI_PUBLIC_CONFIG is not valid JSON` (the planted marker is absent)
+- `UI_STARTUP_REFUSED: UI_PUBLIC_CONFIG_INVALID` for version 2, and for 1,001 tenants (the 1,000-tenant limit is unchanged)
+
+Tests:
+- `tests/compose-ui.test.js`: 7 passing (2 new).
+- `compose-ui`, `compose-deployment-protocol` and `admin-role` together: 31 passing.
+- eslint: 0 errors.
+
+Control: with the swallowed form restored (`catch { 'UI_STARTUP_REFUSED' }`), 2 of 7 go red. The first is `UI_CAUSE_CODE_PRINTED`. The second expected `UI_STARTUP_REFUSED: UI_PUBLIC_CONFIG_INVALID` and got `UI_STARTUP_REFUSED`. Restored byte-identical.
+
+### Item 3, read only: what realtime `maxSockets` bounds
+
+`lib/server/realtime/protocol.js:352` refuses a connection when `states.size >= maxSockets`. `states` holds every connected socket of the realtime process across all tenants and namespaces (`/`, `/storage`, `/alarm`). So the limit is one ceiling for the whole process, with no limit per tenant.
+- It is validated in `lib/server/realtime/config.js:16` as a positive integer with no upper bound.
+- It is part of the configuration identity (`config.js:28`), so changing it needs a restart.
+
+The capacity runs' 25000 means two sockets per tenant at about 12,500 tenants. Choice pending the mismatch above. Recommendation: derive it in the fixture as `tenantCount × sockets per tenant`, with sockets per tenant an operator setting (default 2). Of the options the brief offered, this one keeps a real per-process limit that scales with the roster. A fixed operator total would drift when the tenant count changes.
+
+### Item 4, read only: limits that scale with tenant count
+
+| where | limit | blocks 3,000–10,000 in Compose? |
+|---|---|---|
+| `deploy/multitenant/ui.js:30` | tenants ≤ 1000 | yes; the fix is held on the mismatch |
+| `deploy/multitenant/ui.js:36` | aliases ≤ 100 per tenant | no |
+| `deploy/multitenant/config.js:129,149` (core) | `maxTenants:2` for evaluator, realtime and api socket forwarding | yes in core's copy; the deploy copy uses `n` |
+| `deploy/multitenant/config.js:139` (core) | realtime `maxSockets:100`, for the whole process | yes, at 2 sockets per tenant above 50 tenants |
+| `lib/server/serve/evaluator-config.js:49`, `lib/server/realtime/config.js` + `admission.js:9`, `lib/server/realtime/private-config.js:9` | tenants ≤ the configuration's `maxTenants` (positive integer, no upper bound) | no, when the fixture sets it from the count |
+| `lib/server/serve/admin-config.js:30` | `MAX_TENANTS = 10000` | no up to 10,000; refuses 10,001 |
+| `lib/tenant-connector/config.js:40,87` | vcpool `maxTenants` default 1000, settable 1..100000 | only if vcpool runs with the default |
+| `lib/server/serve/preview-config.js:186`, `owner-preview-config.js:67` | trust keys ≤ 10000 | no (a key list, not per tenant) |
+| every role configuration file | `MULTITENANT_CONFIG_MAX_BYTES` (first part of this record) | settable |
+
+Bootstrap's `validateFiles` (core `config.js:179`) is in the same file as the mismatch, so making it validate the ui configuration is held too.
+
+### Decision applied: one preview tenant ceiling (branch head `5c60aec669362b032a10d6dd7ac368e9c61e8003`)
+
+Coordinator decision: nightscout-deploy is the source of the deployable `config.js`, and core's copy stays the shrunk test fixture. `tenantCount` is not ported into core.
+
+- **The constant.** `lib/server/serve/tenant-ceiling.js` exports `PREVIEW_MAX_TENANTS = 10000`, the value `admin-config.js` held as `MAX_TENANTS`. `admin-config.js` and `deploy/multitenant/ui.js` both read it, so the ui's own 1,000 is gone. The ui file's size stays bounded by `MULTITENANT_CONFIG_MAX_BYTES`.
+- **Left to the deploy lane:** take `tenantCount`'s range from this constant, derive `maxSockets` = tenantCount × sockets per tenant (default 2), and have bootstrap validate the ui configuration.
+- **New tests** (`tests/compose-ui.test.js`):
+  - `parseConfig` accepts 3,000 and 10,000 tenants and refuses 10,001.
+  - The actual entrypoint, started on a synthetic 3,000-tenant file (157,915 bytes), serves `t2999.example.test` (200) and refuses an unconfigured host (421).
+  - The entrypoint refuses 10,001 tenants, inside a raised byte bound, with `UI_STARTUP_REFUSED: UI_PUBLIC_CONFIG_INVALID`.
+- **Control.** With the 1,000 limit restored in `ui.js`, 2 tests go red. `parseConfig` throws `TypeError: UI_PUBLIC_CONFIG_INVALID` for 3,000. The entrypoint test fails `UI_3000_TENANTS_SERVED` with stderr `UI_STARTUP_REFUSED: UI_PUBLIC_CONFIG_INVALID`. Restored byte-identical.
+- **Test runs:**
+
+| run | result |
+|---|---|
+| `compose-ui` + `admin-role` | 19 passing |
+| affected since `5517cb6c` at depth 4 (14 files; disposable MongoDB 8.0 with `nofile=64000`, removed after) | unit 85 passing; integration 24 passing, 63 pending (opt-in suites, run in the corpus below) |
+| corpus: admin-role-ownership, admin-lifecycle-fit, multitenant-preview-process, multitenant-preview-replicas, owner-preview.integration, owner-configuration.integration (disposable PostgreSQL 16, verified removed) | 61 passing, 0 pending, 0 failing |
+| tier map; eslint | ok; 0 errors |
+
+No corpus suite runs the Compose ui; `compose-ui.test.js` is its suite.
