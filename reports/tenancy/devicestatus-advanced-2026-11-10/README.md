@@ -105,3 +105,74 @@ consumer. The lane worktree and branch hold no commits.
   "devicestatus.advanced … unset for a tenant (read-derived …)" can be closed as measured, not reproduced,
   citing this record; nothing for `decisions.md`, `contents.md` or the register unless the parity question
   above is taken.
+
+## 7. Fix (maintainer decision), 2026-11-10
+
+Decision relayed by the coordinator: a tenant reports `devicestatus: {advanced: true, days: 1}` in its
+status, for parity with a single site. The measurement above is unchanged; this section records the
+change made on that basis.
+
+**Branch** `codex/devicestatus-advanced-20261110`, head `0df0e66f25baacc329df4238dd8b98163fc785c3` (one
+commit on `16a1fc2d`, not pushed; 6 files, +96/-24).
+
+| file | change |
+|---|---|
+| `lib/server/tenant-app/environment.js` | `devicestatus: { advanced: boolean }` joins `EXTENDED`; `days` stays limited to 1 or 2. The status projection (`filteredSettings` of a tenant's extended settings) adds `DEVICESTATUS_REPORTED = {advanced: true, days: 1}` under the operator's values. The environment object still carries only operator-supplied values, so the evaluator configuration's equality check (`evaluator-config.js:53-54`), its identity, and server-side day loading (`cache.js:30`, `dataloader.js:494`) are unchanged. Comment states display parity while frames stay full. |
+| `lib/server/realtime/protocol.js` | the realtime status frame reports the same projection as the status route (it sent the raw environment object before). |
+| `docs/architecture/multitenant-api-preview.md` | `extendedSettings` paragraph: the reported defaults, the operator override and types, display parity while tenant updates are full snapshots. |
+| `tests/tenant-extended-settings.test.js` | `EXT_DEVICESTATUS_DEFAULT`, `EXT_DEVICESTATUS_OVERRIDE` (advanced false, days 2, both, mistyped values fall back to the defaults), evaluator config accepts `advanced:false`; `EXT_ROUNDTRIP` now carries `devicestatus.advanced` (from the catalogue) with `days: 2`; `EXT_UNKNOWN_REFUSED` adds `advanced:'true'` and `days:3`; `devicestatus.advanced` removed from `EXT_EXCLUDED`; per-request display view shows the defaults and the environment does not copy them. |
+| `tests/realtime-preview.test.js` | `RT_DEVICESTATUS_DEFAULT` (tenant A frame reports the defaults, `delta === false`) and `RT_DEVICESTATUS_OVERRIDE` (tenant B's operator value, B only). The full-frame guard is the existing `RT_ACTUAL_FULL_RESET` in the same file, unchanged. |
+| `tests/tenant-rest-context.integration.test.js` | over HTTP on both backends: tenant A (operator `advanced:false, days:2`) and tenant B (unset, `{advanced:true, days:1}`) in `/api/v1/status.json`. |
+
+Choice made in the implementation: the default is applied where the tenant *reports* settings, not
+inside the environment. Putting it in the environment would make every existing operator evaluator
+configuration that supplies `extendedSettings` differ from its projection and be refused (read-derived
+from `evaluator-config.js:53-54`; not run). Both reporting
+surfaces (status route, realtime status frame) go through the one projection.
+
+### Red on the base, green on the fix
+
+New tests against base `lib/` (tests from the fix, `lib/` reverted, then re-applied):
+`tenant-extended-settings` + `realtime-preview` + `receiveddata.merge`: **43 passing, 4 failing**:
+`EXT_ROUNDTRIP` (`TypeError: Cannot set properties of undefined (setting 'days')`, the catalogue has no
+devicestatus entry), `EXT_DEVICESTATUS_DEFAULT`, the per-request display view, `RT_DEVICESTATUS_DEFAULT`.
+On the fix: **47 passing**.
+
+### Break-it control
+
+Removed the reported default (`if (reported) result.devicestatus = { ...DEVICESTATUS_REPORTED, ... }`) in
+the lane worktree: **44 passing, 3 failing**. They were `EXT_DEVICESTATUS_DEFAULT` (`+ {}` against
+`- { devicestatus: { advanced: true, days: 1 } }`), the per-request display view, and
+`RT_DEVICESTATUS_DEFAULT`. Restored from a copy: `BREAK-IT` marker count 0, **47 passing**.
+`EXT_DEVICESTATUS_OVERRIDE` shares the `it` with `EXT_DEVICESTATUS_DEFAULT` and did not execute under the
+break, because the first assertion stopped it. Its override values are held green by the integration
+status assertion (tenant A) and `RT_DEVICESTATUS_OVERRIDE`.
+
+### Harness after the fix
+
+`repro-base.js` re-run on `0df0e66f` (PostgreSQL 16.15 container, removed): tenant status route and
+realtime status frame `{"advanced":true,"days":1}`, single site `{"advanced":true,"days":1}`; client
+device status `[1,2,3]` → `[2,3,4]` with both, `tenantFramesDiffer: false`. The `delta:true` detection
+row now gives `[1,2,3,4]` for both modes. That is the documented risk: if tenant frames became
+incremental, the reported `advanced:true` would keep a deleted status in the browser.
+`RT_ACTUAL_FULL_RESET` is the guard against that.
+
+### Suites on `0df0e66f`
+
+| check | result |
+|---|---|
+| `npm run test:unit` | 3178 passing, exit 0 |
+| `node scripts/test-multitenant.js --only tenant-rest-context --only multitenant-preview-process --only owner-configuration --only tenant-socket-data-forwarding` (script-owned postgres:16 and mongo:8.0, suites' own Vault/PG; all created containers and volumes verified absent) | 44 passing, 0 pending, 0 failing, exit 0 |
+| realtime suites (`realtime-*.test.js`) | in the unit tier, included above |
+| `node scripts/test-tiers.js check` | `626 test files, 8 tiers: ok` |
+| `eslint` on the 5 changed `.js` files | 0 errors, 4 warnings, all `security/detect-non-literal-fs-filename` on lines of `realtime-preview.test.js` this change does not touch |
+
+Not run: the full integration tier and the browser/enabled-corpus acceptance. Those belong to the
+coordinator's frozen-candidate acceptance.
+
+### For the coordinator
+
+- `decisions.md`: one row for the decision (tenant reports devicestatus defaults; display parity while
+  frames are full; operator may override `advanced` boolean and `days` 1|2).
+- `contents.md`: the branch for the next batch join, with the counts above.
+- Register: no defect. The queue note on the tenant extended-settings item can cite this record.

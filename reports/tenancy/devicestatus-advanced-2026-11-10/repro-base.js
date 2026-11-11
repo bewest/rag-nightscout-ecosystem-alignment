@@ -56,7 +56,7 @@ async function main () {
   const protocol = protocolFactory.create({ admission: { resolve: async () => T }, api, readCurrent,
     runtime: () => runtime, maxSockets: 4, domains: ['entries', 'treatments', 'devicestatus'] });
   let schedule;
-  const runtime = await runtimeFactory({ tenants: [T], readCurrent, create: () => ({ acquire: ({ at }) => { served = false; return projection.acquire({ at: at || Date.now() }).catch(e => { console.error("ACQUIRE", e); throw e; }); } }),
+  const runtime = await runtimeFactory({ tenants: [T], readCurrent, create: () => ({ acquire: ({ at }) => { served = false; return projection.acquire({ at: at || Date.now() }); } }),
     fanout: protocol.fanout, recoveryIntervalMs: 100000, schedule: cb => { schedule = cb; return 1; }, cancel: () => {} });
   class Socket extends EventEmitter {
     constructor () { super(); this.request = { headers: { host: 't.test' }, rawHeaders: ['Host', 't.test'], socket: {} }; this.sent = []; this.rooms = new Set(['self']); this.id = 'self'; }
