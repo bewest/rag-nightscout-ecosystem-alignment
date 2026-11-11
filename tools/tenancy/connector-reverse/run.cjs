@@ -133,11 +133,13 @@ async function provision () {
     await admin.query(`GRANT INSERT ON ${ns.secrets}.secret_audit TO ${name}`);
   }
   // Activity readers (api, vcpool), and the pool member identity (partitioned phase).
-  await role('api_activity'); await role('vc_activity'); await role('vc_pool'); await role('ev_pool');
+  await role('api_activity'); await role('vc_activity'); await role('vc_pool'); await role('ev_pool'); await role('pool_operator');
   for (const statement of activityStore.grants({ namespace: LIFECYCLE, reader: 'api_activity' })) await admin.query(statement);
   for (const statement of activityStore.grants({ namespace: LIFECYCLE, reader: 'vc_activity' })) await admin.query(statement);
   for (const statement of membership.grants({ namespace: POOL, member: 'vc_pool' })) await admin.query(statement);
   for (const statement of membership.grants({ namespace: POOL, member: 'ev_pool' })) await admin.query(statement);
+  // The member count is the operator's (decision pool-desired-count-in-table), set in the pool table.
+  for (const statement of membership.grants({ namespace: POOL, operator: 'pool_operator' })) await admin.query(statement);
 
   await vault('sys/mounts/transit', { type: 'transit' });
   for (const [i, tenant] of TENANTS.entries()) {
@@ -452,10 +454,12 @@ const setActivity = (tenant, column, value) => admin.query(`UPDATE ${LIFECYCLE}.
 
     // Pool partitioned: one member, a cross-kind row, a duplicate ordinal.
     await stop(vc);
-    const poolEnv = { MULTITENANT_POOL_VCPOOL_PARTITION: 'on', MULTITENANT_POOL_VCPOOL_MEMBERS: '1', MULTITENANT_POOL_VCPOOL_ORDINAL: '0',
+    const poolOperator = await membership.operator({ connectionString: urls.pool_operator, namespace: POOL, kinds: ['vcpool', 'evaluator'] });
+    await poolOperator.setMembers('vcpool', 1); await poolOperator.setMembers('evaluator', 2);
+    const poolEnv = { MULTITENANT_POOL_VCPOOL_PARTITION: 'on', MULTITENANT_POOL_VCPOOL_ORDINAL: '0',
       MULTITENANT_POOL_VCPOOL_LEASE_MS: '3000', MULTITENANT_POOL_VCPOOL_DATABASE_URL: urls.vc_pool, MULTITENANT_POOL_VCPOOL_NAMESPACE: POOL };
     vc = await startVcpool(api, { overrides: { credential: { [A]: 'connector-source-credential-2' } }, pool: poolEnv });
-    const evaluatorMember = await membership.member({ kind: 'evaluator', partitioned: true, members: 2, ordinal: 0, leaseMs: 30000, connectionString: urls.ev_pool, namespace: POOL }, { onAlert: () => {} });
+    const evaluatorMember = await membership.member({ kind: 'evaluator', partitioned: true, ordinal: 0, leaseMs: 30000, connectionString: urls.ev_pool, namespace: POOL }, { onAlert: () => {} });
     await evaluatorMember.register();
     await seedSource(src[0], 2, 1);
     const gp = await settle(A, 0);
@@ -472,7 +476,7 @@ const setActivity = (tenant, column, value) => admin.query(`UPDATE ${LIFECYCLE}.
     note('first member keeps (or regains) eligibility once the duplicate exits; one vcpool row',
       recovered.member.eligible === true && rowsAfter === 1, 'eligible ' + recovered.member.eligible + ' rows ' + rowsAfter + ' alerts: ' +
       (vc.stderr.match(/Pool membership alert: .*/g) || []).map(l => JSON.parse(l.replace('Pool membership alert: ', ''))).map(e => e.state + ':' + (e.reason || e.previous)).join(','));
-    await evaluatorMember.close();
+    await evaluatorMember.close(); await poolOperator.close();
 
     // Observation: create-only grants (no read) on the connector role.
     await admin.query(`UPDATE preview_auth.tenant_authorization_roles SET permissions=$2 WHERE tenant_id=$1 AND name='connector'`, [A, ['api:entries:create', 'api:treatments:create']]);

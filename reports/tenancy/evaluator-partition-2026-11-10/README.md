@@ -153,3 +153,145 @@ window, alarm tick continuity, the duplicate-ordinal control, count disagreement
 equivalence through the evaluator integration suites, the inspection read, the three break-it
 controls, `test:unit`, tiers, write-boundary and eslint. No code changed, so none of them was run.
 The store-level step of the finding (a new key becomes a delivered request) is read-derived.
+
+## Resumed, 2026-11-10: implemented and measured
+
+*Appended after the maintainer's decisions [alarm-output-idempotent-by-content](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-output-idempotent-by-content)
+(option b) and [pool-desired-count-in-table](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-desired-count-in-table).
+The sections above are the stop record and stay as captured; the figures above that say UNMEASURED are
+superseded by this section only where it gives a measurement.*
+
+### Anchors
+
+| tree | commit |
+|---|---|
+| base: `codex/connector-reverse-20261110` | `1792063a28a2a018709a71af5efd65dc1c212c4c` |
+| lane branch `codex/evaluator-partition-20261110`, worktree `externals/work/crm-evaluator-partition-20261110` (local, unpushed) | `cb1b751d4e3875b9b9c250b1a3b6236f7c926aa4` (one commit; 35 files, 1880 insertions, 214 deletions) |
+| alignment `main` when the measurements ran | `ee1621b38` |
+| lab harness | [`tools/tenancy/evaluator-partition/run.cjs`](../../../tools/tenancy/evaluator-partition/run.cjs) |
+
+Every run used one dedicated `postgres:16` container (server 16.15, name `ns-ep-pg-*`), a random password in a
+mode-0700 scratch directory, and a `*_test` database. The container, its volume and the credentials were removed
+afterwards (`docker ps -a` lists no `ns-ep-*`). The local mongod on 27017 was not used. Node v22.23.4.
+
+### Design (file:line at `cb1b751d`)
+
+| element | where | what |
+|---|---|---|
+| content freshness | `lib/tenant-notifications/producer-state.js:50-53` | The freshness tuple is `[identity, contentDigest, inputCheckpoint]`. An eligible output without a 64-hex digest is refused (`NOTIFICATION_PRODUCER_CONTENT_REQUIRED`). The runtime publishes the digest it already computes (`lib/server/serve/evaluator-runtime.js:123`). |
+| content-derived origins | `producer-state.js:72,82,91,109` | Every emission is attributed to the step that caused it: `['output', prior output, next]`, `['repeat', next, stored repeatAt]`, `['ack', ack key, reset scope]`, `['reset', ...]`. The origin is `digest(['producer-transition-v2', cause, index within cause])`. The cause uses only shared durable state and content, so two evaluators replaying one step derive one origin, hence one `dedup_key`. Distinct steps never share one: a return to an earlier output (A→B→A) has a different prior output, and each repeat has its own slot. |
+| clear provenance, acknowledgement, snooze, BF-231 repeat clock | unchanged code paths | `postgres.js` keeps a pending clear only while the current intents carry its exact origin. A clear's origin is stable across empty polls because effects persist in the producer state. Checked by the existing producer tests (stable clear origin, ack silence, stale clear retired, control clear with failed acquisition; all green) and by new tests: two acknowledgements of one output give two distinct clear origins. **No mismatch found.** |
+| desired count | migration `0002_pool_desired_count` (`lib/pool-membership/postgres-candidate.json:17-19`) | Adds `pool_desired(pool_kind, members, previous_members, slice_rule, revision, updated_at)`. On `pool_membership` it replaces `expected_members` with `applied_members`, the count this member currently works. The census pin moves to `08f21d64…d60f` (`lib/tenant-operations/catalogues.js:23`). |
+| agreement and switch | `lib/pool-membership/assess.js:28-35` | The count in effect is the desired count once every ordinal below it is live. Until then, and only while no live row has applied the desired count, it is the previous count if that count is fully live. Otherwise it is the desired count with the missing ordinals reported. A completed switch therefore never falls back when a member is lost: that would be an implicit stale-slice takeover, which stays undecided. Refusals: `POOL_SELF_NOT_LIVE`, `POOL_COUNT_UNSET`, `POOL_RULE_DISAGREEMENT`, `POOL_DUPLICATE_ORDINAL`. A member beyond the count is eligible with an empty slice. |
+| applied count | `lib/pool-membership/postgres.js:185` | A member writes its applied count as soon as it changes, and again on every heartbeat. |
+| operator command | `lib/pool-membership/operator.js:34-48`; `lib/server/serve/admin-preview.js:53,97`; contract `pool-operations` (`/pool/get`, `/pool/members`) | The admin role composes `pools` beside, or instead of, `ownership`. It uses a separate operator identity: SELECT on membership, INSERT and column UPDATE on `pool_desired`, nothing else (checked at boot and by the database). `setPoolMembers` records the count currently in effect as `previous_members`. |
+| environment | `lib/pool-membership/config.js:47` | `MULTITENANT_POOL_<KIND>_MEMBERS` is refused with a message that names `setPoolMembers (POST /pool/members)`. A pod carries `_PARTITION`, `_ORDINAL`, `_LEASE_MS`, `_DATABASE_URL` and `_NAMESPACE`. |
+| evaluator gate | `lib/server/serve/evaluator-pool.js` | One `slice()` per scheduled pass (`evaluator-runtime.js:207`), single flight, shared by the runtime and the consumers. A standalone evaluator admits every configured tenant and reads nothing. |
+| runtime | `evaluator-runtime.js:114,152-166` | A withdrawn tenant is fenced (generation), its pending work dropped and its component and output retired. The code is `EVALUATOR_POOL_NOT_IN_SLICE` or `EVALUATOR_<reason>`. A cycle that finishes after a withdrawal does not publish. An entering tenant starts with an acquisition on a fresh component. |
+| consumers | `lib/server/serve/evaluator-consumers.js:55` | A tenant the gate does not admit gets no selection, attempt, retry or repeat wake (`EVALUATOR_CONSUMER_POOL_*`). On a slice change every tenant is woken, so the repeat clock resumes from the shared producer state (`evaluator-preview.js:80`). |
+| boot | `lib/server/serve/evaluator-preview.js:41-43` | A refused member boots and waits; boot no longer exits. Readiness is boot, never eligibility. Every member warms every configured tenant read-only (`evaluator-readiness.js:99`). |
+| inspection | contract `evaluator-inspection` (`/evaluator/inspect`); `evaluator-preview.js:97`; `lib/server/serve/evaluator-config.js:142`; `internal-listener.js:22,50` | Configured values (mode, ordinal, rule, lease, number of configured tenants) are kept separate from observed membership (desired, previous and effective count, revision, live rows with applied count and heartbeat age, conflicts), the gate (eligible, reason, reads, refusals, heartbeats), and, for each configured tenant, its assigned ordinal, admission, code, cycles, revision and delivery state. Every partitioned member serves it. A standalone evaluator serves it only with `NS_SERVE_INTERNAL_SOCKET`, or with `_HOST` and `_PORT`. |
+| vcpool | `lib/tenant-connector/runtime.js:132`, `connector-inspection.json` | The vcpool reads its count the same way: its slice now follows the table each cycle, and inspection reports the observed count. Its boot rule (exit 78 on a refusal at boot) is unchanged. |
+
+Kubernetes names (canonical, no aliases): `NS_EVALUATOR_POOL_ORDINAL` → `MULTITENANT_POOL_EVALUATOR_ORDINAL`, from
+the pod-index label. `NS_EVALUATOR_POOL_MEMBERS` has no environment counterpart. The renderer drops it, and the
+operator sets the count with `setPoolMembers`. The binding also needs `MULTITENANT_POOL_EVALUATOR_PARTITION=on`,
+`_LEASE_MS`, `_DATABASE_URL` (secret) and `_NAMESPACE`, plus a `pools` block and an operator identity on the admin role.
+
+### Measurements (reproduced)
+
+Reducer probe ([`reduce-probe.cjs`](reduce-probe.cjs), now with a content digest), identical content, 10 passes:
+
+| arm | `1792063a` | `cb1b751d` |
+|---|---|---|
+| single owner | 1 | 1 |
+| two runtimes alternating | 10 | **1** |
+| handover A→B | 2 | 1 |
+| control: one runtime id | 1 | 1 |
+| two runtimes, revisions differ | 10 | 1 |
+
+Lab, final run at `cb1b751d`: `SUMMARY 22 checks, 0 failing`. Setup: 6 synthetic tenants with one low reading each,
+so an urgent alarm is active. Repeat (tenant heartbeat) 3000 ms, lease 2000 ms, heartbeat every 666 ms, evaluator
+pass 500 ms, consumer poll 1000 ms. Inspection was sampled every 100 ms. The oracles are request rows read
+directly from PostgreSQL (cadence from `created_at`; a duplicate is two alarm requests of one tenant less than
+2400 ms apart) and the sink's own log.
+
+| gate | output |
+|---|---|
+| standalone inspection | `mode standalone`, `observed: null`, 6 configured, 6 admitted, `heartbeats: null` |
+| standalone baseline, 12 s | 3–4 alarms per tenant, minimum gap 3000 ms, duplicates 0, 23 rows / 23 distinct keys / 23 sink deliveries |
+| standalone without explicit serve.internal | boots (`ready true`), opens no inspection listener |
+| **two evaluators owning every tenant at once, 15 s** | 4–5 alarms per tenant, minimum gap 3000 ms, **duplicates 0**, 26 rows / 26 keys / 26 deliveries, no request delivered twice |
+| restart with identical output | next delivery 2806 ms after the restart, 3338 ms after the previous one: it waits for the repeat clock (the accepted behaviour change) |
+| 2 members cover every tenant exactly once | m0 `11,e2,e7`, m1 `22,e1,e4`, as `sha256-modulo-v1` predicts |
+| 2 members, 9 s | duplicates 0, worst evaluator-tick gap 536 ms |
+| count set to 3, ordinal 2 absent | `effective 2, switching true`; both members keep their slices, no refusal |
+| **2 → 3, no restart** | m2 boots in 587 ms; all three switch 12 ms after m2 is ready; m0 and m1 keep their PIDs |
+| **measured overlap and gap** (5 of 6 tenants move) | longest doubly-owned interval **100 ms**, longest unowned interval **200 ms** (at 100 ms sampling) |
+| 2 → 3, no duplicate | 24 rows / 24 keys / 24 deliveries, duplicates 0 |
+| **2 → 3 tick continuity** | worst gap per tenant 528–594 ms, against a lease of 2000 ms |
+| 2 → 3 delivery continuity | worst gap 3977 ms, against repeat + lease of 5000 ms |
+| **duplicate ordinal** | all 4 members refuse `POOL_DUPLICATE_ORDINAL` within 798 ms; one alert line each; **0 requests delivered** during 7 s; inspection still answers |
+| duplicate removed | one recovery line per member; every tenant delivers again within 4503 ms |
+| count missing from the table | all 3 refuse `POOL_COUNT_UNSET`; restored through the admin role, all eligible at count 3 |
+| member 2 killed (SIGKILL) and restarted at once | the dead row is a duplicate ordinal until its lease expires. Eligible again 1575 ms after the kill. Whole kind unowned for 1000 ms, m2's tenants for 1500 ms. Worst delivery gap 5536 ms. Duplicates 0 |
+| graceful restart of member 1 | its tenant unowned for 500 ms, no overlap, duplicates 0 |
+| `MULTITENANT_POOL_EVALUATOR_MEMBERS=3` | boot refused: `… MULTITENANT_POOL_EVALUATOR_MEMBERS is not read: the member count is set in the pool table with the admin role's pool-operations setPoolMembers (POST /pool/members)` |
+
+The gap is about one heartbeat plus the lease only when a member dies hard: the 1575 ms measured is under the
+2000 ms lease, because the dead row's last heartbeat was up to 666 ms old. With a graceful exit or a scale change the
+gap is about one evaluator pass, 100–500 ms here.
+
+Other checks at `cb1b751d`:
+
+| check | result |
+|---|---|
+| `npm run test:unit` | 3219 passing, exit 0 (base record: 3201) |
+| `npm run test:tiers` | `630 test files, 8 tiers: ok` (new `tests/evaluator-partition.test.js` in the unit tier) |
+| `npm run test:write-boundary` | all 9 adapter entry points checked |
+| integration on PostgreSQL 16, flag off: `evaluator-consumers`, `evaluator-consumer-load`, `evaluator-consumer-timer-churn`, `tenant-activity`, `tenant-current-state-recovery-proof`, `tenant-durable-replay`, `pool-membership` | 45 passing, exit 0 |
+| `tenant-projection-evaluator.integration` (`NS_TENANT_PROJECTION_EVALUATOR_TEST=1`) | 7 passing |
+| `pool-membership.integration` (two kinds, unset count, 2→3 with no fallback after the switch, operator privileges, duplicate, lease expiry) | 10 passing |
+| connector lab `tools/tenancy/connector-reverse/run.cjs` against this head (count set through the operator; `MEMBERS` removed from its environment) | `SUMMARY 24 checks, 0 failing` |
+| eslint on the 29 changed JS files | 0 errors; 19 warnings, all `security/detect-non-literal-fs-filename` on config and fixture file reads |
+
+### Break-it controls
+
+Each control was applied to the worktree, run, and restored. `sha256sum -c` against copies taken first printed `OK`
+for all six files.
+
+| control | break | symptom |
+|---|---|---|
+| restore `runtimeId` in the tuple | `producer-state.js:53` back to `[identity, runtimeId, outputRevision, inputCheckpoint]` | **red**. Unit: 4 failing (`PRODUCER_RUNTIME_NOT_IDENTITY`, `PRODUCER_RESTART_NO_IMMEDIATE_RESEND`, …). Lab overlap: duplicates at 165 and 181 ms. The pending requests also cancelled each other, so 4 of 6 tenants got **one** alarm in 15 s (worst gap 14967 ms). The restart check went red: re-sent after 1579 ms. |
+| drop the idempotence key | intent key + `randomUUID()` per pass | **red** in the standalone baseline as well as under overlap: 0–32 alarms per tenant in 12 s, minimum gap 19 ms; 140 rows under overlap. The key protects re-presentation on every pass, not only overlap. |
+| revert to boot-only filtering | the gate reads membership once | **red**. The switch never happens (`switchAfterM2ReadyMs 15052`, `after null`); e4 and e7 are doubly owned for 26100 ms. The duplicate ordinal is not refused: 9 requests delivered during it, alerts `[0,0,0,1]`. Content identity kept the doubly-owned tenants at 0 duplicates. |
+| skip the per-cycle agreement check | `slice()` ignores a refusal | **red**. Integration: 3 failing. Lab: the duplicate is not refused, 10 delivered, no alerts. |
+| remove the cycle fence (unit) | `evaluator-runtime.js:114` removed | **red**: `POOL_CYCLE_FENCED` |
+| remove the consumer gate (unit) | `evaluator-consumers.js:55` disabled | **red** on the inactive-state assertion. Delivery to the withdrawn tenant was still blocked by the notifier's `mayAttempt`, because the runtime had withdrawn its output: defence in depth. |
+
+### Findings for the maintainer
+
+1. **A killed member's serve.internal socket file blocks its restart in the same runtime directory.**
+   Observed: `SOCKET_IPC_PATH_EXISTS` at boot. In Kubernetes, a container restart within one Pod keeps a shared
+   `emptyDir` `/run/ns-ipc`, so a crashed partitioned evaluator would not come back until the Pod is replaced. This is
+   existing serve.internal behaviour (endpoint-composition lane). It matters now because every partitioned member
+   opens a socket. The lab modelled Pod replacement by removing the file.
+2. **The admin configuration now accepts `pools` without `ownership`** (at least one service is required). This
+   changes the admin role's configuration contract; the existing refusal of an empty composition still holds.
+3. **The vcpool still exits 78 when it is refused at boot** (the lane R rule). With the count in the table, a
+   partitioned vcpool started before the operator sets its count exits with `POOL_COUNT_UNSET`. Aligning it with the
+   evaluator (boot refused and wait) is a small change; it was not made here because the decision named the evaluator.
+4. Every member warms and observes every configured tenant (read-only). The configuration still lists all tenants
+   on every member.
+
+### UNMEASURED
+
+- `multitenant-preview-process.integration` was not run: it creates its own containers outside the `ns-ep-*`
+  naming. The full suite, the browser and dom tiers, and `prcheck` belong to the coordinator's frozen-head acceptance.
+- Overlap while two members hold different content (one has read a new row and the other has not). Every lab phase
+  holds one reading, so content never changed during an overlap.
+- Scale-down 3 → 2 in the lab: covered only by the integration test (immediate switch, empty slice beyond the count).
+- A partitioned vcpool with more than one member. Kubernetes and the binding itself (no cluster on this host).
+  Database failover, clock behaviour across replicas, lease and pass values at scale. Each lab figure comes from one
+  run (the earlier development runs agree, but run-to-run variance was not computed).
+- Stale-slice takeover is still undecided. Its gap was measured above only for a member that comes back.

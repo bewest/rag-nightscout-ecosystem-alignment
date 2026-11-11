@@ -5,7 +5,10 @@ const root = process.env.CRM_ROOT;
 const { reduce } = require(root + '/lib/tenant-notifications/producer-state');
 const limits = { maxRows: 100, maxBytes: 1 << 20, maxPayloadBytes: 65536 };
 const req = [{ kind: 'notify', level: 2, title: 'Urgent HIGH', message: 'synthetic', group: 'default', plugin: { name: 'simplealarms' }, eventName: 'high' }];
-const cyc = (runtimeId, rev, now) => ({ identity: 'id1', runtimeId, outputRevision: rev, inputCheckpoint: 1, eligible: true, result: { now, requested: req } });
+// Identical content in every arm. contentDigest is read by the producer from 2026-11-10 (option b);
+// at 1792063a the field is ignored and the tuple carried runtimeId and outputRevision.
+const contentDigest = require('node:crypto').createHash('sha256').update('synthetic-identical-content').digest('hex');
+const cyc = (runtimeId, rev, now) => ({ identity: 'id1', runtimeId, outputRevision: rev, inputCheckpoint: 1, contentDigest, eligible: true, result: { now, requested: req } });
 function run (label, seq) {
   let prev = null, revision = 0, emitted = 0; const log = [];
   for (const [rt, rev, at] of seq) {
