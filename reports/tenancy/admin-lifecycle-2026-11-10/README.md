@@ -203,3 +203,67 @@ so after the census rewrite it no longer applied; it now asserts its mutation ap
 - Deletion ceremony execution with the admin role connected.
 - Full suite, browser tier, multitenant corpus, prcheck, CI (coordinator's joined-candidate acceptance).
 - nightscout-deploy overlay: needs the four control grants and `ownership.lifecycleNamespace`.
+
+## Addendum 2026-11-10 (second pass): counter writers, export, logical restore
+
+Decision [`restore-census-counter-writers`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-counter-writers)
+(alignment `main` `c7370e9618748b9844774e36ab80cf4b05f7df52`) answers both decision questions above.
+Started from `26b5349d`, worktree clean.
+
+| commit | what |
+|---|---|
+| `9ef3ffa4d6e5585b08c80027f68b26b11d0636a8` | census also refuses a non-participant that can write the insertion-order or write-clock tables |
+
+**Counter writers.** The census statement now also returns `counters` for each backend: the identity
+holds INSERT, UPDATE or DELETE (table level), or column INSERT/UPDATE, or owns the table, directly or
+through any membership, on a table named `tenant_insertion_ordinal` or `tenant_write_clock` in the
+protected namespaces (`clinical-catalogue.js` `COUNTERS`). A non-participant is exempt only when
+`clinical === false && counters === false`; any other value refuses `RESTORE_COHORT_UNKNOWN_BACKEND`.
+Read-only identities (the plan's `readiness`, a SELECT-only probe) and `ownership_operator` stay exempt.
+TRUNCATE, REFERENCES and TRIGGER are not counted as writes for the counters, per the decision's list
+(they still count toward the clinical flag on clinical tables).
+
+**Export.** Accepted as recommended: no export state; ownership changes are not refused during an
+export, which is one consistent snapshot transaction. Nothing added.
+
+**Native case** (fit suite, new): a non-participant probe identity with only USAGE on the clock schema
+and INSERT on `tenant_write_clock`, connected → restore refuses `RESTORE_COHORT_UNKNOWN_BACKEND`, body
+not entered, A `active`. INSERT revoked, SELECT granted, probe and the plan's `readiness` identity
+connected with the admin role → restore `activated`. UPDATE on `entries.tenant_insertion_ordinal` →
+refuses, A `active`.
+
+| check (head `9ef3ffa4`) | result |
+|---|---|
+| focused family (same command as above) | **186 passing, 0 failing**, exit 0; no container left |
+| `test-tiers.js check` | `617 test files, 8 tiers: ok` |
+| `npm run lint` | 0 errors, 51 warnings |
+
+| control | mutation | mutated | exact symptom |
+|---|---|---|---|
+| K1 (in-suite) | probe granted INSERT on the write clock | restore refuses | `RESTORE_COHORT_UNKNOWN_BACKEND`, body not entered |
+| K2 (in-suite) | same probe, SELECT only (plus `readiness` connected) | restore proceeds | `state: 'activated'` |
+| K3 | counter clause removed from the exemption (`clinical === false` alone) | **red** 17/2 | native counter case: `Missing expected rejection.` (K1 goes green); unit: `Missing expected rejection: counters true` |
+| K4 | counter clause counts SELECT too | **red** 4/1 | native counter case: `RESTORE_COHORT_UNKNOWN_BACKEND` at the SELECT-only step (K2 goes red) |
+
+Restored runs: 19/0 and 5/0, tree clean, no container left (`controls-run-2.py`, `controls-2.json`).
+
+**Clinical logical restore with admin connected: UNMEASURED under the deployment plan; two blockers
+reproduced**, both outside this lane. In the fit suite's setup (plan catalogue and grants, real admin
+role connected), with synthetic entries for A and B, a live write-clock floor, `capture` of A through
+`deploy/multitenant/restore.js`, then A altered:
+
+1. `deploy/multitenant/restore.js` `restore()` calls `lifecycle.restoreLogical` without
+   `ledgerNamespace`; since `ed46cc43` (key retention) `admitRestore` refuses
+   `LIFECYCLE_RETENTION_LEDGER_REQUIRED`. It is raised **inside the claim**, after suspension, so A is
+   left `suspended` (reproduced: the next case read `phase = 'suspended'`).
+2. Composed directly with `ledgerNamespace: <control>`, the plan's `operator` identity has no grant on
+   `tenant_lifecycle_key_retention` (`plan.grants` excludes the control namespace from the operator's
+   SELECT loop and `operatorGrants` does not list it); `SELECT ... FOR UPDATE` there fails
+   `42501 permission denied for table tenant_lifecycle_key_retention`, again inside the claim.
+
+Probe only, not acceptance and not committed (`probe-logical-restore.diff`): with a test-only
+`GRANT SELECT, UPDATE (phase, restored_at)` on that table to the operator and `ledgerNamespace` passed,
+the logical restore of A ran to `activated` with the admin role connected: summary `replaced 1,
+deleted 1, created 0`; A's current rows equal the captured ones; B's unchanged (1 passing, run with
+`-g logically`). Which grant the operator should hold, and the driver fix, belong to the key-retention /
+deploy owners; these are the coordinator's to route.

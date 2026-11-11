@@ -1,0 +1,57 @@
+[
+ {
+  "id": "K3",
+  "mutation": "counter-writer clause removed (only the clinical flag decides)",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js",
+   "tests/operation-cohort.test.js"
+  ],
+  "mutated": {
+   "exit": 2,
+   "passing": 17,
+   "failing": 2,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)",
+    "Actual operation cohort composition source protocol"
+   ],
+   "symptoms": [
+    "AssertionError [ERR_ASSERTION]: Missing expected rejection.",
+    "AssertionError [ERR_ASSERTION]: Missing expected rejection: counters true"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 19,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ },
+ {
+  "id": "K4",
+  "mutation": "counter clause counts read privileges too (SELECT as well as writes)",
+  "files": [
+   "tests/admin-lifecycle-fit.integration.test.js"
+  ],
+  "mutated": {
+   "exit": 1,
+   "passing": 4,
+   "failing": 1,
+   "failures": [
+    "admin role beside a tenant restore (disposable PostgreSQL, deployment grants)"
+   ],
+   "symptoms": [
+    "Error: RESTORE_COHORT_UNKNOWN_BACKEND"
+   ]
+  },
+  "restored": {
+   "exit": 0,
+   "passing": 5,
+   "failing": 0,
+   "failures": []
+  },
+  "tree_clean": true,
+  "containers_left": []
+ }
+]

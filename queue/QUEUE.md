@@ -11035,6 +11035,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-admin-lifecycle-20261110` |
 | semver | `n/a` |
 | review | maintainer |
+| register | `BF-230` |
 | blocks on | `MT-ADMIN-ROLE-OWNERSHIP` |
 
 **Blast radius.** operation-cohort.js assertComplete (grant-checked exemption), ownership operations phase check, listeners.js plane rule.
@@ -11053,7 +11054,7 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `reports/tenancy/admin-lifecycle-2026-11-10/README.md`
 
-**Notes.** Decisions restore-census-and-ownership-phase and admin-plane-same-address- different-port (2026-11-10). 2026-11-10 (reproduced in lane): 26b5349d on 1376c294. Census exempts backends whose identity holds no privilege on CLINICAL tables (lib/tenant-lifecycle/clinical-catalogue.js), checked in the census SQL; ownership refuses OWNERSHIP_TENANT_INACTIVE via tenantPhase (window lock held shared). Not run: clinical logical restore with admin connected.
+**Notes.** Decisions restore-census-and-ownership-phase and admin-plane-same-address- different-port (2026-11-10). 2026-11-10 (reproduced in lane): 26b5349d on 1376c294. Census exempts backends whose identity holds no privilege on CLINICAL tables (lib/tenant-lifecycle/clinical-catalogue.js), checked in the census SQL; ownership refuses OWNERSHIP_TENANT_INACTIVE via tenantPhase (window lock held shared). Not run: clinical logical restore with admin connected. 2026-11-10 second pass (reproduced): 9ef3ffa4. Census also refuses non-participants that can write the insertion-ordinal or write-clock tables (controls K1-K4). Clinical logical restore with admin connected is blocked by BF-230 (driver omits ledgerNamespace; operator lacks the key-retention grant); a probe with both fixed ran to activated. Fix routed to this lane.
 
 ### `DEPLOY-TREE-HOME` &mdash; Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README
 
