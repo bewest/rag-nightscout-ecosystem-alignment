@@ -1,0 +1,129 @@
+=== d-540d3998-n100 23:40:37
+{"tenants":100,"label":"d-540d3998-n100","concurrency":"default","status":"ok","idle_s":"10.273448147","api":"17.189210023","realtime":"17.367405630","evaluator":"27.733773236","tenant-admin":"17.743836595"}
+mode=serve loadavg=13.38 11.27 11.04
+{"index":0,"firstServedMs":6871,"statuses":{"200":1,"502":24}}
+{"index":99,"firstServedMs":7199,"statuses":{"200":1,"502":24,"503/ra=5":1}}
+{"index":50,"firstServedMs":7233,"statuses":{"200":1,"502":24,"503/ra=5":1}}
+rss_at_listen=227.7MiB / 62.64GiB
+rss_after_55s_no_drain_line=243.4MiB / 62.64GiB
+listener_open_ms=6070
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=500
+api NS_TENANT_READINESS=serve
+mode=all loadavg=12.79 11.59 11.17
+{"index":50,"firstServedMs":9640,"statuses":{"200":1,"502":34}}
+{"index":0,"firstServedMs":9641,"statuses":{"200":1,"502":34}}
+{"index":99,"firstServedMs":9640,"statuses":{"200":1,"502":34}}
+rss_at_listen=224.4MiB / 62.64GiB
+listener_open_ms=9132
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=500
+api NS_TENANT_READINESS=all
+mode=serve loadavg=12.10 11.48 11.14
+{"index":0,"firstServedMs":7474,"statuses":{"200":1,"502":24,"503/ra=5":1}}
+{"index":50,"firstServedMs":7763,"statuses":{"200":1,"502":24,"503/ra=5":2}}
+{"index":99,"firstServedMs":7810,"statuses":{"200":1,"502":24,"503/ra=5":2}}
+rss_at_listen=227.5MiB / 62.64GiB
+rss_after_55s_no_drain_line=249.4MiB / 62.64GiB
+listener_open_ms=6671
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=500
+api NS_TENANT_READINESS=serve
+=== d-86617644-n100 23:44:22
+{"tenants":100,"label":"d-86617644-n100","concurrency":"default","status":"ok","idle_s":"10.310979222","api":"11.398473857","realtime":"11.552733429","evaluator":"19.610693860","tenant-admin":"11.819383621"}
+mode=serve loadavg=12.23 11.76 11.29
+{"index":99,"firstServedMs":2113,"statuses":{"200":1,"502":5,"503/ra=5":1}}
+{"index":50,"firstServedMs":2112,"statuses":{"200":1,"502":5,"503/ra=5":1}}
+{"index":0,"firstServedMs":2114,"statuses":{"200":1,"502":5,"503/ra=5":1}}
+rss_at_listen=133.8MiB / 62.64GiB
+rss_after_warm=242.2MiB / 62.64GiB
+listener_open_ms=1305
+warm_drained_ms=4935 Tenant warm drained: ready 100 failed 0 deferred 0 after 3689 ms
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=0
+api NS_TENANT_READINESS=serve
+mode=all loadavg=11.89 11.70 11.27
+{"index":99,"firstServedMs":6088,"statuses":{"200":1,"502":20}}
+{"index":50,"firstServedMs":6090,"statuses":{"200":1,"502":20}}
+{"index":0,"firstServedMs":6090,"statuses":{"200":1,"502":20}}
+rss_at_listen=219.1MiB / 62.64GiB
+listener_open_ms=5509
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=500
+api NS_TENANT_READINESS=all
+mode=serve loadavg=11.67 11.66 11.27
+{"index":0,"firstServedMs":2177,"statuses":{"200":1,"502":3,"503/ra=5":1}}
+{"index":99,"firstServedMs":2179,"statuses":{"200":1,"502":3,"503/ra=5":1}}
+{"index":50,"firstServedMs":2185,"statuses":{"200":1,"502":3,"503/ra=5":1}}
+rss_at_listen=121.9MiB / 62.64GiB
+rss_after_warm=241.9MiB / 62.64GiB
+listener_open_ms=1322
+warm_drained_ms=4918 Tenant warm drained: ready 100 failed 0 deferred 0 after 3646 ms
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=0
+api NS_TENANT_READINESS=serve
+=== d-86617644-n1000 23:45:46
+{"tenants":1000,"label":"d-86617644-n1000","concurrency":"default","status":"ok","idle_s":"10.360460595","api":"193.544859998","realtime":"193.696521194","evaluator":"238.483263637","tenant-admin":"194.003787574"}
+mode=serve loadavg=14.13 11.37 11.12
+{"index":0,"firstServedMs":2730,"statuses":{"200":1,"502":7,"503/ra=5":1}}
+rss_at_listen=137.3MiB / 62.64GiB
+{"index":999,"firstServedMs":3067,"statuses":{"200":1,"502":7,"503/ra=5":2}}
+{"index":500,"firstServedMs":3069,"statuses":{"200":1,"502":7,"503/ra=5":2}}
+rss_after_warm=873.1MiB / 62.64GiB
+listener_open_ms=1888
+warm_drained_ms=41251 Tenant warm drained: ready 1000 failed 0 deferred 0 after 39439 ms
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=0
+api NS_TENANT_READINESS=serve
+mode=all loadavg=16.21 12.28 11.43
+{"index":0,"firstServedMs":48710,"statuses":{"200":1,"502":189}}
+{"index":999,"firstServedMs":48735,"statuses":{"200":1,"502":189}}
+{"index":500,"firstServedMs":48735,"statuses":{"200":1,"502":189}}
+rss_at_listen=875MiB / 62.64GiB
+listener_open_ms=48171
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=5000
+api NS_TENANT_READINESS=all
+mode=serve loadavg=16.55 13.05 11.75
+{"index":500,"firstServedMs":2746,"statuses":{"200":1,"502":5,"503/ra=5":1}}
+{"index":999,"firstServedMs":2749,"statuses":{"200":1,"502":5,"503/ra=5":1}}
+{"index":0,"firstServedMs":2749,"statuses":{"200":1,"502":5,"503/ra=5":1}}
+rss_at_listen=147.1MiB / 62.64GiB
+rss_after_warm=866.6MiB / 62.64GiB
+listener_open_ms=1873
+warm_drained_ms=37341 Tenant warm drained: ready 1000 failed 0 deferred 0 after 35555 ms
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=0
+api NS_TENANT_READINESS=serve
+=== d-540d3998-n1000 23:53:12
+{"tenants":1000,"label":"d-540d3998-n1000","concurrency":"default","status":"ok","idle_s":"10.402250028","api":"253.648217217","realtime":"253.828332501","evaluator":"301.693057000","tenant-admin":"254.159676662"}
+mode=serve loadavg=14.92 12.82 11.94
+{"index":999,"firstServedMs":50630,"statuses":{"200":1,"502":197,"503/ra=5":1}}
+{"index":500,"firstServedMs":50649,"statuses":{"200":1,"502":197,"503/ra=5":1}}
+{"index":0,"firstServedMs":50668,"statuses":{"200":1,"502":197,"503/ra=5":1}}
+rss_at_listen=832MiB / 62.64GiB
+rss_after_280s_no_drain_line=725.9MiB / 62.64GiB
+listener_open_ms=49699
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=5000
+api NS_TENANT_READINESS=serve
+mode=all loadavg=17.70 15.11 13.15
+{"index":0,"firstServedMs":118176,"statuses":{"200":1,"502":463}}
+{"index":500,"firstServedMs":118383,"statuses":{"200":1,"502":464}}
+{"index":999,"firstServedMs":118383,"statuses":{"200":1,"502":464}}
+rss_at_listen=855.3MiB / 62.64GiB
+listener_open_ms=117621
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=5000
+api NS_TENANT_READINESS=all
+mode=serve loadavg=29.14 20.13 15.22
+rss_at_listen=817.2MiB / 62.64GiB
+{"index":0,"firstServedMs":73247,"statuses":{"200":1,"502":283,"503/ra=5":2}}
+{"index":500,"firstServedMs":73346,"statuses":{"200":1,"502":283,"503/ra=5":2}}
+{"index":999,"firstServedMs":73337,"statuses":{"200":1,"502":283,"503/ra=5":2}}
+rss_after_280s_no_drain_line=726.9MiB / 62.64GiB
+listener_open_ms=71771
+readiness_alert_lines=0
+enabling_feature_lines_before_listen=5000
+api NS_TENANT_READINESS=serve
+=== done 00:13:02

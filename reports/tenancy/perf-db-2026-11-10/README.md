@@ -333,3 +333,118 @@ Since the restart: p25 5.7 min, p50 10.8 min, p90 22.5 min. This is the clinical
 | Compose file | `docker compose config` valid |
 | affected selection (`test-select.js affected --since cb1b751d --depth 4`, 212 files) | exit 0: 754 + 66 + 27 + 1368 + 18 passing, 593 pending (opt-in labs); dedicated `mongo:7.0.43` with `nofile=64000` |
 | full integration tier (`npm run test:integration`) | exit 0: 3643 passing, 650 pending, against the dedicated `mongo:7.0.43` (`nofile=64000`); this replaces the UNMEASURED row in §5 |
+
+## Resumed, 2026-11-11: per-tenant domain construction moves into the tenant's warm
+
+Captured 2026-11-10 23:40 – 2026-11-11 00:13 PST; appended, the sections above are unchanged.
+
+### Anchors
+
+| what | value |
+|---|---|
+| commit | `86617644aaf86ef7ada25f7e22306bdefb286737` on `codex/perf-db-20261110` (parent `540d3998`). Not pushed |
+| images | `ns-pdb-perf:540d3998` (`sha256:834b9c75…`, before) and `ns-pdb-perf:86617644` (`sha256:77e52916…`, after), label-checked; removed afterwards |
+| harness | [`harness/recreate.sh`](harness/recreate.sh) (stop the api, recreate it with `NS_TENANT_READINESS`, time listener open and first served, RSS at listen and after the drain), [`harness/campaign3.sh`](harness/campaign3.sh), [`harness/make-golden-base.py`](harness/make-golden-base.py) (base construction + read-only accessor for the golden) |
+| raw output | [`runs/construction/campaign.txt`](runs/construction/campaign.txt) (one deployment per image and tenant count; each recreated three times: serve, all, serve) |
+| host | load average (1 min) 11.7–29.1 during the runs (per line in `campaign.txt`); another lane's deployment (`ns-pdb-ev1000-*`, not this lane's) ran throughout |
+
+### Change
+
+`lib/server/serve/preview-domains.js` no longer builds every tenant's storage ports, v3 routes, legacy v1/v2 graph and REST context before the api listener opens, and no longer mounts one middleware per tenant on the data router.
+
+- **What moved:** each tenant's construction now runs from its `initializeTenant`, which is its warm.
+- **What is shared per process:** modules and one dispatcher that routes by tenant.
+- **What stays per tenant:** the environment, ports and graphs, built by the same steps in the same order as before.
+- **Unbuilt tenant:** a request that reaches one is refused `TENANT_WARMING` (503, `Retry-After`). The readiness gate normally stops it before that.
+- **Readiness `all`:** still builds every tenant before the listener, as before.
+- **Drain log:** the background warm logs one line when it drains (`Tenant warm drained: ready … failed … deferred … after … ms`).
+
+### Clinical-equivalence control (reproduced, `tests/preview-domains-equivalence.test.js`, 3 passing)
+
+**Fixture:** five tenants built by the real environment builder, with different settings:
+- defaults;
+- mmol with German and custom thresholds;
+- ten features with pump, cage and openaps extended settings;
+- loop, ar2, rawbg and upbat with a 24 h clock and night mode;
+- an empty feature list with treatmentnotify and devicestatus settings.
+
+All five environments differ, and four distinct v1 setting sets result.
+
+**Fingerprint per tenant:**
+- the constructed environment (JSON, with function names);
+- the v1/v2/v3 Express app settings, which is where feature enablement lives (`app.enable(feature)`);
+- the collections;
+- the storage ports.
+
+The `env` app setting is excluded because it is the process `NODE_ENV`, not a tenant value.
+
+**Golden:** captured from the construction at `540d3998`, adding only a read-only accessor (`harness/make-golden-base.py`); 19,868 bytes.
+
+**Result and controls:**
+- After the change, all five tenants equal the golden.
+- Mutation controls, both caught:
+  - every tenant given the first tenant's environment: fingerprint differs;
+  - the per-domain collection names dropped: fingerprint differs.
+
+### Api startup and first serve (reproduced; the api is stopped, then recreated; times from the new container's start)
+
+| tenants | build | readiness | listener open | first served (3 tenants) | "enabling feature" lines before listen | load |
+|---|---|---|---|---|---|---|
+| 100 | before `540d3998` | serve | 6.1 s, 6.7 s | 6.9–7.2 s, 7.5–7.8 s | 500 | 13.4, 12.1 |
+| 100 | before | all | 9.1 s | 9.6 s | 500 | 12.8 |
+| 100 | **after `86617644`** | **serve** | **1.3 s, 1.3 s** | **2.1 s, 2.2 s** | **0** | 12.2, 11.7 |
+| 100 | after | all | 5.5 s | 6.1 s | 500 | 11.9 |
+| 1,000 | before | serve | 49.7 s, 71.8 s | 50.6 s, 73.3 s | 5,000 | 14.9, 29.1 |
+| 1,000 | before | all | 117.6 s | 118.2–118.4 s | 5,000 | 17.7 |
+| 1,000 | **after** | **serve** | **1.9 s, 1.9 s** | **2.7–3.1 s, 2.7 s** | **0** | 14.1, 16.6 |
+| 1,000 | after | all | 48.2 s | 48.7 s | 5,000 | 16.2 |
+
+- In serve mode each probed tenant answered one or two 503 `Retry-After: 5` responses, then 200 on the next 250 ms probe. Its request moved it to the front of the warm queue.
+- The whole background warm drained in 39.4 s and 35.6 s at 1,000 tenants (1,000 ready, 0 failed) and 3.7 s at 100.
+- Readiness `all` at 1,000 dropped from 117.6 s to 48.2 s on the same image family. Derived: per-request routing is now one dispatcher instead of walking up to 1,000 tenant middlewares, and construction runs inside the bounded warm.
+- No readiness alerts in any run.
+
+### Api resident memory at 1,000 tenants (reproduced; single `docker stats` samples)
+
+| build, readiness | RSS at listener open | RSS after the warm drained | per tenant (derived) |
+|---|---|---|---|
+| after, serve | 137.3 MiB, 147.1 MiB | 873.1 MiB, 866.6 MiB | 0.74, 0.72 MiB |
+| after, all | 875.0 MiB (all built before listen) | – | – |
+| before, serve | 832.0 MiB, 817.2 MiB (all built before listen) | 725.9, 726.9 MiB after 280 s (no drain line in that build) | – |
+| 100 tenants, after, serve | 133.8, 121.9 MiB | 242.2, 241.9 MiB | 1.08, 1.20 MiB |
+
+- **Total memory:** the constructed domains are about 0.73 MiB per tenant at 1,000; the api holds about the same total after warm as before the change.
+- **Derived extrapolation:** about 2.2 GiB at 3,000 tenants and 7.2 GiB at 10,000.
+- **What changed is when it is paid:** after the warm instead of before the listener opens.
+
+### Could constructed domains be evicted for idle tenants without changing behaviour? (read-derived; measured cost only, not built)
+
+What a built tenant holds (`preview-domains.js` `build`):
+- its storage ports;
+- a v3 Express app with its collections;
+- the long-lived legacy graph (wrappers, `ctx.cache`, `ctx.ddata`) used by the frame service;
+- the REST context.
+
+What it does not hold:
+- **The clinical write clock floor.** It lives in the module-level `tenantClocks` map (`lib/server/srv-dates.js:95-107`). `restoreResolved` only raises it (`Math.max`), so it survives an eviction and a rebuild.
+- **The legacy read path's state.** Each legacy read builds a fresh graph per request (`legacyRouter`).
+
+Eviction therefore looks behaviour-preserving apart from one visible change: the first request after an eviction would be a cold start. Concretely:
+- it gets 503 `Retry-After` (as a restored tenant does today after `invalidateTenant`), or waits for a synchronous rebuild;
+- a rebuild costs one tenant's warm: about 140–160 ms including construction and its floor and dates reads (derived: 35.6–39.4 s for 1,000 tenants at concurrency 4);
+- memory freed would be about 0.73 MiB per evicted tenant.
+
+Not verified:
+- whether `ctx.cache` or the bus listeners of the long-lived graph feed anything a request reads between rebuilds (the frame service loads frames from storage per request);
+- an eviction-plus-rebuild equivalence test, which the fingerprint control above could carry.
+
+### Checks at `86617644`
+
+| check | result |
+|---|---|
+| `npm run test:unit` | 3253 passing |
+| protocol suites touching preview-domains, the window, startup or the suppression guard + pool-config + readiness | 237 passing |
+| tier check | 635 files, 8 tiers: ok |
+| eslint on changed files | 0 errors |
+| affected selection since `540d3998` (58 files) | exit 0: 396 + 27 + 11 passing, 198 pending (opt-in labs) |
+| full integration tier (dedicated `mongo:7.0.43`, `nofile=64000`) | exit 0: 3643 passing, 650 pending |

@@ -1,0 +1,3 @@
+loadavg_before=12.59 11.83 11.29
+loadavg_ready=11.26 11.55 11.21
+loadavg_after=12.42 11.79 11.30
