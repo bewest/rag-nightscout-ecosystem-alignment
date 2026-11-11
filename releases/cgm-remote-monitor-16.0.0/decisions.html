@@ -2188,7 +2188,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>b76d3b470</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>c7370e961</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3660,7 +3660,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/b76d3b4703c8e6088070fb1fc76c8f818f262463/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c7370e9618748b9844774e36ab80cf4b05f7df52/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -3746,6 +3746,54 @@ deployment has run.</p>
 <td>maintainer, 2026-11-10</td>
 <td><code>lib/server/serve/listeners.js</code> plane rule; multitenant</td>
 <td>Reproduced 2026-11-10 by resolving listeners directly on <code>1376c294</code>: with nothing set, admin resolves to <code>127.0.0.1:1338</code> and starts (the consumer address is every interface); with <code>HOSTNAME=127.0.0.1</code> it refuses ("is on the consumer listener's address"). The ownership lane's "exits 78 by default" came from a test environment that sets <code>HOSTNAME</code>. Relaxes the same-address check written with D7/D21 (<code>listeners.js:8-16</code>); separation of a shared non-loopback address now rests on the port, the acknowledgement and the deployment's network policy.</td>
+</tr>
+<tr>
+<td><a id="export-removal-no-retry"></a><strong>A repeat key destruction does not retry a failed export-file removal; it reports the recorded outcome and the file is the operator's to delete by hand. An interrupted destruction that already removed the file records <code>absent</code> on the resumed run.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-EXPORT-EXPIRY</code> (<code>701eba6f</code>)</td>
+<td>As built in the export-expiry lane; the audit records what each run found (<code>removed</code>, <code>absent</code>, <code>failed</code> with a fixed code).</td>
+</tr>
+<tr>
+<td><a id="activity-row-always-provisioned"></a><strong>Every tenant has an activity row: a migration backfills existing tenants as active, and tenant provisioning writes the row in the same transaction. If a tenant's row cannot be read, the evaluator stops for that tenant only, with a per-tenant health code and log warning; other tenants continue.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-ACTIVITY-ELIGIBILITY</code></td>
+<td>A missing row becomes a provisioning defect caught by tests, not an operating state. Isolation of one tenant's unreadable row from the others is required acceptance (not yet measured: the lane measured B unaffected while A was paused or suspended, not while A's row was unreadable). The health code becomes an alertable metric when the operational health/metrics module exists (<code>MT-ENDPOINT-TRANSPORT</code>); today it is a log and health code only.</td>
+</tr>
+<tr>
+<td><a id="deletion-request-auto-pauses"></a><strong>An owner's deletion request pauses the site automatically; cancelling the request restores the state the site had before; the operator's execution suspends it, as deletion already requires. An owner may also pause or unpause during a pending deletion ceremony; ownership changes still refuse then.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-ACTIVITY-ELIGIBILITY</code>, deletion request flow</td>
+<td>Alarms and viewing stop as soon as the owner asks to delete; uploads are still stored until suspension. The deletion confirmation tells the owner in plain language that alarms stop now.</td>
+</tr>
+<tr>
+<td><a id="activity-adopted-semantics-wiring"></a><strong>The adopted pause/suspend semantics stand in full: suspend refuses ingest and reads and disconnects sockets; pause blocks UI and reads while uploads continue (and, per <a href="#activity-is-pause-suspend">activity-is-pause-suspend</a>, stops the evaluator).</strong></td>
+<td>coordinator, 2026-11-10, restating <a href="../../docs/30-design/tenancy/multitenancy-decisions.html#suspension-and-lifecycle">suspension-and-lifecycle</a></td>
+<td><code>MT-ACTIVITY-ELIGIBILITY</code></td>
+<td>Not yet wired on <code>8f3e3c60</code>: API ingest and read refusal, socket disconnect on suspend, read blocking on pause. The owner-facing suspend text ("uploads stop") is accurate only once ingest refusal is wired.</td>
+</tr>
+<tr>
+<td><a id="root-role-edit-delete"></a><strong>Through the admin tools, root may edit a role's permissions; renaming is refused; deleting a role is refused while any subject holds it.</strong></td>
+<td>maintainer, 2026-11-10 (chose over rename/delete carrying the links, and over leaving 501)</td>
+<td><code>MT-ROOT-ADMIN-PARITY</code>, multitenant</td>
+<td>Differs deliberately from single-site, where a deleted or renamed role leaves dangling names that silently remove permissions. Needs an authorization migration (audit operations, role UPDATE/DELETE) and grants for the root identity only; the migration number must be allocated at the join.</td>
+</tr>
+<tr>
+<td><a id="root-grant-ceiling-default-all"></a><strong>Root may grant any tenant data permission (<code>*</code>) unless the operator narrows the list for the deployment; never owner or operator permissions.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-ROOT-ADMIN-PARITY</code></td>
+<td>On <code>cfae532c</code> root is bounded by the owner catalogue and operator ceiling, and the Compose demo's catalogue is <code>api:entries:read</code> only; the default becomes <code>*</code> within tenant data.</td>
+</tr>
+<tr>
+<td><a id="admin-role-subjects-use-admin-tools"></a><strong>A subject whose roles grant <code>admin:api:subjects:*</code> may use the admin tools with its own token, as on a single site, with the same last-owner guard and never owner or operator authority.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-ROOT-ADMIN-PARITY</code></td>
+<td>On <code>cfae532c</code> the restored routes accept the tenant root secret only.</td>
+</tr>
+<tr>
+<td><a id="restore-census-counter-writers"></a><strong>The restore census also refuses a connected non-participant whose identity can write the insertion-order or write-clock tables; read-only identities stay exempt. Ownership changes are not refused during export: an export is one consistent snapshot transaction and has no lifecycle state.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>Refines <a href="#restore-census-and-ownership-phase">restore-census-and-ownership-phase</a>; <code>MT-ADMIN-LIFECYCLE-FIT</code></td>
+<td>The census checks identities and grants of connected backends (configuration), not live writes, and refuses only the restore of the tenant being restored; participants (api, realtime, evaluator) keep serving other tenants. In the current design only api writes those counters, so nothing trips it; it guards against a future worker or a wrong grant.</td>
 </tr>
 </tbody>
 </table>
