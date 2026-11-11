@@ -26339,7 +26339,7 @@ items:
     branch: docs/operator-readme-20261110
     worktree: ../nightscout-deploy-readme-wt
     base: main@cda3826
-    state: in-progress
+    state: ready-to-push
     blast_radius: >
       nightscout-deploy README rewritten for operators (what runs, how, pinned core commit; stubs say not started); #8898 drops or shrinks deploy/multitenant to the fixture its tests boot; port e6f6e248 grants as an overlay.
     review: maintainer

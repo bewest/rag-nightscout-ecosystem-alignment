@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 37 items
+### Maintainer &mdash; 38 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -62,6 +62,7 @@ every item that was `merged-upstream` then is `released`.
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
+| `DEPLOY-TREE-HOME` | `ready-to-push` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;  | &mdash; |
 | `DEPLOY-VAULT-AGENT` | `ready-to-push` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | &mdash; |
 | `MT-CONNECTOR-REVERSE` | `ready-to-push` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in | &mdash; |
 | `MT-EVAL-COST` | `ready-to-push` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work | &mdash; |

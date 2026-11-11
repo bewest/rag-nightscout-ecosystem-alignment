@@ -235,7 +235,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 3 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-flight-upstream` | `MT-M6A-JOIN` |
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
 | 4 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up | `in-progress` | `DEPLOY-TRUST-PROBES` |
-| 4 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;  | `in-progress` | `MT-M6B-JOIN` |
+| 4 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;  | `ready-to-push` | `MT-M6B-JOIN` |
 | 4 | `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | `in-flight-upstream` | `MT-M6B-JOIN` |
 | 4 | `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an owners | `in-flight-upstream` | `MT-M6B-JOIN` |
 | 4 | `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `in-flight-upstream` | `MT-M6B-JOIN` |

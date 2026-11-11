@@ -87,7 +87,7 @@ flowchart LR
   ARCH-SEAM-CONTRACT["ARCH-SEAM-CONTRACT<br/>in-progress"]
   DEPLOY-IDP-PROFILE["DEPLOY-IDP-PROFILE<br/>not-started"]
   DEPLOY-K8S-BINDING["DEPLOY-K8S-BINDING<br/>in-progress"]
-  DEPLOY-TREE-HOME["DEPLOY-TREE-HOME<br/>in-progress"]
+  DEPLOY-TREE-HOME["DEPLOY-TREE-HOME<br/>ready-to-push"]
   DEPLOY-TRUST-PROBES["DEPLOY-TRUST-PROBES<br/>not-started"]
   DEPLOY-VAULT-AGENT["DEPLOY-VAULT-AGENT<br/>ready-to-push"]
   MIG-RUNNER["MIG-RUNNER<br/>closed"]
@@ -223,7 +223,7 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="mt-export-expiry"></a>**MT-EXPORT-EXPIRY**: in-flight-upstream | Key destruction removes the export / lane 701eba6f; joined at 16a1fc2d (#8898) | MT-M6B-JOIN (in-flight-upstream) | Production composition of the artifact remover and the operator UPDATE grant. |
 | <a id="mt-consumer-stale-reselect"></a>**MT-CONSUMER-STALE-RESELECT**: in-flight-upstream | Alarm path / lane 956d0940 (BF-231); joined at 16a1fc2d (#8898) | MT-M6B-JOIN (in-flight-upstream) | No lane action remains recorded beyond the joined acceptance at 16a1fc2d. |
 | <a id="mt-tenant-extended-settings"></a>**MT-TENANT-EXTENDED-SETTINGS**: in-flight-upstream | Plugin extended settings / lane 2f1ae027 (BF-232); joined at 16a1fc2d (#8898) | None recorded | Owner editing of plugin alert enables after the first preview; the browser tier on 16a1fc2d (carried over from 3cd1c487). |
-| <a id="deploy-tree-home"></a>**DEPLOY-TREE-HOME**: in-progress | M6c / nightscout-deploy branch 9387428, unpushed | MT-M6B-JOIN (in-flight-upstream) | Operator README and ownership-admin overlay; #8898 drops or shrinks deploy/multitenant to the fixture its tests boot. |
+| <a id="deploy-tree-home"></a>**DEPLOY-TREE-HOME**: ready-to-push | M6c / nightscout-deploy branch 9387428, unpushed | MT-M6B-JOIN (in-flight-upstream) | Operator README and ownership-admin overlay; #8898 drops or shrinks deploy/multitenant to the fixture its tests boot. |
 
 ## Accepted slices and integration handoff
 
