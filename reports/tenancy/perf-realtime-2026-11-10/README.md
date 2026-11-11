@@ -492,7 +492,7 @@ Cause of the `9b6ff088` failure (reproduced): the runtime calls `onReady` from i
 cycle, which runs inside the operation window's async scope. `tenantReady` started the parked drain
 there, so the drain and every retry timer it scheduled inherited that scope; after the cycle ended,
 every prime was refused with `LIFECYCLE_WINDOW_SCOPE_INVALID` (`operation-window.js:139`, via
-`withOperation`; `runs/rt5-n1000-9b6ff088-errlog.txt`). Counters 5 min after the restart: all 1,000
+`withOperation`). Counters 5 min after the restart: all 1,000
 tenants healthy, socket refreshes 66611 with 66569 failures, primed 76. The unit gate passed on
 `9b6ff088` because its lab had no operation window.
 
@@ -538,3 +538,7 @@ tenants on this host. The unit bound is the discriminating check. Counters:
 - Restart recovery under a tighter bound or at 3,000 tenants; whether a larger warm share during a
   restart closes the gap to the unbounded control without its socket-path failures.
 - The write clock (perf-db `03661f22`) is not yet merged in this lane; the absence check is still on.
+- The realtime logs of the two `9b6ff088` restart runs (counters and the `LIFECYCLE_WINDOW_SCOPE_INVALID`
+  lines) were overwritten when a later deploy reused their run directories; the figures above for
+  those runs are quoted from tool output at capture time. Their run files (`*-restart-s2.json`,
+  `*-campaign.txt`) are kept.
