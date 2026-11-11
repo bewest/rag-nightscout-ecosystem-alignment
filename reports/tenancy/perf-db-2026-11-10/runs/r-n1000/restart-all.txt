@@ -1,0 +1,7 @@
+ 22:57:42 up 45 days, 14:35,  1 user,  load average: 18.59, 17.92, 14.32
+{"index":999,"firstServedMs":90842,"statuses":{"200":1,"502":355}}
+{"index":500,"firstServedMs":90839,"statuses":{"200":1,"502":355}}
+{"index":0,"firstServedMs":90827,"statuses":{"200":1,"502":355}}
+api NS_TENANT_READINESS=all
+
+[exited with code 0]

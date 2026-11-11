@@ -221,3 +221,115 @@ initialized.
    go through `postgres-connection.js`, whose selected window now checks the epoch, so its
    admission becomes the epoch check too (read-derived; not run as `root_writer` here). Core
    `config.js` `grants()` still lacks its control reads (next batch, as recorded there).
+
+## Resumed, 2026-11-10 (late): serve-then-warm readiness and the epoch everywhere
+
+Decisions [readiness-serve-then-warm](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#readiness-serve-then-warm)
+and [admission-epoch-everywhere](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admission-epoch-everywhere).
+Captured 22:00–23:30 PST; appended, the sections above are unchanged.
+
+### Anchors
+
+| what | value |
+|---|---|
+| base merged | `d6560468` (evaluator-partition head) **merged** into the branch: `7c415f28` (no rebase, so `cbda5f68`/`d53f12d6` keep their hashes) |
+| new commits | `a52bc33babb582b45506a0da3f7be37b458e0e6d` serve-then-warm readiness (api) + Compose start period; `540d3998ec1edbd961c950d5caa6cdb3e061c82c` suppression reader on the epoch + backend identity cache. Head measured: `540d3998`. Not pushed |
+| images | `ns-pdb-perf:d53f12d6` (`sha256:60c6d609…`, before) and `ns-pdb-perf:540d3998` (`sha256:cb32fc7b…`, after), each label-checked against its commit; removed afterwards |
+| harness | [`harness/restart.sh`](harness/restart.sh) (api restart probe, first evaluator pass), [`harness/restart-all.sh`](harness/restart-all.sh) (recreate the api with the readiness flag), [`harness/eval-gap.js`](harness/eval-gap.js) (per-tenant evaluation gap) |
+
+### Corrections to the sections above (measured this session)
+
+- **"api ready" in §3.3 is not the api's own time.** `start.sh` polls health only after `docker compose up -d` returns, and Compose starts realtime only once the api is healthy and returns only once realtime has started (`depends_on: service_healthy`, `deploy/multitenant/compose.yaml`), so the api, realtime and tenant-admin columns are bounded below by realtime's readiness. The evaluator column is its own. The api's own time at 1,000 tenants is below (container logs and the restart probe).
+- **The catalogue suite had 20 cases, not 19**: 3 fence cases + 20 catalogue cases = 23 tests, as §3.2's count says. The decision row quotes 19.
+
+### 1. Readiness: serve, then warm (`a52bc33b`)
+
+`lib/server/serve/tenant-startup.js` gains a readiness mode; the api adopts it.
+
+- **`serve` (default for the api):** the role opens once its own dependencies are up. Tenants warm in the **background, bounded** (`NS_TENANT_STARTUP_CONCURRENCY`, default 4), and **a request for a cold tenant moves it to the front of the queue**: both. A cold tenant's request is refused `TENANT_WARMING`, **503 with `Retry-After: 5`**, for that tenant only. A tenant whose initialization fails is marked failed with an alert (`TENANT_WARM_FAILED`, log line and `health().alerts`) and refused `TENANT_UNAVAILABLE` (503, `Retry-After` until its retry after 30 s); the other tenants serve and the boot succeeds.
+- **`all` (`NS_TENANT_READINESS=all`):** today's behaviour, ready only once every tenant is initialized; a tenant failure fails the boot.
+- **Cold bound:** in both modes a tenant still cold after `NS_TENANT_COLD_ALERT_MS` (default 120,000) raises `TENANT_COLD_BEYOND_BOUND`, cleared when it warms.
+- `health()` on the api role: `{readiness, configured, ready, warming, cold, deferred, failed, alerts, ready}`. Global failures (wrong window, configuration) still fail the boot.
+- Compose fixture: the api, realtime and evaluator healthchecks get `start_period: 900s` (`deploy/multitenant/compose.yaml`). nightscout-deploy's Compose binding needs the same change; its Kubernetes probes need a matching startup probe.
+
+**Controls (reproduced, `tests/tenant-readiness.test.js`, 8 passing):**
+
+| control | result |
+|---|---|
+| one broken tenant among 100 (missing root credential metadata), actual api boot, readiness `serve` | boot succeeds; 99 tenants initialized and served; the broken tenant alerts `TENANT_WARM_FAILED` and is refused `TENANT_UNAVAILABLE` with `Retry-After` |
+| break-it: `serve` reverted to boot-fails (background warm replaced by the `all` path) | red, 4 failing; the 100-tenant test fails with `Error: preview readiness or storage initialization refused; check operator preparation and credential privileges`; restored: 8 passing |
+| the flag | `NS_TENANT_READINESS=all`: the same broken tenant fails the boot (same error); with no broken tenant, ready only after all 100 initialized |
+| cold tenant over HTTP | `503`, `Retry-After: 5`, `{"error":"TENANT_WARMING"}`; a warm tenant on the same app is served |
+| queue promotion | with concurrency 1, a request for the tenth tenant makes it the next to warm |
+| cold bound | alert at exactly the bound (999 ms none, 1,000 ms alert), cleared once warm |
+
+The existing api-boot protocol test runs under `NS_TENANT_READINESS=all` (today's semantics).
+
+**Time to first served request after an api restart, 1,000 tenants (reproduced; three tenants: first, middle, last in configuration order; probe every 250 ms through nginx, so 502 while the api is down):**
+
+| readiness | first served (all three) | statuses seen | load avg (1 min) |
+|---|---|---|---|
+| serve | 35.2 s | 137 × 502, then one 503 `Retry-After: 5`, then 200 | 6.8 |
+| serve (repeat) | 53.0 s | 204 × 502, one 503 `Retry-After: 5`, then 200 | 18.7 |
+| all (control) | 90.8 s | 355 × 502, then 200 | 18.6 |
+
+Each tenant was served 250 ms after its first 503: the request moved it to the front of the warm queue. In `serve` mode the remaining 35–53 s is the api's own boot before its listener opens: SIGTERM to "Listening" was 33–35 s in the container log, and that boot builds every tenant's settings and plugin set once ("enabling feature" × 2 per tenant, 2,000 lines) in `previewDomains` before the tenant warm starts. That per-tenant construction is the api's next O(N) startup cost (not changed here). No readiness alerts in the api log (the background warm finished inside the 120 s bound).
+
+### 2. The epoch everywhere (`540d3998`)
+
+- **Suppression reader** (`evaluator-consumers.js` → `evaluator-consumer-readiness.js` `suppressionGuard`): each reader snapshot reads one epoch statement (the window epoch with the whole-catalogue sweep its `unrelated` check needs, joined by `tenant_alarm_suppression` and its ledger, `operation-window-epoch.js` `extra`); the full guard runs only for an epoch it has not admitted, and the epoch is cached only if unchanged after the full guard.
+- **Backend identity** (`postgres-connection.js`): read once per pooled client and again when the client's backend pid differs; a reconnect is a new client.
+
+**Controls (reproduced, `tests/operation-window-epoch.integration.test.js`, 47 passing):**
+
+| control | result |
+|---|---|
+| suppression reader, 22 catalogue cases (the 19 window cases that apply to it, targeted at the suppression identity where role-specific, plus a foreign table read, a changed suppression policy, a changed suppression ledger) | each refused on the next snapshot after a cached admission; admitted after the revert. The lifetime "foreign function" case is not an input of this guard and is not run against it |
+| unchanged epoch | three snapshots, no further full checks |
+| break-it: suppression epoch held constant | red, 5 failing, each `Missing expected rejection.`: foreign table write, foreign column write, foreign table read, changed suppression policy, changed suppression ledger. The other 17 stay refused because the reader's own transaction passes the window epoch, which covers the control-table and role cases; these five are covered only by the suppression epoch |
+| reconnect with a different backend (native: superuser `pg_terminate_backend` on the api identity's backends) | the new backend's pid is in the cohort census |
+| break-it (protocol, `tests/tenant-operation-window.test.js`): cache keyed on the client only | red: `a different backend is read again` |
+
+**Idle DB time, Compose, 60 s idle after start, before `d53f12d6` → after `540d3998` (reproduced):**
+
+| tenants | total DB-ms per min | statements per min | suppression identity DB-ms | lifetime operations (eval + rt) | DB-ms per lifetime operation (derived) | load avg |
+|---|---|---|---|---|---|---|
+| 10 | 41,705 → 36,452 | 337,183 → 291,945 | 5,494 → 2,174 | 3,019 → 3,028 | 13.8 → 12.0 | 5.1 / 6.3 |
+| 100 | 72,164 → 74,098 | 536,916 → 508,705 | 5,948 → 2,731 | 4,086 → 4,386 | 17.7 → 16.9 | 6.5 / 6.6 |
+
+The per-transaction identity statement (`SELECT pg_backend_pid() AS pid,current_user …`) left the top statements: before, 17,564 calls / 1,642 ms (evaluator) and 12,000 / 1,063 ms (realtime) at 10 tenants, and 43,352 / 4,545 ms (realtime) at 100. The suppression full guard (`operation-window-table` 6,050 calls, `suppression-role` 1,210 calls at 10 tenants) is replaced by one epoch statement per snapshot (about 1.2 ms each, the whole-catalogue sweep). The idle total is still the evaluator's and realtime's per-tenant polls; at 100 tenants the after run also did 7% more operations.
+
+### 3. Evaluator after a restart, 1,000 tenants (clinical note)
+
+The evaluator keeps readiness `all` (its scheduling is the evaluator perf lane's), so after a restart **no tenant is evaluated until every tenant has warmed**; the evaluator was healthy 44 s after SIGTERM (container log). The cold-tenant alert covers warm only: it did not fire (warm finished inside 120 s) while tenants went unevaluated for much longer, so an alert on *time since the last evaluation* belongs in the evaluator's scheduler (seam below).
+
+**Per-tenant evaluation gap after an evaluator restart, 1,000 tenants (reproduced, [`runs/r-n1000/evaluator-gap.txt`](runs/r-n1000/evaluator-gap.txt), `harness/eval-gap.js`, load average 15.8 → 9.3):**
+the evaluator was healthy 54.5 s after the restart; a tenant's first evaluation is its first window operation by an evaluator backend after that point.
+
+| evaluated within (of 1,000) | 60 s | 5 min | 15 min | 25 min (end) | not evaluated within 25 min |
+|---|---|---|---|---|---|
+| tenants | 16 | 143 | 424 | 700 | **300** |
+
+Since the restart: p25 5.7 min, p50 10.8 min, p90 22.5 min. This is the clinical gap the note asks for: with the per-tenant polling evaluator at 1,000 tenants, most tenants' alarms are not evaluated for minutes after a restart and 30% not within 25 minutes. It is set by the evaluator's cycle throughput (the evaluator perf lane), not by warm: warm took under a minute and raised no cold alerts. A first pass with `restart.sh` part (2) is superseded (it dropped operations of pooled backends that had since closed; [`runs/r-n1000/restart-serve.txt`](runs/r-n1000/restart-serve.txt) keeps its line for the record).
+
+### 4. Seams for the peer lanes
+
+| lane | what it needs at the join | where |
+|---|---|---|
+| realtime (`codex/perf-realtime-20261110`) | pass `{ readiness: require('./pool-config').tenantReadiness() }` to `tenant-startup.create` and stop awaiting every tenant before the role opens; the runtime's first refresh loop over all tenants (`runtime.js:45`, bounded by this lane) and `health().ready` requiring every cell healthy (`runtime.js:57`) must become per-tenant; a socket for a cold tenant needs a refusal clients retry (the HTTP side has `TENANT_WARMING` + `Retry-After`) | `lib/server/serve/preview-realtime.js:57,63`, `lib/server/realtime/runtime.js:45,57` |
+| evaluator (`codex/perf-evaluator-20261110`) | the same option at `evaluator-preview.js:50`; `create()` already calls `startup.ensure` per tenant (`:66`), so a cold tenant can initialize on its first cycle; the scheduler must skip or prioritise tenants not yet warm (`startup.health()`), alert when a tenant has not been evaluated within a bound after restart (the measured gap above), and expose `startup.health()` in `health()`/inspection; `evaluator-consumers.js` `prepare` still visits every tenant sequentially before the runtime starts | `lib/server/serve/evaluator-preview.js:50,66,104`, `lib/server/serve/evaluator-consumers.js` tenant loop |
+| api (this lane, next) | the per-tenant settings/plugin construction in `previewDomains` runs for every tenant before the listener opens (≈35–53 s at 1,000) | `lib/server/serve/preview-api.js` `previewDomains(...)` |
+
+### 5. Checks at `540d3998`
+
+| check | result |
+|---|---|
+| `npm run test:unit` | 3250 passing |
+| protocol suites touching the window, startup or suppression guard (17 files) + pool-config + readiness | 201 passing, 16 pending (opt-in) |
+| native epoch suite | 47 passing |
+| disposable-PostgreSQL suites: admin-lifecycle-fit 6, key-retention 6, admin-role-ownership 11, tenant-ownership-postgres 9, owner-subject-policy 38 | passing |
+| tier check, write-boundary | ok (634 files); all 9 entry points |
+| eslint on changed files | 0 errors |
+| Compose file | `docker compose config` valid |
+| affected selection (`test-select.js affected --since cb1b751d --depth 4`, 212 files) | exit 0: 754 + 66 + 27 + 1368 + 18 passing, 593 pending (opt-in labs); dedicated `mongo:7.0.43` with `nofile=64000` |
+| full integration tier (`npm run test:integration`) | exit 0: 3643 passing, 650 pending, against the dedicated `mongo:7.0.43` (`nofile=64000`); this replaces the UNMEASURED row in §5 |

@@ -1,0 +1,15 @@
+nsdemo_evaluator	17580	10094.0	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_realtime	12140	7232.4	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_lifetime_evaluator	2420	3720.4	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_lifetime_evaluator	2420	2982.9	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	2412	2252.7	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_outbox	9637	1685.1	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity 
+nsdemo_outbox	2410	1600.2	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplicat
+nsdemo_outbox	2411	1478.8	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_suppression	1206	1402.4	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||co
+nsdemo_lifetime_realtime	608	891.8	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_suppression	1206	723.3	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_lifetime_realtime	608	710.0	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	600	607.7	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_lifetime_evaluator	2413	196.8	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_evaluator	7260	73.0	SELECT id_kind, doc, bool_or(jsonb_typeof((doc -> $10::text)) IN ($13, $14)) OVER () AS unsortable FROM (SELEC

@@ -1,0 +1,9 @@
+ 22:31:35 up 45 days, 14:09,  1 user,  load average: 6.79, 5.62, 5.63
+{"index":0,"firstServedMs":35244,"statuses":{"200":1,"502":137,"503/ra=5":1}}
+{"index":500,"firstServedMs":35227,"statuses":{"200":1,"502":137,"503/ra=5":1}}
+{"index":999,"firstServedMs":35234,"statuses":{"200":1,"502":137,"503/ra=5":1}}
+api_alert_lines=0
+evaluator_first_op: tenants_seen=790 of 1000 p50_ms=28589 p95_ms=1387525 max_ms=1503037
+evaluator_alert_lines=0
+
+[exited with code 0]

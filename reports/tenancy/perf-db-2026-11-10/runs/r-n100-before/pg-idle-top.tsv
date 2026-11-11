@@ -1,0 +1,15 @@
+nsdemo_realtime	43353	29497.1	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_evaluator	9757	7396.7	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_realtime	43352	4545.1	SELECT pg_backend_pid() AS pid,current_user AS role,extract(epoch from backend_start)::text AS birth,current_d
+nsdemo_lifetime_realtime	2168	3373.9	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_suppression	5370	2928.4	SELECT /* operation-window-table */ c.oid,c.relowner AS owner_oid,c.relkind AS kind,c.relpersistence AS persis
+nsdemo_lifetime_evaluator	1918	2914.0	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_lifetime_realtime	2168	2755.9	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	2168	2461.3	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_lifetime_evaluator	1918	2378.6	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	1918	2171.1	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_outbox	8584	1806.1	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity 
+nsdemo_outbox	2146	1759.2	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplicat
+nsdemo_suppression	1074	1726.3	SELECT /* evaluator-consumer-suppression-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rol
+nsdemo_outbox	2146	1590.0	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_evaluator	9760	1106.5	SELECT pg_backend_pid() AS pid,current_user AS role,extract($1 from backend_start)::text AS birth,current_data

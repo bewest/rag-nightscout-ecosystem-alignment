@@ -1,0 +1,11 @@
+nsdemo_evaluator	idle	1
+nsdemo_evaluator	idle in transaction	3
+nsdemo_lifetime_evaluator	idle	6
+nsdemo_lifetime_evaluator	idle in transaction	2
+nsdemo_lifetime_realtime	active	3
+nsdemo_lifetime_realtime	idle	5
+nsdemo_outbox	idle	1
+nsdemo_outbox	idle in transaction	1
+nsdemo_realtime	active	4
+nsdemo_suppression	idle	2
+postgres	active	1

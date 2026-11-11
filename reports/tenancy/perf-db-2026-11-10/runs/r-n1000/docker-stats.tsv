@@ -1,0 +1,6 @@
+ns-pdb-r-n1000-api-1	13.63%	726.1MiB / 62.64GiB
+ns-pdb-r-n1000-evaluator-1	105.51%	1.384GiB / 62.64GiB
+ns-pdb-r-n1000-postgres-1	91.78%	159.2MiB / 62.64GiB
+ns-pdb-r-n1000-realtime-1	117.29%	449.3MiB / 62.64GiB
+ns-pdb-r-n1000-tenant-admin-1	15.30%	48.43MiB / 62.64GiB
+ns-pdb-r-n1000-vault-1	0.40%	98.16MiB / 62.64GiB

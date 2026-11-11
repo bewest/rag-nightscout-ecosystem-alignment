@@ -1,0 +1,6 @@
+ns-pdb-r-n100-before-api-1	10.24%	235.8MiB / 62.64GiB
+ns-pdb-r-n100-before-evaluator-1	100.99%	277.6MiB / 62.64GiB
+ns-pdb-r-n100-before-postgres-1	347.45%	162.1MiB / 62.64GiB
+ns-pdb-r-n100-before-realtime-1	78.28%	225.2MiB / 62.64GiB
+ns-pdb-r-n100-before-tenant-admin-1	9.50%	55.97MiB / 62.64GiB
+ns-pdb-r-n100-before-vault-1	6.78%	48.51MiB / 62.64GiB

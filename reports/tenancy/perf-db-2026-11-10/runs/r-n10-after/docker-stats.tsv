@@ -1,0 +1,6 @@
+ns-pdb-r-n10-after-api-1	8.09%	93.57MiB / 62.64GiB
+ns-pdb-r-n10-after-evaluator-1	32.08%	255.9MiB / 62.64GiB
+ns-pdb-r-n10-after-postgres-1	157.13%	158.6MiB / 62.64GiB
+ns-pdb-r-n10-after-realtime-1	17.77%	244.7MiB / 62.64GiB
+ns-pdb-r-n10-after-tenant-admin-1	0.00%	52.58MiB / 62.64GiB
+ns-pdb-r-n10-after-vault-1	0.38%	39.88MiB / 62.64GiB

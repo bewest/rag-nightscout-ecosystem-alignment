@@ -1,0 +1,15 @@
+nsdemo_realtime	45283	33876.6	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_evaluator	12429	10223.3	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_lifetime_realtime	2264	3801.6	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_lifetime_evaluator	2122	3498.5	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_lifetime_realtime	2264	3099.7	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	2122	2883.8	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	2264	2811.1	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_lifetime_evaluator	2123	2607.9	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_outbox	9019	2104.9	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity 
+nsdemo_outbox	2255	1954.2	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplicat
+nsdemo_outbox	2255	1818.7	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_suppression	1128	1774.9	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||co
+nsdemo_suppression	1128	881.7	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_lifetime_realtime	2264	253.2	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_lifetime_evaluator	2123	230.6	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
