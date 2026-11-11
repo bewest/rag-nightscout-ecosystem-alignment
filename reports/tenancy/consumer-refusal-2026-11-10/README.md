@@ -186,3 +186,47 @@ cost is unmeasured.
 > under churn with no wake from timer publications; decision (a)/(b) above.
 
 Evidence: this record; lane handoff `externals/work/HANDOFF-consumer-refusal-20261110.md` (local).
+
+## Addendum 2026-11-10: revision-on-content-change stopped at the reader inventory
+
+Decision [`evaluator-revision-on-content-change`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change)
+(alignment `main` `b9e78338`). Lane head unchanged at `1adb17f8`, tree clean. No code was changed: one reader relies on
+the per-cycle bump, so the lane stopped and reported, as instructed.
+
+**What changes between cycles over unchanged data** (reproduced natively; actual evaluator role, one synthetic reading,
+`tick`/`acquire` over IPC, including one tick 61 s later): only `outputRevision`, `result.evaluationRevision`, `trigger`
+and `result.now`. `checkpoint`, `progress`, `emitted`, `requested` and `properties` (`bgnow`, `buckets`, `direction`)
+were identical. A content digest over those five fields would therefore hold the revision on every timer cycle.
+
+**Readers of the evaluator's `last` / `outputRevision`** (at `1adb17f8`):
+
+| reader | use | per-cycle bump |
+|---|---|---|
+| `lib/tenant-notifications/producer-state.js:57-68` | each new `[identity, runtimeId, outputRevision, inputCheckpoint]` is a fresh cycle: re-runs legacy `notifications.process`, which re-emits the active unsnoozed alarm | **relies on it** |
+| `tests/evaluator-consumers.integration.test.js:44-45` `M5_CONSUMER_NEW_RT_CYCLE` | a `tick` over identical data must deliver a second realtime event | **relies on it** |
+| activity lane `tests/tenant-activity.integration.test.js:128` (`07981b55`) `ACTIVITY_B_UNAFFECTED` | B's health `outputRevision` must advance by more than 2 over the timer window | relies on it (test oracle) |
+| `lib/tenant-notifications/producer.js:36-39` `unchanged()` | runtimeId/outputRevision/inputCheckpoint equality and `result` object identity | no; benefits only if an unchanged cycle keeps the same frozen `last` object |
+| `lib/tenant-notifications/producer.js:60-61`, `component.js:22-24,39-40,125` | the producer's own store revision, not the evaluator's | no (indirect: it moves when the producer state moves) |
+| `lib/tenant-alarms/cycle.js:11-13,24` | shape validation; the revision must not change within one cycle | no |
+| `lib/server/serve/evaluator-runtime.js:146,149-150` | health report, `last()` | no (reporting) |
+
+`lib/server/realtime/runtime.js` keeps its own `cell.last` and does not read the evaluator's revision.
+
+**Why the reliance is behavioural.** Legacy single-tenant Nightscout re-emits the highest unsnoozed alarm on every
+processing cycle (`lib/notifications.js:131-165`, `emitNotification` at `:156`), gated only by the ack silence
+window (`:63`). Processing runs on every heartbeat tick (`lib/server/bootevent.js:537-540`; `heartbeat` default 60 s,
+`lib/settings.js:38`) and on each data-received event. The multitenant producer reproduces that repeat by treating
+each evaluator cycle as fresh. Under the decision as worded, a time-only cycle with identical output keeps its
+revision, so `fresh` is false and an unacknowledged alarm is delivered once per content change, not once per cycle. That
+is a change from single-tenant behaviour. Read-derived: the client-side effect of fewer repeats (e.g. a client that
+connects after the first delivery) was not measured.
+
+Related measured fact: at the deployed `timeIntervalMs` 1000, the multitenant consumer re-delivers an active alarm about
+once per second per tenant, against legacy's once per heartbeat (60 s default).
+
+**Questions for the maintainer before implementation:**
+
+1. Should alarm repetition stay per cycle (as in single tenant), become per content change, or follow a separate
+   repeat clock (e.g. the legacy heartbeat interval)?
+2. If repetition is kept, should the producer's `fresh` key be decoupled from the evaluator revision (for example, a
+   repeat tick counter driven by a heartbeat), so the revision can still move only on content change?
