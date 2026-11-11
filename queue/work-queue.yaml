@@ -27178,9 +27178,9 @@ items:
     title: "Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: ''
-    state: blocked
+    branch: workspace/tenant-registry-20261111
+    base: workspace/multitenant-20261102@0392acf9
+    state: in-progress
     blast_radius: >
       Multitenant only. Replaces the static tenant list in role configs (decisions.md#tenant-registry,
       decisions.md#provisioning-split).
@@ -27193,11 +27193,15 @@ items:
       - no-gate: >
           Design and acceptance to be defined; isolation (the definer function reveals only host-to-tenant mapping) and
           the startup-only re-measure at 1k/3k are the expected gates.
-    blocks_on:
-      - MT-CAPACITY-FIXES
-    evidence: []
+    blocks_on: []
+    evidence:
+      - reports/tenancy/tenant-registry-2026-11-11/README.md
     notes: >
       2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it.
+      Step (a) at f5c4c0c3 (8 commits): registry, cached resolver, provisioning library, admin /v1/tenants and
+      `nightscout admin provision`, api/tenant-admin/admin/evaluator in registry mode, isolation tests, docs. Before the
+      join: resolve loader conflicts with MT-CAPACITY-FIXES; gaps before default listed in the record.
+
   - id: MT-TENANT-LIVE-ADD
     title: "Running evaluator and realtime pick up newly provisioned tenants without a restart"
     parcel: tenancy
