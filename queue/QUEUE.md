@@ -31,20 +31,20 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 398 |
-| runnable gates | 451 |
+| items | 399 |
+| runnable gates | 452 |
 | explicit `no-gate:` markers | 400 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 851 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 852 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
-| `in-progress` | 26 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, DEPLOY-TREE-HOME, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-OWNER-LAST-GUARD |
+| `in-progress` | 17 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, DEPLOY-TREE-HOME |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
+| `ready-to-push` | 12 | WS-LAB, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, DEPLOY-VAULT-AGENT |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 11 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 98 items
+`parcel: tenancy` &mdash; 99 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8452,16 +8452,17 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 | `in-flight-upstream` | `codex/m6b-join-20261110` | minor | 1 run |
 | `MT-OIDC-SINGLE-PROVISION` | Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers | `in-flight-upstream` | `codex/oidc-single-provision-20261110` | minor | 1 run |
 | `MT-OWNERSHIP-OPS` | M6b: operator-assisted ownership add, transfer and recovery | `in-flight-upstream` | `codex/ownership-ops-20261110` | minor | 1 run |
-| `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity | `in-progress` | `codex/ownership-role-20261110` | n/a | 1 run |
-| `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `in-progress` | `codex/root-admin-parity-20261110` | n/a | 1 run |
-| `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline | `in-progress` | `codex/internal-listener-20261110` | n/a | 1 run |
-| `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause | `in-progress` | `codex/activity-eligibility-20261110` | n/a | 1 run |
-| `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `in-progress` | `codex/export-expiry-20261110` | n/a | 1 run |
-| `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `in-progress` | `codex/admin-lifecycle-20261110` | n/a | 1 run |
+| `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity | `ready-to-push` | `codex/ownership-role-20261110` | n/a | 1 run |
+| `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools | `ready-to-push` | `codex/root-admin-parity-20261110` | n/a | 1 run |
+| `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline | `ready-to-push` | `codex/internal-listener-20261110` | n/a | 1 run |
+| `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause | `ready-to-push` | `codex/activity-eligibility-20261110` | n/a | 1 run |
+| `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `ready-to-push` | `codex/export-expiry-20261110` | n/a | 1 run |
+| `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `ready-to-push` | `codex/admin-lifecycle-20261110` | n/a | 1 run |
 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README | `in-progress` | `docs/operator-readme-20261110` | n/a | 0 run + 1 no-gate |
-| `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `in-progress` | `codex/consumer-refusal-20261110` | n/a | 1 run |
-| `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) | `in-progress` | `codex/tenant-extended-settings-20261110` | n/a | 1 run |
-| `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-progress` | `codex/m6b-followups-20261110` | n/a | 1 run |
+| `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `ready-to-push` | `codex/consumer-refusal-20261110` | n/a | 1 run |
+| `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) | `ready-to-push` | `codex/tenant-extended-settings-20261110` | n/a | 1 run |
+| `MT-BATCH-JOIN-1110` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance | `ready-to-push` | `codex/batch-join-20261110` | n/a | 1 run |
+| `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `ready-to-push` | `codex/m6b-followups-20261110` | n/a | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-flight-upstream` | `codex/key-retention-20261110` | minor | 1 run |
 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | `codex/vault-token-file-20261109` | minor | 1 run |
 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `main` | n/a | 1 run |
@@ -10876,7 +10877,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/ownership-role-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -10900,13 +10901,13 @@ alarm-readiness items, and the seam branch refresh.
 
 - `reports/tenancy/ownership-role-2026-11-10/README.md`
 
-**Notes.** 2026-11-10 (reproduced in lane): three commits on b70ad83f. Decision inputs (read-derived): default admin bind vs plane rule; restore cohort census refuses while admin is connected; no lifecycle fence on ownership changes.
+**Notes.** 2026-11-10 (reproduced in lane): three commits on b70ad83f. Decision inputs (read-derived): default admin bind vs plane rule; restore cohort census refuses while admin is connected; no lifecycle fence on ownership changes. 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH- JOIN-1110), accepted, not pushed.
 
 ### `MT-ROOT-ADMIN-PARITY` &mdash; Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/root-admin-parity-20261110` |
 | base | `codex/m6b-followups-20261110@65657a62a1e26dde9e245f9a7651d2593da0208a` |
@@ -10931,13 +10932,13 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `reports/tenancy/root-admin-parity-2026-11-10/README.md`
 
-**Notes.** Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10). 2026-11-10 (reproduced in lane): cfae532c on 65657a62. /api/v2/authorization subjects (list/create/edit/delete) and roles (list/create) for the tenant root secret on DATA; role edit/delete return 501; store refuses construction without ownerPolicy; new nsdemo_root_writer identity. Not run: preview API boot with subjectAdmin on real PostgreSQL and Vault; browser admin page. 2026-11-10 second pass (reproduced): 165c13bf. Role edit; rename 400 ROLE_RENAME_REFUSED; delete of a held role 409 SUBJECT_ADMIN_ROLE_IN_USE; catalogue default '*'; admin-role subjects use the admin tools with their own token under single-site permissions (admin:api:subjects:*, admin:api:roles:*). Migration 0007_root_role_administration is provisional (allocate at the join). owner- subject-policy 38/0, focused unit 220/0; controls C1-C8. Owner and root share one catalogue (policy row digest), so the demo gives owners '*' too.
+**Notes.** Decisions tenant-root-single-site-parity and root-may-edit-owner-subjects (2026-11-10). 2026-11-10 (reproduced in lane): cfae532c on 65657a62. /api/v2/authorization subjects (list/create/edit/delete) and roles (list/create) for the tenant root secret on DATA; role edit/delete return 501; store refuses construction without ownerPolicy; new nsdemo_root_writer identity. Not run: preview API boot with subjectAdmin on real PostgreSQL and Vault; browser admin page. 2026-11-10 second pass (reproduced): 165c13bf. Role edit; rename 400 ROLE_RENAME_REFUSED; delete of a held role 409 SUBJECT_ADMIN_ROLE_IN_USE; catalogue default '*'; admin-role subjects use the admin tools with their own token under single-site permissions (admin:api:subjects:*, admin:api:roles:*). Migration 0007_root_role_administration is provisional (allocate at the join). owner- subject-policy 38/0, focused unit 220/0; controls C1-C8. Owner and root share one catalogue (policy row digest), so the demo gives owners '*' too. 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH- JOIN-1110), accepted, not pushed.
 
 ### `MT-INTERNAL-LISTENER` &mdash; Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/internal-listener-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -10962,13 +10963,13 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `reports/tenancy/internal-listener-2026-11-10/README.md`
 
-**Notes.** Decisions internal-listener-ory-pattern and internal-listener-graceful- shutdown (2026-11-10). 2026-11-10 (reproduced in lane): 78ecba76 on b70ad83f. serve.internal {socket}|{host,port}, NS_SERVE_INTERNAL_*, socket default <runtime>/<roles>.sock; peers NS_<ROLE>_INTERNAL_URL|SOCKET defaulting to sockets; contracts fixed per role in internal-listener.js; endpoint-config.js and openControl removed. Join: ownership-operations must be added to OWNED/plan() for admin.
+**Notes.** Decisions internal-listener-ory-pattern and internal-listener-graceful- shutdown (2026-11-10). 2026-11-10 (reproduced in lane): 78ecba76 on b70ad83f. serve.internal {socket}|{host,port}, NS_SERVE_INTERNAL_*, socket default <runtime>/<roles>.sock; peers NS_<ROLE>_INTERNAL_URL|SOCKET defaulting to sockets; contracts fixed per role in internal-listener.js; endpoint-config.js and openControl removed. Join: ownership-operations must be added to OWNED/plan() for admin. 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
 
 ### `MT-ACTIVITY-ELIGIBILITY` &mdash; Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/activity-eligibility-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -10993,13 +10994,13 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `reports/tenancy/activity-eligibility-2026-11-10/README.md`
 
-**Notes.** Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner- facing text says alarms stop while paused. 2026-11-10 (reproduced in lane): 8f3e3c60 on b70ad83f. New lib/tenant-activity (migration 0001, paused/suspended flags, audit); evaluator and realtime consumers skip ineligible tenants; owner pause/unpause routes with audit. Not wired: API ingest/serving refusal under suspend, read blocking under pause, socket disconnect on suspend; owner-facing suspend text currently overstates (says uploads stop). 2026-11-10 second pass (reproduced): 07981b55. Suspend refuses uploads and reads (423 TENANT_SUSPENDED) and disconnects sockets; pause refuses reads/UI (423 TENANT_PAUSED), admits uploads and the credential exchange; activity tables moved to the lifecycle catalogue as migration 0007_tenant_activity with backfill (number provisional; export-expiry adds 0006, root-admin-parity an authorization 0007); provisioning writes the row in the tenant's transaction; unreadable row stops only that tenant (measured: B kept delivering); deletion request pauses, cancel restores, execution suspends. Native 33 passing; nine controls. Open: 423 vs 503 for refused uploads; deploy wiring and grants; full API/realtime role runs with activity selected; per-request read cost.
+**Notes.** Decisions activity-is-pause-suspend and owner-may-pause (2026-11-10). Owner- facing text says alarms stop while paused. 2026-11-10 (reproduced in lane): 8f3e3c60 on b70ad83f. New lib/tenant-activity (migration 0001, paused/suspended flags, audit); evaluator and realtime consumers skip ineligible tenants; owner pause/unpause routes with audit. Not wired: API ingest/serving refusal under suspend, read blocking under pause, socket disconnect on suspend; owner-facing suspend text currently overstates (says uploads stop). 2026-11-10 second pass (reproduced): 07981b55. Suspend refuses uploads and reads (423 TENANT_SUSPENDED) and disconnects sockets; pause refuses reads/UI (423 TENANT_PAUSED), admits uploads and the credential exchange; activity tables moved to the lifecycle catalogue as migration 0007_tenant_activity with backfill (number provisional; export-expiry adds 0006, root-admin-parity an authorization 0007); provisioning writes the row in the tenant's transaction; unreadable row stops only that tenant (measured: B kept delivering); deletion request pauses, cancel restores, execution suspends. Native 33 passing; nine controls. Open: 423 vs 503 for refused uploads; deploy wiring and grants; full API/realtime role runs with activity selected; per-request read cost. 2026-11-10: joined into codex/batch- join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
 
 ### `MT-EXPORT-EXPIRY` &mdash; Key destruction removes the export artifact file in the same audited step
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/export-expiry-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11024,13 +11025,13 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `reports/tenancy/export-expiry-2026-11-10/README.md`
 
-**Notes.** Decision key-destruction-removes-export (2026-11-10). 2026-11-10 (reproduced in lane): 701eba6f on b70ad83f. Migration 0006 adds artifact_removal (removed/absent/failed) and its code; destroy refuses without a remover. Partial failure: keys always destroyable, file outcome audited. Open: retry a failed removal on repeat destroy (built: no); interrupted-after-removal records absent. Join note: production wiring must pass removeArtifact; operator role needs UPDATE on the two new columns; other lifecycle migrations renumber after 0006.
+**Notes.** Decision key-destruction-removes-export (2026-11-10). 2026-11-10 (reproduced in lane): 701eba6f on b70ad83f. Migration 0006 adds artifact_removal (removed/absent/failed) and its code; destroy refuses without a remover. Partial failure: keys always destroyable, file outcome audited. Open: retry a failed removal on repeat destroy (built: no); interrupted-after-removal records absent. Join note: production wiring must pass removeArtifact; operator role needs UPDATE on the two new columns; other lifecycle migrations renumber after 0006. 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
 
 ### `MT-ADMIN-LIFECYCLE-FIT` &mdash; Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/admin-lifecycle-20261110` |
 | base | `codex/ownership-role-20261110@1376c2946ce71078b477d4e0f2e4d428f29778ed` |
@@ -11056,7 +11057,7 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `reports/tenancy/admin-lifecycle-2026-11-10/README.md`
 
-**Notes.** Decisions restore-census-and-ownership-phase and admin-plane-same-address- different-port (2026-11-10). 2026-11-10 (reproduced in lane): 26b5349d on 1376c294. Census exempts backends whose identity holds no privilege on CLINICAL tables (lib/tenant-lifecycle/clinical-catalogue.js), checked in the census SQL; ownership refuses OWNERSHIP_TENANT_INACTIVE via tenantPhase (window lock held shared). Not run: clinical logical restore with admin connected. 2026-11-10 second pass (reproduced): 9ef3ffa4. Census also refuses non-participants that can write the insertion-ordinal or write-clock tables (controls K1-K4). Clinical logical restore with admin connected is blocked by BF-230 (driver omits ledgerNamespace; operator lacks the key-retention grant); a probe with both fixed ran to activated. Fix routed to this lane. 2026-11-10 third pass (reproduced): 66655756 fixes BF-230 (565a96aa operator column grant, ports to nightscout-deploy); native fit suite 6 passing, focused family 228/0. Join note: the example in lib/tenant-lifecycle/README.md calls importArtifact without ledgerNamespace (the export-expiry lane also edits that README); fix at the join.
+**Notes.** Decisions restore-census-and-ownership-phase and admin-plane-same-address- different-port (2026-11-10). 2026-11-10 (reproduced in lane): 26b5349d on 1376c294. Census exempts backends whose identity holds no privilege on CLINICAL tables (lib/tenant-lifecycle/clinical-catalogue.js), checked in the census SQL; ownership refuses OWNERSHIP_TENANT_INACTIVE via tenantPhase (window lock held shared). Not run: clinical logical restore with admin connected. 2026-11-10 second pass (reproduced): 9ef3ffa4. Census also refuses non-participants that can write the insertion-ordinal or write-clock tables (controls K1-K4). Clinical logical restore with admin connected is blocked by BF-230 (driver omits ledgerNamespace; operator lacks the key-retention grant); a probe with both fixed ran to activated. Fix routed to this lane. 2026-11-10 third pass (reproduced): 66655756 fixes BF-230 (565a96aa operator column grant, ports to nightscout-deploy); native fit suite 6 passing, focused family 228/0. Join note: the example in lib/tenant-lifecycle/README.md calls importArtifact without ledgerNamespace (the export-expiry lane also edits that README); fix at the join. 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
 
 ### `DEPLOY-TREE-HOME` &mdash; Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README
 
@@ -11091,7 +11092,7 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/consumer-refusal-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11116,13 +11117,13 @@ alarm-readiness items, and the seam branch refresh.
 
 - `reports/tenancy/consumer-refusal-2026-11-10/README.md`
 
-**Notes.** 2026-11-10 (reproduced): 1adb17f8 on b70ad83f. Open: the outputRevision freshness-gate path (component.js:38-43) needs a maintainer decision (wake the consumer on timer publications, or compare effects). 2026-11-10 second pass (reproduced): 956d0940. Revision only on content change (digest of checkpoint, progress, emitted, requested, properties); alarm repeat on the tenant heartbeat (60 s default) with ack/snooze silence and outbox suppression unchanged; targeted wake. Deployed intervals: deliveries per active alarm 60/min -> 1/min, selections 360 -> 125/min, 0 refusals; 150 ms churn 8/8 delivered. Repeat covers any requested notification, as single-site processing does. Handed to the batch join.
+**Notes.** 2026-11-10 (reproduced): 1adb17f8 on b70ad83f. Open: the outputRevision freshness-gate path (component.js:38-43) needs a maintainer decision (wake the consumer on timer publications, or compare effects). 2026-11-10 second pass (reproduced): 956d0940. Revision only on content change (digest of checkpoint, progress, emitted, requested, properties); alarm repeat on the tenant heartbeat (60 s default) with ack/snooze silence and outbox suppression unchanged; targeted wake. Deployed intervals: deliveries per active alarm 60/min -> 1/min, selections 360 -> 125/min, 0 refusals; 150 ms churn 8/8 delivered. Repeat covers any requested notification, as single-site processing does. Handed to the batch join. 2026-11-10: joined into codex/batch- join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
 
 ### `MT-TENANT-EXTENDED-SETTINGS` &mdash; Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232)
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/tenant-extended-settings-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11146,13 +11147,43 @@ alarm-readiness items, and the seam branch refresh.
 
 - `reports/tenancy/tenant-extended-settings-2026-11-10/README.md`
 
-**Notes.** Read-derived 2026-11-10. Survey every plugin's extended-settings reads first. 2026-11-10 (reproduced): 2f1ae027 on b70ad83f; joins the next batch. Open: owner editing of plugin alert enables after the first preview (documents settle only the first preview); devicestatus.advanced defaults true on a single site but is unset for a tenant (read-derived, env.js:396 vs receiveddata.js:159).
+**Notes.** Read-derived 2026-11-10. Survey every plugin's extended-settings reads first. 2026-11-10 (reproduced): 2f1ae027 on b70ad83f; joins the next batch. Open: owner editing of plugin alert enables after the first preview (documents settle only the first preview); devicestatus.advanced defaults true on a single site but is unset for a tenant (read-derived, env.js:396 vs receiveddata.js:159). 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+
+### `MT-BATCH-JOIN-1110` &mdash; Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance
+
+| | |
+|---|---|
+| state (claimed) | `ready-to-push` |
+| repo | `cgm-remote-monitor` |
+| branch | `codex/batch-join-20261110` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `externals/work/crm-batch-join-20261110` |
+| semver | `n/a` |
+| review | maintainer |
+| register | `BF-229`, `BF-230`, `BF-231`, `BF-232` |
+
+**Blast radius.** Fast-forward of #8898 by 37 commits: internal listener, pause/suspend, export expiry, admin lifecycle fit (BF-230), root admin parity (BF-229), consumer revision and repeat clock (BF-231), tenant extended settings (BF-232), and seven join repairs.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- `[unit]` _(cwd: `externals/work/crm-batch-join-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-extended-settings.test.js tests/tenant-activity.test.js tests/root-admin.test.js tests/serve-listeners.test.js tests/notification-producer.test.js`
+  - Lane unit tests on the joined head 16a1fc2d: 62 passing. Full campaign on frozen 3cd1c487 and delta campaign on 16a1fc2d (all 0 failing, prcheck OK) in reports/tenancy/batch-join-2026-11-10/16a1fc2d-acceptance/README.md.
+
+**Evidence.**
+
+- `reports/tenancy/batch-join-2026-11-10/16a1fc2d-acceptance/README.md`
+
+**Notes.** 2026-11-10: accepted, not pushed. Frozen 3cd1c487: unit 3167, dom 205, dependency 368/2, core 319, harness 99, integration 3643/593, stress 18, browser 686, corpus 596/1 (54 suites), OIDC matrix 9/9 with three controls. Final 16a1fc2d adds BF-232 (environment.js only; production bundle byte- identical): unit 3176, the other tiers re-run, 18 environment-reaching corpus suites 160/1. Open follow-ups: activity selections and grants in the demo config; export-expiry removeArtifact production wiring; API ingest refusal and socket disconnect under suspend are wired in core but not in the deploy demo.
 
 ### `MT-OWNER-LAST-GUARD` &mdash; M6b follow-up: refuse revoking the last usable owner's subject (BF-229)
 
 | | |
 |---|---|
-| state (claimed) | `in-progress` |
+| state (claimed) | `ready-to-push` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/m6b-followups-20261110` |
 | base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
@@ -11177,7 +11208,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `reports/tenancy/m6b-followups-2026-11-10/README.md`
 
-**Notes.** 2026-11-10 (reproduced in lane): 65657a62 on b70ad83f. Joins the next #8898 candidate with the internal-listener reshape, deploy-tree move and ownership- in-admin-role lane. Two related decision questions from the same lane (legacy multi-mode writer without ownerPolicy; export-artifact expiry) are with the maintainer.
+**Notes.** 2026-11-10 (reproduced in lane): 65657a62 on b70ad83f. Joins the next #8898 candidate with the internal-listener reshape, deploy-tree move and ownership- in-admin-role lane. Two related decision questions from the same lane (legacy multi-mode writer without ownerPolicy; export-artifact expiry) are with the maintainer. 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT- BATCH-JOIN-1110), accepted, not pushed.
 
 ### `MT-KEY-RETENTION` &mdash; M6b: 30-day retained-key destruction and after-window refusal
 

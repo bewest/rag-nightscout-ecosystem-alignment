@@ -1,0 +1,112 @@
+
+> nightscout@16.0.0 test:tiers
+> node scripts/test-tiers.js check
+
+# 626 test files, 8 tiers: ok
+tiers exit 0
+Write intent: 13 enrolled module(s) write only through write(intent); 3 read(s) by identifier-match
+write-intent exit 0
+Write boundary: all 9 adapter entry points and canonical socket delegation checked
+write-boundary exit 0
+
+> nightscout@16.0.0 lint
+> eslint lib
+
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/api/entries/index.js
+  663:16  warning  Found non-literal argument to RegExp Constructor  security/detect-non-literal-regexp
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/cli/commands/healthcheck.js
+  93:19  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  96:23  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/cli/commands/migrate.js
+  42:75  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/cli/index.js
+  100:12  warning  Found statSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/middleware/express-extension-to-accept.js
+  21:16  warning  Found non-literal argument to RegExp Constructor  security/detect-non-literal-regexp
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/migrations/catalogue.js
+  62:39  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/secrets/vault-token-source.js
+  23:21  warning  Found readFile from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/app.js
+   13:7   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   15:7   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+   17:7   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  213:21  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  324:23  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  325:23  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/client-ip.js
+  93:19  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+  94:24  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/enclave.js
+  23:9   warning  Found existsSync from package "fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  24:14  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/env.js
+   82:12  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   83:15  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   86:16  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  290:14  warning  Found readFileSync from package "fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/internal-api/transport.js
+  114:51   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  116:7    warning  Found realpathSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  186:11   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  193:11   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  230:16   warning  Found existsSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  231:23   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  232:85   warning  Found unlinkSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  234:24   warning  Found existsSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  235:23   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  236:101  warning  Found unlinkSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  248:19   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  249:5    warning  Found chmodSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  254:5    warning  Found linkSync from package "node:fs" with non literal argument at index 0,1    security/detect-non-literal-fs-filename
+  254:67   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  273:22   warning  Found lstatSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/query.js
+  442:12  warning  Found non-literal argument to RegExp Constructor  security/detect-non-literal-regexp
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/realtime/contract.js
+  14:16  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  16:17  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/serve/admin-config.js
+  84:18  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  85:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/serve/evaluator-config.js
+  106:20  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  108:21  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/serve/internal-listener.js
+  55:9  warning  Found mkdirSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/serve/owner-preview-config.js
+  91:18  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  92:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/serve/preview-config.js
+  51:18  warning  Found statSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  53:19  warning  Found readFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/tenant-app/data-access.js
+  80:11  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+  80:55  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+
+<alignment>/externals/work/crm-batch-join-20261110/lib/server/tenant-app/derived-frame.js
+  23:20  warning  Found non-literal argument in require  security/detect-non-literal-require
+
+✖ 52 problems (0 errors, 52 warnings)
+
+lint exit 0

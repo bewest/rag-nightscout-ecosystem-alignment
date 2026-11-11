@@ -134,7 +134,7 @@ acceptance.
 
 ## 7. Operator- and contributor-facing text changed (on the branch)
 
-- `docs/architecture/multitenant-api-preview.md`: the per-tenant `extendedSettings` paragraph. It
+- cgm-remote-monitor's architecture document `multitenant-api-preview.md`: the per-tenant `extendedSettings` paragraph. It
   explains that the stale-data alarm is off until the operator enables it, as on a single site, and lists
   what is not carried.
 - `docs/m5-evaluator-preview.md`: the tenants row and the refusal sentence.

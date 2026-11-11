@@ -1,0 +1,576 @@
+== codex/batch-join-20261110 already contains official/dev 4a482627
+== the push would send 571 commit(s) on official/dev 4a482627:
+   16a1fc2d Ben West: Join the tenant extended settings lane (2f1ae027, BF-232)
+   2f1ae027 Ben West: Carry operator plugin extended settings into the tenant environment (BF-232)
+   3cd1c487 Ben West: Count evaluator cycles in the M5 recovery proof where it assumed a revision per cycle
+   99dfe627 Ben West: Measure tenant B's unaffected evaluator by cycles, not output revisions, in the activity suite
+   57d59c77 Ben West: List the consumer load suite in the multitenant corpus and recount it
+   c00dabe2 Ben West: Join the consumer refusal lane's final head (956d0940, BF-231 option c)
+   956d0940 Ben West: Change the evaluator revision only with content; repeat alarms on the tenant heartbeat
+   beefaad2 Ben West: Give the owner-policy ownership races the lifecycle control namespace the admin lifecycle lane requires
+   1d39c924 Ben West: Report evaluator cycles and consumer passes and selections in health
+   10558a61 Ben West: List the activity and timer-churn suites in the multitenant corpus and recount it
+   f99e529f Ben West: Pass ledgerNamespace in the lifecycle README's importArtifact example
+   1eee9e46 Ben West: Resolve serve.internal only for roles that have one, so the admin role starts on its own plane
+   22f069e5 Ben West: Join the consumer refusal lane (1adb17f8, first pass)
+   7dbbd334 Ben West: Join the export expiry lane (701eba6f)
+   e711f285 Ben West: Join the activity eligibility lane (07981b55)
+   89188a4b Ben West: Join the internal listener lane (78ecba76)
+   95dfe1f2 Ben West: Join the admin lifecycle lane (66655756, includes the ownership role lane 1376c294 and BF-230)
+   85b8f045 Ben West: Join the root admin parity lane (165c13bf, includes BF-229 65657a62)
+   07981b55 Ben West: Wire the adopted pause/suspend semantics; provision an activity row for every tenant; pause on deletion request
+   1adb17f8 Ben West: Select again when a newer evaluator output makes a producer selection stale
+   165c13bf Ben West: Default the compose demo catalogue to all tenant data and let its root writer edit and delete roles
+   df7252d1 Ben West: Let root edit and delete roles and admin-role subjects use the admin tools; default the root catalogue to all tenant data
+   66655756 Ben West: Pass the key-retention ledger to the Compose restore driver (BF-230)
+   565a96aa Ben West: Grant the deployment operator the restore's key-retention reads and updates
+   9ef3ffa4 Ben West: Refuse a restore beside a non-participant that can write the restore's counters
+   78ecba76 Ben West: Select the blanket-window control mutant by its file name in the Compose instrument
+   8f3e3c60 Ben West: Build evaluator and consumer work lists from durable pause/suspend state; add owner pause/unpause
+   efb58a0f Ben West: Serve each role process's internal contracts on one serve.internal listener and drain it on shutdown
+   cfae532c Ben West: Grant the compose demo's root subject writer least privilege
+   db93072e Ben West: Give a tenant's API_SECRET single-site admin tools parity through the owner-aware writer
+   26b5349d Ben West: Let a restore proceed beside the admin role; refuse ownership changes on a non-active tenant
+   bb5753b0 Ben West: Let the admin listener share the consumer listener's address on another port
+   701eba6f Ben West: Remove the export artifact file in the key-destruction step and audit the outcome
+   1376c294 Ben West: Refuse a CREATEROLE ownership identity in the admin role's native suite
+   65657a62 Ben West: Refuse revoking the last usable owner's subject on the owner plane
+   b726b6a0 Ben West: Compose ownership operations into the multitenant admin role
+   e6f6e248 Ben West: Add the ownership_operator identity and grants to the multitenant deployment plan
+   b70ad83f Ben West: Set a fresh API secret before booting the provisioning test's server
+   3545236d Ben West: Register the single-site OIDC provisioning test in the integration tier
+   ea8c6e5e Ben West: Join oidc-single-provision lane into the #8898 candidate
+   4b81f59d Ben West: Exercise runtime.single end to end: boot provisioning, local key, email scope and the HTTP sign-in routes
+   665119fb Ben West: Pin the ownership operation paths in the public-port isolation test
+   29244d88 Ben West: Join ownership-ops lane into the #8898 candidate
+   54c8de1d Ben West: Join key-retention lane into the #8898 candidate
+   463ee77d Ben West: Join listener-composition lane into the #8898 candidate
+   7b30a6f2 Ben West: Iterate repeated access-token parameters as a typed candidate list
+   d69b873a Ben West: Compose private service contracts on one listener with per-operation rules
+   61af8beb Ben West: Document the single-site identity list, fallback role and local signing key
+   ed46cc43 Ben West: Retain tenant keys 30 days after deletion; operator destroy; refuse late restore
+   c2869b89 Ben West: Single-site OIDC: identity list, fallback role, current subject roles and local signing
+   6ee8fb04 Ben West: Add operator-assisted tenant ownership: list, add co-owner, transfer and recover over a private internal service
+   692bd507 Ben West: Clarify private API categories, bindings and edge authority
+   3a534e89 Ben West: Document internal schemas and component network interfaces
+   dc795bd1 Ben West: Define internal service contracts and separate private transports
+   0fc5abf9 Ben West: Refuse non-string access tokens in subject lookup; dispatch IPC only to a function
+   74036ba6 Ben West: Bring the multitenant opt-in suites up to the owner capability candidate
+   887c7357 Ben West: Drop the unused initial value in the OIDC matrix stage runner
+   2c289a0c Ben West: Follow the wall clock in the evaluator alarm suppression test
+   f9702e56 Ben West: Fix the two lint errors in the human-session tests
+   861a5d11 Ben West: Probe the OIDC browser session only on pages whose server mounted OIDC
+   463e2806 Ben West: Follow the wall clock in the next-cycle owner settings evaluator test
+   cc1789bd Ben West: Admit the OIDC human-session tables to the tenant lifecycle as a human_session family
+   521c35e0 Ben West: Keep socket writes registered from the canonical factory; refresh human authority through a beforeWrite hook
+   80f00394 Ben West: Dispatch private socket operations through a fixed Map
+   9b2c5e50 Ben West: Share the Vault token sink reader across the human access and owner credential loaders
+   7ec700a5 Ben West: Merge branch 'codex/vault-token-file-20261109' into codex/m6a-join-20261109
+   3b09131e Ben West: Add the disposable native harness for the nine-stage owner/OIDC matrix
+   2151cc5b Ben West: Accept Vault 1.17+ 200 reply on Transit key creation in the vault native probe
+   0c547958 Ben West: Read the preview Vault token from a sink file per call as an alternative to tokenEnv
+   c0a67b69 Ben West: Require native Transit stages and bounded fixture custody
+   96fd87ff Ben West: Model owner issuance audit migration in operations fixtures
+   124699bd Ben West: Merge commit 'ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364' into codex/owner-oidc-combined-20261107
+   ed2ced00 Ben West: Preserve tenant Host in Compose demo HTTP requests
+   39f4afb1 Ben West: Merge commit '872db6e3f82f7d97b3ad252f45b00715586cfdb2' into codex/tenant-order-integration-20261107
+   872db6e3 Ben West: Pin producer-death clinical replay to the committed reading
+   b45d7200 Ben West: Align tenant operations fixtures with tenant-local counters
+   06d16e78 Ben West: Use resolved loopback hostname for owner HTTPS fixtures
+   bc5d7bd1 Ben West: Compose reserved owner checks into shared human HTTPS instrument
+   01ed7c92 Ben West: Admit explicit wildcard owner catalogues in preview trust fixtures
+   cd718d99 Ben West: Merge commit 'eadf41f889e48ab6762724e62d4e6c85d50fb654' into codex/next-batch-integration-20261107
+   de7a7cd8 Ben West: Merge commit 'ce4aa263c4ce3cfc0ec2988684cee78cc1b69955' into codex/next-batch-integration-20261107
+   c23cf1f3 Ben West: Allow restore claims alongside operation registration references
+   eadf41f8 Ben West: Bind human sessions to asymmetric access authority
+   a1e14728 Ben West: Merge branch 'codex/tenant-startup-http-refusal-20261107' into codex/tenant-order-integration-20261107
+   fba5281a Ben West: fix: preserve tenant startup admission HTTP refusals
+   bd99f549 Ben West: Classify provider server failures as unavailable during code renewal
+   b391d96f Ben West: Model unconditional outbox metadata in evaluator control readiness fixture
+   ce4aa263 Ben West: Check issuance audit migration at selected owner startup
+   6f87a27b Ben West: Document owner capability and classify focused source verification
+   ed998797 Ben West: Merge branch 'codex/owner-settings-next-20261107' into codex/owner-capability-next-20261107
+   01792530 Ben West: Extend owner source oracles and prepare native revoke fixtures
+   fc21fe33 Ben West: Prepare native persistence and browser OIDC acceptance fixtures
+   6a230b86 Ben West: Implement projected owner settings and retained-input evaluator reconfiguration
+   6e0a816e Ben West: Merge branch 'codex/owner-credential-issuance-next-20261107' into codex/owner-capability-next-20261107
+   3ef957f2 Ben West: Compose owner credential issuance and verify source transaction boundaries
+   9cdb77f5 Ben West: Admit legacy issuance in secrets audit and exact-reference policy
+   10164e77 Ben West: Merge branch 'codex/owner-shiro-implication-20261107' into codex/owner-capability-next-20261107
+   68f35cd0 Ben West: Add fenced owner subject and role management source paths
+   00645d63 Ben West: Enforce owner ceilings through Shiro language implication
+   b7a66063 Ben West: Add fenced tenant legacy credential issuance boundary
+   4935aa77 Ben West: Publish Compose nginx through a separate edge bridge
+   275c238c Ben West: Record owned HTTPS fixture process and listener identities
+   051eea0b Ben West: Bound HTTPS fixture ports and observed resource cleanup
+   b486f6f6 Ben West: Implement optional shared OIDC human sessions and current authority adapters
+   151de024 Ben West: Document independent tenant startup and pending restart acceptance
+   6a97018d Ben West: Allow tenant-local startup while another tenant is suspended
+   b029f5d8 Ben West: Link the separate-role Compose and restore preview from the README
+   d52b86f7 Ben West: Merge commit '2a1574e45cdd97853a3e39038e5afabfacfedb85' into codex/tenant-order-integration-20261107
+   5da2566d Ben West: Refresh operator activity snapshot before cohort census
+   2a1574e4 Ben West: Exchange Compose demo subject credentials before API3 requests
+   984ac56d Ben West: Correct Compose bootstrap file ownership documentation
+   05e04d59 Ben West: Support classic Docker ignore rules and final TCP database readiness
+   2f6dfe8c Ben West: Redact synchronous bootstrap configuration failures
+   62a22bfc Ben West: Link the shared-role restart and restore recovery boundary
+   d5e4bc15 Ben West: Merge commit '28c4cb12d80a2bb2c16022ca9adcaa9e1d49f744' into codex/compose-deployment-20261107
+   28c4cb12 Ben West: Document suspended-tenant shared-role restart boundary
+   2bc5d6e9 Ben West: Admit selected control reads in every suppression snapshot
+   76789619 Ben West: Keep deployment acceptance status in the alignment release record
+   cdcf2823 Ben West: Require a matching built image before deployment startup
+   eb668dc0 Ben West: Capture resolved browser targets during the deployment image build
+   219941f1 Ben West: Preserve the source browser target policy in Compose images
+   684cda29 Ben West: Strip unused credential headers from UI upstream requests
+   e1910f96 Ben West: Merge commit '78273b2f75129d162a2b589056ee9812056f9cfb' into codex/compose-deployment-20261107
+   ee24938f Ben West: Build deployment images from verified committed source archives
+   78273b2f Ben West: Refuse logical restore behind known captured history floors
+   1235614b Ben West: Require complete participant readiness before demo mutations
+   59ac1439 Ben West: Order private role startup on listener and IPC readiness
+   49764092 Ben West: Merge commit 'a17df2bfdce682b808e3df883e486c071c4b6215' into codex/tenant-order-integration-20261107
+   7624607d Ben West: Pin local deployment images and account for Vault volumes
+   a17df2bf Ben West: test: read raw typed clock seeds through actual port API
+   2d014a96 Ben West: Wait for verified Vault TLS readiness before bootstrap
+   8ad354dc Ben West: Merge branch 'codex/compose-provisioning-20261107' into codex/compose-deployment-20261107
+   9d202c9d Ben West: Restrict image context and connect explicit operator configuration
+   48cf6c8b Ben West: Add explicit multitenant Compose provisioning and credential boundaries
+   6fad09a2 Ben West: Merge branch 'codex/compose-restore-demo-20261107' into codex/compose-deployment-20261107
+   3cb35f8a Ben West: Merge branch 'codex/compose-ui-20261107' into codex/compose-deployment-20261107
+   32d2fdf1 Ben West: Add isolated Compose services and explicit deployment preparation
+   e358a739 Ben West: Add explicit tenant-local restore demonstration driver
+   20b9c1a1 Ben West: Add DB-less multitenant browser UI and same-origin nginx ingress
+   7899ac48 Ben West: Merge commit '21eb75dc5b013d545197e651c660cf83dbd7bc70' into codex/tenant-order-integration-20261107
+   21eb75dc Ben West: test: isolate commit clock control from insertion allocation
+   197a1d9b Ben West: Merge commit 'a5a411afca1804b5d62b93ade5b822265d967617' into codex/tenant-order-integration-20261107
+   c3e6b85b Ben West: Merge commit '49977f8999720be97f85b31b398cbf3b233fa516' into codex/tenant-order-integration-20261107
+   a5a411af Ben West: Own the views equality fixture secret and restore failed boot environment
+   7bd906c1 Ben West: Bind foreign tenant seed in identifier race fixture
+   49977f89 Ben West: test: retain socket migration prefix checks after tenant counters
+   cbbe92fc Ben West: Model IPC response finish in canonical profile wire fixture
+   3cd41d15 Ben West: Admit fixed cohort operations through private IPC client
+   e9713b6e Ben West: Merge commit '43311a200b23b0f7174012ebff9d195f391a8308' into codex/tenant-order-integration-20261107
+   43311a20 Ben West: Bind local restore census to its operator datastore
+   8e5cd72a Ben West: Merge commit '38c5c76c77917a868c4c4e614d68588901b797f2' into codex/tenant-order-integration-20261107
+   ec90ca66 Ben West: Document logical tenant restore and retained clock authority
+   38c5c76c Ben West: Merge commit 'c9fe924315974a828213e7614e5b766e40cfad49' into codex/tenant-cohort-review-20261107
+   3a4d225f Ben West: Coordinate fixed operation cohorts across private process endpoints
+   a43733de Ben West: Reconcile tenant restore through forward history changes and deletions
+   c9fe9243 Ben West: Pin restore participant identities through controller lifetime
+   efa429e3 Ben West: State operation cohort census and deployment scope limits
+   05cff843 Ben West: Merge original cohort composition review and lifetime controls
+   30fa5e3e Ben West: Harden selected operation cohort admission and lifetime controls
+   e7014462 Ben West: Merge commit 'facc5792c10bcf22d5dbd2d34de4e4498b0638f3' into codex/tenant-order-integration-20261107
+   facc5792 Ben West: Defer restore effects until acknowledged outer commit
+   b5250edf Ben West: Merge commit '917a6cf0' into codex/tenant-order-integration-20261107
+   917a6cf0 Ben West: Retain restore control records and explicit private counter ACLs
+   79bdaea4 Ben West: Merge commit '771951b1013a254bcadb32f942753a4a313410b5' into codex/tenant-order-lifecycle-20261107
+   92641bd0 Ben West: Merge commit '5c8044c1' into codex/tenant-order-integration-20261107
+   e09f7c40 Ben West: Merge commit 'c7a0b346086fc25742afe139a7cc2e9fef8e2673' into codex/tenant-order-integration-20261107
+   c1e9581e Ben West: Measure populated tenant-order upgrades through migration runner
+   4677ea28 Ben West: Merge commit 'c7a0b346086fc25742afe139a7cc2e9fef8e2673' into codex/tenant-order-lifecycle-20261107
+   c7a0b346 Ben West: Add tenant-bound private restore controller
+   5c8044c1 Ben West: Integrate tenant insertion counters with lifecycle and recovery inventory
+   498e0c93 Ben West: Merge commit '771951b1013a254bcadb32f942753a4a313410b5' into codex/tenant-cohort-review-20261107
+   9f5e90c9 Ben West: Merge commit '771951b1013a254bcadb32f942753a4a313410b5' into codex/tenant-order-integration-20261107
+   f0905caa Ben West: Compose explicit operation-window cohort through preview role lifetimes
+   771951b1 Ben West: Match PostgreSQL policy OID metadata without relaxing tenant checks
+   f7079ae4 Ben West: Preserve physical admission predicate diagnostics for native probes
+   9abd38e8 Ben West: Require corrected tenant binding function during physical admission
+   9e74ba51 Ben West: Merge commit '7bf97fa0901fd52250e47b3118f5fa909e981d01' into codex/tenant-order-readiness-20261107
+   087a3bab Ben West: Merge commit '7bf97fa0901fd52250e47b3118f5fa909e981d01' into codex/tenant-order-lifecycle-20261107
+   7bf97fa0 Ben West: Append binding SQLSTATE compatibility correction
+   b9e72540 Ben West: Enroll allocator admission and align owned preview fixture grants
+   d2ca0af4 Ben West: Advance native migration fixtures to appended conversion ledger
+   824c40f1 Ben West: Merge commit 'ce1d4f160087d1fd4b54da61a7d2ea25634934c0' into codex/tenant-order-readiness-20261107
+   4647fda5 Ben West: Admit tenant-local insertion schemas and effective runtime privileges
+   ce1d4f16 Ben West: Account for tenant counters in owned realtime resets
+   a954502a Ben West: Integrate reviewed tenant-local insertion migrations
+   9b8c827c Ben West: Merge original tenant operation-window source for joined integration
+   51e1d0be Ben West: Merge original tenant-local insertion prototype
+   f0590be3 Ben West: Document source admission and remaining native boundaries
+   e63e9f89 Ben West: Refuse executable foreign functions in lifetime admission
+   e41f612e Ben West: Bound lifetime foreign-write census by relation privilege type
+   535bf704 Ben West: Admit operation-window schema and backend-owned durable records
+   07f8c27d Ben West: Validate effective tenant insertion privileges
+   6a949798 Ben West: Prototype tenant-local insertion SQL conversion
+   53fa7912 Ben West: Keep operation-window startup metadata strictly read-only
+   e79da68d Ben West: Require the selected operation window for common PostgreSQL helpers
+   6a245c09 Ben West: Prototype tenant operation lifetimes across data and serving consumers
+   f0fac99a Ben West: Track fixture containers only after successful creation
+   8738b311 Ben West: Remove anonymous volumes with owned test fixture containers
+   e8827e1d Ben West: Synchronize full multitenant corpus inventory with operations suite
+   57817a50 Ben West: Merge commit 'ec0f4afdcef235a3ea3717a076ca6e36a0ef81af' into codex/m5-m6-joined-completion-20261107
+   ea86b926 Ben West: Merge commit 'b6bb39fd02a1cc1df8cd0c088edd8bafeb4ef952' into codex/m5-m6-joined-completion-20261107
+   3dda0242 Ben West: Register selected serving-status compatibility checks
+   b6bb39fd Ben West: Register selected serving-status compatibility checks
+   9ce4e8a2 Ben West: Expose admitted API serving state to selected tenant status
+   10e182b4 Ben West: Expose admitted API serving state to selected tenant status
+   f85f1579 Ben West: Register bounded browser diagnostics checks
+   e7646b59 Ben West: Register bounded browser diagnostics checks
+   9647d440 Ben West: Bound browser diagnostic snapshots without replacing wait failures
+   ec645e8f Ben West: Capture bounded browser fixture stage diagnostics before teardown
+   b6435b99 Ben West: Bound browser diagnostic snapshots without replacing wait failures
+   17c5f460 Ben West: Capture bounded browser fixture stage diagnostics before teardown
+   519fbc71 Ben West: Retain live process identity across terminal zombie samples
+   ec0f4afd Ben West: Retain live process identity across terminal zombie samples
+   43947bc5 Ben West: Register selected socket composition checks
+   3cd2de2e Ben West: Register selected socket composition checks
+   f7965717 Ben West: Adapt selected socket write steps to trusted preview ports
+   17397a25 Ben West: Adapt selected socket write steps to trusted preview ports
+   9298d793 Ben West: Bind SQL fixture grants to explicit OLD and CURRENT catalogues
+   a6a5cb42 Ben West: Register generated timestamp parity checks
+   be391ee5 Ben West: Register generated timestamp parity checks
+   6c379161 Ben West: Validate six-domain socket parity against observed timestamp contracts
+   d2eca7ef Ben West: Validate six-domain socket parity against observed timestamp contracts
+   6a1770c8 Ben West: Order destructive execution authority before lifecycle row locks
+   96f174f8 Ben West: Snapshot storage stage events before later socket mutation
+   0f3e764f Ben West: Snapshot storage stage events before later socket mutation
+   2854cd19 Ben West: Refuse ordinary inheritance in selected recovery relations
+   358199af Ben West: Reject unreviewed physical relations in owned recovery namespaces
+   5c736389 Ben West: Require reviewed lifecycle ledgers and refuse unsafe identity imports
+   2c1a9e95 Ben West: Prepare whole-catalogue SQL recovery instrument and causal controls
+   d180b60a Ben West: Register connected storage proof source checks
+   ed7a6ef4 Ben West: Register connected storage proof source checks
+   92a87c70 Ben West: Keep main socket revocation observation across storage proof
+   93bebdb0 Ben West: Prepare connected typed storage and current collection recovery proof
+   21590685 Ben West: Use named origins for joined role fixture transports
+   2684fa0f Ben West: Keep main socket revocation observation across storage proof
+   ea6f00db Ben West: Prepare connected typed storage and current collection recovery proof
+   a7d04d0a Ben West: Use named origins for joined role fixture transports
+   8912c445 Ben West: Keep the startup observer source test in its declared unit tier
+   353bb444 Ben West: Keep the startup observer source test in its declared unit tier
+   bdab1511 Ben West: Register private startup observer contract checks
+   f7b33d26 Ben West: Register private startup observer contract checks
+   dc579475 Ben West: Grant selected alarm ledger read and observe private API startup stages
+   0b2a055b Ben West: Grant selected alarm ledger read and observe private API startup stages
+   97ec2e70 Ben West: Preflight complete owned bootstrap reset FK closure
+   693ca4b8 Ben West: Preflight complete owned bootstrap reset FK closure
+   b9f88caa Ben West: Include operator recovery suite in the enabled multitenant corpus
+   94c09afd Ben West: Merge commit '0627fdbd6646d3af0dd7ad595922658080fe7cba' into codex/m5-m6-joined-completion-20261107
+   0627fdbd Ben West: Preserve separate consumer checkpoint catalogue instances
+   f4e3f7e7 Ben West: Register native consumer provenance and ACL restoration checks
+   5b5d5b1e Ben West: Correct lifecycle native bucket and readiness error oracles
+   613123a9 Ben West: Repair joined consumer observations and narrow ACL restoration
+   8bb5c6d2 Ben West: Declare physical consumer oracle fixture coverage
+   3667cf91 Ben West: Register committed consumer physical oracle checks
+   42eaf4e2 Ben West: Assert consumer retry and cold clear from committed physical boundaries
+   3b9f7c2e Ben West: Register exact PUBLIC policy metadata compatibility checks
+   fd160fc6 Ben West: Merge commit 'af6b180f300689841b650b54e8e5297057203c34' into codex/m5-runtime-completion-batch-20261106
+   73423d6a Ben West: Merge commit '32e8ea3f26492886d19d71c2711aebe6697d96af' into codex/m5-runtime-completion-batch-20261106
+   e048b652 Ben West: Merge commit '0efe28d625864fbe8cd7c0b8c9cc4e05864f845e' into codex/m5-runtime-completion-batch-20261106
+   0efe28d6 Ben West: Recognize exact PUBLIC OID representations in readiness metadata
+   af6b180f Ben West: Pin the exact executable for named browser fixtures
+   32e8ea3f Ben West: Align role bootstrap image phase and credential interfaces
+   b9c6c973 Ben West: Merge commit 'af89ac0d5731e034ca89fe380c6d6ead3adb5488' into codex/m5-runtime-completion-batch-20261106
+   af89ac0d Ben West: Isolate actual fixture protocol in its explicit synthetic environment
+   e7863477 Ben West: Merge commit 'ee87cc2f07b664bcaf52d890aad556bb7f7b4730' into codex/m5-runtime-completion-batch-20261106
+   9fcc61d3 Ben West: Register joined runtime setup and metadata evidence checks
+   c1a45568 Ben West: Merge commit '835cd8e08e030e85f257c3f477191e9f2099bd0d' into codex/m5-runtime-completion-batch-20261106
+   ee87cc2f Ben West: Prepare independent cold evaluator and realtime fixture bounds
+   835cd8e0 Ben West: Prepare joined realtime epoch and durable consumer acceptance drivers
+   c60461b9 Ben West: Merge commit '6fda0e545f54d0cd36b9fa3dd9d5293901316e7a' into codex/m5-runtime-completion-batch-20261106
+   e0eb30e1 Ben West: Merge commit '13bc2759c6f4932f9e22325319986d4ace48e417' into codex/m5-runtime-completion-batch-20261106
+   13bc2759 Ben West: Target metadata observer control at its unsafe policy row
+   d7c1842d Ben West: Merge commit '940952728129c6c832496d4d5c96ce2d36af9749' into codex/m5-runtime-completion-batch-20261106
+   7629a571 Ben West: Merge commit 'd8de92b50cb74b3302c6675e623f23b73d65579a' into codex/m5-runtime-completion-batch-20261106
+   6fda0e54 Ben West: Keep unresolved real environment flows conservative in inventory checks
+   d8de92b5 Ben West: Fence inherited consumer setup and capture bounded readiness metadata
+   e1bc6b4a Ben West: Classify executable opt-in environment reads in corpus inventory
+   79f7a9b4 Ben West: Register shared config metadata and actual reply codec checks
+   af13c716 Ben West: Merge commit '946eb72b8bacb63c72f75a2f2af46a6faeda9bb8' into codex/m5-runtime-completion-batch-20261106
+   94095272 Ben West: Use named tenant origins in the controlled realtime browser fixture
+   e3bc7825 Ben West: Merge commit 'dc1ad00018fc03307f8aceab380c29934bf98dc5' into codex/m5-runtime-completion-batch-20261106
+   7928df9b Ben West: Merge commit 'ee8d5938c9a99d368403f88a3a8448fb10f8e214' into codex/m5-runtime-completion-batch-20261106
+   946eb72b Ben West: Wait for actual evaluator CLI readiness after projection recovery
+   ee8d5938 Ben West: Bootstrap joined runtime from parent-owned service capabilities
+   dc1ad000 Ben West: Encode direct profile callbacks at the actual JSON wire boundary
+   057e9e60 Ben West: Allow owned API authority relay in joined role fixture
+   6ad27c7a Ben West: Hydrate joined fixture credentials from explicit environment references
+   fe911c33 Ben West: Recognize headless evaluator startup in joined role fixture
+   f6639061 Ben West: Merge commit 'f1e42967c58cda37a5596838b5f36044d9aa2233' into codex/m5-runtime-completion-batch-20261106
+   d3f918f4 Ben West: Declare the runtime directory fixture under test
+   f1e42967 Ben West: Attribute native timestamp and runtime-directory oracle source hashes
+   73b0a8cf Ben West: Register profile timestamp and runtime directory oracle checks
+   daa289f6 Ben West: Merge commit 'af13f525c475699bdc560dc0e9d0afdbea94a7e2' into codex/m5-runtime-completion-batch-20261106
+   6c90c397 Ben West: Merge commit '3f9f6c73867cb35fffc55af926ba5191bfc6aa9d' into codex/m5-runtime-completion-batch-20261106
+   3f9f6c73 Ben West: Validate generated profile timestamps without altering retry requests
+   af13f525 Ben West: Allow owned API authority relay in joined role fixture
+   12637321 Ben West: Identify physical consumer control outcomes explicitly
+   189e9a61 Ben West: Capture joined consumer physical observations before verdicts
+   0a2c1660 Ben West: Admit pinned notification producer state to recovery inventory
+   805522db Ben West: Hydrate joined fixture credentials from explicit environment references
+   7ae38d01 Ben West: Merge commit 'd9d88857187de63a4f6f14db4dbf07b3699d929e' into codex/m5-runtime-completion-batch-20261106
+   f4240dc3 Ben West: Recognize headless evaluator startup in joined role fixture
+   ed8bd734 Ben West: Register the joined evaluator notification consumer checks
+   d9d88857 Ben West: Preserve producer revision across JSONB object order
+   4a30424a Ben West: Merge commit '5600192558a10462c159d00ef53ba770a647765d' into codex/m5-runtime-completion-batch-20261106
+   56001925 Ben West: Compose durable evaluator realtime notification consumers
+   58d212e3 Ben West: Prepare pinned profile order recovery admission and controls
+   ad3c0b66 Ben West: Register the explicit profile order source contract
+   9fa0fc75 Ben West: Merge commit '0bf5cf6daef4bd1adc04f0e689ac179ed63283d8' into codex/m5-runtime-completion-batch-20261106
+   0bf5cf6d Ben West: Select persisted profile socket insertion order with safe catalogue admission
+   1ed24e00 Ben West: Keep parent-owned native phases outside tier and corpus test inventory
+   268ee15a Ben West: Correct the registered multitenant corpus inventory totals
+   0f395680 Ben West: Distinguish current and stale recipients in actual outbox handoff oracle
+   e202e75a Ben West: Calibrate joined tenant-isolation control against equal config identities
+   e4b7fd58 Ben West: Require actual two-tenant realtime recovery oracles
+   938dae7f Ben West: Bind native role fixtures to attested service endpoints
+   37c9afbc Ben West: Validate native profile CLI setup without opening services
+   cde6c3fc Ben West: Export the realtime native plan before CLI execution
+   f96cc3d1 Ben West: Prepare actual evaluator outbox realtime handoff and suppression native join
+   e8631f2e Ben West: Export the realtime native plan before CLI execution
+   c5b34516 Ben West: Add explicit operator deletion ceremony and pinned recovery inputs
+   8ac843b6 Ben West: Pin causal native source files and admit explicit archived control phases
+   f26ab00c Ben West: Prepare actual socket DATA parity and realtime SQL denial oracles
+   a423c1bb Ben West: Merge commit 'b1f59166d9a43a384de5145be52a8dd2e1e968be' into codex/m5-runtime-completion-batch-20261106
+   652f4500 Ben West: Prepare unchanged browser consumer oracle for actual realtime roles
+   1c564752 Ben West: Document native phase ownership and remaining joined acceptance
+   e2d9730a Ben West: Prepare actual realtime role recovery and same-origin browser fixture seams
+   b1f59166 Ben West: Prepare bounded actual profile port and Mongo differential phase
+   b463087b Ben West: Keep bound inode ownership across private socket publication failure
+   5bdae872 Ben West: Publish private realtime sockets safely and prepare owned native uncertainty phases
+   74181c27 Ben West: Register joined alarm notification and realtime checks
+   1a64d4b4 Ben West: Merge commit 'e016c882638e292344fdd91a26d4cedab7fdf3ac' into codex/m5-runtime-completion-batch-20261106
+   e016c882 Ben West: Bind alarm writer to admitted datastore and check its installed catalogue
+   51b70647 Ben West: Merge commit '7c0457766151cc9f17fc674a97c599f295e847bc' into codex/m5-runtime-completion-batch-20261106
+   e7f81ecd Ben West: Merge commit 'd06c990ca2c00e8689be5c56e37301f5c71ffc67' into codex/m5-runtime-completion-batch-20261106
+   7c045776 Ben West: Isolate refused alarm recipients without hiding transport outages
+   8e507ba5 Ben West: Fence realtime socket authorization epochs and preserve alarm precedence
+   d06c990c Ben West: Keep realtime event admission distinct from provider notification windows
+   0baca01d Ben West: Use truthful realtime handoff acceptance and characterize storage baseline
+   53ad49a4 Ben West: Merge commit '159529d6c503218b8a312fc03fb6a8c6a67ad43a' into codex/m5-runtime-completion-batch-20261106
+   771ce02e Ben West: Correct browser fixture frame binding
+   cc4b9a10 Ben West: Model populated browser caches in realtime absence control
+   b62cf17c Ben West: Add explicit same-host realtime preview and private socket forwarding
+   66f1368a Ben West: Guard outbox readiness and preserve current notification effects
+   159529d6 Ben West: Record evaluator child exits and reject forced-shutdown evidence
+   b9ffbd5b Ben West: Merge commit '2fce07d525879a64f8ceeb0939572f51cdf0938a' into codex/m5-runtime-completion-batch-20261106
+   2fce07d5 Ben West: Reuse tenant-local logical statistics for evaluator frames
+   b0ee6e94 Ben West: Prepare pinned alarm recovery extension inputs
+   3341060d Ben West: Complete coalesced evaluator requests without waiting for future ticks
+   a7f5cbf7 Ben West: Prepare full admitted deployment backup upgrade and rollback
+   d76fe56c Ben West: Retain actual table and index statistics in evaluator inputs
+   d66443ee Ben West: Compose explicit evaluator preview lifecycle and retained time cycles
+   439a1d15 Ben West: Prepare native outbox death recovery and rollback controls
+   1bdd0fb3 Ben West: Persist tenant notification requests before bounded dispatch and retries
+   e9121a6e Ben West: Release native alarm commit hold before control verdicts
+   4b34935a Ben West: Keep native revoked-actor assertion at its intended boundary
+   4d3a9025 Ben West: Record independent alarm transaction receipts in native fixture
+   96ea1dcb Ben West: Compose durable tenant alarm suppression and API acknowledgements
+   ac9987dc Ben West: Merge commit 'c48d4d197e5ae6880bb48bad78a9f0821f6fb2a8' into codex/batch-c-operations-20261106
+   8a31dd9e Ben West: Merge commit 'f77c025f8e797775faca0e179cc84fc3ca9c5874' into codex/batch-c-operations-20261106
+   14c0a593 Ben West: Merge commit 'fd827e350a185ad73c838b013b25fe889434b036' into codex/batch-c-operations-20261106
+   57d54963 Ben West: Compare reconciled JSONB state semantically
+   f54d457f Ben West: Reconcile bounded tenant current state before reference evaluation
+   a22cb784 Ben West: Merge commit '74d7b3fc25c7e3c496c438847c95e89ec7fe6061' into codex/m5-current-state-proof-20261106
+   0bcdec22 Ben West: Add executable M5 current-state uncertainty probe
+   74d7b3fc Ben West: Align settle event assertions with adopted null metadata
+   7015fbae Ben West: Merge commit 'b7002fbe761e5c9c59160bda9c800b1f74480d09' into codex/m1-m2-completion-batch-20261107
+   b7002fbe Ben West: Match held status response by stable original URL
+   071cbb12 Ben West: Merge commit '16e21747a15b157539e0da20ac22f73815150fb3' into codex/m1-m2-completion-batch-20261107
+   16e21747 Ben West: Preserve tenant scope during lazy display readiness
+   af8a9cde Ben West: Merge commit 'c5bac33ff45f0b8f11c0e9c33306617b92d07c1b' into codex/m1-m2-completion-batch-20261107
+   58a9f05f Ben West: Merge commit '2ab6712ec0a1ea51915d31dd4c9d473c5ec1e90e' into codex/m1-m2-completion-batch-20261107
+   c5bac33f Ben West: Compose explicit owner settings and isolated presentation reads
+   c48d4d19 Ben West: Document measured representative PostgreSQL recovery scope
+   2ab6712e Ben West: Prepare minimal native entries paging and importer fidelity vectors
+   a6c8cf3c Ben West: Record native server identity and per-case liveness
+   f77c025f Ben West: Isolate interrupted restore readback before lossy insert control
+   b6cd9140 Ben West: Audit and remove owned PostgreSQL fixture volumes
+   922b938f Ben West: Document admitted entries backend assertion coverage and remaining native vectors
+   386dba33 Ben West: Anchor legacy REST differential fixtures to a captured UTC day
+   f4e05487 Ben West: Complete dormant tenant backup restore and upgrade primitives
+   a7422f16 Ben West: Merge peer reader-mode removal and retain writer proof
+   98118fb2 Ben West: Drop the subject-reader clamping mode: a tenant's api-secret keeps its own tenant resource (decision of 2026-11-06)
+   e2a760bc Ben West: Remove optional subject-reader clamping and preserve legacy authority
+   fd827e35 Ben West: Fix the lifecycle ledger candidate SQL: quote the CHECK patterns
+   1acb4eee Ben West: Keep socket write gates enrolled after handler extraction
+   7255414e Ben West: Add dormant tenant lifecycle primitives: typed export, import and two-phase deletion
+   f2e7fdda Ben West: Test: a nested write whose outer transaction allocates again carries the final floor
+   4144a334 Ben West: Storage intent event: the stamp is the transaction's final floor
+   fbe25ccf Ben West: Register tests/write-intent.event-payload.test.js in the unit tier
+   e0d1101b Ben West: Tests: the intent event's tenant and stamp
+   81307bba Ben West: Storage intent event: carry the tenant and the commit stamp
+   4cd95d06 Ben West: Preserve explicit tenant Host on native owner fixture requests
+   f07804b3 Ben West: Isolate actual single Mongo socket reference in owned child
+   e202a17f Ben West: Prototype optional socket insertion-order successor capability
+   eb8671a9 Ben West: Share canonical socket DATA writes with dormant tenant API executor
+   ae48cbef Ben West: Prepare dormant credential-preserving socket forwarding core
+   911b5682 Ben West: Prepare real combined owner data listeners and reader refusal coverage
+   852f497f Ben West: Compose explicit headless tenant owner preview with current management authority
+   7f2ad18b Ben West: Compose dormant tenant clinical views from persisted typed projection
+   83582e87 Ben West: Copy replay fixture dependencies into source control scratch
+   87133959 Ben West: Repair populated restore input and preserve typed replay oracle
+   1df25fba Ben West: Prepare populated PostgreSQL dump and restore reference lab
+   4a1eb4f2 Ben West: Add dormant tenant-bound durable current-state replay
+   b1499036 Ben West: Cover selected readers during owned authority termination
+   5367b2d8 Ben West: Prepare selected owner-ceiling PostgreSQL and HTTP acceptance
+   e0454db5 Ben West: Add dormant subject reader owner-ceiling selection
+   d89a44e1 Ben West: Provision an explicit disposable test database for the corpus
+   c0e8ad3c Ben West: Preserve legacy data refusal envelopes in the tenant preview
+   863c8a2b Ben West: Preserve legacy client identity and literal slash lookups in tenant preview
+   88dfaa1b Ben West: tests: cover the role table's typed fields and describeComposition
+   d9954969 Ben West: serve: state each role's contract as fields in the role table (D23 entry condition 4)
+   801ac1c7 Ben West: Include joined clock suites in the multitenant corpus
+   34aa6b89 Ben West: Merge commit 'b7eac9bb' (B5: multitenant corpus command and CI job) into codex/b5-join-20261106
+   b7eac9bb Ben West: Corpus command runs under TZ=UTC; migration expectation reads the catalogue
+   65bb8456 Ben West: Merge commit '3532c1a46d6fc3fb2100ed7704544d278f29357b' into codex/clock-join-20261106
+   5f65449e Ben West: Merge commit '11770146b420a2aa1ccad587030bfee50a8ea0b3' into codex/clock-join-20261106
+   f2be3afa Ben West: Run the multitenant opt-in corpus in CI
+   44e0524d Ben West: Document the multitenant test corpus and its one command
+   93db7a76 Ben West: Add one command for the multitenant opt-in test corpus
+   3532c1a4 Ben West: Propagate checked-out PostgreSQL client failures
+   ef48efd6 Ben West: Require sanitized HTTP failure and surviving API worker after backend abort
+   11770146 Ben West: Propagate checked-out PostgreSQL client failures
+   48b5bcd2 Ben West: Allow passive crash monitor only on the injected writer process
+   ad37ace8 Ben West: Capture redacted bounded emitter stacks for clock fault diagnostics
+   35903069 Ben West: Preserve settings comparison normalization without unused bindings
+   ad435f98 Ben West: Record and dispose only the explicitly backend-faulted API child
+   4a15802c Ben West: Verify owner fencing upgrade preserves the three applied authority migrations
+   f83cb029 Ben West: Register owner catalogue and selected policy tests in existing tiers
+   b8bca5f1 Ben West: Report persisted effects in owner guard control failures
+   93eb4e2d Ben West: Test reviewed owner catalogue against actual Shiro implication
+   2b000429 Ben West: Bound dormant owner grants to reviewed REST operations
+   24cdcd9e Ben West: Verify owned PostgreSQL cleanup failures explicitly
+   c5287abd Ben West: Characterize proposed owner grants and transaction fencing over HTTP
+   7486e6d4 Ben West: Prototype transaction-fenced owner role assignment
+   d90532ce Ben West: Read tenant clock readiness maxima from portable JSONB
+   a8d9af9c Ben West: Require clock readiness across all admitted catalogues
+   c52887d7 Ben West: Read tenant clock readiness maxima from portable JSONB
+   6c2e6010 Ben West: Preserve primary pre-bind clock startup failure during teardown
+   c7778436 Ben West: Register private acquisition caller contract tests
+   654f1004 Ben West: Characterize overlapping private acquisition ownership and errors
+   c9b3c7ff Ben West: Share private acquisition allocation behind caller policies
+   887c4aad Ben West: Give planned clock batch distinct legacy reading keys
+   839260c8 Ben West: Correct legacy twin seed in clock characterization
+   2619a439 Ben West: Prepare optional clock-off HTTP benchmark comparison
+   20d3a717 Ben West: Classify tenant clock unit and HTTP proof tests
+   9fcc559b Ben West: Prepare independent HTTP tenant clock schedules and benchmarks
+   ab798b72 Ben West: Author real PostgreSQL tenant clock port proof
+   29432b86 Ben West: Classify tenant clock source protocol tests
+   550f50ef Ben West: Prepare opt-in tenant transaction clock prototype
+   3e76b270 Ben West: Prepare opt-in tenant transaction clock prototype
+   33870764 Ben West: Clean up only the settings fixture owned Vault mount
+   ea656d79 Ben West: Give settings differential fixture its own Vault transit mount
+   714f6c8b Ben West: Attempt every owned replica resource cleanup on failure
+   d93b7fca Ben West: Record and verify exact owned replica volume cleanup
+   bd9c3ede Ben West: Remove owned replica fixture anonymous volumes during cleanup
+   529d9c51 Ben West: Preserve authenticated wire request in replica tenant control
+   0a4a7d59 Ben West: Admit API3 scalar sort with four stable tie breakers
+   f9a8e855 Ben West: Extend settings corpus with typed identity isolation and failure cases
+   2a6eaf73 Ben West: Measure bounded REST replica behavior and history cursor limits
+   498451f0 Ben West: Capture actual settings sort and preserve immutable date inputs
+   c912a1e2 Ben West: Characterize settings sort refusal and correct common validation inputs
+   8db076b0 Ben West: Add actual settings storage differential corpus
+   1c55098a Ben West: Require the actual invalid Mongo URI rejection in its fixture
+   1350727e Ben West: Keep Mongo storage fault fixtures off the shared environment
+   3285ca40 Ben West: Preserve current default-role and missing-name authorization semantics
+   21fadecd Ben West: Assert private acquisition leaves the caller cache contents empty
+   580c1604 Ben West: Register frame acquisition and concurrent-read integration checks
+   ce680659 Ben West: Keep acquisition fixtures within configured lint rules
+   4f29e6a3 Ben West: Characterize actual bounded views and tenant frame acquisition
+   fa10eb8b Ben West: Allow owned Mongo dependency and assert actual read egress attempts
+   c8f80174 Ben West: Always restore frame read privileges and relations after request failure
+   55d21684 Ben West: Restrict frame read observations to document SELECTs
+   b675ddf5 Ben West: Characterize concurrent tenant frame reads and whole-response failure
+   ab09297b Ben West: Wire tenant-local public token verification into explicit API preview
+   44331668 Ben West: Pin legacy commit fixtures to a timezone-independent offset
+   e5796b32 Ben West: Register identifier index race differential in full integration tier
+   163f94c8 Ben West: Measure deterministic identifier index races across Mongo and PG HTTP
+   a955b914 Ben West: Share PostgreSQL intent projection lookup and commit-event mechanics
+   bc4ee1a9 Ben West: Separate preview domain metadata from PostgreSQL composition and storage failures
+   1ee1f737 Ben West: Register imported identity differential in full integration tier
+   a05e228d Ben West: Characterize imported identity fallback through Mongo and PG HTTP
+   d4570e58 Ben West: Limit event subscriber guard to executable sources and clarify no-op events
+   d1d8c520 Ben West: Register storage port and management HTTP integration suites
+   ca83906a Ben West: Refuse malformed subject management path parameters
+   f94e2d4a Ben West: Add dormant separately authenticated subject management HTTP
+   35dfe5e3 Ben West: Characterize actual storage port capabilities
+   94c57f1f Ben West: Add bounded tenant subject administration service
+   199986a1 Ben West: Exercise shipping exchange after subject rename
+   d10f5a04 Ben West: Characterize shipping credentials across subject display rename
+   8dd317a9 Ben West: Assert bounded representation refusal response
+   5b6b923d Ben West: Characterize legacy treatment empty-field preparation
+   9475babd Ben West: Expand mixed-version treatment differential workflows
+   ded254b9 Ben West: Update executable acceptance for admitted v2 summary reads
+   c9804060 Ben West: Verify derived REST composition through the real PG and Vault executable
+   dd80c0da Ben West: Admit tenant-local v2 derived REST reads through shipping handlers
+   528e2f5e Ben West: Use uploader response IDs in client follow-up writes
+   83f7f75a Ben West: Test pinned synthetic uploader and follower tenant HTTP replay
+   8a4558ad Ben West: Classify independent REST authority probe in integration tier
+   3d9e5e87 Ben West: Test tenant REST authority with independent persisted grant and audience controls
+   ae471ac7 Ben West: Compose explicitly selected tenant REST domains through shipping handlers
+   a014a9ba Ben West: Label unavailable tenant REST context provider opt-in explicitly
+   9ea9519c Ben West: Expand actual device and activity HTTP parity and isolation controls
+   d5191fa6 Ben West: Preserve measured legacy status carriers and verify tenant context controls
+   21ad43ca Ben West: Implement tenant devicestatus and activity storage through shipping REST handlers
+   04407e84 Ben West: Implement tenant profile and food collection ports
+   3844f803 Ben West: Add tenant-safe status discovery settings and snapshot service ports
+   17940cf1 Ben West: Keep unclassified tenant treatment delete faults internal
+   14fe24a2 Ben West: Implement scoped treatments REST storage across API versions
+   3a4e3e5f Ben West: Serve legacy entries through trusted ports with measured narrow time-helper translation
+   a9166f04 Ben West: Reuse shipping legacy parent middleware and API3 representation handling
+   78c954ae Ben West: Preserve provably unique legacy reads and explicit entries insertion order
+   667be6ce Ben West: Preserve legacy exchange and shared batch resolution semantics
+   86d34997 Ben West: Distinguish legacy access-token carriers from bearer JWTs
+   dc23c41e Ben West: Preserve legacy authorization callback and narrow discovery permission contracts
+   d7de8740 Ben West: Keep restored server write cursors local to the bound tenant
+   441d34cc Ben West: Bind version-aware current authority after legacy domain parsers
+   d9ff6f5a Ben West: Refuse ambiguous API3 bearer token header syntax
+   5faed178 Ben West: Allow raw-header-only credential extraction callers
+   6ce150ab Ben West: Extract tenant credentials with version-specific carrier precedence
+   f711b612 Ben West: Translate trusted legacy collection operations at scoped PostgreSQL intent boundary
+   ee031caf Ben West: Inject trusted logical collection ports into legacy storage
+   21145d0d Ben West: Exercise entries CRUD in executable preview
+   deb21409 Ben West: Merge branch 'workspace/operator-import-fidelity-20261104' into workspace/runnable-crud-20261104
+   51592d1f Ben West: Merge branch 'workspace/entries-crud-20261104' into workspace/runnable-crud-20261104
+   f57138f2 Ben West: Support tenant entries CRUD through shared API3 handlers
+   93c90520 Ben West: feat: run explicit PostgreSQL Vault multitenant API preview
+   9e97d073 Ben West: test: characterize operator-prepared credential fidelity
+   c527fb7e Ben West: test: accept canonical ingress through real provider
+   b1c3437a Ben West: Merge commit '468c41dcab391f827a5bd1d9a581af9de2f0e10b' into workspace/canonical-preview-20261104
+   468c41dc Ben West: Add canonical tenant ingress mode
+   4621d5c4 Ben West: test: accept real Vault tenant entries POST across workers
+   acd46750 Ben West: Merge commit 'e410b1637038c4a4e5f4675a340c4697398bbcba' into workspace/preview-composition-20261104
+   e410b163 Ben West: test: compose tenant runtime with Vault and Postgres
+   6cad7a42 Ben West: Add dormant tenant entries POST through shared write intents
+   c10290d2 Ben West: Add tenant entries search read
+   81bc71e6 Ben West: Join dormant tenant legacy exchange to current-authority entries GET
+   2bbdf312 Ben West: Measure shipping exchange compatibility and document tenant decision gaps
+   7eb76c71 Ben West: Add dormant tenant legacy credential and current GET authority bridge
+   8b193e18 Ben West: Merge commit 'ad0cbdac058789bd806ae49047c7f95a6670332c' into workspace/p2-integration-20261103
+   cabb5eec Ben West: Test PostgreSQL entry projection edge cases
+   ad0cbdac Ben West: Verify pool close after database termination
+   1b6c8f2f Ben West: Assert authority pool cleanup after outage
+   1bc8eb42 Ben West: Test tenant authority pool failure handling
+   cada9de2 Ben West: Assert tenant authority refuses disabled RLS
+   8fdfca08 Ben West: Add tenant-scoped current authority adapter
+   8c035d0f Ben West: Support API3 entry read projections
+   0afdb87f Ben West: Merge remote-tracking branch 'official/dev' into workspace/pr8898-ci-20261103
+   04321de0 Ben West: Account explicitly for disabled integration labs in CI
+   a19b549c Ben West: Add opt-in two-tenant entries HTTP lab
+   c496d009 Ben West: Add dormant tenant policy and HTTP boundaries
+   025704cd Ben West: Test candidate entries schema under tenant RLS
+   327cbb1f Ben West: Add one-time PostgreSQL entries import
+   dc2c5fbf Ben West: test: cover tenant-bound JWT authorization
+   436ef543 Ben West: Verify MongoDB primary crash recovery and expired renewal refusal
+   562f6206 Ben West: Add fenced transactional MongoDB operator migration slice
+   011802ba Ben West: Add dormant versioned scalar tenant settings and policy-aware rollback
+   1dd8990b Ben West: Add dormant persistent subject authority and versioned grant policy
+   0de90852 Ben West: Merge secrets recovery acceptance with entries intent integration
+   a8dd162d Ben West: Cover resolved entries pruning through the v3 intent seam
+   14ae16db Ben West: Extend dormant entries upserts and post-commit v3 intents
+   78b915ab Ben West: Verify synthetic secrets backup restore and SIGKILL retry recovery
+   6943dccb Ben West: Merge dormant Vault secrets and persistence into multitenant integration
+   fec19ba5 Ben West: Add audited tenant ciphertext rewrap with maintenance-only CAS
+   cbbe9179 Ben West: Persist tenant ciphertext and append-only secrets audit in PostgreSQL
+   7bcfc8b0 Ben West: Add dormant PostgreSQL entries write primitives
+   a3888080 Ben West: Add dormant tenant secrets contract and Vault Transit adapter
+   7d4f3872 Ben West: Add dormant PostgreSQL entries read and filter slice
+   68828b8d Ben West: Add explicit PostgreSQL operator migration foundation
+   6b1bf889 Ben West: Preserve ObjectId and string kinds in PostgreSQL identity encoding
+   ce14d637 Ben West: Require an explicit PostgreSQL connection URI
+   27f085c9 Ben West: Add PostgreSQL tenant transaction foundation with RLS proof
+   700 files changed, 89611 insertions(+), 1069 deletions(-)
+   (official/codex/batch-join-20261110 does not exist yet)
+OK

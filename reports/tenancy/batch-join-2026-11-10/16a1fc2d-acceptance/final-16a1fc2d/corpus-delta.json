@@ -1,0 +1,77 @@
+{
+  "id": "b1e44aca9f3c",
+  "startedAt": "2026-11-11T01:58:16.959Z",
+  "suites": [
+    "tests/owner-configuration.integration.test.js",
+    "tests/owner-preview.integration.test.js",
+    "tests/tenant-frame-concurrency.integration.test.js",
+    "tests/tenant-projection-evaluator.integration.test.js",
+    "tests/tenant-current-state-recovery-proof.integration.test.js",
+    "tests/tenant-notifications.integration.test.js",
+    "tests/evaluator-consumers.integration.test.js",
+    "tests/tenant-activity.integration.test.js",
+    "tests/evaluator-consumer-timer-churn.integration.test.js",
+    "tests/evaluator-consumer-load.integration.test.js",
+    "tests/tenant-commit-clock-http.integration.test.js",
+    "tests/multitenant-preview-replicas.integration.test.js",
+    "tests/tenant-rest-derived.integration.test.js",
+    "tests/tenant-rest-context.integration.test.js",
+    "tests/postgres-secrets.integration.test.js",
+    "tests/admin-role-ownership.integration.test.js",
+    "tests/admin-lifecycle-fit.integration.test.js",
+    "tests/tenant-frame-acquisition.integration.test.js",
+    "tests/multitenant-preview-process.integration.test.js"
+  ],
+  "created": [
+    {
+      "kind": "postgres",
+      "id": "38cdad7634b111e70f93b7abfc521f053683c095ab8e7b77fcb1d750059d9589",
+      "volumes": [
+        "af4c48e20fb3adbaa1ecbaf6488deded121b976bc0e5e3a4e200b06a5367dde1"
+      ],
+      "image": "postgres@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97"
+    },
+    {
+      "kind": "mongo",
+      "id": "0af0d3b69377073f82a648f6a7f59fe04bef7b04a4da8e1bf125da154e2e032f",
+      "volumes": [
+        "fe8e2cea7981b5a84e01ec87f92a24322abf4d39e38c0b49a97b004166c247e0",
+        "e35c197e04eb714f84d5ddcb647de6ee7056b4da80ba98762edaa8c49db866dd"
+      ],
+      "image": "mongo@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b"
+    }
+  ],
+  "removed": [
+    {
+      "kind": "mongo",
+      "id": "0af0d3b69377073f82a648f6a7f59fe04bef7b04a4da8e1bf125da154e2e032f",
+      "volumes": [
+        "fe8e2cea7981b5a84e01ec87f92a24322abf4d39e38c0b49a97b004166c247e0",
+        "e35c197e04eb714f84d5ddcb647de6ee7056b4da80ba98762edaa8c49db866dd"
+      ],
+      "verifiedAbsent": true
+    },
+    {
+      "kind": "postgres",
+      "id": "38cdad7634b111e70f93b7abfc521f053683c095ab8e7b77fcb1d750059d9589",
+      "volumes": [
+        "af4c48e20fb3adbaa1ecbaf6488deded121b976bc0e5e3a4e200b06a5367dde1"
+      ],
+      "verifiedAbsent": true
+    }
+  ],
+  "env": {
+    "NS_TEST_POSTGRES_ADMIN_URI": "disposable",
+    "CUSTOMCONNSTR_mongo": "disposable"
+  },
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 160,
+    "pending": 1,
+    "failing": 0
+  },
+  "finishedAt": "2026-11-11T02:01:38.679Z",
+  "remaining": [],
+  "status": 0
+}

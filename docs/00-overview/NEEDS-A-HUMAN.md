@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 20 items
+### Maintainer &mdash; 30 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -53,6 +53,16 @@ every item that was `merged-upstream` then is `released`.
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
 | `DEPLOY-VAULT-AGENT` | `ready-to-push` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | &mdash; |
+| `MT-ACTIVITY-ELIGIBILITY` | `ready-to-push` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | &mdash; |
+| `MT-ADMIN-LIFECYCLE-FIT` | `ready-to-push` | Restore census accepts non-clinical identities; ownership refuses on non-active  | &mdash; |
+| `MT-ADMIN-ROLE-OWNERSHIP` | `ready-to-push` | M6b: compose ownership operations into the multitenant admin role with an owners | &mdash; |
+| `MT-BATCH-JOIN-1110` | `ready-to-push` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | &mdash; |
+| `MT-CONSUMER-STALE-RESELECT` | `ready-to-push` | Alarm consumer survives evaluator timer publications during selection (BF-231) | &mdash; |
+| `MT-EXPORT-EXPIRY` | `ready-to-push` | Key destruction removes the export artifact file in the same audited step | &mdash; |
+| `MT-INTERNAL-LISTENER` | `ready-to-push` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | &mdash; |
+| `MT-OWNER-LAST-GUARD` | `ready-to-push` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | &mdash; |
+| `MT-ROOT-ADMIN-PARITY` | `ready-to-push` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | &mdash; |
+| `MT-TENANT-EXTENDED-SETTINGS` | `ready-to-push` | Tenant environment carries plugin extended settings so the stale-data alarm can  | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item

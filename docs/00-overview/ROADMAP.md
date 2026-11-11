@@ -191,9 +191,10 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or r | `not-started` | &mdash; |
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
+| 1 | `MT-BATCH-JOIN-1110` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | `ready-to-push` | &mdash; |
 | 1 | `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | &mdash; |
 | 1 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | &mdash; |
-| 1 | `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can  | `in-progress` | &mdash; |
+| 1 | `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can  | `ready-to-push` | &mdash; |
 | 1 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | &mdash; |
 | 1 | `ST-VIEWS-PROFILE` | Next: refresh and integrate PR 8891 single nonresident profile | `in-progress` | &mdash; |
 | 1 | `T31-REM` | T3.1 remainder - per-tenant signing key replaces the install-wide one | `blocked` | &mdash; |
@@ -217,7 +218,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `MT-VAULT-TOKEN-FILE` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
 | 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `MT-ENDPOINT-TRANSPORT` |
-| 2 | `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | `in-progress` | `MT-ENDPOINT-TRANSPORT` |
+| 2 | `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | `ready-to-push` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `MT-OIDC-NATIVE` |
 | 2 | `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `not-started` | `MT-ENDPOINT-TRANSPORT` |
 | 3 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
@@ -233,16 +234,16 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 4 | `ARCH-SQLITE-SPIKE` | Deferred low priority: hypothetical SQLite and cell adapter probe | `not-started` | `ARCH-SEAM-CONSOLIDATE`, `ARCH-DERIVED-FRAME` |
 | 4 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap up | `not-started` | `DEPLOY-TRUST-PROBES` |
 | 4 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;  | `in-progress` | `MT-M6B-JOIN` |
-| 4 | `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | `in-progress` | `MT-M6B-JOIN` |
-| 4 | `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an owners | `in-progress` | `MT-M6B-JOIN` |
+| 4 | `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | `ready-to-push` | `MT-M6B-JOIN` |
+| 4 | `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an owners | `ready-to-push` | `MT-M6B-JOIN` |
 | 4 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal loa | `not-started` | `MT-BENCH-BASELINE` |
-| 4 | `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `in-progress` | `MT-M6B-JOIN` |
+| 4 | `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `ready-to-push` | `MT-M6B-JOIN` |
 | 4 | `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership t | `not-started` | `MT-BENCH-BASELINE` |
-| 4 | `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `in-progress` | `MT-M6B-JOIN` |
-| 4 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-progress` | `MT-M6B-JOIN` |
+| 4 | `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `ready-to-push` | `MT-M6B-JOIN` |
+| 4 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `ready-to-push` | `MT-M6B-JOIN` |
 | 4 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no  | `not-started` | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING` |
-| 5 | `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active  | `in-progress` | `MT-ADMIN-ROLE-OWNERSHIP` |
-| 5 | `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | `in-progress` | `MT-OWNER-LAST-GUARD` |
+| 5 | `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active  | `ready-to-push` | `MT-ADMIN-ROLE-OWNERSHIP` |
+| 5 | `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | `ready-to-push` | `MT-OWNER-LAST-GUARD` |
 
 <!-- END GENERATED: road-tenancy -->
 

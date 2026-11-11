@@ -1,0 +1,6 @@
+SCENARIO_PASS {"baseline":{"A":{"ok":3,"refused":0},"B":{"ok":3,"refused":0}},"revokedA":{"A":{"ok":0,"refused":3},"B":{"ok":3,"refused":0}},"suspendedA":{"A":{"ok":0,"refused":3},"B":{"ok":3,"refused":0},"directA":"SOCKET_IPC_UNAVAILABLE","directB":"admitted","control":{"api":{"participant":"api","roles":["api"],"statusOk":true,"invalidated":"11111111-1111-4111-8111-111111111111","invalidationLog
+2026-11-11T01:53:08Z api running during hold after SIGTERM: true; WINDOW_DRAINED lines: 0
+DRAIN {"apiShutdownMs":500,"holdMs":1500,"runningDuringHold":true,"drainedLinesDuringHold":0,"apiExit":0,"heldCall":["start","finish"],"windowOperations":29,"allFinished":true,"drainedMs":1571,"client":{"error":"SOCKET_IPC_UNAVAILABLE","elapsedMs":728},"expected":"SOCKET_IPC_UNAVAILABLE"}
+2026-11-11T01:53:08Z containers remaining for project ns-lc-20261111t015302z-3210133: 0
+2026-11-11T01:53:08Z networks remaining for project ns-lc-20261111t015302z-3210133: 0
+2026-11-11T01:53:08Z exit 0

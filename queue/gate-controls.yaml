@@ -3381,3 +3381,11 @@ controls:
       into B, 8 failing), C3 (unknown keys accepted) and C4 (status projection removed), each restored by file copy with the
       hash checked; reports/tenancy/tenant-extended-settings-2026-11-10/README.md. Automating them would write into the lane worktree.
 
+  - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/tenant-extended-settings.test.js tests/tenant-activity.test.js tests/root-admin.test.js tests/serve-listeners.test.js tests/notification-producer.test.js
+    cwd: externals/work/crm-batch-join-20261110
+    control-exempt: >
+      The five files carry each lane's controls, recorded red-then-restored in the lane evidence under
+      reports/tenancy/*-2026-11-10/; the join reproduced the activity oracle control (ACTIVITY_B_UNAFFECTED) and the
+      Compose early-drop and blanket-window controls on the join (batch-join-2026-11-10/16a1fc2d-acceptance/README.md).
+      Re-running source ablations would write into the join worktree that queue gates use.
+

@@ -1,0 +1,22 @@
+01:38:38 head 3cd1c4878f3ffdf5fe68156040fe6d30805c3de6 porcelain=0
+01:38:38 start test:all
+01:42:10 test:all exit 0
+01:42:10 start test:browser
+01:46:01 test:browser exit 0
+01:46:01 start corpus
+01:52:20 corpus exit 0
+01:52:20 start oidc matrix
+01:52:38 oidc matrix exit 0
+01:52:38 start oidc controls
+01:52:55 oidc controls exit 0
+01:52:55 start compose final
+01:53:02 compose final exit 0
+01:53:02 start compose deadline
+01:53:08 compose deadline exit 0
+01:53:08 start compose early-drop
+01:53:15 compose early-drop exit 1
+01:53:15 start compose blanket
+01:53:18 compose blanket exit 1
+01:53:18 start tiers/write checks
+01:53:23 lint exit 0
+01:53:23 done porcelain=0 containers=0
