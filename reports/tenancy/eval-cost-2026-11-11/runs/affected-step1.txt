@@ -1,0 +1,4 @@
+head d5b4f7ec files 39 load 17.35 10.63 8.31
+  501 passing (4m)
+exit 0 load 16.77 15.78 11.25
+      MOMENT_MEMO_CORPUS files=28 distinct date strings=14579 all equal

@@ -1,0 +1,28 @@
+LAB hours=12 drop=rawbg,timeago,ar2,errorcodes,cage,sage,iage,bage,pump,loop,upbat,iob,cob,bwp,basal,profile,devicestatus records=200 load=1.47 4.39 5.13
+RUN base {"cycles":46801,"acquisitions":{"n":198,"cpuMsMean":6.11,"cpuMsP50":5.27,"cpuMsP95":10.8,"wallMsP50":8.2,"wallMsP95":11.7},"timeOnly":{"n":46603,"cpuMsMean":6.73,"cpuMsP50":5.78,"cpuMsP95":13.37,"wallMsP50":9.32,"wallMsP95":13.7},"alarmTransitions":17,"contentTransitions":19} elapsed_s=444.7
+TRANSITIONS base
+  23:00:00 (none)
+  23:00:10 treatmentnotify|0||Site Change
+  23:10:00 (none)
+  23:30:10 treatmentnotify|0||Insulin Change
+  23:40:00 (none)
+  00:00:10 treatmentnotify|0||Pump Battery Change
+  00:10:00 (none)
+  01:00:20 simplealarms|2||Urgent LOW
+  01:20:20 (none)
+  01:30:10 treatmentnotify|0||Correction Bolus
+  01:40:00 (none)
+  02:00:20 simplealarms|2||Urgent HIGH
+  02:20:20 (none)
+  04:10:10 treatmentnotify|0||Meal Bolus
+  04:20:00 (none)
+  05:00:20 treatmentnotify|0||Calibration
+  05:10:00 (none)
+RUN due slow=1000 {"cycles":6093,"acquisitions":{"n":198,"cpuMsMean":6.84,"cpuMsP50":5.54,"cpuMsP95":11.73,"wallMsP50":10.27,"wallMsP95":16.08},"timeOnly":{"n":5895,"cpuMsMean":5.77,"cpuMsP50":4.81,"cpuMsP95":10.91,"wallMsP50":9.46,"wallMsP95":13.99},"alarmTransitions":17,"contentTransitions":19} elapsed_s=60.4
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=1000 :: 19 base content transitions, 19 due
+CYCLES slow=1000 base 46801 due 6093 (7.7x fewer)
+RUN due slow=60000 {"cycles":288,"acquisitions":{"n":198,"cpuMsMean":6.1,"cpuMsP50":5.58,"cpuMsP95":12.4,"wallMsP50":9.29,"wallMsP95":13.71},"timeOnly":{"n":90,"cpuMsMean":4.84,"cpuMsP50":4.17,"cpuMsP95":10.15,"wallMsP50":7.34,"wallMsP95":11.13},"alarmTransitions":17,"contentTransitions":19} elapsed_s=2.5
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=60000 :: 19 base content transitions, 19 due
+CYCLES slow=60000 base 46801 due 288 (162.5x fewer)

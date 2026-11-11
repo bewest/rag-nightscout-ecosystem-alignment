@@ -1,0 +1,4 @@
+TIEBREAK {"read":"entries {\"date\":1}","rows":288,"sql-today wallMs":2.754,"sql-today execMs":0.795,"sql-total wallMs":3.52,"sql-total execMs":1.121,"memory wallMs":0.16}
+TIEBREAK {"read":"devicestatus {\"created_at\":-1}","rows":288,"sql-today wallMs":3.918,"sql-today execMs":1.281,"sql-total wallMs":4.217,"sql-total execMs":2.005,"memory wallMs":0.302}
+TIEBREAK {"read":"entries {\"date\":-1} limit 12","rows":288,"sql-today wallMs":2.588,"sql-today execMs":1.105,"sql-total wallMs":2.737,"sql-total execMs":1.334,"memory wallMs":0.108}
+LOAD 4.63 3.08 4.81

@@ -1,0 +1,28 @@
+LAB hours=12 drop=rawbg,timeago,ar2,errorcodes,cage,sage,iage,bage,pump,loop,upbat,iob,cob,bwp,basal,profile,devicestatus records=200 load=1.70 3.75 7.72
+RUN base {"cycles":46801,"acquisitions":{"n":198,"cpuMsMean":11.63,"cpuMsP50":10.16,"cpuMsP95":22.5,"wallMsP50":13.01,"wallMsP95":21.24},"timeOnly":{"n":46603,"cpuMsMean":6.11,"cpuMsP50":4.4,"cpuMsP95":12.41,"wallMsP50":10,"wallMsP95":17.64},"alarmTransitions":17,"contentTransitions":19} elapsed_s=505.9
+TRANSITIONS base
+  23:00:00 (none)
+  23:00:10 treatmentnotify|0||Site Change
+  23:10:00 (none)
+  23:30:10 treatmentnotify|0||Insulin Change
+  23:40:00 (none)
+  00:00:10 treatmentnotify|0||Pump Battery Change
+  00:10:00 (none)
+  01:00:20 simplealarms|2||Urgent LOW
+  01:20:20 (none)
+  01:30:10 treatmentnotify|0||Correction Bolus
+  01:40:00 (none)
+  02:00:20 simplealarms|2||Urgent HIGH
+  02:20:20 (none)
+  04:10:10 treatmentnotify|0||Meal Bolus
+  04:20:00 (none)
+  05:00:20 treatmentnotify|0||Calibration
+  05:10:00 (none)
+RUN due slow=1000 {"cycles":6093,"acquisitions":{"n":198,"cpuMsMean":13.32,"cpuMsP50":11.14,"cpuMsP95":27.89,"wallMsP50":15.42,"wallMsP95":23.7},"timeOnly":{"n":5895,"cpuMsMean":5.35,"cpuMsP50":4.11,"cpuMsP95":11.24,"wallMsP50":9.55,"wallMsP95":14.86},"alarmTransitions":17,"contentTransitions":19} elapsed_s=59.4
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=1000 :: 19 base content transitions, 19 due
+CYCLES slow=1000 base 46801 due 6093 (7.7x fewer)
+RUN due slow=60000 {"cycles":288,"acquisitions":{"n":198,"cpuMsMean":11.59,"cpuMsP50":9.85,"cpuMsP95":20.74,"wallMsP50":14.65,"wallMsP95":22.62},"timeOnly":{"n":90,"cpuMsMean":5.82,"cpuMsP50":4.26,"cpuMsP95":10.53,"wallMsP50":10.08,"wallMsP95":14.24},"alarmTransitions":17,"contentTransitions":19} elapsed_s=4.0
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=60000 :: 19 base content transitions, 19 due
+CYCLES slow=60000 base 46801 due 288 (162.5x fewer)

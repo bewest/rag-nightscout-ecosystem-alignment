@@ -1,0 +1,9 @@
+head 7f5f518e load 3.63 4.37 6.37
+# unit: 249 test files
+  3249 passing (57s)
+  1 pending
+exit 0 load 1.72 3.68 6.01
+# 639 test files, 8 tiers: ok
+Write boundary: all 9 adapter entry points and canonical socket delegation checked
+✖ 56 problems (0 errors, 56 warnings)
+eslint exit 0

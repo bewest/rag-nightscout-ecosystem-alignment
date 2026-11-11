@@ -1,0 +1,8 @@
+    1) skips the projection read-back, deep compare and copies only for a committed, unchanged signature (E)
+      2) does not UPDATE semantically unchanged JSONB-reordered projection but preserves array order
+  17 passing (95ms)
+  2 failing
+  1) dormant durable replay source protocol
+      AssertionError [ERR_ASSERTION]: EV_COST_E_CHANGED a different signature reads and compares
+  2) dormant durable replay source protocol
+      AssertionError [ERR_ASSERTION]: JSON arrays retain order semantics

@@ -1,0 +1,3 @@
+  0 passing (2s)
+  1 failing
+      AssertionError [ERR_ASSERTION]: the views read nothing through PostgreSQL

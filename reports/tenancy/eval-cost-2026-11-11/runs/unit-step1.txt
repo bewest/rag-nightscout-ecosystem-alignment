@@ -1,0 +1,9 @@
+head 2af5a3c5 load 2.29 8.30 10.66
+# unit: 248 test files
+  3243 passing (58s)
+  1 pending
+exit 0 load 2.72 7.40 10.21
+# 637 test files, 8 tiers: ok
+Write boundary: all 9 adapter entry points and canonical socket delegation checked
+✖ 55 problems (0 errors, 55 warnings)
+eslint exit 0

@@ -1,0 +1,5 @@
+    1) is moment's own parse on every corpus shape and ISO/fallback form
+  4 passing (23ms)
+  1 failing
+  1) moment-memo: document dates parsed once
+      AssertionError [ERR_ASSERTION]: "2026-11-10" first parse

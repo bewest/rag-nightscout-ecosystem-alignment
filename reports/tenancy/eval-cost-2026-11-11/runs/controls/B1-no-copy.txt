@@ -1,0 +1,30 @@
+    1) EV_COST_MUTATION_GUARD steady: a plugin that changes everything changes no later cycle
+    2) EV_COST_MUTATION_GUARD urgentLow: a plugin that changes everything changes no later cycle
+    3) EV_COST_MUTATION_GUARD recentTreatment: a plugin that changes everything changes no later cycle
+    4) EV_COST_MUTATION_GUARD loopFailing: a plugin that changes everything changes no later cycle
+    5) EV_COST_MUTATION_GUARD crowdedStatus: a plugin that changes everything changes no later cycle
+    6) EV_COST_MUTATION_GUARD aapsLoopStopped: a plugin that changes everything changes no later cycle
+    7) EV_COST_MUTATION_GUARD openapsEnactedOnly: a plugin that changes everything changes no later cycle
+    8) EV_COST_MUTATION_GUARD pumpRepost: a plugin that changes everything changes no later cycle
+    9) EV_COST_B_WINDOW_CUT wall clock at the instant
+    10) EV_COST_B_WINDOW_CUT wall clock 2500 ms after the instant
+  1 passing (21s)
+  10 failing
+  1) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  2) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  3) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  4) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  5) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  6) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  7) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  8) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: time-only cycle 2 after the hostile cycle
+  9) evaluator cost lane B: a kept working set equals a fresh load at every instant
+      AssertionError [ERR_ASSERTION]: working set at 2026-11-06T12:00:40.000Z (kept): ["sgvs","devicestatus","tempbasalTreatments"]

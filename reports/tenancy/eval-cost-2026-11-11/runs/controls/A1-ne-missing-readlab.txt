@@ -1,0 +1,1 @@
+FAIL A_READ_DIFFERENTIAL {"reads":5472,"equal":1534,"orderOnly":0,"different":3938,"refusedBoth":0,"refusedOne":0,"mingoMembership":1140,"mingoMembershipDiffer":0,"mingoOrder":5472,"mingoOrderDiffer":392,"instants":456,"workingSetEqual":0,"outputEqual":0} elapsed_s=45.4 load=4.97 4.62 7.12

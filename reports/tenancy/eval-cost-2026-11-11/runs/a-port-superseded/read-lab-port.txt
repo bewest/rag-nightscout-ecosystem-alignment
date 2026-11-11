@@ -1,0 +1,5 @@
+PART scenarios {"reads":1680,"equal":1680,"orderOnly":0,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":350,"mingoMembershipDiffer":0,"mingoOrder":1680,"mingoOrderDiffer":178,"instants":140,"workingSetEqual":140,"outputEqual":140}
+PART timelines {"reads":5472,"equal":5472,"orderOnly":0,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":1140,"mingoMembershipDiffer":0,"mingoOrder":5472,"mingoOrderDiffer":392,"instants":456,"workingSetEqual":456,"outputEqual":456}
+PART corpus sets=7 {"reads":5976,"equal":5976,"orderOnly":0,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":1245,"mingoMembershipDiffer":0,"mingoOrder":5976,"mingoOrderDiffer":400,"instants":498,"workingSetEqual":498,"outputEqual":498}
+READS_BY_METHOD {"profile.findFiltered":498,"entries.findFiltered":996,"treatments.findFiltered":3984,"devicestatus.findFiltered":498}
+PASS A_READ_DIFFERENTIAL {"reads":5976,"equal":5976,"orderOnly":0,"different":0,"refusedBoth":0,"refusedOne":0,"mingoMembership":1245,"mingoMembershipDiffer":0,"mingoOrder":5976,"mingoOrderDiffer":400,"instants":498,"workingSetEqual":498,"outputEqual":498} elapsed_s=62.6 load=3.01 6.92 9.23

@@ -1,0 +1,8 @@
+    1) EV_COST_B_WINDOW_CUT wall clock at the instant
+    2) EV_COST_B_WINDOW_CUT wall clock 2500 ms after the instant
+  0 passing (2s)
+  2 failing
+  1) evaluator cost lane B: a kept working set equals a fresh load at every instant
+      AssertionError [ERR_ASSERTION]: working set at 2026-11-06T12:03:10.000Z (kept): ["lastProfileFromSwitch"]
+  2) evaluator cost lane B: a kept working set equals a fresh load at every instant
+      AssertionError [ERR_ASSERTION]: working set at 2026-11-06T12:00:50.000Z (kept): ["treatments","tempbasalTreatments"]

@@ -1,0 +1,12 @@
+TIE_READ 242 treatments sort {"created_at":1}
+TIE_READ 32 entries sort {"date":1}
+TIE_READ 126 devicestatus sort {"created_at":-1}
+TIE_READ 2 entries sort {"date":-1} limit 12
+WORKING_SET_DIFF 2 twins-and-ties properties ddata.sgvs.[].mgdl
+WORKING_SET_DIFF 2 twins-and-ties alarms ddata.sgvs.[].mgdl
+WORKING_SET_DIFF 24 timeline properties ddata.sgvs.[]._id
+OUTPUT_DIFF 2 twins-and-ties properties output.emitted.[].clear
+OUTPUT_DIFF 2 twins-and-ties alarms output.emitted.[].clear
+OUTPUT_DIFF 4 timeline:twoUploaders properties output.properties.bgnow.sgvs.[]._id
+OUTPUT_DIFF 2 timeline:twoUploaders properties output.properties.delta.previous.sgvs.[]._id
+TIE_ORDER {"sortedReads":5976,"tieReads":402,"mongoMatchesPostgres":0,"mongoMatchesOrdinal":400,"mongoMatchesBoth":0,"mongoMatchesNeither":2,"instants":498,"workingSetDiffers":28,"outputDiffers":10}

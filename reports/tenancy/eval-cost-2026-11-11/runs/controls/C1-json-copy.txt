@@ -1,0 +1,14 @@
+    1) equals JSON.parse(JSON.stringify()) on the special cases
+    2) throws as JSON does on a cycle and on a bigint
+    3) equals the round trip on 2,000 random structures and shares nothing with them
+    4) gives copies independent of their source and of each other (mutation)
+  1 passing (11ms)
+  4 failing
+  1) json-copy: the JSON round trip without the text
+      AssertionError [ERR_ASSERTION]: {"boxed":["s",1,true]}
+  2) json-copy: the JSON round trip without the text
+     AssertionError [ERR_ASSERTION]: Missing expected exception (TypeError).
+  3) json-copy: the JSON round trip without the text
+      AssertionError [ERR_ASSERTION]: seed 554
+  4) json-copy: the JSON round trip without the text
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:

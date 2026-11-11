@@ -1,0 +1,1 @@
+FAIL A_SORT_TIES {"cases":1000,"equal":647,"different":240,"refusedBoth":113,"refusedOne":0,"withTies":339,"bounded":441} seed=1

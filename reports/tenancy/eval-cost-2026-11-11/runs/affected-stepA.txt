@@ -1,0 +1,6 @@
+head 745c7f4e files 41 load 2.22 2.84 4.51
+      MOMENT_MEMO_CORPUS files=28 distinct date strings=14579 all equal
+      EV_COST_B_WINDOW_CUT skew=0 instants=193 reused=136 loaded=57
+      EV_COST_B_WINDOW_CUT skew=2500 instants=193 reused=130 loaded=63
+  512 passing (3m)
+exit 0 load 1.20 2.03 3.91

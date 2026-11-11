@@ -1,0 +1,6 @@
+deploy-base: IDENTICAL cycles base=46801 candidate=46801 differing=0 alarmTransitions base=17 candidate=17
+deploy-due1000: IDENTICAL cycles base=6093 candidate=6093 differing=0 alarmTransitions base=17 candidate=17
+deploy-due60000: IDENTICAL cycles base=288 candidate=288 differing=0 alarmTransitions base=17 candidate=17
+full-base: IDENTICAL cycles base=46801 candidate=46801 differing=0 alarmTransitions base=52 candidate=52
+full-due1000: IDENTICAL cycles base=46917 candidate=46917 differing=0 alarmTransitions base=52 candidate=52
+full-due60000: IDENTICAL cycles base=1032 candidate=1032 differing=0 alarmTransitions base=52 candidate=52

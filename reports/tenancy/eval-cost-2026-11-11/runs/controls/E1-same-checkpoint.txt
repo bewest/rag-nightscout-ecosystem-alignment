@@ -1,0 +1,5 @@
+    1) EV_COST_E_SAME_CHECKPOINT an acquisition after a hard delete at the same checkpoint sees the delete
+  0 passing (1s)
+  1 failing
+  1) evaluator cost lane: no change made during one cycle reaches the next
+      AssertionError [ERR_ASSERTION]: the evaluation sees the delete
