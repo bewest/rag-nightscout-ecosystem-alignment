@@ -1,0 +1,4 @@
+loadavg_before_gap=4.84 4.00 4.55
+{"tenants":1000,"evaluatorReadyMs":12198,"evaluatedAfterReady":999,"sinceRestartMs":{"p25":15924,"p50":46145,"p90":816645,"max":1406978},"within":{"60s":511,"300s":668,"900s":928,"1500s":999},"notEvaluatedWithinTimeout":1,"backendsSeen":8}
+gap exit 0
+loadavg_after_gap=5.82 5.87 5.62

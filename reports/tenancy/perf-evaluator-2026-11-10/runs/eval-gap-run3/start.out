@@ -1,0 +1,2 @@
+{"tenants":1000,"label":"ev1000","concurrency":"default","status":"ok","idle_s":"60.204208815","api":"154.195966904","realtime":"154.289516751","evaluator":"161.374220033","tenant-admin":"154.513486590"}
+start exit 0

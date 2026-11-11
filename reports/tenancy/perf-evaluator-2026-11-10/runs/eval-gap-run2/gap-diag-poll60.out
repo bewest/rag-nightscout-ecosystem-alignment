@@ -1,0 +1,3 @@
+loadavg_before=3.83 4.25 5.47
+{"tenants":1000,"evaluatorReadyMs":14613,"evaluatedAfterReady":1000,"sinceRestartMs":{"p25":128935,"p50":270693,"p90":474186,"max":533139},"within":{"60s":112,"300s":569,"900s":1000,"1500s":1000},"notEvaluatedWithinTimeout":0,"backendsSeen":46}
+loadavg_after=4.44 4.22 4.94

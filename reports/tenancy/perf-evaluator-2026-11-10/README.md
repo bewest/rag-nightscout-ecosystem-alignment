@@ -239,3 +239,109 @@ lane ran. Neither is built here; both conflict with what was reproduced:
 - Backstop intervals other than 1000 ms (per-check cost is reproduced; the rate scales linearly, derived).
 - 3,000 and 10,000 tenants.
 - A quiet host: load averages 1.5–15 during runs.
+
+## Resumed, 2026-11-11 (00:00–02:00 local): evaluation-gap gate, alert and readiness seam
+
+*Appended after the coordinator relayed perf-db's restart-gap measurement (`codex/perf-db-20261110` `540d3998`,
+[perf-db record, "Resumed"](../perf-db-2026-11-10/README.md)) and the readiness seam for
+[readiness-serve-then-warm](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#readiness-serve-then-warm). The
+sections above are unchanged.*
+
+### Anchors
+
+| what | value |
+|---|---|
+| lane branch `codex/perf-evaluator-20261110` | `3ac621a2` alert + serve boot; `374e7191` partition test; `8da2804a` bounded checks; head **`5ab35cad`** config parse cache. Not pushed |
+| join scratch branch `codex/perf-evaluator-join-db-20261110` (worktree `externals/work/crm-perf-evaluator-join-20261110`) | lane merged with perf-db `540d3998` (`c812c5f0`), readiness wiring `91c5c2b4`, boot-protocol test `2ec72c4d`, check bound `6ce791fc`, head **`41f9179a`** (lane `5ab35cad` merged). Not pushed; for measurement and the join |
+| gate harness | perf-db's `harness/start.sh` (1,000 tenants, `KEEP=1`) and `harness/eval-gap.js` unchanged; overlay `overlay-4e5a1051`; images `ns-pev-perf:<join head>` built by `deploy/multitenant/build.js`, label-checked, removed afterwards |
+
+### What changed
+
+**Lane (`5ab35cad`)**
+- **Evaluation-gap alert**: `EVALUATOR_NOT_EVALUATED_WITHIN_BOUND` (`evaluationAlertMs`, default 60,000; evaluator
+  config field of the same name). A tenant's evaluation is "confirmed current" by an acquisition, a time-only cycle, or
+  a backstop check that found nothing changed; the alert fires once when the age since the runtime started or since the
+  last confirmation exceeds the bound, and clears on confirmation. Paused, suspended and withdrawn tenants are exempt.
+  It has its own watchdog schedule, so a stuck backstop still alerts. Exposed in `health()` (`tenants[].evaluatedAgeMs`,
+  `tenants[].alert`, `alerts`) and in the evaluator inspection (`tenants[].evaluation: { ageMs, alert }`, an additive
+  optional property of the `evaluator-inspection` contract).
+- **Serve boot**: `boot: 'serve'` returns at once and acquires in the background, `bootConcurrency` at a time, warm
+  tenants first (`isWarm`); the backstop leaves queued tenants to that queue. `'all'` is unchanged.
+- **Bounded backstop**: checks and the acquisitions they start share `checkConcurrency` slots (default 4); the in-flight
+  guard is per tenant (one stuck check holds only itself); a refused check waits for the next pass instead of
+  acquiring.
+- **Config parse cache**: `readCurrent` reuses the parsed evaluator config while the file's inode, size, mtime and ctime
+  are unchanged.
+
+**Join (`41f9179a`)**: the evaluator passes `NS_TENANT_READINESS` (default `serve`) and `NS_TENANT_STARTUP_CONCURRENCY`
+to `tenant-startup.create` and to the runtime boot, with `isWarm` from a new `tenant-startup` `isReady(tenant)`;
+`checkConcurrency` is the evaluator pool size (`NS_POOL_EVALUATOR_MAX`); `startup.health()` is in `health()` and the
+inspection (`startup`, additive); the consumers' `prepare` tenant loop runs through perf-db's `settleLimited` at the
+startup concurrency instead of one tenant after another (the first failure still refuses the boot). The role-booting
+labs and the evaluator boot-protocol test run under `NS_TENANT_READINESS=all`, as perf-db did for the api's.
+
+### Gate: per-tenant evaluation gap after an evaluator restart, 1,000 tenants (reproduced)
+
+Same definition as perf-db: a tenant's first evaluation after the restart is its first window operation by an evaluator
+backend after the container is healthy. Under the change, an unchanged tenant's backstop check is such an operation
+and is exactly "confirmed current"; an acquisition is too.
+
+| run | code | evaluator healthy after | within 60 s | 5 min | 15 min | 25 min | not within 25 min | p50 since restart | load avg |
+|---|---|---|---|---|---|---|---|---|---|
+| perf-db (reference) | polling evaluator, `540d3998` | 54.5 s | 16 | 143 | 424 | 700 | 300 | 10.8 min | 15.8 → 9.3 |
+| 1 | join `ca50a4b5` (unbounded backstop) | 20.6 s | 22 | 129 | 286 | 506 | 494 | 12.8 min | 16.9 → 6.1 |
+| 2 | join `6ce791fc` (bounded checks) | 12.5 s | 41 | 180 | 365 | 554 | 446 | 8.9 min | 3.9 → 4.4 |
+| **3** | **join `41f9179a` (+ config parse cache), deployed settings** | 12.2 s | **511** | **668** | **928** | **999** | **1** | **46 s** | 4.8 → 5.8 |
+| 3, diagnostic | same, consumers' per-tenant poll at 60 s instead of 1 s | 14.2 s | **996** | 1,000 | 1,000 | 1,000 | 0 | 26.6 s (max 73 s) | 5.8 → 6.0 |
+
+Steady state after the diagnostic run (evaluator inspection, `runs/eval-gap-run3/inspect-steady-poll60.json`): all
+1,000 tenants confirmed within the last 957 ms (p50 592, p90 891), no alert, no refusal code; evaluator 52% CPU,
+511 MiB; PostgreSQL 310% (the per-tenant signature checks under the window, one per tenant per second).
+
+**What each run found** (from the evaluator's own inspection on the live deployment):
+- run 1: 817 tenants `EVALUATOR_WINDOW_REFUSED`. The backstop started every tenant's check at once: 1,000 window leases
+  on a pool with a 5 s connect timeout; each refused check started an acquisition, feeding the herd. Fixed by bounded
+  checks (`8da2804a`).
+- run 2: 854 tenants `EVALUATOR_WINDOW_REFUSED`, all 1,000 alerting, evaluator ~125% CPU. Two causes: (a) every check's
+  `readCurrent` re-parsed the whole configuration, all tenants included (O(N²) per pass), fixed by the parse cache
+  (`5ab35cad`); (b) the notification consumers poll **every tenant every second** for `run` and for `retry`
+  (`lib/server/serve/evaluator-consumers.js` `start`, `pollIntervalMs`/`retryIntervalMs` = 1000 in
+  `deploy/multitenant/config.js`), each under an operation-window lease: about 2,000 leases a second at 1,000 tenants
+  in the same role. The diagnostic (b) alone, polls at 60 s, gave 1,000 within 15 min before the cache.
+- run 3: with both evaluator fixes, the remaining tail (p90 13.6 min, one tenant past 25 min) is (b): with the consumer
+  polls at 60 s the gap closes to 73 s for the last tenant. **The consumers' per-tenant one-second poll is the remaining
+  blocker to the gate**; it is the delivery path, not the evaluator runtime this lane changed, so it is reported, not
+  changed here. The consumers already have per-tenant repeat timers (`arm`) and wakes on revision (`revised`/`wake`);
+  turning the poll into a slow backstop is the analogous change.
+
+The evaluation-gap alert fired in the field: run 1's evaluator logged 2,229 `EVALUATOR_NOT_EVALUATED_WITHIN_BOUND`
+lines and run 2's inspection showed all 1,000 alerting; in the diagnostic steady state none.
+
+### Controls (reproduced)
+
+| control | green | break-it → restored |
+|---|---|---|
+| one tenant's evaluation suppressed (its change check never completes) | `EV_GAP_ALERT`: only that tenant alerts, once, age > 30,000 ms; the other is confirmed ≤ 1 s; clears after evaluation (`tests/evaluator-gap-alert.test.js`) | watchdog raise disabled: red, no alert for the suppressed tenant (`EV_GAP_ALERT only the suppressed tenant, once`) → restored 3/3 |
+| paused/withdrawn tenant | no alert | |
+| serve boot | returns before any acquisition; warm tenants first; one at a time at concurrency 1; the backstop does not start queued tenants | |
+| config parse cache | 21 reads of an unchanged file parse once; a same-size edit is seen (`EV_CONFIG_PARSED_ONCE_WHILE_UNCHANGED`, `EV_CONFIG_EDIT_SEEN`) | cache disabled: red, `EV_CONFIG_PARSED_ONCE_WHILE_UNCHANGED` → restored 17/17 |
+| stuck tenant does not hold the others | found by the alert test itself: the first version's single-flight pass let one hung check stop every tenant's confirmation; fixed by the per-tenant guard (`3ac621a2`) | |
+
+Checks: see the table appended below this section.
+
+### Still open
+
+- The consumers' per-tenant one-second poll (above): owner is the delivery/realtime perf lane or the join coordinator.
+- The gate's healthy point under serve readiness is earlier (12 s) than perf-db's measurement under `all` (54.5 s), so
+  the windows are not identical; the column "p50 since restart" is comparable.
+- The two decisions reported above (definer function, incremental read) are unchanged by this work.
+
+### Checks at the resumed heads (reproduced)
+
+| check | lane `5ab35cad` | join `41f9179a` |
+|---|---|---|
+| affected suites (as above, all opt-ins, + new suites; join also tenant-readiness, pool-config, tenant-startup-admission) | 222 passing, 0 failing | 256 passing, 0 failing |
+| unit tier | 3228 passing, 0 failing (a first run had 1 failure in `tenant-legacy-credentials`, a JWT lifetime of 28801 vs 28800 s at a second boundary; untouched by this lane, it passed 3/3 alone and in the rerun) | 3259 passing, 0 failing |
+| `test:tiers` | ok (633 files) | ok (637 files) |
+| `test:write-boundary` | — | all 9 entry points |
+| eslint `lib` | 0 errors (55 warnings; +1 `detect-non-literal-fs-filename` on the config `statSync`) | 0 errors |
