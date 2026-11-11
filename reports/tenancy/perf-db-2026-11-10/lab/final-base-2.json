@@ -1,0 +1,180 @@
+{
+ "data_tx": {
+  "K": 300,
+  "per_op": {
+   "statements": 18,
+   "db_ms": 2.789,
+   "wall_ms": 16.693
+  },
+  "by_role": [
+   {
+    "role": "pdb_api",
+    "calls": 5400,
+    "ms": 836.615,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-table */ c.oid,c.relowner AS owner_oid,c.re",
+      "calls": 1500,
+      "ms": 745.626
+     },
+     {
+      "q": "SELECT pg_backend_pid() AS pid,current_user AS role,extract($1 from ba",
+      "calls": 300,
+      "ms": 25.501
+     },
+     {
+      "q": "SELECT /* operation-window-role lower */ n.oid AS namespace_oid,n.nspo",
+      "calls": 300,
+      "ms": 20.223
+     },
+     {
+      "q": "SELECT /* operation-window-function */ p.oid,p.proowner AS owner_oid,p",
+      "calls": 300,
+      "ms": 19.065
+     },
+     {
+      "q": "SELECT lock_key::text,phase,generation::text FROM \"pdb_control\".tenant",
+      "calls": 300,
+      "ms": 7.071
+     },
+     {
+      "q": "SELECT pg_backend_pid() AS pid,current_database() AS database,(SELECT ",
+      "calls": 300,
+      "ms": 6.454
+     }
+    ]
+   }
+  ]
+ },
+ "lifetime_op": {
+  "K": 300,
+  "per_op": {
+   "statements": 26,
+   "db_ms": 11.676,
+   "wall_ms": 29.043
+  },
+  "by_role": [
+   {
+    "role": "pdb_lifetime_api",
+    "calls": 7800,
+    "ms": 3502.887,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-role lifetime */ n.oid AS namespace_oid,n.n",
+      "calls": 300,
+      "ms": 2058.718
+     },
+     {
+      "q": "SELECT /* operation-window-table */ c.oid,c.relowner AS owner_oid,c.re",
+      "calls": 1500,
+      "ms": 730.178
+     },
+     {
+      "q": "INSERT INTO \"pdb_control\".tenant_lifecycle_operations (tenant_id,opera",
+      "calls": 300,
+      "ms": 319.761
+     },
+     {
+      "q": "UPDATE \"pdb_control\".tenant_lifecycle_operations SET finished=$4 WHERE",
+      "calls": 300,
+      "ms": 293.196
+     },
+     {
+      "q": "SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_c",
+      "calls": 1200,
+      "ms": 36.664
+     },
+     {
+      "q": "SELECT /* operation-window-function */ p.oid,p.proowner AS owner_oid,p",
+      "calls": 300,
+      "ms": 18.641
+     }
+    ]
+   }
+  ]
+ },
+ "op_with_data_tx": {
+  "K": 300,
+  "per_op": {
+   "statements": 44,
+   "db_ms": 14.619,
+   "wall_ms": 45.948
+  },
+  "by_role": [
+   {
+    "role": "pdb_api",
+    "calls": 5400,
+    "ms": 842.725,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-table */ c.oid,c.relowner AS owner_oid,c.re",
+      "calls": 1500,
+      "ms": 749.109
+     },
+     {
+      "q": "SELECT pg_backend_pid() AS pid,current_user AS role,extract($1 from ba",
+      "calls": 300,
+      "ms": 27.753
+     },
+     {
+      "q": "SELECT /* operation-window-role lower */ n.oid AS namespace_oid,n.nspo",
+      "calls": 300,
+      "ms": 21.594
+     },
+     {
+      "q": "SELECT /* operation-window-function */ p.oid,p.proowner AS owner_oid,p",
+      "calls": 300,
+      "ms": 18.602
+     },
+     {
+      "q": "SELECT lock_key::text,phase,generation::text FROM \"pdb_control\".tenant",
+      "calls": 300,
+      "ms": 7.225
+     },
+     {
+      "q": "SELECT pg_backend_pid() AS pid,current_database() AS database,(SELECT ",
+      "calls": 300,
+      "ms": 6.561
+     }
+    ]
+   },
+   {
+    "role": "pdb_lifetime_api",
+    "calls": 7800,
+    "ms": 3542.874,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-role lifetime */ n.oid AS namespace_oid,n.n",
+      "calls": 300,
+      "ms": 2094.522
+     },
+     {
+      "q": "SELECT /* operation-window-table */ c.oid,c.relowner AS owner_oid,c.re",
+      "calls": 1500,
+      "ms": 735.541
+     },
+     {
+      "q": "INSERT INTO \"pdb_control\".tenant_lifecycle_operations (tenant_id,opera",
+      "calls": 300,
+      "ms": 316.292
+     },
+     {
+      "q": "UPDATE \"pdb_control\".tenant_lifecycle_operations SET finished=$4 WHERE",
+      "calls": 300,
+      "ms": 296.751
+     },
+     {
+      "q": "SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_c",
+      "calls": 1200,
+      "ms": 34.863
+     },
+     {
+      "q": "SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_c",
+      "calls": 300,
+      "ms": 19.154
+     }
+    ]
+   }
+  ]
+ }
+}

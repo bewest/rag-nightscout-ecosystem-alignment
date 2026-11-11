@@ -1,0 +1,6 @@
+ns-pdb-n500-api-1	12.44%	397.6MiB / 62.64GiB
+ns-pdb-n500-evaluator-1	110.86%	380.1MiB / 62.64GiB
+ns-pdb-n500-postgres-1	111.71%	152MiB / 62.64GiB
+ns-pdb-n500-realtime-1	106.85%	363.9MiB / 62.64GiB
+ns-pdb-n500-tenant-admin-1	15.99%	40.35MiB / 62.64GiB
+ns-pdb-n500-vault-1	13.95%	73.98MiB / 62.64GiB

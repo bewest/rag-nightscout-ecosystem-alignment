@@ -1,0 +1,15 @@
+nsdemo_realtime	22956	26621.1	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_evaluator	3241	4407.7	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_realtime	22959	3788.9	SELECT pg_backend_pid() AS pid,current_user AS role,extract($1 from backend_start)::text AS birth,current_data
+nsdemo_lifetime_realtime	1148	3089.5	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_suppression	3573	3002.6	SELECT /* operation-window-table */ c.oid,c.relowner AS owner_oid,c.relkind AS kind,c.relpersistence AS persis
+nsdemo_lifetime_evaluator	994	2699.8	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_lifetime_realtime	1148	2322.8	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	1144	2240.3	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_lifetime_evaluator	994	2055.8	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	994	2039.4	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_suppression	715	1962.7	SELECT /* evaluator-consumer-suppression-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rol
+nsdemo_outbox	5700	1902.2	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity 
+nsdemo_outbox	1425	1840.1	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplicat
+nsdemo_outbox	1426	1755.3	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_suppression	714	850.0	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((

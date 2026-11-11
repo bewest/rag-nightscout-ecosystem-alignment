@@ -1,0 +1,6 @@
+ns-pdb-n10-api-1	12.85%	92.7MiB / 62.64GiB
+ns-pdb-n10-evaluator-1	69.55%	258.1MiB / 62.64GiB
+ns-pdb-n10-postgres-1	384.02%	162.9MiB / 62.64GiB
+ns-pdb-n10-realtime-1	34.53%	216.5MiB / 62.64GiB
+ns-pdb-n10-tenant-admin-1	8.28%	52.38MiB / 62.64GiB
+ns-pdb-n10-vault-1	13.22%	38.83MiB / 62.64GiB

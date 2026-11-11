@@ -1,0 +1,15 @@
+nsdemo_evaluator	17467	24573.9	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_realtime	12078	16270.1	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_lifetime_evaluator	2268	6854.8	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_lifetime_evaluator	2269	5360.0	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_suppression	5315	5224.7	SELECT /* operation-window-table */ c.oid,c.relowner AS owner_oid,c.relkind AS kind,c.relpersistence AS persis
+nsdemo_lifetime_evaluator	2268	5092.4	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_evaluator	17467	3645.6	SELECT pg_backend_pid() AS pid,current_user AS role,extract($1 from backend_start)::text AS birth,current_data
+nsdemo_suppression	1063	3275.1	SELECT /* evaluator-consumer-suppression-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rol
+nsdemo_outbox	2127	3273.8	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplicat
+nsdemo_outbox	8504	3205.7	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity 
+nsdemo_outbox	2127	2904.0	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesce((
+nsdemo_realtime	12076	2452.7	SELECT pg_backend_pid() AS pid,current_user AS role,extract(epoch from backend_start)::text AS birth,current_d
+nsdemo_lifetime_realtime	602	2252.0	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17153:'||coalesc
+nsdemo_lifetime_realtime	610	1558.4	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND
+nsdemo_lifetime_realtime	602	1547.6	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)

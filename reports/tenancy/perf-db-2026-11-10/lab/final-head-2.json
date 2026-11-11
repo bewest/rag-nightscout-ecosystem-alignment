@@ -1,0 +1,180 @@
+{
+ "data_tx": {
+  "K": 300,
+  "per_op": {
+   "statements": 8,
+   "db_ms": 0.849,
+   "wall_ms": 3.68
+  },
+  "by_role": [
+   {
+    "role": "pdb_api",
+    "calls": 2400,
+    "ms": 254.825,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(con",
+      "calls": 300,
+      "ms": 224.061
+     },
+     {
+      "q": "SELECT pg_backend_pid() AS pid,current_user AS role,extract($1 from ba",
+      "calls": 300,
+      "ms": 26.949
+     },
+     {
+      "q": "SELECT set_config($2, $1, $3)",
+      "calls": 300,
+      "ms": 1.321
+     },
+     {
+      "q": "SELECT $1 AS x",
+      "calls": 300,
+      "ms": 0.737
+     },
+     {
+      "q": "SELECT pg_try_advisory_lock_shared($1::bigint) AS held",
+      "calls": 300,
+      "ms": 0.731
+     },
+     {
+      "q": "SELECT pg_advisory_unlock_shared($1::bigint) AS released",
+      "calls": 300,
+      "ms": 0.686
+     }
+    ]
+   }
+  ]
+ },
+ "lifetime_op": {
+  "K": 300,
+  "per_op": {
+   "statements": 16,
+   "db_ms": 3.718,
+   "wall_ms": 8.858
+  },
+  "by_role": [
+   {
+    "role": "pdb_lifetime_api",
+    "calls": 4800,
+    "ms": 1115.433,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(",
+      "calls": 300,
+      "ms": 451.464
+     },
+     {
+      "q": "INSERT INTO \"pdb_control\".tenant_lifecycle_operations (tenant_id,opera",
+      "calls": 300,
+      "ms": 321.486
+     },
+     {
+      "q": "UPDATE \"pdb_control\".tenant_lifecycle_operations SET finished=$4 WHERE",
+      "calls": 300,
+      "ms": 286.157
+     },
+     {
+      "q": "SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_c",
+      "calls": 1200,
+      "ms": 33.043
+     },
+     {
+      "q": "SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_c",
+      "calls": 300,
+      "ms": 18.374
+     },
+     {
+      "q": "SELECT set_config($2,$1,$3)",
+      "calls": 600,
+      "ms": 2.515
+     }
+    ]
+   }
+  ]
+ },
+ "op_with_data_tx": {
+  "K": 300,
+  "per_op": {
+   "statements": 24,
+   "db_ms": 4.548,
+   "wall_ms": 12.297
+  },
+  "by_role": [
+   {
+    "role": "pdb_api",
+    "calls": 2400,
+    "ms": 268.121,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(con",
+      "calls": 300,
+      "ms": 234.793
+     },
+     {
+      "q": "SELECT pg_backend_pid() AS pid,current_user AS role,extract($1 from ba",
+      "calls": 300,
+      "ms": 29.152
+     },
+     {
+      "q": "SELECT set_config($2, $1, $3)",
+      "calls": 300,
+      "ms": 1.536
+     },
+     {
+      "q": "SELECT pg_try_advisory_lock_shared($1::bigint) AS held",
+      "calls": 300,
+      "ms": 0.935
+     },
+     {
+      "q": "SELECT $1 AS x",
+      "calls": 300,
+      "ms": 0.703
+     },
+     {
+      "q": "SELECT pg_advisory_unlock_shared($1::bigint) AS released",
+      "calls": 300,
+      "ms": 0.663
+     }
+    ]
+   },
+   {
+    "role": "pdb_lifetime_api",
+    "calls": 4800,
+    "ms": 1096.34,
+    "top": [
+     {
+      "q": "SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(",
+      "calls": 300,
+      "ms": 442.682
+     },
+     {
+      "q": "INSERT INTO \"pdb_control\".tenant_lifecycle_operations (tenant_id,opera",
+      "calls": 300,
+      "ms": 313.984
+     },
+     {
+      "q": "UPDATE \"pdb_control\".tenant_lifecycle_operations SET finished=$4 WHERE",
+      "calls": 300,
+      "ms": 283.991
+     },
+     {
+      "q": "SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_c",
+      "calls": 1200,
+      "ms": 32.184
+     },
+     {
+      "q": "SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_c",
+      "calls": 300,
+      "ms": 18.738
+     },
+     {
+      "q": "SELECT set_config($2,$1,$3)",
+      "calls": 600,
+      "ms": 2.541
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,6 @@
+ns-pdb-n200-api-1	14.96%	312MiB / 62.64GiB
+ns-pdb-n200-evaluator-1	90.93%	379.7MiB / 62.64GiB
+ns-pdb-n200-postgres-1	181.21%	152.1MiB / 62.64GiB
+ns-pdb-n200-realtime-1	68.01%	316.9MiB / 62.64GiB
+ns-pdb-n200-tenant-admin-1	0.00%	60.13MiB / 62.64GiB
+ns-pdb-n200-vault-1	0.37%	56.34MiB / 62.64GiB

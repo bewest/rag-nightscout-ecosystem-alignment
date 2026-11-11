@@ -1,0 +1,14 @@
+nsdemo_realtime	258182	41824.0
+nsdemo_api	165076	26116.7
+nsdemo_lifetime_api	36045	17840.6
+nsdemo_lifetime_realtime	29280	15360.5
+nsdemo_lifetime_evaluator	24633	13745.3
+nsdemo_suppression	20152	8051.8
+nsdemo_outbox	13127	3787.9
+nsdemo_evaluator	19783	3325.9
+nsdemo_readiness	12067	573.3
+nsdemo_lifetime_tenant_admin	9	115.5
+nsdemo_owner_reader	34	31.2
+nsdemo_owner_writer	30	29.6
+nsdemo_root_writer	24	13.3
+nsdemo_alarm	5	0.4
