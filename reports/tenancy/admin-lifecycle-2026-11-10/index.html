@@ -2336,6 +2336,8 @@
       
         
       
+        
+      
     
     
     
@@ -3351,6 +3353,64 @@
     
   
     connector-sync-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../consumer-refusal-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-refusal-2026-11-10/
   
 
     
@@ -5921,6 +5981,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#addendum-2026-11-10-second-pass-counter-writers-export-logical-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 2026-11-10 (second pass): counter writers, export, logical restore
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#addendum-2026-11-10-third-pass-bf-230-fixed-on-the-lane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 2026-11-10 (third pass): BF-230 fixed on the lane
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -5939,7 +6021,7 @@
 
 
 <h1 id="mt-admin-lifecycle-fit-the-admin-role-beside-tenant-lifecycle-operations">MT-ADMIN-LIFECYCLE-FIT: the admin role beside tenant lifecycle operations<a class="headerlink" href="#mt-admin-lifecycle-fit-the-admin-role-beside-tenant-lifecycle-operations" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>a00e0d4a3</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>c3afa1c3a</code>.</em></p>
 <p><em>Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Lane
 <code>codex/admin-lifecycle-20261110</code>; local, unpushed. Implements the 16.0.0 decisions
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase"><code>restore-census-and-ownership-phase</code></a>
@@ -6251,6 +6333,252 @@ so after the census rewrite it no longer applied; it now asserts its mutation ap
 <li>Full suite, browser tier, multitenant corpus, prcheck, CI (coordinator's joined-candidate acceptance).</li>
 <li>nightscout-deploy overlay: needs the four control grants and <code>ownership.lifecycleNamespace</code>.</li>
 </ul>
+<h2 id="addendum-2026-11-10-second-pass-counter-writers-export-logical-restore">Addendum 2026-11-10 (second pass): counter writers, export, logical restore<a class="headerlink" href="#addendum-2026-11-10-second-pass-counter-writers-export-logical-restore" title="Permanent link">&para;</a></h2>
+<p>Decision <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-counter-writers"><code>restore-census-counter-writers</code></a>
+(alignment <code>main</code> <code>c7370e9618748b9844774e36ab80cf4b05f7df52</code>) answers both decision questions above.
+Started from <code>26b5349d</code>, worktree clean.</p>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>9ef3ffa4d6e5585b08c80027f68b26b11d0636a8</code></td>
+<td>census also refuses a non-participant that can write the insertion-order or write-clock tables</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Counter writers.</strong> The census statement now also returns <code>counters</code> for each backend: the identity
+holds INSERT, UPDATE or DELETE (table level), or column INSERT/UPDATE, or owns the table, directly or
+through any membership, on a table named <code>tenant_insertion_ordinal</code> or <code>tenant_write_clock</code> in the
+protected namespaces (<code>clinical-catalogue.js</code> <code>COUNTERS</code>). A non-participant is exempt only when
+<code>clinical === false &amp;&amp; counters === false</code>; any other value refuses <code>RESTORE_COHORT_UNKNOWN_BACKEND</code>.
+Read-only identities (the plan's <code>readiness</code>, a SELECT-only probe) and <code>ownership_operator</code> stay exempt.
+TRUNCATE, REFERENCES and TRIGGER are not counted as writes for the counters, per the decision's list
+(they still count toward the clinical flag on clinical tables).</p>
+<p><strong>Export.</strong> Accepted as recommended: no export state; ownership changes are not refused during an
+export, which is one consistent snapshot transaction. Nothing added.</p>
+<p><strong>Native case</strong> (fit suite, new): a non-participant probe identity with only USAGE on the clock schema
+and INSERT on <code>tenant_write_clock</code>, connected → restore refuses <code>RESTORE_COHORT_UNKNOWN_BACKEND</code>, body
+not entered, A <code>active</code>. INSERT revoked, SELECT granted, probe and the plan's <code>readiness</code> identity
+connected with the admin role → restore <code>activated</code>. UPDATE on <code>entries.tenant_insertion_ordinal</code> →
+refuses, A <code>active</code>.</p>
+<table>
+<thead>
+<tr>
+<th>check (head <code>9ef3ffa4</code>)</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>focused family (same command as above)</td>
+<td><strong>186 passing, 0 failing</strong>, exit 0; no container left</td>
+</tr>
+<tr>
+<td><code>test-tiers.js check</code></td>
+<td><code>617 test files, 8 tiers: ok</code></td>
+</tr>
+<tr>
+<td><code>npm run lint</code></td>
+<td>0 errors, 51 warnings</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>control</th>
+<th>mutation</th>
+<th>mutated</th>
+<th>exact symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K1 (in-suite)</td>
+<td>probe granted INSERT on the write clock</td>
+<td>restore refuses</td>
+<td><code>RESTORE_COHORT_UNKNOWN_BACKEND</code>, body not entered</td>
+</tr>
+<tr>
+<td>K2 (in-suite)</td>
+<td>same probe, SELECT only (plus <code>readiness</code> connected)</td>
+<td>restore proceeds</td>
+<td><code>state: 'activated'</code></td>
+</tr>
+<tr>
+<td>K3</td>
+<td>counter clause removed from the exemption (<code>clinical === false</code> alone)</td>
+<td><strong>red</strong> 17/2</td>
+<td>native counter case: <code>Missing expected rejection.</code> (K1 goes green); unit: <code>Missing expected rejection: counters true</code></td>
+</tr>
+<tr>
+<td>K4</td>
+<td>counter clause counts SELECT too</td>
+<td><strong>red</strong> 4/1</td>
+<td>native counter case: <code>RESTORE_COHORT_UNKNOWN_BACKEND</code> at the SELECT-only step (K2 goes red)</td>
+</tr>
+</tbody>
+</table>
+<p>Restored runs: 19/0 and 5/0, tree clean, no container left (<code>controls-run-2.py</code>, <code>controls-2.json</code>).</p>
+<p><strong>Clinical logical restore with admin connected: UNMEASURED under the deployment plan; two blockers
+reproduced</strong>, both outside this lane. In the fit suite's setup (plan catalogue and grants, real admin
+role connected), with synthetic entries for A and B, a live write-clock floor, <code>capture</code> of A through
+<code>deploy/multitenant/restore.js</code>, then A altered:</p>
+<ol>
+<li><code>deploy/multitenant/restore.js</code> <code>restore()</code> calls <code>lifecycle.restoreLogical</code> without
+   <code>ledgerNamespace</code>; since <code>ed46cc43</code> (key retention) <code>admitRestore</code> refuses
+   <code>LIFECYCLE_RETENTION_LEDGER_REQUIRED</code>. It is raised <strong>inside the claim</strong>, after suspension, so A is
+   left <code>suspended</code> (reproduced: the next case read <code>phase = 'suspended'</code>).</li>
+<li>Composed directly with <code>ledgerNamespace: &lt;control&gt;</code>, the plan's <code>operator</code> identity has no grant on
+   <code>tenant_lifecycle_key_retention</code> (<code>plan.grants</code> excludes the control namespace from the operator's
+   SELECT loop and <code>operatorGrants</code> does not list it); <code>SELECT ... FOR UPDATE</code> there fails
+   <code>42501 permission denied for table tenant_lifecycle_key_retention</code>, again inside the claim.</li>
+</ol>
+<p>Probe only, not acceptance and not committed (<code>probe-logical-restore.diff</code>): with a test-only
+<code>GRANT SELECT, UPDATE (phase, restored_at)</code> on that table to the operator and <code>ledgerNamespace</code> passed,
+the logical restore of A ran to <code>activated</code> with the admin role connected: summary <code>replaced 1,
+deleted 1, created 0</code>; A's current rows equal the captured ones; B's unchanged (1 passing, run with
+<code>-g logically</code>). Which grant the operator should hold, and the driver fix, belong to the key-retention /
+deploy owners; these are the coordinator's to route.</p>
+<h2 id="addendum-2026-11-10-third-pass-bf-230-fixed-on-the-lane">Addendum 2026-11-10 (third pass): BF-230 fixed on the lane<a class="headerlink" href="#addendum-2026-11-10-third-pass-bf-230-fixed-on-the-lane" title="Permanent link">&para;</a></h2>
+<p>Started from <code>9ef3ffa4</code>, worktree clean. BF-230 (register, alignment <code>main</code>): the Compose restore driver
+leaves the tenant suspended.</p>
+<table>
+<thead>
+<tr>
+<th>commit</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>565a96aa70217a92959e3f9c5e6ccae4d4425482</code></td>
+<td><code>deploy/multitenant/config.js</code> only: the plan's <code>operator</code> gets the restore's key-retention columns (ports as an overlay to nightscout-deploy)</td>
+</tr>
+<tr>
+<td><code>666557564fab7f9c8ad8ae7fcacaab09cd0d5f00</code></td>
+<td><code>deploy/multitenant/restore.js</code> passes <code>ledgerNamespace: config.control.namespace</code>; native regression test</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ledger namespace.</strong> In the plan's layout <code>control</code> (<code>&lt;prefix&gt;_control</code>) is the namespace the lifecycle
+candidate is applied to (<code>plan.catalogues().control</code>), so it holds <code>tenant_lifecycle_key_retention</code>;
+<code>plan.lifecycle(l).namespaces</code> excludes it and the driver's config carries it as <code>control.namespace</code>.</p>
+<p><strong>Derived grant</strong> (from the SQL the restore path runs on the ledger, <code>key-retention.js</code>):
+<code>admitRestore</code> → <code>SELECT request_id, phase, retained_at, retain_until FROM … WHERE tenant_id=$1 FOR UPDATE</code>;
+<code>markRestored</code> → <code>UPDATE … SET phase=$3, restored_at=$4 WHERE request_id=$1 AND tenant_id=$2 AND phase=$5</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">SELECT</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span><span class="n">tenant_id</span><span class="p">,</span><span class="n">phase</span><span class="p">,</span><span class="n">retained_at</span><span class="p">,</span><span class="n">retain_until</span><span class="p">),</span><span class="k">UPDATE</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span><span class="n">restored_at</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="k">ON</span><span class="w"> </span><span class="ss">"&lt;prefix&gt;_control"</span><span class="p">.</span><span class="ss">"tenant_lifecycle_key_retention"</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="ss">"&lt;prefix&gt;_operator"</span>
+</code></pre></div>
+<p>No table-level SELECT (so not <code>key_names</code>, <code>key_references</code>, destroy columns), no INSERT/DELETE. The probe
+of the second pass used table-level SELECT; this is narrower.</p>
+<p><strong>Regression test</strong> (fit suite, now 6 cases): synthetic entries for A and B with a write-clock floor;
+<code>capture</code> of A through the shipped driver; A altered (one row changed, one added); A given an executed
+deletion request and a <code>retained</code> key-retention record inside its window; admin role connected; shipped
+<code>restore()</code> under the plan's grants → <code>activated</code>; summary <code>created 0, replaced 1, deleted 1</code>; A's current
+rows equal the captured ones; B's unchanged; A <code>active</code>; the retention record <code>restored</code>.</p>
+<table>
+<thead>
+<tr>
+<th>check (head <code>66655756</code>)</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>focused family (as above, plus <code>tenant-lifecycle.test.js</code>, <code>tenant-insertion-lifecycle.test.js</code>)</td>
+<td><strong>228 passing, 0 failing</strong>, exit 0; no container left</td>
+</tr>
+<tr>
+<td>fit suite alone</td>
+<td>6 passing</td>
+</tr>
+<tr>
+<td><code>node --test deploy/multitenant/bootstrap.test.js deploy/multitenant/restore.test.js</code></td>
+<td>pass 10, fail 0</td>
+</tr>
+<tr>
+<td><code>test-tiers.js check</code></td>
+<td><code>617 test files, 8 tiers: ok</code></td>
+</tr>
+<tr>
+<td><code>npm run lint</code></td>
+<td>0 errors, 51 warnings</td>
+</tr>
+</tbody>
+</table>
+<p>Controls (<code>controls-run-3.py</code>, <code>controls-3.json</code>; each restored 6/0, tree clean, no container left):</p>
+<table>
+<thead>
+<tr>
+<th>control</th>
+<th>mutation</th>
+<th>mutated</th>
+<th>exact symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td>driver drops <code>ledgerNamespace</code></td>
+<td><strong>red</strong> 4/2</td>
+<td><code>LIFECYCLE_RETENTION_LEDGER_REQUIRED</code>; the next case reads A's phase <code>'suspended'</code> (left suspended)</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>operator retention grant removed</td>
+<td><strong>red</strong> 4/2</td>
+<td><code>permission denied for table tenant_lifecycle_key_retention</code> (SQLSTATE 42501) in <code>tenantRecords</code>/<code>admitRestore</code>; A left <code>'suspended'</code></td>
+</tr>
+<tr>
+<td>L1</td>
+<td>grant without <code>UPDATE(restored_at)</code></td>
+<td><strong>red</strong> 4/2</td>
+<td>42501 in <code>markRestored</code></td>
+</tr>
+<tr>
+<td>L2</td>
+<td>grant without <code>SELECT(retain_until)</code></td>
+<td><strong>red</strong> 4/2</td>
+<td>42501 in <code>tenantRecords</code></td>
+</tr>
+<tr>
+<td>L3</td>
+<td>grant without <code>SELECT(tenant_id)</code></td>
+<td><strong>red</strong> 4/2</td>
+<td>42501 in <code>tenantRecords</code></td>
+</tr>
+<tr>
+<td>L4</td>
+<td>SELECT columns only, no UPDATE</td>
+<td><strong>red</strong> 4/2</td>
+<td>42501 in <code>tenantRecords</code> (<code>FOR UPDATE</code> needs an UPDATE column)</td>
+</tr>
+</tbody>
+</table>
+<p>L1–L4 show each column of the grant is required by a statement the restore runs. Every refusal is inside
+the claim, so the tenant stays suspended by design (no automatic reopen).</p>
+<p><strong>Other callers without <code>ledgerNamespace</code></strong> (<code>git grep</code> for <code>restoreLogical</code>, <code>importArtifact(</code>,
+<code>logical-restore').restore</code>):
+- <code>deploy/multitenant/restore.js:111</code>: fixed here; <code>deploy/multitenant/demo.js</code> reaches restore only through it.
+- <code>lib/tenant-lifecycle/README.md</code> (example block under "Obtain its connection and opaque claim"): the
+  <code>importArtifact</code> call omits <code>ledgerNamespace</code>, although the prose above it and the "Restore gate" bullet
+  require it. Copied as written it would refuse <code>LIFECYCLE_RETENTION_LEDGER_REQUIRED</code>. Not edited.
+- <code>tools/lab/tenant-whole-c/core.js:619</code>: <code>importArtifact</code> without it, expecting
+  <code>LIFECYCLE_IDENTITY_IMPORT_UNSUPPORTED</code>, which <code>importArtifact</code> raises before the retention admission
+  (read-derived, not run).
+- <code>tests/tenant-insertion-lifecycle.test.js:71,91</code>: without it on purpose; they expect
+  <code>LIFECYCLE_MAINTENANCE_REQUIRED</code> and <code>LIFECYCLE_RESTORE_CLAIM_INVALID</code>, which come first (both pass in the
+  focused run).
+- Every other caller (<code>tests/tenant-lifecycle.test.js</code>, <code>tests/tenant-logical-restore.test.js</code>,
+  <code>tests/tenant-key-retention.integration.test.js</code>) passes it.</p>
+<p>The "clinical logical restore with admin connected" item in the second-pass addendum is now measured by
+this regression test under the plan's grants.</p>
 
 
 
