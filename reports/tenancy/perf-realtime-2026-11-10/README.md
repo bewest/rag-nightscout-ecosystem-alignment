@@ -542,3 +542,80 @@ tenants on this host. The unit bound is the discriminating check. Counters:
   lines) were overwritten when a later deploy reused their run directories; the figures above for
   those runs are quoted from tool output at capture time. Their run files (`*-restart-s2.json`,
   `*-campaign.txt`) are kept.
+
+## Update 2026-11-11 (round 3, continued): the complete write clock
+
+Lane head `eacd6a3b`: perf-db `03661f22` merged (`6264b976`, no conflicts), then the realtime side of
+decision write-clock-complete.
+
+- **Change-stamp function, catalogue `0002`:** `DROP FUNCTION`, then `CREATE` returning
+  `(tenant_id, last_stamp, last_delete_stamp)`, then `REVOKE` from `PUBLIC`.
+  - The reader checks the new result type and body, and returns the stamp and the pair (`clock`).
+  - The operational digest is re-pinned.
+  - `clock` precedes `change_stamps` in the catalogue map, and the deployment grants run after every
+    catalogue, so the realtime and evaluator identities hold `EXECUTE` after the `DROP`.
+- **Incremental view:** reads the pair in its snapshot, and reconciles in full when
+  `last_delete_stamp` is past the checkpoint. The physical count stays as the guard for a writer
+  outside the clock.
+- **Periodic absence check retired:** removed from the runtime, the realtime configuration and the
+  deployment configuration. An unchanged stamp is an unchanged tenant.
+
+### Checks (reproduced; PostgreSQL 16.15, disposable container)
+
+| check | result |
+|---|---|
+| `RT_HARD_DELETE_STAMP_ONLY` | passes: stamp-only detection publishes the hard delete |
+| `RT_HARD_DELETE` | passes: every socket within 200 ms (ticks of 20 ms) |
+| `RT_NO_PERIODIC_REFRESH` (replaces `RT_ABSENCE_SHARE`) | passes: 200 unchanged tenants, 0 refreshes in 300 ms; one write, one refresh |
+| `IV_DELETE_STAMP` (new) | passes: a hard delete through the clock moves both stamps; the view reconciles on the delete stamp (`deletes` 1, `absences` 0) and the reading leaves |
+| `CS_OLD_SHAPE_REFUSED` (new) | passes: the `0001` function is refused with `CHANGE_STAMPS_FUNCTION_UNSAFE` |
+| change-stamps integration | 10 passing |
+| incremental-view integration | 6 passing |
+| tenant-write-clock-complete integration | 6 passing |
+| unit tier (`scripts/test-tiers.js run unit`) | 3280 passing, 1 failing: `preview-domains-equivalence` (see below) |
+
+Controls, each restored after:
+
+| break | symptom |
+|---|---|
+| every warm tenant due on every tick | red: `RT_NO_PERIODIC_REFRESH refreshes of unchanged tenants over 300 ms (15 ticks)` |
+| ignore `last_delete_stamp` | red on `IV_DELETE_STAMP_REASON` (deletes/absences `[0, 1]`), but the deleted reading still leaves the view: the physical-count guard reconciles instead |
+| ignore `last_delete_stamp` and remove the count guard | red: `IV_DELETE_STAMP the deleted reading leaves the view` |
+| reader without its attribute check | red: every `CS_ALTERED_REFUSED` case and `CS_BODY_REPLACED` (5 failing) |
+| reader without the result-type comparison | green, 10 passing: the comparison is shadowed (see below) |
+
+- **Result-type comparison:** an old shape fails when the call is planned (`42703`), and any other
+  shape needs a different body, which the body comparison refuses. The planning error now maps to
+  `CHANGE_STAMPS_FUNCTION_UNSAFE`; before this round it surfaced as the raw database error.
+- **`preview-domains-equivalence`:** the failure arrived with the merge. The golden fixture
+  `tests/fixtures/preview-domains-equivalence.golden.json` holds perf-db's absolute worktree path in
+  its `views` field, and fails at `03661f22` from any other checkout. It is perf-db's to fix.
+
+### Idle cost at 1,000 tenants × 2 sockets, before and after (180 s window)
+
+| figure | `dc8d10bc` (absence check every 60 s) | `eacd6a3b` (stamps only) |
+|---|---|---|
+| realtime DB-ms per minute | 5480 (lifetime leases 3433 + stamp poll 2047) | 1937 (stamp poll only) |
+| realtime DB-ms per tenant-minute | 5.48 | 1.94 |
+| realtime operation leases in the window | 2599 | 0 |
+| realtime CPU-ms per minute | 32617 | 26501 |
+| realtime CPU-ms per tenant-minute | 32.6 | 26.5 |
+| postgres CPU-ms per minute | 56808 | 59043 |
+| frames per socket-minute | 0 | 0 |
+| subject authorizations per socket-minute | 0.827 | 0.826 |
+| host load average during the run | 6.7 at start | 14 to 16 (a peer bench shared the host) |
+
+- **DB time:** the absence check was 63% of realtime's idle DB time. What remains is the
+  once-a-second stamp poll (one function call for all 1,000 tenants).
+- **CPU:** the comparison crosses host loads and is indicative only. The remaining realtime CPU at
+  idle is not database work. It is consistent with transport keep-alive and the authorization recheck
+  (0.83 per socket-minute), which is read-derived, not profiled.
+
+**Restart gate on `eacd6a3b`:** stock clients 2000/2000 in 85.3 s, under the 300 s bound
+(`restartCommandMs` 813, host load about 15).
+
+Runs: `runs/rt4-n1000-eacd6a3b-{idle-s2,restart-s2}.json`, `-diag.txt`, `-campaign.txt`.
+
+The bench overlay is now generated from the lane head. The earlier overlay (core `650cfce3`) carried
+the retired `absenceCheckMs`, and the realtime configuration refused it. Its `config.js` and
+`bootstrap.js` match every head measured before this one, so those runs stand.
