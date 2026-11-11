@@ -137,51 +137,59 @@ def accepted():
 
 
 def current():
-    p = Plate('Current private API composition', 'Read-derived from joined dc795bd1 • reference bindings, not universal port defaults',
-        'IMPLEMENTED CONTRACTS  |  UDS reference + explicit HTTP adapter; one contract per listener')
+    p = Plate('Private API composition: one internal listener per role', 'Read-derived from the 2026-11-10 lanes joined on codex/batch-join-20261110 • in acceptance, not pushed',
+        'IN ACCEPTANCE  |  serve.internal per role (lane 78ecba76); #8898 head b70ad83f still opens one listener per contract', True)
     p.zone(198, 134, '1  CLIENT / REFERENCE INGRESS', 'Network reachability and application authority are separate', '#f1f5fb')
     p.card(300, 246, 1000, 'Browsers, apps, uploaders and owner/operator clients', ['Only nginx is host-published by the synthetic Compose binding'], h=70)
     p.arrow([(800,316),(800,350)])
     p.zone(350, 167, '2  EDGE TRUST BOUNDARY', 'nginx already handles HTTP proxying and WebSocket upgrade/tunnel', '#eef6f6')
-    p.card(64, 392, 1472, 'nginx — reference container :8080; host 127.0.0.1:18080', ['Routes consumer API / UI / Socket.IO; does not publish private service or operator control endpoints'], h=94)
-    p.zone(535, 105, '3  CONSUMER CONTRACTS', 'Consumer/management HTTP is separate from private API listeners', '#f3f5fa')
+    p.card(64, 392, 1472, 'nginx — reference container :8080; host 127.0.0.1:18080', ['Routes consumer API / UI / Socket.IO; publishes no internal listener, admin plane or owner management port'], h=94)
+    p.zone(535, 105, '3  CONSUMER CONTRACTS', 'Consumer/management HTTP is separate from the internal listener', '#f3f5fa')
     for x,w,title,lines in [(64,456,'UI / assets',['Backend HTTP :1340']), (572,456,'REST APIs',['Backend HTTP :1337']), (1080,456,'Realtime / Socket.IO',['Backend HTTP :1339'])]:
         p.card(x,577,w,title,lines,h=60)
     for x in [292,800,1308]: p.arrow([(x,486),(x,535)])
-    p.zone(659, 450, '4  ACTUAL ROLE PROCESSES', 'Application and lifecycle are both PRIVATE API categories', '#f8f9fb')
+    p.zone(659, 650, '4  ACTUAL ROLE PROCESSES', 'One serve.internal per process; role code fixes its contracts', '#f8f9fb')
     for x,title,lines,terminal in [
-        (64,'UI process',['Page / assets listener :1340','No private API in this binding','No database credentials'],'Consumer HTTP only'),
-        (572,'REST APIs process',['Consumer HTTP :1337','Application: api.sock','Lifecycle: cohort-api.sock','Current authority + mutation executor'],'Private: socket-authority + lifecycle'),
-        (1080,'Realtime process',['Consumer Socket.IO :1339','Application: alarm.sock','Lifecycle: cohort-realtime.sock','Owns sessions / fanout / messages'],'Private: alarm-delivery + lifecycle')]:
+        (64,'UI process',['Page / assets listener :1340','No internal contract, so no','serve.internal; no DB credentials'],'Consumer HTTP only'),
+        (572,'REST APIs process',['Consumer HTTP :1337','serve.internal: api.sock','socket-authority','lifecycle-participant'],'Authority + mutation executor'),
+        (1080,'Realtime process',['Consumer Socket.IO :1339','serve.internal: realtime.sock','alarm-delivery','lifecycle-participant'],'Owns sessions / fanout / messages')]:
         p.card(x,706,456,title,lines,terminal,h=178)
     for x in [292,800,1308]: p.arrow([(x,637),(x,659)])
     for x,title,lines,terminal in [
-        (64,'Evaluator process',['No consumer HTTP listener','Lifecycle: cohort-evaluator.sock','health() is in-process','No ring / metrics API yet'],'Calls realtime notification delivery'),
-        (572,'Tenant-admin process',['Management HTTP :1341','Not routed by reference edge','cohort-tenant-admin.sock','Scoped owner / management authority'],'Private lifecycle listener is separate'),
-        (1080,'Maintenance jobs',['Operator-invoked bootstrap / restore','No inbound listener','Direct participant endpoints','Pins actual process incarnations'],'Consumes private lifecycle API')]:
+        (64,'Evaluator process',['No consumer HTTP listener','serve.internal: evaluator.sock','lifecycle-participant','health() is in-process'],'Calls realtime alarm-delivery'),
+        (572,'Tenant-admin process',['Management HTTP :1341','Not routed by reference edge','serve.internal: tenant-admin.sock','lifecycle-participant'],'Owner settings, export, pause'),
+        (1080,'Maintenance jobs',['Operator-invoked bootstrap / restore','No inbound listener','Calls every participant directly','Pins actual process incarnations'],'Consumes lifecycle-participant')]:
         p.card(x,904,456,title,lines,terminal,h=178)
-    p.rect(48,1126,1504,72,'#edf1f6','none')
-    p.text(68,1155,'REFERENCE: one host / Compose backend; private socket files carry HTTP, not a separate wire protocol.',18,INK,'600')
-    p.text(68,1181,'ALTERNATIVE: explicit private HTTP origin + optional bind address. Network access policy belongs to deployment.',18,MUTED)
-    p.zone(1216,157,'5  BACKING RESOURCES', 'Role-scoped authority is unchanged by listener or transport choice', '#f0f7f3')
-    for x,title,lines in [(64,'PostgreSQL',['Clinical / authority / lifecycle state','Separate role-scoped connections']), (572,'Vault Transit — HTTPS',['Configured API provider / bootstrap','Deployment-managed access']), (1080,'Recovery artifacts',['Operator-owned snapshots','Claim-bound restore operations'])]:
-        p.card(x,1258,456,title,lines,h=100)
-    y=p.table(1417,[
+    p.card(64,1102,456,'Admin role — operator plane',['ADMIN_HOSTNAME / ADMIN_PORT','(default 127.0.0.1:1338); no serve.internal','ownership-operations v1 only','DB identity: ownership_operator'],'Not a lifecycle participant',h=178)
+    p.card(572,1102,964,'serve.internal rules (decided 2026-11-10)',[
+        'Default: unix socket <runtime>/<roles>.sock; <runtime> = $XDG_RUNTIME_DIR/nightscout or /run/nightscout',
+        'Network only when NS_SERVE_INTERNAL_HOST and _PORT are both set; no authentication of its own',
+        'Peers are dialled at NS_<ROLE>_INTERNAL_URL or _SOCKET; configuration cannot move or merge contracts',
+        'SIGTERM: stop accepting, finish in-flight calls up to the deadline (5 s default), then force-close'],
+        'A force-closed call stays uncertain for its caller',h=178)
+    p.rect(48,1326,1504,72,'#edf1f6','none')
+    p.text(68,1355,'REFERENCE: the Compose demo binds /run/ns-ipc/<role>.sock for every role; socket files carry HTTP, not a separate protocol.',18,INK,'600')
+    p.text(68,1381,'The admin listener may share the API address on another port; never every interface; non-loopback needs an explicit acknowledgement.',18,MUTED)
+    p.zone(1416,157,'5  BACKING RESOURCES', 'Role-scoped authority is unchanged by listener or transport choice', '#f0f7f3')
+    for x,title,lines in [(64,'PostgreSQL',['Clinical / authority / lifecycle / activity','Separate role-scoped connections']), (572,'Vault Transit — HTTPS',['Configured API provider / bootstrap','Deployment-managed access']), (1080,'Recovery artifacts',['Operator-owned snapshots','Claim-bound restore operations'])]:
+        p.card(x,1458,456,title,lines,h=100)
+    y=p.table(1617,[
         ('DATA','Client → nginx → consumer listener','Reference HTTP routing and WebSocket upgrade. Realtime still owns application protocol, subscriptions, fanout and exact message authorization.'),
-        ('APP-1','Evaluator → realtime','deliverAlarm: notification handoff, not an arbitrary proxy. Reference alarm.sock; a private HTTP endpoint can bind the same contract.'),
-        ('APP-2','Realtime → API','authorizeSocket and executeSocketMutation: current permissions and authorized writes/ACKs. Delivery can itself check recipient authority.'),
-        ('LIFE','Controller → each role instance','Private getStatus / invalidateTenant. Exact instance roster, actual incarnation and drain/invalidation rules remain. Lifecycle is purpose, not a different transport.'),
-        ('OPS','Process health / future operational APIs','Evaluator health is in-process. General remote readiness/metrics contracts and shared private-listener composition are not implemented here.'),
-        ('TRUST','Deployment → private listener reachability','UDS uses protected paths/service UID; HTTP uses explicit network trust. Service/version headers identify contracts, not credentials. No new bearer protocol.'),
+        ('APP-1','Evaluator → realtime','alarm-delivery (deliverAlarm). The output revision changes only on content change, which wakes the consumer; an active, unacknowledged alarm repeats on the tenant heartbeat (60 s default).'),
+        ('APP-2','Realtime → API','socket-authority (authorizeSocket, executeSocketMutation): current permissions and authorized writes/ACKs. Delivery can itself check recipient authority.'),
+        ('LIFE','Controller → each role instance','lifecycle-participant (getStatus / invalidateTenant) on each serve.internal, callable for a paused or suspended tenant. Exact roster, actual incarnation and drain/invalidation rules remain.'),
+        ('ADMIN','Operator → admin listener','ownership-operations (list, add, transfer, recover), refused unless the tenant is active. The restore census exempts the ownership_operator identity because it holds no clinical or counter-write grant.'),
+        ('ACTIVE','Roles → tenant activity row','Paused: uploads stored, reads/UI 423 TENANT_PAUSED, evaluator stopped, sockets disconnected. Suspended: everything 423 TENANT_SUSPENDED, sockets disconnected.'),
+        ('TRUST','Deployment → internal listener reachability','Socket default under a 0700 runtime directory; host/port needs explicit network trust. Service/version headers identify contracts, not credentials.'),
     ])
-    p.text(48,y+36,'Source: dc795bd1 shared transport, contracts and consuming roles; later 692bd507 changes application documentation only.',18,MUTED)
-    p.text(48,y+64,'Acceptance: joined dc795bd1 campaign; HTTP beyond loopback, Kubernetes and multi-host admission remain UNMEASURED.',18,AMBER,'600')
-    p.text(48,y+92,'Evidence: reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/; diagram is a read-derived view.',17,MUTED)
+    p.text(48,y+36,'Source: lanes 78ecba76 (internal listener), 1376c294 + 66655756 (admin role), 07981b55 (activity), 956d0940 (alarm repeat).',18,MUTED)
+    p.text(48,y+64,'Joined acceptance is in progress; HTTP beyond loopback, Kubernetes and multi-host admission remain UNMEASURED.',18,AMBER,'600')
+    p.text(48,y+92,'Evidence: reports/tenancy/internal-listener-2026-11-10/README.md and admin-lifecycle-2026-11-10/; diagram is a read-derived view.',17,MUTED)
     return p.finish(y+105,'current-internal-api-topology')
 
 
 def proposed():
-    p=Plate('Proposed private-listener and API-scale target','Explicit contract modules • deployment-selected transport • exact maintenance instances','PROPOSED COMPOSITION / SCALE — NOT IMPLEMENTED  |  Current shared transport is the starting point',True)
+    p=Plate('Proposed fixed-roster API-scale target','One serve.internal per role instance • deployment-selected socket or host/port • exact maintenance instances','PROPOSED SCALE — NOT IMPLEMENTED  |  Starts from one internal listener per role (in acceptance)',True)
     p.zone(198,115,'1  PUBLIC / DMZ', 'DNS supplies reachability, not permission', '#f1f5fb')
     p.card(300,241,1000,'Clients / browsers → public DNS name',['Permanent or temporary name binds to current tenant/access policy'],h=64)
     p.arrow([(800,305),(800,332)])
@@ -195,7 +203,7 @@ def proposed():
         p.card(x,650,w,title,lines,h=58)
     for x in [229,800,1371]:p.arrow([(x,579),(x,610)])
     p.zone(730,327,'5  RUNTIME INSTANCES — PLACEMENT SEPARATE', 'Equivalent REST replicas; explicit maintenance participants', '#f8f9fb')
-    for x,title,lines,term in [(64,'UI process',['Templates / assets'],'No DB grant'),(436,'REST replica A',['Consumer + private listener','Typed modules / local pools'],'PG role grant  ·  N1 / C1'),(808,'REST replica B',['Same consumer/private modules','Typed modules / local pools'],'PG role grant  ·  N1 / C2'),(1180,'Realtime',['Consumer + private listener','Sessions / fanout / messages'],'PG reader grant  ·  N2 / C3')]:
+    for x,title,lines,term in [(64,'UI process',['Templates / assets'],'No DB grant'),(436,'REST replica A',['Consumer + serve.internal','Same role contracts / local pools'],'PG role grant  ·  N1 / C1'),(808,'REST replica B',['Consumer + serve.internal','Same role contracts / local pools'],'PG role grant  ·  N1 / C2'),(1180,'Realtime',['Consumer + serve.internal','Sessions / fanout / messages'],'PG reader grant  ·  N2 / C3')]:
         p.card(x,780,356,title,lines,term,h=120)
     p.arrow([(229,708),(229,730)])
     p.arrow([(614,708),(614,730)])
@@ -204,8 +212,8 @@ def proposed():
     for x,title,lines,term in [(64,'Evaluator — one producer',['Private lifecycle / workload API','M7: inspect assigned slice / peers'],'PG declared grant  ·  N2 / C4'),(572,'Owner REST module',['May co-locate with API','Retains management audience'],'PG management grant  ·  C5'),(1080,'Private maintenance controller',['Platform/config roster input','C1…C5 per-instance fanout'],'PG maintenance grant  ·  C')]:
         p.card(x,920,456,title,lines,term,h=120)
     p.rect(48,1073,1504,62,'#fff4dd','none')
-    p.text(68,1100,'PRIVATE LISTENER: one per component by default, explicitly composing application, lifecycle and operational modules.',18,INK,'600')
-    p.text(68,1125,'UDS or TCP is a binding choice. Service routing never substitutes for exact per-instance lifecycle addressing.',18,MUTED)
+    p.text(68,1100,'INTERNAL LISTENER: one serve.internal per role instance; role code fixes its contracts (decided 2026-11-10).',18,INK,'600')
+    p.text(68,1125,'Socket or host/port is a binding choice. Service routing never substitutes for exact per-instance lifecycle addressing.',18,MUTED)
     p.zone(1153,158,'6  BACKING RESOURCES', 'Durability, recovery and effective grants remain explicit', '#f0f7f3')
     for x,title,lines in [(64,'PostgreSQL',['Tenant / operation authority','Aggregate API pools need limits']), (572,'Vault Transit — TLS',['Scoped Transit capabilities','Deployment-managed access']), (1080,'Durable recovery artifacts',['Declared store and ownership','Verify restores and retained keys'])]:
         p.card(x,1195,456,title,lines,h=100)
@@ -213,15 +221,16 @@ def proposed():
     p.text(68,1387,'OIDC IdP ↔ optional shared human-session integration: separate current-authority adapter; no implicit DATA/root grant.',19,MUTED)
     y=p.table(1472,[
         ('DATA','Edge → UI / API service / realtime','TLS public ingress; tenant selection, current access policy and client authority still apply. Public operator ingress is forbidden.'),
-        ('N1','Realtime → REST service → replica A or B','Current UDS/explicit HTTP adapter; proposed multi-contract private listener and replica routing. Deployment controls access; existing tenant/client authority remains.'),
+        ('N1','Realtime → REST service → replica A or B','socket-authority on each replica serve.internal; replica routing is proposed. Deployment controls access; existing tenant/client authority remains.'),
         ('N2','Evaluator singleton → realtime singleton','Same alarm-delivery contract over selected binding. Remote deployment acceptance remains open. Realtime replication needs separate fanout ownership.'),
-        ('C1…C5','Controller → each exact role instance','Private lifecycle modules may share each instance private listener. Complete roster and pinned incarnation remain mandatory; a load-balanced sample is insufficient.'),
-        ('OPS','Monitoring → each private listener','Proposed health/readiness/metrics contracts with fixed method/path registration and operation-specific lifetime rules. No metrics API is implied by a worker box.'),
+        ('C1…C5','Controller → each exact role instance','lifecycle-participant on each instance serve.internal. Complete roster and pinned incarnation remain mandatory; a load-balanced sample is insufficient.'),
+        ('OPS','Monitoring → each private listener','Proposed health/readiness/metrics contract on serve.internal with fixed method/path registration and operation-specific lifetime rules. No metrics API is implied by a worker box.'),
         ('EDGE','nginx / gateway → decision projection','Optional JSON/status/header projection of existing application authority for gateway consumers. Direct app-to-app APIs keep the same authority without a mandatory gateway hop or authentication redesign. Message/write gates remain.'),
         ('STORE','Each role → declared backing capabilities','Effective per-role PostgreSQL grants; scoped API/secret-provider Vault access. No blanket all-role database, Vault or artifact-store authority.'),
         ('OWNER','Owner client → authenticated private control','Separately authenticated listener or admitted edge route. Optional OIDC requires its own joined provider/session acceptance; operator control remains private.'),
+        ('ADMIN','Operator → admin listener','ownership-operations on the operator plane (ADMIN_HOSTNAME/ADMIN_PORT) with its own ownership_operator identity; not a lifecycle participant and not scaled with API replicas.'),
     ])
-    p.text(48,y+36,'Compose private modules explicitly: method/path ownership, collisions, schemas, current authority and lifecycle hooks.',18,AMBER,'600')
+    p.text(48,y+36,'Remaining: operational contract, remote binding qualification, fixed-roster replicas and their acceptance (work plan).',18,AMBER,'600')
     p.text(48,y+64,'Acceptance: public/private isolation, no self-blocking control drain, exact roster, replacement, ambiguity and pool/load bounds.',18,MUTED)
     p.text(48,y+92,'No dynamic API membership, replicated realtime or production/HA claim. MT-EVALUATOR-PARTITION is separate M7 work.',18,AMBER,'600')
     p.text(48,y+120,'Design source: docs/30-design/tenancy/runtime-topology.md and selectable-endpoints-and-api-scaling-plan.md.',17,MUTED)

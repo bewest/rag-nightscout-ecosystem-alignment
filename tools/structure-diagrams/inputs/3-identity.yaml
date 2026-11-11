@@ -12,7 +12,9 @@
 #               derived from the API secret); storage.js:140-148 (default roles); lib/settings.js:39 and
 #               README.md:242-244 (AUTH_DEFAULT_ROLES `readable`, or `denied`); endpoints.js:38-98
 #               (subjects and roles managed with admin permissions); configuration-and-delegation §5.3
-#   proposed  - execution plan §1 and §2.8-§2.9: D7 (ns-admin, unreachable), D13 (no deployment
+#   proposed  - (2026-11-10) release decisions tenant-root-single-site-parity, owner-may-pause,
+#               restore-census-and-ownership-phase; owner-authority.md; multitenancy-decisions.md
+#               "Operator, owner and data authority". Earlier sources: execution plan §1 and §2.8-§2.9: D7 (ns-admin, unreachable), D13 (no deployment
 #               secret in multi mode; tenant root credential), D14 (per-tenant signing key), D16
 #               (three listeners; ns-tenant-admin a second socket in ns-api, decided 2026-10-16),
 #               D17 (devices native, never Ory; Kratos for people adopted in principle, gated; Hydra
@@ -23,26 +25,26 @@ title: "3·identity · Who is who on a hub, and who may do what"
 base: false
 scenarios: [believed, actual, proposed]
 nodes:
-  - {id: owner, label: "Site owner (person\nor family; the tenant\nowner when hosted)", kind: human, level: 0, column: 1, icon: user}
-  - {id: hoster, label: "Hosting operator", kind: org, level: 0, column: 3, icon: building-2, status: proposed, in: [proposed]}
+  - {id: owner, label: "Site owner (person\nor family; the tenant\nowner in multitenant)", kind: human, level: 0, column: 1, icon: user}
+  - {id: hoster, label: "Multitenant\noperator", kind: org, level: 0, column: 3, icon: building-2, status: proposed, in: [proposed]}
   - {id: people, label: "Caregivers,\nfollowers and\nclinicians", kind: human, level: 1, column: 0, icon: users}
   - {id: apps, label: "Uploaders,\ncontrollers and\nclient apps", kind: entity, level: 1, column: 2, icon: smartphone}
   - {id: hub, label: "Nightscout hub:\ndata API", kind: commons, level: 2, column: 1, icon: server}
-  - {id: tadmin, label: "ns-tenant-admin:\nthe owner's socket", kind: entity, level: 2, column: 3, icon: settings, status: proposed, in: [proposed]}
+  - {id: tadmin, label: "Tenant-admin:\nthe owner's\nmanagement listener", kind: entity, level: 2, column: 3, icon: settings, status: proposed, in: [proposed]}
   - {id: reg, label: "Controller\nregistration", kind: process, level: 3, column: 2, icon: clipboard-list, status: proposed, in: [proposed]}
 edges:
   - {from: owner, to: hub, kind: control, label: "sets API_SECRET",
      labels: {believed: "sets API_SECRET, a\npassphrase of 12 or\nmore characters",
-              actual: "API_SECRET grants every\npermission (*); it also\nroots every subject token"},
-     in: [believed, actual]}
+              actual: "API_SECRET grants every\npermission (*); it also\nroots every subject token",
+              proposed: "the tenant API_SECRET:\nsame as a single site\n(data, subjects, roles)"}}
   - {from: owner, to: apps, kind: control, label: "credential",
      labels: {believed: "gives the API secret\nso the app can upload",
               actual: "the API secret, or a\nsubject's token with the\nroles the owner chose",
-              proposed: "a native per-subject\ncredential; never Ory\n(D17)"}}
+              proposed: "a native per-subject\ncredential (D17)"}}
   - {from: owner, to: people, kind: control, label: "access",
      labels: {believed: "shares the address,\nand the secret with\nthose who help",
               actual: "shares the secret or a\ntoken; no scoped, expiring\ngrant exists",
-              proposed: "per-person login (Ory\nKratos, gated); scoped\ngrants not yet decided"}}
+              proposed: "sign-in through an\nOIDC provider; roles\nfrom the subject"}}
   - {from: apps, to: hub, kind: control, label: "upload",
      labels: {believed: "upload with\nthe secret",
               actual: "a token resolves to its\nsubject's roles plus the\ndefault roles; JWT 8 h",
@@ -50,12 +52,12 @@ edges:
   - {from: people, to: hub, kind: control, label: "view",
      labels: {believed: "open the site",
               actual: "no credential: the\ndefault roles",
-              proposed: "a token Nightscout mints\nafter login (D17)"}}
+              proposed: "a token Nightscout mints\nafter sign-in (D17)"}}
   - {from: hub, to: people, kind: data, label: "glucose and treatments",
      labels: {actual: "default readable (*:*:read)\nunless set to denied;\nread is all or nothing",
               proposed: "read by role, inside\nthe tenant's own rows\n(RLS, D3)"}}
-  - {from: hoster, to: tadmin, kind: control, label: "mints the tenant root\ncredential from ns-admin,\nan unreachable port (D7, D13)", status: proposed, in: [proposed]}
-  - {from: owner, to: tadmin, kind: control, label: "root credential, which\nthe owner can rotate;\nno deployment secret", status: proposed, in: [proposed]}
+  - {from: hoster, to: tadmin, kind: control, label: "provisions, suspends,\nassisted ownership changes\n(private admin plane, D7)", status: proposed, in: [proposed]}
+  - {from: owner, to: tadmin, kind: control, label: "settings, export,\ndeletion, ownership,\npause", status: proposed, in: [proposed]}
   - {from: apps, to: reg, kind: control, label: "registers; bound to the\ncreating subject, not\nthe token (§3.5)", status: proposed, in: [proposed]}
   - {from: tadmin, to: reg, kind: control, label: "retire, block, release,\ntransfer; api-secret\nbindings move to the\nroot credential", status: proposed, in: [proposed]}
 views:

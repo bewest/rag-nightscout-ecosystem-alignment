@@ -2,7 +2,7 @@
   "as_of": "2026-11-10",
   "integration": "workspace/multitenant-20261102 (draft PR #8898)",
   "observed_tip": "b70ad83fa4cdaeb7e6023137a05bd811d7db606a",
-  "integration_note": "Draft #8898 carries the accepted ed2 one-host reference, the M6a owner/OIDC and internal service API candidate (dc795bd1) and the M6b join: listener composition, key retention, ownership operations, single-site OIDC provisioning and the CodeQL 150 fix. Read from GitHub 2026-11-10 20:54 UTC: head b70ad83f, open draft, 17 checks pass and 3 skipped (CodeQL and the multitenant opt-in corpus included). The frozen-head acceptance is reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md. On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moved to a Vault Agent sidecar and native acceptance runs through a disposable harness (release decisions, 2026-11-09). No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
+  "integration_note": "Draft #8898 carries the accepted ed2 one-host reference, the M6a owner/OIDC and internal service API candidate (dc795bd1) and the M6b join: listener composition, key retention, ownership operations, single-site OIDC provisioning and the CodeQL 150 fix. Read from GitHub 2026-11-10 20:54 UTC: head b70ad83f, open draft, 17 checks pass and 3 skipped (CodeQL and the multitenant opt-in corpus included). The frozen-head acceptance is reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md. The next batch (codex/batch-join-20261110) joins the 2026-11-10 lanes: last-owner guard (BF-229), root admin parity, ownership in the admin role with the lifecycle fit (BF-230), one serve.internal per role with graceful shutdown, pause/suspend activity, export-file removal on key destruction, content-change revisions with the alarm repeat clock (BF-231) and tenant extended settings (BF-232). That join is in acceptance and not pushed; the lanes below record their own focused evidence. On 2026-11-09 M6 was split into M6a-M6d and M7, the deployment tree moved to nightscout-deploy, Vault connectivity moved to a Vault Agent sidecar and native acceptance runs through a disposable harness (release decisions, 2026-11-09). No dev merge, operator release, production/default enablement, capacity or multi-host claim.",
   "milestones": [
     {
       "id": "M0",
@@ -101,9 +101,12 @@
       ],
       "work": [
         "MT-OWNERSHIP-OPS",
-        "MT-KEY-RETENTION"
+        "MT-KEY-RETENTION",
+        "MT-M6B-JOIN",
+        "MT-OWNER-LAST-GUARD",
+        "MT-ADMIN-ROLE-OWNERSHIP"
       ],
-      "gate": "Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Both capabilities are in the b70ad83f joined acceptance (reports/tenancy/m6b-join-2026-11-10). Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; no promotion recorded."
+      "gate": "Operator-assisted ownership add/transfer/recovery with race and current-authority controls; 30-day retained-key destruction and after-window refusal; adopted deletion ceremony. Both capabilities are in the b70ad83f joined acceptance (reports/tenancy/m6b-join-2026-11-10). Ownership in the admin role, the last-owner guard and export-file removal are fixed on lane branches and in the batch join, which is in acceptance. Real role processes over Compose, the deploy-repo ownership overlay and the production key custodian remain open; no promotion recorded."
     },
     {
       "id": "M6c",
@@ -316,6 +319,66 @@
       "id": "MT-EVALUATOR-PARTITION",
       "lane": "M7 / evaluator scaling",
       "next": "Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control."
+    },
+    {
+      "id": "MT-M6B-JOIN",
+      "lane": "M6b / b70ad83f on #8898, CI green",
+      "next": "Carried forward by the batch join (codex/batch-join-20261110), in acceptance."
+    },
+    {
+      "id": "MT-OIDC-SINGLE-PROVISION",
+      "lane": "Single-site OIDC / joined at b70ad83f",
+      "next": "Authoritative identity list decided 2026-11-10. Real provider interoperability and concurrent starts remain UNMEASURED."
+    },
+    {
+      "id": "MT-OWNER-LAST-GUARD",
+      "lane": "M6b / fixed on lane 65657a62 (BF-229); in the batch join",
+      "next": "Joined acceptance on the batch candidate."
+    },
+    {
+      "id": "MT-ADMIN-ROLE-OWNERSHIP",
+      "lane": "M6b / fixed on lane 1376c294; in the batch join",
+      "next": "Joined acceptance; port the ownership_operator grants to a nightscout-deploy overlay."
+    },
+    {
+      "id": "MT-ADMIN-LIFECYCLE-FIT",
+      "lane": "Admin role beside lifecycle / lane 66655756 (BF-230); in the batch join",
+      "next": "Joined acceptance; clinical logical restore with the admin role connected."
+    },
+    {
+      "id": "MT-ROOT-ADMIN-PARITY",
+      "lane": "Tenant API_SECRET parity / lane 165c13bf; in the batch join",
+      "next": "Joined acceptance; preview API boot with subject admin on real PostgreSQL and Vault, and the browser admin page."
+    },
+    {
+      "id": "MT-INTERNAL-LISTENER",
+      "lane": "serve.internal per role / lane 78ecba76; in the batch join",
+      "next": "Joined acceptance; real role processes over Compose (UNMEASURED in the lane)."
+    },
+    {
+      "id": "MT-ACTIVITY-ELIGIBILITY",
+      "lane": "Pause/suspend / lane 07981b55; in the batch join",
+      "next": "Joined acceptance; isolation of one tenant's unreadable activity row; port activity grants to nightscout-deploy."
+    },
+    {
+      "id": "MT-EXPORT-EXPIRY",
+      "lane": "Key destruction removes the export / lane 701eba6f; in the batch join",
+      "next": "Production composition of the artifact remover and the operator UPDATE grant."
+    },
+    {
+      "id": "MT-CONSUMER-STALE-RESELECT",
+      "lane": "Alarm path / lane 956d0940 (BF-231); in the batch join",
+      "next": "Joined acceptance of content-change revisions, the repeat clock and the targeted wake."
+    },
+    {
+      "id": "MT-TENANT-EXTENDED-SETTINGS",
+      "lane": "Plugin extended settings / lane 2f1ae027 (BF-232); in the batch join",
+      "next": "Full suite, browser tier and prcheck on the joined candidate; owner editing of plugin alert enables after the first preview."
+    },
+    {
+      "id": "DEPLOY-TREE-HOME",
+      "lane": "M6c / nightscout-deploy branch 9387428, unpushed",
+      "next": "Operator README and ownership-admin overlay; #8898 drops or shrinks deploy/multitenant to the fixture its tests boot."
     }
   ],
   "slices": [
@@ -750,6 +813,86 @@
       "commit": "74036ba6",
       "evidence": "../../../reports/tenancy/m6a-join-2026-11-09/README.md#10-final-verification",
       "result": "Reproduced 2026-11-09: OIDC matrix 9/9 with 3/3 controls; test:all 0 failing; browser 686/0; multitenant corpus 537/1/0; prcheck exit 0. Fast-forward of the PR branch; push awaits two maintainer decisions."
+    },
+    {
+      "title": "M6b joined candidate for #8898",
+      "work": "MT-M6B-JOIN",
+      "stage": "integrated-accepted",
+      "commit": "b70ad83f",
+      "evidence": "../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md#per-suite-results",
+      "result": "Reproduced 2026-11-10 on the frozen head: unit 3106, dom 205, integration 3643/547 pending, browser 686, multitenant corpus 550/1 pending, all 0 failing; OIDC matrix 9/9 with 3/3 controls; prcheck OK. Pushed by the maintainer; all 16 CI jobs green including CodeQL."
+    },
+    {
+      "title": "Last usable owner cannot be revoked (BF-229)",
+      "work": "MT-OWNER-LAST-GUARD",
+      "stage": "local-accepted",
+      "commit": "65657a62",
+      "evidence": "../../../reports/tenancy/m6b-followups-2026-11-10/README.md#item-1-last-owner-revocation-reproduced-fixed",
+      "result": "Reproduced 2026-11-10: PostgreSQL 16 23/2 on b70ad83f, 25/0 with the fix; four ablations. Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "Ownership operations in the admin role",
+      "work": "MT-ADMIN-ROLE-OWNERSHIP",
+      "stage": "local-accepted",
+      "commit": "1376c294",
+      "evidence": "../../../reports/tenancy/ownership-role-2026-11-10/README.md#commands-and-results-lane-head-1376c294-from-tool-output",
+      "result": "Reproduced 2026-11-10: native admin-role suite 11/0; unit admin-role 9/0; unit tier 3116 passing; eight controls red then restored. Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "Restore census, ownership phase and restore ledger (BF-230)",
+      "work": "MT-ADMIN-LIFECYCLE-FIT",
+      "stage": "local-accepted",
+      "commit": "66655756",
+      "evidence": "../../../reports/tenancy/admin-lifecycle-2026-11-10/README.md#addendum-2026-11-10-third-pass-bf-230-fixed-on-the-lane",
+      "result": "Reproduced 2026-11-10: the restore driver passes the retention ledger; controls B1 (driver drops the ledger) and B2 (operator grant removed) red 4/2. Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "Tenant API_SECRET admin tools parity",
+      "work": "MT-ROOT-ADMIN-PARITY",
+      "stage": "local-accepted",
+      "commit": "165c13bf",
+      "evidence": "../../../reports/tenancy/root-admin-parity-2026-11-10/README.md#results-at-165c13bf",
+      "result": "Reproduced 2026-11-10 with synthetic tenants on real PostgreSQL: role edit, rename and held-role refusals, last-owner guard, admin-role subjects; controls each red then restored. Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "One serve.internal per role and graceful shutdown",
+      "work": "MT-INTERNAL-LISTENER",
+      "stage": "local-accepted",
+      "commit": "78ecba76",
+      "evidence": "../../../reports/tenancy/internal-listener-2026-11-10/README.md#separated-processes-over-docker-compose-reproduced-78ecba76-dirty0",
+      "result": "Reproduced 2026-11-10: Compose instrument exit 0; early-drop and blanket-window controls exit 1; five source ablations red. Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "Pause/suspend drive serving and worker eligibility",
+      "work": "MT-ACTIVITY-ELIGIBILITY",
+      "stage": "local-accepted",
+      "commit": "07981b55",
+      "evidence": "../../../reports/tenancy/activity-eligibility-2026-11-10/README.md#checks-reproduced-at-07981b55",
+      "result": "Reproduced 2026-11-10: suspend refuses uploads and reads (423), pause refuses reads/UI and admits uploads, sockets disconnected, deletion request auto-pauses; controls red then green (23 passing). Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "Key destruction removes the export file",
+      "work": "MT-EXPORT-EXPIRY",
+      "stage": "local-accepted",
+      "commit": "701eba6f",
+      "evidence": "../../../reports/tenancy/export-expiry-2026-11-10/README.md#4-commands-and-results-from-tool-output-worktree",
+      "result": "Reproduced 2026-11-10: tenant-lifecycle unit 36/0, native key-retention 6 passing; two ablations red. Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "Content-change revision, alarm repeat clock and targeted wake (BF-231)",
+      "work": "MT-CONSUMER-STALE-RESELECT",
+      "stage": "local-accepted",
+      "commit": "956d0940",
+      "evidence": "../../../reports/tenancy/consumer-refusal-2026-11-10/README.md#addendum-2026-11-10-second-revision-on-content-change-and-the-alarm-repeat-clock",
+      "result": "Reproduced 2026-11-10 at deployed intervals: deliveries per active alarm 60/min to 1/min, selections 360 to 125/min, 0 refusals; 150 ms churn 8/8 delivered. Joins through the batch join, in acceptance."
+    },
+    {
+      "title": "Tenant plugin extended settings (BF-232)",
+      "work": "MT-TENANT-EXTENDED-SETTINGS",
+      "stage": "local-accepted",
+      "commit": "2f1ae027",
+      "evidence": "../../../reports/tenancy/tenant-extended-settings-2026-11-10/README.md#4-acceptance-measured-on-2f1ae027",
+      "result": "Reproduced 2026-11-10: unit 9 passing, HTTP status route 10 passing, unit tier 3115; four controls red. Joins through the batch join, in acceptance."
     }
   ],
   "deferred": [

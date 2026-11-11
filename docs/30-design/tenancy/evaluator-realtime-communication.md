@@ -149,6 +149,37 @@ suppression state; the evaluator subsequently reads that state.
 [Private acknowledgement admission][private-api] is distinct from the transport
 receipt acknowledging an evaluator-to-realtime handoff.
 
+<a id="alarm-repeat-and-targeted-wake-diagram"></a>The diagrams above follow the inspected tree. The 2026-11-10 decisions
+([evaluator-revision-on-content-change](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change),
+[alarm-repeat-clock](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock), [activity-is-pause-suspend](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend))
+change when the consumer is woken and how an active alarm repeats. Built on lanes `956d0940` and `07981b55`,
+in the batch join that is in acceptance; [evidence](../../../reports/tenancy/consumer-refusal-2026-11-10/README.md).
+
+```mermaid
+sequenceDiagram
+    participant Act as Tenant activity row
+    participant Eval as Evaluator runtime
+    participant Consumer as Notification consumer
+    participant RT as Realtime alarm-delivery
+    Eval->>Act: Read the state before each cycle and before publishing
+    alt paused or suspended
+        Eval->>Eval: No cycle and no output, and the consumer skips the tenant
+    else active
+        Eval->>Eval: Compute output and its content digest
+        alt content changed (new data or time-driven)
+            Eval->>Consumer: New revision and a targeted wake
+            Consumer->>RT: deliverAlarm for the new or changed request
+        else identical content
+            Eval->>Eval: Keep the revision, no wake
+        end
+        loop alarm active, unacknowledged and unsnoozed
+            Consumer->>Consumer: Repeat clock: last processing + tenant heartbeat (60 s default)
+            Consumer->>RT: deliverAlarm again
+        end
+    end
+    Note over Eval,Consumer: After unpause the evaluator recomputes from current data before publishing
+```
+
 ## Browser authorization and mutations
 
 Socket.IO exposes `/`, `/storage` and `/alarm`. Tenant resolution uses the admitted
