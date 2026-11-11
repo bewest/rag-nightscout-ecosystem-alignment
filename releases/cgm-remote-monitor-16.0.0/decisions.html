@@ -2188,7 +2188,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>c6927c7b8</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>b1202249f</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3660,7 +3660,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c6927c7b8a28090849a0e52ce763743afb28b64b/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/37113566341b3c1e4b94778d3e216284bd516ac3/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -3866,6 +3866,48 @@ deployment has run.</p>
 <td>maintainer, 2026-11-10</td>
 <td><code>MT-CONNECTOR-REVERSE</code> (<code>1792063a</code>)</td>
 <td>Mechanism: the connector reads the tenant to find its resume point and the paused api refuses reads with 423. Measured: 55 of 56 while paused, <code>CONNECTOR_GAP_FAILED</code>, <code>write:423</code> ×30; 56/56 after unpause, no duplicate. Visible in the connector inspection read. Revisit options: admit a precise list of uploader reads while paused, or a durable operational bookmark. Also recorded from the lane: v1 requires read on a collection for every request, so the connector subject holds read+create, not create-only (<code>data-access.js:52,57,147</code>).</td>
+</tr>
+<tr>
+<td><a id="alarm-output-idempotent-by-content"></a><strong>Evaluator alarm output is idempotent by content: the producer's freshness comparison uses the evaluator's content digest, input checkpoint and identity instead of the process's runtime id and revision, and effect origins derive from content, so two evaluators computing the same alarm produce one request. This replaces the "idempotent by contract" premise of <a href="#evaluator-static-partition">evaluator-static-partition</a>, which measurement refuted.</strong></td>
+<td>maintainer, 2026-11-10 ("a or b: which is less expensive, which is better for maintenance and architecture"; coordinator recommended b)</td>
+<td><code>MT-EVALUATOR-PARTITION</code></td>
+<td>Refutation (reproduced, reducer level, <code>reports/tenancy/evaluator-partition-2026-11-10/README.md</code>): identical content for 10 s, single owner 1 effect, two alternating runtimes 10, control with one runtime id 1. Cause: freshness tuple <code>[identity, runtimeId, outputRevision, inputCheckpoint]</code> (<code>producer-state.js:43-44</code>) and producer-revision origins (<code>:88</code>) in the dedupe key (<code>producer.js:62</code>). Consequence accepted: restarting a tenant's evaluator no longer re-sends an active alarm at once; it waits for the repeat clock (multitenant restart is not comparable to a single-site restart). The pool lease stays as hygiene; no overlap fence is built.</td>
+</tr>
+<tr>
+<td><a id="pool-desired-count-in-table"></a><strong>A pool's expected member count lives in the pool table, set by an operator command; members carry only their ordinal in the environment. Scaling adds or removes members without restarting the others, and members switch slices together once every expected ordinal is live.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-POOL-PRIMITIVE</code>, <code>MT-EVALUATOR-PARTITION</code>, <code>MT-CONNECTOR-REVERSE</code>, <code>DEPLOY-K8S-BINDING</code></td>
+<td>Refines <a href="#evaluator-static-partition">evaluator-static-partition</a> (count from the renderer's environment). Reason: with the count in each Pod's environment, a rolling change keeps counts in disagreement and the agreement rule stops the whole kind for the rollout. Readiness never depends on pool eligibility, so an <code>OrderedReady</code> rollout cannot deadlock.</td>
+</tr>
+<tr>
+<td><a id="cohort-pod-not-scaled"></a><strong>The one-Pod cohort (all roles in one Pod) is a monolith placement: it may be scaled vertically, never horizontally, and the deployment binding, not core, holds it to one replica. Horizontal scale and high availability come from deploying the roles as separate components (per-role placement), each scaled through its own mechanism (API replicas through the fixed roster, evaluator and <code>vcpool</code> through the pool table, realtime through sharding). The two placements are alternatives, never run alongside each other against the same database.</strong></td>
+<td>maintainer, 2026-11-10 ("deployment-level only"; "don't scale the monolith horizontally; instead deploy as separate components to scale horizontally as appropriate or for high availability")</td>
+<td><code>DEPLOY-K8S-BINDING</code>, <code>MT-API-FIXED-ROSTER</code>, <code>MT-REALTIME-SHARDING</code></td>
+<td>Kind smoke (k8s 1.32, <code>reports/tenancy/k8s-binding-2026-11-10/README.md</code>): scaled to 2 Pods, both served and the second evaluator took every tenant; core at <code>16a1fc2d</code> enforces nothing. The binding's offline invariant (<code>replicas: 1</code> on the cohort, with a break-it control) and its README carry the rule; the queue gate's "two Pods of one cohort refuse" is replaced by it.</td>
+</tr>
+<tr>
+<td><a id="root-writer-fenced"></a><strong>The subject-admin store's <code>root_writer</code> connection stays inside the restore operation window, like every other tenant writer; it is granted the control-schema reads window admission needs.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-ROOT-ADMIN-PARITY</code>, <code>MT-BENCH-BASELINE</code>, nightscout-deploy</td>
+<td>Measured: without the reads the api exits 78 (<code>SUBJECT_ADMIN_STORE_UNSAFE</code> wrapping <code>LIFECYCLE_WINDOW_SCHEMA_UNSAFE</code>); fixed in the deploy tree (<code>54af5f2e</code>, merged to nightscout-deploy main). Core's own <code>deploy/multitenant/config.js</code> <code>grants()</code> must carry the same reads in the next batch. Subject and role edits are then refused during a restore of that tenant.</td>
+</tr>
+<tr>
+<td><a id="cost-proportional-to-activity"></a><strong>Multitenant cost scales with activity, not tenant count: work is proportional to writes, viewers × changes and due timers, and an idle tenant costs close to nothing. The evaluator, realtime and restore-fence paths are changed in model, not tuned: (1) evaluator work on change, with a per-member aggregate change query on an interval (the D6 backstop shape) and per-tenant due-time timers for time-driven alarms, replacing the per-tenant one-second poll; (2) realtime publishes on change, authorization checked at connect and invalidated by events (expiry, revocation, pause, suspend), and the initial frame queued under pool pressure instead of a server disconnect; (3) the restore fence stays database-enforced but is checked by a cheap per-tenant epoch or shared lock instead of a catalogue query per transaction; plus bounded startup warm and pool sizes from configuration. A contrast bench (N single-site processes at equal load) runs alongside as the target.</strong></td>
+<td>maintainer, 2026-11-10 ("model changes + contrast bench")</td>
+<td><code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code>, <code>MT-SCALE-UNBOUND</code>, new perf items</td>
+<td>Measured basis: <code>reports/tenancy/bench-baseline-2026-11-10/README.md</code> (PostgreSQL 899% CPU idle at 10 tenants; 100 and 200 tenants do not start; admission query 4,376 of 5,219 DB-ms idle). Change signalling stays as <a href="../../docs/30-design/tenancy/multitenancy-decisions.html#d6">D6</a>: a wake is a hint, the per-tenant change stamp against the processed checkpoint is the truth; <code>NOTIFY</code> only from a slot reader in a later stage, never from the writer (EXP-MT-059: per-process listeners, 2.8 M tenants of rate headroom, writer-emitted notifications fill the queue under a wedged listener).</td>
+</tr>
+<tr>
+<td><a id="pool-member-hygiene"></a><strong>Pool members recover cleanly: a stale serve.internal socket file is reclaimed when nothing answers on it (an answering socket still refuses); a partitioned <code>vcpool</code> refused at boot waits and alerts like the evaluator instead of exiting; the admin role may serve pool operations without ownership operations (at least one required).</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-EVALUATOR-PARTITION</code> (<code>cb1b751d</code>), <code>MT-CONNECTOR-REVERSE</code>, <code>MT-ENDPOINT-TRANSPORT</code></td>
+<td>Measured trigger: a killed partitioned member's restart refused with <code>SOCKET_IPC_PATH_EXISTS</code>, so in a Kubernetes Pod it would not return until the Pod is replaced.</td>
+</tr>
+<tr>
+<td><a id="m7-capacity-gate"></a><strong>M7 capacity gate: at least 3,000 tenants stable on one machine of this class (16 threads, 64 GB), with 10,000 as the stretch target; stable 1,000+ is the first milestone worth reporting. The reference to beat is tenant-per-pod Kubernetes at about 100 tenants per node (the default per-node Pod limit); node-multienv-style hosting (one process per site) has run 300+ on a machine like this.</strong></td>
+<td>maintainer, 2026-11-10 ("record 3k gate with 10k stretch"; "even stable 1k+ on a machine like this would be a big deal")</td>
+<td><code>MT-BENCH-BASELINE</code>, <code>MT-SCALE-UNBOUND</code>, perf lanes</td>
+<td>Capacity is derived from measured marginal cost per tenant (CPU-ms per tenant-minute, MB resident per tenant, DB-ms per tenant-minute, at idle and at real cadence) and confirmed by a run near the claimed count, never assumed. No single-site contrast bench is needed (<code>MT-BENCH-CONTRAST</code> closed). Unmeasured risks named at decision time: evaluator CPU per evaluation, and per-tenant resident memory.</td>
 </tr>
 </tbody>
 </table>

@@ -5565,7 +5565,15 @@
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-connector-reverse-codex-connector-reverse-20261110.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-consumer-stale-reselect-codex-consumer-refusal-20261110.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-evaluator-partition-codex-evaluator-partition-20261110.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
@@ -5602,6 +5610,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-ownership-ops-codex-ownership-ops-20261110.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-pool-primitive-codex-pool-primitive-20261110.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
@@ -5757,6 +5769,10 @@
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/bench-baseline-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/completion-batch-74d7-2026-11-06/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
@@ -5766,6 +5782,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/connector-sync-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/connector-sync-out-2026-11-10/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
@@ -5782,6 +5802,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/devicestatus-advanced-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/evaluator-partition-2026-11-10/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
@@ -6502,6 +6526,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/compose-baseline/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
