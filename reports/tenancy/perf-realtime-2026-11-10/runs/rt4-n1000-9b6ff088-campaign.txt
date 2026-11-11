@@ -1,0 +1,9 @@
+2026-11-11T14:30:54Z load=8.11 7.52 4.42 deploy rt4 n1000 ns-prt-realtime:9b6ff088
+{"label":"rt4","tenants":1000,"port":27000,"image":"ns-prt-realtime:9b6ff088","bootstrapSeconds":33.7,"startSeconds":76.1}
+2026-11-11T14:32:45Z load=6.11 7.26 4.69 measure idle
+prime {"sockets":2000,"primed":2000,"dark":0,"serverDisconnected":0,"ms":21489,"reasons":{"connect_error:xhr poll error":121,"connect_error:xhr post error":33,"transport error":131}}
+window {"frames":0,"fpspm":0,"auth":0.8280476292996374,"cpu":{"realtime":94385.631,"api":48059.178,"postgres":160773.425}}
+2026-11-11T14:36:51Z load=5.81 6.59 5.05 measure restart
+prime {"sockets":2000,"primed":2000,"dark":0,"serverDisconnected":0,"ms":22639,"reasons":{"connect_error:xhr post error":21,"transport error":30,"connect_error:xhr poll error":9}}
+restart {"restartCommandMs":682,"stockWindowMs":300000,"stockRecovered":76,"stockAllRecoveredMs":null,"retryRecovered":76,"retryAllRecoveredMs":null,"realtimeState":{"status":"running","exitCode":0,"restarting":false},"sockets":2000,"reasons":{"connect_error:xhr post error":69,"transport error":216,"connect_error:xhr poll error":1842,"transport close":1947}}
+2026-11-11T14:43:53Z load=4.81 6.53 5.77 done

@@ -1,0 +1,6 @@
+2026-11-11T15:07:32Z load=22.96 16.26 10.88 deploy rt5 n1000 ns-prt-realtime:dc8d10bc scratch/diag/compose.control-unbounded.yaml
+{"label":"rt5","tenants":1000,"port":27000,"image":"ns-prt-realtime:dc8d10bc","bootstrapSeconds":40.1,"startSeconds":110.0}
+2026-11-11T15:10:04Z load=19.19 16.72 11.84 measure restart
+prime {"sockets":2000,"primed":2000,"dark":0,"serverDisconnected":0,"ms":45352,"reasons":{"connect_error:xhr poll error":351,"connect_error:xhr post error":32,"transport error":73,"connect_error:timeout":19}}
+restart {"restartCommandMs":10553,"stockWindowMs":300000,"stockRecovered":2000,"stockAllRecoveredMs":103141,"retryRecovered":2000,"retryAllRecoveredMs":0,"realtimeState":{"status":"running","exitCode":0,"restarting":false},"sockets":2000,"reasons":{"connect_error:xhr poll error":3124,"connect_error:xhr post error":166,"transport error":470,"connect_error:timeout":19,"transport close":1953}}
+2026-11-11T15:13:53Z load=19.63 18.70 13.74 done

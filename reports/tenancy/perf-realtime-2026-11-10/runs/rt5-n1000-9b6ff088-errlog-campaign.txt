@@ -1,0 +1,6 @@
+2026-11-11T14:44:33Z load=3.94 6.10 5.66 deploy rt5 n1000 ns-prt-realtime:9b6ff088 scratch/diag/compose.errlog.yaml
+{"label":"rt5","tenants":1000,"port":27000,"image":"ns-prt-realtime:9b6ff088","bootstrapSeconds":22.5,"startSeconds":69.0}
+2026-11-11T14:46:06Z load=3.57 5.42 5.45 measure restart
+prime {"sockets":2000,"primed":2000,"dark":0,"serverDisconnected":0,"ms":19398,"reasons":{"connect_error:xhr poll error":98,"connect_error:xhr post error":2,"transport error":9}}
+restart {"restartCommandMs":618,"stockWindowMs":60000,"stockRecovered":52,"stockAllRecoveredMs":null,"retryRecovered":52,"retryAllRecoveredMs":null,"realtimeState":{"status":"running","exitCode":0,"restarting":false},"sockets":2000,"reasons":{"connect_error:xhr poll error":2201,"connect_error:xhr post error":69,"transport error":209,"transport close":2000}}
+2026-11-11T14:48:33Z load=6.51 6.06 5.69 done

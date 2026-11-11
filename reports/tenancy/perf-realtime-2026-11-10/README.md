@@ -442,3 +442,99 @@ tenant-minute idle) are not the first limits at these sizes. Restart recovery at
 - Write-to-frame at 1,000 tenants with writes (idle and the hard delete only).
 - Memory per socket at 1,000 tenants beyond the one idle run.
 - The cost of the absence check with realistic stored data (synthetic tenants hold few rows).
+
+## Update 2026-11-11 (round 3): restart recovery at 1,000 tenants, idle frames
+
+Lane head `dc8d10bc` (`codex/perf-realtime-20261110`, not pushed). Commits this round: `721b5daf`
+(protocol counters), `65b9fc7a` (cold-tenant sockets park for the runtime's bounded warm), `9b6ff088`
+(bounded recheck, resend only a missed frame), `dc8d10bc` (parked drain outside the runtime's
+operation; sockets wait for the runtime's next cycle). Compose reference as above, 1,000 tenants × 2
+stock sockets, `--open flood`; a diagnostic mount (`preview-realtime.js` logging protocol and runtime
+counters every 5 s) on every run. Host load averages are in each `*-campaign.txt`; a peer bench
+campaign shared the host during the `dc8d10bc` runs (load 6.7 to 23).
+
+### Idle frames at 1,000 tenants: recheck resends (reproduced), fixed
+
+| image | idle window | frames | resends | authorizeInFlightMax | recheckFailures |
+|---|---|---|---|---|---|
+| `721b5daf` (before) | 180 s | 236 | 236 | 1000 | 420 → 1968 |
+| `9b6ff088` | 180 s | 0 | 0 | | |
+| `dc8d10bc` | 180 s | 0 | 0 | | |
+
+Mechanism: the periodic recheck started every tenant at once, so 1,000 authorizations were in flight;
+the failures held sockets, and the end of each hold resent the frame whether or not it had changed.
+Fix (`9b6ff088`): the sweep rechecks 8 tenants at a time, and a hold ends with a frame only if fan-out
+skipped a changed view during the hold, or display or permissions changed. Unit controls: resend
+always, `RT_RESEND_NONE no frame for an unchanged view after the hold`; unbounded sweep,
+`RT_RECHECK_BOUNDED 40 authorizations in flight for 40 tenants`. Runs:
+`runs/rt3-n1000-721b5daf-idle-s2.json`, `runs/rt4-n1000-9b6ff088-idle-s2.json`,
+`runs/rt4-n1000-dc8d10bc-idle-s2.json`; counters in the matching `*-diag.txt`.
+
+### Restart recovery at 1,000 tenants (BF-233 at scale)
+
+| image | what it does | restartCommandMs | stock clients recovered | all recovered |
+|---|---|---|---|---|
+| `721b5daf` | each socket warms its own tenant | 1769 | 2000/2000 | 94.2 s |
+| `9b6ff088` | sockets park; drain started inside the runtime's operation | 682 | 76/2000 | not within 300 s |
+| `dc8d10bc` | parked drain detached; sockets wait for the runtime's cycle | 1041 | 2000/2000 | 129.7 s |
+| `dc8d10bc` + control mount | unbounded per-socket warm (no parking, socket refreshes) | 10553 | 2000/2000 | 103.1 s |
+
+Gate: stock clients N/N at 1000 × 2 within 300 s. **Met on `dc8d10bc`** (129.7 s).
+
+Cause on the old path (`721b5daf`, reproduced with counters): after the restart every reconnecting
+socket ran its own tenant warm, outside the runtime's bound, and every retry re-authorized. At +30 s:
+healthy 19, socket warms 851 (648 failed), retries 4139, authorizations 6059, runtime ticks 1. At
++60 s: healthy 496, socket warms 3635 (2847 failed), retries 6338, authorizations 8765, runtime
+ticks 2. The 163/2000 of the previous round ran at host load 21 to 24; this run recovered on a quieter
+host.
+
+Cause of the `9b6ff088` failure (reproduced): the runtime calls `onReady` from inside its refresh
+cycle, which runs inside the operation window's async scope. `tenantReady` started the parked drain
+there, so the drain and every retry timer it scheduled inherited that scope; after the cycle ended,
+every prime was refused with `LIFECYCLE_WINDOW_SCOPE_INVALID` (`operation-window.js:139`, via
+`withOperation`; `runs/rt5-n1000-9b6ff088-errlog.txt`). Counters 5 min after the restart: all 1,000
+tenants healthy, socket refreshes 66611 with 66569 failures, primed 76. The unit gate passed on
+`9b6ff088` because its lab had no operation window.
+
+Fix (`dc8d10bc`):
+
+- The drain runs in the protocol's own async context (`AsyncResource.bind` at create).
+- A socket for a warm tenant never refreshes the tenant itself: `runtime.fresh(tenant)` wakes the
+  tenant into the tick's bounded share, and the socket takes the first cycle that starts after it
+  asked (freshness at connect, `RT_HARD_DELETE*`, kept). All sockets of a tenant share that cycle.
+  Sockets released by the runtime's warm take the projection that warm published. A cycle published
+  while sockets primed is sent to them afterwards.
+- A failed tenant with sockets waiting backs off from the tick interval up to `failureRetryMs`;
+  without this, a pool refusal of the runtime's own fan-out darkened the tenant for 30 s
+  (`RT_PRESSURE_ALL_PRIMED 0/50`). A failed tenant nobody waits for keeps the full interval
+  (`RD_ONE_BROKEN`).
+
+Unit gate `RD_RESTART_BOUNDED` now runs under an operation window with the window's scope rule:
+100 cold tenants × 2 sockets all prime, concurrent acquires ≤ 2 (runtime concurrency), parked ≥ 1.
+Controls, each red then restored green: unbounded per-socket warm,
+`RD_RESTART_BOUND concurrent warms 100 (runtime concurrency 2)`; drain not detached,
+`RD_RESTART_ALL_PRIMED 0/200`.
+
+**Compose control: an unbounded per-socket warm does not fail the gate at this size** (2000/2000 in
+103.1 s, host load about 19). Its symptoms are those of the old path: socket refreshes 4836 with
+4153 failures and runtime ticks 2 at about +60 s after the restart (`dc8d10bc`: socket refreshes
+266, 0 failures, ticks 14), and a 10.6 s restart command. The bounded design recovers more slowly
+here (129.7 s against 103.1 s, under different host loads) because warm-up proceeds at the runtime's
+concurrency share per tick; the gate as stated does not discriminate between the two at 1,000
+tenants on this host. The unit bound is the discriminating check. Counters:
+`runs/rt4-n1000-dc8d10bc-diag.txt`, `runs/rt5-n1000-dc8d10bc-control-unbounded-diag.txt`.
+
+### Checks on `dc8d10bc`
+
+- `realtime-*`, `tenant-startup-admission`, `tenant-operation-window`, `human-session-stream`,
+  `tenant-activity` at the project timeout (`--timeout 5000`): 157 passing, 0 failing.
+  `realtime-browser-diagnostics` fails only at mocha's 2,000 ms default, identically on `cb1b751d`,
+  `16a1fc2d` and `dc8d10bc`; it passes at 5,000 ms on all three.
+- eslint: 0 errors (2 existing `detect-non-literal-fs-filename` warnings on the configuration file
+  read).
+
+### UNMEASURED (round 3)
+
+- Restart recovery under a tighter bound or at 3,000 tenants; whether a larger warm share during a
+  restart closes the gap to the unbounded control without its socket-path failures.
+- The write clock (perf-db `03661f22`) is not yet merged in this lane; the absence check is still on.

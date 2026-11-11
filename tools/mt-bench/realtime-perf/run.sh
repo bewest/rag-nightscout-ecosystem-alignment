@@ -12,7 +12,7 @@ here=$(cd "$(dirname "$0")" && pwd); bench="$here/../compose-baseline"
 : "${NS_PRT_WORK:?private work dir}"
 cmd=$1 label=$2 core=$3; shift 3
 mt="$core/deploy/multitenant"
-overlay="$NS_PRT_WORK/overlay-${label%2}"
+case "$label" in rt*) overlay="$NS_PRT_WORK/overlay-rt";; *) overlay="$NS_PRT_WORK/overlay-${label%2}";; esac
 case "$cmd" in
   overlay)
     commit=$1
@@ -23,7 +23,7 @@ case "$cmd" in
     ;;
   deploy)
     image=$1 N=$2
-    case "$label" in base) port=$((20000 + N));; int) port=$((24000 + N));; *) port=$((22000 + N));; esac
+    case "$label" in base) port=$((20000 + N));; int) port=$((24000 + N));; rt3|rt4|rt5) port=$((26000 + N));; *) port=$((22000 + N));; esac
     project="ns-prt-$label-n$N"; dir="$NS_PRT_WORK/$label-n$N"
     [ -e "$dir" ] && { echo "exists: $dir" >&2; exit 1; }
     mkdir -p "$dir"; [ -e "$mt/.env" ] && { echo "$mt/.env exists" >&2; exit 1; }
