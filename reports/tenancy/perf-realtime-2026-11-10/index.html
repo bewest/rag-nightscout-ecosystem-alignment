@@ -1,0 +1,8802 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/perf-realtime-2026-11-10/index.html">
+      
+      
+        <link rel="prev" href="../perf-evaluator-2026-11-10/index.html">
+      
+      
+        <link rel="next" href="../pool-primitive-2026-11-10/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Realtime publishes on change (perf lane RT), 2026-11-10 - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#realtime-publishes-on-change-perf-lane-rt-2026-11-10" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Realtime publishes on change (perf lane RT), 2026-11-10
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../owner-subject-policy-acceptance-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selected owner proposed-grant verification — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../compat-refresh-2026-11-05/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compat-refresh-2026-11-05/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../compat-rest-next-2026-11-05/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compat-rest-next-2026-11-05/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../connector-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../consumer-impact-15.0.9/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-impact-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../control-recovery-gates/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    control-recovery-gates/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-3022b/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exp-3022b/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m4-client-binaries/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m4-client-binaries/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../patient-c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    patient-c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../phase0-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    phase0-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../private-acquisition-profile-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    private-acquisition-profile-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../projection-evaluator-gates/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    projection-evaluator-gates/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reviewer-packets/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reviewer-packets/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../selected-owner-clients/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    selected-owner-clients/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../synthetic-demo-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    synthetic-demo-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_18" id="__nav_7_18_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_18_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backup-upgrade-native-f77-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Representative PostgreSQL backup/upgrade capability proof — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../batch-a-acceptance-attempt-c0e8ad3c-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch A acceptance attempt on c0e8ad3c — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../batch-a-acceptance-d89a44e1-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch A final acceptance capsule — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../batch-a-foundation-c0e8ad3c-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch A PgBouncer foundation continuation — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../completion-batch-source-checks-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Completion-batch source checks — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-recovery-acceptance-87133959-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control/recovery acceptance — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-recovery-focused-1df25fba-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Focused control/recovery campaign — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-recovery-runner-continuation-83582e87-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source-control runner continuation — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gate-controls-65bb8456-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frozen-head multitenant gate controls — partial capture, 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gate-controls-65bb8456-continuation-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frozen-head gate controls — repaired instrument continuation, 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../owner-preview-wire-native-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Headless owner native request fixture — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-replica-history-characterization-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST replica history characterization — 2026-11-05
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime-topology-reconciliation-2026-11-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime topology reconciliation — 2026-11-10
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serial-cumulative-acceptance-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cumulative settings, private acquisition and selected owner policy — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../socket-evaluator-native-attempt-1990f453-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Joined socket/evaluator native attempt — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../socket-order-prototype-native-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fresh-schema socket DATA prototype — native evidence, 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-clock-http-backend-abort-diagnostic-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant clock HTTP: backend-abort availability diagnostic — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-clock-http-fixed-recovery-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant clock HTTP: fixed connection recovery — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-clock-join-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant clock join: frozen-head acceptance on 65bb8456 — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-commit-clock-lower-proof-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant commit clock: bounded lower-port proof — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../2026-11-06-clock-http-workload/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026-11-06-clock-http-workload/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../activity-eligibility-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    activity-eligibility-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../admin-lifecycle-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    admin-lifecycle-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../allocator-plan-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    allocator-plan-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../allocator-preserving-restore-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    allocator-preserving-restore-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../batch-join-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    batch-join-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../batch-join-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    batch-join-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bench-baseline-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bench-baseline-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capacity-fixes-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    capacity-fixes-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../completion-batch-74d7-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    completion-batch-74d7-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-reverse-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-reverse-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-sync-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-sync-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-sync-out-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-sync-out-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../consumer-refusal-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-refusal-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../deploy-capacity-fixes-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deploy-capacity-fixes-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../deploy-fixture-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deploy-fixture-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../derived-output-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    derived-output-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../devicestatus-advanced-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    devicestatus-advanced-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../eval-cost-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    eval-cost-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../evaluator-partition-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    evaluator-partition-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../export-expiry-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    export-expiry-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../final-floor-native-1acb4eee-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    final-floor-native-1acb4eee-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../insertion-order-consumers-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    insertion-order-consumers-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../internal-listener-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    internal-listener-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../internal-service-api-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    internal-service-api-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../k8s-binding-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    k8s-binding-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../key-retention-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    key-retention-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../legacy-rest-temporal-fixtures-386dba33-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    legacy-rest-temporal-fixtures-386dba33-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../listener-composition-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    listener-composition-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m1-backend-native-7015-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m1-backend-native-7015-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m5-runtime-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m5-runtime-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6-allocator-discriminator-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6-allocator-discriminator-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6-operation-window-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6-operation-window-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6-ops-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6-ops-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6a-join-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6a-join-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6b-followups-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6b-followups-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6b-join-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6b-join-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oidc-native-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oidc-native-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oidc-single-provision-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oidc-single-provision-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../operation-control-metadata-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    operation-control-metadata-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../operation-window-acceptance-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    operation-window-acceptance-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../owner-preview-native-controls-4cd95d06-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    owner-preview-native-controls-4cd95d06-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../owner-settings-native-7015-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    owner-settings-native-7015-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../ownership-ops-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ownership-ops-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../ownership-role-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ownership-role-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../perf-db-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    perf-db-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../perf-evaluator-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    perf-evaluator-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_69" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    perf-realtime-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_69_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_69">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    perf-realtime-2026-11-10/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../pool-primitive-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pool-primitive-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../restore-history-continuity-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    restore-history-continuity-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../root-admin-parity-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    root-admin-parity-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../shared-oidc-sessions-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    shared-oidc-sessions-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../socket-data-controls-12919f55-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    socket-data-controls-12919f55-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenant-extended-settings-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-extended-settings-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenant-local-insertion-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-local-insertion-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenant-registry-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-registry-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../vault-agent-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    vault-agent-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#outcome" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outcome
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anchors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anchors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-fileline-at-6f31c94b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design (file:line at 6f31c94b)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Checks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#break-it-controls-each-red-with-the-symptom-shown-then-restored-green" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Break-it controls (each red with the symptom shown, then restored green)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bounds-stated-then-measured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounds (stated, then measured)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measurements-compose-reference-host-16-cores--64-gb-other-lanes-running-load-average-in-each-run-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurements (Compose reference, host 16 cores / 64 GB, other lanes running; load average in each run file)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Measurements (Compose reference, host 16 cores / 64 GB, other lanes running; load average in each run file)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-and-after" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before and after
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restart recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-tenant-marginal-costs-for-realtime-capacity-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-tenant marginal costs for realtime (capacity gate)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unmeasured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UNMEASURED
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-local-and-unpushed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is local and unpushed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-2026-11-11-bf-233-change-stamp-function-incremental-refresh-serve-then-warm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update 2026-11-11: BF-233, change-stamp function, incremental refresh, serve-then-warm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update 2026-11-11: BF-233, change-stamp function, incremental refresh, serve-then-warm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anchors_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anchors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-fileline-at-the-lane-head" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design (file:line at the lane head)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-hard-delete-gap-coordinators-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The hard-delete gap (coordinator's question)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controls-each-red-with-the-symptom-then-restored-green" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Controls (each red with the symptom, then restored green)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measurements-compose-reference-host-load-average-in-the-run-files-920-during-these-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurements (Compose reference; host load average in the run files, 9–20 during these runs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-tenant-marginal-costs-updated-derived-from-the-rows-above" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-tenant marginal costs, updated (derived from the rows above)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decisions-and-questions-for-the-join" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisions and questions for the join
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unmeasured-this-round" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UNMEASURED (this round)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-2026-11-11-round-3-restart-recovery-at-1000-tenants-idle-frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update 2026-11-11 (round 3): restart recovery at 1,000 tenants, idle frames
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update 2026-11-11 (round 3): restart recovery at 1,000 tenants, idle frames">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#idle-frames-at-1000-tenants-recheck-resends-reproduced-fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idle frames at 1,000 tenants: recheck resends (reproduced), fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart-recovery-at-1000-tenants-bf-233-at-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restart recovery at 1,000 tenants (BF-233 at scale)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checks-on-dc8d10bc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checks on dc8d10bc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unmeasured-round-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UNMEASURED (round 3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-2026-11-11-round-3-continued-the-complete-write-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update 2026-11-11 (round 3, continued): the complete write clock
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update 2026-11-11 (round 3, continued): the complete write clock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checks-reproduced-postgresql-1615-disposable-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checks (reproduced; PostgreSQL 16.15, disposable container)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#idle-cost-at-1000-tenants--2-sockets-before-and-after-180-s-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Idle cost at 1,000 tenants × 2 sockets, before and after (180 s window)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="realtime-publishes-on-change-perf-lane-rt-2026-11-10">Realtime publishes on change (perf lane RT), 2026-11-10<a class="headerlink" href="#realtime-publishes-on-change-perf-lane-rt-2026-11-10" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-11 at <code>ec6ad8464</code>.</em></p>
+<p><em>Contributor-facing evidence record for perf lane RT (multitenant only). Captured 2026-11-10/11 (UTC); not
+edited after capture. Decisions read: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#cost-proportional-to-activity">cost-proportional-to-activity</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity-is-pause-suspend</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#suspended-refusal-423">suspended-refusal-423</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-devicestatus-status-parity">tenant-devicestatus-status-parity</a>,
+D6 and the <a href="../../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a>;
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-capacity-gate">m7-capacity-gate</a> for the marginal-cost section.
+Synthetic data only. Every figure is labelled </em><em>reproduced</em><em> (read from a run file here) or </em><em>derived</em><em>
+(arithmetic on reproduced figures, stated).</em></p>
+<h2 id="outcome">Outcome<a class="headerlink" href="#outcome" title="Permanent link">&para;</a></h2>
+<p>Realtime sends a frame only when a tenant's view changes, authorizes a socket when it connects and
+then only on events, primes concurrent connects late instead of disconnecting them, and comes back
+after a restart at 50 and 100 tenants. No client change: <code>lib/client</code> is untouched, frames stay full
+(<code>delta:false</code>). Measured on the one-host Compose reference against the base head:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>base <code>cb1b751d</code></th>
+<th>this lane <code>6f31c94b</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>frames per idle connected socket per minute (1 tenant × 20)</td>
+<td>20.0</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>subject authorizations per connected socket per minute (1 × 20)</td>
+<td>20.1</td>
+<td><strong>0.099</strong></td>
+</tr>
+<tr>
+<td>realtime DB-ms per minute, 50 tenants × 20 sockets idle</td>
+<td>44,989</td>
+<td><strong>83</strong></td>
+</tr>
+<tr>
+<td>sockets primed when 1000 open (50 × 20)</td>
+<td>14 / 1000 at 50 ms stagger (986 server-disconnected)</td>
+<td><strong>1000 / 1000 opened at once</strong>, none disconnected</td>
+</tr>
+<tr>
+<td>realtime after <code>docker compose restart realtime</code>, 50 tenants</td>
+<td>exit 78, never back</td>
+<td><strong>running</strong>; reconnecting clients 1000/1000 in 32.8 s</td>
+</tr>
+<tr>
+<td>realtime start at 100 tenants</td>
+<td>exit 78 at deploy</td>
+<td><strong>running</strong>; restart survived, 200/200 back in 35.1 s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Restart root cause (reproduced):</strong> at boot realtime warms and refreshes every configured tenant at
+once, each inside an operation window that takes a client from the lifetime pool (max 8, 5 s connect
+timeout, <code>operation-cohort-config.js:49</code>). On a loaded PostgreSQL one window waits longer than 5 s,
+pg-pool rejects with <code>timeout exceeded when trying to connect</code> at <code>operation-window.js:103</code>, the
+startup <code>Promise.allSettled</code> treats any rejection as fatal (<code>runtime.js:43-45</code> and <code>tenant-startup.js</code>
+warm, both at <code>cb1b751d</code>), and <code>preview-realtime.js</code> turns it into <code>PreviewConfigError</code> → exit 78. Shown with a diagnostic
+copy of <code>preview-realtime.js</code> that prints the swallowed error (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-restart-diagnostic.txt"><code>runs/base-n50-restart-diagnostic.txt</code></a>).
+It is not caused by the previous process: a fresh <code>up</code> of the stopped container failed the same way.
+The perf-db lane reproduced the same mechanism independently with unbounded warm at 200
+(<a href="../perf-db-2026-11-10/index.html">perf-db record</a>).</p>
+<p><strong>Not fixed here, measured in both heads:</strong> graceful shutdown with sockets attached overruns the
+10 s bound (<code>still open 10000 ms after SIGTERM: PipeWrap, PipeWrap, Timeout, …</code>, then the watchdog
+exits 1; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-realtime-lifecycle.txt"><code>runs/base-n50-realtime-lifecycle.txt</code></a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/tenancy/perf-realtime-2026-11-10/runs/after-n50-realtime-lifecycle.txt"><code>runs/after-n50-realtime-lifecycle.txt</code></a>). Without sockets the
+base restarted in 5 s with no overrun. The mechanism was not examined.</p>
+<h2 id="anchors">Anchors<a class="headerlink" href="#anchors" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>commit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base: <code>codex/evaluator-partition-20261110</code> (clone <code>externals/cgm-remote-monitor-official</code>)</td>
+<td><code>cb1b751d4e3875b9b9c250b1a3b6236f7c926aa4</code></td>
+</tr>
+<tr>
+<td>lane branch <code>codex/perf-realtime-20261110</code>, worktree <code>externals/work/crm-perf-realtime-20261110</code>, local, unpushed</td>
+<td><code>6f31c94b0d8574c9796113fbd01765f5b5566a2b</code> (<code>6a64b75e</code> change, <code>6f31c94b</code> test strengthening)</td>
+</tr>
+<tr>
+<td>base measurement worktree (detached)</td>
+<td><code>externals/work/crm-perf-realtime-base-20261110</code> at <code>cb1b751d</code></td>
+</tr>
+<tr>
+<td>images (built by <code>deploy/multitenant/build.js</code>, revision label checked, removed afterwards)</td>
+<td><code>ns-prt-realtime:cb1b751d</code>, <code>ns-prt-realtime:6f31c94b</code></td>
+</tr>
+<tr>
+<td>bench overlay</td>
+<td><code>tools/mt-bench/compose-baseline/make-overlay.sh</code> (core config at the commit + nightscout-deploy <code>085d88a..4e5a1051</code>), <code>maxSockets</code> raised to 25000 for 20 sockets per tenant</td>
+</tr>
+<tr>
+<td>harness</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/mt-bench/realtime-perf"><code>tools/mt-bench/realtime-perf/</code></a> (<code>run.sh</code>, <code>measure.js</code>); projects <code>ns-prt-&lt;label&gt;-n&lt;N&gt;</code></td>
+</tr>
+<tr>
+<td>alignment <code>main</code> when written</td>
+<td><code>23b8ada56</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="design-fileline-at-6f31c94b">Design (file:line at <code>6f31c94b</code>)<a class="headerlink" href="#design-fileline-at-6f31c94b" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>piece</th>
+<th>where</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>change hints in one round trip</td>
+<td><code>lib/storage/postgres-connection.js:232</code> <code>scanTenants</code></td>
+<td>One READ ONLY transaction per 500 tenants: for each tenant <code>set_config('app.current_tenant_id', …)</code> then one fixed parameterless SELECT, so forced RLS scopes each statement to its tenant. No operation-window lease; nothing read is served. Refuses <code>;</code>, <code>$</code>, <code>\</code>, non-SELECT, duplicate or non-UUID tenants.</td>
+</tr>
+<tr>
+<td>detector</td>
+<td><code>lib/server/realtime/change-detector.js:19</code> <code>stampReader</code>, <code>:25</code> <code>create</code>, <code>:47</code> <code>invalidateIneligible</code></td>
+<td>Per interval: every tenant's <code>tenant_write_clock.last_stamp</code> (one scan), activity (<code>tenant-activity/postgres.js:94</code> <code>readMany</code>, one scan), configuration identities (<code>realtime/config.js:43</code> <code>readAll</code>, one file read). A tenant removed from admission or not eligible to be read (paused, suspended, unprovisioned, unreadable) has its sockets disconnected.</td>
+</tr>
+<tr>
+<td>runtime</td>
+<td><code>lib/server/realtime/runtime.js:54</code> <code>due</code>, <code>:63</code> <code>tick</code>, <code>:93</code> <code>wake</code></td>
+<td>Refreshes a tenant only if its stamp differs from the checkpoint of its last published refresh (the clock floor read in the refresh's own snapshot), its configuration identity changed, its last refresh failed, or it was woken. At most two refreshes at a time (<code>preview-realtime.js:11</code>); startup bounded the same way (<code>:88</code>, <code>preview-realtime.js:80</code>). <code>wake(tenant)</code> is the seam for a later NOTIFY / slot reader.</td>
+</tr>
+<tr>
+<td>publish on change</td>
+<td><code>lib/server/realtime/protocol.js:52</code> <code>sameView</code>, <code>:359</code> <code>fanout</code></td>
+<td>A main socket gets a frame only when its view (frame minus <code>lastUpdated</code>, plus configuration identity) differs from what it last received. <code>/storage</code> gets only row changes. Frames stay <code>delta:false</code>. Fanout uses each socket's remembered rights: no per-frame api call.</td>
+</tr>
+<tr>
+<td>authorization by event</td>
+<td><code>protocol.js:130</code> <code>remember</code>, <code>:60</code> <code>expiryOf</code>, <code>:268</code> <code>recheck</code>, <code>:295</code> <code>sweep</code>, <code>:413</code> <code>recheckTenant</code></td>
+<td>At connect/re-authorize: one api call. Afterwards: at the credential's JWT <code>exp</code> (a recheck the api answers; all stock carriers are JWTs with <code>exp</code>), every <code>authorizationRecheckMs</code> (optional config, default 30000, set explicitly in <code>deploy/multitenant/config.js</code>), on <code>recheckTenant</code> (revocation-event seam), and on pause/suspend/admission removal (detector) or lifecycle invalidation. One api call per distinct (namespace, host, credential) per tenant per recheck (<code>:111</code> <code>authorities</code>). A refusal disconnects; an api that cannot answer holds that socket's frames until it can. Alarm delivery and <code>loadRetro</code> still authorize per request.</td>
+</tr>
+<tr>
+<td>late, not dropped</td>
+<td><code>protocol.js:160</code> <code>queue</code>, <code>:171</code> <code>later</code>, <code>:204</code> <code>prime</code></td>
+<td>Connects are queued per tenant and primed in batches: authorization outside the window (one call per distinct credential), then one operation window for the refresh and every send. Pool pressure or an unanswering api retries the batch with jittered backoff (250 ms → 5 s); only refusals (<code>:21</code> <code>REFUSALS</code>, window suspension) disconnect.</td>
+</tr>
+<tr>
+<td>shutdown</td>
+<td><code>protocol.js:429</code> <code>close</code></td>
+<td>Unchanged: every socket is disconnected server-side.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>D6 mismatch, stated:</strong> the decision asks for "one aggregate query per member per interval". Every
+clinical and clock table is <code>FORCE ROW LEVEL SECURITY</code> and the realtime identity is NOBYPASSRLS
+(<code>evaluator-readiness.js:15-19</code> refuses otherwise), so a single cross-tenant SELECT is not possible
+without a schema change (a security-definer function or a summary table outside RLS). <code>scanTenants</code>
+is one round trip and one transaction per member per interval, with one statement per tenant. A true
+aggregate statement is a schema decision for the batch join.</p>
+<p><strong>Shared with the evaluator lane:</strong> <code>stampReader</code> is the evaluator's per-member change query too
+(<code>stamps(tenants) → Map&lt;tenant, last_stamp&gt;</code>; the evaluator compares with its own checkpoint), and
+<code>readMany</code> is its activity work list in one round trip. The peer branch <code>codex/perf-evaluator-20261110</code>
+had no commits when this lane started, so nothing was reconciled yet.</p>
+<p><strong>Overlap with perf-db (<code>codex/perf-db-20261110</code>, <code>d53f12d6</code>, <code>a52bc33b</code>):</strong> both lanes bound startup
+warm (<code>tenant-startup.js</code> warm). perf-db reads <code>NS_TENANT_STARTUP_CONCURRENCY</code> (default 4) for warm and
+realtime's first refresh and makes pool sizes configurable; this lane hard-codes 2 for warm, startup
+and change ticks. At the join take perf-db's setting for startup and derive the tick concurrency from
+<code>NS_POOL_REALTIME_MAX</code>. The new <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>
+decision (recorded after this lane started) is not implemented for realtime here: realtime still
+refuses the boot if any tenant's startup fails, and <code>/health</code> stays 503 until all are ready.</p>
+<h2 id="checks">Checks<a class="headerlink" href="#checks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>check</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm run test:unit</code></td>
+<td>3229 passing, 0 failing (<code>6f31c94b</code>)</td>
+</tr>
+<tr>
+<td><code>tests/realtime-publish-on-change.test.js</code> (new, unit tier)</td>
+<td>10 passing</td>
+</tr>
+<tr>
+<td><code>tests/realtime-preview.test.js</code>, <code>tests/realtime-storage-proof.test.js</code>, <code>tests/tenant-activity.test.js</code></td>
+<td>24, 5, 16 passing</td>
+</tr>
+<tr>
+<td><code>tests/postgres-tenant-scan.integration.test.js</code> (new) and <code>tests/tenant-activity.integration.test.js</code> (+1 case: <code>readMany</code>), PostgreSQL 16.15 container <code>ns-prt-pg</code></td>
+<td>3 and 8 passing</td>
+</tr>
+<tr>
+<td><code>tests/tenant-socket-data-forwarding.integration.test.js</code> (PostgreSQL + MongoDB 8.0.34 container <code>ns-prt-mongo</code>)</td>
+<td>4 passing</td>
+</tr>
+<tr>
+<td><code>tests/evaluator-consumers.integration.test.js</code>, <code>tests/tenant-alarm-state.integration.test.js</code></td>
+<td>20 passing together with the two above, 4 pending (opt-in not selected)</td>
+</tr>
+<tr>
+<td>browser tier <code>socket-client.test.js</code>, <code>server-alarms.test.js</code> (no multitenant realtime case exists in the browser tier)</td>
+<td>7 passing</td>
+</tr>
+<tr>
+<td>headless socket tests</td>
+<td>none target multitenant realtime; the unit tier's socket suites pass</td>
+</tr>
+<tr>
+<td>tier check, <code>test:write-boundary</code>, <code>eslint lib</code></td>
+<td>ok; all 9 entry points; 0 errors, 54 warnings (base: 54)</td>
+</tr>
+</tbody>
+</table>
+<p>Four existing assertions encoded the replaced model (fanout re-authorizing every socket every
+second, or a frame every second). Each now drives the same security property through the recheck:
+<code>realtime-preview</code> "fanout stops after revocation" and the <code>/</code> epoch fence call <code>recheckTenant</code>;
+<code>realtime-storage-proof</code> narrows collections by <code>recheckTenant</code> before fanout; <code>tenant-activity</code> gives
+B a write so its frame is a changed view.</p>
+<h3 id="break-it-controls-each-red-with-the-symptom-shown-then-restored-green">Break-it controls (each red with the symptom shown, then restored green)<a class="headerlink" href="#break-it-controls-each-red-with-the-symptom-shown-then-restored-green" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>control</th>
+<th>break</th>
+<th>symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no change → no frame</td>
+<td><code>due()</code> returns true</td>
+<td><code>RT_IDLE_NO_ACQUISITION no projection read while the stamp is unchanged</code></td>
+</tr>
+<tr>
+<td>unchanged view sends nothing</td>
+<td><code>sameView</code> returns false</td>
+<td><code>RT_SAME_VIEW a stamp move with an unchanged view sends nothing</code></td>
+</tr>
+<tr>
+<td>a write → frame within the bound</td>
+<td><code>due()</code> ignores the stamp</td>
+<td><code>every A socket receives the new frame</code> (false after 1 s)</td>
+</tr>
+<tr>
+<td>revocation → disconnect within the bound</td>
+<td>recheck skips invalidation</td>
+<td><code>RT_REVOCATION_NO_DATA no frame after one recheck interval</code> — <code>2 !== 1</code>: the revoked socket kept receiving</td>
+</tr>
+<tr>
+<td>expiry</td>
+<td>expiry timer not scheduled</td>
+<td><code>disconnected at expiry</code> (false after 2.5 s)</td>
+</tr>
+<tr>
+<td>pause and suspend</td>
+<td>detector invalidation removed</td>
+<td>both cases: socket not disconnected within 1 s</td>
+</tr>
+<tr>
+<td>one api call per credential</td>
+<td>dedupe off</td>
+<td><code>one call per sweep for 20 sockets sharing a credential: 60</code></td>
+</tr>
+<tr>
+<td>50 simultaneous connects all prime</td>
+<td>disconnect-on-exhaustion restored</td>
+<td><code>RT_PRESSURE_ALL_PRIMED 0/50</code></td>
+</tr>
+<tr>
+<td>scan binds each tenant</td>
+<td><code>set_config</code> replaced by <code>SELECT 1</code></td>
+<td><code>returns each tenant its own rows only</code> deep-equal failure (RLS returned no rows)</td>
+</tr>
+</tbody>
+</table>
+<p>The first pressure version was vacuous (the control stayed green: batching meant the fake pool
+never saw two windows at once); the fake pool is now exhausted by other holders for 150 ms
+(<code>6f31c94b</code>), and the control goes red as above.</p>
+<h3 id="bounds-stated-then-measured">Bounds (stated, then measured)<a class="headerlink" href="#bounds-stated-then-measured" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>event</th>
+<th>stated bound</th>
+<th>measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a write → frame</td>
+<td>one detection interval (<code>recoveryIntervalMs</code>, 1000 in the reference) + one refresh</td>
+<td>unit: ≤ 90 ms at a 50 ms interval; Compose: p50 1,248 ms (1 tenant), 1,674 ms (10), 1,539 ms (50, host load ≈ 18; p95 6,178, p99 14,713) — <strong>reproduced</strong></td>
+</tr>
+<tr>
+<td>revocation</td>
+<td><code>authorizationRecheckMs</code> (30 s) + one api call; <code>recheckTenant</code> now</td>
+<td>unit: ≤ 160 ms at a 100 ms interval — <strong>reproduced</strong> (Compose: not measured)</td>
+</tr>
+<tr>
+<td>token expiry</td>
+<td><code>exp</code> + one api call</td>
+<td>unit: &lt; 200 ms after <code>exp</code> — <strong>reproduced</strong></td>
+</tr>
+<tr>
+<td>pause, suspend, admission removal</td>
+<td>one detection interval</td>
+<td>unit: ≤ 90 ms at a 50 ms interval; activity is not configured for realtime in the Compose reference, so no Compose figure — <strong>reproduced (unit only)</strong></td>
+</tr>
+<tr>
+<td>single-site reference</td>
+<td>—</td>
+<td>legacy sockets in <code>DataReceivers</code> are never rechecked after <code>authorize</code> (<code>lib/server/websocket.js:122,207-232</code>); human sockets are rechecked per emit (<code>:123-126</code>) — read-derived</td>
+</tr>
+</tbody>
+</table>
+<h2 id="measurements-compose-reference-host-16-cores--64-gb-other-lanes-running-load-average-in-each-run-file">Measurements (Compose reference, host 16 cores / 64 GB, other lanes running; load average in each run file)<a class="headerlink" href="#measurements-compose-reference-host-16-cores--64-gb-other-lanes-running-load-average-in-each-run-file" title="Permanent link">&para;</a></h2>
+<p>All windows: sockets opened, primed, 5 s settle, <code>pg_stat_statements</code> reset, then 120 s idle (or
+300 s with one write per tenant spread evenly); CPU from the container's cgroup <code>cpu.stat</code>, memory
+from cgroup <code>memory.stat</code> <code>anon</code>. "Subject authorizations" count the api's subject-snapshot statement,
+one per socket authorization of the exchanged JWT. Per-socket figures divide by sockets that were
+connected and primed.</p>
+<h3 id="before-and-after">Before and after<a class="headerlink" href="#before-and-after" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>N × sockets</th>
+<th>head</th>
+<th>primed</th>
+<th>frames / socket / min</th>
+<th>subject auth / socket / min</th>
+<th>realtime DB-ms / min</th>
+<th>api DB-ms / min</th>
+<th>realtime window leases / min</th>
+<th>file</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 × 20</td>
+<td>base</td>
+<td>20/20 (250 ms stagger)</td>
+<td>20.0</td>
+<td>20.1</td>
+<td>1,307</td>
+<td>9,433</td>
+<td>20.3</td>
+<td><code>base-n1-idle-s20</code></td>
+</tr>
+<tr>
+<td>1 × 20</td>
+<td>lane</td>
+<td>20/20 (flood)</td>
+<td>0</td>
+<td>0.099</td>
+<td>8</td>
+<td>200</td>
+<td>0</td>
+<td><code>after-n1-idle-s20</code></td>
+</tr>
+<tr>
+<td>10 × 20</td>
+<td>base</td>
+<td>41/200 (250 ms stagger)</td>
+<td>16.6</td>
+<td>16.8</td>
+<td>38,409</td>
+<td>27,429</td>
+<td>413</td>
+<td><code>base-n10-idle-s20</code></td>
+</tr>
+<tr>
+<td>10 × 20</td>
+<td>lane</td>
+<td>200/200 (flood)</td>
+<td>0</td>
+<td>0.099</td>
+<td>21</td>
+<td>2,737</td>
+<td>0</td>
+<td><code>after-n10-idle-s20</code></td>
+</tr>
+<tr>
+<td>50 × 20</td>
+<td>base</td>
+<td>14/1000 (50 ms stagger)</td>
+<td>6.2</td>
+<td>6.2</td>
+<td>44,989</td>
+<td>4,435</td>
+<td>415</td>
+<td><code>base-n50-idle-s20</code></td>
+</tr>
+<tr>
+<td>50 × 20</td>
+<td>lane</td>
+<td>1000/1000 (flood)</td>
+<td>0</td>
+<td>0.074</td>
+<td>83</td>
+<td>6,770</td>
+<td>0</td>
+<td><code>after-n50-idle-s20</code></td>
+</tr>
+<tr>
+<td>100 × 2</td>
+<td>lane</td>
+<td>200/200 (flood)</td>
+<td>0</td>
+<td>0.99</td>
+<td>425</td>
+<td>9,430</td>
+<td>0</td>
+<td><code>after-n100-idle-s2</code></td>
+</tr>
+</tbody>
+</table>
+<p>Base per-socket rates are over the primed sockets (base 10 and 50 per-socket values derived:
+reported per opened socket × opened / primed). Lane authorization rate is two rechecks per minute per
+distinct credential divided by the sockets sharing it (0.1 at 20 per credential, 1.0 at 2).</p>
+<p>With one write per tenant every 5 minutes (lane): frames per socket per minute 0.199 (1 and 10
+tenants), 0.222 (50; frame count includes 116 more frames than writes × sockets: resends after held
+rechecks or reconnects, not separated); all frames delivered at 1 and 10 tenants (20/20, 200/200),
+960/1000 by window close at 50 (the last writes were sent within seconds of the close).</p>
+<h3 id="restart-recovery">Restart recovery<a class="headerlink" href="#restart-recovery" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>N</th>
+<th>head</th>
+<th>after <code>docker compose restart realtime</code></th>
+<th>stock clients (no reconnect after server disconnect)</th>
+<th>reconnecting clients</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50</td>
+<td>base</td>
+<td><strong>exit 78</strong></td>
+<td>0/1000</td>
+<td>0/1000 (nothing to connect to)</td>
+</tr>
+<tr>
+<td>50</td>
+<td>lane</td>
+<td>running</td>
+<td>0/1000</td>
+<td>1000/1000 in 32.8 s (flood)</td>
+</tr>
+<tr>
+<td>100</td>
+<td>base</td>
+<td><strong>exit 78 at deploy</strong></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>100</td>
+<td>lane</td>
+<td>running</td>
+<td>0/200</td>
+<td>200/200 in 35.1 s</td>
+</tr>
+</tbody>
+</table>
+<p>What the client does on restart (reproduced, both heads): shutdown disconnects every socket
+server-side, socket.io-client reports <code>io server disconnect</code> and does not reconnect, so the stock
+browser stays dark until reloaded. Unchanged by this lane, as required.</p>
+<h2 id="per-tenant-marginal-costs-for-realtime-capacity-gate">Per-tenant marginal costs for realtime (capacity gate)<a class="headerlink" href="#per-tenant-marginal-costs-for-realtime-capacity-gate" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>figure</th>
+<th>value</th>
+<th>basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU-ms per tenant-minute, idle, no sockets</td>
+<td>not resolved above the process floor: 2,995 (1 tenant), 3,671 (10), 2,931 (100) ms/min for the whole process. Largest slope seen 75 ms/tenant-min (1→10), none 10→100</td>
+<td>reproduced points; slope derived</td>
+</tr>
+<tr>
+<td>CPU-ms per socket-minute, idle</td>
+<td>3.6 (10 × 20: (4,396 − 3,671)/200), 10 (50 × 20: (13,102 − ≈3,000)/1000), 18.5 (100 × 2: (6,624 − 2,931)/200; one recheck call per 2 sockets)</td>
+<td>derived from reproduced windows</td>
+</tr>
+<tr>
+<td>CPU-ms per tenant-minute, one write / 5 min</td>
+<td>not separable at 1 and 10 tenants (4,436 vs 4,396 ms/min at 10 × 20)</td>
+<td>reproduced</td>
+</tr>
+<tr>
+<td>resident MB per tenant, no sockets</td>
+<td>≈ 1.4 (anon 66 / 99 / 202 MB at 1 / 10 / 100 tenants)</td>
+<td>points reproduced; slope derived; includes uncollected garbage</td>
+</tr>
+<tr>
+<td>resident MB per connected socket</td>
+<td>0.36 (50 × 20), 0.44 (10 × 20), 0.79 (100 × 2)</td>
+<td>derived from reproduced before/after-open anon</td>
+</tr>
+<tr>
+<td>realtime DB-ms per tenant-minute, idle</td>
+<td>≈ 1.8 (8 / 19 / 178 ms/min at 1 / 10 / 100 tenants, no sockets)</td>
+<td>points reproduced; slope derived</td>
+</tr>
+<tr>
+<td>realtime DB-ms per tenant-minute, one write / 5 min</td>
+<td>30 (1), 37 (10), 45 (50)</td>
+<td>derived: (write-window − idle) / N; ≈ 185 ms per write-triggered refresh</td>
+</tr>
+<tr>
+<td>frames per socket per minute</td>
+<td>0 idle; 0.2 at one write / 5 min</td>
+<td>reproduced</td>
+</tr>
+<tr>
+<td>authorization calls per socket per minute</td>
+<td>2 / (sockets per credential): 0.074–0.099 at 20 per credential, 0.99 at 2</td>
+<td>reproduced</td>
+</tr>
+<tr>
+<td>1,000 tenants idle with a few sockets</td>
+<td><strong>UNMEASURED</strong>: the api exits 78 at boot before realtime starts (operation-window pool connect timeout at <code>operation-window.js:103</code>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/tenancy/perf-realtime-2026-11-10/runs/after-n1000-api-diagnostic.txt"><code>runs/after-n1000-api-diagnostic.txt</code></a>). Bounding the api warm to 2 did not change it (tried in a commit since removed from the branch); the remaining all-tenant step was not found. perf-db reports 1,000 tenants starting with its serve-then-warm api change.</td>
+<td>reproduced symptom</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What runs out first (derived, for one realtime process):</strong></p>
+<ol>
+<li><strong>Refresh throughput.</strong> Change ticks refresh at most two tenants at once and a refresh takes
+   roughly 0.7–1.2 s of wall time (write-to-frame p50 1.2–1.7 s minus about half a detection
+   interval), so about 100–170 refreshes per minute: <strong>about 500–850 tenants at one write per
+   5 minutes</strong>, fewer with several uploaders per tenant. Each refresh is a full current-state
+   reconcile (<code>postgres-durable-replay.js</code> reconcile scans every row), so it grows with each tenant's
+   stored data; the synthetic tenants here hold little. Raising the concurrency (pool 4, configurable
+   in perf-db) or an incremental catch-up refresh moves this.</li>
+<li><strong>The single Node thread.</strong> Idle sockets cost 3.6–18.5 CPU-ms per socket-minute, and one thread
+   gives 60,000 ms per minute: roughly <strong>3,000–4,500 idle sockets</strong> per process (1,000 to 1,500
+   tenants at 3 sockets each), less with writes (50 × 20 with writes: 17,957 ms/min).</li>
+<li><strong>Memory.</strong> About 1.4 MB per tenant and 0.4–0.8 MB per socket: 3,000 tenants with 3 sockets each
+   ≈ 4 GB + 4–7 GB per process.</li>
+<li>Realtime's own database time is not a limit at these sizes: about 1.8 ms per tenant-minute idle,
+   about 40 ms with one write per 5 minutes (≈ 2 cores of PostgreSQL at 3,000 tenants).</li>
+</ol>
+<p>Sharding realtime across processes (<code>MT-REALTIME-SHARDING</code>) addresses 2 and 3; 1 is per process too.</p>
+<h2 id="unmeasured">UNMEASURED<a class="headerlink" href="#unmeasured" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Everything at 1,000 tenants (api boot refusal above).</li>
+<li>Revocation, expiry, pause and suspend bounds on the Compose reference (unit only; the reference does
+  not configure activity for realtime, and no revocation driver was run).</li>
+<li>Write-to-frame on a quiet host at 50 tenants (load average ≈ 18 from other lanes).</li>
+<li>Cost per write with realistic stored data (synthetic tenants hold few rows).</li>
+<li>The shutdown overrun's mechanism.</li>
+<li>Lane head on a joined batch with perf-db and the evaluator lane.</li>
+</ul>
+<h2 id="what-is-local-and-unpushed">What is local and unpushed<a class="headerlink" href="#what-is-local-and-unpushed" title="Permanent link">&para;</a></h2>
+<p>Branch <code>codex/perf-realtime-20261110</code> (<code>6f31c94b</code>) in worktree <code>externals/work/crm-perf-realtime-20261110</code>;
+detached base worktree <code>externals/work/crm-perf-realtime-base-20261110</code>. Containers <code>ns-prt-*</code> and both
+<code>ns-prt-realtime:*</code> images removed after the runs. Private run state (tenant tokens, logs) stayed in
+the session scratch directory.</p>
+<hr />
+<h2 id="update-2026-11-11-bf-233-change-stamp-function-incremental-refresh-serve-then-warm">Update 2026-11-11: BF-233, change-stamp function, incremental refresh, serve-then-warm<a class="headerlink" href="#update-2026-11-11-bf-233-change-stamp-function-incremental-refresh-serve-then-warm" title="Permanent link">&para;</a></h2>
+<p><em>Appended 2026-11-11 (UTC); the sections above are unchanged. Brief: BF-233 (filed from this lane's
+finding), decisions <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#change-stamp-definer-function">change-stamp-definer-function</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#incremental-refresh">incremental-refresh</a> and
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>.
+The coordinator then put the change-stamp function and incremental refresh </em><em>on hold</em><em> pending the
+maintainer's answer on how the write clock should cover deletes; what was built before the hold is
+committed and described below, and nothing further was added to those two after it, except where a
+measured defect in already-committed code had to be fixed (marked).</em></p>
+<h3 id="anchors_1">Anchors<a class="headerlink" href="#anchors_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>commit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lane <code>codex/perf-realtime-20261110</code>, worktree <code>externals/work/crm-perf-realtime-20261110</code>, unpushed</td>
+<td><code>20a49aabe7014726cc870e8fde76e1923add9d5a</code></td>
+</tr>
+<tr>
+<td>merged into the lane</td>
+<td><code>d6560468</code> (evaluator-partition head; <strong>merge</strong>, not rebase: <code>3390626a</code>), then <code>codex/perf-db-20261110</code> at <code>540d3998</code> (<code>cdbdf5ac</code>, for serve-then-warm)</td>
+</tr>
+<tr>
+<td>scratch integration, measurement only, not for the join</td>
+<td><code>scratch/perf-realtime-int-20261111</code> (<code>12ff09e2</code> measured), worktree <code>externals/work/crm-perf-realtime-int-20261111</code></td>
+</tr>
+<tr>
+<td>images (removed afterwards)</td>
+<td><code>ns-prt-realtime:f62222cd</code>, <code>:650cfce3</code>, <code>:int-12ff09e2</code>, <code>:20a49aab</code></td>
+</tr>
+<tr>
+<td>alignment <code>main</code> when written</td>
+<td><code>25ca687fb</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="design-fileline-at-the-lane-head">Design (file:line at the lane head)<a class="headerlink" href="#design-fileline-at-the-lane-head" title="Permanent link">&para;</a></h3>
+<p><strong>BF-233.</strong> <code>lib/server/realtime/socket-server.js</code> owns the Socket.IO server on the realtime listener. Shutdown is <code>io.close()</code> (namespaces, then <code>engine.close()</code>: every transport closes); <code>protocol.close</code> (<code>protocol.js</code>) no longer sends a server-side disconnect. socket.io-client then sees <code>transport close</code> and reconnects with its own backoff. No client change.</p>
+<p>Mechanism of the 10 s overrun (reproduced, control A below): a server-side <code>disconnect(true)</code> on a polling socket leaves its engine connection and two timers waiting for a client that, having been told "io server disconnect", no longer polls. After <code>stop()</code> resolved (119 ms) the process still held 829 TCP sockets and 1,656 timers for 828 disconnected sockets, so it outlived the 10 s bound and the watchdog exited 1. <code>closeAllConnections</code> was tried and is not needed (control B).</p>
+<p><strong>Change stamps (decision change-stamp-definer-function).</strong>
+- <code>lib/change-stamps/postgres-candidate.json</code>: operational catalogue (census <code>OPERATIONAL</code>, digest-pinned, <code>lib/tenant-operations/catalogues.js</code>), one migration creating <code>tenant_change_stamps(uuid[]) RETURNS TABLE (tenant_id uuid, last_stamp bigint)</code>, plpgsql, <code>SECURITY DEFINER</code>, <code>SET search_path = pg_catalog</code>, <code>SET app.current_tenant_id = ''</code>, <code>REVOKE ALL ... FROM PUBLIC</code>. The body binds each requested tenant through the same RLS setting the serving paths use and selects that tenant's clock row: RLS on the clock is unchanged and the owner needs no bypass. The function's own <code>SET app.current_tenant_id</code> keeps its binding from reaching the caller.
+- Provisioning (<code>lib/change-stamps/postgres.js</code> <code>grants</code>, used by <code>deploy/multitenant/config.js</code>): <code>ALTER FUNCTION ... SET search_path = &lt;clock schema&gt;, pg_catalog</code>; <code>USAGE</code> and <code>EXECUTE</code> to the realtime and evaluator identities only; the catalogue ledger read to realtime only (its readiness checks the catalogue). <code>bootstrap.js</code> gives the function to the NOLOGIN catalogue owner, as every catalogue function (reviewed signature list).
+- Reader (<code>lib/change-stamps/postgres.js</code> <code>create</code>): one statement per poll returns the stamps and the function's catalogue version (pg_proc row version plus the owner's login/superuser/bypass flags) — the same idea as perf-db's catalogue epoch, applied to the one object perf-db's epoch does not cover. An unadmitted version calls the function with no tenants, runs the attribute check (owner NOLOGIN, NOSUPERUSER, NOBYPASSRLS and owning the clock table; SECURITY DEFINER; plpgsql; exact body; exact result type; exact <code>proconfig</code>; no PUBLIC EXECUTE), then calls it with the tenants. A refused check raises <code>CHANGE_STAMPS_FUNCTION_UNSAFE</code>; detection then answers nothing and the runtime refreshes only failed cells.
+- Realtime uses it when <code>postgres.namespaces.changeStamps</code> is set (the Compose plan sets it); a configuration without it keeps the per-tenant scan. The evaluator has EXECUTE and can adopt it; its configuration does not name the namespace yet.</p>
+<p><strong>Incremental refresh (decision incremental-refresh).</strong> <code>lib/storage/postgres-incremental-view.js</code>, shared read path:
+- <code>create({ connection, domains, indexed, clockTable, reconcile, pageSize, maxRows })</code>; <code>refresh()</code> inside the tenant binding returns <code>{ mode: 'full' | 'incremental' | 'unchanged', changed, checkpoint, rows }</code>; <code>reset()</code> forces a full read.
+- Cold start: the existing bounded <code>replay.reconcile</code> (checkpoint bookkeeping unchanged; it now also reports its physical row count and invalid keys from the same snapshot, <code>postgres-durable-replay.js</code>).
+- Afterwards one REPEATABLE READ snapshot: clock floor; rows stamped in <code>(checkpoint, floor]</code> through the generated, indexed <code>"srvModified"</code> column (entries, treatments, devicestatus; an expression for profile, food, activity); a physical row count per tenant. Soft deletes (<code>isValid:false</code>) remove, everything else replaces.
+- Full reconcile when the floor is below the checkpoint (rewind, restore), when more rows changed than the bound (gap), or when the count disagrees with the view (a hard delete — v1 entries remove, v3 prune or permanent delete — or a writer outside the clock leaves no stamp; durable event delivery contract §4).
+- Hard deletes advance no clock, so nothing announces them: the runtime refreshes every tenant at least every <code>absenceCheckMs</code> (default 60000, set in the Compose plan; the single-site data reload cadence). With the floor unmoved that refresh is one count and returns the published frame unchanged (<code>projection.js</code>).
+- The frame build's dbsize statistics (<code>sum(pg_column_size(doc))</code> over every row, <code>postgres-tenant-stats.js:19</code>) are read at most every 5 minutes per tenant.
+- Frames stay full (<code>delta:false</code>).</p>
+<p><strong>For the join with the evaluator lane (<code>a335be89</code>):</strong> the evaluator's backstop reads, per tenant per pass, a signature of floor + row count + a digest over every row's identity and <code>xmin</code> (one statement per tenant, cost with stored rows). The shared shape is: <code>change-stamps</code> for the floor of every member tenant in one statement, then <code>postgres-incremental-view</code> per changed tenant (its count check covers hard deletes and unstamped writes), with an absence interval for tenants with no stamp movement.</p>
+<p><strong>Serve, then warm (decision readiness-serve-then-warm, on perf-db's mechanism).</strong> <code>NS_TENANT_READINESS</code>
+(default <code>serve</code>) reaches realtime's startup cells (<code>preview-realtime.js</code>) and runtime (<code>runtime.js</code>).
+In <code>serve</code> the role opens without awaiting tenants; each tick warms a bounded number of cold tenants
+after the changed ones; a failed tenant is retried after 30 s while the others serve; <code>health().ready</code> is
+the role's own, with <code>healthy</code> and <code>failed</code> counts. The stock client retries neither a handshake refusal
+nor a server disconnect (<code>lib/client/index.js:1165</code> opens with default reconnection, which covers only
+transport loss), so a socket for a cold tenant is <strong>not refused</strong>: it waits in the priming queue built
+for pool pressure and gets its first frame when the tenant is warm. <code>all</code> restores the earlier
+await-every-tenant boot.</p>
+<p><strong>Two defects found by measurement in already-committed code, fixed:</strong>
+- <em>Absence checks stalled change detection at scale</em> (<code>addaa1ad</code>). At 1,000 tenants every tenant's 60 s
+  absence check was due at once; one tick refreshed about three per second and the stamp poll ran only
+  between ticks: 0.3 stamp calls per minute in the window (reproduced, <code>int-n1000-idle-s2</code>). Each tick now
+  takes the changed, failed or woken tenants plus at most <code>ceil(N × interval / absenceCheckMs)</code> absence
+  checks, oldest first.
+- <em>Configuration re-parsed on every check</em> (<code>20a49aab</code>). One parse of the 1,000-tenant realtime
+  configuration costs 85 ms (reproduced locally on the deployed file); it ran twice per refresh, once per
+  fanout and once per tick, and the 143 KB admission file on every check. At 1,000 tenants realtime used
+  70–73 s of CPU per minute with no sockets (more than its one thread) and primed 4 of 2,000 sockets
+  (reproduced). Both files are still read on every call; they are parsed only when their text changes.
+  This cost was in the base too (every refresh, every socket check).
+- Also fixed on the way, each measured: the evaluator refused its boot because the grants gave it the
+  change-stamp catalogue ledger outside its readiness screen (<code>f62222cd</code>); the 60 s absence check rebuilt
+  every frame (<code>261f568e</code>); each frame build ran <code>sum(pg_column_size(doc))</code> over the tenant's rows for the
+  dbsize display (<code>postgres-tenant-stats.js:19</code>), now at most every 5 minutes per tenant (<code>650cfce3</code>).</p>
+<h3 id="the-hard-delete-gap-coordinators-question">The hard-delete gap (coordinator's question)<a class="headerlink" href="#the-hard-delete-gap-coordinators-question" title="Permanent link">&para;</a></h3>
+<p><strong>Reproduced, and covered by the absence check, not by the stamp.</strong> A hard delete (v1 entries <code>remove</code>,
+<code>postgres-entries-write.js:177</code>) allocates no stamp, so <code>tenant_write_clock</code> does not move
+(<code>postgres-write-clock.js</code> writes the floor only when a stamp was allocated).
+- Stamp-only detection (this lane at <code>6f31c94b</code>, and the realtime runtime with no absence check) misses
+  it: <code>RT_HARD_DELETE_STAMP_ONLY</code> (kept as a test) shows the deleted reading staying on display.
+- With the absence check (count of physical rows against the view, <code>postgres-incremental-view.js</code>, at
+  least every <code>absenceCheckMs</code> = 60 s): <code>RT_HARD_DELETE</code> passes (unit), <code>IV_HARD_DELETE</code> passes on
+  PostgreSQL, and <strong>end to end on the Compose reference</strong> a v1 <code>DELETE</code> of a synthetic entry removed it
+  from a stock-style socket's display after <strong>79.8 s</strong> at 100 tenants (stored count 0 after the delete;
+  <code>rt2-n100-hard-delete.json</code>) and after <strong>67.7 s</strong> at 1,000 tenants (<code>rt2-n1000-hard-delete.json</code>; the write itself reached the display in 1.0 s).
+- <strong>Not covered:</strong> an in-place edit of an unstamped activity row (no stamp, no count change). Only a full
+  reconcile sees it; realtime runs one on cold start, a gap, a mismatch or a count difference.</p>
+<h3 id="checks_1">Checks<a class="headerlink" href="#checks_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>check</th>
+<th>result at <code>20a49aab</code> (unless stated)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm run test:unit</code></td>
+<td>3267 passing, 0 failing (<code>044c08c2</code>; <code>20a49aab</code> adds one unit file, <code>realtime-config-cache</code>, 2 passing)</td>
+</tr>
+<tr>
+<td>new: <code>realtime-socket-server</code> (actual Socket.IO, 50 stock clients), <code>realtime-readiness</code>, <code>realtime-config-cache</code>; <code>realtime-publish-on-change</code> now 13</td>
+<td>1, 3, 2, 13 passing</td>
+</tr>
+<tr>
+<td>PostgreSQL 16.15 (<code>ns-prt-pg</code>) and MongoDB 8.0.34 (<code>ns-prt-mongo</code>, <code>--ulimit nofile=64000</code>): <code>postgres-tenant-scan</code>, <code>change-stamps</code> (new, 9), <code>incremental-view</code> (new, 5), <code>tenant-activity</code>, <code>tenant-socket-data-forwarding</code>, <code>evaluator-consumers</code>, <code>tenant-alarm-state</code>, <code>tenant-durable-replay</code></td>
+<td>45 passing, 0 failing (<code>044c08c2</code>)</td>
+</tr>
+<tr>
+<td>tier check, <code>test:write-boundary</code>, <code>eslint lib</code></td>
+<td>ok (641 files); all 9 entry points; 0 errors, 56 warnings (54 at <code>cb1b751d</code>; the perf-db merge adds code)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="controls-each-red-with-the-symptom-then-restored-green">Controls (each red with the symptom, then restored green)<a class="headerlink" href="#controls-each-red-with-the-symptom-then-restored-green" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>control</th>
+<th>break</th>
+<th>symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BF-233, unit (actual Socket.IO)</td>
+<td>restore the server-side disconnect in <code>protocol.close</code></td>
+<td><code>BF233_RECOVER 0/50 stock clients received a frame after the restart; reasons {"io server disconnect":50}</code></td>
+</tr>
+<tr>
+<td>BF-233, Compose (50 × 20, mounted variant)</td>
+<td>restore the server-side disconnect</td>
+<td>restart command 10.6 s, <code>still open 10000 ms after SIGTERM</code>; after <code>stop()</code> resolved (119 ms) 829 TCP sockets and 1,656 timers remained; stock clients <strong>172/1000</strong> back in 150 s, 828 told <code>io server disconnect</code></td>
+</tr>
+<tr>
+<td>BF-233, Compose</td>
+<td>drop <code>closeAllConnections</code> (variant B)</td>
+<td>none: restart 1.1 s, stock 1000/1000 in 62.7 s, so it was not needed and was removed (<code>a8ed874d</code>)</td>
+</tr>
+<tr>
+<td>function: attribute check</td>
+<td>check admits every version</td>
+<td>5 alteration cases <code>Missing expected rejection</code> (owner to a LOGIN role, search_path, EXECUTE to PUBLIC, SECURITY INVOKER, body replaced)</td>
+</tr>
+<tr>
+<td>function: serving identity</td>
+<td>(a property, no break)</td>
+<td>api identity: <code>permission denied</code>; <code>has_function_privilege</code> api false, PUBLIC false</td>
+</tr>
+<tr>
+<td>incremental view</td>
+<td>ignore soft deletes</td>
+<td><code>IV_SOFT_DELETE reflected</code></td>
+</tr>
+<tr>
+<td>incremental view</td>
+<td>skip the physical count</td>
+<td><code>IV_HARD_DELETE reflected without any write</code></td>
+</tr>
+<tr>
+<td>absence share</td>
+<td>unbounded share (as before <code>addaa1ad</code>)</td>
+<td><code>RT_ABSENCE_SHARE write latency 596 ms with 200 tenants due for absence checks</code></td>
+</tr>
+<tr>
+<td>absence check</td>
+<td>no absence checks</td>
+<td><code>RT_HARD_DELETE the deleted reading leaves every display</code></td>
+</tr>
+<tr>
+<td>readiness: one broken tenant</td>
+<td>serve mode awaits every tenant</td>
+<td>boot fails, <code>REPLAY_NOT_PROVISIONED</code></td>
+</tr>
+<tr>
+<td>readiness: cold socket</td>
+<td>refuse a cold tenant's socket</td>
+<td><code>RD_COLD_SOCKET not refused or disconnected while cold</code></td>
+</tr>
+<tr>
+<td>readiness: flag</td>
+<td><code>all</code> ignored</td>
+<td><code>Missing expected rejection</code></td>
+</tr>
+<tr>
+<td>config parse</td>
+<td>never re-parse / parse every call</td>
+<td><code>RT_PARSE_CHANGE …</code> / <code>RT_PARSE_ONCE one parse for fifty unchanged reads</code></td>
+</tr>
+</tbody>
+</table>
+<p>A note on two controls during this round: two edits commented out the rest of a line and went red
+for a syntax error, not for the property; each was redone (the table shows the redone symptom).</p>
+<h3 id="measurements-compose-reference-host-load-average-in-the-run-files-920-during-these-runs">Measurements (Compose reference; host load average in the run files, 9–20 during these runs)<a class="headerlink" href="#measurements-compose-reference-host-load-average-in-the-run-files-920-during-these-runs" title="Permanent link">&para;</a></h3>
+<p><strong>BF-233 gates (reproduced).</strong></p>
+<table>
+<thead>
+<tr>
+<th>N × sockets</th>
+<th>build</th>
+<th>restart command</th>
+<th><code>still open</code></th>
+<th>stock clients back (no assistance)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50 × 20</td>
+<td>base <code>cb1b751d</code> (first record)</td>
+<td>10.7 s</td>
+<td>yes</td>
+<td>0/1000 (realtime exit 78)</td>
+</tr>
+<tr>
+<td>50 × 20</td>
+<td><code>6f31c94b</code> (first record)</td>
+<td>~10.6 s</td>
+<td>yes</td>
+<td>0/1000 in 30 s</td>
+</tr>
+<tr>
+<td>50 × 20</td>
+<td><code>f62222cd</code></td>
+<td>0.87 s; 0.74 s</td>
+<td>no; <code>stop()</code> 124 ms, 49 ms</td>
+<td>1000/1000 within 180 s</td>
+</tr>
+<tr>
+<td>50 × 20</td>
+<td><code>650cfce3</code></td>
+<td>4.9 s</td>
+<td>no</td>
+<td><strong>1000/1000 in 42.8 s</strong></td>
+</tr>
+<tr>
+<td>100 × 2</td>
+<td><code>650cfce3</code></td>
+<td>4.9 s</td>
+<td>no</td>
+<td><strong>200/200 in 55.2 s</strong></td>
+</tr>
+<tr>
+<td>1000 × 2</td>
+<td>scratch <code>12ff09e2</code> (before the stall and parse fixes)</td>
+<td>10.8 s</td>
+<td>—</td>
+<td>0/2000 in 300 s</td>
+</tr>
+<tr>
+<td>1000 × 2</td>
+<td><code>20a49aab</code></td>
+<td>0.89 s</td>
+<td>no</td>
+<td><strong>163/2000 in 300 s</strong> (gate not met; 1,669 saw <code>transport close</code> and kept retrying)</td>
+</tr>
+</tbody>
+</table>
+<p>The stock client's recovery time is the realtime start plus priming; the restart command's 4.9 s at
+<code>650cfce3</code> includes Docker's own stop and start.</p>
+<p><strong>Change detection, statements and DB-ms per interval (reproduced).</strong></p>
+<table>
+<thead>
+<tr>
+<th>N</th>
+<th>build</th>
+<th>stamp statements per minute</th>
+<th>realtime DB-ms per minute (idle, with sockets)</th>
+<th>of which window leases (absence checks)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50</td>
+<td><code>6f31c94b</code> (per-tenant scan, no absence check)</td>
+<td>2,761 scan statements (one round trip per second)</td>
+<td>83</td>
+<td>0</td>
+</tr>
+<tr>
+<td>50</td>
+<td><code>650cfce3</code> (function)</td>
+<td>53.7 (one per second)</td>
+<td>1,815</td>
+<td>1,421</td>
+</tr>
+<tr>
+<td>100</td>
+<td><code>650cfce3</code></td>
+<td>58.8</td>
+<td>2,294</td>
+<td>1,783</td>
+</tr>
+<tr>
+<td>1000</td>
+<td>scratch <code>12ff09e2</code></td>
+<td>0.3 (stalled)</td>
+<td>1,115</td>
+<td>896</td>
+</tr>
+<tr>
+<td>1000</td>
+<td><code>20a49aab</code></td>
+<td>56.2 (one per second)</td>
+<td>10,451</td>
+<td>6,979 (948 leases/min)</td>
+</tr>
+</tbody>
+</table>
+<p>The function itself: one statement per poll regardless of N; 26–39 ms wall for 1,000 tenants in the lab
+(<code>CS_SCALE</code>). The absence check costs one operation-window lease per tenant per minute (about 29 ms of
+lifetime-role time each on the lane before perf-db's epoch; about 7.4 ms at <code>20a49aab</code> with it).</p>
+<p><strong>Refresh cost against stored data (lab, entries, reproduced).</strong> Full reconcile 11 / 33 / 433 ms at 100 /
+1,000 / 10,000 stored rows; incremental refresh with one changed row 3.1 / 3.2 / 10.6 ms (2.7 / 3.0 / 9.0
+after VACUUM). The remaining growth is the physical count and the in-process copy of the view.</p>
+<p><strong>At 1,000 tenants (reproduced).</strong></p>
+<table>
+<thead>
+<tr>
+<th>figure</th>
+<th>scratch <code>12ff09e2</code></th>
+<th><code>20a49aab</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>realtime start to ready</td>
+<td>257.8 s (await every tenant)</td>
+<td>92.4 s (serve; 1,000/1,000 warm by the first measurement)</td>
+</tr>
+<tr>
+<td>realtime CPU per minute, no sockets</td>
+<td>72.6 s</td>
+<td>15.6 s</td>
+</tr>
+<tr>
+<td>sockets primed (2 per tenant, opened at once)</td>
+<td>4 / 2000</td>
+<td>2000 / 2000 in 42 s</td>
+</tr>
+<tr>
+<td>realtime CPU per minute, 2000 idle sockets</td>
+<td>70.7 s</td>
+<td>30.7 s</td>
+</tr>
+<tr>
+<td>resident MB, no sockets / with sockets</td>
+<td>1,295 / 1,297</td>
+<td>231 / 384</td>
+</tr>
+<tr>
+<td>frames per idle socket per minute</td>
+<td>—</td>
+<td>0.05 (300 frames in 3 min, no writes; authorization rechecks 0.38 per socket per minute against 1.0 expected: read-derived, rechecks the busy api could not answer hold a socket and resend one frame when they succeed)</td>
+</tr>
+<tr>
+<td>stamp statements per minute</td>
+<td>0.3</td>
+<td>56.2</td>
+</tr>
+<tr>
+<td>write to frame / hard delete to removal (end to end, one tenant)</td>
+<td>—</td>
+<td>1.0 s / 67.7 s</td>
+</tr>
+</tbody>
+</table>
+<h3 id="per-tenant-marginal-costs-updated-derived-from-the-rows-above">Per-tenant marginal costs, updated (derived from the rows above)<a class="headerlink" href="#per-tenant-marginal-costs-updated-derived-from-the-rows-above" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>figure (<code>20a49aab</code>, 1,000 tenants unless stated)</th>
+<th>value</th>
+<th>basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>realtime CPU-ms per tenant-minute, idle, no sockets</td>
+<td>about 13 (15.6 s/min at 1,000 minus the ≈3 s process floor) — almost all of it the 60 s absence check</td>
+<td>derived from reproduced</td>
+</tr>
+<tr>
+<td>CPU-ms per socket-minute, idle</td>
+<td>about 7.6 ((30.7 − 15.6) s / 2000)</td>
+<td>derived</td>
+</tr>
+<tr>
+<td>resident MB per tenant, no sockets</td>
+<td>about 0.2 (231 MB at 1,000; the earlier 1.4 MB/tenant estimate included configuration-parse garbage now gone)</td>
+<td>derived</td>
+</tr>
+<tr>
+<td>resident MB per connected socket</td>
+<td>about 0.08 ((384 − 231) / 2000)</td>
+<td>derived</td>
+</tr>
+<tr>
+<td>realtime DB-ms per tenant-minute, idle</td>
+<td>about 10.5 (10,451 / 1,000): 7.0 window lease + 3.5 count and floor, all from the absence check; the stamp function is one statement per second for all tenants</td>
+<td>derived from reproduced</td>
+</tr>
+<tr>
+<td>frames per socket-minute</td>
+<td>0 idle by design (0.05 measured, see above); 0.2 at one write per 5 minutes (50 × 20)</td>
+<td>reproduced</td>
+</tr>
+<tr>
+<td>authorization calls per socket-minute</td>
+<td>2 / sockets sharing a credential (0.074 at 20, 0.99 at 2; 0.38 at 1,000 × 2 where rechecks failed)</td>
+<td>reproduced</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What runs out first (derived, one realtime process).</strong> The single Node thread: 15.6 s/min at 1,000
+tenants with no sockets and 30.7 s/min with 2,000 idle sockets, so about <strong>1,900 tenants at 2 sockets
+each</strong> (≈ 3,800 with none) before one core is spent. Most of the idle cost is the 60 s absence check
+(one lease, one count, one refresh per tenant per minute); if the maintainer's answer makes hard deletes
+advance the clock, the absence check can go and the idle per-tenant cost falls to the stamp function's
+share. Memory (≈0.2 MB per tenant, 0.08 MB per socket) and realtime's own DB time (≈10 ms per
+tenant-minute idle) are not the first limits at these sizes. Restart recovery at 1,000 is the open gate:
+163/2000 stock clients back in 300 s.</p>
+<h3 id="decisions-and-questions-for-the-join">Decisions and questions for the join<a class="headerlink" href="#decisions-and-questions-for-the-join" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The change-stamp function and incremental refresh are on hold per the coordinator. If the maintainer
+  makes deletes advance the clock, the absence check (and its per-tenant lease every minute) can go; the
+  count check in the view stays as a guard.</li>
+<li>The evaluator lane's per-tenant signature (floor + row count + digest over every row's identity and
+  <code>xmin</code>, <code>a335be89</code>) and this lane's function + view are two answers to one question; the shared shape
+  proposed is: the function for every member tenant's floor in one statement, the view per changed
+  tenant, an absence interval for unmoved tenants.</li>
+<li><code>closeAllConnections</code> is not needed (control B); the shutdown fix is the removed server-side disconnect.</li>
+<li>perf-db overlap is merged in the lane (<code>cdbdf5ac</code>); the scratch branch is for measurement only.</li>
+</ul>
+<h3 id="unmeasured-this-round">UNMEASURED (this round)<a class="headerlink" href="#unmeasured-this-round" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Restart recovery at 1,000 tenants: gate not met (163/2000 in 300 s).</strong> Mechanism read-derived, not
+  instrumented: after a restart every tenant is cold, and each reconnecting socket's priming batch
+  warms its own tenant directly (no bound across tenants), competing with the bounded background warm;
+  batches back off and retry. Candidate: a cold tenant's socket waits for the runtime's bounded warm
+  (<code>wake</code> to the front) instead of warming itself.</li>
+<li>
+<p>The run files of the <code>f62222cd</code> deployment (first stock-recovery runs, BF-233 controls A and B) were
+  deleted by mistake before the next campaign; their figures above are quoted from tool output at
+  capture time.</p>
+</li>
+<li>
+<p>Revocation, expiry, pause and suspend on the Compose reference (unit only, as before).</p>
+</li>
+<li>Write-to-frame at 1,000 tenants with writes (idle and the hard delete only).</li>
+<li>Memory per socket at 1,000 tenants beyond the one idle run.</li>
+<li>The cost of the absence check with realistic stored data (synthetic tenants hold few rows).</li>
+</ul>
+<h2 id="update-2026-11-11-round-3-restart-recovery-at-1000-tenants-idle-frames">Update 2026-11-11 (round 3): restart recovery at 1,000 tenants, idle frames<a class="headerlink" href="#update-2026-11-11-round-3-restart-recovery-at-1000-tenants-idle-frames" title="Permanent link">&para;</a></h2>
+<p>Lane head <code>dc8d10bc</code> (<code>codex/perf-realtime-20261110</code>, not pushed). Commits this round: <code>721b5daf</code>
+(protocol counters), <code>65b9fc7a</code> (cold-tenant sockets park for the runtime's bounded warm), <code>9b6ff088</code>
+(bounded recheck, resend only a missed frame), <code>dc8d10bc</code> (parked drain outside the runtime's
+operation; sockets wait for the runtime's next cycle). Compose reference as above, 1,000 tenants × 2
+stock sockets, <code>--open flood</code>; a diagnostic mount (<code>preview-realtime.js</code> logging protocol and runtime
+counters every 5 s) on every run. Host load averages are in each <code>*-campaign.txt</code>; a peer bench
+campaign shared the host during the <code>dc8d10bc</code> runs (load 6.7 to 23).</p>
+<h3 id="idle-frames-at-1000-tenants-recheck-resends-reproduced-fixed">Idle frames at 1,000 tenants: recheck resends (reproduced), fixed<a class="headerlink" href="#idle-frames-at-1000-tenants-recheck-resends-reproduced-fixed" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>image</th>
+<th>idle window</th>
+<th>frames</th>
+<th>resends</th>
+<th>authorizeInFlightMax</th>
+<th>recheckFailures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>721b5daf</code> (before)</td>
+<td>180 s</td>
+<td>236</td>
+<td>236</td>
+<td>1000</td>
+<td>420 → 1968</td>
+</tr>
+<tr>
+<td><code>9b6ff088</code></td>
+<td>180 s</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>dc8d10bc</code></td>
+<td>180 s</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Mechanism: the periodic recheck started every tenant at once, so 1,000 authorizations were in flight;
+the failures held sockets, and the end of each hold resent the frame whether or not it had changed.
+Fix (<code>9b6ff088</code>): the sweep rechecks 8 tenants at a time, and a hold ends with a frame only if fan-out
+skipped a changed view during the hold, or display or permissions changed. Unit controls: resend
+always, <code>RT_RESEND_NONE no frame for an unchanged view after the hold</code>; unbounded sweep,
+<code>RT_RECHECK_BOUNDED 40 authorizations in flight for 40 tenants</code>. Runs:
+<code>runs/rt3-n1000-721b5daf-idle-s2.json</code>, <code>runs/rt4-n1000-9b6ff088-idle-s2.json</code>,
+<code>runs/rt4-n1000-dc8d10bc-idle-s2.json</code>; counters in the matching <code>*-diag.txt</code>.</p>
+<h3 id="restart-recovery-at-1000-tenants-bf-233-at-scale">Restart recovery at 1,000 tenants (BF-233 at scale)<a class="headerlink" href="#restart-recovery-at-1000-tenants-bf-233-at-scale" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>image</th>
+<th>what it does</th>
+<th>restartCommandMs</th>
+<th>stock clients recovered</th>
+<th>all recovered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>721b5daf</code></td>
+<td>each socket warms its own tenant</td>
+<td>1769</td>
+<td>2000/2000</td>
+<td>94.2 s</td>
+</tr>
+<tr>
+<td><code>9b6ff088</code></td>
+<td>sockets park; drain started inside the runtime's operation</td>
+<td>682</td>
+<td>76/2000</td>
+<td>not within 300 s</td>
+</tr>
+<tr>
+<td><code>dc8d10bc</code></td>
+<td>parked drain detached; sockets wait for the runtime's cycle</td>
+<td>1041</td>
+<td>2000/2000</td>
+<td>129.7 s</td>
+</tr>
+<tr>
+<td><code>dc8d10bc</code> + control mount</td>
+<td>unbounded per-socket warm (no parking, socket refreshes)</td>
+<td>10553</td>
+<td>2000/2000</td>
+<td>103.1 s</td>
+</tr>
+</tbody>
+</table>
+<p>Gate: stock clients N/N at 1000 × 2 within 300 s. <strong>Met on <code>dc8d10bc</code></strong> (129.7 s).</p>
+<p>Cause on the old path (<code>721b5daf</code>, reproduced with counters): after the restart every reconnecting
+socket ran its own tenant warm, outside the runtime's bound, and every retry re-authorized. At +30 s:
+healthy 19, socket warms 851 (648 failed), retries 4139, authorizations 6059, runtime ticks 1. At
++60 s: healthy 496, socket warms 3635 (2847 failed), retries 6338, authorizations 8765, runtime
+ticks 2. The 163/2000 of the previous round ran at host load 21 to 24; this run recovered on a quieter
+host.</p>
+<p>Cause of the <code>9b6ff088</code> failure (reproduced): the runtime calls <code>onReady</code> from inside its refresh
+cycle, which runs inside the operation window's async scope. <code>tenantReady</code> started the parked drain
+there, so the drain and every retry timer it scheduled inherited that scope; after the cycle ended,
+every prime was refused with <code>LIFECYCLE_WINDOW_SCOPE_INVALID</code> (<code>operation-window.js:139</code>, via
+<code>withOperation</code>). Counters 5 min after the restart: all 1,000
+tenants healthy, socket refreshes 66611 with 66569 failures, primed 76. The unit gate passed on
+<code>9b6ff088</code> because its lab had no operation window.</p>
+<p>Fix (<code>dc8d10bc</code>):</p>
+<ul>
+<li>The drain runs in the protocol's own async context (<code>AsyncResource.bind</code> at create).</li>
+<li>A socket for a warm tenant never refreshes the tenant itself: <code>runtime.fresh(tenant)</code> wakes the
+  tenant into the tick's bounded share, and the socket takes the first cycle that starts after it
+  asked (freshness at connect, <code>RT_HARD_DELETE*</code>, kept). All sockets of a tenant share that cycle.
+  Sockets released by the runtime's warm take the projection that warm published. A cycle published
+  while sockets primed is sent to them afterwards.</li>
+<li>A failed tenant with sockets waiting backs off from the tick interval up to <code>failureRetryMs</code>;
+  without this, a pool refusal of the runtime's own fan-out darkened the tenant for 30 s
+  (<code>RT_PRESSURE_ALL_PRIMED 0/50</code>). A failed tenant nobody waits for keeps the full interval
+  (<code>RD_ONE_BROKEN</code>).</li>
+</ul>
+<p>Unit gate <code>RD_RESTART_BOUNDED</code> now runs under an operation window with the window's scope rule:
+100 cold tenants × 2 sockets all prime, concurrent acquires ≤ 2 (runtime concurrency), parked ≥ 1.
+Controls, each red then restored green: unbounded per-socket warm,
+<code>RD_RESTART_BOUND concurrent warms 100 (runtime concurrency 2)</code>; drain not detached,
+<code>RD_RESTART_ALL_PRIMED 0/200</code>.</p>
+<p><strong>Compose control: an unbounded per-socket warm does not fail the gate at this size</strong> (2000/2000 in
+103.1 s, host load about 19). Its symptoms are those of the old path: socket refreshes 4836 with
+4153 failures and runtime ticks 2 at about +60 s after the restart (<code>dc8d10bc</code>: socket refreshes
+266, 0 failures, ticks 14), and a 10.6 s restart command. The bounded design recovers more slowly
+here (129.7 s against 103.1 s, under different host loads) because warm-up proceeds at the runtime's
+concurrency share per tick; the gate as stated does not discriminate between the two at 1,000
+tenants on this host. The unit bound is the discriminating check. Counters:
+<code>runs/rt4-n1000-dc8d10bc-diag.txt</code>, <code>runs/rt5-n1000-dc8d10bc-control-unbounded-diag.txt</code>.</p>
+<h3 id="checks-on-dc8d10bc">Checks on <code>dc8d10bc</code><a class="headerlink" href="#checks-on-dc8d10bc" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>realtime-*</code>, <code>tenant-startup-admission</code>, <code>tenant-operation-window</code>, <code>human-session-stream</code>,
+  <code>tenant-activity</code> at the project timeout (<code>--timeout 5000</code>): 157 passing, 0 failing.
+  <code>realtime-browser-diagnostics</code> fails only at mocha's 2,000 ms default, identically on <code>cb1b751d</code>,
+  <code>16a1fc2d</code> and <code>dc8d10bc</code>; it passes at 5,000 ms on all three.</li>
+<li>eslint: 0 errors (2 existing <code>detect-non-literal-fs-filename</code> warnings on the configuration file
+  read).</li>
+</ul>
+<h3 id="unmeasured-round-3">UNMEASURED (round 3)<a class="headerlink" href="#unmeasured-round-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Restart recovery under a tighter bound or at 3,000 tenants; whether a larger warm share during a
+  restart closes the gap to the unbounded control without its socket-path failures.</li>
+<li>The write clock (perf-db <code>03661f22</code>) is not yet merged in this lane; the absence check is still on.</li>
+<li>The realtime logs of the two <code>9b6ff088</code> restart runs (counters and the <code>LIFECYCLE_WINDOW_SCOPE_INVALID</code>
+  lines) were overwritten when a later deploy reused their run directories; the figures above for
+  those runs are quoted from tool output at capture time. Their run files (<code>*-restart-s2.json</code>,
+  <code>*-campaign.txt</code>) are kept.</li>
+</ul>
+<h2 id="update-2026-11-11-round-3-continued-the-complete-write-clock">Update 2026-11-11 (round 3, continued): the complete write clock<a class="headerlink" href="#update-2026-11-11-round-3-continued-the-complete-write-clock" title="Permanent link">&para;</a></h2>
+<p>Lane head <code>eacd6a3b</code>: perf-db <code>03661f22</code> merged (<code>6264b976</code>, no conflicts), then the realtime side of
+decision write-clock-complete.</p>
+<ul>
+<li><strong>Change-stamp function, catalogue <code>0002</code>:</strong> <code>DROP FUNCTION</code>, then <code>CREATE</code> returning
+  <code>(tenant_id, last_stamp, last_delete_stamp)</code>, then <code>REVOKE</code> from <code>PUBLIC</code>.</li>
+<li>The reader checks the new result type and body, and returns the stamp and the pair (<code>clock</code>).</li>
+<li>The operational digest is re-pinned.</li>
+<li><code>clock</code> precedes <code>change_stamps</code> in the catalogue map, and the deployment grants run after every
+    catalogue, so the realtime and evaluator identities hold <code>EXECUTE</code> after the <code>DROP</code>.</li>
+<li><strong>Incremental view:</strong> reads the pair in its snapshot, and reconciles in full when
+  <code>last_delete_stamp</code> is past the checkpoint. The physical count stays as the guard for a writer
+  outside the clock.</li>
+<li><strong>Periodic absence check retired:</strong> removed from the runtime, the realtime configuration and the
+  deployment configuration. An unchanged stamp is an unchanged tenant.</li>
+</ul>
+<h3 id="checks-reproduced-postgresql-1615-disposable-container">Checks (reproduced; PostgreSQL 16.15, disposable container)<a class="headerlink" href="#checks-reproduced-postgresql-1615-disposable-container" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>check</th>
+<th>result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RT_HARD_DELETE_STAMP_ONLY</code></td>
+<td>passes: stamp-only detection publishes the hard delete</td>
+</tr>
+<tr>
+<td><code>RT_HARD_DELETE</code></td>
+<td>passes: every socket within 200 ms (ticks of 20 ms)</td>
+</tr>
+<tr>
+<td><code>RT_NO_PERIODIC_REFRESH</code> (replaces <code>RT_ABSENCE_SHARE</code>)</td>
+<td>passes: 200 unchanged tenants, 0 refreshes in 300 ms; one write, one refresh</td>
+</tr>
+<tr>
+<td><code>IV_DELETE_STAMP</code> (new)</td>
+<td>passes: a hard delete through the clock moves both stamps; the view reconciles on the delete stamp (<code>deletes</code> 1, <code>absences</code> 0) and the reading leaves</td>
+</tr>
+<tr>
+<td><code>CS_OLD_SHAPE_REFUSED</code> (new)</td>
+<td>passes: the <code>0001</code> function is refused with <code>CHANGE_STAMPS_FUNCTION_UNSAFE</code></td>
+</tr>
+<tr>
+<td>change-stamps integration</td>
+<td>10 passing</td>
+</tr>
+<tr>
+<td>incremental-view integration</td>
+<td>6 passing</td>
+</tr>
+<tr>
+<td>tenant-write-clock-complete integration</td>
+<td>6 passing</td>
+</tr>
+<tr>
+<td>unit tier (<code>scripts/test-tiers.js run unit</code>)</td>
+<td>3280 passing, 1 failing: <code>preview-domains-equivalence</code> (see below)</td>
+</tr>
+</tbody>
+</table>
+<p>Controls, each restored after:</p>
+<table>
+<thead>
+<tr>
+<th>break</th>
+<th>symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>every warm tenant due on every tick</td>
+<td>red: <code>RT_NO_PERIODIC_REFRESH refreshes of unchanged tenants over 300 ms (15 ticks)</code></td>
+</tr>
+<tr>
+<td>ignore <code>last_delete_stamp</code></td>
+<td>red on <code>IV_DELETE_STAMP_REASON</code> (deletes/absences <code>[0, 1]</code>), but the deleted reading still leaves the view: the physical-count guard reconciles instead</td>
+</tr>
+<tr>
+<td>ignore <code>last_delete_stamp</code> and remove the count guard</td>
+<td>red: <code>IV_DELETE_STAMP the deleted reading leaves the view</code></td>
+</tr>
+<tr>
+<td>reader without its attribute check</td>
+<td>red: every <code>CS_ALTERED_REFUSED</code> case and <code>CS_BODY_REPLACED</code> (5 failing)</td>
+</tr>
+<tr>
+<td>reader without the result-type comparison</td>
+<td>green, 10 passing: the comparison is shadowed (see below)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Result-type comparison:</strong> an old shape fails when the call is planned (<code>42703</code>), and any other
+  shape needs a different body, which the body comparison refuses. The planning error now maps to
+  <code>CHANGE_STAMPS_FUNCTION_UNSAFE</code>; before this round it surfaced as the raw database error.</li>
+<li><strong><code>preview-domains-equivalence</code>:</strong> the failure arrived with the merge. The golden fixture
+  <code>tests/fixtures/preview-domains-equivalence.golden.json</code> holds perf-db's absolute worktree path in
+  its <code>views</code> field, and fails at <code>03661f22</code> from any other checkout. It is perf-db's to fix.</li>
+</ul>
+<h3 id="idle-cost-at-1000-tenants--2-sockets-before-and-after-180-s-window">Idle cost at 1,000 tenants × 2 sockets, before and after (180 s window)<a class="headerlink" href="#idle-cost-at-1000-tenants--2-sockets-before-and-after-180-s-window" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>figure</th>
+<th><code>dc8d10bc</code> (absence check every 60 s)</th>
+<th><code>eacd6a3b</code> (stamps only)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>realtime DB-ms per minute</td>
+<td>5480 (lifetime leases 3433 + stamp poll 2047)</td>
+<td>1937 (stamp poll only)</td>
+</tr>
+<tr>
+<td>realtime DB-ms per tenant-minute</td>
+<td>5.48</td>
+<td>1.94</td>
+</tr>
+<tr>
+<td>realtime operation leases in the window</td>
+<td>2599</td>
+<td>0</td>
+</tr>
+<tr>
+<td>realtime CPU-ms per minute</td>
+<td>32617</td>
+<td>26501</td>
+</tr>
+<tr>
+<td>realtime CPU-ms per tenant-minute</td>
+<td>32.6</td>
+<td>26.5</td>
+</tr>
+<tr>
+<td>postgres CPU-ms per minute</td>
+<td>56808</td>
+<td>59043</td>
+</tr>
+<tr>
+<td>frames per socket-minute</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>subject authorizations per socket-minute</td>
+<td>0.827</td>
+<td>0.826</td>
+</tr>
+<tr>
+<td>host load average during the run</td>
+<td>6.7 at start</td>
+<td>14 to 16 (a peer bench shared the host)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>DB time:</strong> the absence check was 63% of realtime's idle DB time. What remains is the
+  once-a-second stamp poll (one function call for all 1,000 tenants).</li>
+<li><strong>CPU:</strong> the comparison crosses host loads and is indicative only. The remaining realtime CPU at
+  idle is not database work. It is consistent with transport keep-alive and the authorization recheck
+  (0.83 per socket-minute), which is read-derived, not profiled.</li>
+</ul>
+<p><strong>Restart gate on <code>eacd6a3b</code>:</strong> stock clients 2000/2000 in 85.3 s, under the 300 s bound
+(<code>restartCommandMs</code> 813, host load about 15).</p>
+<p>Runs: <code>runs/rt4-n1000-eacd6a3b-{idle-s2,restart-s2}.json</code>, <code>-diag.txt</code>, <code>-campaign.txt</code>.</p>
+<p>The bench overlay is now generated from the lane head. The earlier overlay (core <code>650cfce3</code>) carried
+the retired <code>absenceCheckMs</code>, and the realtime configuration refused it. Its <code>config.js</code> and
+<code>bootstrap.js</code> match every head measured before this one, so those runs stand.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

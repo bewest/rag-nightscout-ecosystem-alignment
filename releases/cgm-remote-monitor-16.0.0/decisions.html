@@ -2188,7 +2188,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>b1202249f</code>.</em></p>
+<p><em>Living document, last changed 2026-11-11 at <code>6c4c74219</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3660,7 +3660,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/37113566341b3c1e4b94778d3e216284bd516ac3/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -3908,6 +3908,78 @@ deployment has run.</p>
 <td>maintainer, 2026-11-10 ("record 3k gate with 10k stretch"; "even stable 1k+ on a machine like this would be a big deal")</td>
 <td><code>MT-BENCH-BASELINE</code>, <code>MT-SCALE-UNBOUND</code>, perf lanes</td>
 <td>Capacity is derived from measured marginal cost per tenant (CPU-ms per tenant-minute, MB resident per tenant, DB-ms per tenant-minute, at idle and at real cadence) and confirmed by a run near the claimed count, never assumed. No single-site contrast bench is needed (<code>MT-BENCH-CONTRAST</code> closed). Unmeasured risks named at decision time: evaluator CPU per evaluation, and per-tenant resident memory.</td>
+</tr>
+<tr>
+<td><a id="readiness-serve-then-warm"></a><strong>At scale a role is ready once its own dependencies are up; tenants warm in the background with bounded concurrency (or on first request), and a tenant not yet warm answers 503 with <code>Retry-After</code> for that tenant only. A misconfigured tenant fails alone and alerts instead of failing the boot. An operator flag can require all-tenants readiness, for acceptance tests and cautious operators.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>perf lane DB (<code>codex/perf-db-20261110</code>), realtime and evaluator perf lanes</td>
+<td>Measured basis: bounded warm (concurrency 4) started 1,000 tenants with the api ready after 341 s and the evaluator after 421 s (<code>reports/tenancy/perf-db-2026-11-10/README.md</code>); derived about 17 min at 3,000 and 57 min at 10,000 if readiness waits for every tenant.</td>
+</tr>
+<tr>
+<td><a id="admission-epoch-everywhere"></a><strong>The in-transaction catalogue epoch that replaced the per-transaction restore-window admission also carries the alarm-suppression reader's admission; the serving connection's <code>pg_stat_activity</code> identity is cached per pooled client and re-read on reconnect.</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td>perf lane DB</td>
+<td>The epoch is computed by the database inside the transaction (oid and <code>xmin</code> of every catalogue row the admission reads, role attributes, memberships, ledger); any catalogue change is refused on the next read, with a 19-case control suite. Measured: data transaction 18 → 8 statements, 2.79 → 0.85 DB-ms; suppression reader about 11 of 93 idle DB-s per minute at 10 tenants before the change. Stated limits: superuser-only changes to built-in objects, and REPEATABLE READ snapshot versus live privilege functions.</td>
+</tr>
+<tr>
+<td><a id="change-stamp-definer-function"></a><strong>Change detection reads all tenants' write clocks through one narrow <code>SECURITY DEFINER</code> function that returns only <code>(tenant_id, last_stamp)</code>: owned by a non-login role, <code>search_path</code> pinned, <code>EXECUTE</code> revoked from <code>PUBLIC</code> and granted only to the realtime and evaluator identities, named in the census's operational inventory. One statement per member per interval regardless of tenant count; RLS on clinical tables is unchanged.</strong></td>
+<td>maintainer, 2026-11-10 ("which is best for performance and architecture? 1?"; coordinator recommended the function)</td>
+<td><code>MT-PERF-REALTIME</code>, <code>MT-PERF-EVALUATOR</code></td>
+<td>Measured trigger: with FORCE RLS and NOBYPASSRLS roles the realtime detector needs one statement per tenant per interval (<code>postgres-connection.js:232</code> <code>scanTenants</code> on <code>6f31c94b</code>). Rejected: a summary table (an extra write in every data transaction) and per-tenant statements (grow with N each pass). Control required: a serving identity cannot execute it.</td>
+</tr>
+<tr>
+<td><a id="incremental-refresh"></a><strong>Realtime and evaluator read incrementally: a refresh reads only rows past the published or processed checkpoint and applies them to the in-memory view; a full reconcile happens only on cold start, a gap or a checkpoint mismatch. Realtime frames stay full (<code>delta:false</code>).</strong></td>
+<td>maintainer, 2026-11-10</td>
+<td><code>MT-PERF-REALTIME</code>, <code>MT-PERF-EVALUATOR</code></td>
+<td>Derived trigger: realtime refresh throughput runs out at about 500–850 tenants at one write per 5 min because each refresh is a full reconcile whose cost grows with stored data (<code>reports/tenancy/perf-realtime-2026-11-10/README.md</code>). The two roles should share one read path. Deletes and edits must be covered by the incremental read, with a control.</td>
+</tr>
+<tr>
+<td><a id="write-clock-complete"></a><strong>Every supported write that changes evaluated or displayed input advances the tenant write clock in the same transaction, hard deletes and activity-domain writes included; the clock also carries <code>last_delete_stamp</code>, so a reader knows a hard delete needs a full reconcile. Change detection everywhere reads the clock through the definer function, now <code>(tenant_id, last_stamp, last_delete_stamp)</code>; the evaluator's per-tenant row-version digest scan and realtime's periodic absence check are retired once this lands.</strong></td>
+<td>maintainer, 2026-11-11 ("1, or 3? which is best for performance, architecture, and maintenance?"; coordinator recommended 1)</td>
+<td><code>MT-PERF-DB</code> (builds it), <code>MT-PERF-EVALUATOR</code>, <code>MT-PERF-REALTIME</code></td>
+<td>Measured trigger: the clock does not move on hard deletes (<code>postgres-entries-write.js</code> <code>remove</code>) or unstamped activity writes (<code>postgres-write-clock.js:74</code>); stamp-only detection keeps a deleted reading on display (evaluator control C2, realtime <code>RT_HARD_DELETE_STAMP_ONLY</code>). Workarounds measured: evaluator digest scan 0.25–0.79 DB-ms per tenant per check; realtime absence check most of its 10.5 DB-ms per tenant-minute idle and 68–80 s for a delete to leave the display. Rejected: (c) stamp plus slow absence pass (two detection paths and a delete visible for the slow interval); (b) digest in the function (scans every tenant's rows each pass). The write-boundary gate must fail when a write path does not advance the clock.</td>
+</tr>
+<tr>
+<td><a id="incremental-refresh-realtime-only"></a><strong>Incremental refresh applies to realtime only (full reconcile on cold start, gap, mismatch or a delete stamp past the checkpoint). The evaluator keeps full acquisition; its next lever is the per-evaluation cost (projection reads that re-query retained input, the full plugin pass), with clinical-equivalence gates.</strong></td>
+<td>maintainer, 2026-11-11 (coordinator recommendation, asked "which is best")</td>
+<td><code>MT-PERF-REALTIME</code>, <code>MT-PERF-EVALUATOR</code></td>
+<td>Refines <a href="#incremental-refresh">incremental-refresh</a>. Measured: realtime full reconcile 11 / 33 / 433 ms at 100 / 1,000 / 10,000 stored rows against incremental 3.1 / 3.2 / 10.6 ms; evaluator time-only cycle still 16 CPU-ms and 44 statements with no new rows, so an incremental read saves at most about 17 CPU-ms per acquisition.</td>
+</tr>
+<tr>
+<td><a id="evaluation-cost-candidates"></a><strong>Reduce the evaluator's per-evaluation cost with all five profiled candidates, in risk order: first C (no per-cycle JSON parse/stringify or deep clone, copies kept independent), D (document dates parsed once, matching moment's ISO parsing) and E (acquisition skips clone and deep compare when the signature is unchanged); then B (keep the materialised working set between time-only cycles and re-cut only time windows, with a mutation guard); then A (answer view reads from the retained projection in process instead of re-querying PostgreSQL, proved by a differential lab over the views corpora with the <code>mingo</code> oracle). Each step passes the clinical-equivalence gate (same alarm set, timing and messages on the 13-hour synthetic timeline) plus its own proof and break-it control before the next starts.</strong></td>
+<td>maintainer, 2026-11-11</td>
+<td><code>MT-PERF-EVALUATOR</code></td>
+<td>Measured basis (<code>reports/tenancy/perf-evaluator-2026-11-10/README.md</code>, Round 3): time-only cycle 22–30 CPU-ms, acquisition 40–45 CPU-ms; plugins under 2% of busy time; working-set rebuild 22–25%, projection reads through PostgreSQL 21–23% and all 44 statements of a time-only cycle, JSON copying 12–13%, deep clone 6–8%, date parsing 3–13%. A and B together are derived to bring a time-only cycle to a few CPU-ms and no statements.</td>
+</tr>
+<tr>
+<td><a id="view-reads-total-order"></a><strong>View reads have an explicit total order: ties on the sort key break on the per-tenant insertion ordinal, on both the SQL path (<code>ORDER BY &lt;key&gt;, ordinal</code>) and the in-process path (stable sort over the same key). No port of PostgreSQL's internal sort. Scope now: the evaluator's view reads; the API v1/v3 reads follow once the compatibility corpus shows no client depends on tie order.</strong></td>
+<td>maintainer, 2026-11-11 ("on A, that doesn't sound maintainable"; chose option 2)</td>
+<td><code>MT-PERF-EVALUATOR</code> (eval-cost step A), compat survey</td>
+<td>PostgreSQL leaves tie order unspecified (plan, <code>work_mem</code>, sort method, version); single-site MongoDB does not guarantee it either, though it usually returns insertion order. Measured in the eval-cost lane: a stable in-process sort differed from PostgreSQL on 394 tie orders and changed output on typed twins; porting PostgreSQL 16's quicksort removed the difference but ties the code to PostgreSQL internals. Before switching, the lane reports which order matches single-site on the views-equality and replay corpora and every output change on ties; the change applies to ties only.</td>
+</tr>
+<tr>
+<td><a id="tenant-registry"></a><strong>The tenant list moves to a PostgreSQL registry (tenants and host aliases), read through a narrow security-definer function. Roles look a tenant up on its first request, keep it in a bounded cache and refresh it on the existing change signal (stage 1 aggregate poll, then NOTIFY). Vault key names derive from the tenant id by a fixed rule. Until the registry lands, the preview keeps the static file list with an operator-set size cap (<code>MT-CAPACITY-FIXES</code>). A file describing a set of tenants remains a lab and test input to provisioning (below), never a second runtime home.</strong></td>
+<td>maintainer, 2026-11-11 ("1/4/3: we need to be able to rig our labs/tests with primed material easily, and support production needs for 1"; make the changes that can be made before the quiet-machine load tests)</td>
+<td><code>MT-TENANT-REGISTRY</code>, <code>MT-CAPACITY-FIXES</code></td>
+<td>Read at 0392acf9: <code>lib/server/serve/preview-config.js:128-148</code> builds the resolver and the Vault bindings from <code>config.tenants</code> at startup; no registry table exists. The 1 MiB cap refused the api config at 3,000 tenants (1,923,124 bytes, reproduced). Unmeasured: first-request lookup latency and cache misses at 10k.</td>
+</tr>
+<tr>
+<td><a id="provisioning-split"></a><strong>Provisioning, role configuration and lab priming are separate steps. Provisioning (registry and alias rows, Vault keys, activity row; idempotent, refuses partial results) is an operator operation on the <code>admin</code> role (D7's operator plane, its own listener, secured by not being reachable). Every caller goes through it: a Kubernetes controller or Job, a provider's control panel, the Compose bootstrap, and the lab and bench bulk job, which reads a seed file and calls a batch form of the same operation. No caller writes provisioning rows with its own database credentials. Bootstrap sets up infrastructure only (schema, identities, role configs without a tenant list). Synthetic data loading belongs to the bench harness. There is no migration path: no multitenant operator holds a database yet, so preview deployments re-provision, and once the registry lands a role refuses a config that still carries a tenant list.</strong></td>
+<td>maintainer, 2026-11-11 ("1 for production, 2 for our labs etc"; refined the same day: provisioning is exposed by the admin API and controllers are its clients; migration: "whatever is consistent with our plans, high quality and efficient progress"; prioritise the path to the 3k/5k/10k data while respecting the quiet-machine runs)</td>
+<td><code>MT-TENANT-REGISTRY</code></td>
+<td>Order: the cap and deploy fixes first, then the 3k/5k/10k campaign on a quiet machine, while the registry lane avoids heavy runs during that window; then a startup-only re-measure on the registry.</td>
+</tr>
+<tr>
+<td><a id="operator-rest-api"></a><strong>The operator operations (provisioning, pause and suspend, ownership, deletion and export status, pool counts) are published as a versioned REST API with an OpenAPI description on the <code>admin</code> listener: resources, idempotency keys, status for long-running operations, and error codes that stay the same across versions. As with Ory's admin APIs, core does not authenticate callers. Whoever operates the deployment controls who can reach the listener, through a private network, a NetworkPolicy, or their own gateway or mTLS proxy (D7 and D13 unchanged). Each kind of operator connects through its own adapter: a provider's private control system, a DIY script or the core CLI, and test, QMS or lab priming. All of them call the same API.</strong></td>
+<td>maintainer, 2026-11-11 (asked whether a provider needs a REST API; confirmed the Ory-style private admin API with adapters per operator)</td>
+<td><code>MT-TENANT-REGISTRY</code> (provisioning resource first), later operator operations</td>
+<td>Read at 0392acf9: <code>lib/server/serve/admin-preview.js:1-18</code> serves RPC-style internal contracts with no credential. Not decided: core-side caller authentication (mTLS or client-credentials). Reopen it if an operator cannot put a gateway in front.</td>
+</tr>
+<tr>
+<td><a id="tenant-live-add"></a><strong>Running evaluator and realtime processes pick up a newly provisioned tenant without a restart. This is a separate lane after the registry's step (a): the tenant set is read from the registry at startup, removals apply within the refresh bound, and an alert fires while added tenants wait for a restart. The lane adds the tenant to the evaluator runtime, consumers, startup cells, pool slice and realtime admission while they run, under clinical-path review, and measures how long a new tenant takes to get its first alarm.</strong></td>
+<td>maintainer, 2026-11-11 (chose "(b) next, as its own lane"; asked whether the performance runs add tenants mid-run)</td>
+<td><code>MT-TENANT-LIVE-ADD</code>, <code>MT-TENANT-REGISTRY</code></td>
+<td>Read at 0392acf9: both roles refuse to add a tenant while running (<code>REALTIME_RESTART_REQUIRED</code>, "tenant expansion requires restart"). Every evaluator restart pauses alarms for every tenant: the gap reached a maximum of 75 s at 1,000 tenants (capacity run r1; the record is still to be written). The capacity harness (<code>tools/mt-bench/capacity/probe.js</code>) provisions every tenant at bootstrap and only restarts all four roles, so the 3k/5k/10k data does not need this lane. A future campaign that adds tenants while running would.</td>
 </tr>
 </tbody>
 </table>

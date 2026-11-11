@@ -5533,6 +5533,10 @@
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/deploy-tree-home-docs-operator-readme-20261110.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/deploy-vault-agent-main.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
@@ -5573,6 +5577,10 @@
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-eval-cost-codex-eval-cost-20261111.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-evaluator-partition-codex-evaluator-partition-20261110.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
@@ -5610,6 +5618,18 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-ownership-ops-codex-ownership-ops-20261110.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-perf-db-codex-perf-db-20261110.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-perf-evaluator-codex-perf-evaluator-20261110.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/reviewer-packets/mt-perf-realtime-codex-perf-realtime-20261110.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
@@ -5769,7 +5789,19 @@
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/batch-join-2026-11-11/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/batch-join-2026-11-11/0392acf9-acceptance/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/bench-baseline-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/capacity-fixes-2026-11-11/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
@@ -5793,6 +5825,10 @@
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/deploy-capacity-fixes-2026-11-11/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/deploy-fixture-2026-11-10/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
@@ -5802,6 +5838,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/devicestatus-advanced-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/eval-cost-2026-11-11/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
@@ -6001,6 +6041,18 @@
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/perf-db-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/perf-evaluator-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/perf-realtime-2026-11-10/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/pool-primitive-2026-11-10/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
@@ -6026,6 +6078,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/tenant-local-insertion-2026-11-07/index.html</loc>
+         <lastmod>2026-11-11</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/tenant-registry-2026-11-11/index.html</loc>
          <lastmod>2026-11-11</lastmod>
     </url>
     <url>

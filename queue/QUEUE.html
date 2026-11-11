@@ -3233,7 +3233,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-10 at <code>b1202249f</code>.</em></p>
+<p><em>Living document, last changed 2026-11-11 at <code>2cba84dc5</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -3272,7 +3272,7 @@
 <tbody>
 <tr>
 <td>items</td>
-<td>401</td>
+<td>408</td>
 </tr>
 <tr>
 <td>runnable gates</td>
@@ -3280,11 +3280,11 @@
 </tr>
 <tr>
 <td>explicit <code>no-gate:</code> markers</td>
-<td>402</td>
+<td>409</td>
 </tr>
 </tbody>
 </table>
-<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 402 of the 854 gate slots in this queue are in that state.</p>
+<p>A <code>no-gate:</code> marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 409 of the 861 gate slots in this queue are in that state.</p>
 <h3 id="claimed-state-not-a-measurement----run-make-queue-status">Claimed state (NOT a measurement -- run <code>make queue-status</code>)<a class="headerlink" href="#claimed-state-not-a-measurement----run-make-queue-status" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3302,8 +3302,8 @@
 </tr>
 <tr>
 <td><code>in-progress</code></td>
-<td>19</td>
-<td>MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, DEPLOY-TREE-HOME, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING</td>
+<td>20</td>
+<td>MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY</td>
 </tr>
 <tr>
 <td><code>gate-not-met</code></td>
@@ -3312,13 +3312,13 @@
 </tr>
 <tr>
 <td><code>ready-to-push</code></td>
-<td>5</td>
-<td>WS-LAB, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE</td>
+<td>10</td>
+<td>WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST</td>
 </tr>
 <tr>
 <td><code>blocked</code></td>
-<td>11</td>
-<td>T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164</td>
+<td>12</td>
+<td>T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, MT-TENANT-LIVE-ADD</td>
 </tr>
 <tr>
 <td><code>in-flight-upstream</code></td>
@@ -20160,7 +20160,7 @@ distinction is the only thing that makes the register mean anything - widening
 <p><strong>Notes.</strong> 2026-11-01 17:45:01Z: #8895 merged as bb85d10f; dev 61eb3733 also contains the CI hygiene repair. The false-return/500 route is present on v15.0.9 by canonical source inspection. ships_to_operators_today describes that defect exposure, not delivery of dev's fix.</p>
 <hr />
 <h2 id="multitenancy-programme">Multitenancy programme<a class="headerlink" href="#multitenancy-programme" title="Permanent link">&para;</a></h2>
-<p><code>parcel: tenancy</code> &mdash; 101 items</p>
+<p><code>parcel: tenancy</code> &mdash; 108 items</p>
 <p>T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.</p>
 <table>
@@ -20826,7 +20826,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tr>
 <td><code>DEPLOY-TREE-HOME</code></td>
 <td>Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README</td>
-<td><code>in-progress</code></td>
+<td><code>ready-to-push</code></td>
 <td><code>docs/operator-readme-20261110</code></td>
 <td>n/a</td>
 <td>0 run + 1 no-gate</td>
@@ -20980,6 +20980,62 @@ alarm-readiness items, and the seam branch refresh.</p>
 <td>M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant</td>
 <td><code>ready-to-push</code></td>
 <td><code>codex/connector-reverse-20261110</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>MT-PERF-DB</code></td>
+<td>Restore-fence epoch admission, bounded startup warm, pool configuration, serve-then-warm readiness</td>
+<td><code>ready-to-push</code></td>
+<td><code>codex/perf-db-20261110</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>MT-PERF-REALTIME</code></td>
+<td>Realtime publishes on change; event-driven authorization; queued connects under pool pressure</td>
+<td><code>ready-to-push</code></td>
+<td><code>codex/perf-realtime-20261110</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>MT-PERF-EVALUATOR</code></td>
+<td>Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll</td>
+<td><code>ready-to-push</code></td>
+<td><code>codex/perf-evaluator-20261110</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>MT-CAPACITY-FIXES</code></td>
+<td>Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering</td>
+<td><code>in-progress</code></td>
+<td><code>workspace/capacity-fixes-20261111</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>MT-TENANT-REGISTRY</code></td>
+<td>Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming</td>
+<td><code>in-progress</code></td>
+<td><code>workspace/tenant-registry-20261111</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>MT-TENANT-LIVE-ADD</code></td>
+<td>Running evaluator and realtime pick up newly provisioned tenants without a restart</td>
+<td><code>blocked</code></td>
+<td><code>-</code></td>
+<td>n/a</td>
+<td>0 run + 1 no-gate</td>
+</tr>
+<tr>
+<td><code>MT-EVAL-COST</code></td>
+<td>Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order</td>
+<td><code>ready-to-push</code></td>
+<td><code>codex/eval-cost-20261111</code></td>
 <td>n/a</td>
 <td>0 run + 1 no-gate</td>
 </tr>
@@ -25642,7 +25698,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <tbody>
 <tr>
 <td>state (claimed)</td>
-<td><code>in-progress</code></td>
+<td><code>ready-to-push</code></td>
 </tr>
 <tr>
 <td>repo</td>
@@ -26748,6 +26804,384 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>releases/cgm-remote-monitor-16.0.0/decisions.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-11-10: partitioning decided (decisions.md#pool-primitive-shared); egress capacity is a deployment constraint (decisions.md#vcpool-egress-capacity).</p>
+<h3 id="mt-perf-db--restore-fence-epoch-admission-bounded-startup-warm-pool-configuration-serve-then-warm-readiness"><code>MT-PERF-DB</code> &mdash; Restore-fence epoch admission, bounded startup warm, pool configuration, serve-then-warm readiness<a class="headerlink" href="#mt-perf-db--restore-fence-epoch-admission-bounded-startup-warm-pool-configuration-serve-then-warm-readiness" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>codex/perf-db-20261110</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; architecture review</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>MT-EVALUATOR-PARTITION</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Multitenant only. In-transaction catalogue epoch replaces per-transaction window admission; bounded warm; pool sizes from configuration; per-tenant readiness with an all-tenants flag.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Measured in the lane record; frozen-head acceptance at the next #8898 batch join.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>reports/tenancy/perf-db-2026-11-10/README.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-11-10: 1,000 tenants start (baseline failed at 100). Resumed for readiness-serve-then-warm and admission-epoch-everywhere.</p>
+<h3 id="mt-perf-realtime--realtime-publishes-on-change-event-driven-authorization-queued-connects-under-pool-pressure"><code>MT-PERF-REALTIME</code> &mdash; Realtime publishes on change; event-driven authorization; queued connects under pool pressure<a class="headerlink" href="#mt-perf-realtime--realtime-publishes-on-change-event-driven-authorization-queued-connects-under-pool-pressure" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>codex/perf-realtime-20261110</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; architecture review</td>
+</tr>
+<tr>
+<td>register</td>
+<td><code>BF-233</code></td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>MT-EVALUATOR-PARTITION</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Multitenant only. Change detection by tenant write clock per interval, frames only on view change, authorization at connect, expiry and events, connects queued instead of disconnected.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Measured in the lane record; frozen-head acceptance at the next #8898 batch join.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>reports/tenancy/perf-realtime-2026-11-10/README.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-11-10: lane head 6f31c94b; idle frames 20 to 0 per socket-minute, realtime DB-ms 1,307 to 8 per minute at 1x20. BF-233 open.</p>
+<h3 id="mt-perf-evaluator--evaluator-works-on-change-per-member-change-query-and-due-time-timers-replace-the-per-tenant-poll"><code>MT-PERF-EVALUATOR</code> &mdash; Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll<a class="headerlink" href="#mt-perf-evaluator--evaluator-works-on-change-per-member-change-query-and-due-time-timers-replace-the-per-tenant-poll" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>codex/perf-evaluator-20261110</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; architecture review</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>MT-EVALUATOR-PARTITION</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Multitenant only. Evaluation on change stamp past checkpoint plus per-tenant due-time timers for time-driven alarms; backstop per D6.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Measured in the lane record; frozen-head acceptance at the next #8898 batch join.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>releases/cgm-remote-monitor-16.0.0/decisions.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-11-10: lane running.</p>
+<h3 id="mt-capacity-fixes--capacity-campaign-fixes-operator-set-config-size-cap-realtime-warm-retry-bootstrap-error-detail-nginx-re-resolve-start-ordering"><code>MT-CAPACITY-FIXES</code> &mdash; Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering<a class="headerlink" href="#mt-capacity-fixes--capacity-campaign-fixes-operator-set-config-size-cap-realtime-warm-retry-bootstrap-error-detail-nginx-re-resolve-start-ordering" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-progress</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>workspace/capacity-fixes-20261111</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>workspace/multitenant-20261102@0392acf9</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Multitenant preview only. Core: one bounded, operator-set size cap for role config files, with distinct refusal errors; realtime startup warm retries an api that is not ready. nightscout-deploy (deploy/capacity-fixes-20261111): bootstrap error detail, compact JSON, nginx Docker DNS re-resolve, health- ordered start, overlay build path.</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Focused tests and break-it controls in the lane records; the 3k/5k/10k capacity campaign runs on the rebuilt image.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>reports/tenancy/capacity-fixes-2026-11-11/README.md</code></li>
+<li><code>reports/tenancy/deploy-capacity-fixes-2026-11-11/README.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry). Core 5517cb6c (MULTITENANT_CONFIG_MAX_BYTES, distinct CONFIG_FILE_* refusals, SOCKET_IPC_NOT_READY and the realtime warm retry NS_TENANT_WARM_RETRY_MS); deploy 4ebd7ef4. Open: deploy load-env.js bound, edge waits on api and realtime only.</p>
+<h3 id="mt-tenant-registry--tenant-registry-in-postgresql-provisioning-separated-from-bootstrap-and-lab-priming"><code>MT-TENANT-REGISTRY</code> &mdash; Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming<a class="headerlink" href="#mt-tenant-registry--tenant-registry-in-postgresql-provisioning-separated-from-bootstrap-and-lab-priming" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>in-progress</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>workspace/tenant-registry-20261111</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>workspace/multitenant-20261102@0392acf9</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Multitenant only. Replaces the static tenant list in role configs (decisions.md#tenant-registry, decisions.md#provisioning-split).</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Design and acceptance to be defined; isolation (the definer function reveals only host-to-tenant mapping) and the startup-only re-measure at 1k/3k are the expected gates.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>reports/tenancy/tenant-registry-2026-11-11/README.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it. Step (a) at f5c4c0c3 (8 commits): registry, cached resolver, provisioning library, admin /v1/tenants and <code>nightscout admin provision</code>, api/tenant-admin/admin/evaluator in registry mode, isolation tests, docs. Before the join: resolve loader conflicts with MT-CAPACITY-FIXES; gaps before default listed in the record.</p>
+<h3 id="mt-tenant-live-add--running-evaluator-and-realtime-pick-up-newly-provisioned-tenants-without-a-restart"><code>MT-TENANT-LIVE-ADD</code> &mdash; Running evaluator and realtime pick up newly provisioned tenants without a restart<a class="headerlink" href="#mt-tenant-live-add--running-evaluator-and-realtime-pick-up-newly-provisioned-tenants-without-a-restart" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>blocked</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; clinical-path review</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>MT-TENANT-REGISTRY</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Multitenant evaluator and realtime runtimes (clinical path): adding a tenant to the runtime, consumers, startup cells, pool slice and socket admission while running (decisions.md#tenant-live-add).</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; To be defined: time from provisioning to a new tenant's first alarm; no alarm gap for existing tenants; break-it controls.</li>
+</ul>
+<p><strong>Notes.</strong> 2026-11-11: decided; starts after the registry's step (a) lands.</p>
+<h3 id="mt-eval-cost--evaluator-per-evaluation-cost-no-per-cycle-copies-dates-parsed-once-kept-working-set-in-process-view-reads-with-total-order"><code>MT-EVAL-COST</code> &mdash; Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order<a class="headerlink" href="#mt-eval-cost--evaluator-per-evaluation-cost-no-per-cycle-copies-dates-parsed-once-kept-working-set-in-process-view-reads-with-total-order" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>state (claimed)</td>
+<td><code>ready-to-push</code></td>
+</tr>
+<tr>
+<td>repo</td>
+<td><code>cgm-remote-monitor</code></td>
+</tr>
+<tr>
+<td>branch</td>
+<td><code>codex/eval-cost-20261111</code></td>
+</tr>
+<tr>
+<td>base</td>
+<td><code>official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1</code></td>
+</tr>
+<tr>
+<td>worktree</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>semver</td>
+<td><code>n/a</code></td>
+</tr>
+<tr>
+<td>review</td>
+<td>maintainer; clinical-path review</td>
+</tr>
+<tr>
+<td>blocks on</td>
+<td><code>MT-PERF-EVALUATOR</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Blast radius.</strong> Multitenant evaluator only. Steps C/D/E, B and A of decisions.md#evaluation- cost-candidates; ties break on the insertion ordinal on both paths (decisions.md#view-reads-total-order).</p>
+<p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
+<p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
+<p><strong>Gates.</strong></p>
+<ul>
+<li><strong>NO GATE</strong> &mdash; Measured in reports/tenancy/eval-cost-2026-11-11/; frozen-head acceptance at the 2026-11-11 batch join.</li>
+</ul>
+<p><strong>Evidence.</strong></p>
+<ul>
+<li><code>reports/tenancy/eval-cost-2026-11-11/README.md</code></li>
+</ul>
+<p><strong>Notes.</strong> 2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms. Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.</p>
 <hr />
 <h2 id="document-truth-sweeps">Document-truth sweeps<a class="headerlink" href="#document-truth-sweeps" title="Permanent link">&para;</a></h2>
 <p><code>parcel: docs-truth</code> &mdash; 19 items</p>

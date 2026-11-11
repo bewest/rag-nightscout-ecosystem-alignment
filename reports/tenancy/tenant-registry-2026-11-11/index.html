@@ -1,0 +1,7857 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/tenant-registry-2026-11-11/index.html">
+      
+      
+        <link rel="prev" href="../tenant-local-insertion-2026-11-07/index.html">
+      
+      
+        <link rel="next" href="../vault-agent-2026-11-09/index.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tenant registry and provisioning: design and lane record (MT-TENANT-REGISTRY) - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tenant-registry-and-provisioning-design-and-lane-record-mt-tenant-registry" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tenant registry and provisioning: design and lane record (MT-TENANT-REGISTRY)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tools/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    reports/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../owner-subject-policy-acceptance-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Selected owner proposed-grant verification — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../compat-refresh-2026-11-05/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compat-refresh-2026-11-05/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../compat-rest-next-2026-11-05/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compat-rest-next-2026-11-05/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../connector-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../consumer-impact-15.0.9/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-impact-15.0.9/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../control-recovery-gates/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    control-recovery-gates/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../exp-3022b/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exp-3022b/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m4-client-binaries/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m4-client-binaries/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../patient-c-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    patient-c-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../phase0-pr-bodies/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    phase0-pr-bodies/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../private-acquisition-profile-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    private-acquisition-profile-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../projection-evaluator-gates/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    projection-evaluator-gates/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../reviewer-packets/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reviewer-packets/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../selected-owner-clients/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    selected-owner-clients/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../synthetic-demo-analysis/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    synthetic-demo-analysis/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenancy/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_18" id="__nav_7_18_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_18_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenancy/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backup-upgrade-native-f77-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Representative PostgreSQL backup/upgrade capability proof — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../batch-a-acceptance-attempt-c0e8ad3c-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch A acceptance attempt on c0e8ad3c — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../batch-a-acceptance-d89a44e1-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch A final acceptance capsule — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../batch-a-foundation-c0e8ad3c-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch A PgBouncer foundation continuation — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../completion-batch-source-checks-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Completion-batch source checks — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-recovery-acceptance-87133959-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Control/recovery acceptance — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-recovery-focused-1df25fba-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Focused control/recovery campaign — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../control-recovery-runner-continuation-83582e87-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source-control runner continuation — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gate-controls-65bb8456-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frozen-head multitenant gate controls — partial capture, 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gate-controls-65bb8456-continuation-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frozen-head gate controls — repaired instrument continuation, 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../owner-preview-wire-native-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Headless owner native request fixture — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-replica-history-characterization-2026-11-05.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST replica history characterization — 2026-11-05
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime-topology-reconciliation-2026-11-10.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime topology reconciliation — 2026-11-10
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serial-cumulative-acceptance-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cumulative settings, private acquisition and selected owner policy — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../socket-evaluator-native-attempt-1990f453-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Joined socket/evaluator native attempt — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../socket-order-prototype-native-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fresh-schema socket DATA prototype — native evidence, 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-clock-http-backend-abort-diagnostic-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant clock HTTP: backend-abort availability diagnostic — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-clock-http-fixed-recovery-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant clock HTTP: fixed connection recovery — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-clock-join-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant clock join: frozen-head acceptance on 65bb8456 — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tenant-commit-clock-lower-proof-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tenant commit clock: bounded lower-port proof — 2026-11-06
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../2026-11-06-clock-http-workload/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026-11-06-clock-http-workload/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../activity-eligibility-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    activity-eligibility-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../admin-lifecycle-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    admin-lifecycle-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../allocator-plan-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    allocator-plan-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../allocator-preserving-restore-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    allocator-preserving-restore-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../batch-join-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    batch-join-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../batch-join-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    batch-join-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../bench-baseline-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    bench-baseline-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capacity-fixes-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    capacity-fixes-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../completion-batch-74d7-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    completion-batch-74d7-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-reverse-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-reverse-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-sync-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-sync-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../connector-sync-out-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    connector-sync-out-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../consumer-refusal-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    consumer-refusal-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../deploy-capacity-fixes-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deploy-capacity-fixes-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../deploy-fixture-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deploy-fixture-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../derived-output-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    derived-output-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../devicestatus-advanced-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    devicestatus-advanced-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../eval-cost-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    eval-cost-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../evaluator-partition-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    evaluator-partition-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../export-expiry-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    export-expiry-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../final-floor-native-1acb4eee-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    final-floor-native-1acb4eee-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../insertion-order-consumers-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    insertion-order-consumers-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../internal-listener-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    internal-listener-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../internal-service-api-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    internal-service-api-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../k8s-binding-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    k8s-binding-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../key-retention-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    key-retention-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../legacy-rest-temporal-fixtures-386dba33-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    legacy-rest-temporal-fixtures-386dba33-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../listener-composition-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    listener-composition-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m1-backend-native-7015-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m1-backend-native-7015-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m5-runtime-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m5-runtime-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6-allocator-discriminator-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6-allocator-discriminator-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6-operation-window-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6-operation-window-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6-ops-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6-ops-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6a-join-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6a-join-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6b-followups-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6b-followups-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m6b-join-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m6b-join-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oidc-native-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oidc-native-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../oidc-single-provision-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    oidc-single-provision-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../operation-control-metadata-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    operation-control-metadata-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../operation-window-acceptance-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    operation-window-acceptance-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../owner-preview-native-controls-4cd95d06-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    owner-preview-native-controls-4cd95d06-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../owner-settings-native-7015-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    owner-settings-native-7015-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../ownership-ops-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ownership-ops-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../ownership-role-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ownership-role-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../perf-db-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    perf-db-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../perf-evaluator-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    perf-evaluator-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../perf-realtime-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    perf-realtime-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../pool-primitive-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pool-primitive-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../restore-history-continuity-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    restore-history-continuity-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../root-admin-parity-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    root-admin-parity-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../shared-oidc-sessions-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    shared-oidc-sessions-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../socket-data-controls-12919f55-2026-11-06/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    socket-data-controls-12919f55-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenant-extended-settings-2026-11-10/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-extended-settings-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../tenant-local-insertion-2026-11-07/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-local-insertion-2026-11-07/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_77" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tenant-registry-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_77_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_77">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tenant-registry-2026-11-11/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../vault-agent-2026-11-09/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    vault-agent-2026-11-09/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../tools/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#anchors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anchors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-exists-at-0392acf9-read-derived" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What exists at 0392acf9 (read-derived)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#catalogue-namespace-and-migration-number" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catalogue, namespace and migration number
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definer-functions-signatures-and-grants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Definer functions, signatures and grants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lookup-bounded-cache-and-refresh-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lookup, bounded cache and refresh rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unknown-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unknown host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed-or-suspended-tenant-and-cached-entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Removed or suspended tenant and cached entries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admission-epochs-and-the-restore-fence-with-a-cached-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admission epochs and the restore fence with a cached tenant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed-rules-vault-key-names-and-lock-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed rules: Vault key names and lock keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#provisioning-library-admin-operation-batch-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provisioning: library, admin operation, batch form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-cli-one-thin-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The CLI: one thin client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roles-in-registry-mode-and-refusing-a-tenant-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles in registry mode, and refusing a tenant list
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#slices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Slices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gates-and-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gates and controls
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gates and controls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#restart-cost-to-pick-up-one-new-tenant-stage-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restart cost to pick up one new tenant (stage 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-changes-required-nightscout-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy changes required (nightscout-deploy)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-mt-tenant-live-add-fixed-set-assumptions-read-at-3dcd4731" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For MT-TENANT-LIVE-ADD: fixed-set assumptions, read at 3dcd4731
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="tenant-registry-and-provisioning-design-and-lane-record-mt-tenant-registry">Tenant registry and provisioning: design and lane record (MT-TENANT-REGISTRY)<a class="headerlink" href="#tenant-registry-and-provisioning-design-and-lane-record-mt-tenant-registry" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-11 at <code>10413d922</code>.</em></p>
+<p><em>Contributor-facing lane record, 2026-11-11. Living until the lane hands off. Decisions implemented:
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-registry">tenant-registry</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#provisioning-split">provisioning-split</a> (as refined
+on alignment <code>3b841112c</code>). Patterns reused:
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#change-stamp-definer-function">change-stamp-definer-function</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admission-epoch-everywhere">admission-epoch-everywhere</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>,
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#pool-primitive-shared">pool-primitive-shared</a>.</em></p>
+<h2 id="anchors">Anchors<a class="headerlink" href="#anchors" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>tree</th>
+<th>commit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base: batch join accepted head (<code>codex/batch-join-20261111</code>)</td>
+<td><code>0392acf9</code></td>
+</tr>
+<tr>
+<td>lane branch <code>workspace/tenant-registry-20261111</code>, worktree <code>externals/work/crm-tenant-registry-20261111</code></td>
+<td>see <a href="#slices">Slices</a></td>
+</tr>
+<tr>
+<td>nightscout-deploy (read only)</td>
+<td><code>9de244d</code></td>
+</tr>
+<tr>
+<td>alignment <code>main</code> at design time</td>
+<td><code>3b841112c</code></td>
+</tr>
+</tbody>
+</table>
+<p>Base note: the local branch <code>workspace/multitenant-20261102</code> is at <code>0afdb87f</code>, an ancestor of <code>0392acf9</code>; the accepted
+batch head <code>0392acf9</code> has not been fast-forwarded into it. The lane branches from <code>0392acf9</code>, as the peer lane
+<code>workspace/capacity-fixes-20261111</code> does.</p>
+<h2 id="design">Design<a class="headerlink" href="#design" title="Permanent link">&para;</a></h2>
+<h3 id="what-exists-at-0392acf9-read-derived">What exists at 0392acf9 (read-derived)<a class="headerlink" href="#what-exists-at-0392acf9-read-derived" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>lib/server/serve/preview-config.js:128-148</code> builds the resolver, one Vault Transit provider per tenant
+  (<code>encryptionKey</code>, <code>signingKey</code>, <code>signingVersion</code>, <code>tokenEnv | tokenFile</code>), the client environment and the access-token
+  trust keys from <code>config.tenants</code> and <code>config.accessTokens.keys</code>.</li>
+<li>The api uses the static set in <code>tenant-startup</code> cells, <code>human-session/runtime</code> (<code>tenants</code>), root-admin
+  authentication (<code>tenants</code>), <code>secrets.providerFor</code>, <code>preview-domains</code> (<code>config.environments</code>), and the operation window's
+  static lock map (<code>operation-cohort-config</code> <code>locks</code>; <code>operation-window.js:28</code>).</li>
+<li>Realtime, evaluator, tenant-admin, admin (ownership), the operation config (<code>locks</code>), the socket admission file and the
+  UI config each carry their own tenant list.</li>
+<li>Per-tenant provisioning today lives in the Compose bootstrap (<code>nightscout-deploy bindings/compose/multitenant/bootstrap.js:91-149</code>)
+  and the core fixture (<code>tests/fixtures/realtime-preview/bootstrap.js</code>), mixed with lab priming.</li>
+<li>Vault key names are index-based: <code>tenant-&lt;i&gt;-data</code>, <code>tenant-&lt;i&gt;-signing</code>, <code>tenant-&lt;i&gt;-access</code>, <code>tenant-&lt;i&gt;-management</code>,
+  one ACL policy <code>&lt;prefix&gt;_tenant_&lt;i&gt;</code> per tenant; the Vault Agent policy is the union of those policies
+  (<code>vault-agent-bootstrap.js:63-72</code>), so it grows with N and changes with every tenant.</li>
+</ul>
+<h3 id="catalogue-namespace-and-migration-number">Catalogue, namespace and migration number<a class="headerlink" href="#catalogue-namespace-and-migration-number" title="Permanent link">&para;</a></h3>
+<p>A new operational catalogue <code>lib/tenant-registry/postgres-candidate.json</code>, migration <strong><code>0001_tenant_registry</code></strong>, in its own
+namespace (deployment layout kind <code>registry</code>). It is added to the census <code>OPERATIONAL</code> list
+(<code>lib/tenant-operations/catalogues.js:22</code>) with its digest pinned: it is deployment configuration, never part of a tenant
+artifact, export, erase or restore.</p>
+<table>
+<thead>
+<tr>
+<th>object</th>
+<th>columns</th>
+<th>access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tenant_registry</code></td>
+<td><code>tenant_id uuid PK</code> (not the metadata tenant), <code>state text CHECK (state IN ('active','removed'))</code>, <code>signing_version integer &gt;= 1</code>, <code>revision bigint</code>, <code>created_at</code>, <code>updated_at</code></td>
+<td>FORCE RLS on <code>app.current_tenant_id</code>; SELECT granted to serving identities, so a role reads its own tenant's row only under that tenant's binding</td>
+</tr>
+<tr>
+<td><code>tenant_registry_hosts</code></td>
+<td><code>host text PK</code> (lower-case, validated like <code>tenant-resolution</code>), <code>tenant_id uuid FK</code>, <code>kind text CHECK (kind IN ('alias','internal'))</code></td>
+<td>no RLS, <strong>no grant to any login role</strong>; read only by the definer function</td>
+</tr>
+<tr>
+<td><code>tenant_registry_keys</code></td>
+<td><code>(tenant_id, purpose IN ('access','management'), kid)</code> PK, <code>public_key text</code> (Ed25519, base64, public material)</td>
+<td>FORCE RLS; SELECT to api (access) and tenant-admin (management)</td>
+</tr>
+<tr>
+<td><code>tenant_registry_clock</code></td>
+<td>singleton <code>revision bigint</code></td>
+<td>no RLS, no grant; read only by the revision function</td>
+</tr>
+</tbody>
+</table>
+<p><code>state</code> holds existence only (<code>active</code>, <code>removed</code>). Pause and suspend stay in <code>tenant_activity</code>, their one home
+(decision activity-row-always-provisioned), read afresh per request as today.</p>
+<h3 id="definer-functions-signatures-and-grants">Definer functions, signatures and grants<a class="headerlink" href="#definer-functions-signatures-and-grants" title="Permanent link">&para;</a></h3>
+<p>Shaped exactly as <code>tenant_change_stamps</code> (<code>lib/change-stamps/postgres.js</code>): <code>SECURITY DEFINER</code>, <code>plpgsql</code>, owned by the
+NOLOGIN catalogue owner, <code>SET search_path = &lt;registry ns&gt;, pg_catalog</code>, <code>SET app.current_tenant_id = ''</code> so a binding
+never leaks to the caller, <code>REVOKE ALL ... FROM PUBLIC</code>, <code>EXECUTE</code> granted only to the serving identities that resolve hosts
+(api, tenant-admin, realtime), named in the census operational inventory.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">tenant_registry_lookup</span><span class="p">(</span><span class="k">host</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span><span class="w"> </span><span class="n">kind</span><span class="w"> </span><span class="nb">text</span><span class="p">)</span><span class="w"> </span><span class="k">RETURNS</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="p">(</span><span class="n">tenant_id</span><span class="w"> </span><span class="n">uuid</span><span class="p">,</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="nb">text</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">tenant_registry_revision</span><span class="p">()</span><span class="w"> </span><span class="k">RETURNS</span><span class="w"> </span><span class="nb">bigint</span>
+</code></pre></div>
+<ul>
+<li><code>lookup</code> reads one <code>tenant_registry_hosts</code> row by exact <code>(host, kind)</code>, binds that tenant with
+  <code>set_config('app.current_tenant_id', ..., true)</code> and returns that tenant's <code>(tenant_id, state)</code>. Zero or one row. No
+  other column, no list, no prefix match.</li>
+<li><code>revision</code> returns the singleton counter. Every provisioning transaction (and any later alias, state or signing-version
+  change) increments it in the same transaction.</li>
+<li>Every call also returns the function's catalogue version (<code>pg_proc.xmin</code> plus owner attributes); an unadmitted version
+  runs the full attribute check (definer, language, result type, body, owner without LOGIN/SUPERUSER/BYPASSRLS, no PUBLIC
+  EXECUTE, pinned config) before any row is used, the change-stamp and admission-epoch rule. Refusal code
+  <code>TENANT_REGISTRY_FUNCTION_UNSAFE</code>.</li>
+</ul>
+<h3 id="lookup-bounded-cache-and-refresh-rule">Lookup, bounded cache and refresh rule<a class="headerlink" href="#lookup-bounded-cache-and-refresh-rule" title="Permanent link">&para;</a></h3>
+<p><code>lib/tenant-registry/reader.js</code> is a resolver with the same <code>resolve(req)</code> contract and refusal codes as
+<code>lib/tenant-resolution</code> (every call site already <code>await</code>s it), plus <code>entry(tenant)</code> for per-tenant attributes.</p>
+<ul>
+<li><strong>First request</strong>: the host is validated with the existing <code>hostname()</code> rules (<code>TENANT_HOST_INVALID</code> as today), then
+  looked up through <code>tenant_registry_lookup</code>. Per-tenant attributes (<code>signing_version</code>, public keys) are read once under
+  that tenant's RLS binding and cached with the entry.</li>
+<li><strong>Bound</strong>: an LRU of at most <code>maxTenants</code> positive entries (operator-set, default 10,000, maximum 100,000) and a separate
+  negative cache of at most 1,024 unknown hosts. Concurrent misses for one host share one lookup.</li>
+<li><strong>Refresh (stage 1, aggregate poll)</strong>: one <code>tenant_registry_revision()</code> statement per <code>refreshMs</code> (default 2,000 ms,
+  bounds 250–60,000) per process, independent of tenant count. When the revision moves, the negative cache is cleared and
+  every positive entry is marked stale; a stale entry is revalidated (one lookup) on its next use. No LISTEN/NOTIFY.</li>
+<li><strong>New tenant</strong>: served without a restart within <code>refreshMs</code> plus one lookup.</li>
+<li>Unmeasured: revalidation after a change touches each cached host once on next use (about N lookups spread over traffic at
+  N cached tenants). A changed-since function would remove that but returns tenant ids across tenants; left for stage 2 with
+  NOTIFY.</li>
+</ul>
+<h3 id="unknown-host">Unknown host<a class="headerlink" href="#unknown-host" title="Permanent link">&para;</a></h3>
+<p>Same refusal as today: <code>TENANT_HOST_UNKNOWN</code> (and <code>TENANT_PROXY_UNTRUSTED</code>, <code>TENANT_SELECTOR_CONFLICT</code> in
+canonical-internal mode with the same rules). The negative cache only bounds the database cost of repeated unknown hosts.</p>
+<h3 id="removed-or-suspended-tenant-and-cached-entries">Removed or suspended tenant and cached entries<a class="headerlink" href="#removed-or-suspended-tenant-and-cached-entries" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>removed</code>: provisioning's removal path deletes the host rows and sets <code>state='removed'</code> in one transaction with a revision
+  bump. Within one refresh interval every entry is stale; its next request re-looks up, finds no host, and refuses with
+  <code>TENANT_HOST_UNKNOWN</code>. A cached <code>entry(tenant)</code> for a removed tenant answers <code>TENANT_REMOVED</code>.</li>
+<li>Suspended or paused: unchanged. <code>tenant_activity</code> is read per request by the serving gate; the cache never holds it.</li>
+<li>The registry never re-points a host to another tenant in place: an alias change is remove-then-add, both with revision
+  bumps, so a stale cached host can only refuse, never serve the wrong tenant beyond one refresh interval. (Re-pointing is
+  not offered by this lane.)</li>
+</ul>
+<h3 id="admission-epochs-and-the-restore-fence-with-a-cached-tenant">Admission epochs and the restore fence with a cached tenant<a class="headerlink" href="#admission-epochs-and-the-restore-fence-with-a-cached-tenant" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The cache only supplies which tenant a host names and its Vault/key attributes. Every data transaction still acquires the
+  operation window's shared advisory lock and reads the window row and catalogue epoch inside the transaction
+  (<code>operation-window.js</code> <code>assertClient</code>), so a restore or maintenance window refuses requests whatever the cache holds.</li>
+<li>The window's static <code>locks</code> map gives way to a <strong>lock-key rule</strong> (below) for registry tenants; the in-transaction check
+  <code>row.lock_key !== held.key</code> (<code>operation-window.js:128</code>) remains the fence, so a lock key that differs from the window row
+  refuses <code>LIFECYCLE_WINDOW_BINDING_CHANGED</code>.</li>
+<li>A restore increments the window generation; existing <code>invalidateTenant</code> paths reset startup cells as today. Registry rows
+  are operational and are not restored, so restore cannot change a tenant's hosts.</li>
+<li>The registry functions carry their own version admission (above); registry tables are not added to the window's
+  catalogue epoch.</li>
+</ul>
+<h3 id="fixed-rules-vault-key-names-and-lock-keys">Fixed rules: Vault key names and lock keys<a class="headerlink" href="#fixed-rules-vault-key-names-and-lock-keys" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Vault Transit key names: <strong><code>tenant-&lt;purpose&gt;-&lt;tenant uuid&gt;</code></strong>, purpose in <code>data</code>, <code>signing</code>, <code>access</code>, <code>management</code>
+  (for example <code>tenant-data-0b5c...</code>). Purpose first so that one role-level ACL can use prefix globs
+  (<code>path "&lt;mount&gt;/decrypt/tenant-data-*"</code>); the index form <code>tenant-&lt;i&gt;-&lt;purpose&gt;</code> is not accepted in registry mode.</li>
+<li>Vault credential: one role-level source (<code>vault.tokenFile</code>, the Vault Agent sink, or <code>vault.tokenEnv</code>); no per-tenant
+  token reference exists to store. <code>signing_version</code> is per-tenant state in <code>tenant_registry</code> (it changes on rotation),
+  not a Vault reference.</li>
+<li>Operation-window lock key: derived, <code>1 + (first 62 bits of sha256('nightscout-tenant-lock-v1:' + uuid))</code>, written once
+  into <code>tenant_lifecycle_windows.lock_key</code> at provisioning (its existing home, <code>UNIQUE</code>); a collision refuses provisioning
+  with <code>TENANT_PROVISION_LOCK_COLLISION</code>.</li>
+</ul>
+<h3 id="provisioning-library-admin-operation-batch-form">Provisioning: library, admin operation, batch form<a class="headerlink" href="#provisioning-library-admin-operation-batch-form" title="Permanent link">&para;</a></h3>
+<p><code>lib/tenant-registry/provision.js</code> is the implementation; the admin role exposes it on the operator plane as
+<code>tenant-provisioning</code> (new contract in <code>lib/server/internal-api/contracts/</code>). No caller writes provisioning rows with its own
+database credentials.</p>
+<p>Steps for one tenant, idempotency key <strong>the tenant id</strong>:</p>
+<ol>
+<li>Validate the spec (id, hosts, optional canonical internal host). If the id exists in the registry with the same hosts:
+   outcome <code>existing</code>, nothing written. Same id with different hosts, or a host bound to another tenant: <code>refused</code>
+   (<code>TENANT_PROVISION_CONFLICT</code>), nothing written.</li>
+<li>Vault: for each purpose, read the key; create it if absent (<code>aes256-gcm96</code> for data and signing, <code>ed25519</code> for access and
+   management, non-exportable); an existing key of the wrong type refuses. Read the access and management public keys.</li>
+<li>Root secret record: if no <code>root</code> record exists for the tenant, generate and encrypt one through the secrets component; an
+   existing record is reused.</li>
+<li>One PostgreSQL transaction on the provisioning identity, all or nothing: <code>tenant_registry</code>, <code>tenant_registry_hosts</code>,
+   <code>tenant_registry_keys</code>, the clock bump; <code>legacy_credential_config</code> (<code>root</code>), <code>tenant_authorization_config</code>
+   (<code>anonymous_roles = {denied}</code>), <code>tenant_owner_policy</code> (deployment catalogue), <code>access_tenants</code>, <code>access_keys</code>
+   (<code>key1</code>/data, <code>management1</code>/management), <code>tenant_write_clock</code>, one <code>tenant_consumer_checkpoint</code> per configured consumer
+   (consumer id and contract digest are deployment configuration of the operation), <code>tenant_lifecycle_windows</code>
+   (derived lock key, <code>active</code>, generation 1), and the activity row and audit (<code>tenant-activity/provisioning.js</code>, in the
+   same transaction as the window row).</li>
+</ol>
+<p>The <strong>commit point is the registry row</strong>, written in step 4. A tenant without a registry row is not served. Failure before or
+inside step 4 leaves no registry row and rolls back every row of step 4; Vault keys and the root secret record from steps 2–3
+remain and are adopted by a re-run, which then produces the same state as a clean run. Nothing that serves a tenant exists
+before step 4 commits.</p>
+<p>Not provisioning (lab priming, stays in the bench and lab harness): subjects, roles, subject roles, owner actors, access
+credentials and sessions, management tokens, and synthetic entries. Restore authority (<code>tenant_lifecycle_restore_authority</code>)
+stays a separate operator step.</p>
+<p><strong>Batch form</strong> (<code>provisionTenants</code>): at most 100 tenants per call (contract <code>maxItems</code>, and the admin listener's <code>maxBytes</code>);
+each tenant runs the single-tenant steps independently (one transaction per tenant, bounded concurrency 4); the response has
+one result per tenant in request order: <code>{ id, ref, outcome: 'created' | 'existing' | 'refused', code? }</code>. A retried batch
+returns <code>existing</code> for tenants already committed, so retry after any failure is safe. Duplicate ids or hosts inside one
+batch refuse the whole batch before any work.</p>
+<p><strong>Credential hook for priming</strong>: each seed row may carry <code>ref</code>, an opaque lab label echoed in every result. On <code>created</code>
+only, and only when the request sets <code>issueRootSecret: true</code>, the result carries the tenant's root secret once; the CLI
+writes it to a <code>--secrets-out</code> file (mode 0600) keyed by <code>ref</code> and id. The harness reads that file to prime each tenant
+through its normal data API. A re-run returns <code>existing</code> without a secret; the harness keeps its file. The provisioning
+CLI and the admin API load no data.</p>
+<h3 id="the-cli-one-thin-client">The CLI: one thin client<a class="headerlink" href="#the-cli-one-thin-client" title="Permanent link">&para;</a></h3>
+<p><code>nightscout admin provision</code>, a top-level client command beside <code>healthcheck</code> (which is also a client of a role's listener);
+<code>nightscout multitenant &lt;roles&gt;</code> stays the serving command.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nightscout admin provision --id &lt;uuid&gt; --host &lt;host&gt; [--host &lt;host&gt;...] [--internal-host &lt;host&gt;] [--ref &lt;label&gt;]
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>nightscout admin provision --seed &lt;file.json|file.csv&gt; [--batch 100] [--secrets-out &lt;file&gt;]
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  admin listener: --socket &lt;path&gt; | --url http://&lt;private address&gt;  (default from ADMIN_HOSTNAME/ADMIN_PORT)
+</code></pre></div>
+<p>Seed schema, one for both formats:</p>
+<table>
+<thead>
+<tr>
+<th>field</th>
+<th>JSON</th>
+<th>CSV column</th>
+<th>rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td><code>id</code></td>
+<td>canonical lower-case UUID, required</td>
+</tr>
+<tr>
+<td><code>hosts</code></td>
+<td>array of strings</td>
+<td><code>hosts</code>, <code>;</code>-separated</td>
+<td>at least one in direct-alias mode</td>
+</tr>
+<tr>
+<td><code>internalHost</code></td>
+<td>string</td>
+<td><code>internal_host</code></td>
+<td>canonical-internal mode only</td>
+</tr>
+<tr>
+<td><code>ref</code></td>
+<td>string</td>
+<td><code>ref</code></td>
+<td>optional, <code>^[A-Za-z0-9_.-]{1,64}$</code></td>
+</tr>
+</tbody>
+</table>
+<p>JSON is <code>{ "version": 1, "tenants": [ ... ] }</code>; CSV has a header row naming exactly those columns. The CLI sends bounded
+batches, prints one line per tenant (<code>ref id outcome [code]</code>), exits 0 only when every tenant is <code>created</code> or <code>existing</code>,
+and is safe to re-run. It has no database or Vault credentials.</p>
+<h3 id="roles-in-registry-mode-and-refusing-a-tenant-list">Roles in registry mode, and refusing a tenant list<a class="headerlink" href="#roles-in-registry-mode-and-refusing-a-tenant-list" title="Permanent link">&para;</a></h3>
+<p>A role selects the registry with a <code>registry</code> block (connection env of its serving identity, namespace, <code>maxTenants</code>,
+<code>refreshMs</code>). A config that carries <code>registry</code> and <code>tenants</code> (or per-tenant <code>accessTokens.keys</code>) is refused at load with
+<code>registry configuration refuses a tenants list</code>. Order of conversion:</p>
+<ol>
+<li><strong>api</strong> (this lane, first): resolver, Vault providers by rule, access-token keys from <code>tenant_registry_keys</code>, client
+   environment from <code>tenantSettings</code> (required in registry mode), startup cells created on first lookup, operation window
+   lock by rule.</li>
+<li>tenant-admin and admin ownership (lookup and management keys).</li>
+<li>realtime and evaluator need the set of tenants without a request; they are open items (an enumeration path through
+   the change-stamp or a registry function, sized for 10k), not in this lane's first delivery.</li>
+</ol>
+<h2 id="slices">Slices<a class="headerlink" href="#slices" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>slice</th>
+<th>commit</th>
+<th>what it does</th>
+<th>focused tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td><code>a2ffddb2</code></td>
+<td>Catalogue <code>lib/tenant-registry/postgres-candidate.json</code> (<code>0001_tenant_registry</code>), three definer functions (lookup, revision, paged enumeration of active ids, added per the coordinator's redirect), statement-level revision trigger, reader with version admission (<code>postgres.js</code>), fixed rules (<code>rules.js</code>), census <code>OPERATIONAL</code> pin</td>
+<td><code>tests/tenant-registry.integration.test.js</code></td>
+</tr>
+<tr>
+<td>S2</td>
+<td><code>abaa2fad</code></td>
+<td>Registry resolver: first-request lookup, bounded LRU + negative cache, one revision poll per interval, fail closed past the staleness bound (<code>resolver.js</code>)</td>
+<td><code>tests/tenant-registry-resolver.test.js</code></td>
+</tr>
+<tr>
+<td>S3</td>
+<td><code>f2f0e63c</code></td>
+<td>Provisioning library (<code>provision.js</code>, <code>vault-keys.js</code>); lifecycle migration <code>0008_tenant_lifecycle_window_provisioning</code> (window INSERT policy) and window readiness expecting it</td>
+<td><code>tests/tenant-registry-provision.integration.test.js</code></td>
+</tr>
+<tr>
+<td>S4</td>
+<td><code>75e65b8e</code></td>
+<td>Admin REST resource (<code>rest.js</code>, <code>openapi.json</code>), admin config <code>provisioning</code> section, <code>nightscout admin provision</code> client (<code>lib/cli/commands/admin.js</code>)</td>
+<td><code>tests/admin-provisioning.integration.test.js</code>, <code>tests/admin-provisioning-cli.test.js</code></td>
+</tr>
+<tr>
+<td>S5</td>
+<td><code>4c0b2c98</code></td>
+<td>api in registry mode: <code>registry</code> + one role-level Vault credential in place of <code>tenants</code>; <code>registry-tenants.js</code> materializes binding, provider (key names by rule, signing version from the registry), environment and access keys on first resolved request; startup cells on first use; operation config may name <code>registry</code> in place of <code>locks</code> (lock key by rule); restore cohort treats the registry as its tenant set; refuses a tenant list or <code>accessTokens.keys</code> beside <code>registry</code>; refuses socket forwarding and OIDC in registry mode</td>
+<td><code>tests/api-registry.integration.test.js</code>, <code>tests/registry-config.test.js</code></td>
+</tr>
+<tr>
+<td>S6</td>
+<td><code>b5d00a1b</code></td>
+<td>tenant-admin (<code>registry</code> in place of <code>tenants</code> and <code>management.keys</code>; owner credential providers by rule) and admin ownership (<code>registry</code> in place of <code>tenants</code>; acts for active registry tenants)</td>
+<td><code>tests/registry-config.test.js</code> (unit); existing owner/admin suites</td>
+</tr>
+<tr>
+<td>S7</td>
+<td><code>3dcd4731</code></td>
+<td>Evaluator stage 1 (option a): <code>registry</code> in place of <code>tenants</code> (tenant settings store required); <code>registry-tenant-set.js</code> enumerates active ids at start, removal reads as not configured within the refresh bound, tenants added after start counted as <code>waiting</code> (alert <code>TENANT_REGISTRY_EXPANSION_RESTART {waiting}</code>, health <code>registry</code>, evaluator-inspection contract optional <code>registry</code> object); pool slice over the enumeration; empty registry refuses start (<code>TENANT_REGISTRY_EMPTY</code>)</td>
+<td><code>tests/registry-tenant-set.integration.test.js</code>, <code>tests/registry-config.test.js</code></td>
+</tr>
+<tr>
+<td>S8</td>
+<td><code>f5c4c0c3</code></td>
+<td>Provisioning isolation: <code>/v1/tenants</code> (one, batch, read, description) answers as an unknown route on the api, tenant-admin and realtime public listeners and every <code>serve.internal</code> listener; realtime public routes factored into <code>publicApp</code>; docs: operator REST API section in <code>docs/internal-service-api.md</code>, admin listener in <code>docs/internal-service-topology.md</code>, <code>docs/tenant-registry.md</code> (catalogue, definer functions, cache, fixed names, provisioning), <code>nightscout admin provision</code> in the README</td>
+<td><code>tests/provisioning-private.test.js</code>, <code>AR_PROVISIONING_PRIVATE</code>, <code>PROVISIONING_PRIVATE</code> in <code>tests/owner-preview.integration.test.js</code></td>
+</tr>
+</tbody>
+</table>
+<p>Branch head <code>f5c4c0c393fa1717a05b64fc5efa2d25cc3d15e4</code>, 8 commits on <code>0392acf9</code> (55 files changed, 3162 insertions(+), 76 deletions(-), from <code>git diff --shortstat</code>). Not pushed.</p>
+<p>Design changes after the note, from the coordinator: provisioning is a REST resource on the admin listener
+(decision operator-rest-api), not an RPC contract; the evaluator and realtime are in this lane, so the catalogue
+carries the enumeration function; live addition of tenants to a running evaluator or realtime is its own lane
+(MT-TENANT-LIVE-ADD, decision tenant-live-add) and this lane builds stage 1 (restart picks them up). The CLI is
+<code>nightscout admin provision</code> (a top-level client command beside <code>healthcheck</code>; <code>nightscout multitenant</code> stays the
+serving command). A configuration without <code>registry</code> still loads its static tenant list: the refusal applies once a
+configuration selects the registry (see Open). Finding during S3 (reproduced): <code>tenant_lifecycle_windows</code> had no INSERT policy under FORCE
+RLS, so only a superuser or BYPASSRLS identity could provision a window row (the Compose bootstrap runs as the
+database superuser). Migration 0008 adds <code>FOR INSERT WITH CHECK (bound tenant AND phase = 'active' AND generation = 1
+AND claim_id IS NULL AND artifact_digest IS NULL)</code>; <code>operation-window-readiness.js</code> <code>policiesFor</code> expects it.</p>
+<h2 id="gates-and-controls">Gates and controls<a class="headerlink" href="#gates-and-controls" title="Permanent link">&para;</a></h2>
+<p>All runs on a disposable <code>postgres:16</code> container (PostgreSQL 16.15) and dev-mode Vault containers started by the
+lab fixture, on 2026-11-11, before any quiet window. Counts are mocha's. Every control was put back and the suite
+re-run green.</p>
+<table>
+<thead>
+<tr>
+<th>gate</th>
+<th>test (focused count)</th>
+<th>control</th>
+<th>symptom when broken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The definer function returns only the host mapping; tenant A's context sees no B rows</td>
+<td><code>tests/tenant-registry.integration.test.js</code> (12 passing): <code>TR_DEFINER_NARROW</code>, <code>TR_ISOLATION</code>, <code>TR_GRANTS</code>, <code>TR_ALTERED_REFUSED</code> x4, <code>TR_BODY_REPLACED</code></td>
+<td>widened the catalogue's lookup to also return <code>host</code> (all hosts aggregated), reader admitting the new shape</td>
+<td><code>TR_DEFINER_NARROW</code> red: result fields <code>['tenant_id','state','host']</code> instead of <code>['tenant_id','state']</code>; 11 others green</td>
+</tr>
+<tr>
+<td>Cache refresh: a new tenant is served after the next poll</td>
+<td><code>tests/tenant-registry-resolver.test.js</code> (9 passing)</td>
+<td>poll never moves the revision after the first read</td>
+<td><code>RR_NEW_TENANT</code> red (<code>TENANT_HOST_UNKNOWN</code>), <code>RR_REMOVED</code> red (missing rejection), <code>RR_REVISION_LISTENERS</code> red</td>
+</tr>
+<tr>
+<td>A tenant provisioned while the api runs is served without a restart, within the refresh bound</td>
+<td><code>tests/api-registry.integration.test.js</code> (3 passing); served after 376 ms at <code>refreshMs</code> 500 (one run)</td>
+<td>same refresh break</td>
+<td><code>AR_NEW_TENANT</code> red: last status 404, expected 403 (anonymous refusal of a served tenant); <code>AR_REMOVED</code> red: 403 instead of 404</td>
+</tr>
+<tr>
+<td>A config carrying <code>tenants</code> is refused</td>
+<td><code>tests/registry-config.test.js</code> (7 passing): api, tenant-admin, admin ownership, evaluator, <code>accessTokens.keys</code>, <code>management.keys</code></td>
+<td>admitted <code>tenants</code> beside <code>registry</code> in the api loader</td>
+<td><code>RC_TENANTS_REFUSED</code> red: missing expected exception</td>
+</tr>
+<tr>
+<td>Provisioning twice gives the same state; an injected failure leaves no partial tenant and a re-run converges</td>
+<td><code>tests/tenant-registry-provision.integration.test.js</code> (14 passing; failure injected at each of 9 steps)</td>
+<td>on failure, <code>COMMIT</code> instead of <code>ROLLBACK</code></td>
+<td>the 7 in-transaction injection points red with leftover rows (for example <code>{ 'registry.tenant_registry': 1 }</code>); the 2 pre-transaction points (vault, database) stay green, as designed. A first control (no <code>BEGIN</code>) was rejected as imprecise: it broke every test because the tenant binding is transaction-local</td>
+</tr>
+<tr>
+<td>The root secret never reaches CLI stdout or stderr</td>
+<td><code>tests/admin-provisioning.integration.test.js</code> (5 passing), <code>AP_CLI_NO_SECRET_LEAK</code> in both seed formats</td>
+<td>the CLI also writes each secret to stderr</td>
+<td><code>AP_CLI_SEED_CSV</code> and <code>AP_CLI_SEED_JSON</code> red with <code>AP_CLI_NO_SECRET_LEAK: a root secret reached the terminal</code></td>
+</tr>
+<tr>
+<td><code>/v1/tenants</code> is reachable only on the admin listener</td>
+<td>api: <code>AR_PROVISIONING_PRIVATE</code> (<code>tests/api-registry.integration.test.js</code>, 4 passing); tenant-admin: <code>PROVISIONING_PRIVATE</code> (<code>tests/owner-preview.integration.test.js</code>, 10 passing); realtime and every internal contract: <code>tests/provisioning-private.test.js</code> (2 passing)</td>
+<td>mounted the provisioning REST handler (with a stub library) on each public listener in turn: api, tenant-admin, realtime</td>
+<td>each red: <code>POST /v1/tenants</code> answered <code>201</code> where an unknown route answers <code>404</code></td>
+</tr>
+<tr>
+<td>Evaluator stage 1: removal within the bound, waiting count, alert with the count</td>
+<td><code>tests/registry-tenant-set.integration.test.js</code> (2 passing)</td>
+<td>none run (UNMEASURED as a control)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Other focused suites run green on the branch: <code>tests/admin-provisioning-cli.test.js</code> (4), census
+<code>tests/tenant-deployment-operations.test.js</code> (28), unit sets for cohort, operation window, startup, root-admin,
+admin role, owner, evaluator, realtime (182 + 116 + 72 passing in three runs).</p>
+<p>Multitenant corpus suites touching resolution, admission and restore, re-run after S5/S6/S7 changes (opt-in flags as
+in <code>scripts/test-multitenant.js</code>): <code>multitenant-preview-process</code> 16, <code>tenant-runtime-vault</code> 7, <code>owner-preview</code> 9,
+<code>admin-lifecycle-fit</code> 6, <code>admin-role-ownership</code> 11, <code>operation-window-epoch</code> 47, <code>tenant-ownership-postgres</code> 9,
+<code>tenant-key-retention</code> 6, <code>tenant-activity</code> 8, <code>evaluator-consumers</code> 13 passing. Not run: <code>tenant-rest-context</code>
+(needs MongoDB 4.4+; the local mongod is 3.6). <code>realtime-browser-diagnostics.test.js</code> times out at mocha's default
+2000 ms on this branch and identically on the base worktree at <code>0392acf9</code> (not a change of this lane).</p>
+<p>Not measured end to end: the evaluator role booted in registry mode (config, boot path and tenant set are tested
+separately; no evaluator lab run in registry mode); tenant-admin and admin ownership in registry mode beyond unit
+tests; the full suite and the joined-browser corpus.</p>
+<h3 id="restart-cost-to-pick-up-one-new-tenant-stage-1">Restart cost to pick up one new tenant (stage 1)<a class="headerlink" href="#restart-cost-to-pick-up-one-new-tenant-stage-1" title="Permanent link">&para;</a></h3>
+<p><code>RS_RESTART_COST</code>, one run each, machine not quiet: the registry part of a restart (enumerate active ids through the
+paged definer plus build each tenant's evaluator entry) took 18 ms at 101 tenants, 62 ms at 1,001 and 142 ms at
+3,001, one enumeration each. The rest of an evaluator restart (readiness, warm, first evaluation of every tenant) is
+the existing serve-then-warm cost and is not re-measured here; the 2026-11-10 measurement put a bounded warm at
+1,000 tenants at 421 s for the evaluator (<code>reports/tenancy/perf-db-2026-11-10/README.md</code>).</p>
+<h2 id="deploy-changes-required-nightscout-deploy">Deploy changes required (nightscout-deploy)<a class="headerlink" href="#deploy-changes-required-nightscout-deploy" title="Permanent link">&para;</a></h2>
+<p>Read at nightscout-deploy <code>9de244d</code>; nothing edited there.</p>
+<ol>
+<li><strong>Schema and identities.</strong> Add the <code>registry</code> namespace and catalogue (<code>lib/tenant-registry/postgres-candidate.json</code>).
+   The bootstrap's owner loop refuses functions with arguments (<code>bootstrap.js</code> <code>BOOTSTRAP_UNREVIEWED_FUNCTION_SIGNATURE</code>):
+   the registry has <code>tenant_registry_lookup(text, text)</code> and <code>tenant_registry_tenants(uuid, integer)</code> (and the change-stamp
+   function already has <code>uuid[]</code>), so the loop must alter owners by <code>oid::regprocedure</code>. Run
+   <code>require('lib/tenant-registry/postgres').grants({ namespace, resolvers: [api, owner_reader, ...], enumerators: [evaluator, realtime], readers: [api, owner_reader] })</code>.
+   Re-run the lifecycle catalogue to <code>0008</code>.</li>
+<li><strong>Provisioning identity.</strong> A new <code>provisioner</code> login role (NOSUPERUSER NOBYPASSRLS) with
+   <code>provisionerGrants({ namespaces, role, checkpoints })</code> from <code>lib/tenant-registry/provision.js</code>; the admin role gets a
+   <code>provisioning</code> section (connection env, the seven namespaces, checkpoint consumers with their contract digests, Vault).</li>
+<li><strong>Vault.</strong> Key names <code>tenant-&lt;purpose&gt;-&lt;uuid&gt;</code>. A provisioning policy: <code>create, read, update</code> on
+   <code>&lt;mount&gt;/keys/tenant-*</code>, <code>update</code> on <code>&lt;mount&gt;/encrypt/tenant-data-*</code>. One serving policy per role with prefix globs
+   (<code>decrypt/tenant-data-*</code>, <code>hmac|verify/tenant-signing-*</code>, <code>sign/tenant-access-*</code>) replacing the per-tenant policies
+   and the Agent's union of them (<code>vault-agent-bootstrap.js:63-72</code>); one token source per role (<code>vault.tokenFile</code>).</li>
+<li><strong>Role configs without a tenant list.</strong> api, tenant-admin, admin ownership and evaluator take <code>registry</code>
+   (<code>{ namespace, maxTenants?, refreshMs? }</code>); api and evaluator require <code>tenantSettings</code>; api <code>accessTokens</code> and
+   tenant-admin <code>management</code> drop <code>keys</code>; the operation config takes <code>registry: { namespace }</code> in place of <code>locks</code>.</li>
+<li><strong>Bootstrap split.</strong> Per-tenant provisioning leaves the bootstrap: tenants are created by
+   <code>nightscout admin provision --seed &lt;file&gt;</code> against the admin listener (one schema, JSON or CSV). Lab priming
+   (subjects, roles, owner actors, access credentials and sessions, management tokens, synthetic entries) moves to the
+   harness and uses each tenant's root secret from <code>--secrets-out</code> (0600) through the tenant's data API.</li>
+<li><strong>Order at start.</strong> Provision before starting the evaluator (an empty registry refuses its start); restart the
+   evaluator to pick up tenants provisioned later (health <code>registry.waiting</code>).</li>
+<li>Until the gaps below close, a Compose deployment that uses socket forwarding (legacy realtime) or OIDC stays on the
+   static tenant list.</li>
+</ol>
+<h2 id="open">Open<a class="headerlink" href="#open" title="Permanent link">&para;</a></h2>
+<p>Gaps to close before registry mode becomes the default:</p>
+<ul>
+<li><strong>Realtime and api socket forwarding.</strong> Not converted. Realtime's warm calls the api's private <code>authorizeSocket</code>
+  (<code>preview-realtime.js:77-80</code>), and the api's private API resolves hosts from the static alias list and the socket
+  admission file (<code>realtime/private-api.js:36-39,92</code>), which registry mode refuses. Realtime registry mode needs the
+  admission object (<code>realtime/admission.js</code>: <code>resolve</code>, <code>resolveHost</code>, <code>allows</code>, <code>enabled</code>, <code>ids</code>, <code>aliases</code>) served
+  from the registry (lookup for host, active for allows/enabled) on both the api and realtime, and the warm call
+  without a tenant-to-host reverse lookup.</li>
+<li><strong>OIDC origins</strong> (<code>OIDC_TENANT_ORIGINS</code>, one per configured tenant, <code>human-session/runtime.js:55-58</code>): refused in
+  registry mode.</li>
+<li><strong>Static mode still loads.</strong> A configuration without <code>registry</code> keeps its tenant list. Removing static mode (the
+  decision's end state) also needs the fixtures (<code>tests/fixtures/realtime-preview/bootstrap*.js</code>, <code>deploy/multitenant/</code>)
+  and nightscout-deploy moved to provisioning.</li>
+<li><strong>Tenant removal</strong> has no operator operation yet (tests remove by SQL); deletion ceremony integration is open.</li>
+<li><strong>Settings at provisioning.</strong> Provisioning writes no <code>tenant_settings</code> row; tenants start on operator-policy defaults.</li>
+<li><strong>Peer lane.</strong> A trial merge of <code>workspace/capacity-fixes-20261111</code> (<code>5517cb6c</code>) conflicts in the five loaders this lane
+  also changes (<code>admin-config.js</code>, <code>evaluator-config.js</code>, <code>operation-cohort-config.js</code>, <code>owner-preview-config.js</code>,
+  <code>preview-config.js</code>); resolve at the join.</li>
+<li>Unmeasured: first-request lookup latency and cache churn at 10k; revalidation cost after each registry change (each
+  cached host re-looked up once on next use); the evaluator role end to end in registry mode.</li>
+</ul>
+<h3 id="for-mt-tenant-live-add-fixed-set-assumptions-read-at-3dcd4731">For MT-TENANT-LIVE-ADD: fixed-set assumptions, read at <code>3dcd4731</code><a class="headerlink" href="#for-mt-tenant-live-add-fixed-set-assumptions-read-at-3dcd4731" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>where</th>
+<th>assumption</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib/server/serve/evaluator-runtime.js:82-86</code></td>
+<td>refuses an empty or changing <code>tenants</code> array at construction</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-runtime.js:98</code></td>
+<td><code>states</code> Map built once from <code>tenants</code>; no add path</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-runtime.js:432</code></td>
+<td>health lists <code>states</code> only</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-runtime.js:478</code></td>
+<td>background boot iterates the start set</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-consumers.js:29-32,46</code></td>
+<td><code>coordinate</code> refuses an empty set; <code>states</code> built once</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-consumers.js:137-140</code></td>
+<td>run, retry and backstop sweeps over the start <code>tenants</code></td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-consumers.js:206,231</code></td>
+<td><code>prepare</code> takes <code>config.tenants</code> keys once and settles startup over them</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-pool.js:16-17,35,41,71</code></td>
+<td>gate built over the start tenant list; slice changes recomputed over that list only</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-preview.js:54,66,88,107,118</code></td>
+<td>gate, startup cells, runtime, pool wake and inspection over <code>config.tenants</code></td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-readiness.js:56</code></td>
+<td>readiness checks each start tenant</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/tenant-startup.js:61-73</code></td>
+<td>cells from the start set; <code>accept</code> (added in S5) creates cells on first use and is the model for adding</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/registry-tenant-set.js:29-51</code></td>
+<td>stage 1: <code>tenants</code> fixed at start, added ids only counted (<code>waiting</code>)</td>
+</tr>
+<tr>
+<td><code>lib/server/realtime/runtime.js:16,23,89,93,105</code></td>
+<td>refuses empty set; cells built once; detection and due selection over the start set</td>
+</tr>
+<tr>
+<td><code>lib/server/realtime/config.js:36-48</code></td>
+<td><code>REALTIME_RESTART_REQUIRED</code> when the tenant set grows</td>
+</tr>
+<tr>
+<td><code>lib/server/realtime/admission.js:22-26</code></td>
+<td><code>SOCKET_ADMISSION_EXPANSION_RESTART</code> when the admission file grows</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/preview-realtime.js:71,78,94</code></td>
+<td>startup cells, warm host from admission aliases, runtime over <code>config.tenants</code></td>
+</tr>
+<tr>
+<td><code>lib/server/realtime/protocol.js:343-347</code></td>
+<td>recheck over primed socket states (already dynamic per socket)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>
