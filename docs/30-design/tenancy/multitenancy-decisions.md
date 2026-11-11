@@ -103,8 +103,12 @@ no automatic image healthcheck, preserving visible boot-error behavior.
 The operator plane alone provisions, suspends and executes lifecycle deletion.
 It is cross-tenant by construction, with an explicit reachability/bind contract;
 code review bounds that authority. Default operator bind is loopback; non-loopback
-requires explicit acknowledgement and may never share the consumer interface.
-A name used for a loopback bind must resolve only to loopback addresses.
+requires explicit acknowledgement (`ADMIN_INSECURE_BIND_ACKNOWLEDGED=true`) and may
+never bind every interface. The operator listener [may share the consumer
+listener's address on a different port](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-plane-same-address-different-port)
+(2026-11-10), on loopback and non-loopback addresses alike; separation of a shared
+non-loopback address rests on the port, the acknowledgement and the deployment's
+network policy. A name used for a loopback bind must resolve only to loopback addresses.
 Authenticated owner operations remain RLS-scoped. The dashboard's path holds no
 credential for every tenant, and the operator plane never reveals owner secrets.
 
@@ -192,16 +196,34 @@ placement; journal prototype behavior is not an instruction to change defaults.
 Suspend is total blackout, including ingest; pause blocks UI/reads while ingest
 continues. Delete requires suspend, not pause. On suspension, disconnect sockets
 and show last data visibly stale using existing staleness vocabulary; silent
-frozen charts are not sufficient. Destructive lifecycle preconditions, export
-coverage and key retention now live in the [owner-lifecycle packet](../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.md)
-and [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06).
-Do not infer current deletion behavior from the original seam's admin prototype.
-Shared-role startup follows the adopted [tenant-local startup admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission).
-The release record owns its implementation and acceptance state.
-Operator inactivity/resource allocation is a separate [open admission-policy
-review](tenant-admission-and-activity.md), not another meaning silently assigned
-to pause/suspend or the claim-bound restore window. Existing definitions above
-remain unchanged while the capability/transition policy is prepared.
+frozen charts are not sufficient.
+
+Pause and suspend are also the whole operator activity policy ([adopted
+2026-11-10](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend)); there is no third state.
+Background workers build their work lists from tenants eligible under the current
+state, not from configured presence. While paused, uploads and connector polling
+continue and the evaluator stops, so **no alarms are computed or delivered while a
+site is paused**; on unpause it recomputes from current data before publishing.
+While suspended nothing runs for the tenant. Restore and restart preserve the
+state. [An owner may pause](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-pause) their own site; only the
+operator suspends and deletes. [An owner's deletion request pauses the site](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deletion-request-auto-pauses),
+cancelling restores the earlier state and execution suspends.
+[Every tenant has an activity row](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned); an
+unreadable row stops the evaluator for that tenant only. Refused requests return
+[423 `TENANT_SUSPENDED` or `TENANT_PAUSED`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#suspended-refusal-423). The
+[admission and activity guide](tenant-admission-and-activity.md) explains how
+this policy stays separate from the claim-bound restore window and current
+authority.
+
+Destructive lifecycle preconditions, export coverage and key retention are
+[release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06); after the
+30-day window, [key destruction also removes the export file](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#key-destruction-removes-export).
+Ownership operations [refuse unless the tenant is active](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase).
+The [archived owner-lifecycle packet](../../archive/tenancy/owner-lifecycle-decision-packet-2026-11-06.md)
+keeps the alternatives. Do not infer current deletion behavior from the original
+seam's admin prototype. Shared-role startup follows the adopted [tenant-local
+startup admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission). The release
+record owns implementation and acceptance state.
 Deployment support-contact metadata remains a recommendation, not an adopted
 schema: its privacy/availability rationale is retained in the [journal](../../archive/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md#211-deployment-metadata-a-recommendation-not-a-decision).
 

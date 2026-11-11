@@ -119,14 +119,17 @@ retain their actual source and tested scope. The reference Compose binding still
 uses UDS; remote HTTP beyond loopback and replicated API behavior are not qualified
 by those records.
 
-Use the actual environment-reference descriptors in the
-[endpoint contract](selectable-endpoints-and-api-scaling-plan.md#endpoint-and-compatibility-contract):
-legacy socket references remain valid, or an explicit `urlEnv` with `trust: network`
-and optional `bindHostEnv` selects HTTP. A dial service name can differ from the
+Bindings render the adopted [`serve.internal` listener](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern)
+described in the [endpoint contract](selectable-endpoints-and-api-scaling-plan.md#endpoint-and-compatibility-contract):
+one private listener per role process, a unix socket by default or an explicit
+`NS_SERVE_INTERNAL_HOST`/`_PORT` for network exposure, and peer addresses such as
+`NS_API_INTERNAL_URL` for callers. A dial service name can differ from the
 listener's bind interface. Public/management listeners remain separate from the
-private contracts. The current transport binds one contract per listener; shared
-component-private module composition is a remaining code adjustment, not a reason
-to multiply mandatory deployment services.
+private contracts. The current `dc795bd1` transport still binds one contract per
+listener through per-contract references; the adopted composition is
+`MT-ENDPOINT-TRANSPORT` work, not a reason to multiply mandatory deployment
+services. The termination grace a binding sets must exceed the listener's
+[graceful-shutdown deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
 
 The current adapter supports `http:`, not direct `https:`. The deployment owns
 network reachability and any selected standard TLS proxy/mesh boundary; contract

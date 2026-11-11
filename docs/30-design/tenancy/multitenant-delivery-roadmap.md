@@ -100,8 +100,11 @@ must meet the same contract. A disposable Vault lab does not establish TLS,
 unseal/recovery, production identity, HA or operational suitability. Failures
 never fall back to plaintext, another tenant's key or an unapproved signer.
 The [deployment and trust decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07)
-keep Vault Transit at every stage, with a service-login adapter required before
-production use, and admit a deployment by trust record plus live probes.
+keep Vault Transit at every stage and admit a deployment by trust record plus live
+probes. Connectivity is a [Vault Agent sidecar](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-agent-sidecar) with
+[one AppRole per deployment](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-one-approle-per-deployment); core reads the
+token from the sink file per call (`MT-VAULT-TOKEN-FILE`) instead of carrying a
+service-login adapter.
 
 ## Tenant identity, migrations and import
 

@@ -1,9 +1,9 @@
 # Tenant owner authority and token verification
 
 *Contributor-facing living contract. Adopted by the maintainer in the owner-authority
-chat, 2026-11-05. Supplement to execution-plan D17/D22; this is the home of the owner
+chat, 2026-11-05; current with the release decisions of 2026-11-10. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
-Queue homes: MT-OIDC-NATIVE and MT-M6A-JOIN (M6a), MT-OWNERSHIP-OPS (M6b), MT-OIDC-SINGLE-PROVISION;
+Queue homes: MT-OIDC-NATIVE and MT-M6A-JOIN (M6a), MT-OWNERSHIP-OPS (M6b), MT-OIDC-SINGLE-PROVISION, MT-ROOT-ADMIN-PARITY;
 the earlier MT-CONFIG-MIN, MT-SECRETS-CONTRACT, T30-WIRING and MT-IDENTITY-PLAN are closed as superseded.*
 
 ## Authority and storage boundaries
@@ -154,7 +154,17 @@ from the private operator plane. A tenant's root secret (`API_SECRET`) has
 [single-site parity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-root-single-site-parity):
 all data, subjects, roles and the admin tools, never owner or operator authority. It
 [may edit any subject](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#root-may-edit-owner-subjects)
-except removing the last usable owner, and cannot grant itself ownership. Unattended uploaders use revocable machine credentials
+except removing the last usable owner, and cannot grant itself ownership. In
+multitenant mode every subject write goes through the owner-aware writer that
+enforces that guard. Through the admin tools root [may edit a role's permissions,
+not rename it, and may not delete a role a subject holds](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#root-role-edit-delete);
+it [may grant any tenant data permission (`*`) unless the operator narrows the
+list](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#root-grant-ceiling-default-all), never owner or operator permissions.
+A subject whose roles grant `admin:api:subjects:*` [uses the admin tools with its
+own token](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-role-subjects-use-admin-tools) under the same guard.
+Implementation is `MT-ROOT-ADMIN-PARITY`. An owner [may revoke subjects](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-revoke-subjects)
+and [may pause their own site](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-pause); only the operator suspends
+and deletes. Unattended uploaders use revocable machine credentials
 whose renewal does not require a human login.
 
 Adopted initial limits, subject to measured implementation acceptance:

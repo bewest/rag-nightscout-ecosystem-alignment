@@ -1,6 +1,8 @@
 # Private API composition, deployment bindings and fixed-roster scaling
 
-*Living contributor-facing implementation plan, refreshed 2026-11-10. Current
+*Living contributor-facing implementation plan, refreshed 2026-11-10 for the
+adopted [internal listener shape](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern) and
+[graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown). Current
 mechanisms are **read-derived** from joined application `dc795bd1`; carried
 measurements retain their original source/instrument in the linked evidence.
 Remaining criteria are **UNMEASURED** until their instruments run. Queue homes:
@@ -21,9 +23,9 @@ browser, enabled-corpus and OIDC records have their own executed scope.
 | Surface | Current implementation | Remaining adjustment or proof |
 |---|---|---|
 | Private contracts | Socket authority/mutations, alarm delivery and lifecycle participant operations have named clients and schemas. | Compose explicit contract modules on a component-private listener without weakening ownership or lifetime checks. |
-| Binding | UDS or explicit `http:` origin; optional independent bind address. Existing UDS configuration is retained. | Qualify a selected private network deployment, not merely a helper's loopback behavior. Direct `https:` is not implemented. |
+| Binding | UDS or explicit `http:` origin; optional independent bind address (per-contract references, replaced by `serve.internal`). | Qualify a selected private network deployment, not merely a helper's loopback behavior. Direct `https:` is not implemented. |
 | Trust | UDS permissions/UID/inode protections or explicit deployment-owned network reachability. Service/version headers identify the contract, not a caller identity. | Exercise the selected deployment's reachability/access boundary. TLS/mesh/proxy integration, if selected, belongs to the deployment; no new bearer protocol is required. |
-| Listener allocation | One service contract per listener. Public/management interfaces are separate. | Proposed one private listener per component, with server-owned module registration. More listeners remain possible where an actual policy/resource boundary requires them. |
+| Listener allocation | One service contract per listener. Public/management interfaces are separate. | Adopted 2026-11-10: one private listener per role process, `serve.internal`, whose contract set the role's code decides; configuration cannot move or merge contracts. The public listener stays separate. |
 | Worker operations | Evaluator has lifecycle control and in-process `health()`; realtime has a consumer-app health route. | Define and integrate an operational health/readiness/metrics contract. A GET metrics endpoint and its response format do not already exist. |
 | API replicas | API work is request scoped; fixed participant identity/drain mechanisms exist. | Run two real equivalent APIs behind a service destination and prove all-instance maintenance, replacement and compatibility. |
 | Runtime cost | Realtime obtains current authority during recipient fanout. | Measure latency, request amplification, dependency failure and aggregate resource limits under `MT-SCALE-UNBOUND`. |
@@ -36,33 +38,44 @@ version adapters inside one logical request-serving component.
 
 ## Endpoint and compatibility contract
 
-The current source of truth is application `lib/server/internal-api/endpoint-config.js`
-and `transport.js`, with service descriptions under `contracts/` and usage in
-`docs/internal-service-api.md`. Deployment configuration uses environment references:
+**Adopted configuration ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern), 2026-11-10,
+multitenant only).** Each role process has one private listener, `serve.internal`,
+configured in the style of Ory Kratos/Hydra's `serve.public`/`serve.admin`:
+`host`/`port` or `socket`, each overridable from the environment
+(`NS_SERVE_INTERNAL_HOST`, `NS_SERVE_INTERNAL_PORT`, `NS_SERVE_INTERNAL_SOCKET`),
+with a default. The default is a unix socket under a runtime directory, because
+the internal listener trusts its network (`trust:'network'`) and has no
+authentication of its own; network exposure requires an explicit host/port.
+Callers receive peer addresses (for example `NS_API_INTERNAL_URL`). The preview is
+unreleased, so the change carries no compatibility shim.
 
-```json
-{ "socketPathEnv": "NS_INTERNAL_SOCKET" }
-```
+**Current code (`dc795bd1`, read-derived), which this replaces.** Each contract has
+its own `socketPathEnv` or endpoint-descriptor reference with no default
+(`lib/server/internal-api/endpoint-config.js:11-30`; callers
+`realtime/private-config.js`, `serve/operation-cohort-config.js`,
+`serve/evaluator-consumer-config.js`), with service descriptions under
+`contracts/` and usage in `docs/internal-service-api.md`. A Kubernetes Service DNS
+name can be the dial origin while a listener binds its own interface; a configured
+link-local/private address is supported, and loopback is not an architectural
+restriction. Public request content cannot choose private destinations.
+Credentials in URLs, unexpected paths/query/fragment components, unsupported
+schemes and implicit trust/fallback refuse, and the adopted shape keeps those
+refusals.
 
-```json
-{ "urlEnv": "NS_INTERNAL_URL", "trust": "network", "bindHostEnv": "NS_INTERNAL_BIND" }
-```
-
-`bindHostEnv` is optional. A Kubernetes Service DNS name can be the dial origin
-while a listener binds its own interface. A configured link-local/private address
-is supported; loopback is not an architectural restriction. The current parser
-accepts a legacy socket reference OR its endpoint-descriptor alternative, never
-both. Public request content cannot choose private destinations. Credentials in
-URLs, unexpected paths/query/fragment components, unsupported schemes and
-implicit trust/fallback refuse.
+**Shutdown ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)).** On SIGTERM the
+internal listener stops accepting connections, lets in-flight calls finish and
+send their responses up to a configurable deadline below the platform's
+termination grace, then force-closes what remains; callers still treat a
+force-closed call as uncertain. Reproduced on the listener-composition lane
+(Compose, `d69b873a`): `close()` dropped a held call at 176 ms while the server
+still drained its handler.
 
 Private operation payloads retain current tenant, credential, RLS, ACK and
 lifecycle semantics. Current service/version headers require a coordinated
 internal-peer upgrade; preserving the public client protocol does not establish
 mixed-version peer compatibility. Listener consolidation must specify any header,
-operation-path or schema migration explicitly. Existing UDS settings must remain
-supported or have an explicit measured transition; a URL must not be inferred
-from a malformed socket field.
+operation-path or schema migration explicitly; a URL must not be inferred from a
+malformed socket field.
 
 UDS-specific filesystem checks remain inside its adapter. HTTP reachability is
 supplied by the selected deployment policy. If established TLS termination or a
@@ -80,10 +93,10 @@ Keep each capability's helper, fixtures and meaningful controls in its lane.
 
 | Step / queue owner | Concrete change | Focused gate and intended semantic control |
 |---|---|---|
-| Private API composition — `MT-ENDPOINT-TRANSPORT` | Build one explicit registry of supported `(method,path)` routes and contract modules per selected private listener. Enforce duplicate/missing/extra registration, schema/content-type and service/version ownership. Bind independently from public/management HTTP. | Actual UDS and HTTP calls succeed only on their intended private routes; public routes return 404. Inject a duplicate route, foreign contract/header, extra handler, malformed request or response and show the corresponding assertion turns red before unauthorized effects. |
+| Private API composition — `MT-ENDPOINT-TRANSPORT` | Build one explicit registry of supported `(method,path)` routes and contract modules on each role's `serve.internal` listener, configured as adopted above, with graceful shutdown. Enforce duplicate/missing/extra registration, schema/content-type and service/version ownership. Bind independently from public/management HTTP. | Actual UDS and HTTP calls succeed only on their intended private routes; public routes return 404. Inject a duplicate route, foreign contract/header, extra handler, malformed request or response and show the corresponding assertion turns red before unauthorized effects. Shutdown: a held call's caller receives its response within the deadline; restoring the early drop turns that assertion red. |
 | Per-operation lifecycle policy — same owner, with restore integration | Preserve application tenant admission through response completion. Lifecycle status/invalidation and operational probes need their own explicit policy, rather than inheriting a blanket tenant-work window. | With A in maintenance/suspended, status and the admitted invalidation still execute under the controller's existing rules while A application work refuses and B progresses. Hold an application response after SQL completion: drain must still wait. A blanket-window mutant must fail the lifecycle assertion, not merely a setup check. |
 | Operational module — same composition owner | Specify liveness, readiness and metrics semantics, supported methods/response formats, dependency/tenant readiness behavior and scrape access. Retain useful existing health behavior or migrate it explicitly. | Exercise actual GET/operational responses and any metrics content type. Wrong method/schema/format and false-ready dependency mutants go red. The JSON POST RPC client is not silently used as a metrics client. Naming endpoints is not implementing a collector or inventing new metric values. |
-| Deployment binding — endpoint owner with deployment-companion owner | Select UDS or private HTTP independently for application and direct-instance calls. Render actual service/dial and listen addresses, access policy and upgrade configuration; keep existing reference UDS settings valid. | Run real separated processes on the selected network. Compare current authority, stored effects/absence, schema responses, byte/deadline/cancellation bounds, disconnect/no-retry behavior and shutdown. Remove the selected boundary/config check or synthesize an acknowledgement after commit/response loss: the intended refusal/uncertainty oracle must fail. |
+| Deployment binding — endpoint owner with deployment-companion owner | Select UDS or private HTTP independently for application and direct-instance calls. Render actual service/dial and listen addresses, access policy and upgrade configuration, using the adopted `serve.internal` settings (the preview carries no shim for the per-contract references). | Run real separated processes on the selected network. Compare current authority, stored effects/absence, schema responses, byte/deadline/cancellation bounds, disconnect/no-retry behavior and shutdown. Remove the selected boundary/config check or synthesize an acknowledgement after commit/response loss: the intended refusal/uncertainty oracle must fail. |
 | Fixed roster — `MT-API-FIXED-ROSTER` | Consume two equivalent real APIs, one ordinary service destination and a complete roster of exact participant endpoints, with pool inventory. Controller addresses each actual instance even when contracts share its private port. | Observe which API handles each direct/service call. Missing/duplicate/service-aliased participants, wrong datastore/birth/incarnation/nonce, replacement during an old pin and omitted instance invalidation must refuse. Sampling a load-balanced destination is a deliberate failing control. |
 | Joined replica behavior — same API owner | Preserve concurrent current authority, response/callback drain, tenant-local invalidation, lost-ack/commit uncertainty, replacement and B continuity. No transparent mutation replay. | Revoke/change state through one API and exercise both direct APIs/service; hold the other API's response; lose a commit or invalidation reply; replace an incarnation. Stale authority, early lifetime release, ignored uncertainty or missing B progress must each fail its own independent outcome assertion. |
 | Coherent integration — existing candidate coordinator | Join original lane histories, freeze the chosen code/config/instrument candidate, then run applicable full/default-browser/enabled-corpus/native/client acceptance and final prcheck. | Preserve exact source/instrument attribution and named pending cases. A source-identical carried result stays attributed to its original run; new inputs require affected acceptance. No comprehensive campaign per leaf commit. |
