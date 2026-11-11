@@ -6003,6 +6003,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#addendum-2026-11-10-revision-on-content-change-stopped-at-the-reader-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Addendum 2026-11-10: revision-on-content-change stopped at the reader inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -6021,7 +6032,7 @@
 
 
 <h1 id="realtime-consumer-refusal-under-evaluator-timer-churn">Realtime consumer refusal under evaluator timer churn<a class="headerlink" href="#realtime-consumer-refusal-under-evaluator-timer-churn" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>f68241810</code>.</em></p>
+<p><em>Living document, last changed 2026-11-10 at <code>fee6e40e1</code>.</em></p>
 <p><em>Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Lane
 <code>codex/consumer-refusal-20261110</code>; local, unpushed. Settles the suspected pre-existing defect reported by the
 <a href="../activity-eligibility-2026-11-10/index.html">activity-eligibility lane</a> ("evaluator timers at 150 ms make the realtime
@@ -6346,6 +6357,79 @@ deterministic controlled-interleaving unit pair red/green). <strong>Status:</str
 under churn with no wake from timer publications; decision (a)/(b) above.</p>
 </blockquote>
 <p>Evidence: this record; lane handoff <code>externals/work/HANDOFF-consumer-refusal-20261110.md</code> (local).</p>
+<h2 id="addendum-2026-11-10-revision-on-content-change-stopped-at-the-reader-inventory">Addendum 2026-11-10: revision-on-content-change stopped at the reader inventory<a class="headerlink" href="#addendum-2026-11-10-revision-on-content-change-stopped-at-the-reader-inventory" title="Permanent link">&para;</a></h2>
+<p>Decision <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change"><code>evaluator-revision-on-content-change</code></a>
+(alignment <code>main</code> <code>b9e78338</code>). Lane head unchanged at <code>1adb17f8</code>, tree clean. No code was changed: one reader relies on
+the per-cycle bump, so the lane stopped and reported, as instructed.</p>
+<p><strong>What changes between cycles over unchanged data</strong> (reproduced natively; actual evaluator role, one synthetic reading,
+<code>tick</code>/<code>acquire</code> over IPC, including one tick 61 s later): only <code>outputRevision</code>, <code>result.evaluationRevision</code>, <code>trigger</code>
+and <code>result.now</code>. <code>checkpoint</code>, <code>progress</code>, <code>emitted</code>, <code>requested</code> and <code>properties</code> (<code>bgnow</code>, <code>buckets</code>, <code>direction</code>)
+were identical. A content digest over those five fields would therefore hold the revision on every timer cycle.</p>
+<p><strong>Readers of the evaluator's <code>last</code> / <code>outputRevision</code></strong> (at <code>1adb17f8</code>):</p>
+<table>
+<thead>
+<tr>
+<th>reader</th>
+<th>use</th>
+<th>per-cycle bump</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib/tenant-notifications/producer-state.js:57-68</code></td>
+<td>each new <code>[identity, runtimeId, outputRevision, inputCheckpoint]</code> is a fresh cycle: re-runs legacy <code>notifications.process</code>, which re-emits the active unsnoozed alarm</td>
+<td><strong>relies on it</strong></td>
+</tr>
+<tr>
+<td><code>tests/evaluator-consumers.integration.test.js:44-45</code> <code>M5_CONSUMER_NEW_RT_CYCLE</code></td>
+<td>a <code>tick</code> over identical data must deliver a second realtime event</td>
+<td><strong>relies on it</strong></td>
+</tr>
+<tr>
+<td>activity lane <code>tests/tenant-activity.integration.test.js:128</code> (<code>07981b55</code>) <code>ACTIVITY_B_UNAFFECTED</code></td>
+<td>B's health <code>outputRevision</code> must advance by more than 2 over the timer window</td>
+<td>relies on it (test oracle)</td>
+</tr>
+<tr>
+<td><code>lib/tenant-notifications/producer.js:36-39</code> <code>unchanged()</code></td>
+<td>runtimeId/outputRevision/inputCheckpoint equality and <code>result</code> object identity</td>
+<td>no; benefits only if an unchanged cycle keeps the same frozen <code>last</code> object</td>
+</tr>
+<tr>
+<td><code>lib/tenant-notifications/producer.js:60-61</code>, <code>component.js:22-24,39-40,125</code></td>
+<td>the producer's own store revision, not the evaluator's</td>
+<td>no (indirect: it moves when the producer state moves)</td>
+</tr>
+<tr>
+<td><code>lib/tenant-alarms/cycle.js:11-13,24</code></td>
+<td>shape validation; the revision must not change within one cycle</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>lib/server/serve/evaluator-runtime.js:146,149-150</code></td>
+<td>health report, <code>last()</code></td>
+<td>no (reporting)</td>
+</tr>
+</tbody>
+</table>
+<p><code>lib/server/realtime/runtime.js</code> keeps its own <code>cell.last</code> and does not read the evaluator's revision.</p>
+<p><strong>Why the reliance is behavioural.</strong> Legacy single-tenant Nightscout re-emits the highest unsnoozed alarm on every
+processing cycle (<code>lib/notifications.js:131-165</code>, <code>emitNotification</code> at <code>:156</code>), gated only by the ack silence
+window (<code>:63</code>). Processing runs on every heartbeat tick (<code>lib/server/bootevent.js:537-540</code>; <code>heartbeat</code> default 60 s,
+<code>lib/settings.js:38</code>) and on each data-received event. The multitenant producer reproduces that repeat by treating
+each evaluator cycle as fresh. Under the decision as worded, a time-only cycle with identical output keeps its
+revision, so <code>fresh</code> is false and an unacknowledged alarm is delivered once per content change, not once per cycle. That
+is a change from single-tenant behaviour. Read-derived: the client-side effect of fewer repeats (e.g. a client that
+connects after the first delivery) was not measured.</p>
+<p>Related measured fact: at the deployed <code>timeIntervalMs</code> 1000, the multitenant consumer re-delivers an active alarm about
+once per second per tenant, against legacy's once per heartbeat (60 s default).</p>
+<p><strong>Questions for the maintainer before implementation:</strong></p>
+<ol>
+<li>Should alarm repetition stay per cycle (as in single tenant), become per content change, or follow a separate
+   repeat clock (e.g. the legacy heartbeat interval)?</li>
+<li>If repetition is kept, should the producer's <code>fresh</code> key be decoupled from the evaluator revision (for example, a
+   repeat tick counter driven by a heartbeat), so the revision can still move only on content change?</li>
+</ol>
 
 
 
