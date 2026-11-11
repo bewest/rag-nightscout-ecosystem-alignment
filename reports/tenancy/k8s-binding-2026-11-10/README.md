@@ -228,3 +228,21 @@ The table is in `bindings/kubernetes/README.md` at `65f55c1`. Of 23 rows:
 - `vault-0` deleted once so the fixed probe could roll.
 - Debug and probe Pods, labelled outside the StatefulSet selector.
 - `docker image prune -f` at teardown reclaimed 3.746 GB of dangling images host-wide, the kind node image among them.
+
+## 2026-11-10 (late): follow-ups after the smoke
+
+*Appended; earlier sections stand as recorded. Branch `k8s/cluster-smoke-20261110` head `b9af14c` (local, unpushed).*
+
+- **Two-Pod row replaced.** Decision [cohort-pod-not-scaled](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#cohort-pod-not-scaled): the one-Pod cohort is a monolith that scales vertically only. For horizontal scale or HA, operators use per-role placement, and the two placements never run against the same database at once. The binding, not core, holds the cohort to one replica.
+  - The smoke's red two-Pod control is now this rule, enforced at render time.
+  - New invariant `cohort-single-replica`: a rendered `replicas: 2` gives `FAIL cohort-single-replica: StatefulSet/cohort replicas is 2; the one-Pod cohort is a monolith and scales vertically only; for horizontal scale or HA use per-role placement (decision cohort-pod-not-scaled)`. It is restored to green after the control.
+  - The README explains cohort and per-role placement for operators.
+- **Compose-tree defect B fixed** in `bindings/compose/ownership-admin/ownership-grants.js`. `admin.json` now carries `ownership.lifecycleNamespace` (the control namespace), as core requires at `16a1fc2d` `lib/server/serve/admin-config.js:59-60`.
+  - `ownership-grants.test.js` runs core's parser against a `16a1fc2d` archive: 2/2 pass.
+  - Break-it, `lifecycleNamespace` removed: 2 fail, core throws `invalid explicit admin operator configuration` (the smoke's symptom). Restored: 2/2.
+  - Without a core checkout it runs 1 pass, 1 skipped, and is now part of `npm test`.
+  - Not re-smoked on a cluster.
+- **Defect A** (root_writer reads on the lifecycle control schema) is not duplicated here. The fix is the bench lane's `54af5f2`, and the binding's api needs it in the Compose tree's `config.js` until it merges. The README says so.
+- **Apply path.** It is `kubectl apply -f check/golden/preview.yaml`. `tk` v0.20.0 cannot apply against `kubectl` v1.32. tk was not upgraded.
+- **Checks at `b9af14c`:** invariants 10 checks, 0 failures. Controls 13, all red as expected. Golden current: sha256 `2f3e51a1…5b52`, unchanged, because the follow-ups changed comments and checks, not the render. Vault step test 3/3. `npm test` passes.
+- **Images.** No further images were created or removed. The earlier host-wide `docker image prune -f` is recorded above as a lab intervention and is not repeated.
