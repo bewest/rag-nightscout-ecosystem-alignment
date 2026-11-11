@@ -1,0 +1,4 @@
+2026-11-11T05:20:44.800803251Z Listening for role realtime on 0.0.0.0:1339
+2026-11-11T05:24:01.464564693Z nightscout multitenant: SIGTERM, closing listeners and storage
+2026-11-11T05:24:11.465617741Z nightscout multitenant: still open 10000 ms after SIGTERM: PipeWrap, PipeWrap, Timeout, Timeout, Timeout, Timeout, Timeout, Timeout, Timeout, Timeout, Timeout, Timeout, 
+2026-11-11T05:24:35.666528335Z Listening for role realtime on 0.0.0.0:1339

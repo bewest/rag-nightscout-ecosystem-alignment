@@ -1,0 +1,281 @@
+{
+  "args": {
+    "per": 20,
+    "with": 1,
+    "open": "250",
+    "windowS": 120,
+    "writePeriodS": 0,
+    "tenants": 1
+  },
+  "noSockets": {
+    "minutes": 1.0185833333333334,
+    "cpuMs": {
+      "realtime": 5253.797,
+      "api": 2432.439,
+      "postgres": 49922.195
+    },
+    "memory": {
+      "realtime": {
+        "cpuUsec": 6556220,
+        "memoryCurrent": 184274944,
+        "anon": 163790848
+      },
+      "api": {
+        "cpuUsec": 3659569,
+        "memoryCurrent": 77561856,
+        "anon": 70160384
+      },
+      "postgres": {
+        "cpuUsec": 56711801,
+        "memoryCurrent": 148541440,
+        "anon": 56991744
+      }
+    },
+    "pgByRole": {
+      "nsdemo_outbox": {
+        "calls": 6200,
+        "ms": 883
+      },
+      "nsdemo_suppression": {
+        "calls": 3720,
+        "ms": 750.7
+      },
+      "nsdemo_lifetime_realtime": {
+        "calls": 1364,
+        "ms": 493.2
+      },
+      "nsdemo_evaluator": {
+        "calls": 32612,
+        "ms": 4436.7
+      },
+      "postgres": {
+        "calls": 5,
+        "ms": 1.8
+      },
+      "nsdemo_realtime": {
+        "calls": 22568,
+        "ms": 3109.1
+      },
+      "nsdemo_lifetime_evaluator": {
+        "calls": 5456,
+        "ms": 2154.2
+      }
+    },
+    "subjectAuthorizations": 0,
+    "realtimeLeases": 62,
+    "realtimeScans": 0
+  },
+  "beforeSockets": {
+    "at": 1794376326902,
+    "cgroup": {
+      "realtime": {
+        "cpuUsec": 6706493,
+        "memoryCurrent": 172326912,
+        "anon": 163680256
+      },
+      "api": {
+        "cpuUsec": 3702083,
+        "memoryCurrent": 79806464,
+        "anon": 71888896
+      },
+      "postgres": {
+        "cpuUsec": 57656783,
+        "memoryCurrent": 147103744,
+        "anon": 56745984
+      }
+    },
+    "pg": {
+      "byRole": {
+        "nsdemo_outbox": {
+          "calls": 6300,
+          "ms": 896.9
+        },
+        "nsdemo_suppression": {
+          "calls": 3780,
+          "ms": 763.3
+        },
+        "nsdemo_lifetime_realtime": {
+          "calls": 1386,
+          "ms": 500.7
+        },
+        "nsdemo_evaluator": {
+          "calls": 33138,
+          "ms": 4504
+        },
+        "postgres": {
+          "calls": 9,
+          "ms": 3.2
+        },
+        "nsdemo_realtime": {
+          "calls": 22932,
+          "ms": 3156.7
+        },
+        "nsdemo_lifetime_evaluator": {
+          "calls": 5544,
+          "ms": 2185.7
+        }
+      },
+      "subjectAuthorizations": 0,
+      "realtimeLeases": 63,
+      "realtimeScans": 0
+    }
+  },
+  "prime": {
+    "sockets": 20,
+    "primed": 20,
+    "dark": 0,
+    "serverDisconnected": 0,
+    "ms": 7519,
+    "reasons": {}
+  },
+  "window": {
+    "minutes": 2.01705,
+    "cpuMs": {
+      "realtime": 8642.064,
+      "api": 19758.66,
+      "postgres": 153601.262
+    },
+    "memory": {
+      "realtime": {
+        "cpuUsec": 16966939,
+        "memoryCurrent": 175030272,
+        "anon": 165859328
+      },
+      "api": {
+        "cpuUsec": 27345691,
+        "memoryCurrent": 186834944,
+        "anon": 178401280
+      },
+      "postgres": {
+        "cpuUsec": 238640749,
+        "memoryCurrent": 168706048,
+        "anon": 77193216
+      }
+    },
+    "pgByRole": {
+      "nsdemo_outbox": {
+        "calls": 12200,
+        "ms": 1912
+      },
+      "nsdemo_suppression": {
+        "calls": 7320,
+        "ms": 1590.9
+      },
+      "nsdemo_lifetime_realtime": {
+        "calls": 902,
+        "ms": 459.2
+      },
+      "nsdemo_evaluator": {
+        "calls": 64172,
+        "ms": 9047.2
+      },
+      "nsdemo_api": {
+        "calls": 89721,
+        "ms": 11071.4
+      },
+      "postgres": {
+        "calls": 5,
+        "ms": 1.5
+      },
+      "nsdemo_lifetime_api": {
+        "calls": 17798,
+        "ms": 7954.8
+      },
+      "nsdemo_realtime": {
+        "calls": 14924,
+        "ms": 2177.4
+      },
+      "nsdemo_lifetime_evaluator": {
+        "calls": 10736,
+        "ms": 5229.6
+      }
+    },
+    "subjectAuthorizations": 810,
+    "realtimeLeases": 41,
+    "realtimeScans": 0,
+    "writes": {
+      "ok": 0,
+      "failed": 0
+    },
+    "sockets": 20,
+    "connectedAtEnd": 20,
+    "framesTotal": 807,
+    "framesPerSocketPerMinute": 20.004461961775863,
+    "subjectAuthorizationsPerSocketPerMinute": 20.078827991373544,
+    "writeToFrameMs": {
+      "n": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "deliveredFrames": 0,
+    "expectedFrames": 0,
+    "serverDisconnectsInWindow": 0,
+    "framesBefore": 101
+  },
+  "afterSockets": {
+    "at": 1794376462884,
+    "cgroup": {
+      "realtime": {
+        "cpuUsec": 17238697,
+        "memoryCurrent": 171466752,
+        "anon": 163094528
+      },
+      "api": {
+        "cpuUsec": 27526666,
+        "memoryCurrent": 193409024,
+        "anon": 179294208
+      },
+      "postgres": {
+        "cpuUsec": 240275931,
+        "memoryCurrent": 170594304,
+        "anon": 79450112
+      }
+    },
+    "pg": {
+      "byRole": {
+        "nsdemo_outbox": {
+          "calls": 12300,
+          "ms": 1928.4
+        },
+        "nsdemo_suppression": {
+          "calls": 7380,
+          "ms": 1605.1
+        },
+        "nsdemo_lifetime_realtime": {
+          "calls": 902,
+          "ms": 459.2
+        },
+        "nsdemo_evaluator": {
+          "calls": 64698,
+          "ms": 9122.8
+        },
+        "nsdemo_api": {
+          "calls": 90773,
+          "ms": 11218.7
+        },
+        "postgres": {
+          "calls": 9,
+          "ms": 3.4
+        },
+        "nsdemo_lifetime_api": {
+          "calls": 17996,
+          "ms": 8048.1
+        },
+        "nsdemo_realtime": {
+          "calls": 14924,
+          "ms": 2177.4
+        },
+        "nsdemo_lifetime_evaluator": {
+          "calls": 10824,
+          "ms": 5275.2
+        }
+      },
+      "subjectAuthorizations": 819,
+      "realtimeLeases": 41,
+      "realtimeScans": 0
+    }
+  },
+  "reasons": {}
+}
