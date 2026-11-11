@@ -1,0 +1,43 @@
+LAB hours=5 drop=bwp records=128 load=3.14 7.28 8.94
+RUN base {"cycles":21601,"acquisitions":{"n":126,"cpuMsMean":5.56,"cpuMsP50":4.58,"cpuMsP95":11.35,"wallMsP50":6.77,"wallMsP95":10.19},"timeOnly":{"n":21475,"cpuMsMean":5.07,"cpuMsP50":4.34,"cpuMsP95":9.24,"wallMsP50":7.13,"wallMsP95":10.14},"alarmTransitions":32,"contentTransitions":142} elapsed_s=156.4
+TRANSITIONS base
+  23:00:00 (none)
+  23:00:10 treatmentnotify|0||Site Change
+  23:10:00 (none)
+  23:30:10 treatmentnotify|0||Insulin Change
+  23:40:00 (none)
+  00:00:10 treatmentnotify|0||Pump Battery Change
+  00:10:00 (none)
+  01:00:00 cage|0|CAGE|Cannula age 2 hours
+  01:00:20 ar2|2||Urgent, LOW;cage|0|CAGE|Cannula age 2 hours;simplealarms|2||Urgent LOW
+  01:20:20 ar2|2||Urgent, HIGH predicted;cage|0|CAGE|Cannula age 2 hours
+  01:21:00 ar2|2||Urgent, HIGH predicted
+  01:25:20 (none)
+  01:30:10 treatmentnotify|0||Correction Bolus
+  01:40:00 (none)
+  02:00:00 cage|1|CAGE|Cannula age 3 hours
+  02:00:20 ar2|2||Urgent, HIGH;cage|1|CAGE|Cannula age 3 hours;simplealarms|2||Urgent HIGH
+  02:20:20 ar2|2||Urgent, LOW predicted;cage|1|CAGE|Cannula age 3 hours
+  02:21:00 ar2|2||Urgent, LOW predicted
+  02:25:20 (none)
+  03:00:00 cage|2|CAGE|Cannula age 4 hours;sage|0|SAGE|Sensor age 0 days 5 hours
+  03:10:01 cage|2|CAGE|Cannula age 4 hours;sage|0|SAGE|Sensor age 0 days 5 hours;timeago|1|Time Ago|Stale data, check rig?
+  03:21:00 timeago|1|Time Ago|Stale data, check rig?
+  03:25:01 timeago|2|Time Ago|Stale data, check rig?
+  03:25:31 loop|1|Loop|Loop isn't looping;pump|1|Pump|Warning, Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  03:55:31 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  04:00:00 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;sage|1|SAGE|Sensor age 0 days 6 hours;timeago|2|Time Ago|Stale data, check rig?
+  04:00:20 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;sage|1|SAGE|Sensor age 0 days 6 hours
+  04:00:40 sage|1|SAGE|Sensor age 0 days 6 hours
+  04:10:10 sage|1|SAGE|Sensor age 0 days 6 hours;treatmentnotify|0||Meal Bolus
+  04:20:00 sage|1|SAGE|Sensor age 0 days 6 hours
+  04:21:00 (none)
+  05:00:00 sage|2|SAGE|Sensor age 0 days 7 hours
+RUN due slow=60000 {"cycles":356,"acquisitions":{"n":126,"cpuMsMean":7.8,"cpuMsP50":6.54,"cpuMsP95":14.99,"wallMsP50":9.02,"wallMsP95":12.87},"timeOnly":{"n":230,"cpuMsMean":8.04,"cpuMsP50":7.64,"cpuMsP95":14.19,"wallMsP50":10.22,"wallMsP95":14.05},"alarmTransitions":32,"contentTransitions":81} elapsed_s=3.5
+FAIL ALARM_SET_EQUIVALENT slow=60000 :: 32 transitions, due at most 999 ms before base
+  transitions[20] at base 2026-11-10T03:10:01.000Z due 2026-11-10T03:10:30.001Z (29001 ms late); changed text: ["cage|2|CAGE|Cannula age 4 hours","sage|0|SAGE|Sensor age 0 days 5 hours","timeago|1|Time Ago|Stale data, check rig?"]
+  transitions[22] at base 2026-11-10T03:25:01.000Z due 2026-11-10T03:25:30.000Z (29000 ms late); changed text: ["timeago|2|Time Ago|Stale data, check rig?"]
+DIFF CONTENT_EQUIVALENT slow=60000 :: 142 base content transitions, 81 due
+  contents count base 142 due 81
+  contents[22] differs at base 2026-11-10T03:10:01.000Z due 2026-11-10T03:10:30.001Z: "[[\"notify\",\"cage\",2,\"CAGE\",\"Cannula age 4 hours\",\"Cannula change overdue!\",null],[\"notify\",\"sage\",0,\"SAGE\",\"Sensor age 0 days 5 hours\",\"Chan vs "[[\"notify\",\"cage\",2,\"CAGE\",\"Cannula age 4 hours\",\"Cannula change overdue!\",null],[\"notify\",\"sage\",0,\"SAGE\",\"Sensor age 0 days 5 hours\",\"Chan
+CYCLES slow=60000 base 21601 due 356 (60.7x fewer)
