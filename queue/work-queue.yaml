@@ -26377,7 +26377,7 @@ items:
         cwd: externals/work/crm-consumer-refusal-20261110
         kind: unit
         describe: >
-          Producer tests including two controlled-interleaving stale cases: 7 passing on 1adb17f8; red on b70ad83f and
+          Producer tests including two controlled-interleaving stale cases: 7 passing on 1adb17f8 (head now 956d0940); red on b70ad83f and
           under the no-reselect control. Native evaluator-consumers 5, tenant-notifications 7, churn 1 passing.
     blocks_on:
       - MT-M6B-JOIN
@@ -26386,6 +26386,34 @@ items:
     notes: >
       2026-11-10 (reproduced): 1adb17f8 on b70ad83f. Open: the outputRevision freshness-gate path (component.js:38-43)
       needs a maintainer decision (wake the consumer on timer publications, or compare effects).
+      2026-11-10 second pass (reproduced): 956d0940. Revision only on content change (digest of checkpoint, progress,
+      emitted, requested, properties); alarm repeat on the tenant heartbeat (60 s default) with ack/snooze silence and
+      outbox suppression unchanged; targeted wake. Deployed intervals: deliveries per active alarm 60/min -> 1/min,
+      selections 360 -> 125/min, 0 refusals; 150 ms churn 8/8 delivered. Repeat covers any requested notification, as
+      single-site processing does. Handed to the batch join.
+
+  - id: MT-TENANT-EXTENDED-SETTINGS
+    title: "Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232)"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/multitenant-20261102
+    base: official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a
+    state: not-started
+    blast_radius: >
+      lib/server/tenant-app/environment.js projection of extendedSettings; owner settings surface for plugin alert
+      settings; multitenant only.
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: [BF-232]
+    gates:
+      - no-gate: "not started; gate reproduces the stale-data alarm for a tenant with timeago.enableAlerts set, with a control that drops the projection"
+    blocks_on: []
+    evidence:
+      - reports/tenancy/consumer-refusal-2026-11-10/README.md
+    notes: >
+      Read-derived 2026-11-10. Survey every plugin's extended-settings reads first.
   - id: MT-OWNER-LAST-GUARD
     title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
     parcel: tenancy

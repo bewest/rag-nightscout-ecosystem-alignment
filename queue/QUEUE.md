@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 397 |
+| items | 398 |
 | runnable gates | 450 |
-| explicit `no-gate:` markers | 400 |
+| explicit `no-gate:` markers | 401 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 400 of the 850 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 401 of the 851 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 83 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
+| `not-started` | 84 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, MT-TENANT-EXTENDED-SETTINGS, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-BENCH-BASELINE, MT-BENCH-CONTRAST, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, MT-ANDROID-LAB, DEPLOY-K8S-BINDING |
 | `in-progress` | 25 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, DEPLOY-TREE-HOME, MT-CONSUMER-STALE-RESELECT, MT-OWNER-LAST-GUARD |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 2 | WS-LAB, DEPLOY-VAULT-AGENT |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 97 items
+`parcel: tenancy` &mdash; 98 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8460,6 +8460,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port | `in-progress` | `codex/admin-lifecycle-20261110` | n/a | 1 run |
 | `DEPLOY-TREE-HOME` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README | `in-progress` | `docs/operator-readme-20261110` | n/a | 0 run + 1 no-gate |
 | `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `in-progress` | `codex/consumer-refusal-20261110` | n/a | 1 run |
+| `MT-TENANT-EXTENDED-SETTINGS` | Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232) | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-progress` | `codex/m6b-followups-20261110` | n/a | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-flight-upstream` | `codex/key-retention-20261110` | minor | 1 run |
 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | `codex/vault-token-file-20261109` | minor | 1 run |
@@ -11109,13 +11110,42 @@ alarm-readiness items, and the seam branch refresh.
 **Gates.**
 
 - `[unit]` _(cwd: `externals/work/crm-consumer-refusal-20261110`)_ `node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/notification-producer.test.js`
-  - Producer tests including two controlled-interleaving stale cases: 7 passing on 1adb17f8; red on b70ad83f and under the no-reselect control. Native evaluator-consumers 5, tenant-notifications 7, churn 1 passing.
+  - Producer tests including two controlled-interleaving stale cases: 7 passing on 1adb17f8 (head now 956d0940); red on b70ad83f and under the no-reselect control. Native evaluator-consumers 5, tenant-notifications 7, churn 1 passing.
 
 **Evidence.**
 
 - `reports/tenancy/consumer-refusal-2026-11-10/README.md`
 
-**Notes.** 2026-11-10 (reproduced): 1adb17f8 on b70ad83f. Open: the outputRevision freshness-gate path (component.js:38-43) needs a maintainer decision (wake the consumer on timer publications, or compare effects).
+**Notes.** 2026-11-10 (reproduced): 1adb17f8 on b70ad83f. Open: the outputRevision freshness-gate path (component.js:38-43) needs a maintainer decision (wake the consumer on timer publications, or compare effects). 2026-11-10 second pass (reproduced): 956d0940. Revision only on content change (digest of checkpoint, progress, emitted, requested, properties); alarm repeat on the tenant heartbeat (60 s default) with ack/snooze silence and outbox suppression unchanged; targeted wake. Deployed intervals: deliveries per active alarm 60/min -> 1/min, selections 360 -> 125/min, 0 refusals; 150 ms churn 8/8 delivered. Repeat covers any requested notification, as single-site processing does. Handed to the batch join.
+
+### `MT-TENANT-EXTENDED-SETTINGS` &mdash; Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232)
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/multitenant-20261102` |
+| base | `official/workspace/multitenant-20261102@b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+| register | `BF-232` |
+
+**Blast radius.** lib/server/tenant-app/environment.js projection of extendedSettings; owner settings surface for plugin alert settings; multitenant only.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; not started; gate reproduces the stale-data alarm for a tenant with timeago.enableAlerts set, with a control that drops the projection
+
+**Evidence.**
+
+- `reports/tenancy/consumer-refusal-2026-11-10/README.md`
+
+**Notes.** Read-derived 2026-11-10. Survey every plugin's extended-settings reads first.
 
 ### `MT-OWNER-LAST-GUARD` &mdash; M6b follow-up: refuse revoking the last usable owner's subject (BF-229)
 

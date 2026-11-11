@@ -230,3 +230,106 @@ once per second per tenant, against legacy's once per heartbeat (60 s default).
    repeat clock (e.g. the legacy heartbeat interval)?
 2. If repetition is kept, should the producer's `fresh` key be decoupled from the evaluator revision (for example, a
    repeat tick counter driven by a heartbeat), so the revision can still move only on content change?
+
+## Addendum 2026-11-10 (second): revision on content change and the alarm repeat clock
+
+Decisions [`evaluator-revision-on-content-change`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change)
+and [`alarm-repeat-clock`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock) (alignment `main`
+`fee6e40e`). Lane `codex/consumer-refusal-20261110`: `1adb17f8` → `1d39c924` (telemetry) → **`956d0940`** (behaviour).
+PostgreSQL 16.15 disposable container (same digest), removed afterwards.
+
+### What changed (`956d0940`)
+
+- **Evaluator** (`lib/server/serve/evaluator-runtime.js`): content is a canonical SHA-256 digest of `checkpoint`,
+  `progress`, `emitted`, `requested` and `properties` (exported `CONTENT`, `contentDigest`). `now`,
+  `evaluationRevision` and `trigger` are per-cycle metadata. Identical content keeps `outputRevision` and the same
+  frozen `last` object. A new revision calls `onRevision(tenant)`. Health adds `cycles` (from `1d39c924`).
+- **Producer** (`lib/tenant-notifications/producer-state.js`, `producer.js`): when the current output requests any
+  notification (`armed`), the legacy processing of that output runs again once `at >= repeatAt`, at time `at`.
+  `repeatAt = at + heartbeat` after each processing. `heartbeat` is the tenant's single-site setting in seconds
+  (`environment.js:13` CLIENT_KEYS; the owner catalogue carries it too). If it is unset or not a positive number, the
+  default is `lib/settings.js:38` (60). Silence is decided by `notifications.js:63` as before, and the
+  suppression check (`component.js:35`) still applies at handoff.
+- **Consumer** (`lib/server/serve/evaluator-consumers.js`, `evaluator-preview.js`): `revised(tenant)` wakes a tenant
+  with a pending request, an armed repeat clock or a current output that requests a notification. A one-shot wake
+  fires at the producer's `repeatAt`, with a 1 s floor for an overdue time. Health adds `passes`, `selections`
+  and `repeatAt` (the first two from `1d39c924`). The stale-selection retry from `1adb17f8` is kept.
+
+### Content between cycles over unchanged data (reproduced, before this change)
+
+Only `outputRevision`, `result.evaluationRevision`, `trigger` and `result.now` differed across ticks and
+acquisitions, including one 61 s later. With the stale-data plugin (single-site env shape, below), only time passing
+(20 min) adds a level-1 "Stale data, check rig?" request and drops `direction` from `properties`.
+
+### Measurements, deployed intervals (`deploy/multitenant/config.js:96-103`), two tenants each with an active low, random phase
+
+Test `tests/evaluator-consumer-load.integration.test.js`, `NS_CONSUMER_LOAD_HEARTBEAT_S=60 NS_CONSUMER_LOAD_WINDOW_MS=60000`,
+3 runs each. Values are per tenant per minute and were identical for both tenants.
+
+| | evaluator cycles | output revisions | consumer passes | selections | alarm deliveries per active alarm | changed-reading latency | refused | stuck attempting |
+|---|---|---|---|---|---|---|---|---|
+| before (`1d39c924` = `1adb17f8` + counters) | 118-120 | 118-120 | 119-120 | 359-360 | **60** | 224, 1095, 1115 ms | 0 | 0 |
+| after (`956d0940` code) | 120 | **0** | 121 | **125** | **1** | 467, 1032, 1043 ms | 0 | 0 |
+
+At the CI setting (heartbeat 5 s, window 21 s), before: 120 revisions, 360 selections, 60 deliveries/min, latency 256 ms.
+After: 0 revisions, 177 selections, 11.4 deliveries/min (expected 12), latency 595 ms, refused 0, stuck 0.
+Passes stay at about 120/min after the change because the deployed consumer poll and retry timers (1000 ms each)
+dominate. The change removes the per-cycle writes and handoffs, not the polls. The changed reading is picked up by the
+evaluator's own recovery timer (no explicit trigger exists in production: no caller of `acquire` outside the IPC
+driver). At the deployed 1 s poll, its latency is bounded by the poll before and after.
+
+**150 ms churn** (`tests/evaluator-consumer-timer-churn.integration.test.js`, delivery now required): changed reading
+delivered **8/8** (3 at phase 0, 5 random), 197-253 ms. Case "picked up only by the evaluator timers", with the
+fixture's 1,000,000 ms consumer timers and no trigger, so only the targeted wake can deliver: **8/8**, 290-373 ms.
+
+### Controls (each red, then restored by copying the saved file back; `cmp` identical)
+
+| control | edit | red, exact symptom |
+|---|---|---|
+| bump the revision every cycle | runtime `const changed = true` | unit `EVALUATOR_IDENTICAL_CONTENT_KEEPS_REVISION`; load `ALARM_REPEAT_ON_HEARTBEAT 1 delivered 21, expected about 4.2` (selections 451/min); native M5 case 1 red |
+| digest ignores a time-driven change | digest over `checkpoint`,`progress` only | unit `only time passed and the stale-data alarm appeared` (the held output hides the stale-data alarm from consumers) and `emitted is content` |
+| remove the repeat clock | producer-state `const repeat = false && …` | unit `PRODUCER_REPEAT_ON_HEARTBEAT`, `EVALUATOR_CONSUMER_RT_POLICY alarm repeats on the heartbeat clock`, `EVALUATOR_CONSUMER_OUTPUT_POLL …`; load `ALARM_REPEAT_ON_HEARTBEAT 1 delivered 0` and `ALARM_REPEAT_OTHER_TENANT` |
+| ack silence ignored | `notifications.js:63` → `if (true)` | unit `PRODUCER_ACK_SILENCE_HOLDS`. **Native stayed green** (0 acknowledged repeats): the outbox suppression check `allows` → `reader.allows` (`component.js:35`, `tenant-alarms/postgres.js:95`) is a second, independent gate. With both broken (`allows: async () => true` as well): `ALARM_ACK_SILENCE_HOLDS` with 3 acknowledged repeats |
+| remove the targeted wake | preview `onRevision: undefined` | native `CONSUMER_TARGETED_WAKE_LATENCY` (latency null). The load test's latency assertion stays green at the deployed 1 s poll, as expected: the poll alone delivers within a second |
+
+The repeat-clock control also showed a hot loop: with `repeatAt` left in the past, the one-shot re-armed at 0 ms
+(2368 passes/min). The real code always advances an overdue `repeatAt`; the 1 s floor added in `956d0940` bounds any
+regression. With the floor, the same broken state gives 120 passes/min.
+
+### Oracles changed (the per-cycle reliance), with what replaces them
+
+| oracle | was | now |
+|---|---|---|
+| `tests/evaluator-consumers.integration.test.js` case 1 `M5_CONSUMER_NEW_RT_CYCLE` | `tick` over identical data delivers a second event | tenant `heartbeat` 3 s; `tick` before the heartbeat delivers nothing (`M5_CONSUMER_IDENTICAL_CYCLE_NO_REPEAT`); the coordinator's repeat-clock wake delivers the second event with a new UUID |
+| same file, case 4 (`:87`), B independent | `tick` B over identical data delivers for B | a new B reading plus `acquire` B delivers for B |
+| `tests/evaluator-consumers.test.js` `EVALUATOR_CONSUMER_RT_POLICY`, `EVALUATOR_CONSUMER_OUTPUT_POLL`, B `requests + 1` | a `tick` repeats | advance the fixture clock 60 s (default heartbeat), then the tick or poll repeats; adds `EVALUATOR_CONSUMER_NO_REPEAT_BEFORE_HEARTBEAT` |
+| same file, "clinical cycle does not wait for delivery" | `outputRevision` increases | evaluator `cycles` increases |
+| `tests/evaluator-preview-runtime.test.js` "retries unchanged input" | revision increases | `cycles` increases and the revision is unchanged |
+
+**Activity lane (not edited; for the join coordinator):** `tests/tenant-activity.integration.test.js:128` on
+`codex/activity-eligibility-20261110` (`07981b55`). Replace
+`const bBefore = tenantHealth(await worker.call('health'), lab.B).outputRevision;` with
+`const bBefore = tenantHealth(await worker.call('health'), lab.B).cycles;`, and replace
+`assert.ok(tenantHealth(health, lab.B).outputRevision > bBefore + 2, 'ACTIVITY_B_UNAFFECTED B kept cycling on the actual timers');`
+with `assert.ok(tenantHealth(health, lab.B).cycles > bBefore + 2, 'ACTIVITY_B_UNAFFECTED B kept cycling on the actual timers');`.
+(`cycles` is reported by `evaluator-runtime.js` health from `1d39c924`. B's data does not change in that window, so
+its `outputRevision` now stays put by design.)
+
+### Checks at `956d0940`
+
+| check | result |
+|---|---|
+| unit/protocol: 16 files (evaluator-consumer*, evaluator-control-readiness, evaluator-preview-runtime, evaluator-runtime-content, multitenant-inventory, notification-producer*, tenant-operation-window, tenant-notifications, tenant-startup-admission, tenant-deployment-operations, realtime-evaluator-observer, tenant-projection-evaluator, tenant-maintenance-window) | 178 passing |
+| native: evaluator-consumers.integration, tenant-notifications.integration, tenant-notification-native-restoration, evaluator-consumer-timer-churn, evaluator-consumer-load | 17 passing |
+| `node scripts/test-tiers.js check` | `617 test files, 8 tiers: ok` |
+| eslint on changed files | 0 errors; `npm run lint` 0 errors, 49 warnings |
+
+### Found on the way (not changed)
+
+- **The stale-data alarm cannot be enabled for a multitenant tenant.** `timeago` alerts need
+  `extendedSettings.timeago.enableAlerts` (`lib/plugins/timeago.js:20`). The tenant environment copies only
+  `extendedSettings.devicestatus` (`lib/server/tenant-app/environment.js:54-57`). The runtime test builds the
+  single-site env shape directly for that reason. Read-derived, not run against a tenant config.
+- A tenant with no pending request, no armed repeat and a current output that requests no notification is not woken
+  on a content change; it waits for the consumer poll, as the decisions specify. A newly appearing alarm is covered
+  (its output requests a notification), and so is the clear when an alarm ends (the repeat clock was armed).
