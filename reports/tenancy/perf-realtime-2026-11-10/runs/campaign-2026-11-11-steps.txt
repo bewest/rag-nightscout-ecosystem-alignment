@@ -1,0 +1,21 @@
+2026-11-11T07:45:35Z load=11.67 11.66 11.27 deploy rt2 n100
+2026-11-11T07:46:08Z load=10.01 11.26 11.15 state api running exit=0 realtime running exit=0 evaluator running exit=0 
+2026-11-11T07:46:09Z load=10.01 11.26 11.15 health {"live":true,"readiness":"serve","ready":true,"configured":100,"healthy":58,"failed":0}
+2026-11-11T07:46:09Z load=10.01 11.26 11.15 hard-delete n100
+2026-11-11T07:47:30Z load=9.56 10.76 10.98 broke tenant index 37 (checkpoint row removed); restart realtime (serve)
+2026-11-11T07:47:33Z load=10.47 10.93 11.03 state api running exit=0 realtime running exit=0 evaluator running exit=0 
+2026-11-11T07:47:54Z load=10.89 10.99 11.05 health {"live":true,"readiness":"serve","ready":true,"configured":100,"healthy":99,"failed":1}
+2026-11-11T07:47:54Z load=10.89 10.99 11.05 measure broken-one (1 socket per tenant)
+2026-11-11T07:50:31Z load=13.72 11.15 11.04 readiness all with the broken tenant
+2026-11-11T07:52:03Z load=17.84 13.11 11.74 state api running exit=0 realtime exited exit=78 evaluator running exit=0 
+2026-11-11T07:52:07Z load=17.84 13.11 11.74 teardown n100
+2026-11-11T07:52:07Z load=17.84 13.11 11.74 deploy rt2 n1000
+2026-11-11T07:54:25Z load=12.41 12.72 11.79 state api running exit=0 realtime running exit=0 evaluator running exit=0 
+2026-11-11T07:54:25Z load=12.41 12.72 11.79 health {"live":true,"readiness":"serve","ready":true,"configured":1000,"healthy":1000,"failed":0}
+2026-11-11T07:54:25Z load=12.41 12.72 11.79 measure n1000 idle-s2
+2026-11-11T08:01:15Z load=14.75 13.74 12.41 health {"live":true,"readiness":"serve","ready":true,"configured":1000,"healthy":1000,"failed":0}
+2026-11-11T08:01:15Z load=14.75 13.74 12.41 hard-delete n1000
+2026-11-11T08:02:25Z load=12.33 13.26 12.34 measure n1000 restart-s2
+2026-11-11T08:10:48Z load=24.72 23.08 17.59 final api running exit=0 realtime running exit=0 evaluator running exit=0 
+2026-11-11T08:11:10Z load=21.05 22.35 17.47 teardown n1000
+2026-11-11T08:11:10Z load=21.05 22.35 17.47 done

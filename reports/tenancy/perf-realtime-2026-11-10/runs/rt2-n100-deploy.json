@@ -1,0 +1,1 @@
+{"label":"rt2","tenants":100,"port":22100,"image":"ns-prt-realtime:20a49aab","bootstrapSeconds":15.8,"startSeconds":15.5}

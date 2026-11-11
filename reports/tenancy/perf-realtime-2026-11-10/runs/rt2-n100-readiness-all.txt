@@ -1,0 +1,1 @@
+2026-11-11T07:50:37.128157855Z nightscout multitenant: realtime preview readiness or initialization refused

@@ -1,0 +1,3 @@
+2026-11-11T07:04:24.261663540Z Listening for role realtime on 0.0.0.0:1339
+2026-11-11T07:15:05.471379883Z nightscout multitenant: SIGTERM, closing listeners and storage
+2026-11-11T07:15:30.521078597Z Listening for role realtime on 0.0.0.0:1339

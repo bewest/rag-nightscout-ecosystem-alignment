@@ -1,0 +1,238 @@
+{
+  "args": {
+    "per": 20,
+    "with": 50,
+    "open": "flood",
+    "windowS": 300,
+    "writePeriodS": 300,
+    "tenants": 50
+  },
+  "beforeSockets": {
+    "at": 1794380906252,
+    "cgroup": {
+      "realtime": {
+        "cpuUsec": 65561937,
+        "memoryCurrent": 518668288,
+        "anon": 499515392
+      },
+      "api": {
+        "cpuUsec": 37064205,
+        "memoryCurrent": 239513600,
+        "anon": 226738176
+      },
+      "postgres": {
+        "cpuUsec": 1023202955,
+        "memoryCurrent": 239853568,
+        "anon": 161042432
+      }
+    },
+    "pg": {
+      "byRole": {
+        "nsdemo_outbox": {
+          "calls": 58733,
+          "ms": 16595.7
+        },
+        "nsdemo_suppression": {
+          "calls": 35314,
+          "ms": 13619.4
+        },
+        "nsdemo_lifetime_realtime": {
+          "calls": 2200,
+          "ms": 2882.9
+        },
+        "postgres": {
+          "calls": 13,
+          "ms": 13.2
+        },
+        "nsdemo_evaluator": {
+          "calls": 268236,
+          "ms": 64050
+        },
+        "nsdemo_api": {
+          "calls": 22200,
+          "ms": 7846.4
+        },
+        "nsdemo_lifetime_api": {
+          "calls": 4400,
+          "ms": 10620.8
+        },
+        "nsdemo_realtime": {
+          "calls": 2352,
+          "ms": 810.6
+        },
+        "nsdemo_lifetime_evaluator": {
+          "calls": 49784,
+          "ms": 45095.9
+        }
+      },
+      "subjectAuthorizations": 200,
+      "realtimeLeases": 100,
+      "realtimeScans": 114
+    }
+  },
+  "prime": {
+    "sockets": 1000,
+    "primed": 1000,
+    "dark": 0,
+    "serverDisconnected": 0,
+    "ms": 21503,
+    "reasons": {
+      "connect_error:xhr poll error": 1,
+      "transport error": 1
+    }
+  },
+  "window": {
+    "minutes": 5.030566666666667,
+    "cpuMs": {
+      "realtime": 74554.08,
+      "api": 39361.055,
+      "postgres": 1341747.61
+    },
+    "memory": {
+      "realtime": {
+        "cpuUsec": 163029230,
+        "memoryCurrent": 739024896,
+        "anon": 707870720
+      },
+      "api": {
+        "cpuUsec": 87755229,
+        "memoryCurrent": 295444480,
+        "anon": 282767360
+      },
+      "postgres": {
+        "cpuUsec": 2569051606,
+        "memoryCurrent": 208646144,
+        "anon": 135065600
+      }
+    },
+    "pgByRole": {
+      "nsdemo_outbox": {
+        "calls": 138507,
+        "ms": 38026.1
+      },
+      "nsdemo_suppression": {
+        "calls": 83156,
+        "ms": 31684
+      },
+      "nsdemo_lifetime_realtime": {
+        "calls": 5656,
+        "ms": 6756.3
+      },
+      "postgres": {
+        "calls": 5,
+        "ms": 2.2
+      },
+      "nsdemo_evaluator": {
+        "calls": 669879,
+        "ms": 157553.4
+      },
+      "nsdemo_api": {
+        "calls": 78673,
+        "ms": 24725.5
+      },
+      "nsdemo_lifetime_api": {
+        "calls": 9944,
+        "ms": 22210.6
+      },
+      "nsdemo_realtime": {
+        "calls": 23067,
+        "ms": 6556.2
+      },
+      "nsdemo_lifetime_evaluator": {
+        "calls": 118750,
+        "ms": 106701.3
+      }
+    },
+    "subjectAuthorizations": 501,
+    "realtimeLeases": 259,
+    "realtimeScans": 273,
+    "writes": {
+      "ok": 50,
+      "failed": 0
+    },
+    "sockets": 1000,
+    "connectedAtEnd": 1000,
+    "framesTotal": 1001,
+    "framesPerSocketPerMinute": 0.19898354724782494,
+    "subjectAuthorizationsPerSocketPerMinute": 0.09959116600515515,
+    "writeToFrameMs": {
+      "n": 1000,
+      "p50": 1980,
+      "p95": 4222,
+      "p99": 5715,
+      "max": 5718
+    },
+    "deliveredFrames": 1000,
+    "expectedFrames": 1000,
+    "serverDisconnectsInWindow": 0,
+    "framesBefore": 1000
+  },
+  "afterSockets": {
+    "at": 1794381251534,
+    "cgroup": {
+      "realtime": {
+        "cpuUsec": 163377975,
+        "memoryCurrent": 735481856,
+        "anon": 707448832
+      },
+      "api": {
+        "cpuUsec": 87985651,
+        "memoryCurrent": 296001536,
+        "anon": 282746880
+      },
+      "postgres": {
+        "cpuUsec": 2576232483,
+        "memoryCurrent": 208064512,
+        "anon": 133865472
+      }
+    },
+    "pg": {
+      "byRole": {
+        "nsdemo_outbox": {
+          "calls": 139333,
+          "ms": 38249.9
+        },
+        "nsdemo_suppression": {
+          "calls": 83666,
+          "ms": 31869.1
+        },
+        "nsdemo_lifetime_realtime": {
+          "calls": 5698,
+          "ms": 6789
+        },
+        "postgres": {
+          "calls": 9,
+          "ms": 6.1
+        },
+        "nsdemo_evaluator": {
+          "calls": 673572,
+          "ms": 158401.7
+        },
+        "nsdemo_api": {
+          "calls": 78673,
+          "ms": 24725.5
+        },
+        "nsdemo_lifetime_api": {
+          "calls": 9944,
+          "ms": 22210.6
+        },
+        "nsdemo_realtime": {
+          "calls": 23109,
+          "ms": 6566.7
+        },
+        "nsdemo_lifetime_evaluator": {
+          "calls": 119454,
+          "ms": 107305.8
+        }
+      },
+      "subjectAuthorizations": 501,
+      "realtimeLeases": 259,
+      "realtimeScans": 275
+    }
+  },
+  "reasons": {
+    "connect_error:xhr poll error": 1,
+    "transport error": 1,
+    "ping timeout": 1
+  }
+}

@@ -153,14 +153,14 @@ const stats = arr => ({ n: arr.length, p50: pct(arr, 50), p95: pct(arr, 95), p99
     const recovered = () => sockets.filter(s => s.connected && s.frames.some(at => at > r0)).length;
     const STOCK = Number(process.env.STOCK_MS || 30000);
     while (Date.now() < r0 + STOCK && recovered() < sockets.length) await sleep(250);
-    const stockRecovered = recovered();
+    const stockRecovered = recovered(), stockAllRecoveredMs = stockRecovered === sockets.length ? Date.now() - r0 : null;
     const r1 = Date.now(); retrying = true;
     for (const s of sockets) if (!s.connected) s.socket.connect();
     let allMs = null; const LIMIT = Number(process.env.RECOVERY_MS || 180000);
     while (Date.now() < r1 + LIMIT) { if (recovered() === sockets.length) { allMs = Date.now() - r1; break; } await sleep(250); }
     const id = container('realtime');
     const inspect = id ? JSON.parse(execFileSync('docker', ['inspect', id], { encoding: 'utf8' }))[0].State : null;
-    out.restart = { restartCommandMs, stockWindowMs: STOCK, stockRecovered, retryRecovered: recovered(), retryAllRecoveredMs: allMs,
+    out.restart = { restartCommandMs, stockWindowMs: STOCK, stockRecovered, stockAllRecoveredMs, retryRecovered: recovered(), retryAllRecoveredMs: allMs,
       realtimeState: inspect && { status: inspect.Status, exitCode: inspect.ExitCode, restarting: inspect.Restarting }, sockets: sockets.length, reasons: { ...reasons } };
     console.log('restart', JSON.stringify(out.restart));
   }

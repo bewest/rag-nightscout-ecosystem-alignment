@@ -1,0 +1,281 @@
+{
+  "args": {
+    "per": 2,
+    "with": 100,
+    "open": "flood",
+    "windowS": 120,
+    "writePeriodS": 0,
+    "tenants": 100
+  },
+  "noSockets": {
+    "minutes": 1.0214833333333333,
+    "cpuMs": {
+      "realtime": 6240.274,
+      "api": 3469.921,
+      "postgres": 148439.696
+    },
+    "memory": {
+      "realtime": {
+        "cpuUsec": 17635722,
+        "memoryCurrent": 239452160,
+        "anon": 226373632
+      },
+      "api": {
+        "cpuUsec": 15995144,
+        "memoryCurrent": 119922688,
+        "anon": 115286016
+      },
+      "postgres": {
+        "cpuUsec": 274900145,
+        "memoryCurrent": 173268992,
+        "anon": 82792448
+      }
+    },
+    "pgByRole": {
+      "nsdemo_outbox": {
+        "calls": 38113,
+        "ms": 7716.4
+      },
+      "nsdemo_suppression": {
+        "calls": 22882,
+        "ms": 6417.6
+      },
+      "nsdemo_lifetime_realtime": {
+        "calls": 2200,
+        "ms": 1665.7
+      },
+      "postgres": {
+        "calls": 5,
+        "ms": 1.3
+      },
+      "nsdemo_evaluator": {
+        "calls": 56464,
+        "ms": 10685
+      },
+      "nsdemo_realtime": {
+        "calls": 2152,
+        "ms": 474.6
+      },
+      "nsdemo_lifetime_evaluator": {
+        "calls": 22990,
+        "ms": 14727.1
+      }
+    },
+    "subjectAuthorizations": 0,
+    "realtimeLeases": 100,
+    "realtimeScans": 63
+  },
+  "beforeSockets": {
+    "at": 1794381498667,
+    "cgroup": {
+      "realtime": {
+        "cpuUsec": 17821025,
+        "memoryCurrent": 237424640,
+        "anon": 226385920
+      },
+      "api": {
+        "cpuUsec": 16185377,
+        "memoryCurrent": 120639488,
+        "anon": 112562176
+      },
+      "postgres": {
+        "cpuUsec": 278508629,
+        "memoryCurrent": 171098112,
+        "anon": 85356544
+      }
+    },
+    "pg": {
+      "byRole": {
+        "nsdemo_outbox": {
+          "calls": 38943,
+          "ms": 7903.1
+        },
+        "nsdemo_suppression": {
+          "calls": 23346,
+          "ms": 6566.2
+        },
+        "nsdemo_lifetime_realtime": {
+          "calls": 2200,
+          "ms": 1665.7
+        },
+        "postgres": {
+          "calls": 9,
+          "ms": 3.3
+        },
+        "nsdemo_evaluator": {
+          "calls": 57972,
+          "ms": 10995.2
+        },
+        "nsdemo_realtime": {
+          "calls": 2156,
+          "ms": 477.7
+        },
+        "nsdemo_lifetime_evaluator": {
+          "calls": 23531,
+          "ms": 15121.6
+        }
+      },
+      "subjectAuthorizations": 0,
+      "realtimeLeases": 100,
+      "realtimeScans": 64
+    }
+  },
+  "prime": {
+    "sockets": 200,
+    "primed": 200,
+    "dark": 0,
+    "serverDisconnected": 0,
+    "ms": 14844,
+    "reasons": {}
+  },
+  "window": {
+    "minutes": 2.02485,
+    "cpuMs": {
+      "realtime": 20821.572,
+      "api": 16473.461,
+      "postgres": 492783.899
+    },
+    "memory": {
+      "realtime": {
+        "cpuUsec": 52332191,
+        "memoryCurrent": 420900864,
+        "anon": 403632128
+      },
+      "api": {
+        "cpuUsec": 46903387,
+        "memoryCurrent": 337432576,
+        "anon": 322244608
+      },
+      "postgres": {
+        "cpuUsec": 972997119,
+        "memoryCurrent": 280199168,
+        "anon": 177635328
+      }
+    },
+    "pgByRole": {
+      "nsdemo_outbox": {
+        "calls": 58402,
+        "ms": 13386.5
+      },
+      "nsdemo_suppression": {
+        "calls": 35227,
+        "ms": 11262.6
+      },
+      "nsdemo_lifetime_realtime": {
+        "calls": 4400,
+        "ms": 3611.2
+      },
+      "postgres": {
+        "calls": 5,
+        "ms": 1.8
+      },
+      "nsdemo_evaluator": {
+        "calls": 250277,
+        "ms": 49629.2
+      },
+      "nsdemo_api": {
+        "calls": 44400,
+        "ms": 11847.2
+      },
+      "nsdemo_lifetime_api": {
+        "calls": 8800,
+        "ms": 13504.5
+      },
+      "nsdemo_realtime": {
+        "calls": 4272,
+        "ms": 1034.4
+      },
+      "nsdemo_lifetime_evaluator": {
+        "calls": 50335,
+        "ms": 37252.6
+      }
+    },
+    "subjectAuthorizations": 400,
+    "realtimeLeases": 200,
+    "realtimeScans": 119,
+    "writes": {
+      "ok": 0,
+      "failed": 0
+    },
+    "sockets": 200,
+    "connectedAtEnd": 200,
+    "framesTotal": 0,
+    "framesPerSocketPerMinute": 0,
+    "subjectAuthorizationsPerSocketPerMinute": 0.9877274859866164,
+    "writeToFrameMs": {
+      "n": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "deliveredFrames": 0,
+    "expectedFrames": 0,
+    "serverDisconnectsInWindow": 0,
+    "framesBefore": 200
+  },
+  "afterSockets": {
+    "at": 1794381665626,
+    "cgroup": {
+      "realtime": {
+        "cpuUsec": 52547453,
+        "memoryCurrent": 421662720,
+        "anon": 403664896
+      },
+      "api": {
+        "cpuUsec": 47094655,
+        "memoryCurrent": 337137664,
+        "anon": 322265088
+      },
+      "postgres": {
+        "cpuUsec": 978034727,
+        "memoryCurrent": 275542016,
+        "anon": 175788032
+      }
+    },
+    "pg": {
+      "byRole": {
+        "nsdemo_outbox": {
+          "calls": 59200,
+          "ms": 13566.1
+        },
+        "nsdemo_suppression": {
+          "calls": 35730,
+          "ms": 11421
+        },
+        "nsdemo_lifetime_realtime": {
+          "calls": 4400,
+          "ms": 3611.2
+        },
+        "postgres": {
+          "calls": 9,
+          "ms": 4.5
+        },
+        "nsdemo_evaluator": {
+          "calls": 252856,
+          "ms": 50143.1
+        },
+        "nsdemo_api": {
+          "calls": 44400,
+          "ms": 11847.2
+        },
+        "nsdemo_lifetime_api": {
+          "calls": 8800,
+          "ms": 13504.5
+        },
+        "nsdemo_realtime": {
+          "calls": 4280,
+          "ms": 1040.4
+        },
+        "nsdemo_lifetime_evaluator": {
+          "calls": 50929,
+          "ms": 37699.3
+        }
+      },
+      "subjectAuthorizations": 400,
+      "realtimeLeases": 200,
+      "realtimeScans": 120
+    }
+  },
+  "reasons": {}
+}

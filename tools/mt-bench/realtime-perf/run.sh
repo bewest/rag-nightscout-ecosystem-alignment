@@ -4,7 +4,8 @@
 #   run.sh deploy   <label> <core-worktree> <image> <N>      prepare + bootstrap + up (project ns-prt-<label>-n<N>)
 #   run.sh measure  <label> <core-worktree> <N> <name> [measure.js args...]
 #   run.sh teardown <label> <core-worktree> <N>
-# Environment: NS_PRT_WORK (private, outside any checkout), NS_DEPLOY (nightscout-deploy checkout).
+# Environment: NS_PRT_WORK (private, outside any checkout), NS_DEPLOY (nightscout-deploy checkout),
+#   NS_PRT_EXTRA_COMPOSE (optional extra Compose file, e.g. a diagnostic mount; used by deploy and measure).
 # Containers are named ns-prt-*; teardown removes them and their volumes.
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd); bench="$here/../compose-baseline"
@@ -22,14 +23,14 @@ case "$cmd" in
     ;;
   deploy)
     image=$1 N=$2
-    [ "$label" = base ] && port=$((20000 + N)) || port=$((22000 + N))
+    case "$label" in base) port=$((20000 + N));; int) port=$((24000 + N));; *) port=$((22000 + N));; esac
     project="ns-prt-$label-n$N"; dir="$NS_PRT_WORK/$label-n$N"
     [ -e "$dir" ] && { echo "exists: $dir" >&2; exit 1; }
     mkdir -p "$dir"; [ -e "$mt/.env" ] && { echo "$mt/.env exists" >&2; exit 1; }
     (cd "$mt" && node prepare.js --state "$dir/state" --port "$port" >/dev/null)
     mv "$mt/.env" "$dir/env"
     printf 'NS_DEMO_IMAGE=%s\nNS_DEMO_TENANTS=%s\nNS_BENCH_OVERLAY=%s\n' "$image" "$N" "$overlay" >> "$dir/env"
-    compose() { docker compose -p "$project" --env-file "$dir/env" -f "$mt/compose.yaml" -f "$bench/compose.bench.yaml" "$@"; }
+    compose() { docker compose -p "$project" --env-file "$dir/env" -f "$mt/compose.yaml" -f "$bench/compose.bench.yaml" ${NS_PRT_EXTRA_COMPOSE:+-f "$NS_PRT_EXTRA_COMPOSE"} "$@"; }
     t0=$(date +%s.%N)
     compose up -d --wait postgres vault >/dev/null 2>&1
     compose --profile ops run --rm bootstrap >/dev/null
@@ -48,7 +49,7 @@ case "$cmd" in
     project="ns-prt-$label-n$N"; dir="$NS_PRT_WORK/$label-n$N"
     port=$(node -e 'console.log(require(process.argv[1]).port)' "$dir/deploy.json")
     NODE_PATH="$core/node_modules" node "$here/measure.js" --base "http://127.0.0.1:$port" --tenants "$dir/tenants.private.json" \
-      --compose "$project|$dir/env|$mt/compose.yaml|$bench/compose.bench.yaml" --out "$dir/$name.json" "$@"
+      --compose "$project|$dir/env|$mt/compose.yaml|$bench/compose.bench.yaml${NS_PRT_EXTRA_COMPOSE:+|$NS_PRT_EXTRA_COMPOSE}" --out "$dir/$name.json" "$@"
     ;;
   teardown)
     N=$1; project="ns-prt-$label-n$N"; dir="$NS_PRT_WORK/$label-n$N"
