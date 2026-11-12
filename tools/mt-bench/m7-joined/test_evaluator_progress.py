@@ -16,7 +16,7 @@ S='44444444-4444-4444-8444-444444444444'
 class Progress(unittest.TestCase):
     def frame(self,ids=None,ordinal=0,runtime=R,increment=0):
         ids=ids or [A,B]
-        return {'selected':ids,'selfOrdinal':ordinal,'selfMode':'partitioned','view':{'kind':'evaluator','runtimeId':runtime,'configured':{'ordinal':ordinal,'mode':'partitioned'},'gate':{'eligible':True,'reason':None},'tenants':[{'tenant':tenant,'admitted':True,'ready':True,'cycles':1+increment,'code':None,'evaluation':{'alert':None},'progress':{'generation':i+1,'completedAcquisitions':1+increment,'completedTimeCycles':increment,'failedCompletions':0,'lastCompletedAgeMs':0}} for i,tenant in enumerate(ids)]}}
+        return {'selected':ids,'selfOrdinal':ordinal,'selfMode':'partitioned','view':{'kind':'evaluator','runtimeId':runtime,'configured':{'ordinal':ordinal,'mode':'partitioned'},'gate':{'eligible':True,'reason':None},'tenants':[{'tenant':tenant,'admitted':True,'ready':True,'cycles':1+increment,'dueAt':1700000008572.4285,'dueReason':'pump-clock-warn','code':None,'evaluation':{'alert':None},'progress':{'generation':i+1,'completedAcquisitions':1+increment,'completedTimeCycles':increment,'failedCompletions':0,'lastCompletedAgeMs':0}} for i,tenant in enumerate(ids)]}}
     def round(self,increment=0,transform=lambda x:x):
         return p.round_view(['evaluator'],[A,B],lambda *_:json.dumps(transform(self.frame(increment=increment))).encode()+b'\n')
     def test_successful_idle_and_load_are_distinct_and_no_true_cold_claim(self):
@@ -60,7 +60,7 @@ class Progress(unittest.TestCase):
             ordinal=0 if service=='a' else 1;frame=self.frame(ordinal=ordinal,runtime=R if ordinal==0 else S,increment=step)
             for index,row in enumerate(frame['view']['tenants']):
                 if index!=ordinal:
-                    row.update(admitted=False,ready=False,code='EVALUATOR_POOL_NOT_IN_SLICE',cycles=7)
+                    row.update(admitted=False,ready=False,code='EVALUATOR_POOL_NOT_IN_SLICE',cycles=7,dueAt=None,dueReason=None)
                     row['progress'].update(completedAcquisitions=7,completedTimeCycles=3,lastCompletedAgeMs=100)
             return json.dumps(frame).encode()
         return p.round_view(['a','b'],[A,B],fetch)
@@ -79,6 +79,35 @@ class Progress(unittest.TestCase):
         self.assertEqual(p.verify(record,2,['evaluator'],'load'),value)
         record['rounds'][-1]['rows'][0][p.COLUMNS.index('failedCompletions')]=1
         with self.assertRaisesRegex(p.Refused,'HIDDEN_FAILURE'):p.verify(record,2,['evaluator'],'load')
+
+    def test_due_fields_retained_without_changing_progress_policy(self):
+        rounds=[self.round(i) for i in range(3)];result=p.assess(rounds,[A,B],'idle');record=p.pack({**result,'rounds':rounds})
+        self.assertEqual(record['kind'],'evaluator-progress-phase-v2')
+        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState')},{k:v for k,v in p.LEGACY_POLICY.items() if k!='version'})
+        decoded,ids=p.decode_rounds(record,2,['evaluator'])
+        self.assertEqual(decoded[0]['owners'][A]['dueAt'],1700000008572.4285)
+        self.assertEqual(decoded[0]['owners'][A]['dueReason'],'pump-clock-warn')
+        self.assertEqual(p.verify(record,2,['evaluator'],'idle'),result)
+        with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess([self.round()]*3,[A,B],'idle')
+        for due in ({'dueAt':None,'dueReason':None},{'dueAt':1.5,'dueReason':None},{'dueAt':1.7976931348623157e308,'dueReason':'synthetic-future'}):
+            self.assertEqual(p.due_fields(due),due)
+        for due in ({},{'dueAt':1},{'dueAt':-1,'dueReason':None},{'dueAt':float('inf'),'dueReason':None},{'dueAt':float('nan'),'dueReason':None},{'dueAt':'1','dueReason':None},{'dueAt':False,'dueReason':None},{'dueAt':None,'dueReason':'stale-reason'},{'dueAt':1,'dueReason':'private free text'},{'dueAt':1,'dueReason':'a'*129}):
+            with self.assertRaisesRegex(p.Refused,'DUE_CONTRACT'):p.due_fields(due)
+        def missing(frame):frame['view']['tenants'][0].pop('dueAt');return frame
+        with self.assertRaisesRegex(p.Refused,'DUE_CONTRACT'):self.round(transform=missing)
+        broken=copy.deepcopy(record);broken['kind']='evaluator-progress-phase-v1'
+        with self.assertRaisesRegex(p.Refused,'PROOF'):p.verify(broken,2,['evaluator'],'idle')
+
+    def test_historical_real_captures_keep_original_policy_and_unknown_due(self):
+        root=Path(__file__).resolve().parents[3]/'reports/tenancy/evaluator-trusted-scheduling-2026-11-12'
+        for name in ('native-listener-195c-f0f91','native-listener-cd462-0f8749-unmeasured'):
+            file=root/name/'native-observation.json';before=file.read_bytes();value=json.loads(before);record=value['proof'];services=sorted(value['containers'])
+            decoded,ids=p.decode_rounds(record,2,services)
+            self.assertTrue(all('dueAt' not in row and 'dueReason' not in row for rows in decoded[0]['allRows'].values() for row in rows.values()))
+            if value['result']['verdict']=='PASS':self.assertEqual(p.verify(record,2,services,'idle'),value['result'])
+            else:
+                with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(decoded,sorted(ids),'idle',policy=p.LEGACY_POLICY)
+            self.assertEqual(file.read_bytes(),before)
 
     def test_body_failure_preserves_partial_evidence_and_original_exception(self):
         recorded=[];original=ValueError('intentional body failure')
@@ -127,6 +156,8 @@ class ActualComponent(unittest.TestCase):
             env={**os.environ,'M7_PROGRESS_STOPPED':'1' if stopped else '0'}
             result=subprocess.run(['node',str(fixture)],env=env,capture_output=True,check=True,timeout=20)
             rounds=[p.round_view(['evaluator'],[A],lambda *_,line=line:line) for line in result.stdout.splitlines()]
+            actual=rounds[0]['owners'][A]['dueAt'];self.assertIsInstance(actual,float);self.assertNotEqual(actual,int(actual));self.assertEqual(rounds[0]['owners'][A]['dueReason'],'pump-clock-warn')
+            packed=p.pack({'rounds':rounds});decoded,_=p.decode_rounds(packed,1,['evaluator']);self.assertEqual(decoded[0]['owners'][A]['dueAt'],actual)
             if stopped:
                 with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(rounds,[A],'idle')
             else:self.assertEqual(p.assess(rounds,[A],'idle')['verdict'],'PASS')

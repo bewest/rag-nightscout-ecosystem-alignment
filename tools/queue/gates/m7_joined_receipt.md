@@ -221,3 +221,12 @@ ladder can therefore remain UNMEASURED when its complete proof exceeds the budge
 there is no raised cap, omitted foreign evidence or inferred PASS. Full functional
 acceptance alone still does not require future capacity proof. Root owns expected
 artifact/source policies and queue wiring; these helpers never write a receipt.
+
+Current due-complete cells require explicit phase/recovery artifact v2 and observation
+contract2. Every compact row retains typed dueAt/dueReason, including finite
+fractions; this does not alter the every-owner progress assertion. Current receipts
+refuse downgrade to legacy unknown-due artifacts. The shared artifact decoder
+separately supports historical v1 with its exact original policy/columns, leaving
+due metadata absent/UNKNOWN instead of manufacturing null. Historical proof is
+never upgraded or relabelled. Existing source/image/instrument/profile pins and
+streaming16MiB/64MiB decoded limits continue to apply.

@@ -11,7 +11,7 @@ import time
 import evaluator_progress as p
 
 
-def assess(baseline, rounds, ids):
+def assess(baseline, rounds, ids,*,policy=p.POLICY):
     p.need(len(rounds)==2,'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
     first,last=rounds
     p.need(set(first['instances'])==set(baseline['instances']),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
@@ -32,16 +32,18 @@ def assess(baseline, rounds, ids):
             p.need((a['admitted'],a['generation'])==(b['admitted'],b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             if not a['admitted']:
                 p.need(all(a[k]==b[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
-    return {'version':1,'verdict':'PASS','observed':len(ids),'expected':len(ids),'missing':0,'instances':last['instances'],'source':'successful fresh owned acquisition in changed runtime, stable exact-instance coverage; no clinical-equivalence or deadline claim'}
+    return {'version':policy['version'],'verdict':'PASS','observed':len(ids),'expected':len(ids),'missing':0,'instances':last['instances'],'source':'successful fresh owned acquisition in changed runtime, stable exact-instance coverage; no clinical-equivalence or deadline claim'}
 
 
 
 def verify(value,tenants,services):
-    p.need(value.get('kind')=='evaluator-recovery-v1' and value.get('policy')==p.POLICY and value.get('columns')==list(p.COLUMNS),'M7_EVALUATOR_RECOVERY_PROOF')
-    baseline,ids=p.decode_rounds({'rounds':value.get('baseline')},tenants,services)
-    rounds,other=p.decode_rounds({'rounds':value.get('rounds')},tenants,services)
+    legacy=value.get('kind')=='evaluator-recovery-v1';policy=p.LEGACY_POLICY if legacy else p.POLICY
+    columns=p.LEGACY_COLUMNS if legacy else p.COLUMNS
+    p.need(value.get('kind')==('evaluator-recovery-v1' if legacy else 'evaluator-recovery-v2') and value.get('policy')==policy and value.get('columns')==list(columns),'M7_EVALUATOR_RECOVERY_PROOF')
+    baseline,ids=p.decode_rounds({'rounds':value.get('baseline'),'columns':value.get('columns')},tenants,services)
+    rounds,other=p.decode_rounds({'rounds':value.get('rounds'),'columns':value.get('columns')},tenants,services)
     p.need(len(baseline)==1 and ids==other,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-    result=assess(baseline[0],rounds,sorted(ids));recorded=value.get('result',{})
+    result=assess(baseline[0],rounds,sorted(ids),policy=policy);recorded=value.get('result',{})
     p.need({k:v for k,v in recorded.items() if k!='sampling'}==result,'M7_EVALUATOR_RECOVERY_ASSESSMENT')
     sample=recorded.get('sampling',{})
     p.need(sample.get('cadenceMs')==15000 and p.integer(sample.get('queries'),1) and sample['queries']<=p.POLICY['readinessMaxQueries'] and p.integer(sample.get('bytes'),1) and sample['bytes']<=p.POLICY['readinessMaxBytes'],'M7_EVALUATOR_RECOVERY_BUDGET')
@@ -61,7 +63,7 @@ def main(spec):
     path=Path(spec['path']);path.parent.mkdir(parents=True,exist_ok=True)
     if spec['mode']=='baseline':
         value=p.round_view(services,ids,fetch);path.write_text(json.dumps(value,separators=(',',':')));os.chmod(path,0o600)
-        return {'version':1,'instances':value['instances'],'queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']}
+        return {'version':p.POLICY['version'],'instances':value['instances'],'queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']}
     baseline=json.loads(Path(spec['baseline']).read_text());rounds=[];errors=[];queries=0;bytes_seen=0;wall=0;result=None;started=time.monotonic()
     try:
         for attempt in range(60):
@@ -82,9 +84,9 @@ def main(spec):
             if remaining>0:time.sleep(min(15,remaining))
         p.need(result is not None,'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
     except Exception as error:
-        result={'version':1,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'observed':0,'expected':len(ids),'missing':len(ids)}
+        result={'version':p.POLICY['version'],'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'observed':0,'expected':len(ids),'missing':len(ids)}
     result['sampling']={'cadenceMs':15000,'queries':queries,'bytes':bytes_seen,'wallSeconds':wall,'elapsedSeconds':time.monotonic()-started,'failures':len(errors)}
-    evidence={'kind':'evaluator-recovery-v1','attribution':spec['attribution'],'policy':p.POLICY,'columns':list(p.COLUMNS),'result':dict(result),'errors':errors,'baseline':p.pack({'rounds':[baseline]})['rounds'],'rounds':p.pack({'rounds':rounds})['rounds']}
+    evidence={'kind':'evaluator-recovery-v2','attribution':spec['attribution'],'policy':p.POLICY,'columns':list(p.COLUMNS),'result':dict(result),'errors':errors,'baseline':p.pack({'rounds':[baseline]})['rounds'],'rounds':p.pack({'rounds':rounds})['rounds']}
     publishing=time.monotonic();cpu=time.process_time()
     raw=json.dumps(evidence,separators=(',',':')).encode();p.need(len(raw)<=16777216,'M7_EVALUATOR_RECOVERY_ARTIFACT_BOUND')
     path.write_bytes(raw);os.chmod(path,0o600);compressed=gzip.compress(raw,mtime=0);Path(str(path)+'.gz').write_bytes(compressed);os.chmod(str(path)+'.gz',0o600)
@@ -95,4 +97,4 @@ def main(spec):
 if __name__=='__main__':
     try:print(json.dumps(main(json.load(sys.stdin)),separators=(',',':')))
     except Exception as error:
-        print(json.dumps({'version':1,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'missing':None}));sys.exit(1)
+        print(json.dumps({'version':p.POLICY['version'],'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'missing':None}));sys.exit(1)

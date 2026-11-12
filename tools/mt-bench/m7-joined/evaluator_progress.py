@@ -8,11 +8,13 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
 UUID=re.compile(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}')
-POLICY={'version':1,'moduleVersion':2,'selectorRows':128,'maxTenants':10000,'maxInstances':4,
+LEGACY_POLICY={'version':1,'moduleVersion':2,'selectorRows':128,'maxTenants':10000,'maxInstances':4,
         'roundsPerPhase':3,'maxQueriesPerPhase':1024,'maxBytesPerPhase':67108864,
         'responseMaxBytes':1048576,'rpcTimeoutMs':5000,'roundDeadlineMs':15000,
         'idleWitness':'successful-time-only-completion','loadWitness':'successful-work-progression',
         'recoveryCadenceMs':15000,'recoveryTimeoutMs':900000,'recoveryMaxRounds':60,'readinessMaxQueries':25600,'readinessMaxBytes':268435456,'readinessMaxRounds':80,'deadlineClaim':False,'workloadCohortChanged':False}
+POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed'}
+
 class Refused(RuntimeError):
     def __init__(self,code,verdict='UNMEASURED'):
         super().__init__(code);self.verdict=verdict
@@ -21,6 +23,14 @@ def need(value,code,verdict='UNMEASURED'):
     if not value:raise Refused(code,verdict)
 
 def integer(value,minimum=0):return type(value) is int and minimum<=value<=9007199254740991
+
+def due_fields(row):
+    need('dueAt' in row and 'dueReason' in row,'M7_EVALUATOR_PROGRESS_DUE_CONTRACT')
+    at,reason=row['dueAt'],row['dueReason']
+    need(at is None or type(at) in (int,float) and math.isfinite(at) and at>=0,'M7_EVALUATOR_PROGRESS_DUE_CONTRACT')
+    need(reason is None or isinstance(reason,str) and re.fullmatch(r'[a-z][a-z0-9:,_-]{0,127}',reason),'M7_EVALUATOR_PROGRESS_DUE_CONTRACT')
+    need(at is not None or reason is None,'M7_EVALUATOR_PROGRESS_DUE_CONTRACT')
+    return {'dueAt':at,'dueReason':reason}
 
 def validate_ids(ids):
     need(isinstance(ids,list) and 1<=len(ids)<=POLICY['maxTenants'] and len(set(ids))==len(ids) and all(isinstance(v,str) and UUID.fullmatch(v) for v in ids),'M7_EVALUATOR_PROGRESS_TENANTS')
@@ -65,6 +75,7 @@ def _round_view(services,ids,fetch,warming=False):
                 need(age is None or type(age) in (int,float) and math.isfinite(age) and age>=0,'M7_EVALUATOR_PROGRESS_CONTRACT')
                 value={'service':service,'runtimeId':rid,'legacyCycles':row.get('cycles'),'admitted':row.get('admitted'),'ready':row.get('ready'),'code':row.get('code'),'alert':row.get('evaluation',{}).get('alert'),**{k:progress[k] for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs')}}
                 need(integer(value['legacyCycles']) and type(value['admitted']) is bool and type(value['ready']) is bool,'M7_EVALUATOR_PROGRESS_CONTRACT')
+                value.update(due_fields(row))
                 all_rows[service][tenant]=value
                 if not value['admitted']:
                     need(not value['ready'],'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL');continue
@@ -93,7 +104,7 @@ def round_view(services,ids,fetch,warming=False):
         raise
 
 
-def assess(rounds,ids,phase):
+def assess(rounds,ids,phase,*,policy=POLICY):
     need(phase in ('idle','load') and len(rounds)==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
     need(sum(r['queries'] for r in rounds)<=POLICY['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=POLICY['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     first=rounds[0];minimum=None;time_tenants=0;failure_delta=0;work_delta=0;time_delta=0
@@ -120,7 +131,7 @@ def assess(rounds,ids,phase):
         work=b['completedAcquisitions']-a['completedAcquisitions']+b['completedTimeCycles']-a['completedTimeCycles'];delta=b['completedTimeCycles']-a['completedTimeCycles']
         need(work>0 and (phase!='idle' or delta>0),'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
         minimum=work if minimum is None else min(minimum,work);work_delta+=work;time_delta+=delta;time_tenants+=delta>0
-    return {'version':1,'phase':phase,'verdict':'PASS','policy':POLICY,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
+    return {'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
 
 class Observer:
     def __init__(self,services,ids,fetch,seconds,phase,write):
@@ -130,7 +141,7 @@ class Observer:
         try:self.rounds.append(round_view(self.services,self.ids,self.fetch))
         except Exception as error:self.failure=error
     def failed(self,error,extra=None):
-        self.write({'version':1,'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'policy':POLICY,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})})
+        self.write({'version':POLICY['version'],'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'policy':POLICY,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})})
     def __enter__(self):
         self.observe()
         if self.failure:
@@ -159,24 +170,34 @@ class Observer:
         self.write({**result,'rounds':self.rounds});self.result=result
 
 
-COLUMNS=('tenant','service','generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs','legacyCycles','admitted','ready','code','alert')
+LEGACY_COLUMNS=('tenant','service','generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs','legacyCycles','admitted','ready','code','alert')
+COLUMNS=LEGACY_COLUMNS+('dueAt','dueReason')
+
 def pack(value):
-    result={**value,'kind':'evaluator-progress-phase-v1','columns':list(COLUMNS),'rounds':[]}
+    result={**value,'kind':'evaluator-progress-phase-v2','columns':list(COLUMNS),'rounds':[]}
     for raw in value.get('rounds',[]):
         result['rounds'].append({**{k:v for k,v in raw.items() if k not in ('owners','allRows')},'rows':[[tenant]+[row[key] for key in COLUMNS[1:]] for service,values in sorted(raw['allRows'].items()) for tenant,row in sorted(values.items())]})
     return result
 
 
 def verify(value,tenants,services,phase):
-    need(isinstance(value,dict) and value.get('kind')=='evaluator-progress-phase-v1' and value.get('columns')==list(COLUMNS) and value.get('policy')==POLICY and value.get('verdict')=='PASS','M7_EVALUATOR_PROGRESS_PROOF')
+    need(isinstance(value,dict),'M7_EVALUATOR_PROGRESS_PROOF')
+    legacy=value.get('kind')=='evaluator-progress-phase-v1'
+    policy=LEGACY_POLICY if legacy else POLICY
+    columns=LEGACY_COLUMNS if legacy else COLUMNS
+    need(value.get('kind')==('evaluator-progress-phase-v1' if legacy else 'evaluator-progress-phase-v2') and value.get('columns')==list(columns) and value.get('policy')==policy and value.get('verdict')=='PASS','M7_EVALUATOR_PROGRESS_PROOF')
     need(isinstance(value.get('rounds'),list) and len(value['rounds'])==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
     decoded,ids=decode_rounds(value,tenants,services)
-    result=assess(decoded,sorted(ids),phase)
+    result=assess(decoded,sorted(ids),phase,policy=policy)
     need({k:v for k,v in value.items() if k not in ('kind','columns','rounds','attribution')}==result,'M7_EVALUATOR_PROGRESS_ASSESSMENT')
     return result
 
 
 def decode_rounds(value,tenants,services):
+    columns=value.get('columns')
+    need(columns in (list(LEGACY_COLUMNS),list(COLUMNS)),'M7_EVALUATOR_PROGRESS_COLUMNS')
+    legacy=columns==list(LEGACY_COLUMNS)
+    if 'kind' in value:need(value['kind']==('evaluator-progress-phase-v1' if legacy else 'evaluator-progress-phase-v2'),'M7_EVALUATOR_PROGRESS_COLUMNS')
     decoded=[];ids=None
     for raw in value['rounds']:
         need(isinstance(raw,dict) and isinstance(raw.get('instances'),dict) and set(raw['instances'])==set(services),'M7_EVALUATOR_PROGRESS_INSTANCE')
@@ -186,12 +207,13 @@ def decode_rounds(value,tenants,services):
         owners={};all_rows={service:{} for service in services};rows=raw.get('rows')
         need(isinstance(rows,list) and len(rows)==tenants*len(services) and 1<=tenants<=POLICY['maxTenants'],'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
         for packed in rows:
-            need(isinstance(packed,list) and len(packed)==len(COLUMNS),'M7_EVALUATOR_PROGRESS_PROOF')
-            row=dict(zip(COLUMNS,packed));tenant=row.pop('tenant');service=row['service']
+            need(isinstance(packed,list) and len(packed)==len(columns),'M7_EVALUATOR_PROGRESS_PROOF')
+            row=dict(zip(columns,packed));tenant=row.pop('tenant');service=row['service']
             need(isinstance(tenant,str) and UUID.fullmatch(tenant) and service in all_rows and tenant not in all_rows[service],'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
             age=row['lastCompletedAgeMs']
             need(all(integer(row[k]) for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions')) and (age is None or type(age) in (int,float) and math.isfinite(age) and age>=0),'M7_EVALUATOR_PROGRESS_CONTRACT')
             need(integer(row['legacyCycles']) and type(row['admitted']) is bool and type(row['ready']) is bool,'M7_EVALUATOR_PROGRESS_CONTRACT')
+            if not legacy:due_fields(row)
             row['runtimeId']=raw['instances'][service]['runtimeId'];all_rows[service][tenant]=row
             if row['admitted']:
                 need(tenant not in owners and row['ready'] and row['code'] is None and row['alert'] is None and age is not None,'M7_EVALUATOR_PROGRESS_ERROR','FAIL')

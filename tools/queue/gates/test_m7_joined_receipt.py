@@ -114,7 +114,7 @@ class ReceiptTests(unittest.TestCase):
         ids=['00000000-0000-4000-8000-'+str(i).zfill(12) for i in range(count)]
         rounds=[]
         for step in range(3):
-            owners={tenant:{'service':service,'runtimeId':'11111111-1111-4111-8111-111111111111','generation':i+1,'completedAcquisitions':1+step,'completedTimeCycles':step,'failedCompletions':0,'lastCompletedAgeMs':0,'legacyCycles':1+step,'admitted':True,'ready':True,'code':None,'alert':None} for i,tenant in enumerate(ids)}
+            owners={tenant:{'service':service,'runtimeId':'11111111-1111-4111-8111-111111111111','generation':i+1,'completedAcquisitions':1+step,'completedTimeCycles':step,'failedCompletions':0,'lastCompletedAgeMs':0,'legacyCycles':1+step,'admitted':True,'ready':True,'code':None,'alert':None,'dueAt':1700000008572.4285,'dueReason':'pump-clock-warn'} for i,tenant in enumerate(ids)}
             rounds.append({'instances':{service:{'runtimeId':'11111111-1111-4111-8111-111111111111','ordinal':0}},'owners':owners,'allRows':{service:owners},'queries':math.ceil(count/128),'bytes':count*100,'wallSeconds':.01})
         cell['evaluatorProgress']={};refs={}
         for phase in ('idle','load'):
@@ -126,7 +126,7 @@ class ReceiptTests(unittest.TestCase):
             cell['evaluatorProgress'][phase]={**result,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':refs[phase]['sha256']}
         recovery=gate.recovery_contract();baseline=copy.deepcopy(rounds[0]);baseline['instances'][service]['runtimeId']='22222222-2222-4222-8222-222222222222'
         result=recovery.assess(baseline,rounds[-2:],ids);result['sampling']={'cadenceMs':15000,'queries':sum(r['queries'] for r in rounds[-2:]),'bytes':count*200,'wallSeconds':.02,'elapsedSeconds':15,'failures':0}
-        record={'kind':'evaluator-recovery-v1','policy':module.POLICY,'columns':list(module.COLUMNS),'result':result,'errors':[], 'baseline':module.pack({'rounds':[baseline]})['rounds'],'rounds':module.pack({'rounds':rounds[-2:]})['rounds'],'attribution':record['attribution']}
+        record={'kind':'evaluator-recovery-v2','policy':module.POLICY,'columns':list(module.COLUMNS),'result':result,'errors':[], 'baseline':module.pack({'rounds':[baseline]})['rounds'],'rounds':module.pack({'rounds':rounds[-2:]})['rounds'],'attribution':record['attribution']}
         raw=json.dumps(record,separators=(',',':')).encode();compressed=gzip.compress(raw,mtime=0,compresslevel=1)
         refs['recovery']=self.artifact('progress/'+cell['profile']+'-'+str(count)+'-'+str(cell['replicas'])+'-recovery.json.gz',compressed)
         cell['evaluatorProgress']['recovery']={**result,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':refs['recovery']['sha256']}
@@ -541,6 +541,19 @@ class ReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'MISSING_CONTROL_FALSE_PASS'):
             require_refusal(mutant)
         require_refusal(Path(gate.__file__))
+
+    def test_current_progress_receipt_cannot_downgrade_to_legacy_unknown_due(self):
+        self.milestone();cell=json.loads((self.root/'cell-1.json').read_text());module=gate.progress_contract()
+        key=cell['profile']+':'+str(cell['tenants'])+':'+str(cell['replicas']);refs=self.expected['evaluatorProgressArtifacts'][key]
+        record=json.loads(gzip.decompress((self.root/refs['idle']['path']).read_bytes()))
+        record.update(kind='evaluator-progress-phase-v1',columns=list(module.LEGACY_COLUMNS),policy=module.LEGACY_POLICY,version=1)
+        for snapshot in record['rounds']:
+            snapshot['rows']=[row[:len(module.LEGACY_COLUMNS)] for row in snapshot['rows']]
+        legacy=module.verify(record,cell['tenants'],['eval-worker'],'idle');raw=json.dumps(record).encode()
+        refs['idle']=self.artifact('progress/legacy-downgrade.json.gz',gzip.compress(raw,mtime=0))
+        cell['evaluatorProgress']['idle']={**legacy,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':refs['idle']['sha256']}
+        evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts']
+        with self.assertRaisesRegex(ValueError,'PROGRESS_VERSION'):gate.progress_measurement(cell,self.expected,evidence)
 
     def test_progress_missing_hidden_error_wrong_identity_and_gzip_budgets_refuse(self):
         self.milestone();cell=json.loads((self.root/'cell-1.json').read_text())

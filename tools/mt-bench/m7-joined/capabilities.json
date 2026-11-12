@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "kind": "m7-joined-profile-capabilities",
   "settingsFingerprint": {
     "schema": 1,
@@ -45,7 +45,7 @@
   },
   "capacity": "UNMEASURED; capability is not a campaign receipt",
   "evaluatorProgress": {
-    "version": 1,
+    "version": 2,
     "moduleVersion": 2,
     "selectorRows": 128,
     "maxTenants": 10000,
@@ -65,6 +65,7 @@
     "readinessMaxBytes": 268435456,
     "readinessMaxRounds": 80,
     "deadlineClaim": false,
-    "workloadCohortChanged": false
+    "workloadCohortChanged": false,
+    "dueState": "captured-only-not-opportunity-assessed"
   }
 }
