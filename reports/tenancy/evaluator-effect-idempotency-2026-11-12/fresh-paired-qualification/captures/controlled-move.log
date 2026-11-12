@@ -1,0 +1,21 @@
+TAP version 13
+# MOVE_OBSERVATION {"index":0,"status":"fulfilled","reason":null}
+# MOVE_OBSERVATION {"index":1,"status":"fulfilled","reason":null}
+# MOVE_OBSERVATION {"index":2,"status":"fulfilled","reason":null}
+# MOVE_OBSERVATION {"index":3,"status":"fulfilled","reason":null}
+# SHIPPING_MOVE_PROOF actualStoppedOldBoot realRowWarmBarrier coldRefusal BFrames BOldGenerationAlarm actualPinExclusion readinessCutover newOwnerAlarm stableCheckpoint idleOwnerCensus
+# Subtest: actual shipping controlled move excludes old boot, holds target warm and keeps B through staged routing
+ok 1 - actual shipping controlled move excludes old boot, holds target warm and keeps B through staged routing
+  ---
+  duration_ms: 6247.243589
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6306.913032

@@ -1,0 +1,10 @@
+{
+  "identity.json": "ca8351f3227c6f72d8c0da0ba00fd897778a5a106b08ba4bae89fc132cc81ec1",
+  "role-placement.json": "401204b80688991189ebffce70c93a1cc0b819abc4cb4f33f558206eb326d7be",
+  "stock-restore.log": "bc02384a2982c9e1079668e3a96fdb7ffcb7701e5ea8bd83371b152df0421ea7",
+  "settings.log": "6bfef3cdf25fbb83fef7270edeaa5b1702a1ec94268e0085c9f822b2bd0b52d8",
+  "settings-controls.log": "ea6632cd491993b7840886353c0b54d8ee58ab4021799f14bee1d81782609696",
+  "clinical.log": "6705d2d78c933ec0fb4019f2f589435096f3d47403c395fe7767e28f4139de25",
+  "controlled-move.log": "24479780b7bee880a8ad9c3beb6d6bb487b21eaa8a51887667189bdf705daf29",
+  "startup.json": "48291691cf22b0e1b31076c3ff5ea2a1a1be643f6cf91de8274082f33a23b38b"
+}
