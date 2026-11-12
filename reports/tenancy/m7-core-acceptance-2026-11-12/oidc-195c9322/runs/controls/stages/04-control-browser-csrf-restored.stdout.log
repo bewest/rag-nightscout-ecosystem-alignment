@@ -1,0 +1,10 @@
+{"event":"owned-listener","pid":1790776,"host":"127.0.0.1","port":44339}
+{"event":"owned-listener","pid":1790776,"host":"127.0.0.1","port":40555}
+{"event":"owned-pg-schema","name":"hh_access_cb2c11d5f781c6cb","oid":16835}
+{"event":"owned-pg-schema","name":"hh_authority_cb2c11d5f781c6cb","oid":16921}
+{"event":"owned-pg-schema","name":"hh_human_cb2c11d5f781c6cb","oid":17019}
+{"event":"owned-extension-custody","stage":"owner-browser","resources":{"schemas":[{"name":"oc_9bf93ee94dabfb8d_legacy","oid":17085},{"name":"oc_9bf93ee94dabfb8d_settings","oid":17118},{"name":"oc_9bf93ee94dabfb8d_policy","oid":17189},{"name":"oc_9bf93ee94dabfb8d_configure","oid":17211},{"name":"oc_9bf93ee94dabfb8d_secrets","oid":17233}]}}
+{"event":"owned-browser","pid":1792014,"host":"127.0.0.1","port":45867}
+{"cleanup":"closed","listeners":3}
+{"kind":"actual-https-synthetic-provider","stage":"owner-browser","persistence":"postgres","accessSigning":"configured-transit","assertions":49,"owner":{"families":{"classification":"native-PG-Transit-owner-cookie-bearer-https","ownerCookieMutations":true,"ownerBearerParity":true,"ownerCsrfOrigin":true,"ownerSensitiveFreshness":true,"ownerCurrentAuthority":true,"ownerSessionLogout":true}},"browser":"actual-chromium-cookie-and-bearer-https","ownerBrowser":{"families":{"classification":"native-PG-Transit-owner-browser","ownerBrowserMutations":true,"ownerBrowserTabsBackReload":true,"ownerBrowserBearerParity":true,"ownerBrowserLogout":true}},"verdict":"pass"}
+{"event":"matrix-stage-complete","stage":"owner-browser","persistence":"postgres","signing":"configured-transit","native":true,"completed":true,"families":{"ownerCookieMutations":true,"ownerBearerParity":true,"ownerCsrfOrigin":true,"ownerSensitiveFreshness":true,"ownerCurrentAuthority":true,"ownerSessionLogout":true,"ownerBrowserMutations":true,"ownerBrowserTabsBackReload":true,"ownerBrowserBearerParity":true,"ownerBrowserLogout":true}}

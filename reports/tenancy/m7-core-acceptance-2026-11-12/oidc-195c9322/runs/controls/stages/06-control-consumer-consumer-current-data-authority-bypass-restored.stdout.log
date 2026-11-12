@@ -1,0 +1,144 @@
+{"event":"owned-listener","pid":1794671,"host":"127.0.0.1","port":36551}
+{"event":"owned-listener","pid":1794671,"host":"127.0.0.1","port":45115}
+{"event":"owned-pg-schema","name":"hh_access_1cc1ba3bd1c79cfd","oid":17997}
+{"event":"owned-pg-schema","name":"hh_authority_1cc1ba3bd1c79cfd","oid":18083}
+{"event":"owned-pg-schema","name":"hh_human_1cc1ba3bd1c79cfd","oid":18181}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"event":"owned-listener","pid":1794671,"host":"127.0.0.1","port":42229}
+{"event":"owned-listener","pid":1794671,"host":"127.0.0.1","port":35531}
+{"event":"owned-listener","pid":1794671,"host":"127.0.0.1","port":43857}
+{"event":"owned-listener","pid":1794671,"host":"127.0.0.1","port":39011}
+{"event":"owned-extension-custody","stage":"owner-consumer","resources":{"schemas":[{"name":"oc_9cde2dfee4eecc00_legacy","oid":18247},{"name":"oc_9cde2dfee4eecc00_settings","oid":18280},{"name":"oc_9cde2dfee4eecc00_policy","oid":18351},{"name":"oc_9cde2dfee4eecc00_configure","oid":18373},{"name":"oc_9cde2dfee4eecc00_secrets","oid":18395}],"consumer":{"classification":"native-PG-HTTP-consumer-clinical-issued-DATA-and-pinned-oref0","configuration":"consumerJourney: connectionEnv, namespaces(all six clinical domains,clock,checkpoint), client(root,commit,tools,caEnv,maxMs)","identity":"one additional distinct NOSUPERUSER/NOBYPASSRLS clinical identity; maxPool=4","pools":{"clinical":4,"authority":4,"legacy":4,"secrets":4,"migrationTransient":1},"listenerCount":4,"client":{"name":"oref0-ns-get","commit":"d219baf9559d62a8bb0bd42014192a2d7c0839ef","scripts":{"bin/ns-get.sh":"b13d716d3d9e27249fa3864fdf747ed0eeb6aeaf8396bb6e05d40d2a3ec2fffb","bin/oref0-bash-common-functions.sh":"bae949d5fc80cf52966349137172be0c15f8fe038cd019d10e19864ebfb9e828"},"tools":["bash","curl","jq","dirname","basename","cat"],"processes":"one owned bash pipeline at a time: bash/curl/jq plus short-lived dirname/basename/cat","maxCases":3},"source":["lib/server/serve/preview-domains.js","lib/server/tenant-app/index.js","lib/server/tenant-app/data-access.js","lib/tenant-authorization/postgres.js","lib/secrets/component.js","lib/secrets/postgres.js","lib/secrets/legacy-postgres.js","lib/server/serve/evaluator-runtime.js","lib/data/tenant-projection-evaluator.js","lib/storage/postgres-durable-replay.js","lib/server/serve/evaluator-config.js","lib/storage/postgres-projection-read.js","lib/server/serve/postgres-domains.js","lib/storage/postgres-tenant-stats.js","lib/server/serve/evaluator-readiness.js"],"catalogues":["lib/server/serve/postgres-domains.js:get(each domain)","migrations/candidates/postgres-write-clock-v1.json","migrations/candidates/postgres-consumer-checkpoint-v1.json"],"nativeExecution":"run by tests/native/oidc-matrix/run.sh (disposable harness)","schemas":[{"name":"cj_9cde2dfee4eecc00_entries","oid":18437},{"name":"cj_9cde2dfee4eecc00_treatments","oid":18511},{"name":"cj_9cde2dfee4eecc00_devicestatus","oid":18546},{"name":"cj_9cde2dfee4eecc00_profile","oid":18579},{"name":"cj_9cde2dfee4eecc00_food","oid":18607},{"name":"cj_9cde2dfee4eecc00_activity","oid":18649},{"name":"cj_9cde2dfee4eecc00_clock","oid":18677},{"name":"cj_9cde2dfee4eecc00_checkpoint","oid":18696}]}}}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+2026-11-12T13:18:32.206Z	EMITTING ALARM:
+  {"level":"Warning","title":"Warning HIGH","message":"BG Now: 10.5 mmol/L","group":"default","plugin":"simplealarms","debug":{"lastSGV":10.5,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":60}}}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+2026-11-12T13:18:32.311Z	EMITTING ALARM:
+  {"level":"Warning","title":"Warning HIGH","message":"BG Now: 10.5 mmol/L","group":"default","plugin":"simplealarms","debug":{"lastSGV":10.5,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":60}}}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+{"event":"owned-child","pid":1796151,"kind":"client","label":"oref0-ns-get"}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"event":"owned-child","pid":1796188,"kind":"client","label":"oref0-ns-get"}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"event":"owned-child","pid":1796242,"kind":"client","label":"oref0-ns-get"}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"cleanup":"closed","listeners":6}
+{"kind":"actual-https-synthetic-provider","stage":"owner-consumer","persistence":"postgres","accessSigning":"configured-transit","assertions":22,"owner":{"classification":"native-PG-HTTP-consumer-clinical-issued-DATA-and-pinned-oref0","families":{"ownerCreateRoleIssueRevoke":true,"settingsVersionHistoryRollback":true,"httpPresentation":true,"evaluatorCycle":true,"clinicalImmutability":true,"tenantBImmutability":true,"dataCredentialReplay":true,"pinnedClientReplay":true,"dataRevocation":true,"foreignTenantRefusal":true},"presentationHTTP":true,"evaluatorCycle":true,"clinicalImmutability":true,"foreignClinicalImmutability":true,"dataCredentialReplay":true,"pinnedClientReplay":true,"dataAuthorityRevocation":true,"dataCredentialRevocation":true,"foreignCredentialRefusal":true},"verdict":"pass"}
+{"event":"matrix-stage-complete","stage":"owner-consumer","persistence":"postgres","signing":"configured-transit","native":true,"completed":true,"families":{"ownerCreateRoleIssueRevoke":true,"settingsVersionHistoryRollback":true,"httpPresentation":true,"evaluatorCycle":true,"clinicalImmutability":true,"tenantBImmutability":true,"dataCredentialReplay":true,"pinnedClientReplay":true,"dataRevocation":true,"foreignTenantRefusal":true}}

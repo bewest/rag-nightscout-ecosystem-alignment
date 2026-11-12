@@ -1,0 +1,15 @@
+{
+  "source": "195c932293f3abc648da8fbe4356bf7360acd002",
+  "porcelain": [],
+  "node": "v22.23.4",
+  "npm": "10.9.9",
+  "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+  "dependencyInstallation": "fresh owned npm ci --ignore-scripts --offline; no borrowed node_modules",
+  "timezone": "UTC",
+  "ambientNsOrNodeOptions": "removed",
+  "bundleCommand": [
+    "npm",
+    "run",
+    "bundle"
+  ]
+}

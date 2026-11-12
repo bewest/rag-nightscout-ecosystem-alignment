@@ -1,0 +1,1 @@
+{"argv": ["tests/native/oidc-matrix/run.sh", "--out", "$PRIVATE_CAPTURE/matrix"], "timezone": "UTC", "ambientNSNodeFlagsRemoved": true}

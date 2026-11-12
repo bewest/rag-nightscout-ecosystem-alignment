@@ -1,0 +1,2 @@
+{"event":"owned-consumer-child","consumer":"vault-consumer","pid":1752061,"tenant":"single","mode":"single","issued":2,"verified":2,"kids":["vault-human-data","vault-human-management"]}
+{"event":"matrix-stage-complete","stage":"vault-single","persistence":"vault","signing":"configured-transit","native":true,"completed":true,"families":{"vaultSingle":true}}

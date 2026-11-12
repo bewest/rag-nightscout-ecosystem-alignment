@@ -1,0 +1,48 @@
+{
+  "sourceCommit": "195c932293f3abc648da8fbe4356bf7360acd002",
+  "files": {
+    "tests/native/oidc-matrix/authority-races-controls.cjs": "e1b1110a9122f381a2330d1e5fd3f440b606de4c60a2b98998cca4ccc7186c96",
+    "tests/native/oidc-matrix/authority-races.cjs": "7db4f0bc369b83f402fc3572852ac812a43dffaabbe5d259d57f45de362914cf",
+    "tests/native/oidc-matrix/compose.yaml": "f40f6e05498f5d009aaa571509b2c02dc5e5990d848cda43372505f503985445",
+    "tests/native/oidc-matrix/config-template.cjs": "2c380beec2782878cf14388321010fcb6fdbf77e2385b31a7fc0d8b007a0f1c0",
+    "tests/native/oidc-matrix/consumer-journey-controls.cjs": "b98ac2655f50f1403b507d55bbf842728873e750ecbfdc105ce537fad79d6b29",
+    "tests/native/oidc-matrix/consumer-journey.cjs": "5fc783e0070098fde10f0acae0c5645b75c25683db0eb3f9204cfc2365e98541",
+    "tests/native/oidc-matrix/owner-browser-journey-controls.cjs": "29047d65a065484b05083ddca2893517770a96913e930cc1c72b6949e69dd4e3",
+    "tests/native/oidc-matrix/owner-browser-journey.cjs": "53c290f880bf312c2d12dff4e85dbad683d1dff10e1e842c7bb8ec8f960c11db",
+    "tests/native/oidc-matrix/owner-extension.cjs": "1088bb91326e671b08f4d5b8c9a7c13c54df49d83a97bc3a0ba371abaaebdf0f",
+    "tests/native/oidc-matrix/prepare.cjs": "7bc0b1b8da14a84d6812bdf0285a8f6ad73b4b1f3ef5b9011d375081debbdc94",
+    "tests/native/oidc-matrix/probe-checks.json": "e9292682e5e31cc3bb4d4d8f6e7b3f35e27733d8e3c9e0b855b1ac061b6eba97",
+    "tests/native/oidc-matrix/redact.cjs": "22cb7c1a7f41730acceb38e28c8e078352211187c756e3b4fe5aa36bb4cf264d",
+    "tests/native/oidc-matrix/run.cjs": "2d3b61c599e4bff25596eeea263ae30dad4bfb8d6d39854bf1751c1d4aabe3c1",
+    "tests/native/oidc-matrix/run.sh": "43789025d36ff58b46b6eeeb2156ccc8cb30513bc6e553ffddb61143355f46df",
+    "tests/native/oidc-matrix/single-compatibility-controls.cjs": "bea7722fb4dd4ad17a15625194ac4aa425c5d9aad1337ecbebca653bd18271c9",
+    "tests/native/oidc-matrix/single-compatibility.cjs": "3eb5699df9f0c092b468d25a73e022710de1569dde546ab98c517ad6f7213245",
+    "tests/native/oidc-matrix/stage-contract.cjs": "9b2704e796c6df82a74ac148578e5de1f26ace0f974ee2b32009024de1055b13",
+    "tests/native/oidc-matrix/stage.cjs": "d3755d97661a886a6f050aadc69df96eede276191102f0f355399e132ca80425",
+    "tests/native/oidc-matrix/transit-profile.cjs": "8a35f8ec5b79ea26014fc720def02ecfcd89bc93034b5974fb7c102a8950764b",
+    "tests/native/oidc-matrix/vault-consumer.cjs": "008e21be44cc9ca4c29c754af79bf85e55025b0a39c244ac75fa85145381090a"
+  },
+  "dependencies": {
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "source": "fresh owned npm ci --ignore-scripts --offline, new node_modules, no borrowed tree"
+  },
+  "bundle": {
+    "images/7342f65db5b9bb9b02700ef08b4ef27c.png": "a848ea6bd0f451cc130e41ef20ee67fd9c158eb697f17a2ce42d2768ea9be666",
+    "js/bundle.admin.js": "9c0f02e2a64294e81403191933b6954ec97041d98545aef6a10336db9b8d3d0e",
+    "js/bundle.admin.js.map": "36f850eedf7a72aa66cee1137d1de0b55d845cc8fb70a64a05a9b8c7b1419fbb",
+    "js/bundle.app.js": "f17bfa46b73f9a15eb3d96263d47ad73fbae100a915f33b7e88c1692f077d272",
+    "js/bundle.app.js.LICENSE.txt": "29366f6e87800e4e0b4dcfb59637fe5674e9aeb2760d6e021870f90ba8b13b82",
+    "js/bundle.app.js.map": "81a97794242be12bd36c4d31fff46aa8de3869ceb3a4ed6b8d1afae828848bd5",
+    "js/bundle.clock.js": "6a14c9ca3b73e41ca73176b58af03eb9135094b51816c6ad0f8e1ff08ae767d0",
+    "js/bundle.clock.js.LICENSE.txt": "92c768d7fed05fe5e0b91061add75828abb107eac2be124ba87be8e2fa3658c6",
+    "js/bundle.clock.js.map": "1644d0ebedc9475cb7aed8968d7935c95712f64d090965aebbeec9521e4b5c7e",
+    "js/bundle.food.js": "7f05729791002feeefcaf653043d71017e256228ba6d472fe40c7aab0669db67",
+    "js/bundle.food.js.map": "fb60dcf8c682fd952565f4935f9fab801df22647150c6a5567fa99052aa7fd0d",
+    "js/bundle.profile.js": "57e564a7671e53686e07119b627c3b3172ab79e619bf5a3ee5388302d3d99739",
+    "js/bundle.profile.js.map": "2cd7cb4a95629b4480a4700a32d540c799d2d31dc357e9c6ad4c85a100020ee0",
+    "js/bundle.reports.js": "b40aa7e69b5ff9fc4391058a23a41c6bdf7387ae0279fa9f1a8026e60fc04845",
+    "js/bundle.reports.js.LICENSE.txt": "f699a9147f84e881f31597f3f5277a033242fe8f8af6201fd8ce2fde5109f99e",
+    "js/bundle.reports.js.map": "41104e54ae6bd78b9108f32b871adcb8c35ab8dee67f5e2e572bb933350eee24"
+  },
+  "harnessUnchangedFromExecutedD505": true
+}
