@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_current_progress_receipt_cannot_downgrade_to_legacy_unknown_due (test_m7_joined_receipt.ReceiptTests.test_current_progress_receipt_cannot_downgrade_to_legacy_unknown_due)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/queue/gates/test_m7_joined_receipt.py", line 556, in test_current_progress_receipt_cannot_downgrade_to_legacy_unknown_due
+    with self.assertRaisesRegex(ValueError,'PROGRESS_VERSION'):gate.progress_measurement(cell,self.expected,evidence)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.491s
+
+FAILED (failures=1)

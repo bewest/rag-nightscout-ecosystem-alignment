@@ -1,0 +1,21 @@
+
+
+  bounded evaluator inspection v2
+    1) preserves future, overdue and absent due observations without scheduling or inventing a cadence
+
+
+  0 passing (3ms)
+  1 failing
+
+  1) bounded evaluator inspection v2
+       preserves future, overdue and absent due observations without scheduling or inventing a cadence:
+     AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 1794496077546
+
+      at Context.<anonymous> (tests/evaluator-inspection.test.js:31:71)
+
+
+

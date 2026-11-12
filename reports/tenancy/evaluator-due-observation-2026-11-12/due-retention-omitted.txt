@@ -1,0 +1,19 @@
+E
+======================================================================
+ERROR: test_due_fields_retained_without_changing_progress_policy (test_evaluator_progress.Progress.test_due_fields_retained_without_changing_progress_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/test_evaluator_progress.py", line 87, in test_due_fields_retained_without_changing_progress_policy
+    decoded,ids=p.decode_rounds(record,2,['evaluator'])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/evaluator_progress.py", line 210, in decode_rounds
+    need(isinstance(packed,list) and len(packed)==len(columns),'M7_EVALUATOR_PROGRESS_PROOF')
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/evaluator_progress.py", line 23, in need
+    if not value:raise Refused(code,verdict)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evaluator_progress.Refused: M7_EVALUATOR_PROGRESS_PROOF
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (errors=1)
