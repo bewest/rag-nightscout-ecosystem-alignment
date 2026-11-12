@@ -5,7 +5,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto');
 const {run}=require('./diagnostic.cjs');
 const core=process.env.M7_DIAGNOSTIC_TEST_CORE;
-async function fixture({wrongHost=false,suppressFrame=false}={}){
+async function fixture({wrongHost=false,suppressFrame=false,lateStatus=null}={}){
   const {Server}=require(path.join(core,'node_modules/socket.io')),{io}=require(path.join(core,'node_modules/socket.io-client'));
   const d=fs.mkdtempSync(path.join(os.tmpdir(),'m7-functional-fixture-'));fs.mkdirSync(path.join(d,'load'));
   const tenants=['a','b'].map(letter=>({id:crypto.randomUUID(),host:letter+'.example.test',token:crypto.randomUUID()}));
@@ -15,7 +15,7 @@ async function fixture({wrongHost=false,suppressFrame=false}={}){
       const host=(req.headers.host||'').split(':')[0];if(!frames.has(host)){res.writeHead(421);res.end('{}');return;}
       const respond=body=>{res.setHeader('content-type','application/json');res.end(JSON.stringify(body));};
       if(req.url.startsWith('/api/v2/authorization/request/')){respond({token:crypto.randomUUID()});return;}
-      if(req.url.startsWith('/api/v1/status')){respond({status:'ok'});return;}
+      if(req.url.startsWith('/api/v1/status')){if(lateStatus&&host===tenants[1].host){res.statusCode=lateStatus.status;respond(lateStatus.body);return;}respond({status:'ok'});return;}
       if(req.method==='POST'){
         const chunks=[];req.on('data',row=>chunks.push(row));req.on('end',()=>{const row=JSON.parse(Buffer.concat(chunks).toString())[0];frames.set(host,{sgvs:[{mills:row.date,mgdl:row.sgv}]});respond([row]);if(!suppressFrame)for(const socket of socketServer.sockets.sockets.values())if(socket.data.host===host)socket.emit('dataUpdate',frames.get(host));});return;
       }
@@ -41,4 +41,18 @@ test('wrong127URL/extraHeaders client model is rejected instead of measured as p
 });
 test('HTTP ACK without a current frame cannot produce diagnostic PASS', {skip:!core,timeout:5000}, async()=>{
   const f=await fixture({suppressFrame:true});try{await assert.rejects(run({directory:f.d,seconds:1,ioFactory:f.ioFactory,restart:f.restart}),error=>['M7_DIAGNOSTIC_DEADLINE','M7_DIAGNOSTIC_FRAME_MISSING'].includes(error.code));}finally{await f.close();}
+});
+
+for(const refusal of [{status:503,body:{error:'TENANT_WARMING'},expected:'TENANT_WARMING'},{status:401,body:{error:'AUTHORITY_FORBIDDEN'},expected:'AUTHORITY_FORBIDDEN'},{status:503,body:{error:'UNEXPECTED_UNAVAILABLE'},expected:'UNEXPECTED_UNAVAILABLE'},{status:503,body:{error:'not a typed code',message:'PRIVATE_MESSAGE',token:'PRIVATE_TOKEN'},expected:null}])test('late second-tenant status refusal retains sanitized status and code '+refusal.status+'/'+refusal.expected,{skip:!core,timeout:5000},async()=>{
+  const f=await fixture({lateStatus:refusal});let restarted=false;try{
+    await assert.rejects(run({directory:f.d,seconds:2,restart:async()=>{restarted=true;throw Error('UNEXPECTED_RESTART')}}),error=>error.code==='M7_DIAGNOSTIC_HTTP_REFUSED');
+    const file=path.join(f.d,'load/diagnostic-http.json'),trail=JSON.parse(fs.readFileSync(file,'utf8'));
+    assert.equal(trail.requests.length,4,'no retry/exchange fallback/write after refusal');
+    assert.deepEqual(trail.requests[3],{request:4,stage:'initial-status',tenantIndex:1,method:'GET',routeClass:'status',status:refusal.status,errorCode:refusal.expected,failureCode:null});
+    assert.equal(trail.requests[2].status,200);assert.equal(trail.requests[2].routeClass,'exchange');
+    const raw=fs.readFileSync(file,'utf8');for(const secret of [f.tenants[0].token,f.tenants[1].token,f.tenants[0].host,f.tenants[1].host,'PRIVATE_MESSAGE','PRIVATE_TOKEN','/api/','token='])assert.ok(!raw.includes(secret));
+    assert.equal(fs.statSync(file).mode&0o777,0o600);assert.ok(Buffer.byteLength(raw)<16384);
+    const observation=JSON.parse(fs.readFileSync(path.join(f.d,'load/diagnostic-observations.json'),'utf8'));assert.equal(observation.failureCode,'M7_DIAGNOSTIC_HTTP_REFUSED');assert.equal(observation.dataHttpRequests,4);
+    assert.equal(fs.existsSync(path.join(f.d,'load/client-acks.json')),false);assert.equal(restarted,false);
+  }finally{await f.close();}
 });

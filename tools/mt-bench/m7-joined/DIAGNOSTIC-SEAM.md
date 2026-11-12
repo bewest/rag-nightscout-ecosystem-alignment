@@ -74,3 +74,17 @@ startup. A development-pruned serving image is valid: its node_modules is never
 borrowed by the generator. Preserve private prepare-commands/, prepare-failure.json,
 generator-commands/, generator-verifications/ and generator-provenance.json on
 failure. Raw stdout/stderr can contain credentials; do not publish these directories.
+
+Explicit diagnostic HTTP calls retain `load/diagnostic-http.json` even on refusal.
+The bounded trail contains at most40 records: request number, logical stage,
+zero-based tenant index, method, fixed route class, response status, a bounded
+uppercase typed `error` code, and a sanitized local failure code. It records no
+URL, exchange path, query, host, tenant identifier, request/response body or token.
+The private file is mode0600; diagnostic observations link it and retain the
+terminal instrument code. In-flight records can have null status when no response
+arrived. This trail describes explicit DATA HTTP calls, not Socket.IO internals.
+
+A status refusal stops the diagnostic. Warming, authentication and unknown service
+refusals are distinguishable; this observability repair adds no retry, deadline
+extension, credential exchange fallback or role change. A warming-specific status
+poll requires an observed503/TENANT_WARMING cause and a separate reviewed change.
