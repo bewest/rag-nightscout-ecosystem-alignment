@@ -1,0 +1,124 @@
+{
+  "observedAtMs": 1794505194306,
+  "source": "2d0ae0354a38b4a88f43bc2ae5ec60c085058f64",
+  "deploy": "dcc4a70bafd4edf31c5cab4bf3099883bd7e37f9",
+  "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+  "scope": "read-only post-failure logs/role identity; no new HTTP warming requests",
+  "apiRoles": [
+    {
+      "service": "api",
+      "id": "7b38b84c8fb41c8bc6fe74494bd1c2948bd303167d44465f0a1ac92e12a7f177",
+      "startedAt": "2026-11-12T17:25:09.839597617Z",
+      "status": "running",
+      "health": "healthy",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d"
+    },
+    {
+      "service": "api-2",
+      "id": "c8a32866ba715fdc21d6baa786307258c79fb5afbb235801cfc26ae37beb4fbc",
+      "startedAt": "2026-11-12T17:25:09.837940569Z",
+      "status": "running",
+      "health": "healthy",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d"
+    }
+  ],
+  "warmLogEvents": [
+    {
+      "service": "api-2",
+      "timestamp": "2026-11-12T17:25:12.979344399Z",
+      "event": "warm-drained",
+      "ready": 1,
+      "failed": 0,
+      "deferred": 0,
+      "loggedAfterMs": 2279
+    },
+    {
+      "service": "api-2",
+      "timestamp": "2026-11-12T17:25:13.626440049Z",
+      "event": "warm-drained",
+      "ready": 2,
+      "failed": 0,
+      "deferred": 0,
+      "loggedAfterMs": 2926
+    },
+    {
+      "service": "api",
+      "timestamp": "2026-11-12T17:25:16.685167164Z",
+      "event": "warm-drained",
+      "ready": 1,
+      "failed": 0,
+      "deferred": 0,
+      "loggedAfterMs": 5989
+    },
+    {
+      "service": "api",
+      "timestamp": "2026-11-12T17:31:32.223097224Z",
+      "event": "warm-drained",
+      "ready": 2,
+      "failed": 0,
+      "deferred": 0,
+      "loggedAfterMs": 381527
+    },
+    {
+      "service": "api-2",
+      "timestamp": "2026-11-12T17:31:34.437716762Z",
+      "event": "warm-drained",
+      "ready": 1,
+      "failed": 0,
+      "deferred": 1,
+      "loggedAfterMs": 383737
+    },
+    {
+      "service": "api",
+      "timestamp": "2026-11-12T17:31:34.438204769Z",
+      "event": "warm-drained",
+      "ready": 1,
+      "failed": 0,
+      "deferred": 1,
+      "loggedAfterMs": 383743
+    },
+    {
+      "service": "api",
+      "timestamp": "2026-11-12T17:31:34.560127164Z",
+      "event": "warm-drained",
+      "ready": 2,
+      "failed": 0,
+      "deferred": 0,
+      "loggedAfterMs": 383864
+    },
+    {
+      "service": "api-2",
+      "timestamp": "2026-11-12T17:31:34.615060374Z",
+      "event": "warm-drained",
+      "ready": 2,
+      "failed": 0,
+      "deferred": 0,
+      "loggedAfterMs": 383914
+    }
+  ],
+  "demoArtifact": {
+    "state": "passed",
+    "bCommittedDuringRestore": true,
+    "keys": [
+      "demo",
+      "state",
+      "tenant",
+      "unaffectedTenant",
+      "artifactDigest",
+      "observations",
+      "boundary",
+      "summary"
+    ]
+  },
+  "originalStockLogMtimeMs": 1794504695359,
+  "originalTrafficErrors": [
+    "B_SETTINGS_STATUS_503_TENANT_WARMING",
+    "B_SETTINGS_STATUS_503_TENANT_WARMING",
+    "B_SETTINGS_STATUS_503_TENANT_WARMING"
+  ],
+  "evidenceLimits": [
+    "B request start/end timestamps and upstream instance were not retained by original traffic loop.",
+    "Current role healthy state is global readiness, not historical per-tenant warm state.",
+    "Warm-drained loggedAfterMs is boot-relative after-ms, not an individual tenant initialization duration."
+  ]
+}
