@@ -31,18 +31,18 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 410 |
+| items | 411 |
 | runnable gates | 452 |
-| explicit `no-gate:` markers | 411 |
+| explicit `no-gate:` markers | 412 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 411 of the 863 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 412 of the 864 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
 | `not-started` | 78 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
-| `in-progress` | 23 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST |
+| `in-progress` | 24 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 10 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
 | `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, MT-TENANT-LIVE-ADD |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 110 items
+`parcel: tenancy` &mdash; 111 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8487,6 +8487,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-REALTIME-SOCKET-CAP` | Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits | `in-progress` | `workspace/realtime-cap-20261112` | n/a | 0 run + 1 no-gate |
 | `MT-AUTHZ-COST` | api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request | `in-progress` | `workspace/authz-cost-20261112` | n/a | 0 run + 1 no-gate |
 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order | `ready-to-push` | `codex/eval-cost-20261111` | n/a | 0 run + 1 no-gate |
+| `MT-D6-SLOT-READER` | D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N | `in-progress` | `workspace/d6-slot-20261112` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -11918,6 +11919,34 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/eval-cost-2026-11-11/README.md`
 
 **Notes.** 2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms. Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.
+
+### `MT-D6-SLOT-READER` &mdash; D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N
+
+| | |
+|---|---|
+| state (claimed) | `in-progress` |
+| repo | `cgm-remote-monitor` |
+| branch | `workspace/d6-slot-20261112` |
+| base | `workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003` |
+| worktree | `externals/work/crm-d6-slot-20261112` |
+| semver | `n/a` |
+| review | maintainer; security review (replication privilege, definer function) |
+
+**Blast radius.** Realtime and evaluator change detection (lib/server/realtime/change- detector.js, runtime.js wake path, lib/server/serve/evaluator-runtime.js backstop pass, lib/change-stamps); a new slot reader role and its SECURITY DEFINER catalogue; PostgreSQL configuration (wal_level=logical, max_replication_slots, max_slot_wal_keep_size), a publication on the tenant write clock, a least-privilege replication identity; core deploy/multitenant bootstrap and the nightscout-deploy Compose binding.
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; Planned: change-to-frame latency at 1,000 and 3,000 tenants with the reader running no worse than the stage 1 poll, and per-call detector DB cost flat in N; with the reader stopped the backstop alone delivers every change within its bound and an alert fires (control: backstop also disabled goes red); a grep gate that fails when a trigger emits NOTIFY (control: planted trigger); restore and epoch suites green.
+
+**Evidence.**
+
+- `reports/tenancy/capacity-2026-11-11/README.md`
+
+**Notes.** 2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Design note sent to the coordinator; backstop shape, reader placement, identity and transport await answers before implementation.
 
 ---
 

@@ -27312,3 +27312,35 @@ items:
     notes: >
       2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms.
       Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.
+  - id: MT-D6-SLOT-READER
+    title: "D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: workspace/d6-slot-20261112
+    base: workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003
+    worktree: externals/work/crm-d6-slot-20261112
+    state: in-progress
+    blast_radius: >
+      Realtime and evaluator change detection (lib/server/realtime/change-detector.js, runtime.js wake path,
+      lib/server/serve/evaluator-runtime.js backstop pass, lib/change-stamps); a new slot reader role and its
+      SECURITY DEFINER catalogue; PostgreSQL configuration (wal_level=logical, max_replication_slots,
+      max_slot_wal_keep_size), a publication on the tenant write clock, a least-privilege replication identity;
+      core deploy/multitenant bootstrap and the nightscout-deploy Compose binding.
+    review: maintainer; security review (replication privilege, definer function)
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Planned: change-to-frame latency at 1,000 and 3,000 tenants with the reader running no worse than the
+          stage 1 poll, and per-call detector DB cost flat in N; with the reader stopped the backstop alone delivers
+          every change within its bound and an alert fires (control: backstop also disabled goes red); a grep gate
+          that fails when a trigger emits NOTIFY (control: planted trigger); restore and epoch suites green.
+    blocks_on: []
+    evidence:
+      - reports/tenancy/capacity-2026-11-11/README.md
+    notes: >
+      2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the
+      stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Design note sent to the coordinator;
+      backstop shape, reader placement, identity and transport await answers before implementation.
