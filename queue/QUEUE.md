@@ -11431,10 +11431,12 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-unaccepted-measurement-2026-11-12/independent-review/README.md`
+- `releases/cgm-remote-monitor-16.0.0/decisions.md#m7-parallel-unaccepted-measurement`
 - `docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md`
 - `docs/30-design/tenancy/m5-m6-decision-list.md`
 
-**Notes.** Maintainer 2026-11-09: for M7 we benchmark what the numbers are rather than declare them first; limits are set from measurement afterwards. Uses the disposable-harness pattern (containers by digest, reaper cleanup).
+**Notes.** 2026-11-12: maintainer directs parallel source acceptance and baseline observation on independent rigs. Exact-run unaccepted authorization and distinct result scopes preserve all workload/oracle/quietness/native-image requirements; accepted-capacity checks refuse these observations until a separate immutable qualification joins actual same-candidate acceptance. Collection remains UNMEASURED; source/transport review and one current native TIME precede launch. Maintainer 2026-11-09: for M7 we benchmark what the numbers are rather than declare them first; limits are set from measurement afterwards. Uses the disposable-harness pattern (containers by digest, reaper cleanup).
 
 ### `MT-BENCH-CONTRAST` &mdash; M7: contrast the multitenant cohort with existing deployment shapes at equal load
 
@@ -11530,6 +11532,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-unaccepted-measurement-2026-11-12/independent-review/README.md`
+- `releases/cgm-remote-monitor-16.0.0/decisions.md#m7-parallel-unaccepted-measurement`
 - `reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md`
 - `reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md`
 - `reports/tenancy/core-g-acceptance-2026-11-12/README.md`

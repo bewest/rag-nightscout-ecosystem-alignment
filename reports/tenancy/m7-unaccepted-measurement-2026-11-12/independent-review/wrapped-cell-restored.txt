@@ -1,0 +1,6 @@
+test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid (test_unaccepted.Unaccepted.test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.332s
+
+OK
