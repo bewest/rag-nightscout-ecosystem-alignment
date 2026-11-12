@@ -1,0 +1,38 @@
+
+
+  ...................................2026-11-12T05:26:40.521Z	EMITTING ALARM:
+  {"level":"Warning","title":"Stale data, check rig?","message":"Last received: 21 mins ago\nBG Now: 120 mg/dl","group":"Time Ago","plugin":"timeago","debug":{"value":21,"label":"mins ago","shortLabel":"m"}}
+.......2026-11-12T05:26:40.534Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.535Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.548Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+.2026-11-12T05:26:40.554Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.555Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.568Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.568Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+.2026-11-12T05:26:40.578Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.578Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.582Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.587Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"default - Warning was ack'd","group":"default","plugin":"<none>"}
+Warning alarm is silenced for 0 minutes more
+.2026-11-12T05:26:40.589Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T05:26:40.589Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+.Tenant warm drained: ready 1 failed 0 deferred 0 after 1 ms
+....CONSUMER_SETUP_INTERRUPTION_BOUNDARIES {"count":18}
+......
+  .....................................
+
+  93 passing (4s)
+
