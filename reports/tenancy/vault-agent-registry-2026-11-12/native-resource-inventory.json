@@ -1,0 +1,329 @@
+{
+  "project": "ns-vault-agent-final-native-20261112",
+  "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+  "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+  "apiInstances": [
+    "api",
+    "api-2"
+  ],
+  "sinkMounts": [
+    {
+      "service": "api",
+      "readOnly": true
+    },
+    {
+      "service": "api-2",
+      "readOnly": true
+    },
+    {
+      "service": "vault-agent",
+      "readOnly": false
+    }
+  ],
+  "containers": [
+    {
+      "service": "nginx",
+      "containerId": "3ccf16211ab10976fabf3693fb21acaea87978e52cb5e49326b498f1c15a6802",
+      "imageId": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea",
+      "imageReference": "nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+      "startedAt": "2026-11-12T11:51:41.845358166Z",
+      "status": "running",
+      "healthy": null,
+      "sourceCommit": null,
+      "deployCommit": null,
+      "mounts": [
+        {
+          "destination": "/etc/nginx/nginx.conf",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "evaluator",
+      "containerId": "7df3234522328b4e9a9842e5fa0f89fa00c4ceb4c0b681cbfa9192deafd82fdd",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:41.85620341Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ipc",
+          "readOnly": false
+        }
+      ]
+    },
+    {
+      "service": "tenant-admin",
+      "containerId": "930815f2a2a9276d23e523c38fdb3d8f94ee51623af79715dd44c2a4490b61a0",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:39.022417009Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ipc",
+          "readOnly": false
+        }
+      ]
+    },
+    {
+      "service": "realtime",
+      "containerId": "0180ee06e78cfd8dd31c0995dfdd51f853f475246a13ca6cec0b7d96af0a606b",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:39.003537838Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ipc",
+          "readOnly": false
+        },
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "ui",
+      "containerId": "006e8ed128642b26a0f22507245a94fdcb34856e26e85f5436262f6136f48156",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:37.47288955Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "api-2",
+      "containerId": "3b5d626d97522ba5b275524db42c3ec4e913b224b021e846ef9cd8aca8b5546f",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:31.707791007Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ipc",
+          "readOnly": false
+        },
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-vault",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "api",
+      "containerId": "9e3aa44642a24cf681093f1ef16e25c70aba783df1d9cd343da0f23195ce1e86",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:31.697257566Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ipc",
+          "readOnly": false
+        },
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-vault",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "vault-agent",
+      "containerId": "17937fb1b92c792b648c4534c46dbb2224062004b72c1d42f46f216f477fc264",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "imageReference": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "startedAt": "2026-11-12T11:57:30.958986Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": null,
+      "deployCommit": null,
+      "mounts": [
+        {
+          "destination": "/vault/logs",
+          "readOnly": false
+        },
+        {
+          "destination": "/vault/file",
+          "readOnly": false
+        },
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        },
+        {
+          "destination": "/vault/config/agent.hcl",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-vault-creds",
+          "readOnly": false
+        },
+        {
+          "destination": "/run/ns-vault",
+          "readOnly": false
+        }
+      ]
+    },
+    {
+      "service": "admin",
+      "containerId": "1682a36aa79c3c256c89c351a366a1f23d070d6798ed70b150d51ffe7aeec0e4",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:21.01356413Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "feed-reader",
+      "containerId": "8677f01fba883a300845ba1d4ad6029924f2e0c8396493529e5e22bcadbcad83",
+      "imageId": "sha256:902447da3fc66903d3f451805ba35b186fa56ae51852fc5c1dc1116aa91c8250",
+      "imageReference": "nightscout-vault-agent-final-native-20261112:local",
+      "startedAt": "2026-11-12T11:51:20.978367164Z",
+      "status": "running",
+      "healthy": null,
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "deployCommit": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+      "mounts": [
+        {
+          "destination": "/run/ns-config",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "postgres",
+      "containerId": "8506fea61fc9b9de7789f1da6e4d61bb1e4f314799cdae0107dcab1de5f38631",
+      "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "imageReference": "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+      "startedAt": "2026-11-12T11:51:06.580566608Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": null,
+      "deployCommit": null,
+      "mounts": [
+        {
+          "destination": "/var/lib/postgresql/data",
+          "readOnly": false
+        },
+        {
+          "destination": "/run/secrets/postgres-password",
+          "readOnly": true
+        }
+      ]
+    },
+    {
+      "service": "vault",
+      "containerId": "3d9a08b2108a131c50b66e7ef8f8dfefda6feaf2e06bf2e7abd59763e1f384e9",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "imageReference": "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2",
+      "startedAt": "2026-11-12T11:57:43.778918007Z",
+      "status": "running",
+      "healthy": "healthy",
+      "sourceCommit": null,
+      "deployCommit": null,
+      "mounts": [
+        {
+          "destination": "/vault/config/demo.hcl",
+          "readOnly": true
+        },
+        {
+          "destination": "/vault/file",
+          "readOnly": false
+        },
+        {
+          "destination": "/vault/logs",
+          "readOnly": false
+        },
+        {
+          "destination": "/run/ns-tls/server.crt",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-tls/server.key",
+          "readOnly": true
+        },
+        {
+          "destination": "/run/ns-ca/ca.crt",
+          "readOnly": true
+        }
+      ]
+    }
+  ]
+}

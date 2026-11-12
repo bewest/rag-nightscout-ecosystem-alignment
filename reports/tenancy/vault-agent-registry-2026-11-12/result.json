@@ -1,0 +1,438 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-12",
+  "verdict": "EXACT_SOURCE_AGENT_CAPABILITY_PASS_NOT_COMBINED_ACCEPTANCE",
+  "deliveryCommit": "fa558353154c875312da984926a4efd83dfcbef6",
+  "nativeSourcePair": {
+    "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+    "deploy": "43cd1e6a85e9b60a5b1b174a840609ce938169f6",
+    "productionRuntimeUnchangedInDelivery": true
+  },
+  "prototype": "96cd3e6d48ce4117a558fad702911c71605f53b8",
+  "focused": {
+    "exit": 0,
+    "tests": 28,
+    "pass": 28,
+    "fail": 0,
+    "skipped": 0
+  },
+  "independentRootControls": {
+    "union": {
+      "exit": 1,
+      "tests": 20,
+      "pass": 19,
+      "fail": 1,
+      "skipped": 0,
+      "sourceSha256": "db94a96f6cfedaa4a0c0e0acb358e1836fe4ab0cad00333674e534d04ceb9a0a",
+      "inMemoryOnly": true
+    },
+    "static-only": {
+      "exit": 1,
+      "tests": 20,
+      "pass": 12,
+      "fail": 8,
+      "skipped": 0,
+      "sourceSha256": "db94a96f6cfedaa4a0c0e0acb358e1836fe4ab0cad00333674e534d04ceb9a0a",
+      "inMemoryOnly": true
+    },
+    "omit-replica": {
+      "exit": 1,
+      "tests": 20,
+      "pass": 17,
+      "fail": 3,
+      "skipped": 0,
+      "sourceSha256": "db94a96f6cfedaa4a0c0e0acb358e1836fe4ab0cad00333674e534d04ceb9a0a",
+      "inMemoryOnly": true
+    }
+  },
+  "independentRootRestored": {
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "skipped": 0
+  },
+  "native": {
+    "phases": {
+      "policy": {
+        "exit": 0,
+        "operation": "policy",
+        "lastAt": "2026-11-12T11:51:45.370Z"
+      },
+      "observe": {
+        "exit": 0,
+        "operation": "observe",
+        "lastAt": "2026-11-12T11:52:25.435Z"
+      },
+      "missing-sink": {
+        "exit": 0,
+        "operation": "missing-sink",
+        "lastAt": "2026-11-12T11:57:15.976Z"
+      },
+      "seal": {
+        "exit": 0,
+        "operation": "seal",
+        "lastAt": "2026-11-12T11:57:17.158Z"
+      },
+      "expired": {
+        "exit": 0,
+        "operation": "expired",
+        "lastAt": "2026-11-12T11:57:26.598Z"
+      },
+      "restart-without-secret": {
+        "exit": 0,
+        "operation": "expired",
+        "lastAt": "2026-11-12T11:57:28.587Z"
+      },
+      "restart-recovery": {
+        "exit": 0,
+        "operation": "reauth",
+        "lastAt": "2026-11-12T11:57:31.902Z"
+      },
+      "outage": {
+        "exit": 0,
+        "operation": "outage",
+        "lastAt": "2026-11-12T11:57:43.350Z"
+      },
+      "outage-recovery": {
+        "exit": 0,
+        "operation": "unseal",
+        "lastAt": "2026-11-12T11:57:44.838Z"
+      },
+      "serving-final": {
+        "exit": 0,
+        "operation": "serving",
+        "lastAt": "2026-11-12T11:57:45.938Z"
+      }
+    },
+    "liveAPIReplicas": 2,
+    "tenants": 2,
+    "productionParserAPIShapes": [
+      1,
+      2,
+      4
+    ],
+    "servingObservations": {
+      "total": 44,
+      "status200": 26,
+      "expected503": 18,
+      "refusalCode": "AUTHORITY_UNAVAILABLE"
+    },
+    "apiContainersNotRestarted": true,
+    "roleReceipt": {
+      "tokenTtlSeconds": 20,
+      "tokenMaxTtlSeconds": 60,
+      "secretIdTtlSeconds": 0,
+      "secretIdNumUses": 0,
+      "policies": 1
+    },
+    "sinkMounts": [
+      {
+        "service": "api",
+        "readOnly": true
+      },
+      {
+        "service": "api-2",
+        "readOnly": true
+      },
+      {
+        "service": "vault-agent",
+        "readOnly": false
+      }
+    ],
+    "rootAuthorityAndSQLSettingsSeed": "No custom role login/renewer, no custom SQL settings seed or live provider"
+  },
+  "secretLifetimeControl": {
+    "secret-expiring-setup": [
+      {
+        "stage": "role-receipt",
+        "at": "2026-11-12T11:45:44.942Z",
+        "diagnosticRole": true,
+        "tokenTtlSeconds": 2,
+        "tokenMaxTtlSeconds": 6,
+        "secretIdTtlSeconds": 3,
+        "nonexpiring": false,
+        "secretIdNumUses": 0,
+        "policyCount": 1
+      }
+    ],
+    "secret-expiring-observe": [
+      {
+        "stage": "expiring-secret-control",
+        "at": "2026-11-12T11:45:52.329Z",
+        "reauthenticationFailedAfterSecretExpiry": true,
+        "expiredSinkTokenUnchanged": true
+      }
+    ],
+    "secret-nonexpiring-setup": [
+      {
+        "stage": "role-receipt",
+        "at": "2026-11-12T11:45:53.529Z",
+        "diagnosticRole": true,
+        "tokenTtlSeconds": 2,
+        "tokenMaxTtlSeconds": 6,
+        "secretIdTtlSeconds": 0,
+        "nonexpiring": true,
+        "secretIdNumUses": 0,
+        "policyCount": 1
+      }
+    ],
+    "secret-nonexpiring-observe": [
+      {
+        "stage": "nonexpiring-secret-restored",
+        "at": "2026-11-12T11:46:08.436Z",
+        "maxTtlReauthentications": 2,
+        "newSinkTokensValid": true
+      }
+    ],
+    "secret-control-cleanup": [
+      {
+        "stage": "diagnostic-role-removed",
+        "at": "2026-11-12T11:46:09.676Z"
+      }
+    ]
+  },
+  "preliminary0ab": {
+    "deploy": "0ab635788539eabb2bd13d273f8af5159522574c",
+    "servingTokenTtlSeconds": 20,
+    "servingTokenMaxTtlSeconds": 60,
+    "requestedSecretIdTtl": "24h (source-derived; NOT default-lifetime acceptance)",
+    "sourceOfDefaultIssue": "read-derived equal/shorter secret lifetime; reproduced by separate short actual-Agent control"
+  },
+  "initialInstrumentFailure": {
+    "classification": "INSTRUMENT_HOST_TRANSPORT",
+    "observedStatus": 404,
+    "code": "TENANT_REFUSED",
+    "node24Echo": {
+      "fetchPreservesHost": false,
+      "httpRequestPreservesHost": true
+    },
+    "sourceRuntimeChangedForCorrection": false
+  },
+  "existingDeploymentGate": {
+    "npmTest": "FAIL",
+    "cause": "inherited SOURCE tree mismatch",
+    "actualTree": "acfa763f1483343d12af5bafa05eb18ee1b5bf49",
+    "recordedTree": "8c12259b1dcc179be0738f0ce775c0bd6cd62626",
+    "unchangedSincePrototype": true,
+    "downstreamOwnershipExactCore": {
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "skipped": 0
+    }
+  },
+  "resources": {
+    "finalProject": "ns-vault-agent-final-native-20261112",
+    "finalContainersStopped": 12,
+    "preliminaryProject": "ns-vault-agent-short-native-20261112",
+    "preliminaryContainersStopped": 12,
+    "ownedStatesAndVolumesRetained": true,
+    "diagnosticAgentContainersRemaining": 0,
+    "diagnosticRoleRemoved": true,
+    "peerResourcesStoppedOrDeleted": false
+  },
+  "limitations": [
+    "not capacity or full combined/browser/clinical acceptance",
+    "live2API; parser1/2/4; selectedRT/evaluator planning only",
+    "bounded Agent log tail is not proof of absence",
+    "private provisioning and management credentials remain separate; no Agent renewal added for them",
+    "no default/pilot/cloud activation; core scheduler criterion remains coordinator-owned"
+  ],
+  "sourceFiles": {
+    "bindings/compose/vault-agent/README.md": "7a6907e6310f954b1fb9a8d773deba90be8802030b75aede22520376622e75c8",
+    "bindings/compose/vault-agent/agent.hcl": "72df35debcb415151f9c1a0e3708af88bc35a8955f12557a688ef686cb6db82a",
+    "bindings/compose/vault-agent/compose.vault-agent.yaml": "6237d2a35c418d01fe841289ec20e73ec3e6a940c4167323a64b95678e4b459a",
+    "bindings/compose/vault-agent/launch.js": "2eeb569dff295d9f7fb49fdd99a36627f9612dcffa41e4452ab4c72c84da734a",
+    "bindings/compose/vault-agent/tests/control.cjs": "db7d34ee010407f8cdc03955d81dd2c4f6abe4a8559d00d070f3018c09d470a1",
+    "bindings/compose/vault-agent/tests/guards.test.cjs": "4ddb588fac93f8c52bbada3601e323e5c550b21fa56dc80cbd16077360e971fc",
+    "bindings/compose/vault-agent/tests/native-config-probe.cjs": "575ffc71ba55e47c0d3b703b121b590dc5f906a593bd32fad6af716b3a9296b5",
+    "bindings/compose/vault-agent/tests/native-driver.cjs": "1de7c2b4099d504a30ff38064e386af8a97f36a51b235b69d292bce9571a2de1",
+    "bindings/compose/vault-agent/tests/native-probe.cjs": "d7a87d11edc7f06eacf34634de1606451487971dd609240e213608609c90fdad",
+    "bindings/compose/vault-agent/tests/plan.test.cjs": "bafa5e38a317100e489bf6a1ff26fea67cbdeedb13ba2f3369544df47cae9fbe",
+    "bindings/compose/vault-agent/tests/secret-lifetime-driver.cjs": "462146617fa60c11670a0d9ceb349fcda91b8569d784da2ff597beb7979348cd",
+    "bindings/compose/vault-agent/tests/secret-lifetime-probe.cjs": "49eec66b325dba39720ce08e35d3ce8e2cfe34841d2e85a930f84737e242d8e9",
+    "bindings/compose/vault-agent/vault-agent-bootstrap.js": "db94a96f6cfedaa4a0c0e0acb358e1836fe4ab0cad00333674e534d04ceb9a0a",
+    "bindings/compose/vault-agent/vault-agent.sh": "783c67f9ead2cd62398b4db84bc241ddd513a8ea6ba5e13c83d1c465f7a0fc29",
+    "bindings/compose/vault-agent/vault-agent.test.js": "0a97fd08c1f7987d5f3197e56eea9acca0c7a1058b6739edb41fd9642f3e9bc7"
+  },
+  "artifacts": {
+    "focused.log.gz": {
+      "sha256": "8c9b7b20610c025c713ce83caa8debe0508d31a81acfb01f3ffde4f13bdcd8c5",
+      "bytes": 1225,
+      "decodedSha256": "2c8610af2d2a60b1a9370af69b824a058243cb82ad6b835d0cd8a0c2da4800c4",
+      "decodedBytes": 6257
+    },
+    "root-restored.log.gz": {
+      "sha256": "00b4d2a1cabf12dab46639b0e03064a10beafdbe3f37c3ea9a39c84cd3b80533",
+      "bytes": 918,
+      "decodedSha256": "43f8067f713925801aff17af631790a4bde816d81cd17ba4d26c302413b8fa43",
+      "decodedBytes": 4263
+    },
+    "downstream-ownership.log.gz": {
+      "sha256": "8aaf0c11ca635cad29fdca8daa944f7c7c3e267c215b3c702216a7cbe256ee2b",
+      "bytes": 188,
+      "decodedSha256": "73c798d639c4019f226a4168f086abeac070aed1abc776b712cd51b2cf7fea4f",
+      "decodedBytes": 240
+    },
+    "deployment-npm-test.log.gz": {
+      "sha256": "88dbd35caacdc2ed5ef5ad406ec6e1f492ea0255798a3f69e8c6cf8d3d76c2ba",
+      "bytes": 267,
+      "decodedSha256": "cf0cdc438b8bc0b11ee1d415ba09e6bfd987664d4e4685ba69e91ba145e2172e",
+      "decodedBytes": 355
+    },
+    "node24-host-discriminator.log.gz": {
+      "sha256": "0239a92b7be56b477ccb9a55a477bfbe6f8de96cf56f395b963336b91cce06d9",
+      "bytes": 75,
+      "decodedSha256": "8b0ab6efa5fabf2f2462b3fc622f10d75e7118adc511d8de35deb98970989a1a",
+      "decodedBytes": 68
+    },
+    "initial-fetch-probe.log.gz": {
+      "sha256": "e055f6e2605923a81ea744a33a7b759904ff756e421eeca656646e40a18bba1b",
+      "bytes": 295,
+      "decodedSha256": "31a8915e2c726403260fd8ee7313fe08937ddf4df2ac74617a2da11ebcf73bd4",
+      "decodedBytes": 667
+    },
+    "exact-parser.log.gz": {
+      "sha256": "8a56e7fca5b4b3986a1454ac665f7acf8c6bf1bb5e6ba67a0a77ac4ff06d9fae",
+      "bytes": 172,
+      "decodedSha256": "36ab01d4f3f8cb84fdb932e2493d5ff331d288063898597e9ddfbcb31d5ca09e",
+      "decodedBytes": 240
+    },
+    "control-union.log.gz": {
+      "sha256": "c4aa16ca6096f9bd4766967cc96d4a969a1fc12d42958bc296fc3b75ac7d43b0",
+      "bytes": 1371,
+      "decodedSha256": "5474fb45f9a864b1e3845665780cd1afa8c770ebeee0ba6c1c5cc0cf5ca1891c",
+      "decodedBytes": 5784
+    },
+    "control-static-only.log.gz": {
+      "sha256": "e2ac42c8192fab4b2e1b45c09d5a0fab382981c0af62ec840dbf059501a65e2f",
+      "bytes": 1518,
+      "decodedSha256": "94d2877f7ad04de5d14f2be02c808c72a376146c741f1534acd49668e12d1f79",
+      "decodedBytes": 17631
+    },
+    "control-omit-replica.log.gz": {
+      "sha256": "2a75804a16445e985d23ac965ba884a641170e2d24aaae1d1eb0fe3829b33d3e",
+      "bytes": 1534,
+      "decodedSha256": "2db6476b8c83448b89c36b8ddb22243155e0f5e299e1d1fd6166bf0cc8490924",
+      "decodedBytes": 7011
+    },
+    "native-policy.log.gz": {
+      "sha256": "acd42eb165281cceb5b3f885898205d3e05c16ebde5e0113082675fea5c5d4fe",
+      "bytes": 358,
+      "decodedSha256": "e428abe6f1bfeed9b880767b0c8edc9666fea4133c90de127a0537cefdeff449",
+      "decodedBytes": 896
+    },
+    "native-observe.log.gz": {
+      "sha256": "ff215a8cab493b80f344fd72587e1416845a9cf479aedfa8a02ff9a3ab9b0ec3",
+      "bytes": 350,
+      "decodedSha256": "374bf3208e410bb1e4f88dcde5c300af7f46a93ac62a17f166ca11ae74ba5d4e",
+      "decodedBytes": 1505
+    },
+    "native-missing-sink.log.gz": {
+      "sha256": "92232eda59f17ba9c39ae889773c919ca4202e168a6bbf932eec90856ebb168b",
+      "bytes": 331,
+      "decodedSha256": "8cf51e211393defa8479a145572e570437f68acde7893f501e12c34b1948fb75",
+      "decodedBytes": 1057
+    },
+    "native-seal.log.gz": {
+      "sha256": "a81cd9a0729c7d1c70d4b72226fa23359be2bad3415bb6340632358e88a528c8",
+      "bytes": 302,
+      "decodedSha256": "584d64bc98fd594e007911894e079c1f24dc70b966b16b887a2494cb69795d02",
+      "decodedBytes": 876
+    },
+    "native-expired.log.gz": {
+      "sha256": "9e7fcb56757519db0fba4c917d977841bb95aa02e04c767396be26adb24d2b17",
+      "bytes": 287,
+      "decodedSha256": "74f9a43e22e03a6e7a86ae463b372d0488d0afebb26f70a617f548ec6be98de7",
+      "decodedBytes": 678
+    },
+    "native-restart-without-secret.log.gz": {
+      "sha256": "5db351d9a99432928837dea8a685dcdd18b23d2f08d9eb776d7dc6a3174368d6",
+      "bytes": 285,
+      "decodedSha256": "7fc4325f53bf8fe369144b6b1f3f5f3c4b240fd5607e4a8f9998cc520180f7b7",
+      "decodedBytes": 678
+    },
+    "native-restart-recovery.log.gz": {
+      "sha256": "c952aedf308e3810e0fb3de5407461ef66228ec6e91303a85f2d29c9ff4b8168",
+      "bytes": 241,
+      "decodedSha256": "2cf4715422f0a40d749daae6d660140f1eb58e2d895ef6386568c1c19860554f",
+      "decodedBytes": 443
+    },
+    "native-outage.log.gz": {
+      "sha256": "893760943115e45286d3894f4712dd76c6ee592fe0234f8720573a38184639c8",
+      "bytes": 274,
+      "decodedSha256": "531f0de59973187220070d9491f82b3c154b719a8339cf55e4edc7c2a3fdbbd7",
+      "decodedBytes": 490
+    },
+    "native-outage-recovery.log.gz": {
+      "sha256": "e3d3f1695a439f94aa260817e29b07467f2fca8439e25e89cfc21e4eceb93b73",
+      "bytes": 248,
+      "decodedSha256": "0fc26396379d22f1106fe2dfc661ee8f9751a6ea035926eeb727a14b59f397ac",
+      "decodedBytes": 452
+    },
+    "native-serving-final.log.gz": {
+      "sha256": "5937c6524583754ca32662847d7bc46af4ce79db694d900e9702533415e39773",
+      "bytes": 245,
+      "decodedSha256": "90408c56927992191bd176c2214122c44166987ece20382b568369def082b696",
+      "decodedBytes": 579
+    },
+    "secret-expiring-setup.log.gz": {
+      "sha256": "f364415ab10349cf4b682804022992e0b987eeec41fff8124a67f6708013abd9",
+      "bytes": 264,
+      "decodedSha256": "795dec59bfe285bce5856e60cc3cdb71512901a7db23de4a9a733108aea81337",
+      "decodedBytes": 441
+    },
+    "secret-expiring-observe.log.gz": {
+      "sha256": "d0905e38951ea197e88a49edd837851442985f68cbfe22c0e83569d706749e20",
+      "bytes": 248,
+      "decodedSha256": "9d4cc44708a912b5dc1e5bc3ab00c89a81bedb55cdc8df53aa7d1280d77e0154",
+      "decodedBytes": 392
+    },
+    "secret-nonexpiring-setup.log.gz": {
+      "sha256": "ced1ecf7a050c0eaeb8352a357673b81691c195a3e3fdcb35037cd6860cb985b",
+      "bytes": 261,
+      "decodedSha256": "f2ee7e61c35dbfe0208172a2c2be02ab46b0855de460a2b1ca2e5ef0518659e6",
+      "decodedBytes": 446
+    },
+    "secret-nonexpiring-observe.log.gz": {
+      "sha256": "d864c21c3e5609766ec5abb9dab07864eff5539f77cebacb6266bbbe6011c723",
+      "bytes": 235,
+      "decodedSha256": "b0822dd8d7fac32506894fa204744f6ce12978d4d58bc5d9750bd8e1965383c2",
+      "decodedBytes": 376
+    },
+    "secret-control-cleanup.log.gz": {
+      "sha256": "e016eda9b9c7420e84c5bd14c1c894125b4cb2c6973e99de6d9968a885aaaffa",
+      "bytes": 186,
+      "decodedSha256": "8b6298806e63ad9e5e6719c60e105826cfe338ac4a21c77c9b024c96b6fb8735",
+      "decodedBytes": 294
+    },
+    "preliminary-0ab-observe.log.gz": {
+      "sha256": "5dadf9b9a14ad6094ecc2746f7c378983060f71260421438760d4ae7efd2ceeb",
+      "bytes": 348,
+      "decodedSha256": "62ebe9d07c059a516bde20f08c596dadcd434b0036fc5d69c3aa4a29041afd20",
+      "decodedBytes": 1505
+    },
+    "stopped-final-project.log.gz": {
+      "sha256": "2bc7a323c75ea33681cc1e1ee3c13e72de5c80846f1097cd9771d8c7522a056d",
+      "bytes": 139,
+      "decodedSha256": "da3b79c3dc2e20a7d0e026dfc401c93eaba72a0ecc4f62fdb544d711be52270f",
+      "decodedBytes": 648
+    },
+    "original-fetch-probe.cjs": {
+      "sha256": "157413d1372a019af0ed76c171a890591e17c95422e8bee90d0591960e6751a8",
+      "bytes": 7075
+    },
+    "preliminary-http-probe.cjs": {
+      "sha256": "0cf8fe7d7da170ccd6e26bd214ca356aab2521161ad1032ad1e85d9a35f193b7",
+      "bytes": 7525
+    },
+    "native-resource-inventory.json": {
+      "sha256": "001434f4f8c17031e120708a4d4795a72b1fde94358e0370f419dcd636bca207",
+      "bytes": 10501
+    },
+    "versions-and-bounded-log-observations.json": {
+      "sha256": "9f6625106eb0852942238f7eeb10bec694e85f62c09c6a0f6f5b1ab493b67406",
+      "bytes": 353
+    }
+  }
+}
