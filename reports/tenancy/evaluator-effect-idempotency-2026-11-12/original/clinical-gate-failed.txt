@@ -1,0 +1,33 @@
+TAP version 13
+# Subtest: actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress
+not ok 1 - actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress
+  ---
+  duration_ms: 8792.555624
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/deploy-evaluator-finalpair-20261112/bindings/compose/multitenant/shipping-evaluator.integration.test.js:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    membership move cannot duplicate the durable clinical alarm episode
+    
+    2 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 2
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/deploy-evaluator-finalpair-20261112/bindings/compose/multitenant/shipping-evaluator.integration.test.js:48:106)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8841.091269
