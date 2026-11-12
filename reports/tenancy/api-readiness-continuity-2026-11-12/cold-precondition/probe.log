@@ -1,0 +1,1 @@
+{"verdict":"POSSIBLE_MECHANISM_REPRODUCED","naiveGlobalReadyControl":"RED: cold B refusal despite both global ready","exactTupleBarrier":"GREEN","unrelatedAInvalidation":"B stays warm","initializations":3}
