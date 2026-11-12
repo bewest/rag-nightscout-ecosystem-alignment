@@ -1,0 +1,16 @@
+test_api_comparison_requires_exact_real_settings_diagnostics_topology_selection (test_m7_joined_receipt.ReceiptTests.test_api_comparison_requires_exact_real_settings_diagnostics_topology_selection) ... FAIL
+
+======================================================================
+FAIL: test_api_comparison_requires_exact_real_settings_diagnostics_topology_selection (test_m7_joined_receipt.ReceiptTests.test_api_comparison_requires_exact_real_settings_diagnostics_topology_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/m7-receipt-profile-controls-952a4mjy/tools/queue/gates/test_m7_joined_receipt.py", line 387, in test_api_comparison_requires_exact_real_settings_diagnostics_topology_selection
+    self.refuses('PROFILE_SELECTION_MISMATCH','api-scaling')
+  File "/tmp/m7-receipt-profile-controls-952a4mjy/tools/queue/gates/test_m7_joined_receipt.py", line 75, in refuses
+    with self.assertRaisesRegex((ValueError, RuntimeError), code):
+AssertionError: (<class 'ValueError'>, <class 'RuntimeError'>) not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.119s
+
+FAILED (failures=1)

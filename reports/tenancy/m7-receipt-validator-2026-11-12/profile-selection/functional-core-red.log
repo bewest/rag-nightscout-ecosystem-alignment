@@ -1,0 +1,17 @@
+test_core_only_campaign_approved_deployment_pin_and_final_image_proof_stay_distinct (test_m7_joined_receipt.ReceiptTests.test_core_only_campaign_approved_deployment_pin_and_final_image_proof_stay_distinct) ... FAIL
+
+======================================================================
+FAIL: test_core_only_campaign_approved_deployment_pin_and_final_image_proof_stay_distinct (test_m7_joined_receipt.ReceiptTests.test_core_only_campaign_approved_deployment_pin_and_final_image_proof_stay_distinct)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/m7-receipt-profile-controls-952a4mjy/tools/queue/gates/test_m7_joined_receipt.py", line 371, in test_core_only_campaign_approved_deployment_pin_and_final_image_proof_stay_distinct
+    self.campaign['source']['coreCommit']='9'*40;self.refresh_campaign();self.refuses('FUNCTIONAL_CORE_MISMATCH')
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/m7-receipt-profile-controls-952a4mjy/tools/queue/gates/test_m7_joined_receipt.py", line 75, in refuses
+    with self.assertRaisesRegex((ValueError, RuntimeError), code):
+AssertionError: (<class 'ValueError'>, <class 'RuntimeError'>) not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.006s
+
+FAILED (failures=1)

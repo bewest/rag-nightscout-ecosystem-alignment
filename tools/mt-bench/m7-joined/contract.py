@@ -107,7 +107,12 @@ def campaign_check(document):
     cells = document.get("cells", [])
     require({(r.get("tenants"), r.get("replicas")) for r in cells} == {(n, a) for a in REPLICAS for n in COUNTS}, "M7_SUMMARY_MISSING_CELL")
     require(len(cells) == len(COUNTS) * len(REPLICAS), "M7_SUMMARY_DUPLICATE_CELL")
+    from profile_provenance import check_identity, observation_check
+    chosen=check_identity(document.get("profileSelection"))
     for row in cells:
+        require(check_identity(row.get("profileSelection"))==chosen,"M7_PROFILE_SELECTION_MISMATCH")
+        observation_check(row.get("settingsFingerprintObservation"))
+        require(chosen["settings"].get("sourceCommit")==pair["core"],"M7_PROFILE_SETTINGS_SOURCE")
         require(row.get("pair") == pair and row.get("hostIdentity")==document.get("hostIdentity") and row.get("instrument") == document.get("instrument"), "M7_SUMMARY_MIXED_SOURCE")
         require(row.get("imageId")==document["imageId"] and row.get("measurements",{}).get("complete") is True, "M7_SUMMARY_UNMEASURED_CELL")
         require(row.get("verdict") == "PASS", "M7_SUMMARY_NONPASS_CELL")
@@ -119,9 +124,16 @@ def pilot_check(document):
     pair=document.get("pair",{})
     require(all(SHA.fullmatch(pair.get(key,"")) for key in ("core","deploy")) and re.fullmatch(r"sha256:[0-9a-f]{64}",document.get("imageId","")),"M7_PILOT_SOURCE_REQUIRED")
     cells=document.get("cells",[])
-    require(len(cells)==3 and {(r.get("tenants"),r.get("replicas")) for r in cells}=={(n,1) for n in PILOT_COUNTS},"M7_PILOT_MISSING_CELL")
+    replicas=document.get("profileReplicas")
+    require(replicas in REPLICAS,"M7_PILOT_REPLICAS_REQUIRED")
+    require(len(cells)==3 and {(r.get("tenants"),r.get("replicas")) for r in cells}=={(n,replicas) for n in PILOT_COUNTS},"M7_PILOT_MISSING_CELL")
     require(re.fullmatch(r"[0-9a-f]{64}",document.get("instrument","")) and re.fullmatch(r"[0-9a-f]{64}",document.get("hostIdentity","")),"M7_PILOT_IDENTITY_REQUIRED")
+    from profile_provenance import check_identity, observation_check
+    chosen=check_identity(document.get("profileSelection"))
     for row in cells:
+        require(check_identity(row.get("profileSelection"))==chosen,"M7_PROFILE_SELECTION_MISMATCH")
+        observation_check(row.get("settingsFingerprintObservation"))
+        require(chosen["settings"].get("sourceCommit")==pair["core"],"M7_PROFILE_SETTINGS_SOURCE")
         require(row.get("pair")==document.get("pair") and row.get("hostIdentity")==document.get("hostIdentity") and row.get("instrument")==document["instrument"] and row.get("imageId")==document.get("imageId"),"M7_PILOT_MIXED_SOURCE")
         require(row.get("verdict")=="PASS" and row.get("measurements",{}).get("complete") is True and row.get("profile")=="remote-pilot","M7_PILOT_NONPASS_CELL")
     return True

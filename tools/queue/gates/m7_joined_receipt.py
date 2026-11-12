@@ -169,12 +169,15 @@ def check_acceptance(expected, receipt, evidence):
     need(actual_identity == expected['identity'], 'M7_RECEIPT_IDENTITY')
     need(receipt.get('evidenceSha256') == receipt['campaign']['sha256'], 'M7_ACCEPTANCE_EVIDENCE_HASH')
     pair = expected['identity']['pair']
+    functional_pair=expected.get('functionalCampaignPair',pair)
+    need(isinstance(functional_pair,dict) and set(functional_pair)=={'core','deploy'} and all(isinstance(v,str) and SHA.fullmatch(v) for v in functional_pair.values()),'M7_FUNCTIONAL_CAMPAIGN_PIN')
+    need(functional_pair['core']==pair['core'],'M7_FUNCTIONAL_CORE_MISMATCH')
     campaign = evidence.json(receipt['campaign'])
     need(campaign.get('scope') == 'FROZEN_CORE_FUNCTIONAL_ACCEPTANCE_EXECUTION' and campaign.get('status') == 'passed' and
          campaign.get('errors') == [] and campaign.get('ownMongoCleanupVerified') is True and
          campaign.get('fixtureResiduals') == [] and campaign.get('fixtureVolumeResiduals') == [], 'M7_CAMPAIGN_INCOMPLETE')
-    need(campaign.get('source', {}).get('coreCommit') == pair['core'] and
-         campaign.get('source', {}).get('deployCommit') == pair['deploy'], 'M7_CAMPAIGN_SOURCE')
+    need(campaign.get('source', {}).get('coreCommit') == functional_pair['core'] and
+         campaign.get('source', {}).get('deployCommit') == functional_pair['deploy'], 'M7_CAMPAIGN_SOURCE')
     commands = campaign.get('commands')
     need(isinstance(commands, list), 'M7_CAMPAIGN_COMMANDS')
     by_id = {}
@@ -236,6 +239,22 @@ def campaign_contract():
     return module
 
 
+def profile_selection(cell, expected):
+    chosen=expected.get('profileSelection')
+    need(isinstance(chosen,dict) and set(chosen)=={'version','settings','diagnostics','topology','sha256'} and type(chosen['version']) is int and chosen['version']==1,'M7_PROFILE_SELECTION_PIN')
+    digest=hashlib.sha256(json.dumps({k:v for k,v in chosen.items() if k!='sha256'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    need(chosen['sha256']==digest,'M7_PROFILE_SELECTION_HASH')
+    settings=chosen['settings']
+    need(isinstance(settings,dict) and type(settings.get('schema')) is int and settings['schema']==1 and isinstance(settings.get('sha256'),str) and DIGEST.fullmatch(settings['sha256']) and settings.get('sourceCommit')==expected['identity']['pair']['core'] and isinstance(settings.get('sourceBlobs'),dict) and bool(settings['sourceBlobs']) and all(isinstance(k,str) and isinstance(v,str) and SHA.fullmatch(v) for k,v in settings['sourceBlobs'].items()),'M7_PROFILE_SETTINGS_PIN')
+    diagnostics=chosen['diagnostics']
+    need(isinstance(diagnostics,dict) and diagnostics.get('mode') in ('off','on') and integer(diagnostics.get('intervalMs'),1000) and diagnostics['intervalMs']<=60000 and diagnostics.get('environment')=={'NS_M7_DIAGNOSTICS':'1' if diagnostics['mode']=='on' else '0','NS_M7_DIAGNOSTICS_INTERVAL_MS':str(diagnostics['intervalMs'])},'M7_PROFILE_DIAGNOSTICS_PIN')
+    topology=chosen['topology']
+    need(isinstance(topology,dict) and topology.get('binding')=='registry-default' and topology.get('secretsBackend')=='vault-server' and topology.get('vaultAgentOverlay') is False and integer(topology.get('realtimeWorkers'),1) and integer(topology.get('evaluatorWorkers'),1),'M7_PROFILE_TOPOLOGY_PIN')
+    need(cell.get('profileSelection')==chosen,'M7_PROFILE_SELECTION_MISMATCH')
+    observed=cell.get('settingsFingerprintObservation',{})
+    need(isinstance(observed,dict) and observed.get('verdict')=='PASS' and integer(observed.get('observations'),1) and type(observed.get('invalid')) is int and observed['invalid']==0 and type(observed.get('mismatch')) is int and observed['mismatch']==0,'M7_FINGERPRINT_UNMEASURED')
+
+
 def cell_measurement(cell, expected, profile, host):
     for field, value in expected['identity'].items():
         need(cell.get(field) == value, 'M7_CAPACITY_IDENTITY')
@@ -243,6 +262,7 @@ def cell_measurement(cell, expected, profile, host):
     need(cell.get('profile') == profile and cell.get('cadence') == campaign_contract().CADENCE[profile], 'M7_CAPACITY_PROFILE')
     need(type(cell.get('tenants')) is int and type(cell.get('replicas')) is int and
          cell['replicas'] in (1, 2, 4), 'M7_CAPACITY_CELL')
+    profile_selection(cell,expected)
     correctness, oracle = cell.get('correctness'), cell.get('oracle', {})
     need(isinstance(correctness, list) and len(correctness) >= 2 and all(type(v) is bool for v in correctness) and
          oracle.get('verdict') in ('GREEN', 'RED') and integer(oracle.get('uncertain')) and
@@ -298,9 +318,16 @@ def check_ladder(expected, receipt, evidence, pilot=False):
              len(document['cells']) == len(contract.PILOT_COUNTS) and
              {(r.get('tenants'), r.get('replicas')) for r in document['cells']} == {(n, replicas) for n in contract.PILOT_COUNTS}, 'M7_PILOT_MISSING_CELL')
     else:
-        contract.campaign_check(document)
+        # Producer contract loads its fixed helper lazily. Keep resolution
+        # scoped to this read-only invocation, without importing from a peer cwd.
+        saved_path=sys.path[:]
+        try:
+            sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'mt-bench/m7-joined'))
+            contract.campaign_check(document)
+        finally:sys.path[:]=saved_path
     for field, value in expected['identity'].items():
         need(document.get(field) == value, 'M7_CAPACITY_IDENTITY')
+    need(document.get('profileSelection')==expected.get('profileSelection') and expected.get('profileSelection') is not None,'M7_PROFILE_SELECTION_MISMATCH')
     for cell in document['cells']:
         cell_measurement(cell, expected, 'remote-pilot' if pilot else 'capacity', document['hostIdentity'])
         need(cell['verdict'] == 'PASS', 'M7_CAPACITY_TARGET_NOT_PASSING')

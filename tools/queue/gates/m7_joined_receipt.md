@@ -62,7 +62,7 @@ selected references and prints neither contents nor paths.
 `campaign` references the worker's existing `result.json`:
 
 - `scope == FROZEN_CORE_FUNCTIONAL_ACCEPTANCE_EXECUTION`, `status == passed`, empty
-  `errors`, matching `source.coreCommit/deployCommit`, verified owned Mongo cleanup
+  `errors`, exact approved functional `source.coreCommit/deployCommit` (see compositional boundary below), verified owned Mongo cleanup
   and empty fixture/container-volume residuals.
 - Every `unit`, `dom`, `dependency`, `core`, `harness`, `integration`, `stress` and
   `browser` command must exist with `status: passed` and numeric `returnCode: 0`.
@@ -166,3 +166,42 @@ component observation must go red; restored fixture goes green. The included
 focused suite runs these in owned temporary records, including a checker-source
 ablation that falsely admits a missing control and makes its refusal oracle red.
 No queue/release/decision file is changed by this capability.
+
+## Current profile selection and functional campaign composition
+
+Capacity/pilot expectations now pin the producer's complete actual
+`profileSelection` object, including its canonical `sha256`, selected settings
+schema/hash/source blobs, diagnostics mode/interval/environment and default
+registry topology. It must name the primary exact core. Every comparison cell,
+and pilot/full-ladder aggregate, must equal that pin. Even with identical
+source/image/instrument, diagnostics ON versus OFF, changed selected settings or
+changed realtime/evaluator topology are different profiles. API replica count
+is intentionally outside this object. Deliberate ON/OFF overhead experiments
+need distinct named profiles; they cannot silently become API-scaling cells.
+Each selected cell also needs actual `settingsFingerprintObservation` with
+positive observations, zero invalid/mismatch and PASS. Historical summaries
+without observations cannot acquire this proof by inserting inferred defaults.
+The source-owned producer contract and capabilities describe the exact fields
+in [PROFILE-SEAM.md](../../mt-bench/m7-joined/PROFILE-SEAM.md).
+
+Optional expectation `functionalCampaignPair: {core, deploy}` defaults to the
+primary `identity.pair`. Its core MUST exactly equal the primary core; its deploy
+must match the exact deployment metadata captured by the approved core-only
+worker. This is specific to `FROZEN_CORE_FUNCTIONAL_ACCEPTANCE_EXECUTION`:
+original worker `tools/perf-cloud/core-acceptance.py` at deploy instrument
+`3d8ca353f973433021ae2086cd643d03da5fb3a4`, blob
+`d39a96a7412e246e77b7619565965e665fce0e81`, runs commands in its pinned core
+checkout, installs/bundles core and runs core tiers/corpus. Its deployment pin is
+authorization/metadata, not an executed binding. This is a read-derived scope
+verification of that exact worker, not permission to substitute an equivalent
+core or rewrite its captured source fields. A later worker that executes the
+deployment binding needs a new reviewed scope contract.
+
+The primary identity remains the exact final paired image. Required paired-image
+and native binding criteria stay separately pinned to their actual final
+source/image/instrument attribution in the coordinator's `criteria` policy.
+The coordinator must retain those reviewed criteria: accepting a core-only
+campaign with an explicitly approved earlier deployment metadata pin does not
+prove the final binding. Wrong/missing approval refuses; any different core
+refuses; a binding proof attributed to the earlier metadata deployment refuses
+when the final deployment is required. No receipt or source identity is relabelled.

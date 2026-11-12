@@ -1,0 +1,38 @@
+[
+  {
+    "control": "selection",
+    "phase": "red",
+    "returnCode": 1,
+    "log": "/tmp/m7-receipt-profile-selection-red-20261112.log"
+  },
+  {
+    "control": "selection",
+    "phase": "restored",
+    "returnCode": 0,
+    "log": "/tmp/m7-receipt-profile-selection-restored-20261112.log"
+  },
+  {
+    "control": "observation",
+    "phase": "red",
+    "returnCode": 1,
+    "log": "/tmp/m7-receipt-profile-observation-red-20261112.log"
+  },
+  {
+    "control": "observation",
+    "phase": "restored",
+    "returnCode": 0,
+    "log": "/tmp/m7-receipt-profile-observation-restored-20261112.log"
+  },
+  {
+    "control": "functional-core",
+    "phase": "red",
+    "returnCode": 1,
+    "log": "/tmp/m7-receipt-profile-functional-core-red-20261112.log"
+  },
+  {
+    "control": "functional-core",
+    "phase": "restored",
+    "returnCode": 0,
+    "log": "/tmp/m7-receipt-profile-functional-core-restored-20261112.log"
+  }
+]

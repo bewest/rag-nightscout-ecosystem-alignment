@@ -1,0 +1,16 @@
+test_fingerprint_no_observation_or_failed_observation_never_capacity_passes (test_m7_joined_receipt.ReceiptTests.test_fingerprint_no_observation_or_failed_observation_never_capacity_passes) ... FAIL
+
+======================================================================
+FAIL: test_fingerprint_no_observation_or_failed_observation_never_capacity_passes (test_m7_joined_receipt.ReceiptTests.test_fingerprint_no_observation_or_failed_observation_never_capacity_passes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/m7-receipt-profile-controls-952a4mjy/tools/queue/gates/test_m7_joined_receipt.py", line 397, in test_fingerprint_no_observation_or_failed_observation_never_capacity_passes
+    self.refuses('FINGERPRINT_UNMEASURED','capacity-milestone')
+  File "/tmp/m7-receipt-profile-controls-952a4mjy/tools/queue/gates/test_m7_joined_receipt.py", line 75, in refuses
+    with self.assertRaisesRegex((ValueError, RuntimeError), code):
+AssertionError: (<class 'ValueError'>, <class 'RuntimeError'>) not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.098s
+
+FAILED (failures=1)
