@@ -1,0 +1,135 @@
+# Joined M7 capacity adapter
+
+This prepares the **next** measurement; it does not establish a capacity result.
+The prior capacity record and authorization/allocation profiles retain their own
+source scope. No prior working-tree lib mount or bootstrap patch is reused here.
+Only committed paired core/deployment sources can serve a run.
+
+The coordinator must finish the coherent candidate and its full acceptance, then
+hand over a quiet host. This lane does not stop foreign containers, including a
+peer's `nsauthz-base-n1000`, or start a capacity campaign during other work.
+
+## Source and ownership
+
+`adapter.py prepare` creates a unique detached core worktree from a **full commit**,
+archives the deployment's committed Compose tree over its deployment directory,
+and writes the product build overlay marker. Every remaining core input must pass
+the shipping build's two-source admission. There is no borrowed node_modules:
+probe dependencies are extracted from the exact labelled application image.
+The image's core/deployment labels and immutable image ID are checked. Serving
+mounts cannot replace `/opt/app` or any subtree; all existing binding mounts must
+resolve within this cell's own private state. External/shared resources refuse.
+Ambient NS_/BENCH_/NODE_OPTIONS settings cannot silently alter the experiment.
+
+Every cell has a random project nonce, private worktree/state, randomly selected
+loopback port and ownership labels on its containers/networks/volumes. Cleanup
+verifies ownership before removing only that project and its recorded worktree.
+An ownership/source mismatch refuses rather than forcing cleanup. No attach mode
+or foreign teardown command exists. Raw state/config contains synthetic credentials;
+keep the entire work directory private and outside any checkout. Do not commit it.
+
+Build, deploy and traffic require a source-matched frozen acceptance receipt:
+
+```json
+{"kind":"joined-acceptance","status":"UNMEASURED","pair":{"core":"FULL_COMMITTED_CORE_SHA","deploy":"FULL_COMMITTED_DEPLOY_SHA"},"evidenceSha256":"SHA256_OF_COORDINATOR_ACCEPTANCE_RECORD"}
+```
+
+The example deliberately refuses. The coordinator supplies `PASS` only after
+acceptance; provisional source heads are never silently substituted. The receipt
+is an attribution gate, not a new permission dialog. A build/initial deployment
+also requires load below the chosen quiet threshold and **zero foreign running
+containers**. During owned workload, foreign-container checks continue; the owned
+workload's own load average is measured instead of rejecting its expected CPU.
+Host inventories include container IDs/labels, image IDs, load, RAM, Docker/context,
+kernel and process names/CPU/RSS, never command arguments/environments. Only local
+Unix-socket Docker contexts are supported: host metrics must describe that daemon.
+
+## Commands after the handoff
+
+Run from the alignment checkout containing the committed instrument:
+
+```bash
+python3 tools/mt-bench/m7-joined/adapter.py prepare \
+  --directory /absolute/private/m7-cell \
+  --core-repo /absolute/core-repository --core-commit FULL_CORE_SHA \
+  --deploy-repo /absolute/deploy-repository --deploy-commit FULL_DEPLOY_SHA \
+  --image ns-m7:paired-image --freeze /absolute/private/frozen-acceptance.json \
+  --tenants 1000 --replicas 1
+python3 tools/mt-bench/m7-joined/adapter.py build /absolute/private/m7-cell
+python3 tools/mt-bench/m7-joined/adapter.py deploy /absolute/private/m7-cell
+python3 tools/mt-bench/m7-joined/adapter.py run /absolute/private/m7-cell --k6-image PINNED_OR_LOCALLY_RESOLVED_K6_IMAGE
+python3 tools/mt-bench/m7-joined/adapter.py down /absolute/private/m7-cell
+```
+
+`build` is unnecessary when the matching image already exists. Docker's resolved
+k6 image ID is recorded and used for execution. No floating tag runs after pinning.
+`prepare` only stages local source/TLS/config; it sends no performance traffic.
+It accepts the adopted counts only. Binding preparation must expose committed
+`primer provision`/`primer prime`, and either private `primer/tenants.json` or
+`ops/tenants.json` with exact `{version:1,tenants:[{id,host,dataToken,...}]}`.
+Conflicting outputs, legacy `token` fields or missing tokens refuse. Provisioning
+uses the private admin API; seeding uses DATA APIs. There is no direct tenant-row
+or Vault seeding in the campaign adapter.
+
+`campaign.py` accepts the same source/image/freeze arguments plus `--work` and
+`--k6-image`. It measures 1 API at 1,000 → 3,000 → 5,000 → 10,000, then 2 and 4 APIs
+at those counts on the **same frozen pair and image**. Every failed correctness or
+instrument gate stops growth. It never automatically starts anyway on a busy
+host. `check-campaign` refuses missing count/replica rows, mixed source/instrument/
+image identities and unmeasured cells. Realtime worker placement remains the
+product binding's selected topology; the API-replica matrix is not a claim that
+all possible realtime placements or automatic takeover were measured.
+
+## Instrument
+
+The source manifest hashes every adapter file and every reused tracked instrument.
+The existing `capacity/k6/workload.js` drives seven unchanged client shapes: CGM
+entry and Loop devicestatus uploaders, AAPS-style v3 treatments, and follower
+entry/devicestatus/treatment/status reads. Default cadence is real (one CGM cycle
+per 300 seconds), hot tenant factor10. Default idle600s/load900s. Two stock-browser
+polling sockets per tenant use JWT exchange and preserve stock reconnect behavior;
+retry-flood results are labelled separately. All sockets must prime before load.
+
+The capacity socket probe is generated from its tracked source with explicit,
+anchor-checked adaptations (and both hashes retained): actual replica-service
+restart roster, hot/cold write-to-frame distributions, strict initial priming, and
+sparse private runtime acquisition inspection replacing the prior lifecycle-lease
+proxy. New runtime `ready && cycles>0` confirms acquisition in the restarted
+process; it is **not clinical equivalence**. Write stamp→durable evaluator checkpoint
+latency remains an independent per-write SQL observation with about1s resolution.
+Missing/oversized inspection fails as NO-INSTRUMENT, never falls back to leases.
+
+Inspection cadence is15s; payload byte totals, call counts and wall time are saved.
+Per-role Docker CPU/memory, process RSS snapshots, cgroup CPU/anon/memory.current,
+PG statement counts/time and waits/locks are retained. A60s sampler-disabled idle
+window precedes the600s sampled idle window; per-minute rates and collection costs
+let the reviewer assess observer overhead. Two-second sampler/controller and host
+probe CPU/RSS are recorded. Load samples are bounded by load timestamps; reconnect
+samples remain separate raw observations. Cgroup usage/anon and process RSS are
+named separately; no figure is described as JavaScript heap or hard process bound.
+`pg_stat_statements` lives only in the maintenance database to preserve application
+operation-window admission. No diagnostic extension enters the application DB.
+
+## Oracle and controls
+
+Client acknowledgements are compared with independent superuser SQL stored counts
+per tenant and domain/run marker. The oracle does not call the API. Empty workloads,
+unknown tenants or missing accepted totals cannot be green. Uncertain writes are
+reported and refuse a capacity pass. The adapter alters one owned synthetic stored
+row, requires RED, restores it in `finally`, and requires GREEN. A summary cannot
+claim a passing cell without complete metrics, primed/delivered/recovered sockets,
+observed runtime acquisition and the oracle control. No latency or CPU capacity
+threshold is invented; report those distributions and marginal costs as measured.
+
+Focused preparation only:
+
+```bash
+python3 tools/mt-bench/m7-joined/test_contract.py -v
+python3 tools/mt-bench/m7-joined/smoke.py /new/private/smoke-output
+```
+
+The smoke owns one tiny PostgreSQL fixture and six synthetic HTTP accepted writes
+using the tracked payload functions under deterministic mocks. It proves the
+independent SQL oracle/control wiring, **not** k6 scheduling, product authorization,
+clinical behavior, full deployment, stock sockets or capacity. These remain
+UNMEASURED until the coordinator runs the frozen adapter on a quiet host.

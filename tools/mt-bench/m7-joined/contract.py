@@ -1,0 +1,108 @@
+"""Source/ownership and independent count contracts for the joined M7 adapter."""
+import hashlib
+import json
+import re
+from pathlib import Path
+
+COUNTS = (1000, 3000, 5000, 10000)
+REPLICAS = (1, 2, 4)
+UUID = re.compile(r"^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$")
+SHA = re.compile(r"^[0-9a-f]{40}$")
+OWNER = "org.nightscout.m7.owner"
+
+
+def require(condition, code):
+    if not condition:
+        raise RuntimeError(code)
+
+
+def digest(file):
+    return hashlib.sha256(Path(file).read_bytes()).hexdigest()
+
+
+def labels_match(labels, core, deploy):
+    require(labels.get("org.opencontainers.image.revision") == core, "M7_IMAGE_CORE_MISMATCH")
+    require(labels.get("org.nightscout.deploy.revision") == deploy, "M7_IMAGE_DEPLOY_MISMATCH")
+
+
+def owned(resource, owner):
+    labels = resource.get("Config", {}).get("Labels", resource.get("Labels", {})) or {}
+    require(labels.get(OWNER) == owner, "M7_RESOURCE_NOT_OWNED")
+
+
+def tenant_projection(document, count):
+    require(isinstance(document, dict) and document.get("version") == 1 and isinstance(document.get("tenants"), list), "M7_PRIMER_SHAPE")
+    rows = document["tenants"]
+    require(len(rows) == count, "M7_PRIMER_COUNT")
+    result = []
+    for row in rows:
+        require(isinstance(row, dict) and UUID.fullmatch(row.get("id", "")) and isinstance(row.get("host"), str)
+                and re.fullmatch(r"[a-z0-9.-]+", row["host"]) and isinstance(row.get("dataToken"), str) and row["dataToken"], "M7_PRIMER_DATA_TOKEN_REQUIRED")
+        result.append({"id": row["id"], "host": row["host"], "token": row["dataToken"]})
+    require(len({r["id"] for r in result}) == count and len({r["host"] for r in result}) == count, "M7_PRIMER_DUPLICATE")
+    return result
+
+
+def metric(metrics, name, field="count"):
+    row = metrics.get(name, {})
+    value = row.get("values", row).get(field, 0)
+    require(isinstance(value, (int, float)) and value >= 0, "M7_METRIC_INVALID")
+    return value
+
+
+def oracle(stored, metrics, probes, tenants, strict=False):
+    """Independent SQL counts vs client-acknowledged counts; never API reads."""
+    expected = {row["id"] for row in tenants}
+    require(expected and set(stored).issubset(expected) and set(probes).issubset(expected), "M7_ORACLE_TENANT_SCOPE")
+    rows, failures = [], []
+    total = {kind: 0 for kind in ("entries", "devicestatus", "treatments")}
+    for tenant in sorted(expected):
+        values = stored.get(tenant, {})
+        require(set(values).issubset(set(total) | {"probe"}) and all(isinstance(n, int) and n >= 0 for n in values.values()), "M7_ORACLE_COUNTS_INVALID")
+        count = sum(values.get(kind, 0) for kind in total)
+        accepted = metric(metrics, f"writes_ok{{tenant:{tenant}}}")
+        uncertain = metric(metrics, f"writes_uncertain{{tenant:{tenant}}}")
+        match = accepted <= count <= accepted + uncertain and values.get("probe", 0) == probes.get(tenant, 0)
+        if strict:
+            match = match and accepted > 0 and uncertain == 0
+        rows.append({"tenant": tenant, "stored": count, "accepted": accepted, "uncertain": uncertain,
+                     "probeStored": values.get("probe", 0), "probeAccepted": probes.get(tenant, 0), "match": match})
+        if not match:
+            failures.append("tenant:" + tenant)
+        for kind in total:
+            total[kind] += values.get(kind, 0)
+    # Unlike the old baseline formatter, enforce the domain totals too.
+    for kind, count in total.items():
+        accepted = metric(metrics, f"writes_ok{{kind:{kind}}}")
+        # Per-kind uncertain submetrics are absent in the baseline. Nonzero
+        # uncertainty therefore cannot establish exact domain equality.
+        uncertain = sum(row["uncertain"] for row in rows)
+        if not accepted <= count <= accepted + uncertain:
+            failures.append("domain:" + kind)
+    require(sum(row["accepted"] for row in rows) > 0, "M7_ORACLE_NO_ACCEPTED_WRITES")
+    require(sum(row["accepted"] for row in rows) == metric(metrics, "writes_ok"), "M7_ORACLE_CLIENT_TOTAL_MISMATCH")
+    return {"verdict": "RED" if failures else "GREEN", "rows": rows, "domains": total, "failures": failures,
+            "uncertain": sum(row["uncertain"] for row in rows)}
+
+
+def serving_mounts(config):
+    for service, spec in config.get("services", {}).items():
+        for volume in spec.get("volumes", []):
+            target = volume.get("target", "") if isinstance(volume, dict) else volume.split(":")[1]
+            require(not (target == "/opt/app" or target.startswith("/opt/app/")), "M7_SERVING_SOURCE_MOUNT_REFUSED:" + service)
+
+
+def campaign_check(document):
+    require(document.get("version") == 1 and document.get("kind") == "m7-joined-capacity", "M7_SUMMARY_SHAPE")
+    pair = document.get("pair", {})
+    require(all(SHA.fullmatch(pair.get(key, "")) for key in ("core", "deploy")), "M7_SUMMARY_SOURCE_REQUIRED")
+    require(re.fullmatch(r"[0-9a-f]{64}", document.get("instrument", "")), "M7_SUMMARY_INSTRUMENT_REQUIRED")
+    require(re.fullmatch(r"sha256:[0-9a-f]{64}", document.get("imageId", "")), "M7_SUMMARY_IMAGE_REQUIRED")
+    cells = document.get("cells", [])
+    require({(r.get("tenants"), r.get("replicas")) for r in cells} == {(n, a) for a in REPLICAS for n in COUNTS}, "M7_SUMMARY_MISSING_CELL")
+    require(len(cells) == len(COUNTS) * len(REPLICAS), "M7_SUMMARY_DUPLICATE_CELL")
+    for row in cells:
+        require(row.get("pair") == pair and row.get("instrument") == document.get("instrument"), "M7_SUMMARY_MIXED_SOURCE")
+        require(row.get("imageId")==document["imageId"] and row.get("measurements",{}).get("complete") is True, "M7_SUMMARY_UNMEASURED_CELL")
+        require(row.get("verdict") == "PASS", "M7_SUMMARY_NONPASS_CELL")
+    return True
