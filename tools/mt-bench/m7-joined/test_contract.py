@@ -18,6 +18,9 @@ from reduce import measurements
 
 A='11111111-1111-4111-8111-111111111111'
 B='22222222-2222-4222-8222-222222222222'
+from profile_provenance import identity,selection
+PROFILE=identity({'schema':1,'sha256':'f'*64,'sourceCommit':'a'*40,'sourceBlobs':{}},selection(),{'services':{'api':{},'vault':{'command':['vault','server']},'realtime':{},'evaluator':{}}})
+OBS={'verdict':'PASS','observations':1,'invalid':0,'mismatch':0}
 
 class Contract(unittest.TestCase):
     def setUp(self):
@@ -52,8 +55,8 @@ class Contract(unittest.TestCase):
         serving_mounts({'services':{'api':{'volumes':[{'target':'/run/ns-config'}]}}})
         with self.assertRaisesRegex(RuntimeError,'SOURCE_MOUNT_REFUSED'):serving_mounts({'services':{'api':{'volumes':[{'target':'/opt/app/lib'}]}}})
     def test_campaign_requires_all_counts_and_replica_cells_with_same_pair(self):
-        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'verdict':'PASS','imageId':'sha256:'+'e'*64,'measurements':{'complete':True}}
-        document={'version':1,'kind':'m7-joined-capacity','pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'hostIdentity':'d'*64,'cells':[{**row,'tenants':n,'replicas':a} for a in REPLICAS for n in COUNTS]}
+        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'verdict':'PASS','imageId':'sha256:'+'e'*64,'measurements':{'complete':True},'profileSelection':PROFILE,'settingsFingerprintObservation':OBS}
+        document={'profileSelection':PROFILE,'version':1,'kind':'m7-joined-capacity','pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'hostIdentity':'d'*64,'cells':[{**row,'tenants':n,'replicas':a} for a in REPLICAS for n in COUNTS]}
         self.assertTrue(campaign_check(document));broken=copy.deepcopy(document);broken['cells'].pop()
         with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):campaign_check(broken)
         broken=copy.deepcopy(document);broken['cells'][0]['pair']={**pair,'core':'d'*40}
@@ -113,8 +116,8 @@ class Contract(unittest.TestCase):
         self.assertIn('commission-restore.js',' '.join(next(r[2] for r in plan if r[0]=='commission')))
         self.assertEqual(next(r[1] for r in plan if r[0]=='publish-primer'),'local')
     def test_remote_pilot_is_distinct_and_does_not_skip_750(self):
-        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'verdict':'PASS','measurements':{'complete':True},'profile':'remote-pilot','replicas':1}
-        doc={'kind':'m7-joined-remote-pilot','pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':row['imageId'],'cells':[{**row,'tenants':n} for n in PILOT_COUNTS]}
+        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'verdict':'PASS','measurements':{'complete':True},'profileSelection':PROFILE,'settingsFingerprintObservation':OBS,'profile':'remote-pilot','replicas':1}
+        doc={'profileSelection':PROFILE,'profileReplicas':1,'kind':'m7-joined-remote-pilot','pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':row['imageId'],'cells':[{**row,'tenants':n} for n in PILOT_COUNTS]}
         self.assertTrue(pilot_check(doc));doc['cells'].pop(1)
         with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):pilot_check(doc)
         self.assertEqual(CADENCE['remote-pilot']['accel'],1);self.assertEqual(CADENCE['remote-pilot']['loadSeconds'],300)
@@ -124,7 +127,7 @@ class Contract(unittest.TestCase):
             args=SimpleNamespace(mode='pilot',replicas=None,ceiling_receipt=None,k6_image='not-run')
             def prepare(options):
                 seen.append((options.tenants,options.replicas,options.profile));folder=Path(options.directory);folder.mkdir();adapter.write(folder/'owner.json',{})
-            def run(folder,manifest,image):adapter.write(folder/'summary.json',{'pair':pair,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'instrument':'c'*64})
+            def run(folder,manifest,image):adapter.write(folder/'summary.json',{'pair':pair,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'instrument':'c'*64,'profileSelection':PROFILE})
             with patch.object(adapter,'prepare',prepare),patch.object(adapter,'load',lambda folder:(Path(folder),{})),patch.object(adapter,'deploy'),patch.object(adapter,'run',run),patch.object(adapter,'down'):
                 campaign.ladder(args,1,root,master)
             self.assertEqual(seen,[(500,1,'remote-pilot'),(750,1,'remote-pilot'),(1000,1,'remote-pilot')])

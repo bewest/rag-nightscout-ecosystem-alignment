@@ -26,6 +26,7 @@ from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, requi
                       tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity, receipt_scope, diagnostic_check)
 from probe import generate
 from workload import generate as generate_workload
+import profile_provenance
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
           "tools/mt-bench/compose-baseline/probes/sample.sh", "tools/mt-bench/compose-baseline/oracle/disk.sh"]
@@ -196,6 +197,7 @@ def port():
 
 
 def prepare(args):
+    profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000))
     require(os.getuid()==1000 and os.getgid()==1000,"M7_HOST_RUNTIME_UID_REQUIRED")
     if args.profile=="fresh-image-diagnostic":require(1<=args.tenants<=10 and 1<=args.replicas<=2,"M7_DIAGNOSTIC_LIMIT_INVALID")
     require(1<=args.tenants<=10000 and args.replicas in REPLICAS and args.profile in CADENCE, "M7_CAPACITY_CELL_INVALID")
@@ -226,6 +228,7 @@ def prepare_staged(args,target,pinned):
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
          "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":CADENCE[args.profile]}
+    m["diagnostics"]=profile_provenance.selection(getattr(args,"diagnostics","off"),getattr(args,"diagnostics_interval_ms",5000))
     m["hostIdentity"]=host_identity(inventory(nonce))
     write(target / "owner.json", m)
     # Refuse preexisting project resources; no broad cleanup/nearest substitute.
@@ -251,6 +254,7 @@ def prepare_staged(args,target,pinned):
         base_args.extend(["-f", file])
     config = json.loads(command([*base_args, "--profile", "ops", "config", "--format", "json"],phase="compose-config"))
     serving_mounts(config)
+    profile_provenance.select_environment(config,m["diagnostics"])
     for spec in config["services"].values():
         for volume in spec.get("volumes", []):
             if volume.get("type")=="bind":
@@ -284,6 +288,8 @@ def verify(d, m):
     require(host_identity(inventory(m["owner"]))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
+    profile_provenance.verify_environment(document(d/"frozen.compose.json"),m["diagnostics"])
+    profile_provenance.state_environment(d/"state",document(d/"frozen.compose.json"),m["diagnostics"])
     require(digest(d / "restart.cjs")==m["restartHelperSha256"], "M7_RESTART_HELPER_CHANGED")
     require(digest(d / "probe.js") == m["probe"]["adaptedSha256"], "M7_PROBE_CHANGED")
     require(digest(d / "k6/workload.js") == m["workload"]["adaptedSha256"], "M7_WORKLOAD_CHANGED")
@@ -386,6 +392,11 @@ def deploy(d, m):
         write(d/"deployment-stages.json",stages)
         if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
         if name=="bootstrap":
+            fingerprint=json.loads(command(["node",HERE/"fingerprint.cjs",d/"core",m["pair"]["core"],d/"state/primer/config.json",str(m["tenants"])],phase="settings-fingerprint"))
+            m["settingsFingerprint"]=fingerprint
+            m["profileSelection"]=profile_provenance.identity(fingerprint,m["diagnostics"],config)
+            profile_provenance.state_environment(d/"state",config,m["diagnostics"])
+            write(d/"owner.json",m)
             layout=document(d/"state/bootstrap/layout.json")
             require(all(layout.get("namespaces",{}).get(kind)=="nsdemo_"+kind for kind in ("entries","devicestatus","treatments","clock","eval_checkpoint")),"M7_ORACLE_SCHEMA_CONTRACT_CHANGED")
             # Raw restart is not a valid controlled-placement replacement.
@@ -398,6 +409,7 @@ def deploy(d, m):
     projections=[tenant_projection(document(file),m["tenants"]) for file in candidates]
     require(all(value==projections[0] for value in projections),"M7_PRIMER_OUTPUT_CONFLICT")
     write(d/"tenants.private.json",projections[0])
+    profile_provenance.runtime_environment(resources(m),m["diagnostics"],config)
     m["restartRoles"]=service_roster(config)
     write(d/"owner.json",m);write(d/"deployment.json",{"stages":stages,"pair":m["pair"],"imageId":m["imageId"]})
 
@@ -588,6 +600,7 @@ def run(d, m, k6_image):
                 command(["docker", "run", "--rm", "--name", m["project"] + "-k6", "--label", OWNER + "=" + m["owner"], "--label", "com.docker.compose.project=" + m["project"], "--label", "com.docker.compose.service=k6",
                     "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(d / "tenants.private.json") + ":/tenants.private.json:ro",
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
+                    "-e", "SETTINGS_FINGERPRINT=" + m["settingsFingerprint"]["sha256"],
                     "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL=1", "-e", "HOT_FACTOR=10",
                     "-e", "SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status", k6_id, "run", "--quiet", "--summary-export", "/out/k6-summary.json", "/scripts/workload.js"], file=output, timeout=m["cadence"]["loadSeconds"]+600)
             phase_snapshot(d, out, "after")
@@ -603,7 +616,8 @@ def run(d, m, k6_image):
     control(d, m)
     host = inventory(m["owner"]);write(d / "run-after-host.json", host)
     result_probe = document(out / "probe.json")
-    correctness = [result["verdict"] == "GREEN", result["uncertain"] == 0, not any(not r["owned"] for r in host["containers"]),
+    fingerprint_result=profile_provenance.fingerprint_check(document(out/"k6-summary.json")["metrics"])
+    correctness = [fingerprint_result["verdict"]=="PASS", result["verdict"] == "GREEN", result["uncertain"] == 0, not any(not r["owned"] for r in host["containers"]),
                    result_probe["prime"]["primed"] == 2*m["tenants"], result_probe["window"]["deliveredFrames"] == result_probe["window"]["expectedFrames"],
                    result_probe["restart"]["stockRecovered"] == 2*m["tenants"], result_probe["restart"]["runtimeAcquisitionObservation"]["missing"] == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
@@ -613,6 +627,7 @@ def run(d, m, k6_image):
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
+               "profileSelection":m["profileSelection"],"settingsFingerprint":m["settingsFingerprint"],"settingsFingerprintObservation":fingerprint_result,
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
     from reduce import measurements
     summary["measurements"] = measurements(d, m)
@@ -620,6 +635,7 @@ def run(d, m, k6_image):
     write(d / "summary.json", summary)
     metrics = document(out / "k6-summary.json")["metrics"]
     require(metric(metrics,"writes_refused")==0 and metric(metrics,"responses_refused")==0,"M7_FUNCTIONAL_REQUEST_REFUSAL")
+    require(fingerprint_result["verdict"]=="PASS","M7_FUNCTIONAL_SETTINGS_FINGERPRINT")
     require(summary["verdict"] == "PASS", "M7_CORRECTNESS_GROWTH_GATE_FAILED")
 
 
@@ -657,6 +673,7 @@ def diagnose(d,m):
         outcome=document(out/"diagnostic-observations.json")
         result={"kind":"m7-joined-fresh-image-diagnostic","profile":m["profile"],"pair":m["pair"],"instrument":m["instrument"]["sha256"],
                 "hostIdentity":m["hostIdentity"],"imageId":m["imageId"],"tenants":m["tenants"],"replicas":m["replicas"],"verdict":"PASS",
+                "profileSelection":m["profileSelection"],"settingsFingerprintObservation":"UNMEASURED; diagnostic is not k6 capacity",
                 "checks":outcome["checks"],"acceptedWrites":outcome["acceptedWrites"],"dataHttpRequests":outcome["dataHttpRequests"],**{key:outcome[key] for key in ("httpAccountingVersion","criterionHttpRequests","physicalHttpRequests","warmProbeHttpRequests","trailRecords","trailBytes")},"oracle":counted["verdict"],"oracleControl":document(out/"oracle-control.json"),
                 "fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT","trafficDeadlineSeconds":scope["trafficSeconds"]}
         diagnostic_check(result);write(d/"diagnostic.json",result)
@@ -672,6 +689,10 @@ def down(d, m):
     assert_owned(m)
     if m.get("prepared"):
         verify(d, m)
+        config=document(d/"frozen.compose.json")
+        try:captured=profile_provenance.capture_logs(d/"role-logs",config,lambda role:["docker","compose","-p",m["project"],"--env-file",str(d/"env"),"-f",str(d/"frozen.compose.json"),"logs","--no-color","--no-log-prefix","--tail","1000",role])
+        except Exception:captured={"version":1,"scope":"PRIVATE","error":"capture-failed","complete":False}
+        write(d/"role-logs/manifest.json",captured)
         compose(d, "--profile", "ops", "down", "--volumes", "--remove-orphans", timeout=120)
         for row in resources(m):
             owned(row,m["owner"]);command(["docker","rm","--force","--volumes",row["Id"]])
@@ -692,6 +713,8 @@ def parser():
     prep = sub.add_parser("prepare")
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image"):prep.add_argument("--"+name, required=True)
     prep.add_argument("--freeze","--receipt",dest="freeze",required=True)
+    prep.add_argument("--diagnostics",choices=("off","on"),default="off")
+    prep.add_argument("--diagnostics-interval-ms",type=int,default=5000)
     prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)
     for cmd in ("verify", "build", "deploy", "run", "diagnose", "control", "down", "host-identity"):
@@ -701,11 +724,13 @@ def parser():
     check = sub.add_parser("check-pilot");check.add_argument("summary")
     check = sub.add_parser("check-diagnostic");check.add_argument("summary")
     sub.add_parser("manifest")
+    sub.add_parser("capabilities")
     return p
 
 
 def main():
     args = parser().parse_args()
+    if args.command == "capabilities":return print(json.dumps(document(HERE/"capabilities.json"),sort_keys=True))
     if args.command == "manifest":return print(json.dumps(instrument(),indent=2))
     if args.command == "prepare":return prepare(args)
     if args.command == "check-campaign":campaign_check(document(args.summary));return print("M7_CAMPAIGN_COMPLETE")
