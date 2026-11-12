@@ -11541,7 +11541,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `-` |
 | semver | `minor` |
 | review | maintainer; architecture and clinical-path review |
-| register | `BF-238` |
+| register | `BF-238`, `BF-239`, `BF-240` |
 | blocks on | `MT-BENCH-BASELINE` |
 
 **Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A pool-membership table in PostgreSQL holds one heartbeat row per member (ordinal, expected members, ring slice, lease expiry). A member evaluates its slice only while every live row agrees on the member count and no two live rows share an ordinal; otherwise it stops its own cycle and alerts. No per-tenant lock; duplicate evaluation is bounded to one heartbeat interval after a membership change and the evaluator's outputs are idempotent by contract. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index. A read-only private operational module must expose configured mode/count/ordinal/rule/slice separately from observed membership, heartbeat freshness/conflicts, eligibility and actual workload progress. Standalone reports all configured tenants without fabricating a membership lease. The endpoint-composition lane owns shared listener plumbing; this lane owns evaluator payload/schema and observed-state semantics.
@@ -11556,11 +11556,15 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/repair/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-listener-195c-f0f91/README.md`
+- `reports/tenancy/evaluator-effect-idempotency-2026-11-12/original/README.md`
+- `reports/tenancy/producer-repeat-cause-2026-11-12/independent-reducer-195c/README.md`
 - `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/original/README.md`
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** 2026-11-12: partition and private inspection source are joined locally; the fixed-roster deployment binding is under actual-role qualification. BF-238 independently reproduces expired-parent scheduling refusal; its trusted scheduling repair and bounded successful-completion inspection are open. The native 2-to-3 clinical handoff has not run. Earlier planned-only operational API wording below records the original boundary, not current implementation status. Decision evaluator-static-partition (2026-11-09, revised the same day): pool membership table, not a per-tenant lease; the maintainer judged the per-tenant fence unnecessary overhead given idempotent outputs. Open design choices inside the item: whether a member with a stale peer row may take over that slice after the lease expires; modulo vs consistent hashing. MT-SCALE- UNBOUND measures the overlap window for any duplicate external effect. The operational API is planned, not provided by current lifecycle status/in- process health. See the runtime-topology ownership inventory: notification attempts, future connector actors, realtime checkpoint/fanout and maintenance claims need their own ownership semantics; the evaluator ring is not imposed on every component.
+**Notes.** 2026-11-12: BF-238 scheduling and BF-240 empty inspection are fixed in local core195c9322; bounded actual-listener completed-work qualification passes. Actual paired evaluator2-to-3 clinical acceptance fails on BF-239 early duplicate accepted normal effects; repeat-null origins and independent reducer/native warm-gap reproduction isolate lost repeat state. A narrow source repair is under evaluation; final acceptance/capacity are UNMEASURED. Remote CoreC was cancelled before all test tiers/corpus and independently cleaned up. The private configured/observed/ progress API is implemented v2, callable while eligibility is refused and bounded by explicit selectors; inspection must not drive work. Decision evaluator-static-partition uses member-level metadata, not a per-tenant lease; required durable effect idempotency must pass before promotion. Realtime and other actors retain their independent ownership/maintenance contracts; this ring is not imposed on every component.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 

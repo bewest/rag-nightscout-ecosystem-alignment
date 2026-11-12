@@ -1,0 +1,9 @@
+# Core campaign C cancelled before tests
+
+**Reproduced cancellation and cleanup; comprehensive acceptance UNMEASURED.** The [unchanged remote-owner assessment](assessment.json) records exact source/instrument pins, intentional cancellation, collection before teardown and independently empty owned cloud inventory. [Capture digest](SHA256SUMS).
+
+The candidate was core `195c932293f3abc648da8fbe4356bf7360acd002`, deployment metadata `f0f91f43784bb708385bcd4074cdfbd490fc096d`, alignment `1ff724983dd0148e10f76ad73231c46d9a532f26`. Activation raced the coordinator's brief hold request after a separate paired clinical assertion failed. The exact controller was held before its test campaign, then cancelled through its existing finalizer after typed inspection confirmed duplicate accepted normal effects. No source or bundle was patched on the paid host.
+
+All eight tiers and the complete enabled corpus were **NOT RUN**. Controller `failed / deploy:CANCELLED` denotes intentional cancellation, not a failed functional test. The [actual paired clinical failure and exact repeat-null origins](../../evaluator-effect-idempotency-2026-11-12/original/README.md) and [independent reducer discriminator](../../producer-repeat-cause-2026-11-12/independent-reducer-195c/README.md) require a repaired refreeze. The successful scheduler, collector, identity and stock/restore checks retain their separate source and coverage limits.
+
+Collection completed before destruction. Controller/watchdog cleanup and independent owned droplet/firewall/tag absence passed; the remote owner removed its temporary key. The recorded compute estimate is not an invoice. Original private spec, bundle, hold/cancel intent and partial captures remain under local `externals/work/perf-cloud-core-20261112/core-acceptance-20261112-c/`. No cloud job, automatic rerun or capacity activation remains.
