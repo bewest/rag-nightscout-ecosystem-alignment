@@ -1,0 +1,155 @@
+{
+  "kind": "sanitized-captured-core-E-failure",
+  "acceptance": "NOT_ACCEPTED",
+  "capacity": "NOT_ASSESSED",
+  "sourcePins": {
+    "coreCommit": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+    "deployCommit": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+    "alignmentCommit": "8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61",
+    "instrumentCommit": "d358f64e464ec1b03901af1cbaf9bbed39b4caf1"
+  },
+  "capturedSourceProvenance": {
+    "commit": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "ciEnvironmentSha256": "97ebaee8ecab5deb14c434c34e2cb05b3235b5e7a55224b82d5e3e7e4f4a0fff",
+    "nodeVersion": "v24.22.1",
+    "npmVersion": "11.19.1",
+    "nodeBinarySha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+    "instrumentCommit": "d358f64e464ec1b03901af1cbaf9bbed39b4caf1",
+    "workerSha256": "07b4e4e4c36e3c0bc265efc66552be9d645cae579e67c9987a517069e4936e0d"
+  },
+  "stages": {
+    "unit": {
+      "status": "PASSED",
+      "terminalCounts": {
+        "passing": 3563,
+        "pending": 1,
+        "failing": 0
+      },
+      "commandStatus": "passed",
+      "returnCode": 0
+    },
+    "dom": {
+      "status": "PASSED",
+      "terminalCounts": {
+        "passing": 205,
+        "pending": 0,
+        "failing": 0
+      },
+      "commandStatus": "passed",
+      "returnCode": 0
+    },
+    "dependency": {
+      "status": "PASSED",
+      "terminalCounts": {
+        "passing": 368,
+        "pending": 2,
+        "failing": 0
+      },
+      "commandStatus": "passed",
+      "returnCode": 0
+    },
+    "core": {
+      "status": "PASSED",
+      "terminalCounts": {
+        "passing": 319,
+        "pending": 0,
+        "failing": 0
+      },
+      "commandStatus": "passed",
+      "returnCode": 0
+    },
+    "harness": {
+      "status": "PASSED",
+      "terminalCounts": {
+        "passing": 99,
+        "pending": 0,
+        "failing": 0
+      },
+      "commandStatus": "passed",
+      "returnCode": 0
+    },
+    "integration": {
+      "status": "INTERRUPTED/CANCELLED",
+      "terminalCounts": null,
+      "commandStatus": null,
+      "returnCode": null
+    },
+    "stress": {
+      "status": "NOT_RUN",
+      "terminalCounts": null,
+      "commandStatus": null,
+      "returnCode": null
+    },
+    "browser": {
+      "status": "NOT_RUN",
+      "terminalCounts": null,
+      "commandStatus": null,
+      "returnCode": null
+    },
+    "enabled-corpus": {
+      "status": "NOT_RUN",
+      "terminalCounts": null,
+      "commandStatus": null,
+      "returnCode": null
+    }
+  },
+  "enabledCorpusInventory": {
+    "configuredSuites": 86,
+    "execution": "NOT_RUN",
+    "basis": "read-derived exact frozen source inventory; not measured suite results"
+  },
+  "measurementScope": "Captured original campaign only; no new runtime, campaign, cloud/resource queries or tests performed to publish this record.",
+  "integrationLimits": {
+    "status": "INTERRUPTED/CANCELLED",
+    "finalPassing": null,
+    "finalPending": null,
+    "finalFailing": null,
+    "returnCode": null,
+    "firstHookFailureVsMongoDeath": "UNRESOLVED; hook announcements lack event timestamps; data payload dates are not event clocks"
+  },
+  "mongo": {
+    "capturedFatalAt": "2026-11-12T18:43:00.782+00:00",
+    "capturedExitedAt": "2026-11-12T18:43:00.856513703Z",
+    "capturedErrorCode": 24,
+    "capturedErrorText": "Too many open files",
+    "capturedOperation": "WiredTiger directory synchronization during index creation",
+    "capturedPanic": "WT_PANIC",
+    "capturedFatalAssertion": 50853,
+    "dockerState": {
+      "Status": "exited",
+      "Running": false,
+      "OOMKilled": false,
+      "ExitCode": 14,
+      "StartedAt": "2026-11-12T18:40:21.161614899Z",
+      "FinishedAt": "2026-11-12T18:43:00.856513703Z"
+    },
+    "dockerMemoryLimit": 0,
+    "dockerUlimits": [],
+    "effectiveNoFileSoftHard": "UNMEASURED",
+    "interpretation": "Captured EMFILE/panic/exit14 proves the Mongo fixture failed. Empty configured Ulimits is not measured effective cap and does not prove1024. No OOM or disk-full cause was observed; independent earlier hook failure is not excluded."
+  },
+  "cleanup": {
+    "workerFinalResultCaptured": false,
+    "workerOwnedMongoCleanup": "UNMEASURED",
+    "workerFixtureResiduals": null,
+    "workerFixtureVolumeResiduals": null,
+    "controller": {
+      "cancelled": true,
+      "cleanup": "verified",
+      "outcome": "failed",
+      "finishedAt": "2026-11-12T18:53:15.195Z"
+    },
+    "watchdog": {
+      "cleanup": "verified",
+      "finishedAt": "2026-11-12T18:53:23.134Z"
+    },
+    "independentProviderInventory": {
+      "verifiedAt": "2026-11-12T18:53:36.151051+00:00",
+      "remainingDroplets": 0,
+      "remainingFirewalls": 0,
+      "remainingRunTags": 0
+    },
+    "meaning": "Verified outer destruction/provider absence does not establish missing in-VM owned Mongo finalizer/absence proof."
+  }
+}
