@@ -1,0 +1,5 @@
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-access-signature-proof-20261112/scripts/profile-access-signature-proof.js
+  13:16  warning  Found non-literal argument in require  security/detect-non-literal-require
+
+✖ 1 problem (0 errors, 1 warning)
