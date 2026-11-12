@@ -284,8 +284,9 @@ def native_time_witness(expected,evidence):
     need(document.get('kind')=='native-bounded-evaluator-due-listener-qualification' and
          {k:document.get(v) for k,v in {'core':'source','deploy':'binding','imageId':'imageId','instrument':'instrumentSha256'}.items()}==pins,'M7_NATIVE_EVALUATOR_TIME_IDENTITY')
     need(integer(specification['tenants'],1) and isinstance(specification['services'],list) and 1<=len(specification['services'])<=4 and len(set(specification['services']))==len(specification['services']),'M7_NATIVE_EVALUATOR_TIME_SPEC')
-    proof=pointer(document,specification['proofPointer'])
-    try:result=progress_contract().verify(proof,specification['tenants'],specification['services'],'idle')
+    proof=pointer(document,specification['proofPointer']);module=progress_contract()
+    need(isinstance(proof,dict) and proof.get('kind')=='evaluator-progress-phase-v2' and proof.get('policy')==module.POLICY,'M7_NATIVE_EVALUATOR_TIME_VERSION')
+    try:result=module.verify(proof,specification['tenants'],specification['services'],'idle')
     except RuntimeError as error:raise ValueError(str(error)) from error
     need(result['tenantsWithTimeProgress']==specification['tenants'] and result['completedTimeDelta']>0,'M7_NATIVE_EVALUATOR_TIME_REQUIRED')
     return result

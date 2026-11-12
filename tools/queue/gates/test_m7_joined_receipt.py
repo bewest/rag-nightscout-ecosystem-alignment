@@ -558,6 +558,19 @@ class ReceiptTests(unittest.TestCase):
             require_refusal(mutant)
         require_refusal(Path(gate.__file__))
 
+    def test_native_time_witness_cannot_downgrade_to_coherent_historical_v1(self):
+        cell={**self.identity,'profile':'capacity','tenants':2,'replicas':1,'hostIdentity':'2'*64,'profileSelection':self.profile}
+        self.progress(cell);specification=self.expected['nativeEvaluatorTimeWitness'];module=gate.progress_contract()
+        wrapper=json.loads((self.root/specification['artifact']['path']).read_text());proof=wrapper['proof']
+        proof.update(kind='evaluator-progress-phase-v1',columns=list(module.LEGACY_COLUMNS),policy=module.LEGACY_POLICY,version=1)
+        for snapshot in proof['rounds']:snapshot['rows']=[row[:len(module.LEGACY_COLUMNS)] for row in snapshot['rows']]
+        decoded,ids=module.decode_rounds(proof,2,['eval-worker'])
+        wrapper['proof']={**module.assess(decoded,sorted(ids),'idle',policy=module.LEGACY_POLICY),'kind':'evaluator-progress-phase-v1','columns':list(module.LEGACY_COLUMNS),'rounds':proof['rounds']}
+        self.assertGreater(module.verify(wrapper['proof'],2,['eval-worker'],'idle')['completedTimeDelta'],0,'HISTORICAL_READER_REMAINS_VALID')
+        specification['artifact']=self.artifact('native-time-coherent-v1-downgrade.json',wrapper)
+        evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts']
+        with self.assertRaisesRegex(ValueError,'M7_NATIVE_EVALUATOR_TIME_VERSION'):gate.native_time_witness(self.expected,evidence)
+
     def test_idle_safety_requires_independent_exact_native_time_and_refuses_quiet_as_witness(self):
         cell={**self.identity,'profile':'capacity','tenants':2,'replicas':1,'hostIdentity':'2'*64,'profileSelection':self.profile}
         self.progress(cell);evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts']
