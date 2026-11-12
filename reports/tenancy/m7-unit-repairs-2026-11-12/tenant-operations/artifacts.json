@@ -1,0 +1,14 @@
+{
+  "m7-tenant-operations-original.log": {
+    "sha256": "af55cd375c4d76507ad416c7620a978499777497cb55a6de93893a4a845b2213"
+  },
+  "m7-tenant-operations-inventory-control.log": {
+    "sha256": "73c09632ad5c5bde55b209e50b768dfc5e2fca62a20262f63ba87bd311860ca7"
+  },
+  "m7-tenant-operations-model-complete.log": {
+    "sha256": "5682f6ef8c29c75407756e8c34f096e5fb7de4035a02fd280542578105bba3ce"
+  },
+  "m7-tenant-operations-joined-focused.log": {
+    "sha256": "dd34a1b42c053334ae6312e9335667a8151db5a3116697925d89428de56ca749"
+  }
+}

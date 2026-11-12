@@ -1,0 +1,49 @@
+
+
+  tenant operations: deployment backup, restore, upgrade and rollback
+    plan
+      ✔ preserves management issuance request rows and their appended ledger through deployment restore
+      ✔ preserves issuance audit rows and the exact appended ledger without manufacturing inventory changes
+      ✔ refuses unknown migration effects and a column-changing issuance model instead of silently accepting them
+      ✔ validates the injected catalogue list and refuses a shared namespace
+    backup
+      ✔ refuses hidden physical relations with a known ledger in deployment backup and restore
+      ✔ refuses hidden target physical relations before any deployment restore effect
+      ✔ captures every catalogued table for every tenant in one read-only snapshot, with ledgers, checksums and key references
+      ✔ refuses a bound identity before reading any table: a bound role would produce an empty, consistent artifact
+      ✔ refuses a ledger the catalogue does not know, checksum drift, an empty ledger and an unregistered tenant
+      ✔ refuses a secret record whose stored value is not a key-referenced ciphertext, so plaintext never travels
+    restore
+      ✔ restores into prepared fresh namespaces in one transaction, recreates the ACL, advances identity sequences and the independent oracle matches the source
+      ✔ preserves profile successor ordinal gaps across restore and grants only exact writer sequence USAGE
+      ✔ restores exact outbox private clear/ACK/revision state and keeps ACK principal SELECT-only
+      ✔ restores both physical checkpoint instances without mixing their consumers, tenant rows or grants
+      ✔ control: a backup that lost one tenant from one table restores cleanly, and the independent oracle names the tenant and table
+      ✔ control: one tampered row is refused by the file digest before any transaction or write
+      ✔ control: a non-empty target namespace is refused inside the transaction with no write issued and nothing changed
+      ✔ control: a target ledger that is not exactly the artifact ledger is refused: unprepared, longer, or drifted
+      ✔ control: a column difference, a bound identity and a bad ACL role are refused before any write
+      ✔ control: the in-transaction oracle does not trust row counts; a write that reports success without storing rolls everything back
+      ✔ an interrupted restore leaves nothing behind and a rerun completes
+    explicit old/new inventory and table-scoped privileges
+      ✔ backs up only old populated inventory, upgrades a new namespace, refuses older readiness and restores old inventory
+      ✔ refuses occupied new namespaces before backup and detects row loss during an otherwise successful migration
+      ✔ emits only caller-supplied table grants; invalid wildcard/escalation plans refuse before statements
+    upgrade and rollback over a two-catalogue sequence
+      ✔ upgrade is status, backup, up, check; the record names the backup; no up is issued before the backup commits
+      ✔ control: a failing precheck issues neither a backup nor an up; nothing pending issues no backup
+      ✔ control: a ledger that moved between precheck and backup, and an up that fails, keep the artifact and issue no further up
+      ✔ rollback: the older check refuses the upgraded namespace with MIG_UNKNOWN, the backup restores into fresh namespaces, the older check is current there, and writes after the backup are lost
+      ✔ rollback validates ACL, cross-kind source aliases and empty existing schemas before preparation
+      ✔ control: rollback refuses when the older check finds every namespace current, when a target is not fresh, and when the artifact is not the older catalogue
+
+  tenant operations current native fixture contract (recording only)
+    ✔ admits parent-first counter inventory while retaining the exact old source for upgrade
+    ✔ binds every actual native seed insert transaction-locally and rolls back interrupted setup
+    ✔ uses explicit serving ACL declarations and observes raw ordinals and floors independently
+
+
+[TIMING STATS] Total: 33 tests, Avg: 5ms, Slow: 0
+
+  33 passing (158ms)
+
