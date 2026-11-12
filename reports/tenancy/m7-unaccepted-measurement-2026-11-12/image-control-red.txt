@@ -1,0 +1,15 @@
+test_unknown_claims_wrong_tuple_image_run_hash_limits_refuse (selected_controls.Unaccepted.test_unknown_claims_wrong_tuple_image_run_hash_limits_refuse) ... 
+  test_unknown_claims_wrong_tuple_image_run_hash_limits_refuse (selected_controls.Unaccepted.test_unknown_claims_wrong_tuple_image_run_hash_limits_refuse) (changed=['imageId']) ... FAIL
+
+======================================================================
+FAIL: test_unknown_claims_wrong_tuple_image_run_hash_limits_refuse (selected_controls.Unaccepted.test_unknown_claims_wrong_tuple_image_run_hash_limits_refuse) (changed=['imageId'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<alignment>/tools/mt-bench/m7-joined/test_unaccepted.py", line 29, in test_unknown_claims_wrong_tuple_image_run_hash_limits_refuse
+    with self.subTest(changed=list(changed)),self.assertRaises(RuntimeError):c.receipt_scope(manifest(),{**authorization(),**changed},'run')
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

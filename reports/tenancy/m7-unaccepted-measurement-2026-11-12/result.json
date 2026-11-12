@@ -1,0 +1,44 @@
+{
+  "kind": "m7-unaccepted-measurement-source-proof",
+  "source": "7219ad70bd3b284d23573a3bfb115883136fd97a",
+  "base": "5d7fa02746f4695a222f1fc400dc59b61a8c717e",
+  "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d",
+  "instrumentFiles": 40,
+  "receiptGate": {
+    "sha256": "316a3747e86dd519c8ce302055873903e564862a590cd8e38c4d5bea3b6e7b86",
+    "bytes": 35213
+  },
+  "focused": {
+    "unaccepted": {
+      "passing": 9,
+      "failures": 0
+    },
+    "originalContract": {
+      "passing": 19,
+      "failures": 0
+    },
+    "receiptModule": {
+      "passing": 51,
+      "failures": 0
+    }
+  },
+  "controls": {
+    "imageEqualityOmitted": "RED RuntimeError not raised",
+    "actualCellGateRefusalOmitted": "RED ValueError not raised",
+    "restored": "9 focused PASS"
+  },
+  "priorFailure": "Initial 51-test receipt run had one copied-validator ablation failure because eager import required missing sibling source; repaired with self-contained marker check, targeted control then final51PASS.",
+  "capabilities4": "UNCHANGED",
+  "runtime": "UNMEASURED; no app/Docker/cloud/capacity execution",
+  "scope": "Admission and output metadata; original pilot predicates/workload/cadence/oracles unchanged",
+  "originalPrivateLogSha256": {
+    "unaccepted-focused.txt": "7fdd0de30be9deec805531c85c16188cea10c2e56a950aa06ec795755a9876b2",
+    "original-contract.txt": "27cca36156e3a63ad0a0001f4b96b56040b9c2dcbe9cece569b1cf3995e00dc8",
+    "receipt-restored.txt": "f0aa8a492ea0c09254cf6de4f089d6a8c7744d62826898f71b420d7dabfab5b5",
+    "image-control-red.txt": "9f53bf4d4de95ebecd01228b5c396216ec6438e92252645e0e8faca926bb4bc8",
+    "gate-control-red.txt": "b2d1aabc8280691268a0e583e057df1c19feb2143ceec555c75aa41318261519",
+    "receipt-initial-refusal.txt": "0084846861235566bb5c431ba70647090e613422eaaddaac717d9b53dd055ed1",
+    "receipt-targeted-repair.txt": "31362b3fba0b5ad5fa246a0489bd61d0bf3fe8e9d2095ee1161485061ff1aa51",
+    "restored-focused.txt": "76c01e7ba1708ec77ec6989a2c682ba20eb3ed68bc2cab3fa4a24b011fc32a96"
+  }
+}
