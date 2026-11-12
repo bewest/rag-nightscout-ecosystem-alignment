@@ -1,0 +1,85 @@
+{
+  "kind": "read-derived-runtime-input-comparison",
+  "coreBefore": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+  "coreAfter": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+  "deployBefore": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+  "deployAfter": "31565abe437ea84214aa0068f75de1246c06e45e",
+  "coreBuildInputs": {
+    "package.json": {
+      "before": "0ac60a074d1e07631ee3558acdba10b43531c40d",
+      "after": "0ac60a074d1e07631ee3558acdba10b43531c40d"
+    },
+    "package-lock.json": {
+      "before": "34013c3fcd4348762571f664b8d55e2b4edd35d0",
+      "after": "34013c3fcd4348762571f664b8d55e2b4edd35d0"
+    },
+    ".babelrc": {
+      "before": "ff3059c3f099e7703b0e3bb5b9843dcbd0a37153",
+      "after": "ff3059c3f099e7703b0e3bb5b9843dcbd0a37153"
+    },
+    ".browserslistrc": {
+      "before": "34e99e5f0fc9642cf420e3adddef3fc965f462d3",
+      "after": "34e99e5f0fc9642cf420e3adddef3fc965f462d3"
+    },
+    ".dockerignore": {
+      "before": "6bb7bc1e29cf10b1807c642e49efd7220009f495",
+      "after": "6bb7bc1e29cf10b1807c642e49efd7220009f495"
+    },
+    "bundle": {
+      "before": "c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458",
+      "after": "c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458"
+    },
+    "webpack": {
+      "before": "7aa4b78fd4ad48d466a9efa803a0f17d98f074ef",
+      "after": "7aa4b78fd4ad48d466a9efa803a0f17d98f074ef"
+    },
+    "bin": {
+      "before": "a0afba03b03b47e1e21f68a9b5638e19995a31df",
+      "after": "a0afba03b03b47e1e21f68a9b5638e19995a31df"
+    },
+    "lib": {
+      "before": "c3e8b95cf3eb959ed9f013e2cd5142d5a494f840",
+      "after": "c3e8b95cf3eb959ed9f013e2cd5142d5a494f840"
+    },
+    "static": {
+      "before": "645a3fba5f269611f1949f9174144ef9945835e8",
+      "after": "645a3fba5f269611f1949f9174144ef9945835e8"
+    },
+    "views": {
+      "before": "d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8",
+      "after": "d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8"
+    },
+    "translations": {
+      "before": "105b1847130fe57f06ca010e9d4b709d09b6f2e9",
+      "after": "105b1847130fe57f06ca010e9d4b709d09b6f2e9"
+    },
+    "migrations": {
+      "before": "aa71098f942959dd7889586bcf6ecc0141aeecfa",
+      "after": "aa71098f942959dd7889586bcf6ecc0141aeecfa"
+    },
+    "scripts/diagnose-data.js": {
+      "before": "9869466b39493985907a9914a7a3ccb710584d6b",
+      "after": "9869466b39493985907a9914a7a3ccb710584d6b"
+    },
+    "deploy/multitenant": {
+      "before": "fdc9f8dd2644b8789c86abeb030fbc0ad7304780",
+      "after": "fdc9f8dd2644b8789c86abeb030fbc0ad7304780"
+    },
+    "server.js": {
+      "before": "d1c3f30897b5d74635db1490a81f1b3be9910877",
+      "after": "d1c3f30897b5d74635db1490a81f1b3be9910877"
+    }
+  },
+  "bindingTreeBefore": "3ba19b609af18184082cbd8aa5f978c9cfde016c",
+  "bindingTreeAfter": "3ba19b609af18184082cbd8aa5f978c9cfde016c",
+  "coreChangedPaths": [
+    "tests/change-feed.integration.test.js"
+  ],
+  "deployChangedPaths": [
+    "bindings/compose/SOURCE.md"
+  ],
+  "scope": "Unchanged historical native behavior criteria retain old exact attribution; image identity is NOT inferred. New primary image still requires strict successful TIME support.",
+  "nativeReuseSource": "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/",
+  "nativeReuseImage": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+  "nativeNewImage": "NOT_YET_BUILT"
+}
