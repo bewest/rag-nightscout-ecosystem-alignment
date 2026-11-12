@@ -1,0 +1,64 @@
+2026-11-12T13:49:48.484Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.486Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.486Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.486Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+auto acking 2  -  default
+2026-11-12T13:49:48.487Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"Auto ack'd alarm(s)","group":"default","plugin":"<none>"}
+2026-11-12T13:49:48.487Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.487Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.487Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.488Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.489Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.489Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+auto acking 2  -  default
+2026-11-12T13:49:48.489Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"Auto ack'd alarm(s)","group":"default","plugin":"<none>"}
+2026-11-12T13:49:48.489Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.489Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+auto acking 2  -  default
+2026-11-12T13:49:48.489Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"Auto ack'd alarm(s)","group":"default","plugin":"<none>"}
+2026-11-12T13:49:48.489Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Synthetic urgent","message":"Synthetic unchanged","group":"default","plugin":"synthetic"}
+2026-11-12T13:49:48.489Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"default - Urgent was ack'd","group":"default","plugin":"<none>"}
+node:assert:150
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '33fe81ae0d907153b44e5f8dfd453b6e1932b1fdead3fcfc42ece4a3dbb9b0f7'
+- 'c3c9f5605515a7fccfa1d1f9d89e63a006a2354c882d4b7da82c89c770d18b6a'
+
+    at Object.<anonymous> (<owned-original-instrument>/reducer.cjs:24:8)
+    at Module._compile (node:internal/modules/cjs/loader:1781:14)
+    at Object..js (node:internal/modules/cjs/loader:1913:10)
+    at Module.load (node:internal/modules/cjs/loader:1505:32)
+    at Function._load (node:internal/modules/cjs/loader:1309:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+    at node:internal/main/run_main_module:36:49 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '33fe81ae0d907153b44e5f8dfd453b6e1932b1fdead3fcfc42ece4a3dbb9b0f7',
+  expected: 'c3c9f5605515a7fccfa1d1f9d89e63a006a2354c882d4b7da82c89c770d18b6a',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.4
