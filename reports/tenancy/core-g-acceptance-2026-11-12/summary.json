@@ -1,0 +1,127 @@
+{
+  "kind": "sanitized-core-g-completed-failure",
+  "outcome": "FAILED",
+  "acceptance": "NOT_ACCEPTED",
+  "capacity": "NOT_ASSESSED",
+  "source": {
+    "coreCommit": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+    "deployCommit": "31565abe437ea84214aa0068f75de1246c06e45e",
+    "alignmentCommit": "502b46b05bc9a581d2c371f18f7e0e71852f0578",
+    "instrumentCommit": "7209cb29020543a82412cd69d2751ca939cf4318"
+  },
+  "workerStatus": "failed",
+  "workerSourceAcceptance": "COORDINATOR_REVIEW_REQUIRED",
+  "completedTiers": [
+    "unit",
+    "dom",
+    "dependency",
+    "core",
+    "harness",
+    "integration",
+    "stress",
+    "browser"
+  ],
+  "stages": {
+    "unit": {
+      "counts": {
+        "passing": 3563,
+        "pending": 1,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "dom": {
+      "counts": {
+        "passing": 205,
+        "pending": 0,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "dependency": {
+      "counts": {
+        "passing": 368,
+        "pending": 2,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "core": {
+      "counts": {
+        "passing": 319,
+        "pending": 0,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "harness": {
+      "counts": {
+        "passing": 99,
+        "pending": 0,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "integration": {
+      "counts": {
+        "passing": 3643,
+        "pending": 836,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "stress": {
+      "counts": {
+        "passing": 18,
+        "pending": 0,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "browser": {
+      "counts": {
+        "passing": 686,
+        "pending": 0,
+        "failing": 0
+      },
+      "recordedCommandStatus": "passed",
+      "recordedReturnCode": 0
+    },
+    "enabled-corpus": {
+      "counts": {
+        "passing": 838,
+        "pending": 1,
+        "failing": 1
+      },
+      "recordedCommandStatus": "failed",
+      "recordedReturnCode": 1
+    }
+  },
+  "ordinaryTierTotals": {
+    "passing": 8901,
+    "pending": 839,
+    "failing": 0
+  },
+  "enabledCorpus": {
+    "selectedSuites": 86,
+    "matchesExactSourceInventory": true,
+    "actualExecutedFileLedger": "NOT_SEPARATELY_RECORDED",
+    "counts": {
+      "status": 1,
+      "signal": null,
+      "passing": 838,
+      "pending": 1,
+      "failing": 1
+    },
+    "startedAt": "2026-11-12T19:43:52.352Z",
+    "finishedAt": "2026-11-12T19:55:08.157Z"
+  },
+  "processAttribution": "Only recorded outer stage command exits are reported; no independent child CLI exit ledger is inferred."
+}
