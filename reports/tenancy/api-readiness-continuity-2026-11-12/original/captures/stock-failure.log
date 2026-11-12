@@ -1,0 +1,42 @@
+TAP version 13
+# Subtest: actual shipping edge preserves registered Host polling/WebSocket/API3 and real restore continuity
+not ok 1 - actual shipping edge preserves registered Host polling/WebSocket/API3 and real restore continuity
+  ---
+  duration_ms: 11370.121863
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-idlepair-20261112/deploy/multitenant/shipping-sharding.integration.test.js:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    B settings traffic remains healthy
+    + actual - expected
+    
+    + [
+    +   'B_SETTINGS_STATUS_503_TENANT_WARMING',
+    +   'B_SETTINGS_STATUS_503_TENANT_WARMING',
+    +   'B_SETTINGS_STATUS_503_TENANT_WARMING'
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0: 'B_SETTINGS_STATUS_503_TENANT_WARMING'
+    1: 'B_SETTINGS_STATUS_503_TENANT_WARMING'
+    2: 'B_SETTINGS_STATUS_503_TENANT_WARMING'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-idlepair-20261112/deploy/multitenant/shipping-sharding.integration.test.js:58:67)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11424.882495

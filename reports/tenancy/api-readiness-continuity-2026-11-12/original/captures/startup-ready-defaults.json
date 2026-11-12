@@ -1,0 +1,135 @@
+{
+  "observedAtMs": 1794504466630,
+  "scope": "read-only startup-ready/default-data verification before quiet capture; no stock/settings/clinical/move",
+  "defaults": [
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "status": 200,
+      "defaultSgv": 123
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "status": 200,
+      "defaultSgv": 177
+    }
+  ],
+  "evaluatorOwnedRows": [
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "ready": true,
+      "completedAcquisitions": 1
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "ready": true,
+      "completedAcquisitions": 1
+    }
+  ],
+  "containers": [
+    {
+      "id": "3c9020e124ff13646195561dbfcf88046106a7ba10a2816a59fc455aadfec135",
+      "service": "nginx",
+      "image": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea",
+      "status": "running",
+      "health": null
+    },
+    {
+      "id": "23ff8d65c86bdad2299ceedd6e40fb469c2a7d53e7d3d005453f17f5116e8aeb",
+      "service": "evaluator",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "d851acb7d5fbee361f9f133da2108ce486b6f9ae6e72af678abb26110bb9cad9",
+      "service": "evaluator-2",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "67656e48fef6777f4ae758bf1bffc9aec496fa55b0f6e955798d4c46d7bc9dbf",
+      "service": "evaluator-3",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "757d6ad72b3c2d3e726db731ada611a7c6476dd5b62aac37de1eda2aebfd5f17",
+      "service": "ui",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "84b7b666415f9e77670c5339a802fe1e69e04bbc5a379f59c97c4666ded78eb3",
+      "service": "realtime-2",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "1080f39fdf4d4e35c293ca31b46cd5dc615a8913464df424b45557a42a3c7b83",
+      "service": "tenant-admin",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "ba74966f19c240bfe5a93eb13be432cef3ae321ff29d0468b6792c89f7ae772a",
+      "service": "realtime",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "e67c03ed3dd5403e0461061bbf38773756e74754b6af4b8f12b1fdfb1612b741",
+      "service": "socket-edge",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "7b38b84c8fb41c8bc6fe74494bd1c2948bd303167d44465f0a1ac92e12a7f177",
+      "service": "api",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "c8a32866ba715fdc21d6baa786307258c79fb5afbb235801cfc26ae37beb4fbc",
+      "service": "api-2",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "d06fef8cc53bed292fd17655bfb04d0471620e795400c17095e45a3d2d403920",
+      "service": "admin",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "bdcb651b42725c5192098e1f80a546818b7a7837c370652e1382d56fe96b4938",
+      "service": "feed-reader",
+      "image": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+      "status": "running",
+      "health": null
+    },
+    {
+      "id": "61d72809d8d33f1fdd8798aca263f5c2c617affb4d6ccbb508be1401e6fc87b6",
+      "service": "postgres",
+      "image": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "734cd01344266f6a97a65d312036aaaa0da5b30f3ea035b49ca2f99c2ea67cbd",
+      "service": "vault",
+      "image": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "status": "running",
+      "health": "healthy"
+    }
+  ]
+}
