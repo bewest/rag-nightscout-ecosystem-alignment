@@ -1,0 +1,7 @@
+{
+  "fixtures/api-readiness-host.cjs": "7463d0b716de5c1ba2e95cd6e75db9a702fcb7a24f583a9bc2a4ac415757060f",
+  "fixtures/api-readiness-private.cjs": "c0c2294e0f41b7cb5d267b6c351369dccc27a63444a49a57113f27ad1537d6e7",
+  "fixtures/api-readiness-observation.cjs": "ab687344ae626984e9a0f68d5ba28d73be8a45fa8d685cc477b1adf0f62540df",
+  "shipping-sharding.integration.test.js": "b890a9407aa828015c95d725ada2ddeefb5bc980e675b38f03279eb9458e224f",
+  "api-readiness-carrier.test.js": "65fffe93d5a24310d6a3a7646dacf3564bada87c0d333034dc92114d63a3e74b"
+}

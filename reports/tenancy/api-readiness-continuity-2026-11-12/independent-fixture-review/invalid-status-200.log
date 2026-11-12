@@ -1,0 +1,5 @@
+{"probe":"VALID_JSON_INVALID_STATUS_BODY","passed":true}
+INVALID_STATUS_200_FALSE_PASS
+
+true !== false
+
