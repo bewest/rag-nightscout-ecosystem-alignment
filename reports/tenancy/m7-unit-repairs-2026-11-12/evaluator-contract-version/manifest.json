@@ -1,0 +1,11 @@
+{
+  "files": {
+    "README.md": "8c18a4fe34e650001112f54f47e0f5286cded36dde81bd1f0c7bbcf00f542027",
+    "descriptor-downgrade-control.cjs": "3cc6d5f81c3be0301c8f7bec8451ee04d46cf5c448e5cbd41420cfbc41132664",
+    "downgrade-red.log": "7f53450eaa7637c147fa0036425ff21f27223a12ed73d9a0e52ee04d8a205e1d",
+    "fixed.log": "7f948c98c3fb90b58703fcf92563ee192f832d6ec9d4113f836855aa1feda610",
+    "original-red.log": "73ccded95aa13ce46121bf02fe252d818c48aaffac1c4ae848326b4726bdf009",
+    "restored.log": "ed05a2fd5ae899da563a9076e3f2cbc61986df4c08f58caebf41161b2d999ff6",
+    "source.json": "e75e6bb21ab2835f1abd9c72dd94643f608412d219261f4df0462be3d834f5d9"
+  }
+}
