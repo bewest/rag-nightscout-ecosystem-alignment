@@ -4,8 +4,10 @@ import json
 import time
 import evaluator_progress as p
 
+# moduleVersion identifies this idle assessor; strictWorkPolicy still pins the
+# unchanged source inspection/work protocol. The packed row schema stays v1.
 FLAGS=('running','booting','acquire','time','parentAcquire','parentTime')
-POLICY={'version':1,'kind':'evaluator-idle-safety','moduleVersion':2,
+POLICY={'version':1,'kind':'evaluator-idle-safety','moduleVersion':3,
         'strictWorkPolicy':p.POLICY,'meaning':'NO_EVALUATOR_TIME_DEMAND or observed successful time work',
         'quietMeaning':'TIME_NOT_EXERCISED','clockGuard':'common-bracketed-realtime-minus-monotonic-offset',
         'jobEncoding':'six-fixed-clinical-flags-bitmask-v1','newClinicalDemand':'UNMEASURED','explicitNullDue':'NO_TIMER_DECLARED_WITH_COMPLETE_JOB_OBSERVATION','missingDue':'UNMEASURED','nativeTimeWitnessRequired':True,
@@ -88,7 +90,6 @@ def stability(rounds,ids):
 def assess(rounds,ids,phase='idle'):
     p.need(phase=='idle','M7_EVALUATOR_IDLE_PHASE');stability(rounds,ids);clock=clock_windows(rounds)
     final_end=max(v['end']['wallUs'] for v in rounds[-1]['readWindows'].values())/1000
-    final_start=min(v['start']['wallUs'] for v in rounds[-1]['readWindows'].values())/1000
     outcomes={};completed=0
     for tenant in ids:
         first=rounds[0]['owners'][tenant];last=rounds[-1]['owners'][tenant]
@@ -98,8 +99,11 @@ def assess(rounds,ids,phase='idle'):
         opportunities=[i for i,row in enumerate(rows) if row['dueAt'] is not None and row['dueAt']<=final_end]
         if opportunities:
             # A later future due cannot erase an earlier observed opportunity.
+            # A successful completion after that observed counter is sufficient;
+            # a due inside the final fetch does not negate already credited work.
+            # Final-only demand still has no later completion observation.
             for i in opportunities:
-                p.need(i<2 and rows[i]['dueAt']<=final_start and last['completedTimeCycles']>rows[i]['completedTimeCycles'],'M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED')
+                p.need(i<2 and last['completedTimeCycles']>rows[i]['completedTimeCycles'],'M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED')
             outcomes[tenant]={'classification':'TIME_EXERCISED','completedTimeDelta':delta}
         else:
             p.need(delta==0,'M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME')

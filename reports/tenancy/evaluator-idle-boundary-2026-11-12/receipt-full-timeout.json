@@ -1,0 +1,1 @@
+{"command": ["python3", "-B", "tools/queue/gates/test_m7_joined_receipt.py"], "harnessTimeoutSeconds": 45, "result": "TIMED_OUT", "childExitCode": "UNMEASURED", "partialChildOutputRetained": false, "scope": "extra full receipt-module attempt, not application/runtime/phase; affected selected checks run separately"}

@@ -35,6 +35,25 @@ class Idle(unittest.TestCase):
             rounds=self.rounds();rounds[-1]['owners'][A]['dueAt']=at
             if at<=220200:self.refuse(rounds,'TIME_NOT_OBSERVED')
             else:self.assertEqual(idle.assess(rounds,[A,B])['verdict'],'PASS')
+    def test_earlier_due_inside_final_read_with_actual_completion_is_exercised(self):
+        rounds=self.rounds()
+        for i in (0,1):rounds[i]['owners'][A].update(dueAt=220050,dueReason='sgv-recent-10')
+        rounds[2]['owners'][A].update(completedTimeCycles=1,legacyCycles=2,dueAt=None,dueReason=None)
+        value=idle.assess(rounds,[A,B]);self.assertEqual(value['classifications']['TIME_EXERCISED'],1)
+        self.assertEqual(value['completedTimeDelta'],1);self.assertFalse(value['timeWitness'])
+        packed=idle.pack({**value,'rounds':rounds});self.assertEqual(idle.verify(packed,2,['evaluator']),value)
+        old=copy.deepcopy(packed);old['policy']['moduleVersion']=2
+        with self.assertRaisesRegex(p.Refused,'IDLE_VERSION'):idle.verify(old,2,['evaluator'])
+    def test_crossing_uncompleted_and_final_only_demand_stay_unmeasured(self):
+        for due in (220050,220201):
+            rounds=self.rounds()
+            for i in (0,1):rounds[i]['owners'][A].update(dueAt=due,dueReason='sgv-recent-10')
+            rounds[-1]['owners'][A].update(dueAt=None,dueReason=None)
+            if due<=220200:self.refuse(rounds,'TIME_NOT_OBSERVED')
+            else:self.assertEqual(idle.assess(rounds,[A,B])['verdict'],'PASS')
+        rounds=self.rounds();rounds[0]['owners'][A]['dueAt']=1
+        rounds[-1]['owners'][A].update(dueAt=220050,completedTimeCycles=1,legacyCycles=2)
+        self.refuse(rounds,'TIME_NOT_OBSERVED') # positive earlier work does not cover final-only demand
     def test_all_clinical_slots_and_explicit_null_pending_refuse(self):
         for key in idle.FLAGS:
             for due in (1000000,None):

@@ -1,0 +1,55 @@
+test_after_failure_keeps_primary_and_reports_actual_partial_files (test_idle_bookends.Bookends.test_after_failure_keeps_primary_and_reports_actual_partial_files) ... FAIL
+test_after_failure_without_primary_is_not_a_pass (test_idle_bookends.Bookends.test_after_failure_without_primary_is_not_a_pass) ... ERROR
+test_diagnostic_publication_failure_never_replaces_primary (test_idle_bookends.Bookends.test_diagnostic_publication_failure_never_replaces_primary) ... ERROR
+test_observer_refusal_still_captures_existing_after_bookend (test_idle_bookends.Bookends.test_observer_refusal_still_captures_existing_after_bookend) ... FAIL
+test_pass_has_only_original_two_bookends_and_four_sql_queries (test_idle_bookends.Bookends.test_pass_has_only_original_two_bookends_and_four_sql_queries) ... ok
+
+======================================================================
+ERROR: test_after_failure_without_primary_is_not_a_pass (test_idle_bookends.Bookends.test_after_failure_without_primary_is_not_a_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-idle-boundary-20261112/tools/mt-bench/m7-joined/test_idle_bookends.py", line 65, in test_after_failure_without_primary_is_not_a_pass
+    self.assertIs(error,secondary);self.assertIsNone(result);self.assertFalse(a.document(out/'after-snapshot-failure.json')['originalPhaseFailurePreserved'])
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-idle-boundary-20261112/tools/mt-bench/m7-joined/adapter.py", line 90, in document
+    return json.loads(Path(path).read_text())
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1029, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpc8k56yzo/idle/after-snapshot-failure.json'
+
+======================================================================
+ERROR: test_diagnostic_publication_failure_never_replaces_primary (test_idle_bookends.Bookends.test_diagnostic_publication_failure_never_replaces_primary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-idle-boundary-20261112/tools/mt-bench/m7-joined/test_idle_bookends.py", line 68, in test_diagnostic_publication_failure_never_replaces_primary
+    self.assertIs(error,failure);self.assertTrue(error.afterSnapshotFailure['publicationFailed']);self.assertFalse((out/'after-snapshot-failure.json').exists())
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Refused' object has no attribute 'afterSnapshotFailure'
+
+======================================================================
+FAIL: test_after_failure_keeps_primary_and_reports_actual_partial_files (test_idle_bookends.Bookends.test_after_failure_keeps_primary_and_reports_actual_partial_files)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-idle-boundary-20261112/tools/mt-bench/m7-joined/test_idle_bookends.py", line 58, in test_after_failure_keeps_primary_and_reports_actual_partial_files
+    self.assertIs(error,failure);self.assertEqual(queries,3)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 3
+
+======================================================================
+FAIL: test_observer_refusal_still_captures_existing_after_bookend (test_idle_bookends.Bookends.test_observer_refusal_still_captures_existing_after_bookend)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-idle-boundary-20261112/tools/mt-bench/m7-joined/test_idle_bookends.py", line 52, in test_observer_refusal_still_captures_existing_after_bookend
+    self.assertIs(error,failure);self.assertEqual(queries,4)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 4
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.007s
+
+FAILED (failures=2, errors=2)

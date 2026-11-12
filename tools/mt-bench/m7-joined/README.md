@@ -281,3 +281,19 @@ with null age, errors and progress requirements remain strict. Refused field
 checks retain fixed predicate/field names and bounded positional indices, never
 raw rows, tenant IDs or runtime values. Readiness deadlines, polling cadence,
 workload and native TIME proof requirements are unchanged.
+
+Idle assessor module3 accepts already observed successful TIME work after each
+first/midpoint opportunity even when its due time falls inside the final fetch
+bracket. It still refuses final-only demand and any opportunity without later
+credited work; a later future/null due cannot erase an earlier opportunity.
+This is not a deadline claim. Policy/wire row schema remains version1, while
+`evaluatorIdleSafety.moduleVersion=3` explicitly pins this assessor; the source
+inspection/strict-work protocol remains version2. Historical module2 records
+retain their original policy/result and do not silently become current proofs.
+
+Enabled idle attempts its existing AFTER cgroup/PostgreSQL bookend in `finally`,
+including observer refusal. PASS still has only the original BEFORE/AFTER pair.
+If AFTER also refuses, a bounded fixed diagnostic records actual partial-file
+availability and the original phase exception is preserved. Missing bookends
+are never fabricated, and an AFTER failure without a phase failure still fails
+the run. No sampling window, query set, workload or retry policy is expanded.

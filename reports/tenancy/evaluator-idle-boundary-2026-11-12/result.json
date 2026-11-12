@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "kind": "collector-idle-boundary-source-proof",
+  "source": "6e47b652862c4a7d523dcc22aba1c8474eca3662",
+  "instrument": "b60704009d490e04b587220f40d789192c530227b31ac4aafe6bdf160c948320",
+  "gate": {
+    "sha256": "316a3747e86dd519c8ce302055873903e564862a590cd8e38c4d5bea3b6e7b86",
+    "bytes": 35213
+  },
+  "idleAssessorModuleVersion": 3,
+  "sourceInspectionAndStrictWorkVersion": 2,
+  "packedIdleSchema": 1,
+  "checks": {
+    "idle": 14,
+    "bookends": 5,
+    "progress": 14,
+    "warming": 7,
+    "profile": 7,
+    "contract": 19,
+    "unaccepted": 9,
+    "selectedReceipt": 4,
+    "selectedSkips": 0
+  },
+  "fullReceiptModule": "TIMED_OUT_LOCAL_45S_EXTRA_ATTEMPT",
+  "newRuntimeExecution": "NOT_RUN",
+  "capacityAcceptance": "NOT_GRANTED",
+  "originalCResultUnchanged": true,
+  "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+  "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+  "resourcesActivated": false,
+  "isolatedLinkStatus": "canonical attempt-C report coordinator-owned; resolves after root join"
+}
