@@ -1,0 +1,51 @@
+# multitenant: running 1 suites with NS_EVALUATOR_EFFECT_DOCKER_TEST
+
+
+  native evaluator unavailable-model effect idempotency
+2026-11-12T13:44:38.864Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:44:39.104Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+NATIVE_EFFECT_CAUSE {"label":"no-gap","clock":1794484804438,"repeatAt":1794484860000,"hasOutput":true,"requests":[{"request":"823406e6-d179-478b-a5ed-2b2ec01b6512","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+    ✔ retains one accepted logical effect when identical fresh-owner recovery has no unavailable-model observation (337ms)
+2026-11-12T13:44:39.467Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+NATIVE_EFFECT_CAUSE {"label":"unavailable-model","clock":1794484801000,"repeatAt":null,"hasOutput":true,"requests":[{"request":"16b9c1a9-747f-47b0-bf00-15c7e26f5011","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+2026-11-12T13:44:39.681Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+NATIVE_EFFECT_CAUSE {"label":"identical-recovery-before-deadline","clock":1794484804438,"repeatAt":1794484864438,"hasOutput":true,"requests":[{"request":"16b9c1a9-747f-47b0-bf00-15c7e26f5011","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false},{"request":"cb1dfa6c-a68f-47fb-a887-c49df04a096d","state":"accepted","origin":"368d5668f562422a08844602839e909c8d8641facd902e1a57e1c311fe3755c9","created":1794484804438,"accepted":1794484804438,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+NATIVE_EFFECT_ORIGIN_MATCH {"missingClockOrigin":"368d5668f562422a08844602839e909c8d8641facd902e1a57e1c311fe3755c9","matched":1,"lifetimeClients":2}
+    1) refuses an early repeat after real producer observes a held fresh-owner model unavailable
+2026-11-12T13:44:40.011Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:44:40.207Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+NATIVE_EFFECT_CAUSE {"label":"genuine-due-recovery","clock":1794484860000,"repeatAt":1794484920000,"hasOutput":true,"requests":[{"request":"7ba337e8-364b-4e18-939f-f2568016e358","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false},{"request":"3e06c593-ce07-4054-82b2-f40396297a8d","state":"accepted","origin":"368d5668f562422a08844602839e909c8d8641facd902e1a57e1c311fe3755c9","created":1794484860000,"accepted":1794484860000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+    ✔ still accepts exactly one genuine due repeat after the unavailable-model gap (421ms)
+NATIVE_EFFECT_CLEANUP {"containerRemoved":true,"anonymousVolumesRemoved":true,"image":"postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"}
+
+
+[TIMING STATS] Total: 3 tests, Avg: 486ms, Slow: 0
+
+  2 passing (7s)
+  1 failing
+
+  1) native evaluator unavailable-model effect idempotency
+       refuses an early repeat after real producer observes a held fresh-owner model unavailable:
+
+      AssertionError [ERR_ASSERTION]: NATIVE_IDENTICAL_RECOVERY_MUST_NOT_CREATE_EARLY_REPEAT
+
+2 !== 1
+
+      + expected - actual
+
+      -2
+      +1
+      
+      at Context.<anonymous> (tests/evaluator-effect-idempotency.integration.test.js:112:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+
+# multitenant: mocha exited 1 (2 passing, 0 pending, 1 failing)
+# multitenant: run record written to /tmp/evaluator-effect-06032-original-corpus.json

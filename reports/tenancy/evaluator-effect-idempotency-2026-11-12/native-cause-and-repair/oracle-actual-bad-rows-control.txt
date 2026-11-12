@@ -1,0 +1,1 @@
+{"originalTypedRows":"rejected-identical-A-early-effect","removedOnlyExactRepeatNullOrigins":2,"counterfactualTypedRows":"accepted-three-intentional-effects","scope":"metadata-only oracle counterfactual; synthetic fanout digest projection, not runtime acceptance"}

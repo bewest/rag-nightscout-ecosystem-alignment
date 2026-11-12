@@ -1,0 +1,10 @@
+{
+  "originalProduct": "195c932293f3abc648da8fbe4356bf7360acd002",
+  "originalNativeInstrumentCommit": "06032dd3b9fbc7979343b4ead308453ebc5c730a",
+  "repair": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+  "bindingOracle": "5ce61e1414637097c526d23a5729be6a425361a0",
+  "oldReducerSha256": "77300e2eaa4d47adbb5bb0580779758cd75059e3246a2be0d962c66a7a1efc60",
+  "newReducerSha256": "9754e8563bde352170066f9757eb8018cedc86ad490b8216cfc94331414e4bf8",
+  "nativeInstrumentSha256": "41eb55cbd8cb5add19b997655c960c86cf20489afdc3ae09c72ed8499c276b71",
+  "nativeInstrumentUnchangedByRepair": true
+}
