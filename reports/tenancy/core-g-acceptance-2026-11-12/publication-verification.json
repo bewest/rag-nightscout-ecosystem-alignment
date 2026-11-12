@@ -1,0 +1,17 @@
+{
+  "kind": "public-derivative-publication-check",
+  "jsonParsing": "PASS",
+  "privateValueScan": "PASS (source scanner literals excluded, manually reviewed)",
+  "localReadmeLinks": "PASS",
+  "trailingWhitespace": "PASS",
+  "queueCheck": {
+    "exit": 2,
+    "stage": "queue validation",
+    "missingExternalCwdReferences": 16,
+    "laterSteps": "NOT_RUN",
+    "sourceOrQueueEdited": false
+  },
+  "earlierPublicationCheck": "Initial ordering refused because manifest was not created yet; not counted as PASS. Final check rerun after all outputs exist.",
+  "runtimeCampaign": "NOT_RUN; saved capture only",
+  "scope": "Public G derivative quality checks; original remote outcome remains FAILED."
+}
