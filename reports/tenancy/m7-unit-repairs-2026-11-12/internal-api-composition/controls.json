@@ -1,0 +1,18 @@
+{
+  "originalTransportSha256": "97d262179905a3d41dde673bf3bdc1a64e92a6390d60105482f6f13c08d20240",
+  "restoredByteIdentical": true,
+  "controls": [
+    {
+      "control": "owner",
+      "exit": 2,
+      "symptom": "foreign co-resident service: actual200 expected503",
+      "mutatedSourceSha256": "3ff616cb1ab24c55a78fce0c25185072ba7d50c6b084878245efdbc60bca6453"
+    },
+    {
+      "control": "version",
+      "exit": 2,
+      "symptom": "old lifecycle wire version: actual200 expected503",
+      "mutatedSourceSha256": "6a7c3379e6d3f391c648e385824d0819a11ccb5b5312514f182438d80df84424"
+    }
+  ]
+}

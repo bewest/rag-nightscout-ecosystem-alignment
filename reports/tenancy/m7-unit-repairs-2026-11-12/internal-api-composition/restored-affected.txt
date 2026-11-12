@@ -1,0 +1,11 @@
+
+
+  .......................................Tenant warm drained: ready 1 failed 0 deferred 0 after 4 ms
+.Tenant warm drained: ready 1 failed 0 deferred 0 after 1 ms
+Tenant warm drained: ready 1 failed 0 deferred 0 after 1 ms
+................
+  ..........
+[TIMING STATS] Total: 66 tests, Avg: 25ms, Slow: 0
+
+
+  66 passing (2s)

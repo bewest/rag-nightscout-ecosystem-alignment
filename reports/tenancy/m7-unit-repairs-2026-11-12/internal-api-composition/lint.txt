@@ -1,0 +1,6 @@
+
+<WORKSPACE>/externals/work/crm-internal-composition-repair-20261112/tests/internal-api-composition.test.js
+   43:3   warning  Found chmodSync from package "node:fs" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  131:42  warning  Found existsSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+✖ 2 problems (0 errors, 2 warnings)

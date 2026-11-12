@@ -1,0 +1,7 @@
+
+
+  ...................
+[TIMING STATS] Total: 19 tests, Avg: 29ms, Slow: 0
+
+
+  19 passing (555ms)
