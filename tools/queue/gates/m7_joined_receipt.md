@@ -128,7 +128,7 @@ retained files for FAIL comparisons. Duplicate/missing/wrong-source cells refuse
 Cells retain the producer's `verdict == PASS iff all(correctness)` assessment and
 oracle/uncertainty consistency. Claimed targets must PASS. All selected cells need
 complete actual numeric HTTP and role observations, positive sample counts, and
-observed windows covering the existing profile cadence. The expectation must pin `capacityInventories["<profile>:<replicas>"]` as `{httpShapes, windows}`. `httpShapes` is the exact seven names from the selected workload. `windows` contains `idle-disabled`, `idle`, `load`; each maps logical `api`, `realtime`, `evaluator`, `postgres`, `vault-agent` (and optional `other`) to the actual Compose service names selected for that profile/window. API inventory length matches the replica count. Actual role keys and shape keys must match exactly; names are not guessed by the checker. Co-located roles may explicitly share a container observation, which does not create separate per-role CPU/RSS figures.
+observed windows covering the existing profile cadence. The expectation must pin `capacityInventories["<profile>:<replicas>"]` as `{httpShapes, windows}`. `httpShapes` is the exact seven names from the selected workload. `windows` contains `idle-disabled`, `idle`, `load`; each maps logical `api`, `realtime`, `evaluator`, `postgres`, `vault` server (and optional distinct `vault-agent` / `other`) to the actual Compose service names selected for that profile/window. API inventory length matches the replica count. Actual role keys and shape keys must match exactly; names are not guessed by the checker. Co-located roles may explicitly share a container observation, which does not create separate per-role CPU/RSS figures.
 
 Every selected serving role requires finite nonnegative snapshot CPU/cgroup memory fields, `counterReset: false`, and its actual `processRssKiBAfter` Docker `top -eo pid,comm,rss` table with numeric RSS KiB rows. Idle/load additionally require positive sample count and finite sampled CPU/memory observations. The 60-second sampler-disabled control requires its actual snapshot fields, not invented sampler values. RSS is not replaced with cgroup memory or labelled as JS heap. Already-exited load generators belong to their separate resource observations, not fabricated serving-role snapshots. The gate reuses existing
 profile/ladder contracts without altering them or inventing latency thresholds.
@@ -147,6 +147,8 @@ whether a scaling curve or a discovered binding is acceptable.
 
 `bindings` references `{pair, complete: true, entries}`. Entries may be explicitly
 empty; findings carry `component`, `file`, positive `line`, and `finding`.
+Base capacity uses the actual Vault server and does not silently activate an Agent overlay. Broad `vault-agent` scaling additionally pins `agentRoles` in that component specification and a `roles` JSON pointer in each observation. Its sample and metric selectors must address those actual observed Agent roles, disjoint from the pinned Vault server names. A server-only record cannot be relabelled Agent evidence.
+
 Do not erase an actual binding to obtain an empty inventory.
 
 ## Coordinator queue wiring

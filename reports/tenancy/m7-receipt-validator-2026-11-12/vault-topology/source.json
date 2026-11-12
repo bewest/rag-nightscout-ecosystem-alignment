@@ -1,0 +1,8 @@
+{
+  "source": "e62e7c865b60f89e37495a50e0d55247c594e001",
+  "files": {
+    "tools/queue/gates/m7_joined_receipt.py": "0d2826f29eef5afaebde9a4da04e28073ebb9920ea524db384034fc1498244f0",
+    "tools/queue/gates/test_m7_joined_receipt.py": "96dc3fdf43858b7daa0e3afb52b181912218f9a44dd5ad8c6e1121589615af30",
+    "tools/queue/gates/m7_joined_receipt.md": "3cf2f0a738d43ef073dc2ec3ac08c00078a3459bd64fab5951cec39458cd48df"
+  }
+}

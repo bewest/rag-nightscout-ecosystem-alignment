@@ -14,6 +14,7 @@ sys.dont_write_bytecode = True
 
 TIERS = ('unit', 'dom', 'dependency', 'core', 'harness', 'integration', 'stress', 'browser')
 COMPONENTS = ('api', 'realtime', 'evaluator', 'postgres', 'vault-agent')
+BASE_COMPONENTS = ('api', 'realtime', 'evaluator', 'postgres', 'vault')
 SHA = re.compile(r'[0-9a-f]{40}')
 DIGEST = re.compile(r'[0-9a-f]{64}')
 NAME = re.compile(r'[a-z][a-z0-9_-]{0,79}')
@@ -263,10 +264,10 @@ def cell_measurement(cell, expected, profile, host):
             for key in ('p50', 'p95', 'p99')), 'M7_CAPACITY_NOT_MEASURED')
     for phase, window in windows.items():
         groups = inventory['windows'][phase]
-        need(isinstance(groups, dict) and set(COMPONENTS) <= set(groups) and set(groups) <= set(COMPONENTS) | {'other'} and all(
+        need(isinstance(groups, dict) and set(BASE_COMPONENTS) <= set(groups) and set(groups) <= set(BASE_COMPONENTS) | {'vault-agent', 'other'} and all(
             isinstance(names, list) and names and len(set(names)) == len(names) and
             all(isinstance(name, str) and NAME.fullmatch(name) for name in names) for names in groups.values()), 'M7_ROLE_POLICY')
-        need(len(groups['api']) == cell['replicas'], 'M7_ROLE_POLICY')
+        need(len(groups['api']) == cell['replicas'] and set(groups.get('vault-agent', [])).isdisjoint(groups['vault']), 'M7_ROLE_POLICY')
         roles = window.get('roles', {})
         required_roles = {name for names in groups.values() for name in names}
         need(isinstance(roles, dict) and set(roles) == required_roles, 'M7_CAPACITY_ROLE_INVENTORY')
@@ -355,14 +356,24 @@ def validate(expected, receipt, evidence, scope='acceptance'):
         need(set(expected.get('scaling', {})) == set(COMPONENTS) and set(receipt.get('scaling', {})) == set(COMPONENTS), 'M7_SCALING_COMPONENTS')
         for component in COMPONENTS:
             specification = expected['scaling'][component]
-            need(isinstance(specification, dict) and set(specification) == {'proof', 'observations'}, 'M7_SCALING_SPEC')
+            fields = {'proof', 'observations'} | ({'agentRoles'} if component == 'vault-agent' else set())
+            need(isinstance(specification, dict) and set(specification) == fields, 'M7_SCALING_SPEC')
             check_proof(specification['proof'], receipt['scaling'][component], evidence)
             document = evidence.json(receipt['scaling'][component]['artifact'])
             observations = specification['observations']
             need(isinstance(observations, list) and 2 <= len(observations) <= 32, 'M7_SCALING_OBSERVATIONS')
             configurations = []
             for observation in observations:
-                need(isinstance(observation, dict) and set(observation) == {'configuration', 'samples', 'metrics'}, 'M7_SCALING_OBSERVATIONS')
+                fields = {'configuration', 'samples', 'metrics'} | ({'roles'} if component == 'vault-agent' else set())
+                need(isinstance(observation, dict) and set(observation) == fields, 'M7_SCALING_OBSERVATIONS')
+                if component == 'vault-agent':
+                    agent_roles = specification['agentRoles']
+                    vault_roles = {name for inventory in expected.get('capacityInventories', {}).values() for group in inventory.get('windows', {}).values() for name in group.get('vault', [])}
+                    need(isinstance(agent_roles, list) and agent_roles and len(set(agent_roles)) == len(agent_roles) and all(isinstance(name, str) and NAME.fullmatch(name) for name in agent_roles) and set(agent_roles).isdisjoint(vault_roles), 'M7_AGENT_ROLE_POLICY')
+                    observed = pointer(document, observation['roles'])
+                    need(isinstance(observed, dict) and set(agent_roles) <= set(observed), 'M7_AGENT_OVERLAY_UNMEASURED')
+                    prefixes = tuple(observation['roles'] + '/' + name + '/' for name in agent_roles)
+                    need(isinstance(observation['samples'], str) and observation['samples'].startswith(prefixes) and all(isinstance(selector, str) and selector.startswith(prefixes) for selector in observation['metrics']), 'M7_AGENT_METRIC_ATTRIBUTION')
                 configuration = pointer(document, observation['configuration'])
                 need((isinstance(configuration, str) and configuration.strip()) or
                      (type(configuration) in (int, float) and math.isfinite(configuration)), 'M7_SCALING_CONFIGURATION')
