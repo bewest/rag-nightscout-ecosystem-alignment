@@ -1,0 +1,16 @@
+
+
+  Internal service API contracts
+    ✔ fixes service ownership, names, wire paths and immutable versioned descriptors
+    ✔ accepts socket authority wire values and refuses unknown envelope, credential and permission fields
+    ✔ preserves canonical mutation payloads while rejecting unsupported event/namespace combinations and extra envelope fields
+    ✔ fixes ownership operation identifiers and refuses credential-bearing or ambiguous ownership wire values
+    ✔ fixes the connector inspection read: counts and codes only, never an endpoint or credential
+    ✔ preserves extensible notification payloads and fixes the handoff response without claiming device delivery
+    ✔ requires complete lifecycle identities and exact invalidation acknowledgements
+    ✔ fails unsupported schema vocabulary and exercises the implemented JSON Schema subset
+    ✔ ablation: the unknown-field guard goes red when additional-property rejection is removed
+
+
+  9 passing (8ms)
+
