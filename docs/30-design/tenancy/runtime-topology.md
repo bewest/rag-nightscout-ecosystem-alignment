@@ -41,6 +41,59 @@ distinguishes experimental rigs from operating recipes.
 | Admission / fencing | Checks that permit work / controls that prevent an old or invalid actor from continuing it. |
 | Hint / checkpoint | A signal to inspect authoritative state / a position or revision in a named input stream or snapshot. Its contract states what completion it proves. |
 
+## Component inventory and operator-topic readiness
+
+The component boundaries are clear enough to organize operator reference topics.
+They do not imply separate binaries, containers or production qualification.
+The inventory below groups existing responsibilities; release records own their
+current acceptance. Role launch details remain in the application source.
+
+**Read-derived source check, 2026-11-12:** cgm-remote-monitor
+`ff5156b984424f1ef34bcef22d5bfa0071354cfa`, `lib/server/serve/roles.js`,
+`lib/cli/index.js` and `lib/cli/commands/multitenant.js`.
+The role registry declares API, evaluator, realtime, vcpool, tenant-admin, admin and feed-reader.
+UI, maintenance jobs and backing services have different entry points.
+
+| Component or responsibility | Boundary and state ownership | Natural reference topic |
+|---|---|---|
+| API | REST version adapters and canonical clinical writes; current client authority. Each instance has pools, caches and in-flight requests. | Request service, authority, pool limits, replica routing and drain. |
+| Evaluator | Tenant acquisition and clinical/plugin computation; input checkpoints, eligible output and notification production have separate completion meanings. | Assignment, scheduling, freshness, output eligibility and recovery. |
+| Realtime | Client connections, subscriptions and record fanout; forwards authorized writes to API. Owns its projection and connection state. | Socket service, authority checks, tenant placement and reconnect/recovery. |
+| vcpool | Tenant connector actors. Reads scoped configuration and sends tenant-bound writes through the API. | Connector membership, credentials, outbound limits and retries. |
+| Tenant-admin | Tenant owner management with a separate credential audience; distinct from clinical DATA and operator ownership control. | Owner settings, delegation and management listener. |
+| Admin | Private operator ownership, pool and provisioning operations with scoped backing identities. It is not a lifecycle participant. | Operator control, provisioning, credentials and refused operations. |
+| UI | Page and asset delivery in the selected deployment binding. It is not a role in the inspected CLI registry. | Browser endpoint, routing and asset configuration. |
+| Maintenance jobs/controller | Explicit migration and restore operations; exact participant roster, incarnation and operation claims. | Migration, backup/restore, fencing, uncertain outcomes and recovery. |
+| Feed-reader | Dedicated metadata slot reader that emits change hints. It runs alone, outside tenant-operation cohorts. | Reader ownership, slot retention, hint transport and recovery. |
+| Projections and durable delivery | Library/protocol responsibilities used by workers; input positions and effect completion have separate contracts. | Replay, checkpoints, retained work and delivery guarantees. |
+| Edge and backing dependencies | Deployment-selected ingress, PostgreSQL, Vault and optional identity/monitoring services. Their availability and custody affect the whole deployment. | Binding, credentials, retained data, resource budgets and dependency recovery. |
+
+Use the [communication guide](evaluator-realtime-communication.md) for output and
+checkpoint ownership. Use the [deployment guide](deployment-bindings-and-public-names.md)
+for resource bindings and the [production path](production-critical-path.md) for
+operational closure. Proposed cell/fleet control remains a design topic; it is
+not another implemented service in this inventory.
+
+A component passes the operator-topic maturity test when a reader can identify
+its purpose, inputs, outputs, authority, retained state and owner.
+The same topic must explain configuration, startup refusal, readiness, shutdown,
+failure recovery, compatibility and operating limits. Follow existing contract
+and evidence links for each answer; mark missing answers as unmeasured or proposed.
+These are review questions for the existing design, not another status checklist.
+
+The inspected CLI already selects multitenant roles and provides migration,
+healthcheck, environment, diagnostic and operator-client commands. Its top-level multitenant
+summary still names only API and tenant-admin, while the registry supports more roles.
+The admin summary advertises provisioning but omits its removal verb.
+These are discoverability gaps, not evidence of missing implementations.
+The `admin` client and `admin` server role have different responsibilities.
+A healthcheck response also does not prove tenant progress or completed evaluation.
+Role-specific reference material is still spread across source documents and guides.
+Measured resource limits, remote placement and recovery qualification also remain
+source/profile-specific. The architecture is ready for coherent topics; a complete
+production operations manual would need those answers joined for a selected profile.
+No new command, help option or man page is required for this documentation work.
+
 ## Read the diagrams
 
 The three plates preserve different architectural scopes: the historical accepted
@@ -75,8 +128,8 @@ OIDC, network transport, scaling or production measurements.
 [PNG preview](diagrams/current-internal-api-topology.png) · [SVG source](diagrams/current-internal-api-topology.svg)
 
 The plate illustrates the [adopted listener composition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
-One private listener belongs to each role process; explicit contract modules
-select its operations. The [listener evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md)
+In this composition, each process that serves private contracts has one private listener.
+Explicit contract modules select its operations. The [listener evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md)
 and [shared-transport acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
 retain their executed heads and controls. Their source-scoped passes do not qualify
 every network, topology or later candidate. Current integration/publication belongs
@@ -93,7 +146,8 @@ purpose, not different networks or mandatory sockets:
 | Binding | HTTP over UDS or an explicitly selected TCP/HTTP origin, with a separately configurable bind address. The deployment chooses reachability and access policy. |
 | Instance addressing | Ordinary calls may target a service destination; maintenance must reach every actual participant and pin its incarnation. |
 
-Each role process opens one `serve.internal`: API serves socket-authority and
+Each process that serves private contracts opens one `serve.internal`.
+API serves socket-authority and
 lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant; evaluator and
 tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
 unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
@@ -119,7 +173,7 @@ read-derived; its latency, load and failure effects need measurement.
 [PNG preview](diagrams/proposed-fixed-roster-network-topology.png) · [SVG source](diagrams/proposed-fixed-roster-network-topology.svg)
 
 Bind public, management and private interfaces separately.
-Each role has one private listener, `serve.internal`, under the
+Each process that serves private contracts has one `serve.internal` listener under the
 [adopted decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
 The role's code selects its contract modules. Configuration selects a socket or
 host/port; it cannot move or merge contracts. The default is a Unix socket.

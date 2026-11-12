@@ -82,6 +82,23 @@ These were each earned by a defect that reached a document, and every one still 
 
 ## 5. Working rules
 
+**Writing designs and handoffs**
+
+Write for a reader who has none of the chat history. Lead with the purpose or
+outcome, then explain the mechanism and its practical limits. Use short, active
+sentences and one consistent name for each component. Define technical terms on
+first use; retain precise contract names and safety requirements. Keep **must**
+for obligations, **does** for supported behavior and **proposed** for a design
+that has not been adopted.
+
+Use a diagram for relationships and a table for comparisons when either replaces
+repeated prose. Link to the fact's existing home. A design explains responsibilities,
+interfaces, state ownership, failure/recovery behavior and compatibility. A handoff
+leads with what closed, what blocks progress, and the next action and owner; keep
+the source anchors and evidence needed to resume. Update the existing document
+or lane handoff rather than adding a parallel summary, style score or reporting
+step. Use ASD-STE100-inspired plain language without claiming formal conformity.
+
 **Git and worktrees**
 
 - The main checkout stays on `main`. Branch work happens in a worktree (`git worktree add`), one
