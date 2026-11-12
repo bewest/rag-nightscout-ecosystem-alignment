@@ -1,0 +1,20 @@
+{
+  "controls": [
+    {
+      "control": "export-omitted",
+      "exit": 1,
+      "symptom": "undefined"
+    },
+    {
+      "control": "helper-validation-removed",
+      "exit": 1,
+      "symptom": "Missing expected rejection"
+    },
+    {
+      "control": "schema-reason-bound-removed",
+      "exit": 1,
+      "symptom": "Missing expected rejection"
+    }
+  ],
+  "restored": "PASS"
+}
