@@ -18,6 +18,9 @@ class ReceiptTests(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.identity = {'pair': {'core': 'a' * 40, 'deploy': 'b' * 40},
                          'imageId': 'sha256:' + 'c' * 64, 'instrument': 'd' * 64}
+        self.profile={'version':1,'settings':{'schema':1,'sha256':'5'*64,'sourceCommit':'a'*40,'sourceBlobs':{'lib/settings.js':'6'*40}},'diagnostics':{'mode':'off','intervalMs':5000,'environment':{'NS_M7_DIAGNOSTICS':'0','NS_M7_DIAGNOSTICS_INTERVAL_MS':'5000'}},'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,'realtimeWorkers':1,'evaluatorWorkers':1}}
+        self.profile['sha256']=hashlib.sha256(json.dumps(self.profile,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        self.observation={'verdict':'PASS','observations':10,'invalid':0,'mismatch':0}
         self.attribution = {'core': 'e' * 40, 'baseline': 'f' * 40, 'instrument': '1' * 64}
         self.expected = {'version': 1, 'kind': 'm7-joined-expectation', 'identity': self.identity,
                          'pending': {tier: {'count': 0, 'reason': ''} for tier in gate.TIERS + ('corpus',)},
@@ -73,13 +76,14 @@ class ReceiptTests(unittest.TestCase):
             self.check(scope)
 
     def capacity(self):
+        self.expected['profileSelection']=copy.deepcopy(self.profile)
         self.receipt['claims'].append('full-ladder')
-        document = {'version': 1, 'kind': 'm7-joined-capacity', **self.identity, 'hostIdentity': '2' * 64, 'cells': []}
+        document = {'version': 1, 'kind': 'm7-joined-capacity', **self.identity, 'hostIdentity': '2' * 64,'profileSelection':self.profile, 'cells': []}
         for count in (1000, 3000, 5000, 10000):
             for replicas in (1, 2, 4):
                 document['cells'].append({**self.identity, 'hostIdentity': '2' * 64, 'tenants': count, 'replicas': replicas,
                                           'profile': 'capacity', 'cadence': gate.campaign_contract().CADENCE['capacity'], 'verdict': 'PASS', 'measurements': self.measurements(replicas=replicas),
-                                          'correctness': [True, True, True], 'oracle': {'verdict': 'GREEN', 'uncertain': 0}})
+                                          'profileSelection':copy.deepcopy(self.profile),'settingsFingerprintObservation':dict(self.observation),'correctness': [True, True, True], 'oracle': {'verdict': 'GREEN', 'uncertain': 0}})
         self.receipt['capacity'] = self.artifact('capacity.json', document)
         return document
 
@@ -350,6 +354,48 @@ class ReceiptTests(unittest.TestCase):
         self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cells[0])
         self.refuses('RSS_OBSERVATION', 'capacity-milestone')
 
+    def test_core_only_campaign_approved_deployment_pin_and_final_image_proof_stay_distinct(self):
+        captured={'core':self.identity['pair']['core'],'deploy':'7'*40}
+        self.campaign['source']['deployCommit']=captured['deploy'];self.refresh_campaign()
+        self.refuses('CAMPAIGN_SOURCE')
+        self.expected['functionalCampaignPair']=dict(captured)
+        paired={**self.identity['pair'],'imageId':self.identity['imageId'],'instrument':self.identity['instrument']}
+        self.expected['criteria']['paired-image']={'attribution':paired,'assertions':{'/ready':True}}
+        self.receipt['criteria']['paired-image']={'attribution':dict(paired),'artifact':self.artifact('paired-image.json',{'ready':True})}
+        self.check()
+        self.expected['functionalCampaignPair']['deploy']='8'*40;self.refuses('CAMPAIGN_SOURCE')
+        self.expected['functionalCampaignPair']=dict(captured)
+        self.receipt['criteria']['paired-image']['attribution']['deploy']=captured['deploy'];self.refuses('PROOF_ATTRIBUTION')
+        self.receipt['criteria']['paired-image']['attribution']=dict(paired)
+        self.expected['functionalCampaignPair']['core']='9'*40
+        self.campaign['source']['coreCommit']='9'*40;self.refresh_campaign();self.refuses('FUNCTIONAL_CORE_MISMATCH')
+        self.expected['functionalCampaignPair']={'deploy':captured['deploy']};self.refuses('FUNCTIONAL_CAMPAIGN_PIN')
+
+    def test_api_comparison_requires_exact_real_settings_diagnostics_topology_selection(self):
+        cells=self.milestone();self.receipt['claims'].append('api-scaling')
+        self.check('api-scaling')
+        saved=copy.deepcopy(cells[0])
+        for field in ('settings','diagnostics','topology'):
+            broken=copy.deepcopy(saved)
+            if field=='settings':broken['profileSelection']['settings']['sha256']='0'*64
+            elif field=='diagnostics':
+                broken['profileSelection']['diagnostics']['mode']='on'
+                broken['profileSelection']['diagnostics']['environment']['NS_M7_DIAGNOSTICS']='1'
+            else:broken['profileSelection']['topology']['realtimeWorkers']=2
+            chosen=broken['profileSelection'];chosen['sha256']=hashlib.sha256(json.dumps({k:v for k,v in chosen.items() if k!='sha256'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
+            self.receipt['milestoneCells'][0]=self.artifact('cell-1.json',broken)
+            self.refuses('PROFILE_SELECTION_MISMATCH','api-scaling')
+        self.receipt['milestoneCells'][0]=self.artifact('cell-1.json',saved)
+        self.check('api-scaling')
+        self.expected.pop('profileSelection');self.refuses('PROFILE_SELECTION_PIN','api-scaling')
+
+    def test_fingerprint_no_observation_or_failed_observation_never_capacity_passes(self):
+        cells=self.milestone()
+        for value in ({'verdict':'PASS','observations':0,'invalid':0,'mismatch':0},{'verdict':'PASS','observations':1,'invalid':0,'mismatch':1}):
+            cells[0]['settingsFingerprintObservation']=value
+            self.receipt['milestoneCells'][0]=self.artifact('cell-1.json',cells[0])
+            self.refuses('FINGERPRINT_UNMEASURED','capacity-milestone')
+
     def test_pilot_remains_a_separate_small_scope(self):
         full = self.capacity()
         self.receipt['claims'].remove('full-ladder')
@@ -360,7 +406,7 @@ class ReceiptTests(unittest.TestCase):
         for count in (500, 750, 1000):
             full['cells'].append({**self.identity, 'hostIdentity': '2' * 64, 'tenants': count, 'replicas': 1,
                 'profile': 'remote-pilot', 'cadence': gate.campaign_contract().CADENCE['remote-pilot'],
-                'verdict': 'PASS', 'correctness': [True, True], 'oracle': {'verdict': 'GREEN', 'uncertain': 0},
+                'profileSelection':copy.deepcopy(self.profile),'settingsFingerprintObservation':dict(self.observation),'verdict': 'PASS', 'correctness': [True, True], 'oracle': {'verdict': 'GREEN', 'uncertain': 0},
                 'measurements': self.measurements('remote-pilot', replicas=1)})
         self.receipt['pilot'] = self.artifact('pilot.json', full)
         for replicas in (1, 2, 4):
@@ -517,6 +563,7 @@ class ReceiptTests(unittest.TestCase):
         contract.parent.mkdir(parents=True)
         script.write_bytes(Path(gate.__file__).read_bytes())
         contract.write_bytes((Path(gate.__file__).resolve().parents[2] / 'mt-bench/m7-joined/contract.py').read_bytes())
+        (contract.parent/'profile_provenance.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/profile_provenance.py').read_bytes())
         before = {str(f): f.read_bytes() for f in self.root.rglob('*') if f.is_file()}
         result = subprocess.run([sys.executable, str(script), '--expected', str(expected), '--receipt', str(receipt), '--scope', 'full-ladder'], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
