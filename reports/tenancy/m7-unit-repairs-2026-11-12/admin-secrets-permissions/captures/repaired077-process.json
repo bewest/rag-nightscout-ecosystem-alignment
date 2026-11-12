@@ -1,0 +1,10 @@
+{
+  "phase": "repaired077",
+  "source": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+  "returnCode": 0,
+  "startedAtMs": 1794514287326,
+  "finishedAtMs": 1794514290900,
+  "umask": "077",
+  "log": "repaired077.log",
+  "events": "repaired077-events.jsonl"
+}

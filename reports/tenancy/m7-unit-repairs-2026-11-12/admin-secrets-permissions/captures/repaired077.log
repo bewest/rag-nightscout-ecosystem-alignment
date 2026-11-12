@@ -1,0 +1,54 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-11-12T20:11:27.544Z",
+    "end": "2026-11-12T20:11:30.843Z",
+    "duration": 3299
+  },
+  "tests": [
+    {
+      "title": "AP_CLI_SEED_JSON: the CLI provisions a seed in bounded batches, one line per tenant, secrets only to --secrets-out (0600); a re-run is all existing",
+      "fullTitle": "admin provisioning REST and CLI (actual PostgreSQL and Vault) AP_CLI_SEED_JSON: the CLI provisions a seed in bounded batches, one line per tenant, secrets only to --secrets-out (0600); a re-run is all existing",
+      "file": "/tmp/ns-admin-umask-dc5b131ca4/core/tests/admin-provisioning.integration.test.js",
+      "duration": 362,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "fullTitle": "admin provisioning REST and CLI (actual PostgreSQL and Vault) AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "file": "/tmp/ns-admin-umask-dc5b131ca4/core/tests/admin-provisioning.integration.test.js",
+      "duration": 184,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "AP_CLI_SEED_JSON: the CLI provisions a seed in bounded batches, one line per tenant, secrets only to --secrets-out (0600); a re-run is all existing",
+      "fullTitle": "admin provisioning REST and CLI (actual PostgreSQL and Vault) AP_CLI_SEED_JSON: the CLI provisions a seed in bounded batches, one line per tenant, secrets only to --secrets-out (0600); a re-run is all existing",
+      "file": "/tmp/ns-admin-umask-dc5b131ca4/core/tests/admin-provisioning.integration.test.js",
+      "duration": 362,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "fullTitle": "admin provisioning REST and CLI (actual PostgreSQL and Vault) AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "file": "/tmp/ns-admin-umask-dc5b131ca4/core/tests/admin-provisioning.integration.test.js",
+      "duration": 184,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    }
+  ]
+}
