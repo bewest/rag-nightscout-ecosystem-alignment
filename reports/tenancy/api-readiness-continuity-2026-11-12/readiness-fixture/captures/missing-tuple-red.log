@@ -1,0 +1,45 @@
+TAP version 13
+# Subtest: exact owned API roster uses a minimal readonly private client and cleans its credential file
+ok 1 - exact owned API roster uses a minimal readonly private client and cleans its credential file
+  ---
+  duration_ms: 4.00875
+  type: 'test'
+  ...
+# Subtest: foreign instance refuses before helper creation and credential materialization
+ok 2 - foreign instance refuses before helper creation and credential materialization
+  ---
+  duration_ms: 1.091856
+  type: 'test'
+  ...
+# Subtest: typed precondition failure retained without private stdout or credential disclosure
+ok 3 - typed precondition failure retained without private stdout or credential disclosure
+  ---
+  duration_ms: 1.223584
+  type: 'test'
+  ...
+# Subtest: missing exact API/tenant evidence cannot pass on an aggregate passed flag
+not ok 4 - missing exact API/tenant evidence cannot pass on an aggregate passed flag
+  ---
+  duration_ms: 1.297857
+  type: 'test'
+  location: '/tmp/m7-readiness-controls-33y86hkj/missing-tuple/api-readiness-host.test.js:11:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/m7-readiness-controls-33y86hkj/missing-tuple/api-readiness-host.test.js:11:293)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 3
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13.677876

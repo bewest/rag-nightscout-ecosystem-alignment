@@ -1,0 +1,119 @@
+TAP version 13
+# Subtest: exact owned API roster uses a minimal readonly private client and cleans its credential file
+ok 1 - exact owned API roster uses a minimal readonly private client and cleans its credential file
+  ---
+  duration_ms: 4.512964
+  type: 'test'
+  ...
+# Subtest: foreign instance refuses before helper creation and credential materialization
+ok 2 - foreign instance refuses before helper creation and credential materialization
+  ---
+  duration_ms: 1.340575
+  type: 'test'
+  ...
+# Subtest: typed precondition failure retained without private stdout or credential disclosure
+ok 3 - typed precondition failure retained without private stdout or credential disclosure
+  ---
+  duration_ms: 1.675108
+  type: 'test'
+  ...
+# Subtest: missing exact API/tenant evidence cannot pass on an aggregate passed flag
+ok 4 - missing exact API/tenant evidence cannot pass on an aggregate passed flag
+  ---
+  duration_ms: 1.027192
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target containerId drift during readiness and retains partial evidence
+not ok 5 - actual host barrier refuses target containerId drift during readiness and retains partial evidence
+  ---
+  duration_ms: 1.923894
+  type: 'test'
+  location: '/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:75'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: [Function (anonymous)]
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:799)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: actual host barrier refuses target startedAt drift during readiness and retains partial evidence
+not ok 6 - actual host barrier refuses target startedAt drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.816847
+  type: 'test'
+  location: '/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:75'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: [Function (anonymous)]
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:799)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: actual host barrier refuses target image drift during readiness and retains partial evidence
+not ok 7 - actual host barrier refuses target image drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.92728
+  type: 'test'
+  location: '/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:75'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: [Function (anonymous)]
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:799)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: actual host barrier refuses target project drift during readiness and retains partial evidence
+not ok 8 - actual host barrier refuses target project drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.704003
+  type: 'test'
+  location: '/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:75'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: [Function (anonymous)]
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:799)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: actual host barrier refuses target lost drift during readiness and retains partial evidence
+not ok 9 - actual host barrier refuses target lost drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.857913
+  type: 'test'
+  location: '/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:75'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: [Function (anonymous)]
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/m7-readiness-originalcid-g1zija2a/binding/api-readiness-host.test.js:12:799)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 4
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 22.977374
