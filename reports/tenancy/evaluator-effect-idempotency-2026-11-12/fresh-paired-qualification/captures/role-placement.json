@@ -1,0 +1,295 @@
+{
+  "containers": [
+    {
+      "id": "efea0a435d512a976d66de6dbb21409f388b639f39c65576a433f7701e6f116d",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-realtime-2-1",
+      "service": "realtime-2",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "707c96554c8618a9c23be011b4bb5c661c11d629a0b3ea09b578765d94f8176d",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-nginx-1",
+      "service": "nginx",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea",
+      "status": "running",
+      "health": null,
+      "labels": {
+        "org.opencontainers.image.revision": null,
+        "org.nightscout.deploy.revision": null
+      }
+    },
+    {
+      "id": "f19c31622e7f7d015afe672146e129572cfa4f84b83842fde549ad773ca1d976",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-evaluator-2-1",
+      "service": "evaluator-2",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "48fc8c3ec8e7f1b8cdd2db2170856078b5637bb177c4a9fe68157de0c3f90bfd",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-evaluator-3-1",
+      "service": "evaluator-3",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "43da9406bf2ae58ca6947b6d2e0f3d2ea6c45b348df9005fdeef278140372560",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-evaluator-1",
+      "service": "evaluator",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "b74de20398aab984962bb621c7cfbc0dd1c4408b286c1a4d916ca0f77f2a21fc",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-realtime-1",
+      "service": "realtime",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "0fca1c917ac24976ed49f91e895b5b4ff37b731666ad329d928d5694fd7f7923",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-tenant-admin-1",
+      "service": "tenant-admin",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "e7853e904f508d2ec383fd1de302fbc7874805987117a73fc4aea02c8b84cd23",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-socket-edge-1",
+      "service": "socket-edge",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "a90d1ea9d052415e65a99b70da0552e1e27edb35e5bf2db486403bfc3190b36f",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-ui-1",
+      "service": "ui",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "72c38ffb8019f248dc0b024e5eda78c8185ea798ef0dee43fc24785f8fb3245f",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-api-2-1",
+      "service": "api-2",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "07e88e4c110d245526c31e980cfe69537b7b332555b34d1376e2e88d476f8a35",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-api-1",
+      "service": "api",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "2bde07fdfd2d0e1ce3d32f8cf0177eb41ccdbf1d0e4127de81937910739b8ad0",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-admin-1",
+      "service": "admin",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "edbf24d7a794e4f76cf8eea767e4b9b01d46b2a6a4dde892b26a3357d68597b7",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-feed-reader-1",
+      "service": "feed-reader",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+      "status": "running",
+      "health": null,
+      "labels": {
+        "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+        "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+      }
+    },
+    {
+      "id": "b5b4edd7f29e92c12902618fc8595d154dd9c2b985a3f99a44acd498aba2e620",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-vault-1",
+      "service": "vault",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": null,
+        "org.nightscout.deploy.revision": null
+      }
+    },
+    {
+      "id": "b78a240540894a4a14536137217ce23cf61419bd3f9b09adff81836c7fd056fb",
+      "name": "/ns-evaluator-binding-proof-20261112-observe-postgres-1",
+      "service": "postgres",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112/deploy/multitenant",
+      "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "status": "running",
+      "health": "healthy",
+      "labels": {
+        "org.opencontainers.image.revision": null,
+        "org.nightscout.deploy.revision": null
+      }
+    }
+  ],
+  "placement": {
+    "backend": {
+      "version": 1,
+      "rule": "sha256-u32be-v1",
+      "shardCount": 2,
+      "generation": 2,
+      "workers": [
+        {
+          "id": "realtime-1",
+          "incarnation": "0a74a53b-12b9-4c51-8426-5e87ed523bcd",
+          "address": {
+            "socket": "/run/ns-ipc/realtime-1.sock"
+          },
+          "consumerOrigin": "http://realtime:1339"
+        },
+        {
+          "id": "realtime-2",
+          "incarnation": "19468f38-9ecd-404e-86e3-bd471f985eaa",
+          "address": {
+            "socket": "/run/ns-ipc/realtime-2.sock"
+          },
+          "consumerOrigin": "http://realtime-2:1339"
+        }
+      ],
+      "owners": [
+        "realtime-1",
+        "realtime-1"
+      ],
+      "transition": {
+        "previousGeneration": 1,
+        "previousOwners": [
+          {
+            "worker": "realtime-1",
+            "incarnation": "0a74a53b-12b9-4c51-8426-5e87ed523bcd"
+          },
+          {
+            "worker": "realtime-2",
+            "incarnation": "7c867279-927f-4db6-9cd3-80d362b5fabc"
+          }
+        ],
+        "stopped": [
+          {
+            "worker": "realtime-2",
+            "incarnation": "7c867279-927f-4db6-9cd3-80d362b5fabc"
+          }
+        ]
+      }
+    },
+    "routes": {
+      "version": 1,
+      "rule": "sha256-u32be-v1",
+      "shardCount": 2,
+      "generation": 2,
+      "workers": [
+        {
+          "id": "realtime-1",
+          "incarnation": "0a74a53b-12b9-4c51-8426-5e87ed523bcd",
+          "address": {
+            "socket": "/run/ns-ipc/realtime-1.sock"
+          },
+          "consumerOrigin": "http://realtime:1339"
+        },
+        {
+          "id": "realtime-2",
+          "incarnation": "19468f38-9ecd-404e-86e3-bd471f985eaa",
+          "address": {
+            "socket": "/run/ns-ipc/realtime-2.sock"
+          },
+          "consumerOrigin": "http://realtime-2:1339"
+        }
+      ],
+      "owners": [
+        "realtime-1",
+        "realtime-1"
+      ],
+      "transition": {
+        "previousGeneration": 1,
+        "previousOwners": [
+          {
+            "worker": "realtime-1",
+            "incarnation": "0a74a53b-12b9-4c51-8426-5e87ed523bcd"
+          },
+          {
+            "worker": "realtime-2",
+            "incarnation": "7c867279-927f-4db6-9cd3-80d362b5fabc"
+          }
+        ],
+        "stopped": [
+          {
+            "worker": "realtime-2",
+            "incarnation": "7c867279-927f-4db6-9cd3-80d362b5fabc"
+          }
+        ]
+      }
+    }
+  }
+}
