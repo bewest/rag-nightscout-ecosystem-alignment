@@ -1,0 +1,3 @@
+
+[485] tool exec call: text(await tools.exec_command({cmd:"python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess\nassert not Path('/tmp/evaluator-ready-settings.log').exists()\nraise SystemExit(subprocess.run(['python3','/tmp/evaluator-ready-settings.py']).returncode)\nPY","workdir":"/home/bewest/src/rag-nightscout-ecosystem-alignment","max_output_tokens":1300,"yield_time_ms":1000,"login":false,"sandbox_permissions":"require_escalated","justification":"Run the already authorized synthetic lower-port settings/authority controls once on the fresh stack after strict stock/restore passes; no direct SQL settings mutation."}));
+

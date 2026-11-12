@@ -1,0 +1,6 @@
+
+[482] tool exec result: Script completed
+Wall time 0.0 seconds
+Output:
+
+{"chunk_id":"574329","wall_time_seconds":0.000015143,"exit_code":0,"original_token_count":22,"output":"{\"stage\": \"stock-restore\", \"exit\": 0, \"log\": \"/tmp/evaluator-ready-stock-restore.log\"}\n"}
