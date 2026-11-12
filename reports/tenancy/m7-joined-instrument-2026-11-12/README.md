@@ -85,3 +85,26 @@ Local untracked handoff: `externals/work/HANDOFF-m7-joined-instrument-2026-11-12
 All commits remain local/unpushed. The frozen full/browser/clinical/enabled corpus,
 actual paired image, operator restore census and quiet-host capacity remain outside
 this proof. Earlier authorization/allocation profiles retain their original heads.
+
+## Fresh-image instrument repair: generator and preparation failures
+
+[Immutable focused proof](generator-668db69b/proof.json),
+[instrument manifest](generator-668db69b/instrument-manifest.json),
+[contracts](generator-668db69b/contracts.log),
+[stock-client fixture](generator-668db69b/stock-client-fixture.log) and
+[remove/restore control](generator-668db69b/client-remove-restore.log)
+cover source668db69bb02fc8d7a9dafb7de85c001d7160782f. This repair preserves
+ab49's earlier diagnostic capture. The production image prunes development
+dependencies; its node_modules cannot supply the development-only stock client.
+The generator now installs exact committed core manifests into its own private
+tree before infrastructure starts. It records Node/npm binary identity and checks
+actual client resolution before workload traffic. Serving images remain unchanged.
+
+Reproduced: clean owned npm ci with the recorded flags and core manifests, actual
+stock polling/frame/reconnect fixture, missing actual SDK refusal and restoration.
+The positive fixture uses the default diagnostic client import, not an injected
+factory. A synthetic pre-prepared child failure confirms private raw stdout/stderr
+retention with sanitized public errors; files are mode0600. The first install
+attempt failed on npm's duplicate /dev/null configuration, a setup-only failure,
+then passed with distinct private user configuration. Raw install output remains
+private. No full product image diagnostic, cloud, capacity or acceptance is claimed.
