@@ -1,0 +1,21 @@
+{
+  "nativeEvaluatorTimeWitness": {
+    "artifact": {
+      "path": "observation.private.json",
+      "sha256": "d27bd7e8f0668870cd219c03d8c44c9229d94c295a01d496b7090d0ddc343ad6"
+    },
+    "attribution": {
+      "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+      "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+      "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+    },
+    "tenants": 2,
+    "services": [
+      "evaluator",
+      "evaluator-2",
+      "evaluator-3"
+    ],
+    "proofPointer": "/proof"
+  }
+}
