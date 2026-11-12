@@ -1,0 +1,255 @@
+{
+  "observedAtMs": 1794494057976,
+  "hostLoad": [
+    10.3515625,
+    8.6611328125,
+    8.001953125
+  ],
+  "logicalCpus": 16,
+  "ownedProjects": [
+    {
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "runningContainers": 15,
+      "cpuPercentSum": 302.9,
+      "memoryUsage": [
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-evaluator-3-1",
+          "usage": "48.26MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-evaluator-2-1",
+          "usage": "182.4MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-evaluator-1",
+          "usage": "180.5MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-nginx-1",
+          "usage": "116.7MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-realtime-1",
+          "usage": "58.26MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-ui-1",
+          "usage": "22.46MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-tenant-admin-1",
+          "usage": "45.89MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-realtime-2-1",
+          "usage": "54.86MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-socket-edge-1",
+          "usage": "18.69MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-api-1",
+          "usage": "66.71MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-api-2-1",
+          "usage": "61.82MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-feed-reader-1",
+          "usage": "36.89MiB / 384MiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-admin-1",
+          "usage": "42.14MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-postgres-1",
+          "usage": "225.1MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-repair-vault-1",
+          "usage": "41.09MiB / 62.64GiB"
+        }
+      ]
+    },
+    {
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "runningContainers": 15,
+      "cpuPercentSum": 115.12,
+      "memoryUsage": [
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-nginx-1",
+          "usage": "116.6MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-evaluator-1",
+          "usage": "185.1MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-evaluator-2-1",
+          "usage": "59.53MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-evaluator-3-1",
+          "usage": "46.62MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-tenant-admin-1",
+          "usage": "47.21MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-ui-1",
+          "usage": "29MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-socket-edge-1",
+          "usage": "26.46MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-realtime-2-1",
+          "usage": "55.65MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-realtime-1",
+          "usage": "54.45MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-api-1",
+          "usage": "66.64MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-api-2-1",
+          "usage": "61.42MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-feed-reader-1",
+          "usage": "36.75MiB / 384MiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-admin-1",
+          "usage": "45.04MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-postgres-1",
+          "usage": "215.5MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-final-vault-1",
+          "usage": "42.18MiB / 62.64GiB"
+        }
+      ]
+    },
+    {
+      "project": "ns-evaluator-binding-proof-20261112",
+      "runningContainers": 12,
+      "cpuPercentSum": 75.48,
+      "memoryUsage": [
+        {
+          "container": "ns-evaluator-binding-proof-20261112-nginx-1",
+          "usage": "116.7MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-evaluator-2-1",
+          "usage": "169.2MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-evaluator-1",
+          "usage": "169.2MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-evaluator-3-1",
+          "usage": "46.56MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-ui-1",
+          "usage": "28.55MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-realtime-1",
+          "usage": "57.73MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-tenant-admin-1",
+          "usage": "46.66MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-api-1",
+          "usage": "62.77MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-admin-1",
+          "usage": "52.75MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-feed-reader-1",
+          "usage": "37.16MiB / 384MiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-vault-1",
+          "usage": "42.38MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-proof-20261112-postgres-1",
+          "usage": "168.8MiB / 62.64GiB"
+        }
+      ]
+    },
+    {
+      "project": "ns-evaluator-binding-20261112",
+      "runningContainers": 12,
+      "cpuPercentSum": 84.56,
+      "memoryUsage": [
+        {
+          "container": "ns-evaluator-binding-20261112-evaluator-3-1",
+          "usage": "48.46MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-nginx-1",
+          "usage": "117.7MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-evaluator-2-1",
+          "usage": "55.07MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-evaluator-1",
+          "usage": "53.47MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-realtime-1",
+          "usage": "65.13MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-tenant-admin-1",
+          "usage": "48.89MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-ui-1",
+          "usage": "29MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-api-1",
+          "usage": "71.11MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-admin-1",
+          "usage": "48.27MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-feed-reader-1",
+          "usage": "37.07MiB / 384MiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-postgres-1",
+          "usage": "160.3MiB / 62.64GiB"
+        },
+        {
+          "container": "ns-evaluator-binding-20261112-vault-1",
+          "usage": "44.28MiB / 62.64GiB"
+        }
+      ]
+    }
+  ]
+}
