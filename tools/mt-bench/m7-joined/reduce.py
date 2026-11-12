@@ -1,5 +1,6 @@
 """Reduce observable resource windows; absent samples are NO-MEASUREMENT."""
 import csv
+import math
 import re
 from pathlib import Path
 from contract import require, metric
@@ -27,12 +28,17 @@ def measurements(directory, manifest):
         before = json.loads((folder / "before-cgroups.json").read_text())
         after = json.loads((folder / "after-cgroups.json").read_text())
         seconds = after["at"] - before["at"]
-        rows = {}
-        for role, value in after["roles"].items():
+        require(math.isfinite(seconds) and seconds > 0,"M7_WINDOW_INVALID")
+        rows, load_generators = {}, {}
+        for role in sorted(set(before["roles"]) | set(after["roles"])):
+            value = after["roles"].get(role, {})
             first = before["roles"].get(role, {})
+            if role == "k6":
+                load_generators[role] = {"source": "docker-stats-window", "processRssKiBAfter": value.get("processRssKiB", "UNMEASURED"), "snapshotCpu": "UNMEASURED"}
+                continue
             # A restart resets CPU counters; identify this rather than subtract
             # counters from different containers/process lifetimes.
-            if value.get("unavailable") or first.get("unavailable"):
+            if not value or not first or value.get("unavailable") or first.get("unavailable") or value.get("id") != first.get("id"):
                 rows[role] = {"measurement": "NO-MEASUREMENT"};complete = False;continue
             def cgroup(raw):
                 cpu = int(re.search(r"^usage_usec (\d+)$",raw,re.M)[1])
@@ -40,7 +46,11 @@ def measurements(directory, manifest):
                 current = [int(line) for line in raw.splitlines() if line.isdigit()][0]
                 return cpu, anon, current
             a, b = cgroup(first["cgroup"]), cgroup(value["cgroup"])
+            rss=value.get("processRssKiB","")
+            lines=rss.strip().splitlines() if isinstance(rss,str) else []
+            complete = complete and len(lines)>=2 and lines[0].split()==['PID','COMMAND','RSS'] and all(re.fullmatch(r'\s*[0-9]+\s+.+?\s+[0-9]+\s*',line) for line in lines[1:])
             delta = b[0] - a[0]
+            complete = complete and delta >= 0
             rows[role] = {"cpuUsecDelta": delta if delta >= 0 else None, "cpuCoresMean": delta / 1e6 / seconds if delta >= 0 else None,
                           "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
         if name != "idle-disabled":
@@ -49,14 +59,20 @@ def measurements(directory, manifest):
             complete = complete and len(samples) > 0
             for sample in samples:
                 role = sample["container"].removeprefix(manifest["project"] + "-").removesuffix("-1")
-                row = rows.setdefault(role, {})
+                if role == "k6":
+                    row = load_generators.setdefault(role, {"source": "docker-stats-window", "processRssKiBAfter": "UNMEASURED", "snapshotCpu": "UNMEASURED"})
+                else:
+                    if role not in rows:
+                        rows[role] = {"measurement": "NO-MEASUREMENT", "reason": "serving-snapshot-missing"};complete = False
+                    row = rows[role]
                 row.setdefault("cpuPctSamples", []).append(float(sample["cpu_pct"].rstrip('%')))
                 row.setdefault("dockerMemoryBytesSamples", []).append(memory(sample["mem"].split("/")[0]))
-            for row in rows.values():
+            for row in list(rows.values()) + list(load_generators.values()):
                 values = row.pop("cpuPctSamples", [])
                 resident = row.pop("dockerMemoryBytesSamples", [])
                 row.update({"sampleCount": len(values), "cpuPctMean": sum(values)/len(values) if values else None,
                             "cpuPctMax": max(values) if values else None, "dockerMemoryBytesMax": max(resident) if resident else None})
+            complete = complete and all(row.get("sampleCount",0)>0 for row in rows.values())
             with (folder / "pg-activity.tsv").open() as source:
                 activity = [r for r in csv.DictReader(source, delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
             complete = complete and len(activity) > 0
@@ -76,7 +92,7 @@ def measurements(directory, manifest):
             cores=value.get("cpuCoresMean")
             value["cpuMsPerTenantMinute"]=cores*60000/manifest["tenants"] if cores is not None else None
             value["anonBytesPerTenant"]=value["anonBytesAfter"]/manifest["tenants"] if value.get("anonBytesAfter") is not None else None
-        windows[name] = {"seconds":seconds,"roles":rows,"pgStatements":costs,"pgWaits":pg_waits}
+        windows[name] = {"seconds":seconds,"roles":rows,"loadGenerators":load_generators,"pgStatements":costs,"pgWaits":pg_waits}
     raw = json.loads((directory / "load/k6-summary.json").read_text())["metrics"]
     shapes = {}
     for key,value in raw.items():

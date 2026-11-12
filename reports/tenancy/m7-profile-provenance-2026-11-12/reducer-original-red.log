@@ -1,0 +1,15 @@
+test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail (test_profile.Profile.test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail) ... FAIL
+
+======================================================================
+FAIL: test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail (test_profile.Profile.test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/m7-profile-controls-20261112-gfhuctu_/tools/mt-bench/m7-joined/test_profile.py", line 125, in test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail
+    self.assertEqual(set(value['windows']['load']['roles']),{'api'})
+AssertionError: Items in the first set but not the second:
+'k6'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (failures=1)

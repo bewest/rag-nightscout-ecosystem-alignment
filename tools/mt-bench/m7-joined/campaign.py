@@ -56,6 +56,11 @@ def ladder(args, profile, root, master):
             cell=adapter.document(folder/'summary.json')
             require(cell.get('hostIdentity')==master['hostIdentity'],'M7_HOST_IDENTITY_CHANGED')
             master.setdefault('imageId',cell['imageId']);require(master['imageId']==cell['imageId'],'M7_IMAGE_ID_CHANGED')
+            from profile_provenance import check_identity
+            chosen=check_identity(cell.get('profileSelection'))
+            master.setdefault('profileSelection',chosen)
+            require(master['profileSelection']==chosen,'M7_PROFILE_SELECTION_MISMATCH')
+            result['profileSelection']=chosen
             result['cells'].append(cell);master['cells'].append(cell)
         except Exception as caught:
             error=caught
@@ -80,21 +85,27 @@ def main():
     p.add_argument('mode',choices=('all','ladder','pilot'))
     for name in ('work','core-repo','core-commit','deploy-repo','deploy-commit','image','freeze','k6-image'):p.add_argument('--'+name,required=True)
     p.add_argument('--quiet-load',type=float,default=3);p.add_argument('--replicas',type=int,choices=REPLICAS);p.add_argument('--ceiling-receipt')
+    p.add_argument('--diagnostics',choices=('off','on'),default='off');p.add_argument('--diagnostics-interval-ms',type=int,default=5000)
     args=p.parse_args();root=Path(args.work).resolve()
     require(args.mode in ('all','pilot') or args.replicas in REPLICAS,'M7_LADDER_PROFILE_REQUIRED')
     host=adapter.inventory('none');identity=host_identity(host);instrument=adapter.instrument()['sha256']
     pair={'core':args.core_commit,'deploy':args.deploy_commit}
+    chosen=adapter.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)
     kind='m7-joined-remote-pilot' if args.mode=='pilot' else 'm7-joined-capacity'
     if root.exists():
         require((root/'campaign.json').is_file(),'M7_CAMPAIGN_DIRECTORY_NOT_OWNED')
         master=adapter.document(root/'campaign.json')
         require(master.get('directory')==str(root) and master.get('kind')==kind and master.get('pair')==pair and master.get('instrument')==instrument
-                and master.get('hostIdentity')==identity,'M7_CAMPAIGN_IDENTITY_CHANGED')
+                and master.get('hostIdentity')==identity and master.get('diagnostics')==chosen,'M7_CAMPAIGN_IDENTITY_CHANGED')
     else:
         root.mkdir(mode=0o700,parents=True)
-        master={'version':1,'kind':kind,'directory':str(root),'pair':pair,'instrument':instrument,'hostIdentity':identity,'cells':[]}
+        master={'version':1,'kind':kind,'directory':str(root),'pair':pair,'instrument':instrument,'hostIdentity':identity,'diagnostics':chosen,'cells':[]}
         adapter.write(root/'campaign.json',master)
-    profiles=REPLICAS if args.mode=='all' else (1,) if args.mode=='pilot' else (args.replicas,)
+    selected=args.replicas or 1
+    if args.mode=='pilot':
+        master.setdefault('profileReplicas',selected)
+        require(master['profileReplicas']==selected,'M7_PILOT_REPLICAS_CHANGED')
+    profiles=REPLICAS if args.mode=='all' else (selected,) if args.mode=='pilot' else (args.replicas,)
     for profile in profiles:ladder(args,profile,root,master)
     if args.mode=='all':campaign_check(master);print('M7_CAMPAIGN_COMPLETE')
     elif args.mode=='pilot':pilot_check(master);print('M7_REMOTE_PILOT_COMPLETE')
