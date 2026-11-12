@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: private client sends DATA api-secret to exact service/status; no exchange, token URL or bearer
+ok 1 - private client sends DATA api-secret to exact service/status; no exchange, token URL or bearer
+  ---
+  duration_ms: 2.241376
+  type: 'test'
+  ...
+# Subtest: actual private read-to-barrier refuses error-bearing or wrong-shape HTTP200 JSON
+ok 2 - actual private read-to-barrier refuses error-bearing or wrong-shape HTTP200 JSON
+  ---
+  duration_ms: 2.634725
+  type: 'test'
+  ...
+# Subtest: actual source tenant middleware, secrets derivation, permission and status handler accept DATA carrier only after initialized
+ok 3 - actual source tenant middleware, secrets derivation, permission and status handler accept DATA carrier only after initialized
+  ---
+  duration_ms: 129.217638
+  type: 'test'
+  ...
+# Subtest: exact owned API roster uses a minimal readonly private client and cleans its credential file
+ok 4 - exact owned API roster uses a minimal readonly private client and cleans its credential file
+  ---
+  duration_ms: 5.398369
+  type: 'test'
+  ...
+# Subtest: foreign instance refuses before helper creation and credential materialization
+ok 5 - foreign instance refuses before helper creation and credential materialization
+  ---
+  duration_ms: 1.514062
+  type: 'test'
+  ...
+# Subtest: typed precondition failure retained without private stdout or credential disclosure
+ok 6 - typed precondition failure retained without private stdout or credential disclosure
+  ---
+  duration_ms: 1.201216
+  type: 'test'
+  ...
+# Subtest: missing exact API/tenant evidence cannot pass on an aggregate passed flag
+ok 7 - missing exact API/tenant evidence cannot pass on an aggregate passed flag
+  ---
+  duration_ms: 1.056102
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target containerId drift during readiness and retains partial evidence
+ok 8 - actual host barrier refuses target containerId drift during readiness and retains partial evidence
+  ---
+  duration_ms: 1.804863
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target startedAt drift during readiness and retains partial evidence
+ok 9 - actual host barrier refuses target startedAt drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.874283
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target image drift during readiness and retains partial evidence
+ok 10 - actual host barrier refuses target image drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.972575
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target project drift during readiness and retains partial evidence
+ok 11 - actual host barrier refuses target project drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.89978
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target lost drift during readiness and retains partial evidence
+ok 12 - actual host barrier refuses target lost drift during readiness and retains partial evidence
+  ---
+  duration_ms: 1.014119
+  type: 'test'
+  ...
+# Subtest: every exact API/tenant tuple must initialize; only typed warming is retried before the barrier
+ok 13 - every exact API/tenant tuple must initialize; only typed warming is retried before the barrier
+  ---
+  duration_ms: 2.193615
+  type: 'test'
+  ...
+# Subtest: cold exact replica fails despite other tuples being hot; late200 cannot cross the shared bound
+ok 14 - cold exact replica fails despite other tuples being hot; late200 cannot cross the shared bound
+  ---
+  duration_ms: 1.199754
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 401/CREDENTIAL_REFUSED
+ok 15 - other precondition refusal is terminal 401/CREDENTIAL_REFUSED
+  ---
+  duration_ms: 0.273111
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 503/AUTHORITY_UNAVAILABLE
+ok 16 - other precondition refusal is terminal 503/AUTHORITY_UNAVAILABLE
+  ---
+  duration_ms: 0.24254
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 503/null
+ok 17 - other precondition refusal is terminal 503/null
+  ---
+  duration_ms: 0.169105
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 200/API_READINESS_RESPONSE_INVALID
+ok 18 - other precondition refusal is terminal 200/API_READINESS_RESPONSE_INVALID
+  ---
+  duration_ms: 0.18053
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 423/TENANT_SUSPENDED
+ok 19 - other precondition refusal is terminal 423/TENANT_SUSPENDED
+  ---
+  duration_ms: 0.136541
+  type: 'test'
+  ...
+# Subtest: hung/transport requests fail closed and abort outstanding reads
+ok 20 - hung/transport requests fail closed and abort outstanding reads
+  ---
+  duration_ms: 10.352776
+  type: 'test'
+  ...
+# Subtest: all four measured edge workers need first success and any during-restore warming remains a strict failure
+ok 21 - all four measured edge workers need first success and any during-restore warming remains a strict failure
+  ---
+  duration_ms: 2.476981
+  type: 'test'
+  ...
+# Subtest: one fast worker cannot satisfy four-worker precondition and chronology is bounded/sanitized
+ok 22 - one fast worker cannot satisfy four-worker precondition and chronology is bounded/sanitized
+  ---
+  duration_ms: 1.208107
+  type: 'test'
+  ...
+# Subtest: actual shipping fixture holds all socket/JWT/HTTP setup until exact-tuple readiness, and refuses a cold barrier
+ok 23 - actual shipping fixture holds all socket/JWT/HTTP setup until exact-tuple readiness, and refuses a cold barrier
+  ---
+  duration_ms: 310.152894
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 361.65967
