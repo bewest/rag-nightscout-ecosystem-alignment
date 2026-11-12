@@ -1,0 +1,40 @@
+
+
+  live tenant admission with actual clinical and frame computation
+2026-11-12T05:25:41.171Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+Tenant registry alert TENANT_REGISTRY_ADMISSION_REFUSED { waiting: 1, code: 'TENANT_WARM_FAILED' }
+2026-11-12T05:25:41.270Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:25:41.580Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 300 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":300,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:25:41.594Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+LIVE_ADD_NATIVE_MS 386
+    ✔ provisions while running, retries failed warm, then computes first clinical alarm/frame without restarting the existing tenant (387ms)
+Tenant registry alert TENANT_REGISTRY_ADMISSION_REFUSED { waiting: 1, code: 'TENANT_ACTIVITY_DEFERRED' }
+Tenant registry alert TENANT_REGISTRY_ADMISSION_REFUSED { waiting: 1, code: 'TENANT_ACTIVITY_DEFERRED' }
+    ✔ defers paused/suspended new tenants and admits them on resume without a registry revision or data write (749ms)
+2026-11-12T05:25:42.560Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 300 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":300,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:25:42.593Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:25:42.640Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ handles an addition burst and removes only the selected tenant with no late output resurrection (297ms)
+
+  D6 native metadata feed, privilege and failure controls
+    ✔ uses EXECUTE-only reader authority, emits metadata hints and preserves RLS for tenant reads (178ms)
+    ✔ duplicates hints after lost acknowledgement without advancing before a committed notification (125ms)
+    ✔ recovers lost notifications, reader outage and listener reconnect using paged current truth (163ms)
+    ✔ recovers a backend interruption inside notification COMMIT without early acknowledgement (109ms)
+    ✔ signals pause/suspend/resume with no data write while another tenant progresses (255ms)
+    ✔ refuses unsafe wrapper owner/configuration and wrong publication/slot before consuming (73ms)
+    ✔ refuses an oversized complete transaction without ACK; backstop still sees its current truth (124ms)
+D6_CONFIG_SIGNAL_MS 123
+    ✔ signals settings and policy metadata promptly without plaintext feed grants or a data-clock write (649ms)
+    ✔ boots and gracefully stops the dedicated feed-reader CLI role (213ms)
+
+
+  12 passing (15s)
+

@@ -1,0 +1,11 @@
+{
+  "source": "d20354797e368b03af171f4417ead60a6282d098",
+  "controlSource": "69d75085cd0487a27d602a678cf9eb1a0c339517",
+  "artifacts": {
+    "native-final.log": "052117659b2d67326fe6d79e93a833c03f48394e336861284206e0e9c85bf6d3",
+    "freeze-start-roster-red.log": "5b8234be58ee15abf9da46ee148d9c43431818312579798061f4e9612ce15bf6",
+    "focused-final.log": "82a553ecb36c204378ab2388e88676647d5f016149dae25f17697de90b8a4afd",
+    "inventory-final.log": "63af1368be24055a1a230c28e7106634136c5df68b193db4238f8905607f50a0",
+    "lint-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
