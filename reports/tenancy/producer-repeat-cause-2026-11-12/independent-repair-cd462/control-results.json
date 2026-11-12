@@ -1,0 +1,17 @@
+[
+  {
+    "case": "fixed-matrix-original-red",
+    "expectedExit": 1,
+    "actualExit": 1
+  },
+  {
+    "case": "old-bug-script-candidate-red",
+    "expectedExit": 1,
+    "actualExit": 1
+  },
+  {
+    "case": "fixed-matrix-candidate-green",
+    "expectedExit": 0,
+    "actualExit": 0
+  }
+]
