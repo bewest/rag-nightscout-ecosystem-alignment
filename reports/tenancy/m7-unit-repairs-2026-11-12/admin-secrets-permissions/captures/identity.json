@@ -1,0 +1,23 @@
+{
+  "source": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+  "nonce": "80ea96aa80004dd8b6aa0a4213587302",
+  "containers": [
+    {
+      "kind": "postgres",
+      "id": "580ad16a16d7f8eef2af33c1dc6550a835dd94eb085d34fcf94dba9a15538215",
+      "image": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "name": "ns-admin-umask-80ea96aa80-postgres",
+      "port": "38038"
+    },
+    {
+      "kind": "vault",
+      "id": "e8d47355435acf79c8fdc12e9a6455e0db760e91f3c4c133a12dcee915047433",
+      "image": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "name": "ns-admin-umask-80ea96aa80-vault",
+      "port": "38039"
+    }
+  ],
+  "node": "v22.23.4",
+  "packageLockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+  "runtimeGuardSha256": "adb7da9437e67f460e41987fa095afc52e0dc4c4f0f8e7af67d6edb8e25ccbb4"
+}

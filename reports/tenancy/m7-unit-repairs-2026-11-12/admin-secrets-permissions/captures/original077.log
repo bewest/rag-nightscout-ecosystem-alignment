@@ -1,0 +1,54 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-11-12T20:10:20.543Z",
+    "end": "2026-11-12T20:10:23.688Z",
+    "duration": 3145
+  },
+  "tests": [
+    {
+      "title": "AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "fullTitle": "admin provisioning REST and CLI (actual PostgreSQL and Vault) AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "file": "/tmp/ns-admin-umask-dc5b131ca4/core/tests/admin-provisioning.integration.test.js",
+      "duration": 281,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: a group- or world-readable secrets file is refused\n\n0 !== 64\n\n    at Context.<anonymous> (tests/admin-provisioning.integration.test.js:138:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "a group- or world-readable secrets file is refused\n\n0 !== 64\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "0",
+        "expected": "64",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "pending": [],
+  "failures": [
+    {
+      "title": "AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "fullTitle": "admin provisioning REST and CLI (actual PostgreSQL and Vault) AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69",
+      "file": "/tmp/ns-admin-umask-dc5b131ca4/core/tests/admin-provisioning.integration.test.js",
+      "duration": 281,
+      "currentRetry": 0,
+      "err": {
+        "stack": "AssertionError [ERR_ASSERTION]: a group- or world-readable secrets file is refused\n\n0 !== 64\n\n    at Context.<anonymous> (tests/admin-provisioning.integration.test.js:138:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)",
+        "message": "a group- or world-readable secrets file is refused\n\n0 !== 64\n",
+        "generatedMessage": false,
+        "name": "AssertionError",
+        "code": "ERR_ASSERTION",
+        "actual": "0",
+        "expected": "64",
+        "operator": "strictEqual",
+        "diff": "simple"
+      }
+    }
+  ],
+  "passes": []
+}

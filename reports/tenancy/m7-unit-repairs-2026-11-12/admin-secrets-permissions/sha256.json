@@ -1,0 +1,14 @@
+{
+  "captures/attribution.json": "ca9467caf027fdc474fb1b36807a5393d92913e5303adc195ca1e4a4b70201d3",
+  "captures/cleanup-first-interruption.json": "480ad11d86c21f5a0ebc070a0df422797ea306e9c0dc9c91418dc45ded32b451",
+  "captures/cleanup.json": "a7638489b1da39bac92333a3f4d28b7808359ea302fd23fced88d1e19d12510a",
+  "captures/fixture.patch": "8c05d0cdbde82b5787ad2bc4d3a1d8883bfe8741cabb9d0f5ad1469f57ed83e3",
+  "captures/identity.json": "a1e4e1c2db7da64829bf25296245a5bf2c9c81ad39d114f354a7a1c3bc8f6d1f",
+  "captures/observe.cjs": "8ed20e730f7b5c51e2b22a737a17bd1960dbb389b04f0ca5b79da5d443171bec",
+  "captures/original077-events.jsonl": "bf1d7d1bc0bd7e58ae006591a24bffa501d061a15c68a29484bde37672f97f1d",
+  "captures/original077-process.json": "00c3f2a7c05d5aabcce5284f567d333d19e6a07b8b08161c9df1784f34b76d86",
+  "captures/original077.log": "55c2e5bf6e5fa2f6885067b5f679d8834c1876c2c0a4253aec74483252693ca8",
+  "captures/repaired077-events.jsonl": "5f8a15a0e2d5396cff075c43b3f2e8c39d0994c589f26a35819649e0f76dfff7",
+  "captures/repaired077-process.json": "c6f0a48ca084ab15f583c2d89a64fd0438afd497c0c7968a08519dca85f24386",
+  "captures/repaired077.log": "6d84adcf4b890cf3c1f6f2b1ad09e2d52ae9888f2ea804b9cefbf94313f36d5d"
+}
