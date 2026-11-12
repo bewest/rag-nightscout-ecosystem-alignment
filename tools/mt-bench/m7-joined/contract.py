@@ -98,6 +98,7 @@ def serving_mounts(config):
 
 
 def campaign_check(document):
+    accepted_claim_scope(document)
     require(document.get("version") == 1 and document.get("kind") == "m7-joined-capacity", "M7_SUMMARY_SHAPE")
     pair = document.get("pair", {})
     require(all(SHA.fullmatch(pair.get(key, "")) for key in ("core", "deploy")), "M7_SUMMARY_SOURCE_REQUIRED")
@@ -110,6 +111,7 @@ def campaign_check(document):
     from profile_provenance import check_identity, observation_check
     chosen=check_identity(document.get("profileSelection"))
     for row in cells:
+        accepted_claim_scope(row)
         require(check_identity(row.get("profileSelection"))==chosen,"M7_PROFILE_SELECTION_MISMATCH")
         observation_check(row.get("settingsFingerprintObservation"))
         require(chosen["settings"].get("sourceCommit")==pair["core"],"M7_PROFILE_SETTINGS_SOURCE")
@@ -120,7 +122,13 @@ def campaign_check(document):
 
 
 def pilot_check(document):
-    require(document.get("kind")=="m7-joined-remote-pilot", "M7_PILOT_SHAPE")
+    accepted_claim_scope(document)
+    for row in document.get("cells",[]):accepted_claim_scope(row)
+    return _pilot_check(document,"m7-joined-remote-pilot")
+
+
+def _pilot_check(document,kind):
+    require(document.get("kind")==kind, "M7_PILOT_SHAPE")
     pair=document.get("pair",{})
     require(all(SHA.fullmatch(pair.get(key,"")) for key in ("core","deploy")) and re.fullmatch(r"sha256:[0-9a-f]{64}",document.get("imageId","")),"M7_PILOT_SOURCE_REQUIRED")
     cells=document.get("cells",[])
@@ -147,6 +155,19 @@ def host_identity(host):
 
 def receipt_scope(manifest,receipt,operation):
     require(receipt.get("pair")==manifest["pair"],"M7_RECEIPT_SOURCE_MISMATCH")
+    measurement_request(manifest)
+    if manifest.get("measurementMode")=="unaccepted":
+        require(operation in ("build","deploy","run"),"M7_UNACCEPTED_OPERATION")
+        fields={"version","kind","status","pair","instrument","imageId","runId","functionalAcceptanceAtAuthorization","purpose","limits"}
+        require(set(receipt)==fields and receipt.get("version")==1 and type(receipt["version"]) is int
+                and receipt.get("kind")=="joined-measurement-authorization" and receipt.get("status")=="AUTHORIZED_UNACCEPTED_MEASUREMENT"
+                and receipt.get("functionalAcceptanceAtAuthorization")=="PENDING" and receipt.get("purpose")=="PRE_ACCEPTANCE_BASELINE_ONLY","M7_UNACCEPTED_AUTHORIZATION_REQUIRED")
+        require(isinstance(receipt.get("instrument"),str) and receipt.get("instrument")==manifest["instrument"]["sha256"] and re.fullmatch(r"[a-f0-9]{64}",receipt.get("instrument",""))
+                and receipt.get("imageId")==manifest["imageId"] and receipt.get("runId")==manifest["runId"],"M7_UNACCEPTED_IDENTITY_MISMATCH")
+        limits=receipt.get('limits')
+        require(limits==MEASUREMENT_LIMITS and isinstance(limits,dict) and all(type(limits[k]) is int for k in ('apiReplicas','realtimeReplicas','evaluatorReplicas','maximumRunMinutes'))
+                and all(type(n) is int for n in limits['tenantCounts']),"M7_UNACCEPTED_AUTHORIZATION_LIMIT")
+        return {"kind":"unaccepted-measurement",**UNACCEPTED_SCOPE}
     if manifest.get("profile")=="fresh-image-diagnostic":
         require(operation in ("build","deploy","diagnose"),"M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY")
         require(receipt.get("kind")=="joined-diagnostic" and receipt.get("status")=="AUTHORIZED_DIAGNOSTIC"
@@ -182,3 +203,57 @@ def diagnostic_check(document):
             and document.get("oracleControl")=={"baseline":"GREEN","broken":"RED","restored":"GREEN"}
             and isinstance(document.get("checks"),dict) and set(document["checks"])==set(DIAGNOSTIC_CHECKS) and all(value is True for value in document["checks"].values()),"M7_DIAGNOSTIC_NOT_PASSING")
     return True
+
+
+MEASUREMENT_LIMITS={"tenantCounts":list(PILOT_COUNTS),"apiReplicas":1,"realtimeReplicas":1,"evaluatorReplicas":1,"maximumRunMinutes":180}
+MEASUREMENT_AUTHORIZATION={'version':1,'kind':'m7-unaccepted-measurement-admission','receiptKind':'joined-measurement-authorization','receiptStatus':'AUTHORIZED_UNACCEPTED_MEASUREMENT','measurementMode':'unaccepted','profile':'remote-pilot','limits':MEASUREMENT_LIMITS,'diagnostics':'off','diagnosticsIntervalMs':5000,'functionalAcceptance':'UNACCEPTED','functionalAcceptanceAtAuthorization':'PENDING','capacityAcceptance':'NOT_GRANTED','cellKind':'m7-joined-unaccepted-measurement-cell','aggregateKind':'m7-joined-unaccepted-measurement','acceptedClaims':False}
+UNACCEPTED_SCOPE={"measurementMode":"unaccepted","functionalAcceptance":"UNACCEPTED","functionalAcceptanceAtAuthorization":"PENDING","capacityAcceptance":"NOT_GRANTED"}
+
+
+def is_unaccepted(document):
+    return (document.get("measurementMode") == "unaccepted" or str(document.get("kind","")).startswith("m7-joined-unaccepted-measurement")
+            or document.get("functionalAcceptance")=="UNACCEPTED" or document.get("functionalAcceptanceAtAuthorization")=="PENDING"
+            or document.get("capacityAcceptance")=="NOT_GRANTED")
+
+
+def accepted_claim_scope(document):
+    require(not is_unaccepted(document),"M7_UNACCEPTED_MEASUREMENT_NOT_ACCEPTANCE")
+
+
+def measurement_request(manifest):
+    mode=manifest.get("measurementMode","accepted")
+    require(mode in ("accepted","unaccepted"),"M7_MEASUREMENT_MODE_INVALID")
+    if mode=="accepted":return
+    require(manifest.get("profile")=="remote-pilot" and type(manifest.get("tenants")) is int and manifest["tenants"] in PILOT_COUNTS
+            and type(manifest.get("replicas")) is int and manifest["replicas"]==1,"M7_UNACCEPTED_PROFILE_LIMIT")
+    require(isinstance(manifest.get("runId"),str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}",manifest["runId"])
+            and isinstance(manifest.get("imageId"),str) and re.fullmatch(r"sha256:[a-f0-9]{64}",manifest["imageId"])
+            and type(manifest.get("maximumRunMinutes")) is int and manifest["maximumRunMinutes"]==180,"M7_UNACCEPTED_RUN_IMAGE_REQUIRED")
+    from profile_provenance import selection
+    require(manifest.get("diagnostics")==selection('off',5000),"M7_UNACCEPTED_DIAGNOSTICS_REQUIRED")
+
+
+def measurement_topology(manifest,config):
+    if manifest.get("measurementMode")!="unaccepted":return
+    services=config.get('services',{})
+    for role in ('api','realtime','evaluator'):
+        names=[name for name,row in services.items() if isinstance(row.get('command'),list) and row['command'][-1:]==[role]]
+        require(names==[role],"M7_UNACCEPTED_ROLE_TOPOLOGY")
+    require(not any('vault-agent' in name for name in services) and isinstance(services.get('vault',{}).get('command'),list)
+            and services['vault']['command'][:2]==['vault','server'],"M7_UNACCEPTED_VAULT_SERVER_REQUIRED")
+
+
+def measurement_output(manifest,aggregate=False,complete=True):
+    if manifest.get('measurementMode')!='unaccepted':return {}
+    return {**UNACCEPTED_SCOPE,'kind':'m7-joined-unaccepted-measurement' if aggregate else 'm7-joined-unaccepted-measurement-cell',
+            'runId':manifest['runId'],'maximumRunMinutes':manifest['maximumRunMinutes'],'collectionStatus':'COMPLETE' if complete else 'FAILED'}
+
+
+def unaccepted_check(document):
+    require(document.get('kind')=='m7-joined-unaccepted-measurement' and all(document.get(k)==v for k,v in UNACCEPTED_SCOPE.items()),'M7_UNACCEPTED_RESULT_SCOPE')
+    measurement_request({**document,'profile':'remote-pilot','tenants':500,'replicas':document.get('profileReplicas')})
+    require(document.get('collectionStatus')=='COMPLETE' and document.get('verdict')=='PASS','M7_UNACCEPTED_COLLECTION_INCOMPLETE')
+    for row in document.get('cells',[]):
+        require(row.get('kind')=='m7-joined-unaccepted-measurement-cell' and all(row.get(k)==v for k,v in UNACCEPTED_SCOPE.items())
+                and row.get('runId')==document['runId'] and row.get('maximumRunMinutes')==180 and row.get('collectionStatus')=='COMPLETE','M7_UNACCEPTED_CELL_SCOPE')
+    return _pilot_check(document,'m7-joined-unaccepted-measurement')

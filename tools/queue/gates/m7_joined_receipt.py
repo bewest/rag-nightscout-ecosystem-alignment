@@ -327,7 +327,15 @@ def progress_measurement(cell,expected,evidence):
         need(recorded[phase]=={**result,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':ref['sha256']},'M7_EVALUATOR_PROGRESS_ASSESSMENT')
 
 
+def unaccepted_measurement(value):
+    # Acceptance-only validation remains self-contained when copied to scratch.
+    return (value.get('measurementMode')=='unaccepted' or str(value.get('kind','')).startswith('m7-joined-unaccepted-measurement')
+            or value.get('functionalAcceptance')=='UNACCEPTED' or value.get('functionalAcceptanceAtAuthorization')=='PENDING'
+            or value.get('capacityAcceptance')=='NOT_GRANTED')
+
+
 def cell_measurement(cell, expected, profile, host, evidence):
+    need(not unaccepted_measurement(cell),'M7_UNACCEPTED_MEASUREMENT_NOT_ACCEPTANCE')
     for field, value in expected['identity'].items():
         need(cell.get(field) == value, 'M7_CAPACITY_IDENTITY')
     need(cell.get('hostIdentity') == host and isinstance(host, str) and DIGEST.fullmatch(host), 'M7_CAPACITY_HOST')
@@ -439,6 +447,7 @@ def check_milestone(expected, receipt, evidence, api_scaling=False):
 def validate(expected, receipt, evidence, scope='acceptance'):
     need(scope in ('acceptance', 'pilot', 'capacity-milestone', 'api-scaling', 'full-ladder', 'scaling'), 'M7_SCOPE')
     need(isinstance(expected, dict) and isinstance(receipt, dict), 'M7_DOCUMENT_SHAPE')
+    need(receipt.get('kind')!='joined-measurement-authorization' and not unaccepted_measurement(receipt),'M7_UNACCEPTED_MEASUREMENT_NOT_ACCEPTANCE')
     claims = receipt.get('claims')
     need(isinstance(claims, list) and len(set(claims)) == len(claims) and set(claims) <= {'acceptance', 'pilot', 'capacity-milestone', 'api-scaling', 'full-ladder', 'scaling'} and
          'acceptance' in claims and scope in claims and ('scaling' not in claims or 'api-scaling' in claims) and ('api-scaling' not in claims or 'capacity-milestone' in claims), 'M7_CLAIM_MISSING')

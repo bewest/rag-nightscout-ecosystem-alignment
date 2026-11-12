@@ -24,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
 from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, require, digest, labels_match, owned,
-                      tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity, receipt_scope, diagnostic_check)
+                      tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity, receipt_scope, diagnostic_check, measurement_request, measurement_topology, measurement_output, unaccepted_check, MEASUREMENT_AUTHORIZATION)
 from probe import generate
 from workload import generate as generate_workload
 import profile_provenance
@@ -217,6 +217,11 @@ def prepare(args):
     require(all(key in due.get('properties',{}) and key in due.get('required',[]) for key in ('dueAt','dueReason')),'M7_EVALUATOR_DUE_SOURCE_REQUIRED')
     require('jobs' in due.get('properties',{}) and 'jobs' in due.get('required',[]),'M7_EVALUATOR_IDLE_SOURCE_REQUIRED')
     pinned = instrument()
+    if getattr(args,'measurement_mode','accepted')=='unaccepted':
+        candidate={'profile':args.profile,'tenants':args.tenants,'replicas':args.replicas,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'instrument':pinned,
+                   'measurementMode':args.measurement_mode,'runId':getattr(args,'run_id',None),'imageId':getattr(args,'image_id',None),'maximumRunMinutes':getattr(args,'maximum_run_minutes',180),
+                   'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000))}
+        receipt_scope(candidate,document(args.freeze),'deploy')
     target.mkdir(parents=True, mode=0o700)
     try:
         with private_commands(target/'prepare-commands'):
@@ -237,6 +242,10 @@ def prepare_staged(args,target,pinned):
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
          "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":CADENCE[args.profile]}
     m["diagnostics"]=profile_provenance.selection(getattr(args,"diagnostics","off"),getattr(args,"diagnostics_interval_ms",5000))
+    m['measurementMode']=getattr(args,'measurement_mode','accepted')
+    if m['measurementMode']=='unaccepted':
+        m.update(runId=args.run_id,imageId=args.image_id,maximumRunMinutes=args.maximum_run_minutes)
+        frozen(m,'deploy')
     m["hostIdentity"]=host_identity(inventory(nonce))
     write(target / "owner.json", m)
     # Refuse preexisting project resources; no broad cleanup/nearest substitute.
@@ -262,6 +271,7 @@ def prepare_staged(args,target,pinned):
         base_args.extend(["-f", file])
     config = json.loads(command([*base_args, "--profile", "ops", "config", "--format", "json"],phase="compose-config"))
     serving_mounts(config)
+    measurement_topology(m,config)
     profile_provenance.select_environment(config,m["diagnostics"])
     for spec in config["services"].values():
         for volume in spec.get("volumes", []):
@@ -296,6 +306,7 @@ def verify(d, m):
     require(host_identity(inventory(m["owner"]))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
+    measurement_topology(m,document(d/"frozen.compose.json"))
     profile_provenance.verify_environment(document(d/"frozen.compose.json"),m["diagnostics"])
     profile_provenance.state_environment(d/"state",document(d/"frozen.compose.json"),m["diagnostics"])
     require(digest(d / "restart.cjs")==m["restartHelperSha256"], "M7_RESTART_HELPER_CHANGED")
@@ -615,7 +626,17 @@ def loadgen_process(d, process):
     finally:stopped.set();thread.join(timeout=3)
 
 
-def run(d, m, k6_image):
+def run(d,m,k6_image):
+    try:return run_cell(d,m,k6_image)
+    except Exception as error:
+        if m.get('measurementMode')=='unaccepted':
+            prior=document(d/'summary.json') if (d/'summary.json').exists() else {}
+            write(d/'unaccepted-collection-failure.json',{**measurement_output(m,complete=False),'pair':m['pair'],'instrument':m['instrument']['sha256'],'imageId':m['imageId'],
+                  'correctnessVerdict':prior.get('verdict','UNMEASURED'),'publicCode':str(error) if re.fullmatch(r'M7_[A-Z_]+',str(error)) else 'M7_UNACCEPTED_COLLECTION_REFUSED'})
+        raise
+
+
+def run_cell(d, m, k6_image):
     require(m.get("profile")!="fresh-image-diagnostic","M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY")
     frozen(m,"run");quiet(d,m,"run-before",check_load=False);verify(d,m);image(m)
     require((d / "deploy-before-host.json").exists(), "M7_DEPLOY_QUIET_RECORD_REQUIRED")
@@ -689,6 +710,7 @@ def run(d, m, k6_image):
     from reduce import measurements
     summary["measurements"] = measurements(d, m)
     require(summary["measurements"]["complete"], "M7_NO_MEASUREMENT")
+    summary.update(measurement_output(m))
     write(d / "summary.json", summary)
     metrics = document(out / "k6-summary.json")["metrics"]
     require(metric(metrics,"writes_refused")==0 and metric(metrics,"responses_refused")==0,"M7_FUNCTIONAL_REQUEST_REFUSAL")
@@ -772,6 +794,8 @@ def parser():
     prep.add_argument("--freeze","--receipt",dest="freeze",required=True)
     prep.add_argument("--diagnostics",choices=("off","on"),default="off")
     prep.add_argument("--diagnostics-interval-ms",type=int,default=5000)
+    prep.add_argument('--measurement-mode',choices=('accepted','unaccepted'),default='accepted')
+    prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
     prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)
     for cmd in ("verify", "build", "deploy", "run", "diagnose", "control", "down", "host-identity"):
@@ -779,19 +803,23 @@ def parser():
         if cmd == "run":own.add_argument("--k6-image", required=True)
     check = sub.add_parser("check-campaign");check.add_argument("summary")
     check = sub.add_parser("check-pilot");check.add_argument("summary")
+    check = sub.add_parser("check-unaccepted-measurement");check.add_argument("summary")
     check = sub.add_parser("check-diagnostic");check.add_argument("summary")
     sub.add_parser("manifest")
     sub.add_parser("capabilities")
+    sub.add_parser("measurement-capabilities")
     return p
 
 
 def main():
     args = parser().parse_args()
+    if args.command == "measurement-capabilities":return print(json.dumps(MEASUREMENT_AUTHORIZATION,sort_keys=True))
     if args.command == "capabilities":return print(json.dumps(document(HERE/"capabilities.json"),sort_keys=True))
     if args.command == "manifest":return print(json.dumps(instrument(),indent=2))
     if args.command == "prepare":return prepare(args)
     if args.command == "check-campaign":campaign_check(document(args.summary));return print("M7_CAMPAIGN_COMPLETE")
     if args.command == "check-pilot":pilot_check(document(args.summary));return print("M7_REMOTE_PILOT_COMPLETE")
+    if args.command == "check-unaccepted-measurement":unaccepted_check(document(args.summary));return print("M7_UNACCEPTED_COLLECTION_COMPLETE_NOT_ACCEPTANCE")
     if args.command == "check-diagnostic":diagnostic_check(document(args.summary));return print("M7_DIAGNOSTIC_PASS_ONLY")
     d, m = load(args.directory)
     if args.command == "host-identity":
