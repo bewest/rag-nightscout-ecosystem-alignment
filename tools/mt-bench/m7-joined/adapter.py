@@ -29,6 +29,7 @@ from probe import generate
 from workload import generate as generate_workload
 import profile_provenance
 import evaluator_progress
+import evaluator_idle
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
           "tools/mt-bench/compose-baseline/probes/sample.sh", "tools/mt-bench/compose-baseline/oracle/disk.sh"]
@@ -214,6 +215,7 @@ def prepare(args):
     require(progress_contract.get("version")==2,"M7_EVALUATOR_PROGRESS_SOURCE_REQUIRED")
     due=progress_contract['operations']['inspectEvaluator']['response']['properties']['tenants']['items']
     require(all(key in due.get('properties',{}) and key in due.get('required',[]) for key in ('dueAt','dueReason')),'M7_EVALUATOR_DUE_SOURCE_REQUIRED')
+    require('jobs' in due.get('properties',{}) and 'jobs' in due.get('required',[]),'M7_EVALUATOR_IDLE_SOURCE_REQUIRED')
     pinned = instrument()
     target.mkdir(parents=True, mode=0o700)
     try:
@@ -551,7 +553,7 @@ def progress_attribution(m):
 
 def write_progress(out,value,m):
     before=time.monotonic();cpu=time.process_time()
-    packed={**evaluator_progress.pack(value),"attribution":{"pair":m["pair"],"imageId":m["imageId"],"instrument":m["instrument"]["sha256"],"profileSelection":m["profileSelection"]["sha256"],"tenants":m["tenants"],"replicas":m["replicas"],"profile":m["profile"],"hostIdentity":m["hostIdentity"]}};raw=json.dumps(packed,separators=(',',':')).encode()+b'\n'
+    packed={**(evaluator_idle.pack(value) if value.get("policy")==evaluator_idle.POLICY else evaluator_progress.pack(value)),"attribution":{"pair":m["pair"],"imageId":m["imageId"],"instrument":m["instrument"]["sha256"],"profileSelection":m["profileSelection"]["sha256"],"tenants":m["tenants"],"replicas":m["replicas"],"profile":m["profile"],"hostIdentity":m["hostIdentity"]}};raw=json.dumps(packed,separators=(',',':')).encode()+b'\n'
     file=out/'evaluator-progress.json';file.write_bytes(raw);file.chmod(0o600)
     compressed=out/'evaluator-progress.json.gz';compressed.write_bytes(gzip.compress(raw,mtime=0));compressed.chmod(0o600)
     write(out/'evaluator-progress-publication.json',{'wallSeconds':time.monotonic()-before,'processCpuSeconds':time.process_time()-cpu,'rawBytes':len(raw),'gzipBytes':compressed.stat().st_size,'scope':'serialization, gzip and primary-file writes; sidecar publication excluded'})
@@ -564,7 +566,7 @@ def progress_summary(out):
 
 def observe_progress(d,m,out,phase):
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
-    return evaluator_progress.Observer(progress_services(d),ids,lambda *args:progress_fetch(d,*args),m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
+    return (evaluator_idle.Observer if phase=='idle' else evaluator_progress.Observer)(progress_services(d),ids,lambda *args:progress_fetch(d,*args),m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
 
 
 def readiness(d, m):

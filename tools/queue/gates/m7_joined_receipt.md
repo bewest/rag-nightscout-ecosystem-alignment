@@ -210,7 +210,7 @@ Capacity/pilot cells now require coordinator-pinned `evaluatorProgressArtifacts`
 keyed `profile:tenants:replicas`, with exactly idle/load/recovery gzip references.
 The summary's `evaluatorProgress` fields must match independently recomputed
 counters, coverage, identity, generation and hidden-error checks from complete rows.
-The policy is fixed in profile-selection version2; previous cycle-only observation
+The policies are fixed in profile-selection version3; previous cycle-only observation
 is insufficient. Recovery additionally requires changed runtimes and successful
 owned acquisitions, separately from time-only idle/load progression.
 
@@ -222,11 +222,40 @@ there is no raised cap, omitted foreign evidence or inferred PASS. Full function
 acceptance alone still does not require future capacity proof. Root owns expected
 artifact/source policies and queue wiring; these helpers never write a receipt.
 
-Current due-complete cells require explicit phase/recovery artifact v2 and observation
-contract2. Every compact row retains typed dueAt/dueReason, including finite
-fractions; this does not alter the every-owner progress assertion. Current receipts
+Current cells require explicit idle-safety-v1 plus strict load/recovery artifact v2.
+Every compact row retains typed dueAt/dueReason, including finite fractions;
+strict successful-work and changed-runtime recovery assertions are unchanged. Current receipts
 refuse downgrade to legacy unknown-due artifacts. The shared artifact decoder
 separately supports historical v1 with its exact original policy/columns, leaving
 due metadata absent/UNKNOWN instead of manufacturing null. Historical proof is
 never upgraded or relabelled. Existing source/image/instrument/profile pins and
 streaming16MiB/64MiB decoded limits continue to apply.
+
+
+Current `profileSelection` version3 also pins `evaluatorIdleSafety`. The required
+idle artifact is `evaluator-idle-safety-v1`: complete typed clinical job metadata,
+actual read UTC/monotonic brackets and helper observations must independently
+recompute opportunity-aware sampled idle safety. Quiet results explicitly say
+TIME_NOT_EXERCISED, zero completions and `timeWitness:false`; source/runtime/
+ownership/errors, foreign work, new acquisition demand, missing jobs/timestamps
+and any earlier observed due without later time completion refuse. Current
+explicit null plus complete no-pending state means NO_TIMER_DECLARED; historical
+missing/unknown is never converted to null. Old v1/v2 decoders remain historical
+strict proofs and cannot satisfy the new current idle artifact requirement.
+
+Capacity/pilot evidence additionally needs `nativeEvaluatorTimeWitness` in the
+independent expectation, exactly `{artifact, attribution, tenants, services,
+proofPointer}`. `attribution` pins `{core, deploy, imageId, instrument}`. The artifact
+is the actual native-bounded-evaluator-due-listener-qualification wrapper, whose
+source/binding/image/instrument fields must match those pins; `proofPointer` selects
+its embedded strict v2 successful idle-TIME proof. The unchanged checker recomputes
+positive time progression for every native owner. An idle-safety PASS, a future
+timer or a quiet native capture cannot substitute. Any earlier source exception
+requires an explicit reviewed attribution pin; equivalence is never inferred.
+This support criterion does not turn quiet-baseline metrics into active-alarm
+capacity and does not add capacity requirements to functional acceptance alone.
+
+Both idle-safety branches require all six sampled owner clinical flags clear; a
+queued/running/boot job yields UNMEASURED/BUSY even alongside real time completion.
+The complete counter rows remain evidence. This is not a scheduler-stall failure
+or a change to strict native TIME/load/recovery acceptance.

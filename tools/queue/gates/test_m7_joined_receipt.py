@@ -20,7 +20,7 @@ class ReceiptTests(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.identity = {'pair': {'core': 'a' * 40, 'deploy': 'b' * 40},
                          'imageId': 'sha256:' + 'c' * 64, 'instrument': 'd' * 64}
-        self.profile={'version':2,'evaluatorProgress':gate.progress_contract().POLICY,'settings':{'schema':1,'sha256':'5'*64,'sourceCommit':'a'*40,'sourceBlobs':{'lib/settings.js':'6'*40}},'diagnostics':{'mode':'off','intervalMs':5000,'environment':{'NS_M7_DIAGNOSTICS':'0','NS_M7_DIAGNOSTICS_INTERVAL_MS':'5000'}},'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,'realtimeWorkers':1,'evaluatorWorkers':1}}
+        self.profile={'version':3,'evaluatorProgress':gate.progress_contract().POLICY,'evaluatorIdleSafety':gate.idle_contract().POLICY,'settings':{'schema':1,'sha256':'5'*64,'sourceCommit':'a'*40,'sourceBlobs':{'lib/settings.js':'6'*40}},'diagnostics':{'mode':'off','intervalMs':5000,'environment':{'NS_M7_DIAGNOSTICS':'0','NS_M7_DIAGNOSTICS_INTERVAL_MS':'5000'}},'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,'realtimeWorkers':1,'evaluatorWorkers':1}}
         self.profile['sha256']=hashlib.sha256(json.dumps(self.profile,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         self.observation={'verdict':'PASS','observations':10,'invalid':0,'mismatch':0}
         self.attribution = {'core': 'e' * 40, 'baseline': 'f' * 40, 'instrument': '1' * 64}
@@ -117,9 +117,25 @@ class ReceiptTests(unittest.TestCase):
             owners={tenant:{'service':service,'runtimeId':'11111111-1111-4111-8111-111111111111','generation':i+1,'completedAcquisitions':1+step,'completedTimeCycles':step,'failedCompletions':0,'lastCompletedAgeMs':0,'legacyCycles':1+step,'admitted':True,'ready':True,'code':None,'alert':None,'dueAt':1700000008572.4285,'dueReason':'pump-clock-warn'} for i,tenant in enumerate(ids)}
             rounds.append({'instances':{service:{'runtimeId':'11111111-1111-4111-8111-111111111111','ordinal':0}},'owners':owners,'allRows':{service:owners},'queries':math.ceil(count/128),'bytes':count*100,'wallSeconds':.01})
         cell['evaluatorProgress']={};refs={}
+        if 'nativeEvaluatorTimeWitness' not in self.expected:
+            native_rounds=copy.deepcopy(rounds)
+            for raw in native_rounds:
+                selected=ids[:2];raw['owners']={k:v for k,v in raw['owners'].items() if k in selected};raw['allRows']={service:raw['owners']};raw['queries']=1
+            strict=module.assess(native_rounds,ids[:2],'idle');proof=module.pack({**strict,'rounds':native_rounds})
+            wrapper={'kind':'native-bounded-evaluator-due-listener-qualification','source':cell['pair']['core'],'binding':cell['pair']['deploy'],'imageId':cell['imageId'],'instrumentSha256':cell['instrument'],'proof':proof}
+            self.expected['nativeEvaluatorTimeWitness']={'artifact':self.artifact('native-time.json',wrapper),'attribution':{'core':cell['pair']['core'],'deploy':cell['pair']['deploy'],'imageId':cell['imageId'],'instrument':cell['instrument']},'tenants':2,'services':[service],'proofPointer':'/proof'}
         for phase in ('idle','load'):
-            result=module.assess(rounds,ids,phase)
-            record=module.pack({**result,'rounds':rounds})
+            phase_rounds=copy.deepcopy(rounds)
+            assessor=module
+            if phase=='idle':
+                assessor=gate.idle_contract()
+                for step,raw in enumerate(phase_rounds):
+                    at=(100000+step*60000)*1000
+                    stamp=lambda offset:{'wallUs':at+offset,'monoBeforeUs':at+offset-100,'monoAfterUs':at+offset+100}
+                    raw['readWindows']={service:{'start':stamp(0),'end':stamp(10000),'observedAt':[at//1000+5]}}
+                    for row in raw['owners'].values():row.update(completedAcquisitions=1,completedTimeCycles=0,legacyCycles=1,jobs=dict.fromkeys(assessor.FLAGS,False))
+            result=assessor.assess(phase_rounds,ids,phase)
+            record=assessor.pack({**result,'rounds':phase_rounds})
             record['attribution']={'pair':cell['pair'],'imageId':cell['imageId'],'instrument':cell['instrument'],'profileSelection':cell['profileSelection']['sha256'],'tenants':count,'replicas':cell['replicas'],'profile':cell['profile'],'hostIdentity':cell['hostIdentity']}
             raw=json.dumps(record,separators=(',',':')).encode()+b'\n';compressed=gzip.compress(raw,mtime=0,compresslevel=1)
             refs[phase]=self.artifact('progress/'+cell['profile']+'-'+str(count)+'-'+str(cell['replicas'])+'-'+phase+'.json.gz',compressed)
@@ -542,13 +558,46 @@ class ReceiptTests(unittest.TestCase):
             require_refusal(mutant)
         require_refusal(Path(gate.__file__))
 
+    def test_native_time_witness_cannot_downgrade_to_coherent_historical_v1(self):
+        cell={**self.identity,'profile':'capacity','tenants':2,'replicas':1,'hostIdentity':'2'*64,'profileSelection':self.profile}
+        self.progress(cell);specification=self.expected['nativeEvaluatorTimeWitness'];module=gate.progress_contract()
+        wrapper=json.loads((self.root/specification['artifact']['path']).read_text());proof=wrapper['proof']
+        proof.update(kind='evaluator-progress-phase-v1',columns=list(module.LEGACY_COLUMNS),policy=module.LEGACY_POLICY,version=1)
+        for snapshot in proof['rounds']:snapshot['rows']=[row[:len(module.LEGACY_COLUMNS)] for row in snapshot['rows']]
+        decoded,ids=module.decode_rounds(proof,2,['eval-worker'])
+        wrapper['proof']={**module.assess(decoded,sorted(ids),'idle',policy=module.LEGACY_POLICY),'kind':'evaluator-progress-phase-v1','columns':list(module.LEGACY_COLUMNS),'rounds':proof['rounds']}
+        self.assertGreater(module.verify(wrapper['proof'],2,['eval-worker'],'idle')['completedTimeDelta'],0,'HISTORICAL_READER_REMAINS_VALID')
+        specification['artifact']=self.artifact('native-time-coherent-v1-downgrade.json',wrapper)
+        evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts']
+        with self.assertRaisesRegex(ValueError,'M7_NATIVE_EVALUATOR_TIME_VERSION'):gate.native_time_witness(self.expected,evidence)
+
+    def test_idle_safety_requires_independent_exact_native_time_and_refuses_quiet_as_witness(self):
+        cell={**self.identity,'profile':'capacity','tenants':2,'replicas':1,'hostIdentity':'2'*64,'profileSelection':self.profile}
+        self.progress(cell);evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts']
+        gate.native_time_witness(self.expected,evidence)
+        saved=self.expected.pop('nativeEvaluatorTimeWitness')
+        with self.assertRaisesRegex(ValueError,'TIME_REQUIRED'):gate.native_time_witness(self.expected,evidence)
+        self.expected['nativeEvaluatorTimeWitness']=copy.deepcopy(saved);self.expected['nativeEvaluatorTimeWitness']['attribution']['core']='9'*40
+        with self.assertRaisesRegex(ValueError,'TIME_IDENTITY'):gate.native_time_witness(self.expected,evidence)
+        self.expected['nativeEvaluatorTimeWitness']=saved
+        wrapper=json.loads((self.root/saved['artifact']['path']).read_text())
+        for raw in wrapper['proof']['rounds']:
+            for row in raw['rows']:row[4]=0
+        saved['artifact']=self.artifact('quiet-fake-native-time.json',wrapper);evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts']
+        with self.assertRaisesRegex(ValueError,'NOT_OBSERVED'):gate.native_time_witness(self.expected,evidence)
+
     def test_current_progress_receipt_cannot_downgrade_to_legacy_unknown_due(self):
         self.milestone();cell=json.loads((self.root/'cell-1.json').read_text());module=gate.progress_contract()
         key=cell['profile']+':'+str(cell['tenants'])+':'+str(cell['replicas']);refs=self.expected['evaluatorProgressArtifacts'][key]
         record=json.loads(gzip.decompress((self.root/refs['idle']['path']).read_bytes()))
         record.update(kind='evaluator-progress-phase-v1',columns=list(module.LEGACY_COLUMNS),policy=module.LEGACY_POLICY,version=1)
-        for snapshot in record['rounds']:
+        for step,snapshot in enumerate(record['rounds']):
             snapshot['rows']=[row[:len(module.LEGACY_COLUMNS)] for row in snapshot['rows']]
+            for row in snapshot['rows']:
+                row[module.LEGACY_COLUMNS.index('completedTimeCycles')]=step
+                row[module.LEGACY_COLUMNS.index('legacyCycles')]=step+1
+        decoded,ids=module.decode_rounds(record,cell['tenants'],['eval-worker'])
+        record={**module.assess(decoded,sorted(ids),'idle',policy=module.LEGACY_POLICY),'kind':'evaluator-progress-phase-v1','columns':list(module.LEGACY_COLUMNS),'rounds':record['rounds'],'attribution':record['attribution']}
         legacy=module.verify(record,cell['tenants'],['eval-worker'],'idle');raw=json.dumps(record).encode()
         refs['idle']=self.artifact('progress/legacy-downgrade.json.gz',gzip.compress(raw,mtime=0))
         cell['evaluatorProgress']['idle']={**legacy,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':refs['idle']['sha256']}
@@ -590,6 +639,7 @@ class ReceiptTests(unittest.TestCase):
         contract.write_bytes((Path(gate.__file__).resolve().parents[2] / 'mt-bench/m7-joined/contract.py').read_bytes())
         (contract.parent/'evaluator_progress.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_progress.py').read_bytes())
         (contract.parent/'evaluator_recovery.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_recovery.py').read_bytes())
+        (contract.parent/'evaluator_idle.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_idle.py').read_bytes())
         source = Path(gate.__file__).read_text()
         mutations = [
             ("set(roles) == required_roles", "bool(roles)", 'M7_CAPACITY_ROLE_INVENTORY'),
@@ -630,6 +680,7 @@ class ReceiptTests(unittest.TestCase):
         contract.write_bytes((Path(gate.__file__).resolve().parents[2] / 'mt-bench/m7-joined/contract.py').read_bytes())
         (contract.parent/'evaluator_progress.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_progress.py').read_bytes())
         (contract.parent/'evaluator_recovery.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_recovery.py').read_bytes())
+        (contract.parent/'evaluator_idle.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_idle.py').read_bytes())
         (contract.parent/'profile_provenance.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/profile_provenance.py').read_bytes())
         before = {str(f): f.read_bytes() for f in self.root.rglob('*') if f.is_file()}
         result = subprocess.run([sys.executable, str(script), '--expected', str(expected), '--receipt', str(receipt), '--scope', 'full-ladder'], capture_output=True, text=True)

@@ -243,8 +243,8 @@ def campaign_contract():
 
 def profile_selection(cell, expected):
     chosen=expected.get('profileSelection')
-    need(isinstance(chosen,dict) and set(chosen)=={'version','settings','diagnostics','topology','sha256','evaluatorProgress'} and type(chosen['version']) is int and chosen['version']==2,'M7_PROFILE_SELECTION_PIN')
-    need(chosen['evaluatorProgress']==progress_contract().POLICY,'M7_PROFILE_EVALUATOR_PROGRESS_PIN')
+    need(isinstance(chosen,dict) and set(chosen)=={'version','settings','diagnostics','topology','sha256','evaluatorProgress','evaluatorIdleSafety'} and type(chosen['version']) is int and chosen['version']==3,'M7_PROFILE_SELECTION_PIN')
+    need(chosen['evaluatorProgress']==progress_contract().POLICY and chosen['evaluatorIdleSafety']==idle_contract().POLICY,'M7_PROFILE_EVALUATOR_PROGRESS_PIN')
     digest=hashlib.sha256(json.dumps({k:v for k,v in chosen.items() if k!='sha256'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
     need(chosen['sha256']==digest,'M7_PROFILE_SELECTION_HASH')
     settings=chosen['settings']
@@ -264,6 +264,34 @@ def progress_contract():
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
 
 
+def idle_contract():
+    directory=Path(__file__).resolve().parents[2]/'mt-bench/m7-joined'
+    saved=sys.path[:]
+    try:
+        sys.path.insert(0,str(directory))
+        spec=importlib.util.spec_from_file_location('m7_idle_contract',directory/'evaluator_idle.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+    finally:sys.path[:]=saved
+
+
+def native_time_witness(expected,evidence):
+    specification=expected.get('nativeEvaluatorTimeWitness')
+    need(isinstance(specification,dict) and set(specification)=={'artifact','attribution','tenants','services','proofPointer'},'M7_NATIVE_EVALUATOR_TIME_REQUIRED')
+    pins=specification['attribution']
+    need(isinstance(pins,dict) and set(pins)=={'core','deploy','imageId','instrument'},'M7_NATIVE_EVALUATOR_TIME_IDENTITY')
+    identity({'pair':{'core':pins['core'],'deploy':pins['deploy']},'imageId':pins['imageId'],'instrument':pins['instrument']})
+    document=evidence.json(specification['artifact'])
+    need(document.get('kind')=='native-bounded-evaluator-due-listener-qualification' and
+         {k:document.get(v) for k,v in {'core':'source','deploy':'binding','imageId':'imageId','instrument':'instrumentSha256'}.items()}==pins,'M7_NATIVE_EVALUATOR_TIME_IDENTITY')
+    need(integer(specification['tenants'],1) and isinstance(specification['services'],list) and 1<=len(specification['services'])<=4 and len(set(specification['services']))==len(specification['services']),'M7_NATIVE_EVALUATOR_TIME_SPEC')
+    proof=pointer(document,specification['proofPointer']);module=progress_contract()
+    need(isinstance(proof,dict) and proof.get('kind')=='evaluator-progress-phase-v2' and proof.get('policy')==module.POLICY,'M7_NATIVE_EVALUATOR_TIME_VERSION')
+    try:result=module.verify(proof,specification['tenants'],specification['services'],'idle')
+    except RuntimeError as error:raise ValueError(str(error)) from error
+    need(result['tenantsWithTimeProgress']==specification['tenants'] and result['completedTimeDelta']>0,'M7_NATIVE_EVALUATOR_TIME_REQUIRED')
+    return result
+
+
 def recovery_contract():
     directory=Path(__file__).resolve().parents[2]/'mt-bench/m7-joined'
     saved=sys.path[:]
@@ -275,6 +303,7 @@ def recovery_contract():
 
 
 def progress_measurement(cell,expected,evidence):
+    native_time_witness(expected,evidence)
     module=progress_contract()
     key=cell['profile']+':'+str(cell['tenants'])+':'+str(cell['replicas'])
     references=expected.get('evaluatorProgressArtifacts',{}).get(key)
@@ -290,10 +319,10 @@ def progress_measurement(cell,expected,evidence):
         evidence.progress_decoded=getattr(evidence,'progress_decoded',0)+len(raw)
         need(evidence.progress_decoded<=64*1024*1024,'M7_EVALUATOR_PROGRESS_DECODE_BOUND')
         document=decode(raw)
-        need(document.get('kind')==('evaluator-recovery-v2' if phase=='recovery' else 'evaluator-progress-phase-v2') and document.get('policy')==module.POLICY,'M7_EVALUATOR_PROGRESS_VERSION')
+        need(document.get('kind')==('evaluator-idle-safety-v1' if phase=='idle' else 'evaluator-recovery-v2' if phase=='recovery' else 'evaluator-progress-phase-v2') and document.get('policy')==(idle_contract().POLICY if phase=='idle' else module.POLICY),'M7_EVALUATOR_PROGRESS_VERSION')
         need(document.get('attribution')=={'pair':cell['pair'],'imageId':cell['imageId'],'instrument':cell['instrument'],'profileSelection':cell['profileSelection']['sha256'],'tenants':cell['tenants'],'replicas':cell['replicas'],'profile':cell['profile'],'hostIdentity':cell['hostIdentity']},'M7_EVALUATOR_PROGRESS_IDENTITY')
         try:
-            result=recovery_contract().verify(document,cell['tenants'],inventory['windows']['load']['evaluator']) if phase=='recovery' else module.verify(document,cell['tenants'],inventory['windows'][phase]['evaluator'],phase)
+            result=recovery_contract().verify(document,cell['tenants'],inventory['windows']['load']['evaluator']) if phase=='recovery' else (idle_contract() if phase=='idle' else module).verify(document,cell['tenants'],inventory['windows'][phase]['evaluator'],phase)
         except RuntimeError as error:raise ValueError(str(error)) from error
         need(recorded[phase]=={**result,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':ref['sha256']},'M7_EVALUATOR_PROGRESS_ASSESSMENT')
 
