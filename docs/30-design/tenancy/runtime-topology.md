@@ -1,17 +1,106 @@
 # Runtime topology: zones, components and private APIs
 
-*Living contributor-facing architecture guide, refreshed 2026-11-10. Structure is
+*Living contributor-facing architecture guide, reconciled 2026-11-12. Structure is
 **read-derived**; measured acceptance retains its exact source in the linked
 records. This Markdown generates the site's `runtime-topology.html`. The
 [endpoint/API work plan](selectable-endpoints-and-api-scaling-plan.md) owns remaining
 implementation and acceptance criteria; the [queue](../../../queue/work-queue.yaml)
 owns claimed work state. A diagram is not deployment or capacity acceptance.*
 
+## Reuse the components across profiles
+
+A deployment profile selects where the same roles run and how they share work.
+Configuration can select a supported capability. It cannot supply missing ownership,
+migration or recovery behavior.
+
+```mermaid
+flowchart TB
+  R["Reusable roles: API, evaluator, realtime, admin and change feed"]
+  R --> S["Small group<br/>Roles can share a host"]
+  R --> O["Operator deployment<br/>Scale roles separately"]
+  R -.-> F["Proposed fleet<br/>Several bounded deployment groups"]
+  S --> C["Same authority, write, ownership and recovery contracts"]
+  O --> C
+  F -.-> C
+```
+
+The arrows show composition choices, not an upgrade sequence or a capacity claim.
+Fleet placement and tenant moves need separate design and qualification.
+The [scale envelopes](#scale-envelopes-and-fleet-planning) define the evidence needed
+for each profile. The [deployment guide](deployment-bindings-and-public-names.md#experiment-rigs-and-deployment-recipes)
+distinguishes experimental rigs from operating recipes.
+
+| Term | Meaning here |
+|---|---|
+| Role | A responsibility, such as serving API requests or evaluating tenant data. |
+| Replica | Another instance of a role. It needs a valid work-assignment rule. |
+| Cohort | The declared processes that cooperate on a workload and its maintenance. |
+| Instance / incarnation | An actual process / one lifetime of that process. A replacement has a new incarnation. |
+| Shard / partition | A selected share of tenant work. The role's assignment rule determines its owner. |
+| Cell | A proposed bounded deployment, datastore and recovery unit. Several cells could form a fleet. |
+| Admission / fencing | Checks that permit work / controls that prevent an old or invalid actor from continuing it. |
+| Hint / checkpoint | A signal to inspect authoritative state / a position or revision in a named input stream or snapshot. Its contract states what completion it proves. |
+
+## Component inventory and operator-topic readiness
+
+The component boundaries are clear enough to organize operator reference topics.
+They do not imply separate binaries, containers or production qualification.
+The inventory below groups existing responsibilities; release records own their
+current acceptance. Role launch details remain in the application source.
+
+**Read-derived source check, 2026-11-12:** cgm-remote-monitor
+`ff5156b984424f1ef34bcef22d5bfa0071354cfa`, `lib/server/serve/roles.js`,
+`lib/cli/index.js` and `lib/cli/commands/multitenant.js`.
+The role registry declares API, evaluator, realtime, vcpool, tenant-admin, admin and feed-reader.
+UI, maintenance jobs and backing services have different entry points.
+
+| Component or responsibility | Boundary and state ownership | Natural reference topic |
+|---|---|---|
+| API | REST version adapters and canonical clinical writes; current client authority. Each instance has pools, caches and in-flight requests. | Request service, authority, pool limits, replica routing and drain. |
+| Evaluator | Tenant acquisition and clinical/plugin computation; input checkpoints, eligible output and notification production have separate completion meanings. | Assignment, scheduling, freshness, output eligibility and recovery. |
+| Realtime | Client connections, subscriptions and record fanout; forwards authorized writes to API. Owns its projection and connection state. | Socket service, authority checks, tenant placement and reconnect/recovery. |
+| vcpool | Tenant connector actors. Reads scoped configuration and sends tenant-bound writes through the API. | Connector membership, credentials, outbound limits and retries. |
+| Tenant-admin | Tenant owner management with a separate credential audience; distinct from clinical DATA and operator ownership control. | Owner settings, delegation and management listener. |
+| Admin | Private operator ownership, pool and provisioning operations with scoped backing identities. It is not a lifecycle participant. | Operator control, provisioning, credentials and refused operations. |
+| UI | Page and asset delivery in the selected deployment binding. It is not a role in the inspected CLI registry. | Browser endpoint, routing and asset configuration. |
+| Maintenance jobs/controller | Explicit migration and restore operations; exact participant roster, incarnation and operation claims. | Migration, backup/restore, fencing, uncertain outcomes and recovery. |
+| Feed-reader | Dedicated metadata slot reader that emits change hints. It runs alone, outside tenant-operation cohorts. | Reader ownership, slot retention, hint transport and recovery. |
+| Projections and durable delivery | Library/protocol responsibilities used by workers; input positions and effect completion have separate contracts. | Replay, checkpoints, retained work and delivery guarantees. |
+| Edge and backing dependencies | Deployment-selected ingress, PostgreSQL, Vault and optional identity/monitoring services. Their availability and custody affect the whole deployment. | Binding, credentials, retained data, resource budgets and dependency recovery. |
+
+Use the [communication guide](evaluator-realtime-communication.md) for output and
+checkpoint ownership. Use the [deployment guide](deployment-bindings-and-public-names.md)
+for resource bindings and the [production path](production-critical-path.md) for
+operational closure. Proposed cell/fleet control remains a design topic; it is
+not another implemented service in this inventory.
+
+A component passes the operator-topic maturity test when a reader can identify
+its purpose, inputs, outputs, authority, retained state and owner.
+The same topic must explain configuration, startup refusal, readiness, shutdown,
+failure recovery, compatibility and operating limits. Follow existing contract
+and evidence links for each answer; mark missing answers as unmeasured or proposed.
+These are review questions for the existing design, not another status checklist.
+
+The inspected CLI already selects multitenant roles and provides migration,
+healthcheck, environment, diagnostic and operator-client commands. Its top-level multitenant
+summary still names only API and tenant-admin, while the registry supports more roles.
+The admin summary advertises provisioning but omits its removal verb.
+These are discoverability gaps, not evidence of missing implementations.
+The `admin` client and `admin` server role have different responsibilities.
+A healthcheck response also does not prove tenant progress or completed evaluation.
+Role-specific reference material is still spread across source documents and guides.
+Measured resource limits, remote placement and recovery qualification also remain
+source/profile-specific. The architecture is ready for coherent topics; a complete
+production operations manual would need those answers joined for a selected profile.
+No new command, help option or man page is required for this documentation work.
+
 ## Read the diagrams
 
-The three plates answer different questions: the historical accepted deployment,
-the internal-listener composition in the batch join (in acceptance), and the proposed
-fixed-roster scale target. Read downward through client ingress, edge, service destinations,
+The three plates preserve different architectural scopes: the historical accepted
+deployment, the November private-listener composition, and a fixed-roster scale
+placement example. Their captured heads and publication labels belong to those
+plates; use release contents for current implementation and acceptance.
+Read downward through client ingress, edge, service destinations,
 actual role processes and backing resources. Components sit on a grid; named
 terminals and a communication ledger replace long crossing connectors.
 
@@ -38,15 +127,14 @@ OIDC, network transport, scaling or production measurements.
 
 [PNG preview](diagrams/current-internal-api-topology.png) · [SVG source](diagrams/current-internal-api-topology.svg)
 
-The plate draws the [internal-listener decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern)
-as built on lane `78ecba76` and joined, with the admin-role, activity and alarm-repeat lanes, on
-`codex/batch-join-20261110`. That join is **in acceptance, not pushed**; the
-[lane evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md) records its focused,
-Compose and break-it runs. Draft #8898 at `b70ad83f` still opens one listener per contract
-(`alarm.sock`, `cohort-<role>.sock`); its [joined acceptance](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)
-retains that source. The shared transport, contracts, schemas and named clients came with `dc795bd1`
-([acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)).
-These measurements do not qualify a remote HTTP deployment or multiple API replicas.
+The plate illustrates the [adopted listener composition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+In this composition, each process that serves private contracts has one private listener.
+Explicit contract modules select its operations. The [listener evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md)
+and [shared-transport acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
+retain their executed heads and controls. Their source-scoped passes do not qualify
+every network, topology or later candidate. Current integration/publication belongs
+in [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md), not
+in a second chronological account here.
 
 **Both application and lifecycle operations are private APIs.** The labels name
 purpose, not different networks or mandatory sockets:
@@ -58,48 +146,50 @@ purpose, not different networks or mandatory sockets:
 | Binding | HTTP over UDS or an explicitly selected TCP/HTTP origin, with a separately configurable bind address. The deployment chooses reachability and access policy. |
 | Instance addressing | Ordinary calls may target a service destination; maintenance must reach every actual participant and pin its incarnation. |
 
-Each role process opens one `serve.internal`: API serves socket-authority and
+Each process that serves private contracts opens one `serve.internal`.
+API serves socket-authority and
 lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant; evaluator and
 tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
 unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
 listener finishes in-flight calls up to a deadline ([graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)).
-The `admin` role keeps its own operator-plane listener (`ADMIN_HOSTNAME`/`ADMIN_PORT`) for
-ownership operations, with its own `ownership_operator` database identity; it is not a lifecycle
-participant ([restore census](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
+The `admin` role serves ownership operations on its operator listener
+(`ADMIN_HOSTNAME`/`ADMIN_PORT`). It uses the `ownership_operator` database identity.
+It is not a lifecycle participant ([restore census](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
 [same address, different port](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-plane-same-address-different-port)). Evaluator's in-process
 `health()` result is not a remote metrics endpoint.
 
-The private application arrows are different calls, not a generic proxy chain:
-`evaluator → realtime` delivers notifications; `realtime → API` asks for current
-permissions and forwards authorized client writes/acknowledgements. Realtime
+The private arrows show specific calls.
+`evaluator → realtime` delivers notifications.
+`realtime → API` checks current permissions and forwards authorized writes and acknowledgements. Realtime
 owns Socket.IO semantics, subscriptions and fanout. It also checks recipients'
 current permissions during delivery. That synchronous authority dependency is
 read-derived; its latency, load and failure effects need measurement.
 
-### Proposed fixed-roster API-scale target
+<a id="proposed-fixed-roster-api-scale-target"></a>
+### Fixed-roster API-scale placement example
 
 ![Proposed fixed-roster API scale target](diagrams/proposed-fixed-roster-network-topology.svg)
 
 [PNG preview](diagrams/proposed-fixed-roster-network-topology.png) · [SVG source](diagrams/proposed-fixed-roster-network-topology.svg)
 
-Keep public/management and private interfaces independently bound. The adopted
-shape ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern), 2026-11-10) gives each role
-process one private listener, `serve.internal`, serving the contract modules the
-role's code selects; configuration chooses only `host`/`port` or `socket`
-(default: a unix socket under a runtime directory) and cannot move or merge
-contracts. On SIGTERM it [drains in-flight calls up to a deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
-An operational contract would be another module on that listener. #8898 at
-`b70ad83f` still opens one listener per contract; the composition is built and
-accepted in the 2026-11-10 batch join (`MT-INTERNAL-LISTENER`, `MT-BATCH-JOIN-1110`),
-which is not pushed.
+Bind public, management and private interfaces separately.
+Each process that serves private contracts has one `serve.internal` listener under the
+[adopted decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+The role's code selects its contract modules. Configuration selects a socket or
+host/port; it cannot move or merge contracts. The default is a Unix socket.
+On SIGTERM, the listener [drains in-flight calls up to a deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
+Operational inspection is another explicit private contract; its existence does
+not imply a public metrics endpoint or complete production monitoring.
 
-The target also shows two equivalent REST replicas behind a service destination,
-with directly addressable private instance endpoints for maintenance. It is not
-an accepted multihost or Kubernetes deployment. Realtime tenant placement and recovery have their own
-[sharding proposal](realtime-sharding-plan.md); the two-API fixture shown here
-retains one realtime process and does not establish realtime scale-out. Evaluator partitioning is separately
-adopted/queued under `MT-EVALUATOR-PARTITION`; the current reference remains one
-active owner. A replica count is not a workload-assignment rule.
+The plate shows equivalent REST replicas behind a service destination, with
+directly addressable private instance endpoints for maintenance. Implementation
+and bounded native checks for fixed API rosters, evaluator partitions and realtime
+placement are recorded in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+Qualification still belongs to the exact source/image, transport and deployment;
+this example does not establish multi-host, Kubernetes, capacity or failover admission.
+Realtime [sharding and recovery](realtime-sharding-plan.md) uses tenant ownership;
+evaluator partitioning uses its selected membership/ordinal policy. A replica count
+alone establishes neither assignment nor safe handoff.
 
 ## Logical REST cohesion and worker placement
 
@@ -143,30 +233,90 @@ credential-renewal system or mandatory gateway is implied by these diagrams.
 | Backing resources | Follow the [component ownership map](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis): scoped reads and component-owned state can use storage; cross-component commands use admitted APIs. UI/nginx receive no blanket database/Vault authority. |
 | Workload ownership | Size replicas for measured load/availability, and define ownership separately. API replicas do not require evaluator partition leases. The selected evaluator partition work has its own membership/conflict criteria. |
 
-## Work needed to reach the target
+### Scale envelopes and fleet planning
+
+*Post-baseline planning clarification, 2026-11-12; evidence below is UNMEASURED.
+Cell/fleet arrangement is **PROPOSED**, requiring explicit maintainer adoption.
+This adds no gate or prerequisite to current acceptance or the pilot.*
+
+10,000 tenants is an arbitrary experimental point and current preview bound,
+not an overall product goal. Planning covers small groups of 10–100 tenants and operators with hundreds or thousands.
+It also needs a credible path to 100,000+ tenants **across a fleet**. Record tenants, human users,
+concurrent sockets, active evaluation tenants and active alarm/delivery demand
+separately; none is a multiplier implied by another. A cohort is the selected
+workload/participant scope. A proposed cell is a bounded deployment/datastore
+and recovery unit; fleet totals must not be presented as one cell's or one
+PostgreSQL instance's capacity.
+
+Reuse the same API, evaluator, realtime, PostgreSQL and change-feed components
+across qualified profiles. Experimental rigs isolate variables; they are not
+production recipes. Fleet routing, placement, cross-database tenant moves and
+control-plane recovery are additional responsibilities: adding replicas does
+not implement them. The existing [deployment/fault-domain guide](deployment-and-rig-testing.md#deployment-choices-and-fault-domains)
+keeps per-tenant cells distinct from shared-cohort and multi-host choices.
+
+| Envelope | Evidence needed | Next bounded proof and owner |
+|---|---|---|
+| Small group | Whole-stack fixed and marginal cost at idle and steady load. Include application, database, secrets and platform resources. | Measurement and deployment owners compare two selected profiles after the baseline. Use one population and workload; change one axis. |
+| Operator fleet | Density and total cost within freshness, correctness and recovery limits. Include capacity after the declared node or dependency failure. | Measurement and deployment owners test one stated failure on a selected topology. Check independent tenant progress and recovery before recommending a recipe. |
+| Large fleet, proposed | Bounded routing, provisioning, database growth, maintenance and recovery across deployment groups. Total fleet size is not one database's capacity. | Architecture and storage owners first inventory boundaries. A two-group synthetic move/recovery proof can inform an explicit placement and migration decision. |
+
+Small-profile cost differences can justify packaging changes. They do not adopt a
+new production profile. Fleet experiments require independent stored-data and
+ownership checks. They do not prove fleet capacity or adopt a cell architecture.
+
+Keep the same behavior across topology choices. Preserve current tenant authority
+and revocation, committed write outcomes and uncertainty. Preserve owned work,
+checkpoints, lifecycle fencing, response drain, timer rules and public client contracts.
+Proposed compatibility seams are versioned
+internal contracts/capabilities **or explicit coordinated-upgrade refusal**, not
+a blanket mixed-version promise. Keep role instance/incarnation distinct from a
+service address, durable tenant identity distinct from a worker, and hints
+distinct from durable truth. Transport adapters share a behavioral contract;
+these seams do not require a universal framework or a new broker.
+
+Each design brief states the required property, affected code and smallest necessary change.
+It names the owner and explains compatibility, migration and failure behavior.
+It specifies one discriminating control and the evidence needed to justify infrastructure changes. Classify it as required correctness/compatibility,
+measured optimization, bounded prototype or deferred hypothesis. This is a
+**proposed tracking rubric**, preserving adopted decisions rather than choosing
+a fleet topology or adding current acceptance requirements.
+
+Comparative baselines and savings remain **ASSUMPTION** until reproduced with
+whole-stack resource/cost accounting, workload, retention, prices and availability
+scope. Before raising a preview limit, inventory work that scans the whole tenant roster.
+Account for connection pools, file descriptors, queues, backpressure, WAL retention and database growth.
+Include every maintenance participant. Identify bounded work per request/tick and explicit degraded recovery;
+extra worker count does not remove these constraints. The maintainer adopts
+later architecture/profile choices from those measurements with the named
+owners. These envelopes neither raise current limits nor infer PostgreSQL HA,
+automatic realtime failover or a production capacity claim.
+
+<a id="work-needed-to-reach-the-target"></a>
+## Qualification and delivery boundaries
 
 The [work plan](selectable-endpoints-and-api-scaling-plan.md#remaining-work-and-acceptance)
-defines owners, integration boundaries and controls. It separates code already
-incorporated in `dc795bd1` from these remaining changes:
+retains the implementation seams and intended failure controls. Consult the queue
+and release records before treating a listed seam as missing implementation.
+The durable qualification questions are:
 
-1. The adopted `serve.internal` listener per role, with graceful shutdown and
-   explicit lifetime policies; define operational endpoints without pretending
-   `/metrics` already exists.
-2. Deployment binding and remote UDS/HTTP parity, preserving the selected trust,
-   actual acknowledgement and suspension semantics. Gateway hooks are an optional
-   deployment integration, not a new authentication prerequisite.
-3. Fixed-roster API service/instance addressing and native concurrency,
-   all-instance restore, replacement and uncertainty acceptance.
-4. [Realtime sharding and recovery](realtime-sharding-plan.md), including a
-   measured co-location option, stable assignment and complete owner coverage.
-5. Measured scaling/fanout costs and separately scoped evaluator partitioning.
+1. Does the selected private binding preserve authority, exact operations,
+   response completion, shutdown and commit/response uncertainty?
+2. Do all actual API instances initialize the relevant tenant and participate in
+   maintenance, including actors outside ordinary service routing?
+3. Do evaluator partition changes and realtime moves preserve checkpoints,
+   current authority and durable effect identity without duplicate protected output?
+4. Is successful evaluator work distinguished from healthy quiet state, failed
+   work and inspection? A health response is not proof of per-tenant progress.
+5. What workload and resource envelope does the admitted topology meet, including
+   restart, dependency outage and other-tenant interference?
 
-No milestone promotion, default enablement or production admission follows from
-this reconciliation. Historical captures remain unchanged; stale living prose
-is corrected in place rather than kept as a second current design. The
-[deployment guide](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
-owns platform/binding examples. This page owns topology interpretation; the work
-plan owns the acceptance matrix; the queue owns work state.
+These are separate from production/default admission. Gateway hooks, additional
+brokers and new fleet protocols are selected by a concrete requirement or measured
+constraint, not by diagram shape. This page explains components and topology.
+The [deployment guide](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
+owns binding responsibilities. The [production guide](production-critical-path.md) explains admission order.
+The queue and release records own current state.
 
 Figures are generated by
 [`render_tenancy_topologies.py`](../../../tools/site/render_tenancy_topologies.py).
@@ -176,13 +326,14 @@ freshness and layout, not application runtime acceptance.
 
 ## Evaluator inspection and workload ownership
 
-The planned evaluator operational API includes read-only assignment and membership
-inspection, not only process liveness. `MT-ENDPOINT-TRANSPORT` owns the shared
-operational listener/module plumbing; `MT-EVALUATOR-PARTITION` owns the evaluator's
-assignment facts, membership rules, payload/schema and scaling controls. Neither
-the current lifecycle status response nor in-process `health()` exposes a ring API.
+The private evaluator inspection contract exposes bounded read-only state and
+successful-completion observations. Its schema and current implementation are
+owned by the source capability and [release evidence](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+It does not drive evaluation or turn a process health check into workload proof.
+Membership/assignment health and workload progress are distinct concepts; a field
+must name the actual rule and observation rather than inventing a generic ring.
 
-The inspection contract must distinguish:
+The interpretation and any extension of that contract must distinguish:
 
 - Configured mode and assignment rule/version, member count, this instance's
   ordinal and actual incarnation, and intended hash slice.
@@ -207,9 +358,8 @@ must name the actual rule rather than inventing token-range metadata.
 Stable assignment intends one evaluator owner per tenant. The adopted M7 policy
 allows a bounded overlap window with idempotent effects during membership change;
 it does not establish instantaneous exactly-once execution or automatic takeover.
-Those transition/duplicate-effect criteria remain unmeasured. The operational API
-must report conflicts and blocked work even when it refuses evaluation; querying
-inspection must not itself create work, acquire ownership or clear suspension.
+Transition and duplicate-effect claims require their actual source-scoped evidence. The operational API must report conflicts and blocked work, including when evaluation refuses.
+Inspection must not create work, acquire ownership or clear suspension.
 
 Evaluator is not the only component with ownership-sensitive state. A ring is
 one possible assignment mechanism, not a universal scaling rule:
@@ -218,7 +368,7 @@ one possible assignment mechanism, not a universal scaling rule:
 |---|---|---|
 | Clinical evaluator | Tenant's scheduled acquisition/time-based evaluation | Selected M7 member-count/ordinal assignment; partition inspection belongs here. |
 | Notification producer/consumer | Tenant/consumer state and individual durable delivery attempts | Current consumer timers are serialized per tenant within each process; the store locks state and records attempt tokens/deadlines. Co-located consumers must follow the evaluator's admitted assignment, or have a separately qualified work-claim distribution model. A ring alone does not establish exactly-once external delivery. |
-| Connector actors | Tenant/source account, polling cursor/session and upstream effects | Future tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. `MT-CONNECTOR-SYNC` currently tests an external existing connector; it does not implement a partitioned tenant-side pool. |
+| Connector actors | Tenant/source account, polling cursor/session and upstream effects | Tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. External connector-to-tenant and tenant-side connector directions have separate evidence; use the release record for joined scope rather than infer either direction from the other. |
 | Realtime | Client connections/rooms and per-tenant projection/checkpoint consumers | It has scheduled refresh work and retained state. Replication needs affinity, checkpoint ownership and complete notification fanout; it is not ordinary stateless replication and does not inherently require one realtime instance per tenant. |
 | REST/owner request serving | Individual admitted request/transaction, plus instance drain state | Equivalent replicas serve tenants without assigning each tenant to exactly one API. Every actual replica still participates in maintenance. |
 | Maintenance jobs | Exclusive claim for the affected tenant/operation | Existing database/lifecycle claim and census rules serialize destructive work; a tenant ring is not required for all maintenance jobs. |

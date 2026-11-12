@@ -26983,6 +26983,9 @@ items:
       but its corpus fails one permission-fixture assertion. Core9db fixes only that fixture
       with reproduced real-CLI red/restored controls; final source acceptance now passes Core H and the reviewed receipt. E/F/G failures retain independent outcome and cleanup scopes. Exact tested-image adoption is required for remote capacity. Component profiles
       remain distinct from the API-only replica comparison.
+      Post-baseline scale-envelope planning is tracked in
+      docs/30-design/tenancy/runtime-topology.md#scale-envelopes-and-fleet-planning;
+      it adds no gate or prerequisite to current acceptance or the pilot.
       Maintainer 2026-11-09: the architecture must allow scaling different components
       horizontally or vertically as planned, without binding. This item is the proof;
       findings become BF- entries or design changes, not waivers.
