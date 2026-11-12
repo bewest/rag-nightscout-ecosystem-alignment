@@ -137,6 +137,23 @@ class Contract(unittest.TestCase):
                 self.assertIsNone(process.poll());adapter.write(file,value);adapter.stop_job(file,'ours');self.assertIsNotNone(process.wait(timeout=2));adapter.stop_job(file,'ours')
             finally:
                 if process.poll() is None:process.terminate();process.wait(timeout=2)
+    def test_diagnostic_authorization_is_not_full_acceptance_and_cannot_unlock_capacity(self):
+        m={'profile':'fresh-image-diagnostic','pair':{'core':'a'*40,'deploy':'b'*40},'instrument':{'sha256':'c'*64},'tenants':2,'replicas':2}
+        receipt={'kind':'joined-diagnostic','status':'AUTHORIZED_DIAGNOSTIC','pair':m['pair'],'instrument':'c'*64,'limits':{'tenants':10,'apiReplicas':2,'trafficSeconds':180}}
+        self.assertEqual(receipt_scope(m,receipt,'build')['kind'],'diagnostic-only')
+        self.assertEqual(receipt_scope(m,receipt,'diagnose')['trafficSeconds'],180)
+        with self.assertRaisesRegex(RuntimeError,'CANNOT_RUN_CAPACITY'):receipt_scope(m,receipt,'run')
+        for profile in ('capacity','remote-pilot'):
+            with self.assertRaisesRegex(RuntimeError,'FROZEN_ACCEPTANCE_REQUIRED'):receipt_scope({**m,'profile':profile},receipt,'run')
+        with self.assertRaisesRegex(RuntimeError,'LIMIT_INVALID'):receipt_scope({**m,'tenants':11},receipt,'deploy')
+        with self.assertRaisesRegex(RuntimeError,'LIMIT_INVALID'):receipt_scope(m,{**receipt,'limits':{**receipt['limits'],'trafficSeconds':181}},'diagnose')
+        with self.assertRaisesRegex(RuntimeError,'RECEIPT_REQUIRED'):receipt_scope(m,{**receipt,'status':'PASS'},'deploy')
+    def test_diagnostic_result_cannot_satisfy_full_or_pilot_verdict(self):
+        doc={'kind':'m7-joined-fresh-image-diagnostic','pair':{'core':'a'*40,'deploy':'b'*40},'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'tenants':2,'replicas':2,'verdict':'PASS','checks':{key:True for key in DIAGNOSTIC_CHECKS},'acceptedWrites':2,'dataHttpRequests':8,'trafficDeadlineSeconds':180,'oracle':'GREEN','oracleControl':{'baseline':'GREEN','broken':'RED','restored':'GREEN'},'fullAcceptance':'NOT_RUN','capacity':'NO-MEASUREMENT'}
+        self.assertTrue(diagnostic_check(doc))
+        with self.assertRaisesRegex(RuntimeError,'SUMMARY_SHAPE'):campaign_check(doc)
+        with self.assertRaisesRegex(RuntimeError,'PILOT_SHAPE'):pilot_check(doc)
+        with self.assertRaisesRegex(RuntimeError,'NOT_PASSING'):diagnostic_check({**doc,'checks':{'stockRecovery':False}})
     def test_role_roster_is_derived_from_actual_role_commands(self):
         self.assertEqual(adapter.service_roster({'services':{'api':{'command':['node','entrypoint.js','api']},'api-4':{'command':['node','entrypoint.js','api']},'rt-special':{'command':['node','entrypoint.js','realtime']},'feed-reader':{'command':['node','entrypoint.js','feed-reader']}}}),['api','api-4','rt-special'])
 

@@ -8,10 +8,12 @@ COUNTS = (1000, 3000, 5000, 10000)
 REPLICAS = (1, 2, 4)
 PILOT_COUNTS = (500, 750, 1000)
 CADENCE = {"capacity":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":600,"loadSeconds":900},
+           "fresh-image-diagnostic":{"trafficSeconds":180,"idleSeconds":0,"loadSeconds":0},
            "remote-pilot":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":120,"loadSeconds":300}}
 UUID = re.compile(r"^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
 OWNER = "org.nightscout.m7.owner"
+DIAGNOSTIC_CHECKS=("dataHttp","stockPrimed","currentFrames","restartObserved","stockRecovered","httpAfterRecovery")
 
 
 def require(condition, code):
@@ -129,3 +131,36 @@ def host_identity(host):
     values={key:host[key] for key in ('cores','cpuModel','kernel','dockerDaemonId','dockerContext')}
     values['memTotalKiB']=host['memory']['MemTotal']
     return hashlib.sha256(json.dumps(values,sort_keys=True).encode()).hexdigest()
+
+
+def receipt_scope(manifest,receipt,operation):
+    require(receipt.get("pair")==manifest["pair"],"M7_RECEIPT_SOURCE_MISMATCH")
+    if manifest.get("profile")=="fresh-image-diagnostic":
+        require(operation in ("build","deploy","diagnose"),"M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY")
+        require(receipt.get("kind")=="joined-diagnostic" and receipt.get("status")=="AUTHORIZED_DIAGNOSTIC"
+                and receipt.get("instrument")==manifest["instrument"]["sha256"],"M7_DIAGNOSTIC_RECEIPT_REQUIRED")
+        limits=receipt.get("limits",{})
+        require(isinstance(limits.get("tenants"),int) and 1<=manifest["tenants"]<=limits["tenants"]<=10
+                and isinstance(limits.get("apiReplicas"),int) and 1<=manifest["replicas"]<=limits["apiReplicas"]<=2
+                and isinstance(limits.get("trafficSeconds"),int) and 1<=limits["trafficSeconds"]<=180,"M7_DIAGNOSTIC_LIMIT_INVALID")
+        return {"kind":"diagnostic-only","trafficSeconds":limits["trafficSeconds"]}
+    require(receipt.get("kind")=="joined-acceptance" and receipt.get("status")=="PASS","M7_FROZEN_ACCEPTANCE_REQUIRED")
+    require(re.fullmatch(r"[0-9a-f]{64}",receipt.get("evidenceSha256","")),"M7_ACCEPTANCE_EVIDENCE_REQUIRED")
+    return {"kind":"accepted-capacity"}
+
+
+def diagnostic_check(document):
+    require(document.get("kind")=="m7-joined-fresh-image-diagnostic" and document.get("fullAcceptance")=="NOT_RUN"
+            and document.get("capacity")=="NO-MEASUREMENT","M7_DIAGNOSTIC_SHAPE")
+    require(all(SHA.fullmatch(document.get("pair",{}).get(key,"")) for key in ("core","deploy"))
+            and re.fullmatch(r"[0-9a-f]{64}",document.get("instrument",""))
+            and re.fullmatch(r"[0-9a-f]{64}",document.get("hostIdentity",""))
+            and re.fullmatch(r"sha256:[0-9a-f]{64}",document.get("imageId","")),"M7_DIAGNOSTIC_IDENTITY_REQUIRED")
+    require(isinstance(document.get("tenants"),int) and 1<=document["tenants"]<=10
+            and isinstance(document.get("replicas"),int) and 1<=document["replicas"]<=2,"M7_DIAGNOSTIC_LIMIT_INVALID")
+    require(isinstance(document.get("trafficDeadlineSeconds"),int) and 1<=document["trafficDeadlineSeconds"]<=180
+            and document.get("acceptedWrites")==document["tenants"] and document.get("dataHttpRequests")==4*document["tenants"],"M7_DIAGNOSTIC_COUNTS_REQUIRED")
+    require(document.get("verdict")=="PASS" and document.get("oracle")=="GREEN"
+            and document.get("oracleControl")=={"baseline":"GREEN","broken":"RED","restored":"GREEN"}
+            and isinstance(document.get("checks"),dict) and set(document["checks"])==set(DIAGNOSTIC_CHECKS) and all(value is True for value in document["checks"].values()),"M7_DIAGNOSTIC_NOT_PASSING")
+    return True

@@ -5,6 +5,9 @@ The prior capacity record and authorization/allocation profiles retain their own
 source scope. No prior working-tree lib mount or bootstrap patch is reused here.
 Only committed paired core/deployment sources can serve a run.
 
+A separate [fresh-image diagnostic](DIAGNOSTIC-SEAM.md) permits bounded useful tests
+before full acceptance without claiming acceptance or capacity.
+
 The coordinator must finish the coherent candidate and its full acceptance, then
 hand over a quiet host. This lane does not stop foreign containers, including a
 peer's `nsauthz-base-n1000`, or start a capacity campaign during other work.
