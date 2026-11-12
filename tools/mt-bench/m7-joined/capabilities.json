@@ -71,7 +71,7 @@
   "evaluatorIdleSafety": {
     "version": 1,
     "kind": "evaluator-idle-safety",
-    "moduleVersion": 2,
+    "moduleVersion": 3,
     "strictWorkPolicy": {
       "version": 2,
       "moduleVersion": 2,

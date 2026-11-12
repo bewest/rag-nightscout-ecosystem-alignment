@@ -496,6 +496,31 @@ def sampling(d, out):
                                     "overhead": "included in host/PG cgroup figures; compare sampler-disabled idle control"})
 
 
+def enabled_idle(d,m,out,seconds):
+    """Existing two bookends, including AFTER when the observer refuses."""
+    phase_snapshot(d,out,'before')
+    phase_failure=None
+    try:
+        with sampling(d,out), observe_progress(d,m,out,'idle') as progress:time.sleep(seconds)
+    except BaseException as error:
+        phase_failure=error
+        raise
+    finally:
+        try:phase_snapshot(d,out,'after')
+        except BaseException as error:
+            detail={'version':1,'phase':'idle','snapshot':'after','status':'FAILED',
+                    'code':'M7_IDLE_AFTER_SNAPSHOT_REFUSED','originalPhaseFailurePreserved':phase_failure is not None,
+                    'partialFiles':{name:(out/name).is_file() for name in ('after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv')}}
+            # Raw exception messages may contain SQL/URLs/data. Persist only fixed
+            # metadata; publication failure must not replace the phase failure.
+            try:write(out/'after-snapshot-failure.json',detail)
+            except Exception:detail['publicationFailed']=True
+            if phase_failure is None:raise
+            try:phase_failure.afterSnapshotFailure=detail
+            except Exception:pass
+    return progress
+
+
 def stored(d, runid):
     require(re.fullmatch(r"[a-z0-9-]{1,120}", runid), "M7_RUN_ID_INVALID")
     sql = "\nUNION ALL\n".join("SELECT tenant_id::text,'" + kind + "',count(*) FROM nsdemo_" + kind + "." + kind + " WHERE doc->>'" + field + "'='" + runid + suffix + "' GROUP BY 1" for kind, field, suffix in [("entries","device",""),("devicestatus","device",""),("treatments","enteredBy",""),("entries","device","-probe")]) + ";"
@@ -651,9 +676,8 @@ def run_cell(d, m, k6_image):
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before");time.sleep(60);phase_snapshot(d, out, "after")
     for name, seconds in (("idle", m["cadence"]["idleSeconds"]),):
         out = d / name;out.mkdir();quiet(d, m, name + "-before", check_load=False)
-        psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before")
-        with sampling(d, out), observe_progress(d,m,out,'idle') as idle_progress:time.sleep(seconds)
-        phase_snapshot(d, out, "after")
+        psql(d, "SELECT pg_stat_statements_reset();")
+        idle_progress=enabled_idle(d,m,out,seconds)
     out = d / "load";out.mkdir()
     runid = "m7-" + m["owner"][:12];(out / "runid").write_text(runid)
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
