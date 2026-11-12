@@ -2245,3 +2245,18 @@ Not joined; full acceptance runs on the frozen join with the other lanes in prog
 | Idle evaluator cost after the clock switch (N=100) | 24.4 → 1.24 DB-ms and 240 → 1.8 queries per tenant-minute. | same |
 | BF-233 | fixed on the batch head (realtime closes the transport on shutdown; stock clients 2000/2000 at 1,000 tenants × 2). | `reports/tenancy/perf-realtime-2026-11-10/README.md` |
 | Still to do | nightscout-deploy sync to this head (change-stamp catalogue and grants, api `UPDATE(last_stamp,last_delete_stamp)`, function owner USAGE on the clock schema, healthcheck `start_period`, Kubernetes startupProbe); quiet-host capacity campaign at 1k and 3k tenants; CI on the pushed head. | same |
+
+### Update 2026-11-12: M7 batch planned (capacity findings to fixes)
+
+The 2026-11-11 capacity campaign ([record](../../reports/tenancy/capacity-2026-11-11/README.md)) met 1,000 tenants and did not meet the 3,000 gate on `5c60aec6`+`d1c7aca`. All the planned changes, M7 included, are gathered into one batch, all based on `workspace/capacity-fixes-20261111` at `5c60aec6`. The lanes run in parallel and join to one frozen head. Full acceptance runs on that head, then the 3,000/5,000/10,000-tenant capacity campaign on a quiet machine.
+
+| lane | queue item(s) | branch | decision(s) |
+|---|---|---|---|
+| authorization cost (profile first) | `MT-AUTHZ-COST` | `workspace/authz-cost-20261112` | [authorize-cost-first](decisions.md#authorize-cost-first) |
+| api replicas behind one service address | `MT-ENDPOINT-TRANSPORT`, `MT-API-FIXED-ROSTER` | `workspace/api-replicas-20261112` | [cohort-pod-not-scaled](decisions.md#cohort-pod-not-scaled) and the [scaling plan](../../docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md) |
+| realtime: no socket cap, disconnect codes, config stat cache | `MT-REALTIME-SOCKET-CAP` | `workspace/realtime-cap-20261112` | [realtime-no-socket-cap](decisions.md#realtime-no-socket-cap) |
+| tenant registry: gaps before default, then live add | `MT-TENANT-REGISTRY`, `MT-TENANT-LIVE-ADD` | `workspace/tenant-registry-20261112` | [tenant-registry](decisions.md#tenant-registry), [tenant-live-add](decisions.md#tenant-live-add) |
+| D6 stage 2: slot reader + NOTIFY (stamp scan grows with N) | `MT-D6-SLOT-READER` | `workspace/d6-slot-20261112` | [D6](../../docs/30-design/tenancy/multitenancy-decisions.md#d6) |
+| capacity fixes (already done) | `MT-CAPACITY-FIXES` | `workspace/capacity-fixes-20261111` `5c60aec6`; deploy `deploy/capacity-fixes-20261111` `d1c7aca` | [tenant-registry](decisions.md#tenant-registry) |
+
+Second wave, after the api replicas and realtime lanes: `MT-REALTIME-SHARDING`. Its unadopted design points (shard count and hash, alarm replay, takeover) come to the maintainer first. Then `MT-SCALE-UNBOUND` measures the batch. nightscout-deploy follows every lane in one binding branch. Not pushed: #8898 is at `0392acf9` locally (push commands handed over 2026-11-11).
