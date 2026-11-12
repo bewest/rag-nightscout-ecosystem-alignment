@@ -156,16 +156,20 @@ class ServerEvidence(unittest.TestCase):
         process = SimpleNamespace(pid=os.getpid(), poll=lambda: None)
         with tempfile.TemporaryDirectory() as scratch:
             out = Path(scratch) / 'metrics.json'
-            with mock.patch.object(generator.subprocess, 'run', side_effect=subprocess.TimeoutExpired('docker', 10)):
+            good = SimpleNamespace(returncode=0, stdout='{"CPUPerc":"1%"}')
+            with mock.patch.object(generator.subprocess, 'run', side_effect=[good, subprocess.TimeoutExpired('docker', 10)]):
                 generator.sample(process, b, out, Stop(), 'owned-k6')
             value = json.loads(out.read_text())
             self.assertIs(value['complete'], False)
             self.assertEqual(value['refusal'], 'EXTERNAL_GENERATOR_METRICS_REFUSED')
-            with mock.patch.object(generator.subprocess, 'run', side_effect=RuntimeError('EXTERNAL_METRICS_BOUND')):
+            self.assertEqual(len(value['samples']), 1)
+            self.assertIsNotNone(value['samples'][0]['k6'])
+            with mock.patch.object(generator.subprocess, 'run', side_effect=[good, RuntimeError('EXTERNAL_METRICS_BOUND')]):
                 generator.sample(process, b, out, Stop(), 'owned-k6')
             value = json.loads(out.read_text())
             self.assertIs(value['complete'], False)
             self.assertEqual(value['refusal'], 'EXTERNAL_METRICS_BOUND')
+            self.assertEqual(len(value['samples']), 1)
 
 class AppPhases(unittest.TestCase):
     def test_actual_producer_exports_the_complete_public_transfer_manifest(self):
@@ -183,6 +187,47 @@ class AppPhases(unittest.TestCase):
             self.assertEqual({p.name for p in (d / 'traffic-export').iterdir()}, set(TRAFFIC_FILES) | {'traffic.json'})
             self.assertIn('recovery.cjs', descriptor['files'])
             self.assertNotIn('env.json', descriptor['files'])
+
+    def test_actual_export_is_accepted_by_privilege_scoped_generator_preparation(self):
+        import app, generator
+        import hashlib
+        with tempfile.TemporaryDirectory() as scratch:
+            d = Path(scratch)
+            (d / 'dependencies').mkdir();(d / 'k6').mkdir()
+            for name in ('package.json', 'package-lock.json'): (d / 'dependencies' / name).write_text('{}')
+            (d / 'tenants.private.json').write_text('[{},{}]')
+            (d / 'k6/workload.js').write_text('// synthetic workload')
+            digest = hashlib.sha256(b'{}').hexdigest()
+            client_digest = hashlib.sha256(b'// synthetic client').hexdigest()
+            b = selected()
+            expected = {'pair': b['pair'], 'servingImageId': b['imageId'], 'tools': {},
+                        'packageSha256': digest, 'lockSha256': digest,
+                        'client': {'version': 'synthetic', 'entrySha256': client_digest}}
+            m = {'externalBinding': b, 'owner': 'a'*32, 'generator': expected, 'settingsFingerprint': {'sha256': 'f'*64}}
+            with mock.patch.object(app, 'load', return_value=(d, m, b)):
+                produced = app.export_traffic(d, b)
+            incoming = d / 'traffic-export'
+            entry = incoming / 'dependencies/node_modules/socket.io-client/index.js'
+            def npm(*args):
+                entry.parent.mkdir(parents=True)
+                entry.write_text('// synthetic client')
+                return SimpleNamespace(wait=lambda **kw: 0, poll=lambda: 0)
+            with mock.patch.object(generator.os, 'geteuid', return_value=0), mock.patch.object(generator.os, 'chown'), \
+                 mock.patch.object(generator.pwd, 'getpwuid', return_value=SimpleNamespace(pw_name='nsload', pw_gid=1001)), \
+                 mock.patch.object(generator, 'child', side_effect=npm), \
+                 mock.patch.object(generator.subprocess, 'check_output', side_effect=['nsload', json.dumps({'entry': str(entry), 'version': 'synthetic'})]):
+                self.assertEqual(generator.prepare(incoming, b), produced)
+            provenance = json.loads((incoming / 'generator-provenance.json').read_text())
+            self.assertFalse(provenance['dockerAuthority'])
+            self.assertEqual(provenance['trafficGroups'], ['nsload'])
+            # A producer digest change must fail before installing anything.
+            (incoming / 'workload.js').chmod(0o600)
+            (incoming / 'workload.js').write_text('// changed synthetic workload')
+            with mock.patch.object(generator.os, 'geteuid', return_value=0), \
+                 mock.patch.object(generator.pwd, 'getpwuid', return_value=SimpleNamespace(pw_name='nsload', pw_gid=1001)), \
+                 mock.patch.object(generator.subprocess, 'check_output', return_value='nsload'), mock.patch.object(generator, 'child') as install:
+                with self.assertRaisesRegex(RuntimeError, 'EXPORT_CHANGED'): generator.prepare(incoming, b)
+                install.assert_not_called()
 
     def test_actual_app_session_requires_readiness_progress_and_server_recovery(self):
         import app
