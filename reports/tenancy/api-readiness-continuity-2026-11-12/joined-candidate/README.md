@@ -1,0 +1,9 @@
+# Joined readiness candidate — 2026-11-12
+
+Core `ff5156b984424f1ef34bcef22d5bfa0071354cfa` and deployment `cf5bda3f2d189bac5d60269df5644759c40db9e1` join the test-only contract inventory correction and independently reviewed readiness fixture. Official development history was fetched and already contained. This is source readiness, not complete acceptance.
+
+Coordinator joined checks: [29 readiness/overlay checks](joined-focused.txt), [exact source identity/five common files](source-identity.txt) and [two explicit-core package checks](package-checks.txt) PASS, no skipped checks in these runs. Native binding, comprehensive tiers and capacity remain open. [Author controls](../readiness-fixture/README.md) and [independent review](../independent-fixture-review/README.md) preserve original false positives and restored controls.
+
+[Actual Git/input comparison](closure.json) proves the core advance changes only an existing unit assertion; all sixteen Docker source-input blobs/trees and their modes are unchanged. Deployment changes are exactly qualification fixture/client/tests/documentation plus SOURCE metadata. Every other deployment path is unchanged. The 37 captured measurement-module hashes are unchanged. This is **read-derived equivalence**, not a new execution.
+
+The [earlier quiet capture](../../evaluator-idle-safety-2026-11-12/native-2d0-dcc4-first-only/README.md) remains functional evidence at its exact 2d/dcc/b16/c33 attribution, with zero TIME and timeWitness:false. A separately named historical criterion may reference it with this comparison. It cannot satisfy final native TIME or actual pilot idle. A new exact final image must undergo stock/settings/clinical, CURRENT strict-v2 TIME and realtime-move qualification; the actual capacity cells retain their current image/source/instrument/profile coverage. No image identity is inferred from unchanged source inputs.

@@ -1,0 +1,95 @@
+{
+  "kind": "source-comparison-for-historical-functional-quiet-reuse",
+  "sourceBefore": "2d0ae0354a38b4a88f43bc2ae5ec60c085058f64",
+  "sourceAfter": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+  "deployBefore": "dcc4a70bafd4edf31c5cab4bf3099883bd7e37f9",
+  "deployAfter": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+  "coreChanges": [
+    "tests/internal-api-contracts.test.js"
+  ],
+  "coreBuildInputs": {
+    "package.json": {
+      "before": "0ac60a074d1e07631ee3558acdba10b43531c40d",
+      "after": "0ac60a074d1e07631ee3558acdba10b43531c40d"
+    },
+    "package-lock.json": {
+      "before": "34013c3fcd4348762571f664b8d55e2b4edd35d0",
+      "after": "34013c3fcd4348762571f664b8d55e2b4edd35d0"
+    },
+    ".babelrc": {
+      "before": "ff3059c3f099e7703b0e3bb5b9843dcbd0a37153",
+      "after": "ff3059c3f099e7703b0e3bb5b9843dcbd0a37153"
+    },
+    ".browserslistrc": {
+      "before": "34e99e5f0fc9642cf420e3adddef3fc965f462d3",
+      "after": "34e99e5f0fc9642cf420e3adddef3fc965f462d3"
+    },
+    ".dockerignore": {
+      "before": "6bb7bc1e29cf10b1807c642e49efd7220009f495",
+      "after": "6bb7bc1e29cf10b1807c642e49efd7220009f495"
+    },
+    "bundle": {
+      "before": "c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458",
+      "after": "c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458"
+    },
+    "webpack": {
+      "before": "7aa4b78fd4ad48d466a9efa803a0f17d98f074ef",
+      "after": "7aa4b78fd4ad48d466a9efa803a0f17d98f074ef"
+    },
+    "bin": {
+      "before": "a0afba03b03b47e1e21f68a9b5638e19995a31df",
+      "after": "a0afba03b03b47e1e21f68a9b5638e19995a31df"
+    },
+    "lib": {
+      "before": "c3e8b95cf3eb959ed9f013e2cd5142d5a494f840",
+      "after": "c3e8b95cf3eb959ed9f013e2cd5142d5a494f840"
+    },
+    "static": {
+      "before": "645a3fba5f269611f1949f9174144ef9945835e8",
+      "after": "645a3fba5f269611f1949f9174144ef9945835e8"
+    },
+    "views": {
+      "before": "d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8",
+      "after": "d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8"
+    },
+    "translations": {
+      "before": "105b1847130fe57f06ca010e9d4b709d09b6f2e9",
+      "after": "105b1847130fe57f06ca010e9d4b709d09b6f2e9"
+    },
+    "migrations": {
+      "before": "aa71098f942959dd7889586bcf6ecc0141aeecfa",
+      "after": "aa71098f942959dd7889586bcf6ecc0141aeecfa"
+    },
+    "scripts/diagnose-data.js": {
+      "before": "9869466b39493985907a9914a7a3ccb710584d6b",
+      "after": "9869466b39493985907a9914a7a3ccb710584d6b"
+    },
+    "deploy/multitenant": {
+      "before": "fdc9f8dd2644b8789c86abeb030fbc0ad7304780",
+      "after": "fdc9f8dd2644b8789c86abeb030fbc0ad7304780"
+    },
+    "server.js": {
+      "before": "d1c3f30897b5d74635db1490a81f1b3be9910877",
+      "after": "d1c3f30897b5d74635db1490a81f1b3be9910877"
+    }
+  },
+  "deployChanges": [
+    "bindings/compose/SOURCE.md",
+    "bindings/compose/multitenant/README.md",
+    "bindings/compose/multitenant/api-readiness-carrier.test.js",
+    "bindings/compose/multitenant/api-readiness-host.test.js",
+    "bindings/compose/multitenant/api-readiness-observation.test.js",
+    "bindings/compose/multitenant/api-readiness-sequence.test.js",
+    "bindings/compose/multitenant/fixtures/api-readiness-host.cjs",
+    "bindings/compose/multitenant/fixtures/api-readiness-observation.cjs",
+    "bindings/compose/multitenant/fixtures/api-readiness-private.cjs",
+    "bindings/compose/multitenant/shipping-sharding.integration.test.js"
+  ],
+  "instrumentSha256": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+  "instrumentFilesUnchanged": 37,
+  "historicalQuietRawSha256": "d0e1f609f19a32ed9db5e35b3cf864009d8ecff1af05015f169db78d67f5039b",
+  "meaning": "Historical functional quiet evidence keeps old source/image attribution. This is read-derived input equivalence, not a new image/runtime execution or TIME witness.",
+  "newImage": "NOT_YET_BUILT",
+  "finalStrictTimeWitness": "NOT_RUN",
+  "finalPilotIdle": "NOT_RUN"
+}
