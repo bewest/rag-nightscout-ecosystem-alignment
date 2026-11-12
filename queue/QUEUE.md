@@ -10688,13 +10688,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
 - `reports/tenancy/internal-service-api-2026-11-09/README.md`
 - `reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/test-all-and-browser.txt`
 
-**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion. 2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a response whose media type only starts with application/json is now refused by the client. Finding: on shutdown close() drops in-flight connections before handlers finish, consistent with the no-retry contract; a decision for the replica/drain owner. 2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment and the shared-listener configuration shape remain. 2026-11-12: remainder (real-role replicas, drain, deployment binding) taken with MT-API-FIXED-ROSTER on workspace/api- replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6); the listener-composition history stays on codex/listener- composition-20261110.
+**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion. 2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a response whose media type only starts with application/json is now refused by the client. Current source includes graceful response drain and its early-drop semantic control; actual serving-replica maintenance acceptance remains open. 2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment and the shared-listener configuration shape remain. 2026-11-12: remainder (real-role replicas, drain, deployment binding) taken with MT-API-FIXED-ROSTER on workspace/api- replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6); the listener-composition history stays on codex/listener- composition-20261110.
 
 ### `MT-API-FIXED-ROSTER` &mdash; Independent API scaling with a fixed restore participant roster
 
@@ -10722,13 +10723,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
 - `docs/30-design/tenancy/sql-and-migration-architecture.md`
 - `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** Fixed-roster replica implementation is not started; its branch name is proposed, not created. It consumes the incorporated dc795bd1 transport/schema foundation and remaining endpoint/composition/deployment acceptance. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Application service routing and exact per-instance lifecycle addressing stay distinct even when contracts share a component-private port. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion. 2026-11-12: started on workspace/api-replicas-20261112 (worktree externals/work/crm-api- replicas-20261112, base 5c60aec6), one lane with the MT-ENDPOINT-TRANSPORT remainder; follows decisions.md#authorize-cost-first.
+**Notes.** Fixed-roster configuration and client implementation are incorporated locally; actual serving-replica acceptance remains open. It consumes the incorporated dc795bd1 transport/schema foundation and remaining endpoint/composition/deployment acceptance. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Application service routing and exact per-instance lifecycle addressing stay distinct even when contracts share a component- private port. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion. 2026-11-12: started on workspace/api-replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6), one lane with the MT-ENDPOINT-TRANSPORT remainder; follows decisions.md#authorize-cost-first.
 
 ### `MT-OIDC-NATIVE` &mdash; M6a: run the nine-stage owner/OIDC native matrix through a disposable harness
 
@@ -11859,6 +11861,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/realtime-restart-disconnect-2026-11-11/README.md`
 
 **Notes.** 2026-11-11: decided; start after the quiet capacity window. 2026-11-12: in progress on workspace/realtime-cap-20261112 (worktree externals/work/crm- realtime-cap-20261112); also carries realtime's stat-keyed config cache.
@@ -11887,6 +11890,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/api-cost-vs-n-2026-11-11/README.md`
 
 **Notes.** 2026-11-12: decided. Starts once the capacity record is committed. 2026-11-12: started on workspace/authz-cost-20261112 (worktree externals/work/crm-authz- cost-20261112); step 1 is the profile.
@@ -11944,6 +11948,8 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/d6-native-discriminators-2026-11-11/README.md`
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/capacity-2026-11-11/README.md`
 
 **Notes.** 2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Maintainer answers recovered in the 2026-11-11 continuation: decisions.md#d6-paged-backstop selects paging now (watermark only if later outage measurements warrant it); decisions.md#d6-sql-reader- transport selects SQL polling for the reader; decisions.md#d6-activity- control-path requires no evaluator/realtime data work while paused or suspended, with an independent stop/resume control path. Implementation, outage latency and bounded-cost evidence remain UNMEASURED. Reader placement and identity still need their design/least-privilege review.

@@ -1,0 +1,151 @@
+{
+  "status": "recovered prior capture; no fresh workload execution",
+  "capture_at": "2026-11-12T03:15:00.515Z",
+  "core": "5c60aec669362b032a10d6dd7ac368e9c61e8003",
+  "deploy": "d1c7aca4f95998ae68d0fc42e3f236d68991b740",
+  "source_basis": "saved source.txt identifies image lib; not a mounted lib override",
+  "instrument_at_execution": "UNMEASURED: untracked scripts were not pinned in the saved capture",
+  "instrument_hashes_at_recovery": {
+    "driver.cjs": "d517124aae7b5ff8f25dbb3ccc7d5c4e38a67fe331759e4dadf179f51835a675",
+    "instrument.cjs": "6cf1b12862992ec507be95b535d864d0fcddf55c60d102fc0dab48ff3d0d8b5f",
+    "reduce.js": "be50c9d7bd639a376be289601e2cb170a460a9f476e3faf201e2437fbefcc7d3"
+  },
+  "windows": [
+    {
+      "mode": "idle",
+      "secs": 60,
+      "rate": 0,
+      "tenants": 1000,
+      "calls": 60,
+      "outcomes": {},
+      "latencyMs": {
+        "p50": null,
+        "p95": null,
+        "p99": null
+      },
+      "perCall": {
+        "mainThreadMs": 89.5,
+        "processCpuMs": 100.66666666666667,
+        "nonMainCpuMs": 11.166666666666666,
+        "gcPauseMs": 0.06262420813242595,
+        "statements": 0,
+        "transactions": 0,
+        "vault": {},
+        "sampledAllocatedKiB": 2334.3127604166666
+      }
+    },
+    {
+      "mode": "anon",
+      "secs": 30,
+      "rate": 50,
+      "tenants": 1000,
+      "calls": 1500,
+      "outcomes": {
+        "allowed": 1500
+      },
+      "latencyMs": {
+        "p50": 21.783408000002964,
+        "p95": 30.806477999998606,
+        "p99": 38.81065099999978
+      },
+      "perCall": {
+        "mainThreadMs": 7.113333333333333,
+        "processCpuMs": 8.613333333333333,
+        "nonMainCpuMs": 1.5,
+        "gcPauseMs": 0.06677762158711752,
+        "statements": 74.00066666666666,
+        "transactions": 11,
+        "vault": {},
+        "sampledAllocatedKiB": 1387.6852239583334
+      }
+    },
+    {
+      "mode": "anon",
+      "secs": 30,
+      "rate": 50,
+      "tenants": 1000,
+      "calls": 1500,
+      "outcomes": {
+        "allowed": 1500
+      },
+      "latencyMs": {
+        "p50": 21.178618999998434,
+        "p95": 31.828387999994447,
+        "p99": 41.41263500000059
+      },
+      "perCall": {
+        "mainThreadMs": 6.933333333333334,
+        "processCpuMs": 8.366666666666667,
+        "nonMainCpuMs": 1.4333333333333333,
+        "gcPauseMs": 0.0702994941075643,
+        "statements": 74,
+        "transactions": 11,
+        "vault": {},
+        "sampledAllocatedKiB": 1379.3633958333332
+      }
+    },
+    {
+      "mode": "jwt",
+      "secs": 30,
+      "rate": 50,
+      "tenants": 1000,
+      "calls": 1500,
+      "outcomes": {
+        "allowed": 1500
+      },
+      "latencyMs": {
+        "p50": 24.278252000018256,
+        "p95": 39.34957200000645,
+        "p99": 73.74506200000178
+      },
+      "perCall": {
+        "mainThreadMs": 8.98,
+        "processCpuMs": 12.426666666666666,
+        "nonMainCpuMs": 3.4466666666666668,
+        "gcPauseMs": 0.12414839140574137,
+        "statements": 56.004666666666665,
+        "transactions": 8,
+        "vault": {
+          "decrypt": 1,
+          "verify": 1
+        },
+        "sampledAllocatedKiB": 1221.8609479166666
+      }
+    },
+    {
+      "mode": "v1",
+      "secs": 30,
+      "rate": 20,
+      "tenants": 1000,
+      "calls": 600,
+      "outcomes": {
+        "http200": 600
+      },
+      "latencyMs": {
+        "p50": 77.40773899998749,
+        "p95": 97.76069500000449,
+        "p99": 122.31769999998505
+      },
+      "perCall": {
+        "mainThreadMs": 30.016666666666666,
+        "processCpuMs": 40.03333333333333,
+        "nonMainCpuMs": 10.016666666666667,
+        "gcPauseMs": 0.6064598131179809,
+        "statements": 257.00333333333333,
+        "transactions": 36,
+        "vault": {
+          "decrypt": 2,
+          "hmac": 1,
+          "verify": 2
+        },
+        "sampledAllocatedKiB": 6641.382122395833
+      }
+    }
+  ],
+  "limits": [
+    "Idle perCall metrics are per second, not per authorization.",
+    "Profiler enabled: figures are not uninstrumented capacity results.",
+    "No current-source speedup or allow/deny equivalence follows from this recovery.",
+    "Raw profiles and synthetic credentials remain local; no private state included."
+  ]
+}

@@ -1,0 +1,25 @@
+
+
+  socket admission configuration cache
+    1) ADMISSION_UNCHANGED: repeated authority checks neither read the file nor enumerate the roster
+
+
+  0 passing (12ms)
+  1 failing
+
+  1) socket admission configuration cache
+       ADMISSION_UNCHANGED: repeated authority checks neither read the file nor enumerate the roster:
+
+      AssertionError [ERR_ASSERTION]: ADMISSION_UNCHANGED full-file reads
+
+200 !== 0
+
+      + expected - actual
+
+      -200
+      +0
+      
+      at Context.<anonymous> (tests/socket-admission-cache.test.js:39:14)
+
+
+

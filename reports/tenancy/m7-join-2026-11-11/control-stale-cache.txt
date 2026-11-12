@@ -1,0 +1,25 @@
+
+
+  socket admission configuration cache
+    1) ADMISSION_DISABLED: a replacement invalidates cached authority and host admission immediately
+
+
+  0 passing (13ms)
+  1 failing
+
+  1) socket admission configuration cache
+       ADMISSION_DISABLED: a replacement invalidates cached authority and host admission immediately:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+      + expected - actual
+
+      -true
+      +false
+      
+      at Context.<anonymous> (tests/socket-admission-cache.test.js:46:12)
+
+
+
