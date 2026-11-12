@@ -2410,6 +2410,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -3327,6 +3333,64 @@
           
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../api-cost-vs-n-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    api-cost-vs-n-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
         
       
     
@@ -3473,6 +3537,66 @@
     
   
     bench-baseline-2026-11-10/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../capacity-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    capacity-2026-11-11/
   
 
     
@@ -4158,7 +4282,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_41" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_43" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -4181,8 +4305,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_41_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_41">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_43_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_43">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5957,6 +6081,64 @@
   
   
   
+    <a href="../realtime-restart-disconnect-2026-11-11/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    realtime-restart-disconnect-2026-11-11/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../restore-history-continuity-2026-11-07/index.html" class="md-nav__link">
       
   
@@ -7279,7 +7461,7 @@ consumer id. When two members both work one tenant, each pass sees the other mem
 and is delivered. The per-tenant advisory lock (<code>producer-state.js:10-15</code>) serialises the passes; it
 does not merge them.</p>
 <h3 id="measurement-reproduced-reducer-level">Measurement (reproduced, reducer level)<a class="headerlink" href="#measurement-reproduced-reducer-level" title="Permanent link">&para;</a></h3>
-<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a> drives the shipping <code>reduce</code> with one synthetic urgent
+<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a> drives the shipping <code>reduce</code> with one synthetic urgent
 alarm request, identical content, one pass per second for 10 s, repeat interval 60 s. It counts new
 non-clear alarm effects. Output at <code>1792063a</code>:</p>
 <table>
@@ -7445,7 +7627,7 @@ superseded by this section only where it gives a measurement.</em></p>
 </tr>
 <tr>
 <td>lab harness</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/tenancy/evaluator-partition/run.cjs"><code>tools/tenancy/evaluator-partition/run.cjs</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/tenancy/evaluator-partition/run.cjs"><code>tools/tenancy/evaluator-partition/run.cjs</code></a></td>
 </tr>
 </tbody>
 </table>
@@ -7539,7 +7721,7 @@ the pod-index label. <code>NS_EVALUATOR_POOL_MEMBERS</code> has no environment c
 operator sets the count with <code>setPoolMembers</code>. The binding also needs <code>MULTITENANT_POOL_EVALUATOR_PARTITION=on</code>,
 <code>_LEASE_MS</code>, <code>_DATABASE_URL</code> (secret) and <code>_NAMESPACE</code>, plus a <code>pools</code> block and an operator identity on the admin role.</p>
 <h3 id="measurements-reproduced">Measurements (reproduced)<a class="headerlink" href="#measurements-reproduced" title="Permanent link">&para;</a></h3>
-<p>Reducer probe (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a>, now with a content digest), identical content, 10 passes:</p>
+<p>Reducer probe (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a>, now with a content digest), identical content, 10 passes:</p>
 <table>
 <thead>
 <tr>

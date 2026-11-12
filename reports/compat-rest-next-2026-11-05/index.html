@@ -2422,6 +2422,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -3117,12 +3123,12 @@
 
 <h1 id="cumulative-rest-head-bounded-historical-compatibility-refresh">Cumulative REST head: bounded historical compatibility refresh<a class="headerlink" href="#cumulative-rest-head-bounded-historical-compatibility-refresh" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-05 at <code>b59ebfc4a</code>.</em></p>
-<p>Contributor-facing measurement, 2026-11-05. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/compat-rest-next-2026-11-05/aggregate.json">aggregate</a> records
+<p>Contributor-facing measurement, 2026-11-05. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/reports/compat-rest-next-2026-11-05/aggregate.json">aggregate</a> records
 fresh repeated runs of the released source, current development and the new local
 REST candidate. Each uses the same bounded synthetic write matrix. This is a new
 capture; the <a href="../compat-refresh-2026-11-05/index.html">earlier capture</a> is retained.</p>
 <h2 id="source-and-runtime-binding">Source and runtime binding<a class="headerlink" href="#source-and-runtime-binding" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/compat-rest-next-2026-11-05/expected.json">expected configuration</a> binds the audit to full source hashes
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/reports/compat-rest-next-2026-11-05/expected.json">expected configuration</a> binds the audit to full source hashes
 and checked dependency manifests. Candidate <code>d4570e585d0e12e46386ed26772790b269b2b736</code>
 is local cumulative work. It is not the published PR head. Baselines are released
 v15.0.9 <code>c6a0d8ed65637bc90d3090e6e7a0f752041c57fd</code> and official/dev
@@ -3146,7 +3152,7 @@ MongoDB package manifest. Its initial hashed snapshot was taken before the final
 launched, with this campaign’s release/development captures already underway;
 those driver versions were separately checked before their launches. Its final
 snapshot was taken after all runs and controls. The auditor requires both snapshots to match
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/compat-rest-next-2026-11-05/expected.json">expected.json</a>. This checks the declared dependency provenance,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/reports/compat-rest-next-2026-11-05/expected.json">expected.json</a>. This checks the declared dependency provenance,
 not the complete dependency tree or a runtime trace of every module load.</p>
 <h2 id="instrument-prediction-and-limits">Instrument, prediction and limits<a class="headerlink" href="#instrument-prediction-and-limits" title="Permanent link">&para;</a></h2>
 <p>The matrix and its scratch adaptations are unchanged from the
@@ -3187,7 +3193,7 @@ the same wrong head, and alter the environment sidecar. Their expected result is
 exit 1 with a specific failure; the unmodified capture must exit 0. The original
 no-config audit is also rerun and must produce an aggregate byte-identical to
 its retained result. The reproduced CLI outcomes are retained in
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/reports/compat-rest-next-2026-11-05/audit-controls.json">audit-controls.json</a>.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/reports/compat-rest-next-2026-11-05/audit-controls.json">audit-controls.json</a>.</p>
 <p>With the new pins and environment sidecar in a private directory:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/qc/compat/bounded_refresh.py<span class="w"> </span>--pins<span class="w"> </span><span class="s2">"</span><span class="nv">$PINS</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span>--expected-config<span class="w"> </span>reports/compat-rest-next-2026-11-05/expected.json<span class="w"> </span><span class="se">\</span>

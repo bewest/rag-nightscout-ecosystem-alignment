@@ -5392,7 +5392,7 @@ grant clamping, issuer/human sessions, management login, role CRUD, selected rem
 semantics and stream revocation are outside this packet. Default subject-admin
 behavior is retained; selected removal explicitly refuses.</p>
 <h2 id="reproduced-measurements">Reproduced measurements<a class="headerlink" href="#reproduced-measurements" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/archive.js">instrument</a> reads an immutable application archive into private
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/archive.js">instrument</a> reads an immutable application archive into private
 scratch and loads its actual modules. It does not mutate a checkout or start any
 service in pure mode.</p>
 <table>
@@ -5407,17 +5407,17 @@ service in pure mode.</p>
 <tr>
 <td>Catalogue/Shiro first archive</td>
 <td>29 passing, 0 pending, 0 failing</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/results/3106f14d-catalogue-positive-1.log">positive</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/results/3106f14d-catalogue-positive-1.log">positive</a></td>
 </tr>
 <tr>
 <td>Scratch replacement of universe membership with prior literal-shape predicate</td>
 <td>0 passing, 1 semantic failure: missing expected TypeError for namespace prefix</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/results/3106f14d-catalogue-prefix-control.log">control</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/results/3106f14d-catalogue-prefix-control.log">control</a></td>
 </tr>
 <tr>
 <td>Fresh restored archive</td>
 <td>29 passing, 0 pending, 0 failing</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/results/3106f14d-catalogue-restored-2.log">restored</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/results/3106f14d-catalogue-restored-2.log">restored</a></td>
 </tr>
 <tr>
 <td>Existing subject unit cases plus new catalogue cases at capture head</td>
@@ -5442,7 +5442,7 @@ service in pure mode.</p>
 <tr>
 <td>Accepted-parent subject/unit/PostgreSQL/management HTTP baseline</td>
 <td>26 passing</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/results/1c55098a-subject-baseline.log">baseline</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/results/1c55098a-subject-baseline.log">baseline</a></td>
 </tr>
 </tbody>
 </table>
@@ -5469,10 +5469,10 @@ integration cases, the full suite and browser suite, and final prcheck. These ar
 skipped for this pending packet. Pure tests do not establish throughput, tenant
 capacity, a total transaction deadline or client-cancellation behavior.</p>
 <h2 id="alignment-checks">Alignment checks<a class="headerlink" href="#alignment-checks" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/results/alignment-docs-links.log">docs-links</a>: 26 checked, 0 failing. No rich page changed.
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/results/alignment-queue-check.log">queue-check</a> fails at inherited <code>P0-F</code> missing
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/results/alignment-docs-links.log">docs-links</a>: 26 checked, 0 failing. No rich page changed.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/results/alignment-queue-check.log">queue-check</a> fails at inherited <code>P0-F</code> missing
 <code>externals/work/nc-jitter</code>; the same failure persists after linking the known
-external-worktree root (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/36cd9d352d96a3f3ade4172ee5c5d9e7a261201d/tools/lab/owner-subject-policy/results/alignment-queue-check-external-link.log">second check</a>).
+external-worktree root (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/owner-subject-policy/results/alignment-queue-check-external-link.log">second check</a>).
 No fake worktree or central queue change was created to turn this green.
 The raw baseline log retains its captured trailing blank line: alignment
 <code>git diff --check</code> reports <code>1c55098a-subject-baseline.log:37: new blank line at EOF</code>.
