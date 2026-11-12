@@ -27230,6 +27230,30 @@ items:
     evidence: []
     notes: >
       2026-11-11: decided; starts after the registry's step (a) lands.
+  - id: MT-REALTIME-SOCKET-CAP
+    title: "Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: ''
+    state: not-started
+    blast_radius: >
+      Multitenant realtime (lib/server/realtime/protocol.js, socket-server.js, config.js) and the nightscout-deploy edge
+      (decisions.md#realtime-no-socket-cap).
+    review: maintainer
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Planned: stock clients recover 2000/2000 after a full restart at 1,000 tenants; with the bind-side refusal put back,
+          server disconnects return; nothing tenant-scoped reaches an unauthorized socket.
+    blocks_on: []
+    evidence:
+      - reports/tenancy/realtime-restart-disconnect-2026-11-11/README.md
+    notes: >
+      2026-11-11: decided; start after the quiet capacity window.
   - id: MT-EVAL-COST
     title: "Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order"
     parcel: tenancy

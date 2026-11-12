@@ -31,17 +31,17 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 
 | | count |
 |---|---|
-| items | 408 |
+| items | 409 |
 | runnable gates | 452 |
-| explicit `no-gate:` markers | 409 |
+| explicit `no-gate:` markers | 410 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 409 of the 861 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 410 of the 862 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 79 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
+| `not-started` | 80 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB, MT-REALTIME-SOCKET-CAP |
 | `in-progress` | 20 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 10 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
@@ -8370,7 +8370,7 @@ distinction is the only thing that makes the register mean anything - widening
 
 ## Multitenancy programme
 
-`parcel: tenancy` &mdash; 108 items
+`parcel: tenancy` &mdash; 109 items
 
 T3.0 and the DONE-EXCEPT remainders it amends, T4.3, T4.4, the four open §7a
 alarm-readiness items, and the seam branch refresh.
@@ -8484,6 +8484,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-CAPACITY-FIXES` | Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering | `in-progress` | `workspace/capacity-fixes-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-TENANT-REGISTRY` | Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming | `in-progress` | `workspace/tenant-registry-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-TENANT-LIVE-ADD` | Running evaluator and realtime pick up newly provisioned tenants without a restart | `blocked` | `-` | n/a | 0 run + 1 no-gate |
+| `MT-REALTIME-SOCKET-CAP` | Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits | `not-started` | `-` | n/a | 0 run + 1 no-gate |
 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order | `ready-to-push` | `codex/eval-cost-20261111` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
@@ -11831,6 +11832,34 @@ alarm-readiness items, and the seam branch refresh.
 - **NO GATE** &mdash; To be defined: time from provisioning to a new tenant's first alarm; no alarm gap for existing tenants; break-it controls.
 
 **Notes.** 2026-11-11: decided; starts after the registry's step (a) lands.
+
+### `MT-REALTIME-SOCKET-CAP` &mdash; Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits
+
+| | |
+|---|---|
+| state (claimed) | `not-started` |
+| repo | `cgm-remote-monitor` |
+| branch | `-` |
+| base | `-` |
+| worktree | `-` |
+| semver | `n/a` |
+| review | maintainer |
+
+**Blast radius.** Multitenant realtime (lib/server/realtime/protocol.js, socket-server.js, config.js) and the nightscout-deploy edge (decisions.md#realtime-no-socket- cap).
+
+**What an operator sees.** _Nothing. No operator-visible change._
+
+**Why `n/a`.** unreleased preview
+
+**Gates.**
+
+- **NO GATE** &mdash; Planned: stock clients recover 2000/2000 after a full restart at 1,000 tenants; with the bind-side refusal put back, server disconnects return; nothing tenant-scoped reaches an unauthorized socket.
+
+**Evidence.**
+
+- `reports/tenancy/realtime-restart-disconnect-2026-11-11/README.md`
+
+**Notes.** 2026-11-11: decided; start after the quiet capacity window.
 
 ### `MT-EVAL-COST` &mdash; Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order
 
