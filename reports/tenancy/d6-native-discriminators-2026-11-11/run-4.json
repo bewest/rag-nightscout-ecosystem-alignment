@@ -1,0 +1,405 @@
+{
+  "captured_at": "2026-11-12T03:47:22.737660+00:00",
+  "source_head": "9179146638094fcf2b0f642a51d03a272098168e",
+  "image": "postgres@sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a",
+  "harness_sha256": "c2aa02bebe72ae7f42689666334cadaff819a818cb4ddd35fe47ebc4b033d412",
+  "container": "ns-d6-proof-e0bc4b032110",
+  "cases": [
+    {
+      "name": "version",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit\nlogical",
+      "stderr": "",
+      "elapsed_ms": 70.896,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "setup",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "d6_fixed\nd6_other",
+      "stderr": "",
+      "elapsed_ms": 167.101,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "seed_two_tenants_and_excluded",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_ms": 71.379,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "serving_bound_a_sees_only_a",
+      "role": "serving",
+      "exit": 0,
+      "stdout": "00000000-0000-4000-8000-000000000001",
+      "stderr": "",
+      "elapsed_ms": 71.237,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "serving_unbound_sees_nothing",
+      "role": "serving",
+      "exit": 0,
+      "stdout": "0",
+      "stderr": "",
+      "elapsed_ms": 75.473,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "serving_raw_slot_refused",
+      "role": "serving",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42501: permission denied to use replication slots\nDETAIL:  Only roles with the REPLICATION attribute may use replication slots.\nLOCATION:  CheckSlotPermissions, slot.c:1220",
+      "elapsed_ms": 62.827,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "feed_raw_slot_refused",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42501: permission denied to use replication slots\nDETAIL:  Only roles with the REPLICATION attribute may use replication slots.\nLOCATION:  CheckSlotPermissions, slot.c:1220",
+      "elapsed_ms": 70.94,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "serving_wrapper_refused",
+      "role": "serving",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42501: permission denied for schema feed\nLINE 1: SELECT count(*) FROM feed.peek(1);\n                             ^\nLOCATION:  aclcheck_error, aclchk.c:2812",
+      "elapsed_ms": 70.647,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "feed_cannot_assume_reader_owner",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42501: permission denied to set role \"reader_owner\"\nLOCATION:  call_string_check_hook, guc.c:6781",
+      "elapsed_ms": 71.755,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "feed_direct_other_slot_advance_refused",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42501: permission denied to use replication slots\nDETAIL:  Only roles with the REPLICATION attribute may use replication slots.\nLOCATION:  CheckSlotPermissions, slot.c:1220",
+      "elapsed_ms": 62.491,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "reader_owner_unbound_sql_sees_nothing",
+      "role": "reader_owner",
+      "exit": 0,
+      "stdout": "0",
+      "stderr": "",
+      "elapsed_ms": 66.255,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "wrapper_peek_force_rls",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "5|229|B,C,I,R",
+      "stderr": "",
+      "elapsed_ms": 89.892,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "wrapper_peek_full",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "10|513|f",
+      "stderr": "",
+      "elapsed_ms": 91.823,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "wrapper_cross_tenant_metadata",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "t|t|f",
+      "stderr": "",
+      "elapsed_ms": 71.214,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "wrapper_fixed_slot_signature_refuses_other",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42883: function feed.peek(unknown, integer) does not exist\nLINE 1: SELECT * FROM feed.peek('d6_other',1);\n                      ^\nHINT:  No function matches the given name and argument types. You might need to add explicit type casts.\nLOCATION:  ParseFuncOrColumn, parse_func.c:629",
+      "elapsed_ms": 77.778,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "wrapper_fixed_publication_signature_refuses_other",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42883: function feed.peek(integer, unknown) does not exist\nLINE 1: SELECT * FROM feed.peek(1,'d6_wrong');\n                      ^\nHINT:  No function matches the given name and argument types. You might need to add explicit type casts.\nLOCATION:  ParseFuncOrColumn, parse_func.c:629",
+      "elapsed_ms": 74.805,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "wrapper_target_bound",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  P0001: D6_TARGET_REFUSED\nCONTEXT:  PL/pgSQL function feed.peek(integer) line 4 at RAISE\nLOCATION:  exec_stmt_raise, pl_exec.c:3897",
+      "elapsed_ms": 65.345,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "feed_cannot_change_wrapper_owner",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42501: must be owner of function peek\nLOCATION:  aclcheck_error, aclchk.c:2950",
+      "elapsed_ms": 69.496,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "feed_cannot_mutate_publication",
+      "role": "feed_login",
+      "exit": 3,
+      "stdout": "",
+      "stderr": "ERROR:  42501: must be owner of publication d6_metadata\nLOCATION:  aclcheck_error, aclchk.c:2950",
+      "elapsed_ms": 68.756,
+      "expectation": "semantic refusal",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "control_relax_rls",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_ms": 74.117,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "control_serving_bound_a_now_leaks_b",
+      "role": "serving",
+      "exit": 0,
+      "stdout": "00000000-0000-4000-8000-000000000001\n00000000-0000-4000-8000-000000000002",
+      "stderr": "",
+      "elapsed_ms": 77.889,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "restore_rls_policy",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_ms": 70.872,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "restored_serving_bound_a_sees_only_a",
+      "role": "serving",
+      "exit": 0,
+      "stdout": "00000000-0000-4000-8000-000000000001",
+      "stderr": "",
+      "elapsed_ms": 54.471,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "control_add_excluded_publication_table",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_ms": 77.571,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "control_publication_leak_detected",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "t",
+      "stderr": "",
+      "elapsed_ms": 69.421,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "restore_publication_membership",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_ms": 76.529,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "historical_published_row_still_replays",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "t",
+      "stderr": "",
+      "elapsed_ms": 67.02,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "restored_publication_no_leak",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "f",
+      "stderr": "",
+      "elapsed_ms": 66.612,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "advance_seed",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "0/196E350",
+      "stderr": "",
+      "elapsed_ms": 61.349,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "large_transaction_write",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "elapsed_ms": 89.314,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "large_transaction_peek_target_one",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "5003|289012|5000|1",
+      "stderr": "",
+      "elapsed_ms": 67.029,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "large_transaction_peek_repeat",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "5003|289012|5000|1",
+      "stderr": "",
+      "elapsed_ms": 69.01,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "large_transaction_limit_is_output_only",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "1|21\n5003",
+      "stderr": "",
+      "elapsed_ms": 72.803,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "advance_complete_transaction",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "0/1A2C3B8",
+      "stderr": "",
+      "elapsed_ms": 74.317,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "after_advance_no_replay",
+      "role": "feed_login",
+      "exit": 0,
+      "stdout": "0",
+      "stderr": "",
+      "elapsed_ms": 69.446,
+      "expectation": "success",
+      "matched_expected_exit": true
+    },
+    {
+      "name": "restore_force_rls_preserved",
+      "role": "postgres",
+      "exit": 0,
+      "stdout": "tenant_activity|t|t\ntenant_write_clock|t|t",
+      "stderr": "",
+      "elapsed_ms": 64.157,
+      "expectation": "success",
+      "matched_expected_exit": true
+    }
+  ],
+  "scope": "Native PostgreSQL proof; no shipping reader implementation",
+  "assertions": {
+    "serving_bound_a_sees_only_a": true,
+    "serving_unbound_sees_nothing": true,
+    "reader_owner_unbound_sql_sees_nothing": true,
+    "wrapper_cross_tenant_metadata": true,
+    "control_serving_bound_a_now_leaks_b": true,
+    "restored_serving_bound_a_sees_only_a": true,
+    "control_publication_leak_detected": true,
+    "restored_publication_no_leak": true,
+    "historical_published_row_still_replays": true,
+    "large_transaction_peek_target_one": true,
+    "large_transaction_peek_repeat": true,
+    "large_transaction_limit_is_output_only": true,
+    "after_advance_no_replay": true,
+    "restore_force_rls_preserved": true,
+    "all_expected_exits": true,
+    "serving_raw_slot_refused_sqlstate": true,
+    "feed_raw_slot_refused_sqlstate": true,
+    "serving_wrapper_refused_sqlstate": true,
+    "feed_cannot_assume_reader_owner_sqlstate": true,
+    "feed_direct_other_slot_advance_refused_sqlstate": true,
+    "feed_cannot_change_wrapper_owner_sqlstate": true,
+    "feed_cannot_mutate_publication_sqlstate": true
+  },
+  "verdict": "PASS",
+  "unimplemented_checks": [
+    "Runtime pin of wrapper body/owner/publication membership; mutation refusal above measures SQL privilege only",
+    "Bounded bytes/memory/time during decode; SQL target does not promise a hard row bound",
+    "Notification-before-advance crash protocol and actual reader/listener integration",
+    "Shipping restore/epoch suites and pgoutput catalog invalidation"
+  ],
+  "cleanup": {
+    "exit": 0,
+    "stderr": ""
+  }
+}
