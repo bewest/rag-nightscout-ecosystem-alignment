@@ -1,0 +1,33 @@
+{
+  "scope": "offline mutants of actual captured rows; no live stopped-worker or restart claim",
+  "restored": "PASS",
+  "controls": [
+    {
+      "control": "frozen-success-counters",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED"
+    },
+    {
+      "control": "hidden-failure",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE"
+    },
+    {
+      "control": "foreign-work",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_FOREIGN"
+    },
+    {
+      "control": "runtime-reset",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_RESET"
+    },
+    {
+      "control": "missing-foreign-row",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_COVERAGE"
+    }
+  ],
+  "rawSha256": "5e540710ab4897dc94003de904bcd121cd71fa9fc466c07d75b283360c5bc440",
+  "gzipSha256": "8339c0c006aaeca39da64ff10f473db597d4ec46eb57b14b57aedbb651b02836"
+}
