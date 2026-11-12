@@ -1,0 +1,37 @@
+{
+  "reducer.cjs": {
+    "rawSha256": "a37025c41eec895ab58fb09caba859c3d17b756025ff0c4583ac949136b70324",
+    "publishedSha256": "a37025c41eec895ab58fb09caba859c3d17b756025ff0c4583ac949136b70324",
+    "normalization": "none"
+  },
+  "result.json": {
+    "rawSha256": "7be5a225d57795085a3890e78b5f86f93f22a835bfeb5a775a6add93e1567681",
+    "publishedSha256": "7be5a225d57795085a3890e78b5f86f93f22a835bfeb5a775a6add93e1567681",
+    "normalization": "none"
+  },
+  "stdout.txt": {
+    "rawSha256": "4b08c1d449ea49bad7d529edfbe9eb717356f55160b2bd5d823506e5f6a050cd",
+    "publishedSha256": "4b08c1d449ea49bad7d529edfbe9eb717356f55160b2bd5d823506e5f6a050cd",
+    "normalization": "none"
+  },
+  "invariant.cjs": {
+    "rawSha256": "89f0308691fceb93b473e474c3755924ea2cf6d410050fca93b68a31ddced2cd",
+    "publishedSha256": "89f0308691fceb93b473e474c3755924ea2cf6d410050fca93b68a31ddced2cd",
+    "normalization": "none"
+  },
+  "control-results.json": {
+    "rawSha256": "205df4660abd94e044e5b58d3b9cce7f3fe1b63c4f8d7d6d8d99ad86efc83797",
+    "publishedSha256": "205df4660abd94e044e5b58d3b9cce7f3fe1b63c4f8d7d6d8d99ad86efc83797",
+    "normalization": "none"
+  },
+  "transientIneligible.txt": {
+    "rawSha256": "fef7c61b6a06c04866b5b534ecb7dd5d87e45374f1130ee07027349aaf53510b",
+    "publishedSha256": "6e022746dffd78e590efd241729206148dbea0d1027b1afc347ed804d24777b1",
+    "normalization": "owned scratch path prefix in error stack only"
+  },
+  "preservedDeadlineControl.txt": {
+    "rawSha256": "0c97c22b8dbab6c60c025ea66a710ffdd2b6470ec79b2b6fa3681c922867122d",
+    "publishedSha256": "0c97c22b8dbab6c60c025ea66a710ffdd2b6470ec79b2b6fa3681c922867122d",
+    "normalization": "none"
+  }
+}
