@@ -24,6 +24,7 @@ IMAGE='postgres@sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d
 def main():
     require(len(sys.argv)==2,'M7_SMOKE_OUTPUT_REQUIRED')
     output=Path(sys.argv[1]).resolve();require(not output.exists(),'M7_SMOKE_OUTPUT_EXISTS');output.mkdir(mode=0o700,parents=True)
+    captured_instrument=adapter.instrument()
     scratch=Path(tempfile.mkdtemp(prefix='m7-adapter-smoke-'));nonce=uuid.uuid4().hex
     m={'directory':str(scratch),'project':'nsm7-smoke-'+nonce[:12],'owner':nonce}
     adapter.write(scratch/'owner.json',m)
@@ -34,6 +35,7 @@ def main():
     try:
         host=adapter.inventory(nonce)
         adapter.write(scratch/'host-inventory.private.json',host)
+        adapter.write(output/'host-inventory.private.json',host)
         # Foreign work is recorded, never stopped or treated as a quiet-host
         # capacity measurement. One PG container, six synthetic accepted writes.
         adapter.compose(scratch,'up','-d','--no-build','--pull','never','postgres',timeout=30)
@@ -65,7 +67,7 @@ def main():
         thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
         workload_record=adapter.generate_workload(adapter.ROOT,scratch/'k6/workload.js')
         calls=json.loads(adapter.command(['node',adapter.HERE/'workload-shapes.cjs',scratch/'k6/workload.js',scratch/'tenants.private.json']))
-        posts=[row for row in calls if row['method']=='POST'];require(len(posts)==6,'M7_SMOKE_WORKLOAD_SHAPES_MISSING')
+        posts=[row for row in calls if row.get('method')=='POST'];require(len(posts)==6,'M7_SMOKE_WORKLOAD_SHAPES_MISSING')
         for call in posts:
             url=urllib.parse.urlsplit(call['url']);kind=url.path.split('/')[-1]
             request=urllib.request.Request('http://127.0.0.1:'+str(server.server_port)+url.path,data=json.dumps(call['body']).encode(),headers={'Host':call['options']['headers']['Host'],'Content-Type':'application/json'},method='POST')
@@ -83,7 +85,7 @@ def main():
         require(actual=={'baseline':'GREEN','broken':'RED','restored':'GREEN'},'M7_SMOKE_CONTROL_FAILED')
         shutil.copyfile(load/'oracle-control.json',output/'oracle-control.json')
         adapter.write(output/'proof.json',{'kind':'instrument-smoke-only','acceptedWrites':sum(metrics[k] for k in ['writes_ok']),'tenants':2,'domains':3,'sourceOwnedPayloadFunctions':True,
-            'workload':workload_record,'foreignActiveContainers':sum(not row['owned'] for row in host['containers']),
+            'instrument':captured_instrument,'workload':workload_record,'foreignActiveContainers':sum(not row['owned'] for row in host['containers']),
             'privateHostInventorySha256':digest(scratch/'host-inventory.private.json'),'capacity':'NO-MEASUREMENT','applicationAuthorizationClinicalRestore':'NO-MEASUREMENT',
             'limits':'HTTP fixture and direct PG storage validate instrumentation, not shipping application behavior; no k6 scheduling or sockets run'})
         print(json.dumps({'instrumentSmoke':'PASS','acceptedWrites':6,'oracle':['GREEN','RED','GREEN'],'capacity':'NO-MEASUREMENT'}))
