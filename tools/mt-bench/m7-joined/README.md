@@ -71,10 +71,15 @@ Conflicting outputs, legacy `token` fields or missing tokens refuse. Provisionin
 uses the private admin API; seeding uses DATA APIs. There is no direct tenant-row
 or Vault seeding in the campaign adapter.
 
-`campaign.py` accepts the same source/image/freeze arguments plus `--work` and
+`campaign.py all` accepts the same source/image/freeze arguments plus `--work` and
 `--k6-image`. It measures 1 API at 1,000 → 3,000 → 5,000 → 10,000, then 2 and 4 APIs
 at those counts on the **same frozen pair and image**. Every failed correctness or
-instrument gate stops growth. It never automatically starts anyway on a busy
+instrument gate stops growth. `campaign.py ladder --replicas 1` (then2, then4)
+provides separate explicit ladders in the same `--work` ledger. A measured profile
+ceiling stays FAIL; the coordinator may start the next profile at1,000 after a
+source/instrument/host-matched `measured-profile-ceiling` receipt links the failure
+artifact and diagnosis hashes. Any stored-oracle, authority/refusal or functional
+failure sets a global block: a ceiling receipt cannot override it. It never automatically starts anyway on a busy
 host. `check-campaign` refuses missing count/replica rows, mixed source/instrument/
 image identities and unmeasured cells. Realtime worker placement remains the
 product binding's selected topology; the API-replica matrix is not a claim that
@@ -83,9 +88,12 @@ all possible realtime placements or automatic takeover were measured.
 ## Instrument
 
 The source manifest hashes every adapter file and every reused tracked instrument.
-The existing `capacity/k6/workload.js` drives seven unchanged client shapes: CGM
+The existing `capacity/k6/workload.js` supplies seven client shapes: CGM
 entry and Loop devicestatus uploaders, AAPS-style v3 treatments, and follower
-entry/devicestatus/treatment/status reads. Default cadence is real (one CGM cycle
+entry/devicestatus/treatment/status reads. The generated workload records two explicit adaptations: current deterministic
+nominal-arrival timestamps replace prior day-old timestamps (which could suppress
+current frame changes), and read4xx responses increment a functional refusal
+counter. Payloads and client route shapes are reused. Default cadence is real (one CGM cycle
 per 300 seconds), hot tenant factor10. Default idle600s/load900s. Two stock-browser
 polling sockets per tenant use JWT exchange and preserve stock reconnect behavior;
 retry-flood results are labelled separately. All sockets must prime before load.

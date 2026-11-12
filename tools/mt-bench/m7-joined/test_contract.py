@@ -9,6 +9,9 @@ sys.path.insert(0,str(Path(__file__).resolve().parent))
 import adapter
 from contract import *
 from probe import generate
+from workload import generate as generate_workload
+import campaign
+from reduce import measurements
 
 A='11111111-1111-4111-8111-111111111111'
 B='22222222-2222-4222-8222-222222222222'
@@ -60,6 +63,44 @@ class Contract(unittest.TestCase):
             self.assertIn('hotTenantWriteToFrameMs',source);self.assertIn('M7_ESTABLISHED_SOCKETS_INCOMPLETE',source)
             self.assertEqual(record['adaptedSha256'],digest(file))
             subprocess.run(['node','--check',str(file)],check=True,capture_output=True)
+    def test_current_deterministic_workload_and_functional_refusal_counter(self):
+        with tempfile.TemporaryDirectory(prefix='m7-workload-test-') as scratch:
+            file=Path(scratch)/'workload.js';generate_workload(adapter.ROOT,file)
+            tenants=Path(scratch)/'tenants.json';tenants.write_text(json.dumps(self.tenants))
+            calls=json.loads(subprocess.check_output(['node',str(adapter.HERE/'workload-shapes.cjs'),str(file),str(tenants)],env=adapter.runtime_env({'M7_FIXTURE_REFUSE_READS':'1'})))
+            self.assertEqual(len([r for r in calls if r.get('counter')=='responses_refused']),8)
+            dates=[r['body'][0]['date'] for r in calls if r.get('method')=='POST' and isinstance(r.get('body'),list) and r['url'].endswith('token=synthetic-test-only') and '/entries?' in r['url']]
+            self.assertEqual(dates,[1800000000000,1800000150000])
+    def test_replica_ladder_never_overrides_functional_block_and_requires_ceiling_evidence(self):
+        with tempfile.TemporaryDirectory(prefix='m7-ladder-test-') as scratch:
+            root=Path(scratch);master={'pair':{'core':'a'*40,'deploy':'b'*40},'instrument':'c'*64,'hostIdentity':'d'*64}
+            campaign.authorize_profile(1,master,root,None)
+            with self.assertRaisesRegex(RuntimeError,'FIRST_PROFILE'):campaign.authorize_profile(2,master,root,None)
+            prior={'status':'FAIL','failureClass':'diagnosis-required'};adapter.write(root/'profile-1.json',prior)
+            with self.assertRaisesRegex(RuntimeError,'NEEDS_DIAGNOSIS'):campaign.authorize_profile(2,master,root,None)
+            receipt={**master,'kind':'measured-profile-ceiling','classification':'performance','profileArtifactSha256':digest(root/'profile-1.json'),'diagnosisEvidenceSha256':'e'*64}
+            adapter.write(root/'receipt.json',receipt);campaign.authorize_profile(2,master,root,root/'receipt.json')
+            master['functionalBlock']=True
+            with self.assertRaisesRegex(RuntimeError,'GLOBAL_FUNCTIONAL_BLOCK'):campaign.authorize_profile(2,master,root,root/'receipt.json')
+            self.assertEqual(campaign.failure_class('M7_ORACLE_CLIENT_TOTAL_MISMATCH'),'functional-block')
+    def test_resource_reducer_distinguishes_missing_samples_and_process_rss_from_heap(self):
+        with tempfile.TemporaryDirectory(prefix='m7-reduce-test-') as scratch:
+            root=Path(scratch)
+            for name in ('idle-disabled','idle','load'):
+                folder=root/name;folder.mkdir()
+                for edge,at,cpu,calls in [('before',1,1000000,1),('after',3,2000000,3)]:
+                    adapter.write(folder/(edge+'-cgroups.json'),{'at':at,'roles':{'api':{'id':'same','cgroup':'usage_usec '+str(cpu)+'\n1024\nanon 512\n','processRssKiB':'PID COMMAND RSS\n1 node 100'}}})
+                    (folder/(edge+'-pg-role.tsv')).write_text('role\t'+str(calls)+'\t'+str(calls*10)+'\n')
+                if name!='idle-disabled':
+                    (folder/'docker-stats.tsv').write_text('t\tcontainer\tcpu_pct\tmem\n2\towned-api-1\t50%\t1MiB / 1GiB\n')
+                    (folder/'pg-activity.tsv').write_text('t\trole\tstate\twait_event_type\twait_event\tn\n2\trole\tidle\tClient\tClientRead\t1\n')
+            shapes={name:{'med':1,'p(95)':2,'p(99)':3,'count':1} for name in ('w_sgv','w_devicestatus','w_treatments_v3','r_sgv','r_devicestatus','r_treatments','r_status')}
+            adapter.write(root/'load/k6-summary.json',{'metrics':{'http_req_duration{shape:'+name+'}':value for name,value in shapes.items()}})
+            value=measurements(root,{'project':'owned','tenants':2})
+            self.assertTrue(value['complete']);self.assertEqual(value['windows']['load']['roles']['api']['cpuCoresMean'],.5)
+            self.assertEqual(value['windows']['load']['roles']['api']['rssBytesMax'],1024**2)
+            (root/'idle/docker-stats.tsv').write_text('t\tcontainer\tcpu_pct\tmem\n')
+            self.assertFalse(measurements(root,{'project':'owned','tenants':2})['complete'])
     def test_role_roster_is_derived_from_actual_role_commands(self):
         self.assertEqual(adapter.service_roster({'services':{'api':{'command':['node','entrypoint.js','api']},'api-4':{'command':['node','entrypoint.js','api']},'rt-special':{'command':['node','entrypoint.js','realtime']},'feed-reader':{'command':['node','entrypoint.js','feed-reader']}}}),['api','api-4','rt-special'])
 

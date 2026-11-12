@@ -24,6 +24,7 @@ sys.path.insert(0, str(HERE))
 from contract import (COUNTS, REPLICAS, OWNER, SHA, require, digest, labels_match, owned,
                       tenant_projection, metric, oracle, serving_mounts, campaign_check)
 from probe import generate
+from workload import generate as generate_workload
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
           "tools/mt-bench/compose-baseline/probes/sample.sh", "tools/mt-bench/compose-baseline/oracle/disk.sh"]
@@ -118,6 +119,8 @@ def inventory(owner):
                                "project": labels.get("com.docker.compose.project"), "owned": labels.get(OWNER) == owner})
     return {"at": time.time(), "load": list(os.getloadavg()), "cores": os.cpu_count(),
             "memory": dict(re.findall(r"^(MemTotal|MemAvailable):\s+(\d+)", Path("/proc/meminfo").read_text(), re.M)),
+            "cpuModel":re.search(r"^model name\s+: (.+)$",Path("/proc/cpuinfo").read_text(),re.M)[1],
+            "dockerDaemonId":command(["docker","info","--format","{{.ID}}"]).strip(),
             "kernel": os.uname().release, "dockerContext":command(["docker","context","show"]).strip(), "docker": command(["docker", "version", "--format", "{{.Server.Version}} "]).strip(),
             "compose": command(["docker", "compose", "version", "--short"]).strip(), "containers": containers,
             # Record process names/counters, never command arguments or environments.
@@ -214,6 +217,7 @@ def prepare(args):
     m["sourceCompose"] = {str(f.relative_to(target)): digest(f) for f in source_files}
     m["composeSha256"] = digest(target / "frozen.compose.json")
     m["probe"] = generate(ROOT, target / "probe.js")
+    m["workload"] = generate_workload(ROOT, target / "k6/workload.js")
     write(target / "owner.json", m)
     print(json.dumps({"prepared": m["project"], "pair": m["pair"], "tenants": args.tenants, "replicas": args.replicas}))
 
@@ -222,6 +226,7 @@ def verify(d, m):
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
     require(digest(d / "probe.js") == m["probe"]["adaptedSha256"], "M7_PROBE_CHANGED")
+    require(digest(d / "k6/workload.js") == m["workload"]["adaptedSha256"], "M7_WORKLOAD_CHANGED")
     for file, sha in m["sourceCompose"].items():
         require(digest(d / file) == sha, "M7_SOURCE_COMPOSE_CHANGED")
     # Shipping build admission checks every input against the two commits.
@@ -444,9 +449,9 @@ def run(d, m, k6_image):
             monitor = loadgen_process(d, probe_process);monitor.__enter__()
             with (out / "k6.log").open("wb") as output:
                 command(["docker", "run", "--rm", "--name", m["project"] + "-k6", "--label", OWNER + "=" + m["owner"], "--label", "com.docker.compose.project=" + m["project"], "--label", "com.docker.compose.service=k6",
-                    "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(ROOT / "tools/mt-bench/capacity/k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(d / "tenants.private.json") + ":/tenants.private.json:ro",
+                    "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(d / "tenants.private.json") + ":/tenants.private.json:ro",
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
-                    "-e", "RUN_START=" + str(int(time.time()*1000)-86400000), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL=1", "-e", "HOT_FACTOR=10",
+                    "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL=1", "-e", "HOT_FACTOR=10",
                     "-e", "SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status", k6_id, "run", "--quiet", "--summary-export", "/out/k6-summary.json", "/scripts/workload.js"], file=output, timeout=m["cadence"]["loadSeconds"]+600)
             phase_snapshot(d, out, "after")
             (out / ".restart").touch()
@@ -475,6 +480,8 @@ def run(d, m, k6_image):
     summary["measurements"] = measurements(d, m)
     require(summary["measurements"]["complete"], "M7_NO_MEASUREMENT")
     write(d / "summary.json", summary)
+    metrics = document(out / "k6-summary.json")["metrics"]
+    require(metric(metrics,"writes_refused")==0 and metric(metrics,"responses_refused")==0,"M7_FUNCTIONAL_REQUEST_REFUSAL")
     require(summary["verdict"] == "PASS", "M7_CORRECTNESS_GROWTH_GATE_FAILED")
 
 
