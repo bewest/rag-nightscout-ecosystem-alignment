@@ -1,0 +1,69 @@
+LAB hours=12 drop=- records=200 load=6.82 6.18 4.61
+RUN base {"cycles":46801,"acquisitions":{"n":198,"cpuMsMean":8.45,"cpuMsP50":6.76,"cpuMsP95":18.08,"wallMsP50":5.38,"wallMsP95":11.05},"timeOnly":{"n":46603,"cpuMsMean":2.47,"cpuMsP50":1.69,"cpuMsP95":7.77,"wallMsP50":1.67,"wallMsP95":3.98},"alarmTransitions":52,"contentTransitions":245} elapsed_s=94.0
+TRANSITIONS base
+  23:00:00 (none)
+  23:00:10 treatmentnotify|0||Site Change
+  23:10:00 (none)
+  23:30:10 treatmentnotify|0||Insulin Change
+  23:40:00 (none)
+  00:00:10 treatmentnotify|0||Pump Battery Change
+  00:10:00 (none)
+  01:00:00 cage|0|CAGE|Cannula age 2 hours
+  01:00:20 ar2|2||Urgent, LOW;cage|0|CAGE|Cannula age 2 hours;simplealarms|2||Urgent LOW
+  01:20:20 ar2|2||Urgent, HIGH predicted;cage|0|CAGE|Cannula age 2 hours
+  01:21:00 ar2|2||Urgent, HIGH predicted
+  01:25:20 (none)
+  01:30:10 treatmentnotify|0||Correction Bolus
+  01:40:00 (none)
+  02:00:00 cage|1|CAGE|Cannula age 3 hours
+  02:00:20 ar2|2||Urgent, HIGH;bwp|2||Urgent, Check BG, time to bolus?;cage|1|CAGE|Cannula age 3 hours;simplealarms|2||Urgent HIGH
+  02:20:20 ar2|2||Urgent, LOW predicted;cage|1|CAGE|Cannula age 3 hours
+  02:21:00 ar2|2||Urgent, LOW predicted
+  02:25:20 (none)
+  03:00:00 cage|2|CAGE|Cannula age 4 hours;sage|0|SAGE|Sensor age 0 days 5 hours
+  03:10:01 cage|2|CAGE|Cannula age 4 hours;sage|0|SAGE|Sensor age 0 days 5 hours;timeago|1|Time Ago|Stale data, check rig?
+  03:21:00 timeago|1|Time Ago|Stale data, check rig?
+  03:25:01 timeago|2|Time Ago|Stale data, check rig?
+  03:25:31 loop|1|Loop|Loop isn't looping;pump|1|Pump|Warning, Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  03:55:31 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  04:00:00 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;sage|1|SAGE|Sensor age 0 days 6 hours;timeago|2|Time Ago|Stale data, check rig?
+  04:00:20 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;sage|1|SAGE|Sensor age 0 days 6 hours
+  04:00:40 sage|1|SAGE|Sensor age 0 days 6 hours
+  04:10:10 sage|1|SAGE|Sensor age 0 days 6 hours;treatmentnotify|0||Meal Bolus
+  04:20:00 sage|1|SAGE|Sensor age 0 days 6 hours
+  04:21:00 (none)
+  05:00:00 sage|2|SAGE|Sensor age 0 days 7 hours
+  05:00:20 sage|2|SAGE|Sensor age 0 days 7 hours;treatmentnotify|0||Calibration
+  05:10:00 sage|2|SAGE|Sensor age 0 days 7 hours
+  05:21:00 (none)
+  05:30:00 iage|0|IAGE|Insulin reservoir age 6 hours
+  05:51:00 (none)
+  06:30:00 iage|1|IAGE|Insulin reservoir age 7 hours
+  06:51:00 (none)
+  07:30:00 iage|2|IAGE|Insulin reservoir age 8 hours
+  07:51:00 (none)
+  08:10:01 timeago|1|Time Ago|Stale data, check rig?
+  08:25:01 timeago|2|Time Ago|Stale data, check rig?
+  08:25:31 loop|1|Loop|Loop isn't looping;pump|1|Pump|Warning, Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  08:55:31 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  09:00:00 bage|0|BAGE|Pump battery age 9 hours;loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  09:21:00 loop|2|Loop|Loop isn't looping;pump|2|Pump|URGENT: Pump data stale;timeago|2|Time Ago|Stale data, check rig?
+  09:55:31 loop|2|Loop|Loop isn't looping;timeago|2|Time Ago|Stale data, check rig?
+  10:00:00 bage|1|BAGE|Pump battery age 10 hours;loop|2|Loop|Loop isn't looping;timeago|2|Time Ago|Stale data, check rig?
+  10:21:00 loop|2|Loop|Loop isn't looping;timeago|2|Time Ago|Stale data, check rig?
+  11:00:00 bage|2|BAGE|Pump battery age 11 hours;loop|2|Loop|Loop isn't looping;timeago|2|Time Ago|Stale data, check rig?
+  11:21:00 loop|2|Loop|Loop isn't looping;timeago|2|Time Ago|Stale data, check rig?
+RUN due slow=1000 {"cycles":46917,"acquisitions":{"n":198,"cpuMsMean":7.2,"cpuMsP50":6.06,"cpuMsP95":15.21,"wallMsP50":5.37,"wallMsP95":10.62},"timeOnly":{"n":46719,"cpuMsMean":2.52,"cpuMsP50":1.7,"cpuMsP95":8.86,"wallMsP50":1.69,"wallMsP95":5.15},"alarmTransitions":52,"contentTransitions":245} elapsed_s=99.6
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 52 transitions, due at most 999 ms before base
+DIFF CONTENT_EQUIVALENT slow=1000 :: 245 base content transitions, 245 due
+  contents[42] at base 2026-11-10T03:25:38.000Z due 2026-11-10T03:25:38.001Z (1 ms late); changed text: ved: 31 mins ago\\nBG Now: 112 -1 mg/dl\\nBG 15m: 111 mg/dl\\nBWP: 0U\\nIOB: 0.40U\\nCOB: 0g\",null]]"
+  contents[43] at base 2026-11-10T03:26:00.000Z due 2026-11-10T03:26:00.001Z (1 ms late); changed text: 1U\",null],[\"notify\",\"loop\",1,\"Loop\",\"Loop isn't looping\",\"Last Loop: 31m ago\",null],[\"notify\",\"timeago\",2,\"Time Ago\",\"Stale data, check rig?\",\"Last received: 31 mins ago\\nBG Now: 112 -1 mg/dl\\nBG 15m: 111 mg/dl\\nBWP:
+  contents[44] at base 2026-11-10T03:26:24.000Z due 2026-11-10T03:26:24.001Z (1 ms late); changed text: ived: 31 mins ago\\nBG Now: 112 -1 mg/dl\\nBG 15m: 111 mg/dl\\nBWP: 0U\\nIOB: 0.39U\\nCOB: 0g\",null]]"
+CYCLES slow=1000 base 46801 due 46917 (1.0x fewer)
+RUN due slow=60000 {"cycles":1032,"acquisitions":{"n":198,"cpuMsMean":6.72,"cpuMsP50":5.79,"cpuMsP95":15.72,"wallMsP50":5.57,"wallMsP95":11.64},"timeOnly":{"n":834,"cpuMsMean":2.91,"cpuMsP50":1.99,"cpuMsP95":10.07,"wallMsP50":1.92,"wallMsP95":5.96},"alarmTransitions":52,"contentTransitions":156} elapsed_s=3.1
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 52 transitions, due at most 999 ms before base
+DIFF CONTENT_EQUIVALENT slow=60000 :: 245 base content transitions, 156 due
+  contents count base 245 due 156
+  contents[42] differs at base 2026-11-10T03:25:38.000Z due 2026-11-10T03:26:30.000Z: "[[\"notify\",\"pump\",1,\"Pump\",\"Warning, Pump data stale\",\"Pump Battery: 80%\\nPump Reservoir: 97.1U\",null],[\"notify\",\"loop\",1,\"Loop\",\"Loop isn't  vs "[[\"notify\",\"pump\",1,\"Pump\",\"Warning, Pump data stale\",\"Pump Battery: 80%\\nPump Reservoir: 97.1U\",null],[\"notify\",\"loop\",1,\"Loop\",\"Loop isn't
+CYCLES slow=60000 base 46801 due 1032 (45.3x fewer)
+{"pgPoolQueries":0,"pgPoolConnects":0}

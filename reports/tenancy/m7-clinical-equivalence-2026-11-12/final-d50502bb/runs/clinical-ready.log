@@ -1,0 +1,1 @@
+{"id": "48e825e6953969b68ee3e390611aa9f2184e32d910f7d0182d0bedf5748730a9", "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542", "image": "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea", "serverVersion": "16.15", "owner": "c60e95ce484743549067d49fff12dc17", "boundLoopback": true}
