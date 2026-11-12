@@ -1,0 +1,291 @@
+TAP version 13
+# Subtest: bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+not ok 1 - bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+  ---
+  duration_ms: 53.765747
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:38:1'
+  failureType: 'testCodeFailure'
+  error: "ENOENT: no such file or directory, open '/tmp/m7-functional-fixture-IfHUBV/load/diagnostic-observations.json'"
+  code: 'ENOENT'
+  stack: |-
+    Object.readFileSync (node:fs:440:20)
+    TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:39:274)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+ok 2 - wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+  ---
+  duration_ms: 1004.678944
+  type: 'test'
+  ...
+# Subtest: HTTP ACK without a current frame cannot produce diagnostic PASS
+ok 3 - HTTP ACK without a current frame cannot produce diagnostic PASS
+  ---
+  duration_ms: 1005.068195
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+not ok 4 - late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+  ---
+  duration_ms: 3.300104
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:48:295'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    processTicksAndRejections (node:internal/process/task_queues:103:5)
+    runNextTicks (node:internal/process/task_queues:68:3)
+    process.processTimers (node:internal/timers:518:9)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:50:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+not ok 5 - late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+  ---
+  duration_ms: 4.394785
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:48:295'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    processTicksAndRejections (node:internal/process/task_queues:103:5)
+    runNextTicks (node:internal/process/task_queues:68:3)
+    process.processTimers (node:internal/timers:518:9)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:50:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/null
+not ok 6 - late second-tenant status refusal retains sanitized status and code 503/null
+  ---
+  duration_ms: 2.763413
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:48:295'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    processTicksAndRejections (node:internal/process/task_queues:103:5)
+    runNextTicks (node:internal/process/task_queues:68:3)
+    process.processTimers (node:internal/timers:518:9)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:50:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+ok 7 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+  ---
+  duration_ms: 283.212754
+  type: 'test'
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+ok 8 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+  ---
+  duration_ms: 277.854178
+  type: 'test'
+  ...
+# Subtest: typed status warming becomes200 while retaining first refusal and separate accounting
+not ok 9 - typed status warming becomes200 while retaining first refusal and separate accounting
+  ---
+  duration_ms: 1.848224
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:75:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'MODULE_NOT_FOUND'
+  stack: |-
+    Function._resolveFilename (node:internal/modules/cjs/loader:1430:15)
+    defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)
+    resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)
+    Function._load (node:internal/modules/cjs/loader:1216:25)
+    wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+    Module.require (node:internal/modules/cjs/loader:1527:12)
+    require (node:internal/modules/helpers:147:16)
+    run (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs:19:23)
+    TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:77:23)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+  ...
+# Subtest: global warming probe limit refuses before a further request or mutation
+not ok 10 - global warming probe limit refuses before a further request or mutation
+  ---
+  duration_ms: 2.16576
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:82:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:84:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: spawned CLI exhausts unchanged deadline while warming and exits cleanly
+ok 11 - spawned CLI exhausts unchanged deadline while warming and exits cleanly
+  ---
+  duration_ms: 1203.589472
+  type: 'test'
+  ...
+# Subtest: warming followed by 401 does not broaden retry policy
+not ok 12 - warming followed by 401 does not broaden retry policy
+  ---
+  duration_ms: 3.537683
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:96:109'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:98:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: warming followed by 503 does not broaden retry policy
+not ok 13 - warming followed by 503 does not broaden retry policy
+  ---
+  duration_ms: 2.946077
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:96:109'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:98:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: real SDK child CLI completes warming-to200 and stock frame/recovery criteria
+ok 14 - real SDK child CLI completes warming-to200 and stock frame/recovery criteria
+  ---
+  duration_ms: 1271.629804
+  type: 'test'
+  ...
+# Subtest: exchange warming refusal is not a status probe or credential fallback
+not ok 15 - exchange warming refusal is not a status probe or credential fallback
+  ---
+  duration_ms: 1.638994
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:111:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:112:50)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: mutation warming refusal is never retried
+not ok 16 - mutation warming refusal is never retried
+  ---
+  duration_ms: 1.656908
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:114:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Cannot find module 'socket.io-client'
+    Require stack:
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.cjs
+    - /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-profile-provenance-owned-20261112/tools/mt-bench/m7-joined/diagnostic.test.cjs:115:50)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: probe count cannot be configured beyond the production bound
+ok 17 - probe count cannot be configured beyond the production bound
+  ---
+  duration_ms: 0.192357
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 7
+# fail 10
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5183.793945
