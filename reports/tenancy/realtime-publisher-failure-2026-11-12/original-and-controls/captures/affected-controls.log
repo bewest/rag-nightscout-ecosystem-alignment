@@ -1,0 +1,340 @@
+TAP version 13
+# Subtest: replacement retains logical partition and durable routing identity while rotating the exact stopped boot
+ok 1 - replacement retains logical partition and durable routing identity while rotating the exact stopped boot
+  ---
+  duration_ms: 1.573461
+  type: 'test'
+  ...
+# Subtest: operator CLI requires exact owned project/state/roster and bounds the move deadline
+ok 2 - operator CLI requires exact owned project/state/roster and bounds the move deadline
+  ---
+  duration_ms: 0.55074
+  type: 'test'
+  ...
+# Subtest: private boot identity replacement rejects symlinks and broad files and persists complete JSON atomically
+ok 3 - private boot identity replacement rejects symlinks and broad files and persists complete JSON atomically
+  ---
+  duration_ms: 19.291229
+  type: 'test'
+  ...
+# Subtest: records event type, clear, source digest and synthetic discriminator without payload or credentials
+ok 4 - records event type, clear, source digest and synthetic discriminator without payload or credentials
+  ---
+  duration_ms: 1.360873
+  type: 'test'
+  ...
+# Subtest: retains bounded connect/ACK/error/disconnect traces and counts independently
+ok 5 - retains bounded connect/ACK/error/disconnect traces and counts independently
+  ---
+  duration_ms: 1.061759
+  type: 'test'
+  ...
+# Subtest: malformed observer-only metadata cannot throw into the socket listener
+ok 6 - malformed observer-only metadata cannot throw into the socket listener
+  ---
+  duration_ms: 0.846053
+  type: 'test'
+  ...
+# Subtest: caught after-start failure retains typed checkpoint and private detail without changing uncertain refusal
+ok 7 - caught after-start failure retains typed checkpoint and private detail without changing uncertain refusal
+  ---
+  duration_ms: 197.361062
+  type: 'test'
+  ...
+# Subtest: readiness failure is distinct from a completed host callback
+ok 8 - readiness failure is distinct from a completed host callback
+  ---
+  duration_ms: 163.534544
+  type: 'test'
+  ...
+# Subtest: holder commit failure keeps its typed inner boundary
+ok 9 - holder commit failure keeps its typed inner boundary
+  ---
+  duration_ms: 204.078942
+  type: 'test'
+  ...
+# Subtest: zero exit with lost completion remains uncertainty, not successful readiness
+ok 10 - zero exit with lost completion remains uncertainty, not successful readiness
+  ---
+  duration_ms: 142.971298
+  type: 'test'
+  ...
+# Subtest: signal and real completion have distinct typed outcomes
+ok 11 - signal and real completion have distinct typed outcomes
+  ---
+  duration_ms: 312.851219
+  type: 'test'
+  ...
+# Subtest: private stream and public event histories are explicitly bounded
+ok 12 - private stream and public event histories are explicitly bounded
+  ---
+  duration_ms: 4376.450662
+  type: 'test'
+  ...
+# Subtest: raw diagnostics refuse a nonprivate host directory without leaking a stream into shared placement
+ok 13 - raw diagnostics refuse a nonprivate host directory without leaking a stream into shared placement
+  ---
+  duration_ms: 1.249239
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after before-stop
+ok 14 - actual Docker recovery after before-stop # SKIP
+  ---
+  duration_ms: 0.750012
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-stop
+ok 15 - actual Docker recovery after after-stop # SKIP
+  ---
+  duration_ms: 0.090584
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-assignment
+ok 16 - actual Docker recovery after after-assignment # SKIP
+  ---
+  duration_ms: 0.098623
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-env
+ok 17 - actual Docker recovery after after-env # SKIP
+  ---
+  duration_ms: 0.073168
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-create-effect
+ok 18 - actual Docker recovery after after-create-effect # SKIP
+  ---
+  duration_ms: 0.074999
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-create
+ok 19 - actual Docker recovery after after-create # SKIP
+  ---
+  duration_ms: 0.081296
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-start-effect
+ok 20 - actual Docker recovery after after-start-effect # SKIP
+  ---
+  duration_ms: 0.065953
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-start
+ok 21 - actual Docker recovery after after-start # SKIP
+  ---
+  duration_ms: 0.057962
+  type: 'test'
+  ...
+# Subtest: actual Docker recovery after after-routes
+ok 22 - actual Docker recovery after after-routes # SKIP
+  ---
+  duration_ms: 0.285924
+  type: 'test'
+  ...
+# Subtest: actual attached Docker CLI retains inherited lock across creator host crash
+ok 23 - actual attached Docker CLI retains inherited lock across creator host crash # SKIP
+  ---
+  duration_ms: 0.326733
+  type: 'test'
+  ...
+# Subtest: actual changed container/process refuses recovery: restart
+ok 24 - actual changed container/process refuses recovery: restart # SKIP
+  ---
+  duration_ms: 0.099432
+  type: 'test'
+  ...
+# Subtest: actual changed container/process refuses recovery: recreate
+ok 25 - actual changed container/process refuses recovery: recreate # SKIP
+  ---
+  duration_ms: 0.049034
+  type: 'test'
+  ...
+# Subtest: actual foreign project and wrong paired source refuse before stop
+ok 26 - actual foreign project and wrong paired source refuse before stop # SKIP
+  ---
+  duration_ms: 0.038134
+  type: 'test'
+  ...
+# Subtest: actual still-running owner cannot be confirmed by a successful no-op stop command
+ok 27 - actual still-running owner cannot be confirmed by a successful no-op stop command # SKIP
+  ---
+  duration_ms: 0.037504
+  type: 'test'
+  ...
+# Subtest: clinical-only B cannot satisfy the private transport proof
+ok 28 - clinical-only B cannot satisfy the private transport proof
+  ---
+  duration_ms: 1.358455
+  type: 'test'
+  ...
+# Subtest: one matching B plus clinical background passes without granting background probe credit
+ok 29 - one matching B plus clinical background passes without granting background probe credit
+  ---
+  duration_ms: 0.330416
+  type: 'test'
+  ...
+# Subtest: unrelated A cannot substitute the intended post-cutover A probe
+ok 30 - unrelated A cannot substitute the intended post-cutover A probe
+  ---
+  duration_ms: 0.335556
+  type: 'test'
+  ...
+# Subtest: duplicate, forbidden cold/held A, wrong namespace/tenant and old nonce refuse
+ok 31 - duplicate, forbidden cold/held A, wrong namespace/tenant and old nonce refuse
+  ---
+  duration_ms: 1.425729
+  type: 'test'
+  ...
+# Subtest: nonce is required and bounded
+ok 32 - nonce is required and bounded
+  ---
+  duration_ms: 0.403692
+  type: 'test'
+  ...
+# Subtest: actual source effect identity retains nonce message, ignores key/debug, and passes all scoped counterexamples
+ok 33 - actual source effect identity retains nonce message, ignores key/debug, and passes all scoped counterexamples
+  ---
+  duration_ms: 0.315178
+  type: 'test'
+  ...
+# Subtest: all four client scopes are mandatory
+ok 34 - all four client scopes are mandatory
+  ---
+  duration_ms: 0.336601
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after before-stop
+ok 35 - explicit fresh-generation recovery after before-stop
+  ---
+  duration_ms: 1912.203944
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-stop
+ok 36 - explicit fresh-generation recovery after after-stop
+  ---
+  duration_ms: 1693.330356
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-assignment
+ok 37 - explicit fresh-generation recovery after after-assignment
+  ---
+  duration_ms: 1871.972558
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-env
+ok 38 - explicit fresh-generation recovery after after-env
+  ---
+  duration_ms: 1201.65945
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-create-effect
+ok 39 - explicit fresh-generation recovery after after-create-effect
+  ---
+  duration_ms: 1312.424795
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-create
+ok 40 - explicit fresh-generation recovery after after-create
+  ---
+  duration_ms: 1325.430619
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-start-effect
+ok 41 - explicit fresh-generation recovery after after-start-effect
+  ---
+  duration_ms: 1603.60514
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-start
+ok 42 - explicit fresh-generation recovery after after-start
+  ---
+  duration_ms: 1663.413381
+  type: 'test'
+  ...
+# Subtest: explicit fresh-generation recovery after after-routes
+ok 43 - explicit fresh-generation recovery after after-routes
+  ---
+  duration_ms: 1641.704837
+  type: 'test'
+  ...
+# Subtest: no-stop confirmation refuses before backend generation can advance
+ok 44 - no-stop confirmation refuses before backend generation can advance
+  ---
+  duration_ms: 350.128059
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated project
+ok 45 - recovery refuses mutated project
+  ---
+  duration_ms: 322.299429
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated image
+ok 46 - recovery refuses mutated image
+  ---
+  duration_ms: 338.050489
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated startedAt
+ok 47 - recovery refuses mutated startedAt
+  ---
+  duration_ms: 274.48261
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated pid
+ok 48 - recovery refuses mutated pid
+  ---
+  duration_ms: 305.518083
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated container
+ok 49 - recovery refuses mutated container
+  ---
+  duration_ms: 303.058686
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated env
+ok 50 - recovery refuses mutated env
+  ---
+  duration_ms: 343.538549
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated backend
+ok 51 - recovery refuses mutated backend
+  ---
+  duration_ms: 309.603015
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated compose
+ok 52 - recovery refuses mutated compose
+  ---
+  duration_ms: 318.970193
+  type: 'test'
+  ...
+# Subtest: recovery refuses mutated authority
+ok 53 - recovery refuses mutated authority
+  ---
+  duration_ms: 321.887622
+  type: 'test'
+  ...
+# Subtest: native FD lock rejects concurrent operation and releases after last close
+ok 54 - native FD lock rejects concurrent operation and releases after last close
+  ---
+  duration_ms: 101.721227
+  type: 'test'
+  ...
+# Subtest: crashed host leaves creator FD locked until the actual inherited child exits
+ok 55 - crashed host leaves creator FD locked until the actual inherited child exits
+  ---
+  duration_ms: 128.95478
+  type: 'test'
+  ...
+1..55
+# tests 55
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 14
+# todo 0
+# duration_ms 17696.688396

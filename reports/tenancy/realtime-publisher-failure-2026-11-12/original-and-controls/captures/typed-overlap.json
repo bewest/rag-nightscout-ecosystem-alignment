@@ -1,0 +1,36 @@
+{
+  "scope": "later read-only typed durable facts; not original socket counts or callback error",
+  "newBootStartedAtMs": 1794498611831,
+  "rows": [
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "request": "be09305c-f5c9-41c8-aea2-6c2149ef2a20",
+      "state": "accepted",
+      "created": 1794498610792,
+      "acceptedAt": 1794498612957,
+      "attempt": 1,
+      "attemptUntil": 1794498622900,
+      "nextAt": 1794498613957,
+      "origin": "43596c0e2ca890a7b75d5750652b62b20703c3f6f674643f8aaf0532afda4a0e",
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "clear": false,
+      "effectDigest": "c0277ea97ae0f53b4a3fffe435ffaa1dd14230411617e706584ac79ae5e4e452"
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "request": "c2a318ef-cd41-4210-8bcf-b4e7ac0b12a2",
+      "state": "accepted",
+      "created": 1794498613643,
+      "acceptedAt": 1794498615647,
+      "attempt": 1,
+      "attemptUntil": 1794498625602,
+      "nextAt": 1794498616647,
+      "origin": "159250d488e469a2ebd8d631cad6e78a9aa29f314b78b7921c6dcf2070bde55a",
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "clear": true,
+      "effectDigest": "b60d7499bdd828e90b1ee7525e84f26507bf4ef9a52b884f1b00fe8f6809a71f"
+    }
+  ],
+  "acceptedAtMeaning": "application finishedAt before finish commit; not SQL commit-observation time",
+  "sourceClinicalAndCollector": "PASS separately before move; no causal attribution from overlap"
+}
