@@ -41,8 +41,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 79 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
-| `in-progress` | 22 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST |
+| `not-started` | 78 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
+| `in-progress` | 23 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 10 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
 | `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, MT-TENANT-LIVE-ADD |
@@ -8445,8 +8445,8 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-DOC-DEPLOY` | Deployment scenarios, rig testing and topology diagrams | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-REALTIME` | Evaluator and realtime communication architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
 | `MT-DOC-SQL` | SQL tables, migrations and recovery architecture | `done` | `codex/m6-deployment-docs-20261107` | n/a | 1 run |
-| `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | `codex/listener-composition-20261110` | minor | 2 run + 1 no-gate |
-| `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `codex/fixed-roster-api` | minor | 0 run + 2 no-gate |
+| `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | `workspace/api-replicas-20261112` | minor | 2 run + 1 no-gate |
+| `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `in-progress` | `workspace/api-replicas-20261112` | minor | 0 run + 2 no-gate |
 | `MT-OIDC-NATIVE` | M6a: run the nine-stage owner/OIDC native matrix through a disposable harness | `in-flight-upstream` | `codex/oidc-native-harness-20261109` | n/a | 1 run |
 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `codex/m6a-join-20261109` | minor | 1 run |
 | `MT-M6B-JOIN` | Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898 | `in-flight-upstream` | `codex/m6b-join-20261110` | minor | 1 run |
@@ -10665,9 +10665,9 @@ alarm-readiness items, and the seam branch refresh.
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/listener-composition-20261110` |
-| base | `codex/internal-service-api-20261109@692bd507` |
-| worktree | `externals/work/crm-listener-composition-20261110` |
+| branch | `workspace/api-replicas-20261112` |
+| base | `workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003` |
+| worktree | `externals/work/crm-api-replicas-20261112` |
 | semver | `minor` |
 | review | maintainer; compatibility, architecture and deployment operations review |
 
@@ -10693,17 +10693,17 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/internal-service-api-2026-11-09/README.md`
 - `reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/test-all-and-browser.txt`
 
-**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion. 2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a response whose media type only starts with application/json is now refused by the client. Finding: on shutdown close() drops in-flight connections before handlers finish, consistent with the no-retry contract; a decision for the replica/drain owner. 2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment and the shared-listener configuration shape remain.
+**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion. 2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a response whose media type only starts with application/json is now refused by the client. Finding: on shutdown close() drops in-flight connections before handlers finish, consistent with the no-retry contract; a decision for the replica/drain owner. 2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment and the shared-listener configuration shape remain. 2026-11-12: remainder (real-role replicas, drain, deployment binding) taken with MT-API-FIXED-ROSTER on workspace/api- replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6); the listener-composition history stays on codex/listener- composition-20261110.
 
 ### `MT-API-FIXED-ROSTER` &mdash; Independent API scaling with a fixed restore participant roster
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/fixed-roster-api` |
-| base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
-| worktree | `-` |
+| branch | `workspace/api-replicas-20261112` |
+| base | `workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003` |
+| worktree | `externals/work/crm-api-replicas-20261112` |
 | semver | `minor` |
 | review | maintainer; compatibility, isolation and operations review |
 | blocks on | `MT-ENDPOINT-TRANSPORT` |
@@ -10727,7 +10727,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** Fixed-roster replica implementation is not started; its branch name is proposed, not created. It consumes the incorporated dc795bd1 transport/schema foundation and remaining endpoint/composition/deployment acceptance. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Application service routing and exact per-instance lifecycle addressing stay distinct even when contracts share a component-private port. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion.
+**Notes.** Fixed-roster replica implementation is not started; its branch name is proposed, not created. It consumes the incorporated dc795bd1 transport/schema foundation and remaining endpoint/composition/deployment acceptance. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Application service routing and exact per-instance lifecycle addressing stay distinct even when contracts share a component-private port. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion. 2026-11-12: started on workspace/api-replicas-20261112 (worktree externals/work/crm-api- replicas-20261112, base 5c60aec6), one lane with the MT-ENDPOINT-TRANSPORT remainder; follows decisions.md#authorize-cost-first.
 
 ### `MT-OIDC-NATIVE` &mdash; M6a: run the nine-stage owner/OIDC native matrix through a disposable harness
 

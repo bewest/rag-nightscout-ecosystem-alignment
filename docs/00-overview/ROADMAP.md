@@ -222,7 +222,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T31-REM` |
 | 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `MT-VAULT-TOKEN-FILE` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
-| 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `not-started` | `MT-ENDPOINT-TRANSPORT` |
+| 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `in-progress` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-CONNECTOR-REVERSE` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in | `ready-to-push` | `MT-POOL-PRIMITIVE` |
 | 2 | `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | `in-flight-upstream` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `MT-OIDC-NATIVE` |

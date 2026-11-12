@@ -25710,9 +25710,9 @@ items:
     title: "Component-private UDS/HTTP API composition and deployment acceptance"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/listener-composition-20261110
-    worktree: externals/work/crm-listener-composition-20261110
-    base: codex/internal-service-api-20261109@692bd507
+    branch: workspace/api-replicas-20261112
+    worktree: externals/work/crm-api-replicas-20261112
+    base: workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003
     state: in-progress
     blast_radius: >
       Shared internal service transport, schemas, named clients and consuming-role
@@ -25784,13 +25784,17 @@ items:
       finish, consistent with the no-retry contract; a decision for the replica/drain owner.
       2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment
       and the shared-listener configuration shape remain.
+      2026-11-12: remainder (real-role replicas, drain, deployment binding) taken with MT-API-FIXED-ROSTER
+      on workspace/api-replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6);
+      the listener-composition history stays on codex/listener-composition-20261110.
   - id: MT-API-FIXED-ROSTER
     title: "Independent API scaling with a fixed restore participant roster"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/fixed-roster-api
-    base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
-    state: not-started
+    branch: workspace/api-replicas-20261112
+    worktree: externals/work/crm-api-replicas-20261112
+    base: workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003
+    state: in-progress
     blast_radius: >
       Explicit API replica composition and service-vs-instance addressing;
       current authority, per-instance admission, drain and invalidation; native
@@ -25842,6 +25846,9 @@ items:
       Evaluator remains one active owner; partitioning/replication, realtime
       replication, dynamic membership/autoscaling, transaction poolers, Kubernetes
       proof and Jsonnet are outside this capability. No parent milestone promotion.
+      2026-11-12: started on workspace/api-replicas-20261112 (worktree
+      externals/work/crm-api-replicas-20261112, base 5c60aec6), one lane with the
+      MT-ENDPOINT-TRANSPORT remainder; follows decisions.md#authorize-cost-first.
 
   # ---- 2026-11-09 restructure: M6 split into M6a-M6d and M7; one capability per item, one gate each.
   # Release decisions "Plan restructuring and process simplification (2026-11-09)".
