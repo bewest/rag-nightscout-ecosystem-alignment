@@ -271,3 +271,13 @@ exact-source native successful-TIME witness, recomputed with the unchanged stric
 v2 checker. Quiet baseline capacity never establishes active-alarm capacity. Load
 and changed-runtime recovery remain strict. A future due or explicit null cannot
 excuse an earlier observed opportunity without later completed time work.
+
+Readiness collection permits one first-admission transition only when warming:
+a valid admitted, ready, error-free owner with all successful and failed
+completion counters zero may have an explicitly present null completion age
+while its first operation-window release is pending. This remains WARMING with
+no credited acquisition. Nonwarming collection, missing age, nonzero counters
+with null age, errors and progress requirements remain strict. Refused field
+checks retain fixed predicate/field names and bounded positional indices, never
+raw rows, tenant IDs or runtime values. Readiness deadlines, polling cadence,
+workload and native TIME proof requirements are unchanged.

@@ -50,11 +50,11 @@ def _round_view(services,ids,fetch,warming=False):
         futures={service:executor.submit(fetch,service,ids,max_queries,budget) for service in services}
         raw={service:future.result() for service,future in futures.items()}
     identities={};owners={};all_rows={};bytes_seen=0;queries=0;known=set(ids)
-    for service,data in raw.items():
+    for instance_index,(service,data) in enumerate(raw.items()):
         if isinstance(data,str):data=data.encode()
         need(isinstance(data,bytes) and len(data)<=budget,'M7_EVALUATOR_PROGRESS_BYTE_BOUND')
         bytes_seen+=len(data);seen=set();runtime_id=None;ordinal=None;all_rows[service]={}
-        for line in data.splitlines():
+        for page_index,line in enumerate(data.splitlines()):
             queries+=1;need(len(line)<=POLICY['responseMaxBytes']+8192,'M7_EVALUATOR_PROGRESS_RESPONSE_BOUND')
             try:page=json.loads(line)
             except (ValueError,UnicodeError):raise Refused('M7_EVALUATOR_PROGRESS_RESPONSE')
@@ -68,21 +68,37 @@ def _round_view(services,ids,fetch,warming=False):
             need(ordinal is None or ordinal==position,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL');ordinal=position
             need(view.get('kind')=='evaluator' and view.get('gate',{}).get('eligible') is True and view['gate'].get('reason') is None,'M7_EVALUATOR_PROGRESS_GATE','UNMEASURED' if warming else 'FAIL')
             need(isinstance(rows,list) and len(rows)==len(selected) and {row.get('tenant') for row in rows}==set(selected),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-            for row in rows:
+            for row_index,row in enumerate(rows):
+                def contract(valid,field,predicate,code='M7_EVALUATOR_PROGRESS_CONTRACT',verdict='UNMEASURED'):
+                    if not valid:
+                        error=Refused(code,verdict)
+                        error.diagnostic={'predicate':predicate,'field':field,'instanceIndex':instance_index,'pageIndex':page_index,'rowIndex':row_index,'warming':warming}
+                        raise error
                 tenant=row['tenant'];progress=row.get('progress',{})
-                need(isinstance(progress,dict) and all(integer(progress.get(k)) for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions')),'M7_EVALUATOR_PROGRESS_CONTRACT')
+                contract(isinstance(progress,dict),'progress','OBJECT_REQUIRED')
+                for field in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions'):
+                    contract(integer(progress.get(field)),field,'NONNEGATIVE_SAFE_INTEGER_REQUIRED')
+                contract('lastCompletedAgeMs' in progress,'lastCompletedAgeMs','FIELD_REQUIRED')
                 age=progress.get('lastCompletedAgeMs')
-                need(age is None or type(age) in (int,float) and math.isfinite(age) and age>=0,'M7_EVALUATOR_PROGRESS_CONTRACT')
+                contract(age is None or type(age) in (int,float) and math.isfinite(age) and age>=0,'lastCompletedAgeMs','NULL_OR_FINITE_NONNEGATIVE_REQUIRED')
                 value={'service':service,'runtimeId':rid,'legacyCycles':row.get('cycles'),'admitted':row.get('admitted'),'ready':row.get('ready'),'code':row.get('code'),'alert':row.get('evaluation',{}).get('alert'),**{k:progress[k] for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs')}}
-                need(integer(value['legacyCycles']) and type(value['admitted']) is bool and type(value['ready']) is bool,'M7_EVALUATOR_PROGRESS_CONTRACT')
+                contract(integer(value['legacyCycles']),'cycles','NONNEGATIVE_SAFE_INTEGER_REQUIRED')
+                for field in ('admitted','ready'):
+                    contract(type(value[field]) is bool,field,'BOOLEAN_REQUIRED')
                 value.update(due_fields(row))
                 all_rows[service][tenant]=value
                 if not value['admitted']:
                     need(not value['ready'],'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL');continue
                 need(tenant not in owners,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
                 warm_code=warming and value['code'] in ('EVALUATOR_STARTING','EVALUATOR_ACQUISITION_REQUIRED')
-                need(value['ready'] and value['code'] is None and value['alert'] is None,'M7_EVALUATOR_PROGRESS_ERROR','UNMEASURED' if warm_code else 'FAIL')
-                need(age is not None,'M7_EVALUATOR_PROGRESS_CONTRACT')
+                for field,valid,predicate in (('ready',value['ready'],'OWNER_READY_REQUIRED'),('code',value['code'] is None,'OWNER_CODE_NULL_REQUIRED'),('evaluation.alert',value['alert'] is None,'OWNER_ALERT_NULL_REQUIRED')):
+                    contract(valid,field,predicate,'M7_EVALUATOR_PROGRESS_ERROR','UNMEASURED' if warm_code else 'FAIL')
+                # A first admitted cycle can be ready before its operation-window
+                # release has completed. It earns no credit yet; readiness must
+                # still wait for completedAcquisitions > 0. Only that complete
+                # zero-credit shape may have null age, and only during warming.
+                first_release=warming and all(value[k]==0 for k in ('completedAcquisitions','completedTimeCycles','failedCompletions'))
+                contract(age is not None or first_release,'lastCompletedAgeMs','COMPLETION_AGE_OR_FIRST_RELEASE_REQUIRED')
                 owners[tenant]=value
         need(seen==known,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
         identities[service]={'runtimeId':runtime_id,'ordinal':ordinal}
@@ -100,7 +116,8 @@ def round_view(services,ids,fetch,warming=False):
     except Refused as error:
         error.collection={'queries':sum(len(v.splitlines()) for v in captured.values() if isinstance(v,bytes)),
                           'bytes':sum(len(v) for v in captured.values() if isinstance(v,bytes)),
-                          'wallSeconds':time.monotonic()-started,'completeResponses':len(captured)==len(services)}
+                          'wallSeconds':time.monotonic()-started,'completeResponses':len(captured)==len(services),
+                          'diagnostic':getattr(error,'diagnostic',None)}
         raise
 
 
