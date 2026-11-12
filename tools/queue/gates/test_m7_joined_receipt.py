@@ -85,7 +85,7 @@ class ReceiptTests(unittest.TestCase):
 
     def measurements(self, profile='capacity', replicas=1):
         groups = {'api': ['api-' + str(i) for i in range(replicas)], 'realtime': ['rt-worker'],
-                  'evaluator': ['eval-worker'], 'postgres': ['pg-server'], 'vault-agent': ['vault-sidecar']}
+                  'evaluator': ['eval-worker'], 'postgres': ['pg-server'], 'vault': ['vault-server']}
         shapes = ['shape-' + str(i) for i in range(7)]
         phases = ('idle-disabled', 'idle', 'load')
         self.expected.setdefault('capacityInventories', {})[profile + ':' + str(replicas)] = {
@@ -125,6 +125,13 @@ class ReceiptTests(unittest.TestCase):
              'metrics': {'/runs/' + str(i) + '/rate': 'synthetic effects/s'}} for i in range(2)]} for name in gate.COMPONENTS}
         self.receipt['scaling'] = {name: self.proof(name + '.json', {'kind': 'synthetic-measurement',
             'runs': [{'configuration': 1, 'samples': 10, 'rate': 1.5}, {'configuration': 2, 'samples': 10, 'rate': 2.5}]}) for name in gate.COMPONENTS}
+        self.expected['scaling']['vault-agent']['agentRoles'] = ['actual-agent-overlay']
+        self.expected['scaling']['vault-agent']['observations'] = [
+            {'configuration': '/runs/' + str(i) + '/configuration', 'roles': '/runs/' + str(i) + '/roles',
+             'samples': '/runs/' + str(i) + '/roles/actual-agent-overlay/sampleCount',
+             'metrics': {'/runs/' + str(i) + '/roles/actual-agent-overlay/cpuCoresMean': 'CPU cores'}} for i in range(2)]
+        self.receipt['scaling']['vault-agent'] = self.proof('vault-agent.json', {'kind': 'synthetic-measurement',
+            'runs': [{'configuration': i, 'roles': {'actual-agent-overlay': {'sampleCount': 10, 'cpuCoresMean': 1.5}}} for i in (1, 2)]})
         self.receipt['bindings'] = self.artifact('bindings.json', {'pair': self.identity['pair'], 'complete': True, 'entries': []})
 
     def test_acceptance_does_not_require_future_capacity(self):
@@ -378,6 +385,23 @@ class ReceiptTests(unittest.TestCase):
         self.receipt['scaling']['postgres'] = saved
         self.receipt['bindings'] = self.artifact('bindings.json', {'pair': self.identity['pair'], 'entries': []})
         self.refuses('BINDING_INVENTORY', 'scaling')
+
+    def test_server_only_capacity_is_honest_but_does_not_prove_agent_scaling(self):
+        self.milestone()
+        self.check('capacity-milestone')
+        inventory = self.expected['capacityInventories']['capacity:4']['windows']['load']
+        self.assertIn('vault', inventory)
+        self.assertNotIn('vault-agent', inventory)
+        self.refuses('CLAIM_MISSING', 'scaling')
+
+    def test_agent_scaling_requires_actual_distinct_overlay_role(self):
+        self.scaling()
+        self.expected['scaling']['vault-agent']['agentRoles'] = ['vault-server']
+        self.refuses('AGENT_ROLE_POLICY', 'scaling')
+        self.expected['scaling']['vault-agent']['agentRoles'] = ['actual-agent-overlay']
+        self.receipt['scaling']['vault-agent'] = self.proof('vault-agent.json', {'kind': 'synthetic-measurement',
+            'runs': [{'configuration': i, 'roles': {'vault-server': {'sampleCount': 10, 'cpuCoresMean': 1.5}}} for i in (1, 2)]})
+        self.refuses('AGENT_OVERLAY_UNMEASURED', 'scaling')
 
     def test_scaling_component_cannot_be_unmeasured(self):
         self.scaling()
