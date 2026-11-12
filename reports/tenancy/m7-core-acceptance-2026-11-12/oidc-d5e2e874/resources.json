@@ -1,0 +1,13 @@
+{
+  "scope": "independent read-only Docker label check after both owned harness cleanups",
+  "matrix": {
+    "containers": 0,
+    "volumes": 0,
+    "networks": 0
+  },
+  "controls": {
+    "containers": 0,
+    "volumes": 0,
+    "networks": 0
+  }
+}

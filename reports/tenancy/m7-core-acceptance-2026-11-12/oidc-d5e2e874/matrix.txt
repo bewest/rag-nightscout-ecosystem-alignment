@@ -1,0 +1,31 @@
+2026-11-12T08:52:33Z project=oidcmatrix-20261112t085233z-1873860 state=/tmp/oidc-matrix-l5TsYRN6
+2026-11-12T08:52:35Z mapped ports postgres=37995 mongo=37996 vault=37997
+2026-11-12T08:52:35Z + node <owned-core>/tests/native/oidc-matrix/run.cjs --out /tmp/m7-native-oidc-20261112 --state /tmp/oidc-matrix-l5TsYRN6 --project oidcmatrix-20261112t085233z-1873860 --pg-port 37995 --mongo-port 37996 --vault-port 37997
+2026-11-12T08:52:35.418Z source d5e2e874659155c952b5b5deb862f12f982ac02e (codex/m7-join-20261111) porcelain=0 (all under tests/native/oidc-matrix/)
+2026-11-12T08:52:36.005Z services {"postgres":"postgres (PostgreSQL) 16.15","mongo":"db version v7.0.43","vault":"Vault v2.2.1 (0e7c41b936218bd2401ab0f891c93bec10e2e8e4), built 2026-10-22T16:27:49Z"}
+2026-11-12T08:52:36.182Z vault provisioned: transit mount, 4 ed25519 signer keys, 4 aes256-gcm96 owner keys, 3 scoped tokens
+2026-11-12T08:52:36.260Z postgres roles [{"rolname":"om_app","rolsuper":false,"rolbypassrls":false},{"rolname":"om_clinical","rolsuper":false,"rolbypassrls":false},{"rolname":"om_legacy","rolsuper":false,"rolbypassrls":false},{"rolname":"om_owner","rolsuper":false,"rolbypassrls":false},{"rolname":"om_reader","rolsuper":false,"rolbypassrls":false},{"rolname":"om_secrets","rolsuper":false,"rolbypassrls":false},{"rolname":"om_settings","rolsuper":false,"rolbypassrls":false}]
+2026-11-12T08:52:36.349Z vault baseline mounts ["agent-registry/","cubbyhole/","identity/","sys/","transit/"]
+2026-11-12T08:52:36.456Z attempt 01-vault-single stage=vault-single nonce=48b385e16b687b7a sourceRoot=<owned-core> deadlineMs=125000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs vault-single /tmp/oidc-matrix-l5TsYRN6/config-01-vault-single.json /tmp/oidc-matrix-l5TsYRN6/result-01-vault-single.json
+2026-11-12T08:52:36.702Z attempt 01-vault-single PASS in 221ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:36.715Z attempt 02-vault-multi stage=vault-multi nonce=72cf66e784bbb5b1 sourceRoot=<owned-core> deadlineMs=125000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs vault-multi /tmp/oidc-matrix-l5TsYRN6/config-02-vault-multi.json /tmp/oidc-matrix-l5TsYRN6/result-02-vault-multi.json
+2026-11-12T08:52:36.952Z attempt 02-vault-multi PASS in 213ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:36.967Z attempt 03-mongo-sessions stage=mongo-sessions nonce=dfd28d0cb674a040 sourceRoot=<owned-core> deadlineMs=125000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs mongo-sessions /tmp/oidc-matrix-l5TsYRN6/config-03-mongo-sessions.json /tmp/oidc-matrix-l5TsYRN6/result-03-mongo-sessions.json
+2026-11-12T08:52:37.472Z attempt 03-mongo-sessions PASS in 484ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:37.489Z attempt 04-pg-sessions stage=pg-sessions nonce=463aa46d9cd1f1dc sourceRoot=<owned-core> deadlineMs=125000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs pg-sessions /tmp/oidc-matrix-l5TsYRN6/config-04-pg-sessions.json /tmp/oidc-matrix-l5TsYRN6/result-04-pg-sessions.json
+2026-11-12T08:52:38.044Z attempt 04-pg-sessions PASS in 538ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:38.062Z attempt 05-mongo-http stage=mongo-http nonce=8511a0aa36b2c572 sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs mongo-http /tmp/oidc-matrix-l5TsYRN6/config-05-mongo-http.json /tmp/oidc-matrix-l5TsYRN6/result-05-mongo-http.json
+2026-11-12T08:52:40.238Z attempt 05-mongo-http PASS in 2155ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:40.254Z attempt 06-owner-consumer stage=owner-consumer nonce=d49baf5bdb8e81b1 sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-consumer /tmp/oidc-matrix-l5TsYRN6/config-06-owner-consumer.json /tmp/oidc-matrix-l5TsYRN6/result-06-owner-consumer.json
+2026-11-12T08:52:42.848Z attempt 06-owner-consumer PASS in 2576ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:42.862Z attempt 07-owner-authority stage=owner-authority nonce=87690af1f2cf9a14 sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-authority /tmp/oidc-matrix-l5TsYRN6/config-07-owner-authority.json /tmp/oidc-matrix-l5TsYRN6/result-07-owner-authority.json
+2026-11-12T08:52:45.285Z attempt 07-owner-authority PASS in 2408ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:45.297Z attempt 08-owner-browser stage=owner-browser nonce=788ba46e5a4c46af sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-browser /tmp/oidc-matrix-l5TsYRN6/config-08-owner-browser.json /tmp/oidc-matrix-l5TsYRN6/result-08-owner-browser.json
+2026-11-12T08:52:49.732Z attempt 08-owner-browser PASS in 4415ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:49.747Z attempt 09-owner-compatibility stage=owner-compatibility nonce=1bf73b83184b7e34 sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-compatibility /tmp/oidc-matrix-l5TsYRN6/config-09-owner-compatibility.json /tmp/oidc-matrix-l5TsYRN6/result-09-owner-compatibility.json
+2026-11-12T08:52:52.061Z attempt 09-owner-compatibility PASS in 2296ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T08:52:52.066Z wrote /tmp/m7-native-oidc-20261112/summary.json
+2026-11-12T08:52:52Z + docker compose -p oidcmatrix-20261112t085233z-1873860 -f <owned-core>/tests/native/oidc-matrix/compose.yaml logs --no-color --timestamps
+2026-11-12T08:52:52Z + docker compose -p oidcmatrix-20261112t085233z-1873860 -f <owned-core>/tests/native/oidc-matrix/compose.yaml down -v --remove-orphans
+2026-11-12T08:52:52Z containers remaining for project oidcmatrix-20261112t085233z-1873860: 0
+2026-11-12T08:52:52Z exit 0
