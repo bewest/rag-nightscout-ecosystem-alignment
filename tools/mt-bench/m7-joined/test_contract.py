@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import adapter
 from contract import *
@@ -18,7 +19,7 @@ B='22222222-2222-4222-8222-222222222222'
 
 class Contract(unittest.TestCase):
     def setUp(self):
-        self.tenants=[{'id':A,'host':'a.example.test','token':'synthetic-test-only'}, {'id':B,'host':'b.example.test','token':'synthetic-test-only'}]
+        self.tenants=[{'id':A,'host':'a.example.test','token':uuid.uuid4().hex}, {'id':B,'host':'b.example.test','token':uuid.uuid4().hex}]
         self.metrics={'writes_ok':{'count':4}, f'writes_ok{{tenant:{A}}}':{'count':2},f'writes_ok{{tenant:{B}}}':{'values':{'count':2}},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':2}}
         self.stored={A:{'entries':1,'devicestatus':1},B:{'entries':1,'devicestatus':1}}
     def test_independent_accepted_and_domain_oracle_break_restore(self):
@@ -69,7 +70,7 @@ class Contract(unittest.TestCase):
             tenants=Path(scratch)/'tenants.json';tenants.write_text(json.dumps(self.tenants))
             calls=json.loads(subprocess.check_output(['node',str(adapter.HERE/'workload-shapes.cjs'),str(file),str(tenants)],env=adapter.runtime_env({'M7_FIXTURE_REFUSE_READS':'1'})))
             self.assertEqual(len([r for r in calls if r.get('counter')=='responses_refused']),8)
-            dates=[r['body'][0]['date'] for r in calls if r.get('method')=='POST' and isinstance(r.get('body'),list) and r['url'].endswith('token=synthetic-test-only') and '/entries?' in r['url']]
+            dates=[r['body'][0]['date'] for r in calls if r.get('method')=='POST' and isinstance(r.get('body'),list) and '/entries?' in r['url']]
             self.assertEqual(dates,[1800000000000,1800000150000])
     def test_replica_ladder_never_overrides_functional_block_and_requires_ceiling_evidence(self):
         with tempfile.TemporaryDirectory(prefix='m7-ladder-test-') as scratch:
