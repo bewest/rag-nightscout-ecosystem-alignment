@@ -1,0 +1,14 @@
+{
+  "sourceOnlyBuildMechanism": "executed build.js constructs fresh context from git archive at exact core and deploy commits; generated runtime .env/state/credentials never enter that context",
+  "buildHelperSha256": "b2e90a78b5c211381cab170d53cf812398bccb765d610082fd9f3ea688277a28",
+  "dockerfileSha256": "5dea44ec30130e2d6c22781f01836f4caaf4aa6f7d44530bd4560c2e54a5a17c",
+  "privateInspectionSha256": "52fdf3de0076abc16a8c5a997228453890fe6713bfa8ae1282ed0c5b42c3f9a2",
+  "imageEnvAllowlisted": {
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "NODE_VERSION": "24.22.1",
+    "YARN_VERSION": "1.22.22",
+    "NODE_ENV": "production",
+    "NS_SOURCE_COMMIT": "ff5156b984424f1ef34bcef22d5bfa0071354cfa"
+  },
+  "historyRows": 18
+}
