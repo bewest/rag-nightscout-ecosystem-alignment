@@ -1,0 +1,76 @@
+
+
+  Cohort snapshots wait for actual connection admission
+    ✔ waits for a held constructor and captures its admitted backend instead of omitting a null identity
+    ✔ uses one bounded deadline and keeps a held constructor refused on timeout
+    ✔ refuses an observed constructor admission failure instead of returning a partial baseline
+    ✔ refuses an admitted but mismatched datastore
+    ✔ takes one cut while a continuous healthy constructor stream proceeds independently
+    ✔ uses a monotonic timer even when the wall clock moves backwards
+
+  Actual operation cohort composition source protocol
+    ✔ requires actual complete constructors, matching tenants and unique pending role boots
+    ✔ matches launcher coverage when activity uses the actual operation-control namespace
+    ✔ refreshes cached retired/new actors on the same operator before each strict comparison
+    ✔ detects omitted refresh and passes fresh restored source
+    ✔ awaits refresh completion; a started but unawaited clear remains red
+    ✔ propagates same-client refresh refusal before any actor query
+    ✔ matches PID, birth and database role, never an application label; invalidates A only
+    ✔ accepts a non-participant only when the catalogue reports no clinical-table privilege for its identity
+    ✔ detects a broken census comparison and passes the restored source
+
+  Explicit operation cohort configuration
+    ✔ defaults off and rejects duplicate locks, unsafe namespaces and absent environment references (40ms)
+
+  Selected evaluator control-table read admission
+    ✔ allows only a branded physically admitted window and retains unrelated-write refusal (60ms)
+
+  Private IPC lifetime extends through actual response completion
+    ✔ keeps durable unfinished operation until response finish
+    ✔ detects prematurely released IPC lifetime and passes restored source
+
+  Actual serving and CLI selection composition (source protocol)
+    ✔ collects every selected store, boots API before realtime and drains contexts before releasing control
+synthetic: Static tenant lists in use (MULTITENANT_STATIC_TENANTS=lab, lab and test only): api
+    ✔ loads the private cohort only for multitenant commands and passes selection to serving
+
+  Separate-process fixed cohort source protocol
+    ✔ pins all actual peer incarnations, unions actual backend identities, and invalidates only A before ACK
+    ✔ refuses lost ACK, missing peer, unknown actor and wrong actual operator database
+    ✔ classifies one actor born after a status cut only by a full pinned peer re-observation
+    ✔ does not restart the configured snapshot budget after elapsed census work
+    ✔ refuses a closed cohort or released exact pin after a held snapshot reply
+    ✔ detects a removed post-await live-ownership fence and passes restored source
+    ✔ refuses restarted participants during a claim and allows fresh registration after release
+    ✔ detects a broken incarnation fence and passes restored source
+    ✔ refuses manifest omissions and duplicate endpoints, while admitting explicit API replicas
+
+  Fixed process configuration v2
+    ✔ derives participant addresses from serve.internal and peer addresses and refuses missing role coverage/local selection
+
+  Window and lower lease actual datastore binding
+    ✔ refuses an identically migrated foreign datastore before lifetime registration
+    ✔ detects removal of the datastore comparison and passes restored source
+
+  Actual private IPC client cohort path admission
+    ✔ maps exactly both named cohort operations to their registered paths
+    ✔ detects a wrong wire path and passes restored source
+    ✔ exposes no caller-selected path dispatch before filesystem or transport access
+
+  checked-out PostgreSQL client failure propagation
+    ✔ declares repeatable-read snapshots explicitly and refuses to upgrade an outer transaction
+    ✔ returns no successful snapshot when its COMMIT fails
+    ✔ rejects a client event during BEGIN, evicts it, and admits a fresh healthy connection
+    ✔ rejects a client event during config, evicts it, and admits a fresh healthy connection
+    ✔ rejects a client event during SELECT synthetic_work, evicts it, and admits a fresh healthy connection
+    ✔ rejects a client event during COMMIT, evicts it, and admits a fresh healthy connection
+    ✔ rejects work after a gap failure, closes retained scopes and emits no logical commit
+    ✔ blocks success even when a caller catches a failed native query and attempts another query
+    ✔ records an event while fn awaits an unrelated promise and refuses its later successful return
+    ✔ keeps ordinary SQL errors unchanged after successful rollback and reuses the healthy client
+    ✔ preserves a server SQLSTATE and transport rollback cause as distinct failures
+    ✔ hands healthy clients back to the idle pool without accumulating transaction listeners
+
+
+  48 passing (357ms)
+
