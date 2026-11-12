@@ -1,0 +1,34 @@
+2026-11-12T11:13:25Z project=oidcmatrix-20261112t111325z-3298443 state=/tmp/oidc-matrix-K4Rs95eY
+2026-11-12T11:13:28Z mapped ports postgres=38013 mongo=38012 vault=38011
+2026-11-12T11:13:28Z + node <owned-core>/tests/native/oidc-matrix/run.cjs --out /tmp/ns-api-final-acceptance-20261112/oidc-controls --state /tmp/oidc-matrix-K4Rs95eY --project oidcmatrix-20261112t111325z-3298443 --pg-port 38013 --mongo-port 38012 --vault-port 38011 --control single:single-shipping-eight-hour-exchange,browser:csrf,consumer:consumer-current-data-authority-bypass
+2026-11-12T11:13:28.446Z source d50502bb6126bda2bb0af384569e1d95de114f2f (codex/m7-final-native-clinical-20261112) porcelain=0 (all under tests/native/oidc-matrix/)
+2026-11-12T11:13:29.015Z services {"postgres":"postgres (PostgreSQL) 16.15","mongo":"db version v7.0.43","vault":"Vault v2.2.1 (0e7c41b936218bd2401ab0f891c93bec10e2e8e4), built 2026-10-22T16:27:49Z"}
+2026-11-12T11:13:29.307Z vault provisioned: transit mount, 4 ed25519 signer keys, 4 aes256-gcm96 owner keys, 3 scoped tokens
+2026-11-12T11:13:29.381Z postgres roles [{"rolname":"om_app","rolsuper":false,"rolbypassrls":false},{"rolname":"om_clinical","rolsuper":false,"rolbypassrls":false},{"rolname":"om_legacy","rolsuper":false,"rolbypassrls":false},{"rolname":"om_owner","rolsuper":false,"rolbypassrls":false},{"rolname":"om_reader","rolsuper":false,"rolbypassrls":false},{"rolname":"om_secrets","rolsuper":false,"rolbypassrls":false},{"rolname":"om_settings","rolsuper":false,"rolbypassrls":false}]
+2026-11-12T11:13:29.477Z vault baseline mounts ["agent-registry/","cubbyhole/","identity/","sys/","transit/"]
+2026-11-12T11:13:29.707Z control single:single-shipping-eight-hour-exchange: mutated lib/server/enclave.js original=6ca53e226136c32645a1dd76aab1ec16d6d804ef6149a0d87a19010ea1dc68e3 mutant=d15d5d79555e90334800c14dfe4653154982fd0ec07d386a9cb62337bcc210ab
+2026-11-12T11:13:29.782Z attempt 01-control-single-single-shipping-eight-hour-exchange-red stage=mongo-http nonce=f86d2319a5b0946f sourceRoot=/tmp/oidc-matrix-K4Rs95eY/mutant-single-single-shipping-eight-hour-exchange deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs mongo-http /tmp/oidc-matrix-K4Rs95eY/config-01-control-single-single-shipping-eight-hour-exchange-red.json /tmp/oidc-matrix-K4Rs95eY/result-01-control-single-single-shipping-eight-hour-exchange-red.json
+2026-11-12T11:13:30.325Z attempt 01-control-single-single-shipping-eight-hour-exchange-red FAIL in 518ms error=ERR_ASSERTION shipping single subject JWT lifetime is eight hours
+
+3600 !== 28800
+ leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T11:13:30.359Z attempt 02-control-single-single-shipping-eight-hour-exchange-restored stage=mongo-http nonce=4f266fbb202c93b1 sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs mongo-http /tmp/oidc-matrix-K4Rs95eY/config-02-control-single-single-shipping-eight-hour-exchange-restored.json /tmp/oidc-matrix-K4Rs95eY/result-02-control-single-single-shipping-eight-hour-exchange-restored.json
+2026-11-12T11:13:32.645Z attempt 02-control-single-single-shipping-eight-hour-exchange-restored PASS in 2262ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T11:13:32.754Z control browser:csrf: mutated lib/human-session/http.js original=50152e749cc81b82e20118f45135b773523bb6bc7fc3af84c819997b747e8fa3 mutant=c29b35b1b878a3648a74d6314857c9eeaf560077f5d37d6a4c3ff583cca26ebd
+2026-11-12T11:13:32.793Z attempt 03-control-browser-csrf-red stage=owner-browser nonce=7f001891bf684f8d sourceRoot=/tmp/oidc-matrix-K4Rs95eY/mutant-browser-csrf deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-browser /tmp/oidc-matrix-K4Rs95eY/config-03-control-browser-csrf-red.json /tmp/oidc-matrix-K4Rs95eY/result-03-control-browser-csrf-red.json
+2026-11-12T11:13:34.047Z attempt 03-control-browser-csrf-red FAIL in 1236ms error=ERR_ASSERTION owner transport status oracle
+
+200 !== 403
+ leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T11:13:34.060Z attempt 04-control-browser-csrf-restored stage=owner-browser nonce=8b6600b9d817e99f sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-browser /tmp/oidc-matrix-K4Rs95eY/config-04-control-browser-csrf-restored.json /tmp/oidc-matrix-K4Rs95eY/result-04-control-browser-csrf-restored.json
+2026-11-12T11:13:38.588Z attempt 04-control-browser-csrf-restored PASS in 4508ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T11:13:38.677Z control consumer:consumer-current-data-authority-bypass: mutated lib/server/tenant-app/data-access.js original=2fb8ca5caa53431d04fc2d11ddcd842514d9b219a971c978037c0ab1554599eb mutant=6d6fe771bbb59b93bd09941d964d678dc2f69888938277784201ae6425bb461b
+2026-11-12T11:13:38.712Z attempt 05-control-consumer-consumer-current-data-authority-bypass-red stage=owner-consumer nonce=47365b6e05cba0d8 sourceRoot=/tmp/oidc-matrix-K4Rs95eY/mutant-consumer-consumer-current-data-authority-bypass deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-consumer /tmp/oidc-matrix-K4Rs95eY/config-05-control-consumer-consumer-current-data-authority-bypass-red.json /tmp/oidc-matrix-K4Rs95eY/result-05-control-consumer-consumer-current-data-authority-bypass-red.json
+2026-11-12T11:13:41.109Z attempt 05-control-consumer-consumer-current-data-authority-bypass-red FAIL in 2380ms error=ERR_ASSERTION next DATA operation must read current role authority leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T11:13:41.124Z attempt 06-control-consumer-consumer-current-data-authority-bypass-restored stage=owner-consumer nonce=4c7507c3c8af3f18 sourceRoot=<owned-core> deadlineMs=155000 + node <owned-core>/tests/native/oidc-matrix/stage.cjs owner-consumer /tmp/oidc-matrix-K4Rs95eY/config-06-control-consumer-consumer-current-data-authority-bypass-restored.json /tmp/oidc-matrix-K4Rs95eY/result-06-control-consumer-consumer-current-data-authority-bypass-restored.json
+2026-11-12T11:13:43.850Z attempt 06-control-consumer-consumer-current-data-authority-bypass-restored PASS in 2711ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T11:13:43.904Z wrote /tmp/ns-api-final-acceptance-20261112/oidc-controls/controls.json
+2026-11-12T11:13:43Z + docker compose -p oidcmatrix-20261112t111325z-3298443 -f <owned-core>/tests/native/oidc-matrix/compose.yaml logs --no-color --timestamps
+2026-11-12T11:13:44Z + docker compose -p oidcmatrix-20261112t111325z-3298443 -f <owned-core>/tests/native/oidc-matrix/compose.yaml down -v --remove-orphans
+2026-11-12T11:13:45Z containers remaining for project oidcmatrix-20261112t111325z-3298443: 0
+2026-11-12T11:13:45Z exit 0

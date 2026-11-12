@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "oidc-matrix",
+    "project": "oidcmatrix-20261112t111226z-3277184",
+    "remaining": {
+      "volume": [],
+      "network": [],
+      "container": []
+    },
+    "source": "d50502bb6126bda2bb0af384569e1d95de114f2f"
+  },
+  {
+    "kind": "oidc-controls",
+    "project": "oidcmatrix-20261112t111325z-3298443",
+    "remaining": {
+      "volume": [],
+      "network": [],
+      "container": []
+    },
+    "source": "d50502bb6126bda2bb0af384569e1d95de114f2f"
+  }
+]
