@@ -1,0 +1,114 @@
+{
+  "recordType": "NEW_BOUNDED_CLEANUP_AND_COST_SUMMARY_DERIVATIVE",
+  "ownMongo": {
+    "cleanupVerified": true,
+    "createdContainerCount": 1,
+    "fixtureResiduals": [],
+    "fixtureVolumeResiduals": [],
+    "removeAndPositiveAbsenceCommands": [
+      {
+        "id": "mongo-remove",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "mongo-verify-absent",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "mongo-volume-verify",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "final-fixture-volumes",
+        "status": "passed",
+        "returnCode": 0
+      }
+    ]
+  },
+  "controller": {
+    "cleanup": "verified",
+    "finishedAt": "2026-11-12T17:37:14.698Z",
+    "outcome": "failed",
+    "events": [
+      {
+        "phase": "provision",
+        "status": "started",
+        "at": "2026-11-12T17:30:36.709Z"
+      },
+      {
+        "phase": "provision",
+        "status": "completed",
+        "at": "2026-11-12T17:31:16.339Z"
+      },
+      {
+        "phase": "deploy",
+        "status": "started",
+        "at": "2026-11-12T17:31:16.340Z"
+      },
+      {
+        "phase": "deploy",
+        "status": "completed",
+        "at": "2026-11-12T17:33:09.558Z"
+      },
+      {
+        "phase": "campaign",
+        "status": "started",
+        "at": "2026-11-12T17:33:09.558Z"
+      },
+      {
+        "phase": "campaign",
+        "status": "failed",
+        "at": "2026-11-12T17:36:42.172Z"
+      },
+      {
+        "phase": "collect",
+        "status": "started",
+        "at": "2026-11-12T17:36:42.172Z"
+      },
+      {
+        "phase": "collect",
+        "status": "completed",
+        "at": "2026-11-12T17:36:43.862Z"
+      },
+      {
+        "phase": "destroy",
+        "status": "started",
+        "at": "2026-11-12T17:36:43.862Z"
+      },
+      {
+        "phase": "destroy",
+        "status": "verified",
+        "at": "2026-11-12T17:37:14.698Z"
+      }
+    ]
+  },
+  "watchdog": {
+    "cleanup": "verified",
+    "finishedAt": "2026-11-12T17:37:23.620Z",
+    "errors": [],
+    "collection": "controller-finalized"
+  },
+  "independentFinalProviderInventory": {
+    "verifiedAt": "2026-11-12T17:39:30.684158+00:00",
+    "remainingDroplets": 0,
+    "remainingFirewalls": 0,
+    "remainingRunTags": 0
+  },
+  "ephemeralSshKeyFilesPresentAtPublication": {
+    "private": false,
+    "public": false
+  },
+  "cost": {
+    "estimatedComputeUSD": 0.05652194443676207,
+    "accountedSeconds": 406.9579999446869,
+    "scope": "compute estimate, not invoice; controllerstart throughwatchdog includingpreprovision; minimumUSD0.01",
+    "hourlyUSD": 0.5,
+    "maximumEstimatedRuntimeUSD": 1.5,
+    "maximumRunMinutes": 180,
+    "exclusions": "tax, transfer overage, retained artifacts, and failed cleanup beyond the deadline; estimate is not a billing cap",
+    "invoice": "NOT_OBSERVED"
+  }
+}

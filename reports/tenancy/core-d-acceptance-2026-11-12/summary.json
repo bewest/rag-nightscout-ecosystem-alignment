@@ -1,0 +1,122 @@
+{
+  "recordType": "NEW_BOUNDED_SUMMARY_DERIVATIVE",
+  "outcome": "FAILED",
+  "sourceAcceptance": "NOT_ACCEPTED",
+  "derivedFrom": [
+    "controller-result",
+    "worker-result",
+    "acceptance-plan",
+    "unit-stdout",
+    "source-inventory"
+  ],
+  "selectedSpec": {
+    "version": 1,
+    "profile": "core-acceptance-v1",
+    "topology": "colocated",
+    "appNodes": 1,
+    "generatorNodes": 0,
+    "appSize": "c-16",
+    "maxMinutes": 180,
+    "maxEstimatedUSD": 1.5,
+    "osImage": 252242095,
+    "coreCommit": "2d0ae0354a38b4a88f43bc2ae5ec60c085058f64",
+    "deployCommit": "dcc4a70bafd4edf31c5cab4bf3099883bd7e37f9",
+    "alignmentCommit": "c33acdc48208586354002573b93ce4f33d6c0c6a",
+    "instrumentCommit": "f660a1171d605d6ad7517328a6ae0e8423a2e825",
+    "bundleSha256": "84413a438d6ea29e4441a8a942896e7d1cf19dd7adb1300b1cee0bbe9c548886"
+  },
+  "unit": {
+    "status": "FAILED",
+    "counts": {
+      "passing": 3562,
+      "pending": 1,
+      "failing": 1
+    },
+    "command": [
+      "node",
+      "scripts/test-tiers.js",
+      "run",
+      "unit"
+    ],
+    "returnCode": 1,
+    "startedAtEpochSeconds": 1794504912.4769266,
+    "finishedAtEpochSeconds": 1794504983.6405544,
+    "reportedDuration": "1m (Mocha rounded report)",
+    "failure": "tests/internal-api-contracts.test.js:27:14; actual descriptor version2, expected1"
+  },
+  "laterTiers": [
+    {
+      "tier": "dom",
+      "status": "NOT_RUN"
+    },
+    {
+      "tier": "dependency",
+      "status": "NOT_RUN"
+    },
+    {
+      "tier": "core",
+      "status": "NOT_RUN"
+    },
+    {
+      "tier": "harness",
+      "status": "NOT_RUN"
+    },
+    {
+      "tier": "integration",
+      "status": "NOT_RUN"
+    },
+    {
+      "tier": "stress",
+      "status": "NOT_RUN"
+    },
+    {
+      "tier": "browser",
+      "status": "NOT_RUN"
+    }
+  ],
+  "enabledCorpus": {
+    "status": "NOT_RUN",
+    "configuredSuites": 86,
+    "configuredOwnFixtureSuites": 47,
+    "selection": "unfiltered; no --only selector",
+    "command": [
+      "node",
+      "scripts/test-multitenant.js",
+      "--record",
+      "<WORK>/corpus.json"
+    ]
+  },
+  "sourceInventory": {
+    "classification": "read-derived from exact committed tests/tiers.json and source test-file tree; no test execution",
+    "trackedTestFiles": 706,
+    "tiers": {
+      "unit": 289,
+      "dom": 19,
+      "dependency": 32,
+      "core": 26,
+      "harness": 10,
+      "integration": 287,
+      "stress": 1,
+      "browser": 42
+    }
+  },
+  "optionalPending": {
+    "name": "is moment's own parse on every date string of VIEWS_CORPUS_DIR (read in place)",
+    "source": "tests/moment-memo.test.js:113-124",
+    "reason": "No VIEWS_CORPUS_DIR key in the owned private test environment; test uses it.skip without an external corpus",
+    "separateFromEnabledCorpus": true
+  },
+  "worker": {
+    "status": "failed",
+    "completedTests": [],
+    "errors": [
+      {
+        "phase": "execution",
+        "kind": "Refused",
+        "message": "COMMAND_FAILED_unit"
+      }
+    ],
+    "sourceAcceptance": "COORDINATOR_REVIEW_REQUIRED"
+  },
+  "limits": "Failure capture only; no later-tier/corpus, repaired-source, native warming, joined acceptance or capacity result."
+}
