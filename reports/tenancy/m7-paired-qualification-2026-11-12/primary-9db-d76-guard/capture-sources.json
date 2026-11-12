@@ -1,0 +1,55 @@
+{
+  "clinical.log": {
+    "source": "/tmp/evaluator-guard-process-clinical.log",
+    "sha256": "351e311d3335db6a8bdd769a90f95451ee8da8f06c7abf400837f08f5a689530"
+  },
+  "fresh-ingestion.json": {
+    "source": "/tmp/ns-guard-fresh-ingestion-20261112/episode.json",
+    "sha256": "2cf95e0491f6bb2af9ad7ddfaf182fb1bf78bb550e744e5cec11f1868d33245f"
+  },
+  "fresh-ingestion-process.json": {
+    "source": "/tmp/ns-guard-fresh-ingestion-20261112/process.json",
+    "sha256": "585a7f958713412fc4e95ee32306ca05897e795b2ef8bc9dad483a80e9fe119d"
+  },
+  "fresh-ingestion.log": {
+    "source": "/tmp/ns-guard-fresh-ingestion-20261112/driver.log",
+    "sha256": "797f227103e4995bdd09820229094c1f529417e2a4f28808cf2b501ccb0e0380"
+  },
+  "fresh-ingestion.cjs": {
+    "source": "/tmp/ns-guard-fresh-ingestion-20261112/episode.cjs",
+    "sha256": "36bb3dab84623e8315a026e28df03ea23b9dc112f845093978bca2f092d32238"
+  },
+  "fresh-ingestion-supervisor.py": {
+    "source": "/tmp/ns-guard-fresh-ingestion-20261112/run.py",
+    "sha256": "90881f4df5bef631884ce5f4094dd36c798f5eab87db8c84f2170b3e4fda16c8"
+  },
+  "chronology.json": {
+    "source": "/tmp/evaluator-guard-retained-chronology.json",
+    "sha256": "d723c6a7ca8c62e31cdad04505f6756cf2366653f37bad230fdec4e6335fe596"
+  },
+  "image-export.json": {
+    "source": "/tmp/ns-evaluator-binding-9db-d76-export/attestation.json",
+    "sha256": "b6f489c3050ebc33b57bf250cef837332f540d488337f4ec283a1281a5215119"
+  },
+  "export-driver.py": {
+    "source": "/tmp/evaluator-guard-export.py",
+    "sha256": "37eccce84514b6091547f87c9f49b8b9aac56f0141b19905bd3ae6c7b5ef4ca6"
+  },
+  "export.log": {
+    "source": "/tmp/evaluator-guard-process-export.log",
+    "sha256": "b87b4c009a7ca4d08cf858b5666f42dbe463497dc18ce394563d891b502fb6ca"
+  },
+  "api-readiness.json": {
+    "source": "/tmp/ns-evaluator-binding-proof-20261112-guard/artifacts/api-readiness.json",
+    "sha256": "41d986b61a3fc5496f553fec380e6c89998a0bb65bce9e7511058fa9afe264bd"
+  },
+  "custody.json": {
+    "source": "/tmp/evaluator-guard-canonical-custody.json",
+    "sha256": "42512bcdca4cc9a289a5edf43fe55a3f5bf14d3a9f974b5e801f60d9fda6c5ad"
+  },
+  "processes.json": {
+    "source": "/tmp/evaluator-guard-phase-processes.json",
+    "originalSha256": "b15a8cc0fd0edddef7ffabc26b00169deb4d8e639c375ca45b97c05ebc3025d6",
+    "derivative": true
+  }
+}
