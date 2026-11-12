@@ -1,0 +1,162 @@
+{
+  "raw/stock.launch-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 38,
+    "contentBlockIndex": 21,
+    "messageId": "msg_01a1d10c-85c9-7272-a445-4882a8775c7c",
+    "sourceRecordSha256": "3da66c65b871e0b030e26384204f81a3a52eff571b62dfd4904c100f1121a526",
+    "rawBlockSha256": "03c8ae3209998fe92d4ffb244aafffda8309fd8a3ea8058a0445ff9d6b436218",
+    "retainedOrderLabel": 478,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/stock.launch-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 50,
+    "contentBlockIndex": 20,
+    "messageId": "msg_01a1d10d-76ec-7fb2-ab24-1e514ec7e8fb",
+    "sourceRecordSha256": "16ab72284764a4391ce2498dbc135fc6fdf460d20909a78e38173c9238156466",
+    "rawBlockSha256": "9b9574e371f29de171515e12ee9595e322f7944b328fb1d684415e611bca9de3",
+    "retainedOrderLabel": 479,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/stock.final-poll-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 50,
+    "contentBlockIndex": 22,
+    "messageId": "msg_01a1d10d-76ec-7fb2-ab24-1e514ec7e8fb",
+    "sourceRecordSha256": "16ab72284764a4391ce2498dbc135fc6fdf460d20909a78e38173c9238156466",
+    "rawBlockSha256": "786b5da484b54856c579e140ddadfc63449a8d047da5afd802d1bf28cc305663",
+    "retainedOrderLabel": 481,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/stock.final-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 50,
+    "contentBlockIndex": 23,
+    "messageId": "msg_01a1d10d-76ec-7fb2-ab24-1e514ec7e8fb",
+    "sourceRecordSha256": "16ab72284764a4391ce2498dbc135fc6fdf460d20909a78e38173c9238156466",
+    "rawBlockSha256": "c9bf75a182c408b32658f02db20b9a830b98709e16b15a217220a20cb7b05bd2",
+    "retainedOrderLabel": 482,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/settings.launch-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 50,
+    "contentBlockIndex": 26,
+    "messageId": "msg_01a1d10d-76ec-7fb2-ab24-1e514ec7e8fb",
+    "sourceRecordSha256": "16ab72284764a4391ce2498dbc135fc6fdf460d20909a78e38173c9238156466",
+    "rawBlockSha256": "786178f897bb65e5ca89108be47c4529c41d28336f0db1cffcb7e387ef6ea06d",
+    "retainedOrderLabel": 485,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/settings.launch-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 62,
+    "contentBlockIndex": 24,
+    "messageId": "msg_01a1d10d-ff4e-72e3-a5f4-620c867d291c",
+    "sourceRecordSha256": "17df184398be5070459e5ab191030a69c75385e92aa4e591b1b052c2a826fd0b",
+    "rawBlockSha256": "cb9e47058a82c77f3328b532290cbe1d3316ddff41a1ea71cfe1c11dda728039",
+    "retainedOrderLabel": 486,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/settings.final-poll-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 62,
+    "contentBlockIndex": 26,
+    "messageId": "msg_01a1d10d-ff4e-72e3-a5f4-620c867d291c",
+    "sourceRecordSha256": "17df184398be5070459e5ab191030a69c75385e92aa4e591b1b052c2a826fd0b",
+    "rawBlockSha256": "caf77f358527bd7bc373e40e01ba503bcba1c25e5c7f9b8bfb884461955a77b4",
+    "retainedOrderLabel": 488,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/settings.final-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 62,
+    "contentBlockIndex": 27,
+    "messageId": "msg_01a1d10d-ff4e-72e3-a5f4-620c867d291c",
+    "sourceRecordSha256": "17df184398be5070459e5ab191030a69c75385e92aa4e591b1b052c2a826fd0b",
+    "rawBlockSha256": "abd412b1d26d87c488623e5e4539bd2d4ed796cbdcc0c317c98ed34feac85060",
+    "retainedOrderLabel": 489,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/clinical.launch-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-36-41-01a1d10c-39fd-73e2-b51b-e9b1b3ad7b5b.jsonl",
+    "jsonlLine": 62,
+    "contentBlockIndex": 29,
+    "messageId": "msg_01a1d10d-ff4e-72e3-a5f4-620c867d291c",
+    "sourceRecordSha256": "17df184398be5070459e5ab191030a69c75385e92aa4e591b1b052c2a826fd0b",
+    "rawBlockSha256": "00613d166290c4732341f4aebd7be0873f40938e2d42f65d777bd127e33f99b7",
+    "retainedOrderLabel": 491,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/clinical.launch-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-43-40-01a1d112-9d6b-74c0-8f3b-503668c66f11.jsonl",
+    "jsonlLine": 13,
+    "contentBlockIndex": 52,
+    "messageId": "msg_01a1d112-9faa-7a30-95c5-66ff3021497b",
+    "sourceRecordSha256": "ae9e3297913027f60c3e2865115cef315e985c478dbb0941444fc6a2cc008ca5",
+    "rawBlockSha256": "dc0d762a9a398d267bcc39b7c03d06ca857416609e9ff622819dc935b431078a",
+    "retainedOrderLabel": 492,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/clinical.final-poll-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-43-40-01a1d112-9d6b-74c0-8f3b-503668c66f11.jsonl",
+    "jsonlLine": 13,
+    "contentBlockIndex": 55,
+    "messageId": "msg_01a1d112-9faa-7a30-95c5-66ff3021497b",
+    "sourceRecordSha256": "ae9e3297913027f60c3e2865115cef315e985c478dbb0941444fc6a2cc008ca5",
+    "rawBlockSha256": "df6d69fb4fbd0979a8226e5273cd3b8fb0710362b6b66a7f9b5207849a8ec879",
+    "retainedOrderLabel": 495,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/clinical.final-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-43-40-01a1d112-9d6b-74c0-8f3b-503668c66f11.jsonl",
+    "jsonlLine": 13,
+    "contentBlockIndex": 56,
+    "messageId": "msg_01a1d112-9faa-7a30-95c5-66ff3021497b",
+    "sourceRecordSha256": "ae9e3297913027f60c3e2865115cef315e985c478dbb0941444fc6a2cc008ca5",
+    "rawBlockSha256": "92774b05dcef1171a081cb60236f4b7788f2da8933bca951c2e9a7aea6cda8b9",
+    "retainedOrderLabel": 496,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/realtimeMove.launch-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-43-40-01a1d112-9d6b-74c0-8f3b-503668c66f11.jsonl",
+    "jsonlLine": 15,
+    "contentBlockIndex": 1,
+    "messageId": "msg_01a1d112-9fad-73d2-a89e-3cdb99636a76",
+    "sourceRecordSha256": "e4573b861eba569ff2918b5c7c81b0d5b0a034d5fca4614fe3b87ca14942eb8d",
+    "rawBlockSha256": "b4e9f1bbdcfd06e38d1b3cd0b9d58feb5a0fc124c98fba0161d90b2e350f24b8",
+    "retainedOrderLabel": 515,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/realtimeMove.launch-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-46-28-01a1d115-2c0e-7f70-b8b2-5e84a90d14ec.jsonl",
+    "jsonlLine": 15,
+    "contentBlockIndex": 2,
+    "messageId": "msg_01a1d115-2edb-7d02-b65b-45895a79ac46",
+    "sourceRecordSha256": "58440ef4e653d60bc58626b3acd2e9e42477b4c44a2fcea90d4456a396e1997b",
+    "rawBlockSha256": "34477096319a989acaacf894890c48e51f23525093c6a1c6a76cf7d380ff47e5",
+    "retainedOrderLabel": 516,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/realtimeMove.final-poll-call.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-46-28-01a1d115-2c0e-7f70-b8b2-5e84a90d14ec.jsonl",
+    "jsonlLine": 15,
+    "contentBlockIndex": 6,
+    "messageId": "msg_01a1d115-2edb-7d02-b65b-45895a79ac46",
+    "sourceRecordSha256": "58440ef4e653d60bc58626b3acd2e9e42477b4c44a2fcea90d4456a396e1997b",
+    "rawBlockSha256": "01ad473ed08d64e32df102bf07dddfd3a5f3953f9516b201a866d8dc6808724d",
+    "retainedOrderLabel": 520,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  },
+  "raw/realtimeMove.final-result.txt": {
+    "localSourceFile": "rollout-2026-11-12T10-46-28-01a1d115-2c0e-7f70-b8b2-5e84a90d14ec.jsonl",
+    "jsonlLine": 15,
+    "contentBlockIndex": 7,
+    "messageId": "msg_01a1d115-2edb-7d02-b65b-45895a79ac46",
+    "sourceRecordSha256": "58440ef4e653d60bc58626b3acd2e9e42477b4c44a2fcea90d4456a396e1997b",
+    "rawBlockSha256": "140ff6b92002a8f19eb8340274418231983d51118d89b6c35b46b1d05fdc9ce8",
+    "retainedOrderLabel": 521,
+    "sourceKind": "host-retained agent-history block in local review transcript"
+  }
+}

@@ -1,0 +1,3 @@
+
+[481] tool exec call: text(await tools.write_stdin({session_id:71766,chars:"",yield_time_ms:1000,max_output_tokens:1500}));
+

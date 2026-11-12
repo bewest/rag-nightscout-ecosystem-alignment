@@ -1,0 +1,6 @@
+
+[521] tool exec result: Script completed
+Wall time 0.0 seconds
+Output:
+
+{"chunk_id":"faa421","wall_time_seconds":0.000010937,"exit_code":0,"original_token_count":25,"output":"{\"stage\": \"controlled-realtime-move\", \"exit\": 0, \"log\": \"/tmp/evaluator-ready-controlled-move.log\"}\n"}

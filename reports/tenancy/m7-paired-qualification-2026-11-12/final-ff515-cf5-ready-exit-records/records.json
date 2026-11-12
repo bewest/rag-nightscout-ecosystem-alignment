@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "derivativeOfEvidenceCommit": "e17f4f5f83bd2610be12fb4712398306dd94defd",
+  "source": {
+    "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+    "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+    "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+    "nonce": "0dc3af55-99df-4fd9-8b1b-8771f68be6f1",
+    "project": "ns-evaluator-binding-proof-20261112-ready"
+  },
+  "origin": "Verbatim original tool-call/result entries retained in host review agent-history snapshots; not a new execution and not reconstructed from TAP. Primary Exec datastore availability is not asserted.",
+  "phases": {
+    "stock": {
+      "observedProcessReturnCode": 0,
+      "observedReturnCodeScope": "original tool-managed outer process, after completion",
+      "execSessionId": 71766,
+      "launchChunk": "e7b9a1",
+      "finalChunk": "574329",
+      "verbatimResult": "raw/stock.final-result.txt",
+      "provenanceKey": "raw/stock.final-result.txt",
+      "observedFixtureReturnCode": 0,
+      "observedFixtureStage": "stock-restore",
+      "observedFixtureLog": "/tmp/evaluator-ready-stock-restore.log",
+      "fixtureCodeOrigin": "literal exit field printed from subprocess returncode in original phase stdout"
+    },
+    "settings": {
+      "observedProcessReturnCode": 0,
+      "observedReturnCodeScope": "original tool-managed outer process, after completion",
+      "execSessionId": 47793,
+      "launchChunk": "864543",
+      "finalChunk": "eb4238",
+      "verbatimResult": "raw/settings.final-result.txt",
+      "provenanceKey": "raw/settings.final-result.txt",
+      "observedFixtureReturnCode": null,
+      "fixtureCodeOrigin": "No numeric child-code stdout was printed. Settings outer process status is directly retained; individual inner controls include expected refusals and their codes are not asserted."
+    },
+    "clinical": {
+      "observedProcessReturnCode": 0,
+      "observedReturnCodeScope": "original tool-managed outer process, after completion",
+      "execSessionId": 84437,
+      "launchChunk": "993ab2",
+      "finalChunk": "a5e40c",
+      "verbatimResult": "raw/clinical.final-result.txt",
+      "provenanceKey": "raw/clinical.final-result.txt",
+      "observedFixtureReturnCode": 0,
+      "observedFixtureStage": "clinical-members2to3",
+      "observedFixtureLog": "/tmp/evaluator-ready-clinical.log",
+      "fixtureCodeOrigin": "literal exit field printed from subprocess returncode in original phase stdout"
+    },
+    "realtimeMove": {
+      "observedProcessReturnCode": 0,
+      "observedReturnCodeScope": "original tool-managed outer process, after completion",
+      "execSessionId": 35114,
+      "launchChunk": "3ca775",
+      "finalChunk": "faa421",
+      "verbatimResult": "raw/realtimeMove.final-result.txt",
+      "provenanceKey": "raw/realtimeMove.final-result.txt",
+      "observedFixtureReturnCode": 0,
+      "observedFixtureStage": "controlled-realtime-move",
+      "observedFixtureLog": "/tmp/evaluator-ready-controlled-move.log",
+      "fixtureCodeOrigin": "literal exit field printed from subprocess returncode in original phase stdout"
+    }
+  }
+}
