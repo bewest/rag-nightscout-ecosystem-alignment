@@ -1,0 +1,56 @@
+test_actual_readiness_waits_held_release_and_keeps_failure_fatal (test_evaluator_warming.Warming.test_actual_readiness_waits_held_release_and_keeps_failure_fatal) ... ERROR
+test_actual_runtime_window_release_old_new_restore (test_evaluator_warming.Warming.test_actual_runtime_window_release_old_new_restore) ... ERROR
+test_diagnostics_are_bounded_field_predicate_indices_without_values (test_evaluator_warming.Warming.test_diagnostics_are_bounded_field_predicate_indices_without_values) ... ok
+test_first_release_is_warming_without_completion_credit (test_evaluator_warming.Warming.test_first_release_is_warming_without_completion_credit) ... ERROR
+test_missing_fields_and_bad_status_still_refuse (test_evaluator_warming.Warming.test_missing_fields_and_bad_status_still_refuse) ... ok
+test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) ... ok
+test_remaining_contract_and_error_diagnostics_name_only_fixed_fields (test_evaluator_warming.Warming.test_remaining_contract_and_error_diagnostics_name_only_fixed_fields) ... ok
+
+======================================================================
+ERROR: test_actual_readiness_waits_held_release_and_keeps_failure_fatal (test_evaluator_warming.Warming.test_actual_readiness_waits_held_release_and_keeps_failure_fatal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 65, in test_actual_readiness_waits_held_release_and_keeps_failure_fatal
+    adapter.readiness(Path(directory),{})
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/adapter.py", line 589, in readiness
+    value=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "in_memory_collector_control", line 115, in round_view
+  File "in_memory_collector_control", line 101, in _round_view
+  File "in_memory_collector_control", line 76, in contract
+evaluator_progress.Refused: M7_EVALUATOR_PROGRESS_CONTRACT
+
+======================================================================
+ERROR: test_actual_runtime_window_release_old_new_restore (test_evaluator_warming.Warming.test_actual_runtime_window_release_old_new_restore)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 78, in test_actual_runtime_window_release_old_new_restore
+    self.assertEqual(self.collect(held)['owners'][A]['completedAcquisitions'],0)
+                     ^^^^^^^^^^^^^^^^^^
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 21, in collect
+    return p.round_view(['evaluator'],[A],lambda *_:json.dumps(frame).encode(),warming=warming)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "in_memory_collector_control", line 115, in round_view
+  File "in_memory_collector_control", line 101, in _round_view
+  File "in_memory_collector_control", line 76, in contract
+evaluator_progress.Refused: M7_EVALUATOR_PROGRESS_CONTRACT
+
+======================================================================
+ERROR: test_first_release_is_warming_without_completion_credit (test_evaluator_warming.Warming.test_first_release_is_warming_without_completion_credit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 23, in test_first_release_is_warming_without_completion_credit
+    value=self.collect(self.frame());self.assertIsNone(value['owners'][A]['lastCompletedAgeMs'])
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 21, in collect
+    return p.round_view(['evaluator'],[A],lambda *_:json.dumps(frame).encode(),warming=warming)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "in_memory_collector_control", line 115, in round_view
+  File "in_memory_collector_control", line 101, in _round_view
+  File "in_memory_collector_control", line 76, in contract
+evaluator_progress.Refused: M7_EVALUATOR_PROGRESS_CONTRACT
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.057s
+
+FAILED (errors=3)

@@ -1,0 +1,130 @@
+[
+  {
+    "name": "test_evaluator_warming",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_evaluator_warming.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "test_evaluator_progress",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_evaluator_progress.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "test_evaluator_idle",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_evaluator_idle.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "test_contract",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_contract.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "test_unaccepted",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_unaccepted.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "old-age",
+    "command": [
+      "python3",
+      "-B",
+      "tools/mt-bench/m7-joined/evaluator-warming-control.py",
+      "old-age"
+    ],
+    "exitCode": 1
+  },
+  {
+    "name": "unscoped-age",
+    "command": [
+      "python3",
+      "-B",
+      "tools/mt-bench/m7-joined/evaluator-warming-control.py",
+      "unscoped-age"
+    ],
+    "exitCode": 1
+  },
+  {
+    "name": "omit-diagnostic",
+    "command": [
+      "python3",
+      "-B",
+      "tools/mt-bench/m7-joined/evaluator-warming-control.py",
+      "omit-diagnostic"
+    ],
+    "exitCode": 1
+  },
+  {
+    "name": "restored",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_evaluator_warming.py"
+    ],
+    "exitCode": 0
+  },
+  {
+    "name": "runtime-transition",
+    "command": [
+      "node",
+      "tools/mt-bench/m7-joined/evaluator-readiness-fixture.cjs"
+    ],
+    "exitCode": 0
+  }
+]

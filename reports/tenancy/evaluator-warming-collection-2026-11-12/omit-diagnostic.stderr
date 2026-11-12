@@ -1,0 +1,29 @@
+test_actual_readiness_waits_held_release_and_keeps_failure_fatal (test_evaluator_warming.Warming.test_actual_readiness_waits_held_release_and_keeps_failure_fatal) ... ok
+test_actual_runtime_window_release_old_new_restore (test_evaluator_warming.Warming.test_actual_runtime_window_release_old_new_restore) ... ok
+test_diagnostics_are_bounded_field_predicate_indices_without_values (test_evaluator_warming.Warming.test_diagnostics_are_bounded_field_predicate_indices_without_values) ... FAIL
+test_first_release_is_warming_without_completion_credit (test_evaluator_warming.Warming.test_first_release_is_warming_without_completion_credit) ... ok
+test_missing_fields_and_bad_status_still_refuse (test_evaluator_warming.Warming.test_missing_fields_and_bad_status_still_refuse) ... ok
+test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) ... ok
+test_remaining_contract_and_error_diagnostics_name_only_fixed_fields (test_evaluator_warming.Warming.test_remaining_contract_and_error_diagnostics_name_only_fixed_fields) ... ERROR
+
+======================================================================
+ERROR: test_remaining_contract_and_error_diagnostics_name_only_fixed_fields (test_evaluator_warming.Warming.test_remaining_contract_and_error_diagnostics_name_only_fixed_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 51, in test_remaining_contract_and_error_diagnostics_name_only_fixed_fields
+    self.assertEqual(caught.exception.collection['diagnostic']['field'],field)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+======================================================================
+FAIL: test_diagnostics_are_bounded_field_predicate_indices_without_values (test_evaluator_warming.Warming.test_diagnostics_are_bounded_field_predicate_indices_without_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 44, in test_diagnostics_are_bounded_field_predicate_indices_without_values
+    self.assertEqual(cost['diagnostic'],{'predicate':'FIELD_REQUIRED','field':'lastCompletedAgeMs','instanceIndex':0,'pageIndex':0,'rowIndex':0,'warming':True})
+AssertionError: None != {'predicate': 'FIELD_REQUIRED', 'field': [84 chars]True}
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.068s
+
+FAILED (failures=1, errors=1)
