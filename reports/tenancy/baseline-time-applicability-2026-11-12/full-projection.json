@@ -1,0 +1,1860 @@
+{
+  "recordType": "NEW_PATH_REDACTED_DERIVATIVE",
+  "originalPrivateCaptureSha256": "55ea260291e8ecfb770bcf30858e732546617a988df107a91a9b482538450ea1",
+  "transformation": "Replace local path prefixes with logical roles only; measured values unchanged. Not a new execution.",
+  "data": {
+    "kind": "PURE_ACTUAL_CLINICAL_PROJECTION_AND_NEXT_DUE",
+    "coreCommit": "47b43b6246ce7f94f1f1f0d01830495a78b28add",
+    "localNode": "v22.23.4",
+    "localKernel": "6.18.7-76061807-generic",
+    "settingsPreparation": "actual catalogue.DEFAULTS -> catalogue.project -> environment; enable equal registry blank-settings environment",
+    "syntheticAt": 1794484800000,
+    "readAcquisitions": 2,
+    "sqlCalls": 0,
+    "observations": [
+      {
+        "sgv": 123,
+        "deltaMs": 0,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 1,
+          "trigger": "acquisition",
+          "now": 1794484800000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 123,
+              "last": 123,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-0",
+                  "mgdl": 123,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 123
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 123,
+                "last": 123,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-0",
+                    "mgdl": 123,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 123
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 599000
+      },
+      {
+        "sgv": 123,
+        "deltaMs": 60000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 2,
+          "trigger": "time-only",
+          "now": 1794484860000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 123,
+              "last": 123,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-0",
+                  "mgdl": 123,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 123
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 123,
+                "last": 123,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-0",
+                    "mgdl": 123,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 123
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 539000
+      },
+      {
+        "sgv": 123,
+        "deltaMs": 180000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 3,
+          "trigger": "time-only",
+          "now": 1794484980000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 123,
+              "last": 123,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-0",
+                  "mgdl": 123,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 123
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 123,
+                "last": 123,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-0",
+                    "mgdl": 123,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 123
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 419000
+      },
+      {
+        "sgv": 123,
+        "deltaMs": 480000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 4,
+          "trigger": "time-only",
+          "now": 1794485280000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 123,
+              "last": 123,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-0",
+                  "mgdl": 123,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 123
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 123,
+                "last": 123,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-0",
+                    "mgdl": 123,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 123
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 119000
+      },
+      {
+        "sgv": 123,
+        "deltaMs": 598999,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 5,
+          "trigger": "time-only",
+          "now": 1794485398999,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 123,
+              "last": 123,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-0",
+                  "mgdl": 123,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 123
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 123,
+                "last": 123,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-0",
+                    "mgdl": 123,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 123
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 1
+      },
+      {
+        "sgv": 123,
+        "deltaMs": 599000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 6,
+          "trigger": "time-only",
+          "now": 1794485399000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 123,
+              "last": 123,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-0",
+                  "mgdl": 123,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 123
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 123,
+                "last": 123,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-0",
+                    "mgdl": 123,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 123
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399001,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 1
+      },
+      {
+        "sgv": 123,
+        "deltaMs": 599001,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 7,
+          "trigger": "time-only",
+          "now": 1794485399001,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 123,
+              "last": 123,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-0",
+                  "mgdl": 123,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 123
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 123,
+                "last": 123,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-0",
+                    "mgdl": 123,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 123
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": null,
+            "reason": null,
+            "slow": []
+          }
+        },
+        "dueInMs": null
+      },
+      {
+        "sgv": 177,
+        "deltaMs": 0,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 1,
+          "trigger": "acquisition",
+          "now": 1794484800000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 177,
+              "last": 177,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-1",
+                  "mgdl": 177,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 177
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 177,
+                "last": 177,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-1",
+                    "mgdl": 177,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 177
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 599000
+      },
+      {
+        "sgv": 177,
+        "deltaMs": 60000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 2,
+          "trigger": "time-only",
+          "now": 1794484860000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 177,
+              "last": 177,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-1",
+                  "mgdl": 177,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 177
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 177,
+                "last": 177,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-1",
+                    "mgdl": 177,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 177
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 539000
+      },
+      {
+        "sgv": 177,
+        "deltaMs": 180000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 3,
+          "trigger": "time-only",
+          "now": 1794484980000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 177,
+              "last": 177,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-1",
+                  "mgdl": 177,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 177
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 177,
+                "last": 177,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-1",
+                    "mgdl": 177,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 177
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 419000
+      },
+      {
+        "sgv": 177,
+        "deltaMs": 480000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 4,
+          "trigger": "time-only",
+          "now": 1794485280000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 177,
+              "last": 177,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-1",
+                  "mgdl": 177,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 177
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 177,
+                "last": 177,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-1",
+                    "mgdl": 177,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 177
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 119000
+      },
+      {
+        "sgv": 177,
+        "deltaMs": 598999,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 5,
+          "trigger": "time-only",
+          "now": 1794485398999,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 177,
+              "last": 177,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-1",
+                  "mgdl": 177,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 177
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 177,
+                "last": 177,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-1",
+                    "mgdl": 177,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 177
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399000,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 1
+      },
+      {
+        "sgv": 177,
+        "deltaMs": 599000,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 6,
+          "trigger": "time-only",
+          "now": 1794485399000,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 177,
+              "last": 177,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-1",
+                  "mgdl": 177,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 177
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 177,
+                "last": 177,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-1",
+                    "mgdl": 177,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 177
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": 1794485399001,
+            "reason": "sgv-recent-10",
+            "slow": []
+          }
+        },
+        "dueInMs": 1
+      },
+      {
+        "sgv": 177,
+        "deltaMs": 599001,
+        "result": {
+          "tenant": "11111111-1111-4111-8111-111111111111",
+          "checkpoint": 1794484800000,
+          "evaluationRevision": 7,
+          "trigger": "time-only",
+          "now": 1794485399001,
+          "emitted": [],
+          "requested": [],
+          "properties": {
+            "bgnow": {
+              "mean": 177,
+              "last": 177,
+              "mills": 1794484799000,
+              "sgvs": [
+                {
+                  "_id": "synthetic-reading-1",
+                  "mgdl": 177,
+                  "mills": 1794484799000,
+                  "device": "synthetic-compose-demo",
+                  "direction": "Flat",
+                  "type": "sgv",
+                  "scaled": 177
+                }
+              ]
+            },
+            "buckets": [
+              {
+                "mean": 177,
+                "last": 177,
+                "mills": 1794484799000,
+                "index": 0,
+                "fromMills": 1794484649000,
+                "toMills": 1794484949000,
+                "sgvs": [
+                  {
+                    "_id": "synthetic-reading-1",
+                    "mgdl": 177,
+                    "mills": 1794484799000,
+                    "device": "synthetic-compose-demo",
+                    "direction": "Flat",
+                    "type": "sgv",
+                    "scaled": 177
+                  }
+                ]
+              },
+              {
+                "index": 1,
+                "fromMills": 1794484349000,
+                "toMills": 1794484649000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 2,
+                "fromMills": 1794484049000,
+                "toMills": 1794484349000,
+                "sgvs": [],
+                "isEmpty": true
+              },
+              {
+                "index": 3,
+                "fromMills": 1794483749000,
+                "toMills": 1794484049000,
+                "sgvs": [],
+                "isEmpty": true
+              }
+            ],
+            "direction": {
+              "display": null,
+              "value": "Flat",
+              "label": "\u2192",
+              "entity": "&#8594;"
+            },
+            "upbat": {
+              "display": "?%",
+              "devices": {}
+            },
+            "dbsize": {
+              "display": "0%",
+              "status": "current",
+              "totalDataSize": 0,
+              "dataPercentage": 0,
+              "notificationLevel": 0,
+              "details": {
+                "maxSize": 496,
+                "dataSize": 0
+              }
+            },
+            "runtimestate": {
+              "state": "loaded"
+            }
+          },
+          "signature": null,
+          "due": {
+            "dueAt": null,
+            "reason": null,
+            "slow": []
+          }
+        },
+        "dueInMs": null
+      }
+    ],
+    "dependencyResolutionPaths": [
+      "<DEPENDENCY_NODE_MODULES>/@mongodb-js/saslprep/dist/code-points-data.js",
+      "<DEPENDENCY_NODE_MODULES>/@mongodb-js/saslprep/dist/index.js",
+      "<DEPENDENCY_NODE_MODULES>/@mongodb-js/saslprep/dist/memory-code-points.js",
+      "<DEPENDENCY_NODE_MODULES>/@mongodb-js/saslprep/dist/node.js",
+      "<DEPENDENCY_NODE_MODULES>/bson/lib/bson.cjs",
+      "<DEPENDENCY_NODE_MODULES>/ecdsa-sig-formatter/src/ecdsa-sig-formatter.js",
+      "<DEPENDENCY_NODE_MODULES>/ecdsa-sig-formatter/src/param-bytes-for-alg.js",
+      "<DEPENDENCY_NODE_MODULES>/entities/dist/decode.js",
+      "<DEPENDENCY_NODE_MODULES>/entities/dist/escape.js",
+      "<DEPENDENCY_NODE_MODULES>/fast-password-entropy/src/index.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/decode.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/index.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/JsonWebTokenError.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/NotBeforeError.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/TokenExpiredError.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/asymmetricKeyDetailsSupported.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/psSupported.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/rsaPssKeyDetailsSupported.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/timespan.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/lib/validateAsymmetricKey.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/sign.js",
+      "<DEPENDENCY_NODE_MODULES>/jsonwebtoken/verify.js",
+      "<DEPENDENCY_NODE_MODULES>/jwa/index.js",
+      "<DEPENDENCY_NODE_MODULES>/jws/index.js",
+      "<DEPENDENCY_NODE_MODULES>/jws/lib/data-stream.js",
+      "<DEPENDENCY_NODE_MODULES>/jws/lib/sign-stream.js",
+      "<DEPENDENCY_NODE_MODULES>/jws/lib/tostring.js",
+      "<DEPENDENCY_NODE_MODULES>/jws/lib/verify-stream.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash.includes/index.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash.isboolean/index.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash.isinteger/index.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash.isnumber/index.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash.isplainobject/index.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash.isstring/index.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash.once/index.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_Symbol.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_arrayMap.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_baseGetTag.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_basePropertyOf.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_baseToString.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_escapeHtmlChar.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_freeGlobal.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_getRawTag.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_objectToString.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/_root.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/escape.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/isArray.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/isObjectLike.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/isSymbol.js",
+      "<DEPENDENCY_NODE_MODULES>/lodash/toString.js",
+      "<DEPENDENCY_NODE_MODULES>/memory-pager/index.js",
+      "<DEPENDENCY_NODE_MODULES>/moment-timezone/data/packed/latest.json",
+      "<DEPENDENCY_NODE_MODULES>/moment-timezone/index.js",
+      "<DEPENDENCY_NODE_MODULES>/moment-timezone/moment-timezone.js",
+      "<DEPENDENCY_NODE_MODULES>/moment/moment.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb-connection-string-url/lib/index.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb-connection-string-url/lib/redact.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/admin.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/bson.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/bulk/common.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/bulk/ordered.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/bulk/unordered.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/change_stream.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/auto_encrypter.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/client_encryption.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/errors.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/mongocryptd_manager.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/providers/aws.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/providers/azure.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/providers/gcp.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/providers/index.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/client-side-encryption/state_machine.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/auth_provider.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/aws4.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/aws_temporary_credentials.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/gssapi.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongo_credentials.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_aws.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/automated_callback_workflow.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/azure_machine_workflow.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/callback_workflow.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/command_builders.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/gcp_machine_workflow.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/human_callback_workflow.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/k8s_machine_workflow.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/token_cache.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/mongodb_oidc/token_machine_workflow.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/plain.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/providers.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/scram.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/auth/x509.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/command_monitoring_events.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/commands.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/connect.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/connection.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/connection_pool.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/connection_pool_events.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/errors.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/handshake/client_metadata.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/metrics.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/stream_description.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/wire_protocol/compression.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/wire_protocol/constants.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/wire_protocol/on_data.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/wire_protocol/on_demand/document.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/wire_protocol/responses.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cmap/wire_protocol/shared.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/collection.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/connection_string.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/constants.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/abstract_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/aggregation_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/change_stream_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/client_bulk_write_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/explainable_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/find_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/list_collections_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/list_indexes_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/list_search_indexes_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/cursor/run_command_cursor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/db.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/deps.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/encrypter.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/error.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/explain.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/gridfs/download.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/gridfs/index.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/gridfs/upload.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/index.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/mongo_client.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/mongo_client_auth_providers.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/mongo_logger.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/mongo_types.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/aggregate.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/client_bulk_write/client_bulk_write.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/client_bulk_write/command_builder.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/client_bulk_write/executor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/client_bulk_write/results_merger.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/command.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/count.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/create_collection.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/delete.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/distinct.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/drop.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/end_sessions.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/estimated_document_count.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/execute_operation.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/find.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/find_and_modify.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/get_more.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/indexes.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/insert.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/kill_cursors.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/list_collections.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/list_databases.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/operation.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/profiling_level.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/remove_user.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/rename.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/run_command.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/search_indexes/create.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/search_indexes/drop.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/search_indexes/update.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/set_profiling_level.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/stats.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/update.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/operations/validate_collection.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/read_concern.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/read_preference.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/runtime_adapters.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/common.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/events.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/monitor.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/server.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/server_description.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/server_selection.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/server_selection_events.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/srv_polling.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/topology.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sdam/topology_description.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sessions.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/sort.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/timeout.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/transactions.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/utils.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/lib/write_concern.js",
+      "<DEPENDENCY_NODE_MODULES>/mongodb/package.json",
+      "<DEPENDENCY_NODE_MODULES>/ms/index.js",
+      "<DEPENDENCY_NODE_MODULES>/punycode/punycode.js",
+      "<DEPENDENCY_NODE_MODULES>/safe-buffer/index.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/classes/comparator.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/classes/range.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/classes/semver.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/clean.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/cmp.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/coerce.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/compare-build.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/compare-loose.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/compare.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/diff.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/eq.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/gt.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/gte.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/inc.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/lt.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/lte.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/major.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/minor.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/neq.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/parse.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/patch.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/prerelease.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/rcompare.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/rsort.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/satisfies.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/sort.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/truncate.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/functions/valid.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/index.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/internal/constants.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/internal/debug.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/internal/identifiers.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/internal/lrucache.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/internal/parse-options.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/internal/re.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/gtr.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/intersects.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/ltr.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/max-satisfying.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/min-satisfying.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/min-version.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/outside.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/simplify.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/subset.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/to-comparators.js",
+      "<DEPENDENCY_NODE_MODULES>/semver/ranges/valid.js",
+      "<DEPENDENCY_NODE_MODULES>/sparse-bitfield/index.js",
+      "<DEPENDENCY_NODE_MODULES>/tr46/index.js",
+      "<DEPENDENCY_NODE_MODULES>/tr46/lib/mappingTable.json",
+      "<DEPENDENCY_NODE_MODULES>/tr46/lib/regexes.js",
+      "<DEPENDENCY_NODE_MODULES>/tr46/lib/statusMapping.js",
+      "<DEPENDENCY_NODE_MODULES>/webidl-conversions/lib/index.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/index.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/Function.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/URL-impl.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/URL.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/URLSearchParams-impl.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/URLSearchParams.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/encoding.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/infra.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/percent-encoding.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/url-state-machine.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/urlencoded.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/lib/utils.js",
+      "<DEPENDENCY_NODE_MODULES>/whatwg-url/webidl2js-wrapper.js",
+      "<CORE_SOURCE>/lib/api3/const.json",
+      "<CORE_SOURCE>/lib/api3/shared/operationTools.js",
+      "<CORE_SOURCE>/lib/api3/shared/stringTools.js",
+      "<CORE_SOURCE>/lib/api3/storage/mongoCollection/index.js",
+      "<CORE_SOURCE>/lib/api3/storage/mongoCollection/utils.js",
+      "<CORE_SOURCE>/lib/client-core/devicestatus/cob.js",
+      "<CORE_SOURCE>/lib/client-core/devicestatus/loop.js",
+      "<CORE_SOURCE>/lib/client-core/devicestatus/openaps.js",
+      "<CORE_SOURCE>/lib/client-core/devicestatus/pump.js",
+      "<CORE_SOURCE>/lib/constants.json",
+      "<CORE_SOURCE>/lib/data/dataloader.js",
+      "<CORE_SOURCE>/lib/data/ddata.js",
+      "<CORE_SOURCE>/lib/data/evaluator-due.js",
+      "<CORE_SOURCE>/lib/data/json-copy.js",
+      "<CORE_SOURCE>/lib/data/moment-memo.js",
+      "<CORE_SOURCE>/lib/data/private-acquisition.js",
+      "<CORE_SOURCE>/lib/data/tenant-projection-evaluator.js",
+      "<CORE_SOURCE>/lib/data/treatmenttocurve.js",
+      "<CORE_SOURCE>/lib/data/views/bounds.js",
+      "<CORE_SOURCE>/lib/data/views/index.js",
+      "<CORE_SOURCE>/lib/data/working-set.js",
+      "<CORE_SOURCE>/lib/direction-normalizer.js",
+      "<CORE_SOURCE>/lib/food/quickpick.js",
+      "<CORE_SOURCE>/lib/language.js",
+      "<CORE_SOURCE>/lib/levels.js",
+      "<CORE_SOURCE>/lib/notifications.js",
+      "<CORE_SOURCE>/lib/plugins/ar2.js",
+      "<CORE_SOURCE>/lib/plugins/basalprofile.js",
+      "<CORE_SOURCE>/lib/plugins/batteryage.js",
+      "<CORE_SOURCE>/lib/plugins/bgnow.js",
+      "<CORE_SOURCE>/lib/plugins/bolus.js",
+      "<CORE_SOURCE>/lib/plugins/boluscalc.js",
+      "<CORE_SOURCE>/lib/plugins/boluswizardpreview.js",
+      "<CORE_SOURCE>/lib/plugins/cannulaage.js",
+      "<CORE_SOURCE>/lib/plugins/careportal.js",
+      "<CORE_SOURCE>/lib/plugins/cob.js",
+      "<CORE_SOURCE>/lib/plugins/dbsize.js",
+      "<CORE_SOURCE>/lib/plugins/direction.js",
+      "<CORE_SOURCE>/lib/plugins/errorcodes.js",
+      "<CORE_SOURCE>/lib/plugins/index.js",
+      "<CORE_SOURCE>/lib/plugins/insulinage.js",
+      "<CORE_SOURCE>/lib/plugins/iob.js",
+      "<CORE_SOURCE>/lib/plugins/loop.js",
+      "<CORE_SOURCE>/lib/plugins/openaps.js",
+      "<CORE_SOURCE>/lib/plugins/override.js",
+      "<CORE_SOURCE>/lib/plugins/pluginbase.js",
+      "<CORE_SOURCE>/lib/plugins/profile.js",
+      "<CORE_SOURCE>/lib/plugins/pump.js",
+      "<CORE_SOURCE>/lib/plugins/rawbg.js",
+      "<CORE_SOURCE>/lib/plugins/runtimestate.js",
+      "<CORE_SOURCE>/lib/plugins/sensorage.js",
+      "<CORE_SOURCE>/lib/plugins/simplealarms.js",
+      "<CORE_SOURCE>/lib/plugins/speech.js",
+      "<CORE_SOURCE>/lib/plugins/timeago.js",
+      "<CORE_SOURCE>/lib/plugins/treatmentnotify.js",
+      "<CORE_SOURCE>/lib/plugins/upbat.js",
+      "<CORE_SOURCE>/lib/plugins/webhook.js",
+      "<CORE_SOURCE>/lib/plugins/xdripjs.js",
+      "<CORE_SOURCE>/lib/profilefunctions.js",
+      "<CORE_SOURCE>/lib/sandbox.js",
+      "<CORE_SOURCE>/lib/server/activity.js",
+      "<CORE_SOURCE>/lib/server/aggregate.js",
+      "<CORE_SOURCE>/lib/server/cache.js",
+      "<CORE_SOURCE>/lib/server/count.js",
+      "<CORE_SOURCE>/lib/server/devicestatus.js",
+      "<CORE_SOURCE>/lib/server/enclave.js",
+      "<CORE_SOURCE>/lib/server/entries.js",
+      "<CORE_SOURCE>/lib/server/env.js",
+      "<CORE_SOURCE>/lib/server/food.js",
+      "<CORE_SOURCE>/lib/server/log-privacy.js",
+      "<CORE_SOURCE>/lib/server/merge-patch.js",
+      "<CORE_SOURCE>/lib/server/object-id-forms.js",
+      "<CORE_SOURCE>/lib/server/profile.js",
+      "<CORE_SOURCE>/lib/server/query-coercion.js",
+      "<CORE_SOURCE>/lib/server/query-coercion.json",
+      "<CORE_SOURCE>/lib/server/query-operator-allowlist.js",
+      "<CORE_SOURCE>/lib/server/query.js",
+      "<CORE_SOURCE>/lib/server/soft-deleted.js",
+      "<CORE_SOURCE>/lib/server/srv-dates.js",
+      "<CORE_SOURCE>/lib/server/storage-purifier.js",
+      "<CORE_SOURCE>/lib/server/storage-reads.js",
+      "<CORE_SOURCE>/lib/server/storage-writes.js",
+      "<CORE_SOURCE>/lib/server/tenant-app/environment.js",
+      "<CORE_SOURCE>/lib/server/treatment-fallback-key.js",
+      "<CORE_SOURCE>/lib/server/treatments.js",
+      "<CORE_SOURCE>/lib/server/write-items.js",
+      "<CORE_SOURCE>/lib/server/write-settings.js",
+      "<CORE_SOURCE>/lib/server/write-validation.js",
+      "<CORE_SOURCE>/lib/settings.js",
+      "<CORE_SOURCE>/lib/storage/assert-no-query-javascript.js",
+      "<CORE_SOURCE>/lib/storage/filter.js",
+      "<CORE_SOURCE>/lib/storage/identifier-index.js",
+      "<CORE_SOURCE>/lib/storage/mongo-read-options.js",
+      "<CORE_SOURCE>/lib/storage/postgres-collection-intent.js",
+      "<CORE_SOURCE>/lib/storage/postgres-durable-replay.js",
+      "<CORE_SOURCE>/lib/storage/postgres-entries-read.js",
+      "<CORE_SOURCE>/lib/storage/postgres-entries-write.js",
+      "<CORE_SOURCE>/lib/storage/postgres-filter.js",
+      "<CORE_SOURCE>/lib/storage/postgres-identity.js",
+      "<CORE_SOURCE>/lib/storage/postgres-intent-common.js",
+      "<CORE_SOURCE>/lib/storage/postgres-projection-read.js",
+      "<CORE_SOURCE>/lib/storage/projection-memory-read.js",
+      "<CORE_SOURCE>/lib/storage/read-contract.js",
+      "<CORE_SOURCE>/lib/storage/run-with-callback.js",
+      "<CORE_SOURCE>/lib/storage/tenant-scope.js",
+      "<CORE_SOURCE>/lib/storage/validated-update.js",
+      "<CORE_SOURCE>/lib/storage/write-intent.js",
+      "<CORE_SOURCE>/lib/storage/write-limits.js",
+      "<CORE_SOURCE>/lib/storage/write-step.js",
+      "<CORE_SOURCE>/lib/tenant-settings/catalogue.js",
+      "<CORE_SOURCE>/lib/times.js",
+      "<CORE_SOURCE>/lib/treatmentDuration.js",
+      "<CORE_SOURCE>/lib/treatmentTargetUnits.js",
+      "<CORE_SOURCE>/lib/units.js",
+      "<CORE_SOURCE>/lib/utils.js",
+      "<CORE_SOURCE>/lib/utils/callback-tasks.js",
+      "<CORE_SOURCE>/lib/utils/clone.js",
+      "<CORE_SOURCE>/lib/utils/cloneShallow.js",
+      "<CORE_SOURCE>/lib/utils/deepMerge.js",
+      "<CORE_SOURCE>/lib/utils/env-value.js",
+      "<CORE_SOURCE>/lib/utils/html.js",
+      "<CORE_SOURCE>/lib/utils/mongo-password-matches.js",
+      "<CORE_SOURCE>/lib/utils/pick.js",
+      "<CORE_SOURCE>/lib/utils/query-leaves.js",
+      "<CORE_SOURCE>/lib/utils/reference-cache.js",
+      "<CORE_SOURCE>/tests/lib/views-replay/clock.js"
+    ],
+    "dependencyRoot": "<DEPENDENCY_NODE_MODULES>",
+    "sourceOverlay": "<CORE_SOURCE>",
+    "limitations": "No server/runtime scheduler/SQL/containers; evaluateTime called explicitly at selected synthetic instants, not evidence of naturally scheduled TIME completion. Historical authorized exact-lock dependencies, no new install."
+  }
+}
