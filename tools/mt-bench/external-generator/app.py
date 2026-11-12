@@ -99,14 +99,13 @@ def idle(d, m):
         out = d / name
         out.mkdir()
         a.psql(d, 'SELECT pg_stat_statements_reset();')
-        a.phase_snapshot(d, out, 'before')
         if name == 'idle':
-            with a.sampling(d, out), a.observe_progress(d, m, out, 'idle') as observed:
-                time.sleep(seconds)
+            observed = a.enabled_idle(d, m, out, seconds)
             need(observed.result['verdict'] == 'PASS', 'EXTERNAL_IDLE_FAILED')
         else:
+            a.phase_snapshot(d, out, 'before')
             time.sleep(seconds)
-        a.phase_snapshot(d, out, 'after')
+            a.phase_snapshot(d, out, 'after')
 
 
 def health(d, m, deadline):

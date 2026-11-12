@@ -30,6 +30,32 @@ def selected():
 
 
 class Contract(unittest.TestCase):
+    def test_external_idle_keeps_after_bookend_on_observer_refusal(self):
+        import app
+        primary = RuntimeError('SYNTHETIC_IDLE_REFUSED')
+        @contextmanager
+        def observe(*args):
+            yield SimpleNamespace(result={'verdict': 'PASS'})
+            raise primary
+        @contextmanager
+        def sample(*args):
+            yield
+        events = []
+        with tempfile.TemporaryDirectory() as folder, \
+             mock.patch.object(app.a, 'frozen'), mock.patch.object(app.a, 'quiet'), \
+             mock.patch.object(app.a, 'verify'), mock.patch.object(app.a, 'readiness'), \
+             mock.patch.object(app.a, 'psql') as sql, \
+             mock.patch.object(app.a, 'phase_snapshot', side_effect=lambda d, out, name: events.append((out.name, name))), \
+             mock.patch.object(app.a, 'sampling', side_effect=sample), \
+             mock.patch.object(app.a, 'observe_progress', side_effect=observe), \
+             mock.patch.object(app.time, 'sleep') as sleep:
+            with self.assertRaises(RuntimeError) as caught:
+                app.idle(Path(folder), {})
+            self.assertIs(caught.exception, primary)
+            self.assertEqual(sql.call_count, 2)
+            self.assertEqual([call.args[0] for call in sleep.call_args_list], [60, 120])
+        self.assertEqual(events, [('idle-disabled', 'before'), ('idle-disabled', 'after'), ('idle', 'before'), ('idle', 'after')])
+
     def test_positive_and_layout_refusals(self):
         b = selected()
         self.assertEqual(binding(b, 1000), b)

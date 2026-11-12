@@ -51,3 +51,7 @@ readiness ordering, server recovery/oracle refusal and real reconnect semantics.
 The deployment repository's existing `npm run test:perf-cloud` includes the
 self-contained controller controls. Controls use synthetic fixtures; source-only
 passes do not qualify real networking, imports, resource use or cloud teardown.
+
+Enabled idle uses the base adapter's failure-bookend helper. It attempts the
+existing AFTER snapshots when assessment refuses and preserves the original
+failure. The sampler-disabled and enabled windows remain 60 and 120 seconds.
