@@ -1,0 +1,102 @@
+{
+  "source": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+  "binding": "0f8749bc954812b9d384528da733680930e3b236",
+  "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+  "verdict": "UNMEASURED",
+  "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED",
+  "elapsedSeconds": 21.259140285197645,
+  "calls": 9,
+  "successfulCalls": 9,
+  "responseBytes": 17362,
+  "collectorParallelWallSeconds": 1.2249531610868871,
+  "sumPerInstanceExecWallSeconds": 3.507815989200026,
+  "rowsPerRound": [
+    6,
+    6,
+    6
+  ],
+  "foreignRowsPerRound": [
+    4,
+    4,
+    4
+  ],
+  "perTenant": [
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-2",
+      "runtimeId": "0d64e2bb-32df-4801-a691-948da49a3f0d",
+      "generation": 11,
+      "baseline": {
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 75,
+        "failedCompletions": 0,
+        "legacyCycles": 76,
+        "lastCompletedAgeMs": 117
+      },
+      "end": {
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 94,
+        "failedCompletions": 0,
+        "legacyCycles": 95,
+        "lastCompletedAgeMs": 803
+      },
+      "completedAcquisitionDelta": 0,
+      "completedTimeDelta": 19,
+      "failedDelta": 0
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator",
+      "runtimeId": "86abac36-440b-4616-ae0a-979384ff7a53",
+      "generation": 15,
+      "baseline": {
+        "completedAcquisitions": 2,
+        "completedTimeCycles": 5,
+        "failedCompletions": 0,
+        "legacyCycles": 7,
+        "lastCompletedAgeMs": 73800
+      },
+      "end": {
+        "completedAcquisitions": 2,
+        "completedTimeCycles": 5,
+        "failedCompletions": 0,
+        "legacyCycles": 7,
+        "lastCompletedAgeMs": 94621
+      },
+      "completedAcquisitionDelta": 0,
+      "completedTimeDelta": 0,
+      "failedDelta": 0
+    }
+  ],
+  "evaluatorDueState": "UNMEASURED; source runtime fields omitted by captured module-v2 DTO",
+  "controls": [
+    {
+      "control": "hidden-failure",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE"
+    },
+    {
+      "control": "foreign-work",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_FOREIGN"
+    },
+    {
+      "control": "runtime-reset",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_RESET"
+    },
+    {
+      "control": "missing-foreign-row",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_COVERAGE"
+    },
+    {
+      "control": "unmeasured-wrapped-as-pass",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED"
+    }
+  ],
+  "restored": "UNMEASURED/NOT_OBSERVED",
+  "rawSha256": "904672ef875c8493004eb45a2dbc92fce9c90981e0bd67ca371309ef16773846",
+  "gzipSha256": "dd8c132bd07dde621eeb617d546be9fba8f38651f8b0f28925910fed2dc6d64a"
+}
