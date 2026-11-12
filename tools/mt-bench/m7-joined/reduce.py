@@ -51,12 +51,12 @@ def measurements(directory, manifest):
                 role = sample["container"].removeprefix(manifest["project"] + "-").removesuffix("-1")
                 row = rows.setdefault(role, {})
                 row.setdefault("cpuPctSamples", []).append(float(sample["cpu_pct"].rstrip('%')))
-                row.setdefault("rssBytesSamples", []).append(memory(sample["mem"].split("/")[0]))
+                row.setdefault("dockerMemoryBytesSamples", []).append(memory(sample["mem"].split("/")[0]))
             for row in rows.values():
                 values = row.pop("cpuPctSamples", [])
-                resident = row.pop("rssBytesSamples", [])
+                resident = row.pop("dockerMemoryBytesSamples", [])
                 row.update({"sampleCount": len(values), "cpuPctMean": sum(values)/len(values) if values else None,
-                            "cpuPctMax": max(values) if values else None, "rssBytesMax": max(resident) if resident else None})
+                            "cpuPctMax": max(values) if values else None, "dockerMemoryBytesMax": max(resident) if resident else None})
             activity = [r for r in csv.DictReader((folder / "pg-activity.tsv").open(), delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
             complete = complete and len(activity) > 0
             wait = {}
@@ -71,6 +71,10 @@ def measurements(directory, manifest):
         for value in costs.values():
             value["callsPerTenantMinute"] = value["calls"] / manifest["tenants"] / seconds * 60
             value["executionMsPerTenantMinute"] = value["executionMs"] / manifest["tenants"] / seconds * 60
+        for value in rows.values():
+            cores=value.get("cpuCoresMean")
+            value["cpuMsPerTenantMinute"]=cores*60000/manifest["tenants"] if cores is not None else None
+            value["anonBytesPerTenant"]=value["anonBytesAfter"]/manifest["tenants"] if value.get("anonBytesAfter") is not None else None
         windows[name] = {"seconds":seconds,"roles":rows,"pgStatements":costs,"pgWaits":pg_waits}
     raw = json.loads((directory / "load/k6-summary.json").read_text())["metrics"]
     shapes = {}

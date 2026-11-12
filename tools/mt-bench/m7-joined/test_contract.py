@@ -98,7 +98,7 @@ class Contract(unittest.TestCase):
             adapter.write(root/'load/k6-summary.json',{'metrics':{'http_req_duration{shape:'+name+'}':value for name,value in shapes.items()}})
             value=measurements(root,{'project':'owned','tenants':2})
             self.assertTrue(value['complete']);self.assertEqual(value['windows']['load']['roles']['api']['cpuCoresMean'],.5)
-            self.assertEqual(value['windows']['load']['roles']['api']['rssBytesMax'],1024**2)
+            self.assertEqual(value['windows']['load']['roles']['api']['dockerMemoryBytesMax'],1024**2)
             (root/'idle/docker-stats.tsv').write_text('t\tcontainer\tcpu_pct\tmem\n')
             self.assertFalse(measurements(root,{'project':'owned','tenants':2})['complete'])
     def test_role_roster_is_derived_from_actual_role_commands(self):
