@@ -1,0 +1,55 @@
+Warning: Cannot find any files matching pattern "tests/admin-role-ownership.test.js"
+
+
+  private management issuance key and HTTP boundaries
+    ✔ chooses highest matching explicit version and preserves an enabled retry mapping
+    ✔ refuses missing, ambiguous, exported or retired authority mappings
+    ✔ bounds a token callback that never resolves and sanitizes transport errors
+    ✔ serves strict private POSTs with no-store and logs no token or subject
+
+  management issuer configuration and protocol
+    ✔ parses a standalone issuer with explicit identities and a bounded default (68ms)
+    ✔ refuses widened lifetimes, merged namespaces, implicit subjects and missing secrets
+    ✔ uses the existing management protocol without embedding permission grants
+
+  whole deployment source admission and filesystem durability
+    ✔ admits only exact ordinary reviewed relations plus the ordinary migration ledger
+    ✔ stages a private cached-allocator counterexample without application grants or an import workaround
+    ✔ whole-C fixture authority locks the current SQL policy and rereads revocation on the same connection
+    ✔ whole-C window refuses real running process, reused birth and changed identity; only stopped/absent owned births pass
+    ✔ whole-C independent physical oracle exposes second-instance row loss and preserves typed values
+    ✔ whole-C independent closed-file oracle compares durable artifact to raw SQL-shaped rows before upgrade
+    ✔ whole-C runtime config binds immutable heads, role manifest and explicit loopback fixture without opening services
+    ✔ binds OLD and CURRENT ACL contexts to exact selected catalogues without copying identity rights
+    ✔ refuses unknown, crossed or changed ACL catalogue contexts and operational role substitution
+    ✔ retains strict sequence and column guards while the explicit OLD ACL compiles without a sequence
+    ✔ censuses all selected A74/R69 kinds, owner configuration and the independent lifecycle ledger (43ms)
+    ✔ has an explicit two-tenant populated seed for every selected table; no empty-domain acceptance
+    ✔ control: adding a candidate refuses until its exact extension, namespace and table list are admitted (137ms)
+    ✔ enumerates both actual checkpoint instances with independent tenants, consumers and precise grants (99ms)
+    ✔ prepares the frozen alarm extension, both-tenant expiry seeds and narrowly separated roles
+    ✔ refuses a changed pinned extension even when its new migration checksum and table inventory are valid (75ms)
+    ✔ pins the actual notifier catalogue and preserves both normalPolicy key families with narrow outbox grants
+    ✔ admits bounded producer recovery fields and distinct SELECT-only ACK state without broadening old request columns
+    ✔ refuses a changed valid outbox successor until new producer fields are explicitly readmitted
+    ✔ pins the profile successor and gives its writer tenant-local insertion rights without sequences
+    ✔ refuses a changed valid profile successor pin and still admits an OLD archive without that optional file (43ms)
+    ✔ requires an explicit reviewed selection and refuses omitted namespace mappings (46ms)
+    ✔ saves, fsyncs, atomically publishes and independently reloads the exact original-tenant artifact
+    ✔ control: a lying filesystem write or corrupt published row cannot pass readback validation (40ms)
+    ✔ control: interrupted write/sync/rename refuses and never publishes a partial artifact
+    ✔ refuses after a failed publication-directory sync and retains the published artifact for recovery
+    ✔ durability refusal prevents any migration up; a restored filesystem callback completes before up
+    ✔ refuses cloning and incomplete whole-deployment admission before any database or filesystem write
+
+  durable connector source configuration
+    ✔ CS_REGISTRY_CONFIG: registry mode carries no tenant list or per-tenant Vault binding and needs no lab flag
+    ✔ CS_DYNAMIC: sources add/update/delete without restart; all sources of a tenant share one pool slice; credentials are re-read per poll
+    ✔ CS_SECRET_REFRESH: changed or removed secret references replace/refuse the retained driver at the next poll
+    ✔ CS_ELIGIBILITY: paused polling continues, suspended source sends no requests, and return to eligibility rebuilds without restart
+    ✔ CS_REST: admin API exposes generation CAS, bounded list, tombstone delete and OpenAPI without accepting values or logging them
+    ✔ CS_REQUEST_GATE: actual connector transports send no request after configuration/activity admission is withdrawn (84ms)
+
+
+  41 passing (957ms)
+

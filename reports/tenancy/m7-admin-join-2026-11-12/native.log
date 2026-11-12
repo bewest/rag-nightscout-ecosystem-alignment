@@ -1,0 +1,43 @@
+# multitenant: started postgres container f51314ced618d9b9bb4af331d519dd25932163f6bc8dae68e726c82e20f4f68f with anonymous volumes 89d37ac55454f6b5b1689e20f936669c29cee48c3630ebc494f5fbf8acd66a54
+# multitenant: postgres ready on 127.0.0.1:37790
+# multitenant: running 2 suites with NS_MANAGEMENT_SESSIONS_DOCKER_TEST NS_TEST_POSTGRES_ADMIN_URI NS_VAULT_DOCKER_TEST
+
+
+  durable connector source definitions and registry refresh (native PostgreSQL)
+    ✔ CS_CAS: creates, retries, updates and tombstones with generation CAS; stale updates refuse and no values leave the API shape (101ms)
+    ✔ CS_RLS: tenant-bound reads cannot see foreign rows, unbound SQL sees none; writer cannot read ciphertext; foreign references refuse
+    ✔ CS_MAINTENANCE: config writes refuse during a real exclusive lock or suspended window and succeed afterwards
+    ✔ CS_REFRESH: registry revisions refresh multiple sources, destination alias is tenant-bound, unchanged polls issue no source enumeration, deletion removes the assignment (106ms)
+    ✔ CS_CENSUS: an open source metadata writer is exempt in the actual restore census; adding clock-write authority refuses, and restoration passes
+    ✔ CS_ADMIN: real admin composition exposes only the versioned source resource with stable errors and generation metadata (55ms)
+    ✔ CS_HISTORY_RLS: disabling forced row security on the history table refuses a new writer, then restored policy accepts it
+    ✔ CS_ALIAS_BODY: a changed alias definer body is refused before its answer is used, then the exact restored function passes
+
+  private operator management sessions (owned PostgreSQL/Vault and serving API cohort)
+    ✔ selects and signs only the current registry-mapped management key
+    ✔ creates a current tenant-bound credential, is idempotent concurrently and never persists plaintext (134ms)
+admin: {"operation":"management-session-issue","outcome":"created"}
+admin: {"operation":"management-session-issue","outcome":"existing"}
+    ✔ issues through the actual private admin composition and stays absent on API listeners (62ms)
+    ✔ refuses revoked and expired sessions and requires an explicit fresh request (135ms)
+    ✔ serializes the real owner revocation writer against signing, then refuses the next request (189ms)
+    ✔ serializes the real active-key revoke writer and refuses the next issuance (190ms)
+    ✔ refuses a session that expires during a provider call without committing new authority
+    ✔ rolls back all issuance rows after signing when the durable audit insert fails
+    ✔ keeps its live metadata-only backend compatible with actual restore and rejects a clinical-write grant (351ms)
+    ✔ holds the actual restore data window until issuance ends and refuses issuance after suspension (237ms)
+    ✔ blocks the actual deletion activity writer until issuance commits and refuses subsequent issuance (183ms)
+    ✔ pins explicit Vault versions across rotation and refuses retired signing versions (185ms)
+    ✔ rechecks exact authority function and extra EXECUTE grants before every issuance (153ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-c520294c2c7596a3","volumes":["285dcd9d01f9806490563deb71241371730ac3c54ccb7f71de9b3e34b92c1b79","c214c50001b40509700341c5dd9ca5ff256ddd6c86312fced79a1ca104048dee"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-c520294c2c7596a3","volumes":["53ffa7230b6f1823966f9dc738a9e6fc12d2146656d55578d624263702e461c1"]}
+
+
+[TIMING STATS] Total: 21 tests, Avg: 110ms, Slow: 0
+
+  21 passing (10s)
+
+# multitenant: 21 passing, 0 pending, 0 failing
+# multitenant: removed postgres f51314ced618d9b9bb4af331d519dd25932163f6bc8dae68e726c82e20f4f68f, container and volumes verified absent
+# multitenant: every container and volume this run created is verified absent
+# multitenant: run record written to /tmp/m7-admin-joined-native.json
