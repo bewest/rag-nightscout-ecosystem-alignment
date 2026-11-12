@@ -1,0 +1,35 @@
+{
+  "instrumentCommit": "bf2bb554fec35726029acc6695e0d28447c0e32a",
+  "instrumentSha256": "4e086f343be8831565f50574ef33bb9d0c62b39c66e617d505c4a5216540e893",
+  "provisionalPair": {
+    "core": "fae4a925abf4acf025e4ee3e3c53f028d2e7b3db",
+    "deploy": "0ba0a46496d34b429cbe5104752d4ab202798873"
+  },
+  "profile": "remote-pilot",
+  "cadence": {
+    "accel": 1,
+    "hotFactor": 10,
+    "socketsPerTenant": 2,
+    "idleSeconds": 120,
+    "loadSeconds": 300
+  },
+  "tenantArgument": 500,
+  "replicasArgument": 1,
+  "apiServices": [
+    "api"
+  ],
+  "noImageBuild": true,
+  "noApplicationTraffic": true,
+  "noTenantProvisioning": true,
+  "plannedStages": [
+    "infrastructure",
+    "bootstrap",
+    "admin-feed",
+    "provision",
+    "commission",
+    "apis",
+    "prime",
+    "publish-primer",
+    "remaining-roles"
+  ]
+}
