@@ -623,6 +623,16 @@ def run(d, m, k6_image):
     require(summary["verdict"] == "PASS", "M7_CORRECTNESS_GROWTH_GATE_FAILED")
 
 
+def diagnostic_observed_code(out):
+    try:
+        file=out/'diagnostic-observations.json'
+        if file.stat().st_size>1048576:return 'M7_DIAGNOSTIC_CLIENT_REFUSED'
+        value=document(file);code=value.get('failureCode') if isinstance(value,dict) else None
+        if isinstance(code,str) and re.fullmatch(r'M7_DIAGNOSTIC_[A-Z_]{1,64}',code):return code
+    except (OSError,ValueError):pass
+    return 'M7_DIAGNOSTIC_CLIENT_REFUSED'
+
+
 def diagnose(d,m):
     require(m.get("profile")=="fresh-image-diagnostic","M7_DIAGNOSTIC_PROFILE_REQUIRED")
     scope=frozen(m,"diagnose");experiment_host(d,m,"diagnostic-before");verify(d,m);image(m)
@@ -630,12 +640,16 @@ def diagnose(d,m):
     out=d/"load";out.mkdir()
     marker="diagnostic-"+m["owner"][:12];(out/"runid").write_text(marker)
     env=runtime_env({"NODE_PATH":str(d/"dependencies/node_modules")})
-    failure=None
+    failure=None;client_exit=None
     try:
         with (out/"diagnostic.log").open("wb") as log:
             process=subprocess.Popen([m["generator"]["tools"]["node"]["path"],str(HERE/"diagnostic.cjs"),str(d),str(scope["trafficSeconds"])],env=env,stdout=log,stderr=subprocess.STDOUT)
             job=out/"diagnostic-job.json";job_record(job,process,m["owner"])
-            try:require(process.wait(timeout=scope["trafficSeconds"]+15)==0,"M7_DIAGNOSTIC_CLIENT_REFUSED")
+            try:
+                try:client_exit=process.wait(timeout=scope["trafficSeconds"]+15)
+                except subprocess.TimeoutExpired:raise RuntimeError('M7_DIAGNOSTIC_CLIENT_EXIT_TIMEOUT')
+                require(client_exit>=0,'M7_DIAGNOSTIC_CLIENT_TERMINATED')
+                require(client_exit==0,diagnostic_observed_code(out))
             finally:stop_job(job,m["owner"]);process.wait(timeout=10)
         counted=count_oracle(d)
         require(counted["verdict"]=="GREEN","M7_ORACLE_DIAGNOSTIC_RED")
@@ -643,13 +657,13 @@ def diagnose(d,m):
         outcome=document(out/"diagnostic-observations.json")
         result={"kind":"m7-joined-fresh-image-diagnostic","profile":m["profile"],"pair":m["pair"],"instrument":m["instrument"]["sha256"],
                 "hostIdentity":m["hostIdentity"],"imageId":m["imageId"],"tenants":m["tenants"],"replicas":m["replicas"],"verdict":"PASS",
-                "checks":outcome["checks"],"acceptedWrites":outcome["acceptedWrites"],"dataHttpRequests":outcome["dataHttpRequests"],"oracle":counted["verdict"],"oracleControl":document(out/"oracle-control.json"),
+                "checks":outcome["checks"],"acceptedWrites":outcome["acceptedWrites"],"dataHttpRequests":outcome["dataHttpRequests"],**{key:outcome[key] for key in ("httpAccountingVersion","criterionHttpRequests","physicalHttpRequests","warmProbeHttpRequests","trailRecords","trailBytes")},"oracle":counted["verdict"],"oracleControl":document(out/"oracle-control.json"),
                 "fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT","trafficDeadlineSeconds":scope["trafficSeconds"]}
         diagnostic_check(result);write(d/"diagnostic.json",result)
         print("M7_DIAGNOSTIC_PASS_ONLY")
     except Exception as error:
         failure=str(error) if str(error).startswith("M7_") else "M7_DIAGNOSTIC_REFUSED"
-        write(d/"diagnostic.json",{"kind":"m7-joined-fresh-image-diagnostic","pair":m["pair"],"instrument":m["instrument"]["sha256"],"imageId":m["imageId"],"hostIdentity":m["hostIdentity"],"verdict":"FAIL","error":failure,"fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT"})
+        write(d/"diagnostic.json",{"kind":"m7-joined-fresh-image-diagnostic","pair":m["pair"],"instrument":m["instrument"]["sha256"],"imageId":m["imageId"],"hostIdentity":m["hostIdentity"],"verdict":"FAIL","error":failure,"clientExitCode":client_exit,"observedFailureCode":diagnostic_observed_code(out),"requestTrail":"load/diagnostic-http.json" if (out/"diagnostic-http.json").exists() else None,"fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT"})
         raise
 
 

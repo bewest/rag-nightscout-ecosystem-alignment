@@ -1,0 +1,8 @@
+{
+  "sourceCore": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+  "manifests": {
+    "package.json": "6bd42fb8f7c0d475209ef7d050a6ebaed7f2b461e12cb254124feabf0fd42a5f",
+    "package-lock.json": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e"
+  },
+  "generatorVerified": true
+}

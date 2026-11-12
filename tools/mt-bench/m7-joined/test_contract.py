@@ -149,8 +149,10 @@ class Contract(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'LIMIT_INVALID'):receipt_scope(m,{**receipt,'limits':{**receipt['limits'],'trafficSeconds':181}},'diagnose')
         with self.assertRaisesRegex(RuntimeError,'RECEIPT_REQUIRED'):receipt_scope(m,{**receipt,'status':'PASS'},'deploy')
     def test_diagnostic_result_cannot_satisfy_full_or_pilot_verdict(self):
-        doc={'kind':'m7-joined-fresh-image-diagnostic','pair':{'core':'a'*40,'deploy':'b'*40},'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'tenants':2,'replicas':2,'verdict':'PASS','checks':{key:True for key in DIAGNOSTIC_CHECKS},'acceptedWrites':2,'dataHttpRequests':8,'trafficDeadlineSeconds':180,'oracle':'GREEN','oracleControl':{'baseline':'GREEN','broken':'RED','restored':'GREEN'},'fullAcceptance':'NOT_RUN','capacity':'NO-MEASUREMENT'}
+        doc={'kind':'m7-joined-fresh-image-diagnostic','pair':{'core':'a'*40,'deploy':'b'*40},'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'tenants':2,'replicas':2,'verdict':'PASS','checks':{key:True for key in DIAGNOSTIC_CHECKS},'acceptedWrites':2,'dataHttpRequests':8,'httpAccountingVersion':2,'criterionHttpRequests':8,'physicalHttpRequests':8,'warmProbeHttpRequests':0,'trailRecords':8,'trailBytes':2000,'trafficDeadlineSeconds':180,'oracle':'GREEN','oracleControl':{'baseline':'GREEN','broken':'RED','restored':'GREEN'},'fullAcceptance':'NOT_RUN','capacity':'NO-MEASUREMENT'}
         self.assertTrue(diagnostic_check(doc))
+        for values in ({'physicalHttpRequests':9},{'criterionHttpRequests':7},{'warmProbeHttpRequests':513},{'trailBytes':262145},{'httpAccountingVersion':1},{'warmProbeHttpRequests':True,'physicalHttpRequests':9,'trailRecords':9}):
+            with self.assertRaisesRegex(RuntimeError,'HTTP_ACCOUNTING_REQUIRED'):diagnostic_check({**doc,**values})
         with self.assertRaisesRegex(RuntimeError,'SUMMARY_SHAPE'):campaign_check(doc)
         with self.assertRaisesRegex(RuntimeError,'PILOT_SHAPE'):pilot_check(doc)
         with self.assertRaisesRegex(RuntimeError,'NOT_PASSING'):diagnostic_check({**doc,'checks':{'stockRecovery':False}})
@@ -167,6 +169,15 @@ class Contract(unittest.TestCase):
             for key,marker in [('stdout','PRIVATE_ONLY_STDOUT'),('stderr','PRIVATE_ONLY_STDERR')]:
                 file=root/'prepare-commands'/value[key];self.assertIn(marker,file.read_text());self.assertEqual(file.stat().st_mode&0o777,0o600)
             self.assertFalse((root/'owner.json').exists())
+    def test_diagnostic_failure_receipt_preserves_only_safe_instrument_code(self):
+        with tempfile.TemporaryDirectory(prefix='m7-failure-code-') as scratch:
+            out=Path(scratch)
+            self.assertEqual(adapter.diagnostic_observed_code(out),'M7_DIAGNOSTIC_CLIENT_REFUSED')
+            adapter.write(out/'diagnostic-observations.json',{'failureCode':'M7_DIAGNOSTIC_HTTP_REFUSED'})
+            self.assertEqual(adapter.diagnostic_observed_code(out),'M7_DIAGNOSTIC_HTTP_REFUSED')
+            for value in [{'failureCode':'M7_DIAGNOSTIC_HTTP_REFUSED private'}, {'failureCode':'TENANT_WARMING'}, [], {'failureCode':42}]:
+                adapter.write(out/'diagnostic-observations.json',value)
+                self.assertEqual(adapter.diagnostic_observed_code(out),'M7_DIAGNOSTIC_CLIENT_REFUSED')
     def test_generator_missing_actual_client_refuses_before_workload(self):
         with tempfile.TemporaryDirectory(prefix='m7-missing-client-') as scratch:
             root=Path(scratch);(root/'dependencies').mkdir();(root/'dependencies/package.json').write_text('{}')

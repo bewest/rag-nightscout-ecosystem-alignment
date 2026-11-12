@@ -160,6 +160,12 @@ def diagnostic_check(document):
             and isinstance(document.get("replicas"),int) and 1<=document["replicas"]<=2,"M7_DIAGNOSTIC_LIMIT_INVALID")
     require(isinstance(document.get("trafficDeadlineSeconds"),int) and 1<=document["trafficDeadlineSeconds"]<=180
             and document.get("acceptedWrites")==document["tenants"] and document.get("dataHttpRequests")==4*document["tenants"],"M7_DIAGNOSTIC_COUNTS_REQUIRED")
+    require(all(type(document.get(key)) is int for key in ('criterionHttpRequests','physicalHttpRequests','warmProbeHttpRequests','trailRecords','trailBytes'))
+            and document.get('httpAccountingVersion')==2 and document.get('criterionHttpRequests')==4*document['tenants']
+            and isinstance(document.get('warmProbeHttpRequests'),int) and 0<=document['warmProbeHttpRequests']<=512
+            and document.get('physicalHttpRequests')==document['criterionHttpRequests']+document['warmProbeHttpRequests']
+            and document.get('trailRecords')==document['physicalHttpRequests'] and document['trailRecords']<=4*document['tenants']+512
+            and isinstance(document.get('trailBytes'),int) and 0<document['trailBytes']<=262144,'M7_DIAGNOSTIC_HTTP_ACCOUNTING_REQUIRED')
     require(document.get("verdict")=="PASS" and document.get("oracle")=="GREEN"
             and document.get("oracleControl")=={"baseline":"GREEN","broken":"RED","restored":"GREEN"}
             and isinstance(document.get("checks"),dict) and set(document["checks"])==set(DIAGNOSTIC_CHECKS) and all(value is True for value in document["checks"].values()),"M7_DIAGNOSTIC_NOT_PASSING")

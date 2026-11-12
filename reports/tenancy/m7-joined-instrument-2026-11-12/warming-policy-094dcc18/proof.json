@@ -1,0 +1,62 @@
+{
+  "source": "094dcc182af4ee5de88edf458e1433a011a8f1ec",
+  "instrumentSha256": "7eeca6ca443aaffa6639e773e9edbe438137b7a7769f99cfd38fca699bbbfa1f",
+  "counts": {
+    "realHttpStockCli": {
+      "tests": 17,
+      "pass": 17,
+      "fail": 0,
+      "skipped": 0
+    },
+    "contracts": 19
+  },
+  "policy": {
+    "onlyRoute": "GET status",
+    "onlyRetry": {
+      "status": 503,
+      "error": "TENANT_WARMING"
+    },
+    "cadenceMs": 200,
+    "globalTrafficDeadlineMaxSeconds": 180,
+    "globalWarmProbeMax": 512,
+    "trailRecordMax": "4N+512",
+    "trailByteMax": 262144
+  },
+  "accounting": {
+    "version": 2,
+    "criterionHttpRequests": "4N successful criterion DATA HTTP calls; dataHttpRequests alias",
+    "warmProbeHttpRequests": "separate recognized warming refusals",
+    "physicalHttpRequests": "criterion+warmProbe on PASS",
+    "physicalScope": "explicit DATA HTTP calls only; Socket.IO polling traffic excluded",
+    "trailRecords": "equals physical requests; every first refusal retained"
+  },
+  "measured": [
+    "warming-to200 retains first503 and all subsequent explicit HTTP calls",
+    "real stock client + child process reaches current frame and unaided recovery; restart callback is fixture platform",
+    "actual default CLI401/unknown503 refusals exit promptly with connected frameless socket",
+    "actual default CLIwarming exhausts unchanged1s fixturedeadline and exits1",
+    "warming followed by401 or unknown503 stops immediately",
+    "exchange and write503/TENANT_WARMING never retry",
+    "probe cap exhausts at lower fixturelimit2 without another request/mutation",
+    ">512 probe configuration refused",
+    "accounting, bytebound and diagnostic-vs-CAP result controls refuse mutations"
+  ],
+  "scopeLimitations": [
+    "no512-request exhaustion run; production hard upper512 checked through lower-limit fixture and invalid513 control",
+    "positive childCLI uses private IPC callback to restart the owned real HTTP/Socket.IO fixture; no shipping Docker/PG acceptance",
+    "independent SQL count/control mechanism unchanged, not rerun for HTTP-only policy",
+    "original remoteD HTTP cause still unknown; timing is not classification"
+  ],
+  "independentReview": {
+    "source": "094dcc182af4ee5de88edf458e1433a011a8f1ec",
+    "verdict": "no blocking read-derived mismatch",
+    "scope": "read-only source/manifest review, not fresh-image runtime measurement"
+  },
+  "historicalSourcesPreserved": [
+    "668db69bb02fc8d7a9dafb7de85c001d7160782f",
+    "b8c0305585ca032f16ddc3b6978d0523745dfe84"
+  ],
+  "fullProductAcceptance": "NOT_RUN",
+  "capacity": "NO-MEASUREMENT",
+  "cloud": "NOT_RUN"
+}
