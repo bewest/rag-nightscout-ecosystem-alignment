@@ -2,6 +2,7 @@
 """Joined M7 instrument. No operation attaches to or tears down an existing stack."""
 import argparse
 import contextlib
+import contextvars
 import hashlib
 import json
 import os
@@ -36,16 +37,49 @@ def runtime_env(extra=None):
     return {**{key:os.environ[key] for key in names if key in os.environ}, **(extra or {})}
 
 
-def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120):
-    # All argument vectors; error messages never echo argv/environment/private URLs.
-    result = subprocess.run([str(a) for a in argv], cwd=cwd, env=runtime_env() if env is None else env, input=input,
-                            stdout=file or subprocess.PIPE, stderr=subprocess.STDOUT if file else subprocess.PIPE, timeout=timeout)
-    if result.returncode:
-        error = RuntimeError("M7_COMMAND_FAILED:" + Path(str(argv[0])).name)
-        error.stderr = result.stderr
-        error.returncode = result.returncode
-        raise error
-    return None if file else result.stdout.decode()
+_PRIVATE_COMMANDS=contextvars.ContextVar('m7_private_commands',default=None)
+
+
+@contextlib.contextmanager
+def private_commands(directory):
+    directory=Path(directory);directory.mkdir(mode=0o700,parents=True,exist_ok=True);directory.chmod(0o700)
+    token=_PRIVATE_COMMANDS.set({'directory':directory,'sequence':0})
+    try:yield
+    finally:_PRIVATE_COMMANDS.reset(token)
+
+
+def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None):
+    # Raw output belongs only in private phase artifacts; never argv/env in
+    # public exceptions. Capture begins before prepared=true or state exists.
+    capture=_PRIVATE_COMMANDS.get();prefix=None;started=time.time()
+    if capture is not None:
+        capture['sequence']+=1
+        prefix=capture['directory']/(str(capture['sequence']).zfill(4)+'-'+Path(str(argv[0])).name)
+    result=None;failure=None;stdout=b'';stderr=b''
+    try:
+        if prefix is None:
+            result=subprocess.run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,
+                                  stdout=file or subprocess.PIPE,stderr=subprocess.STDOUT if file else subprocess.PIPE,timeout=timeout)
+            stdout=result.stdout or b'';stderr=result.stderr or b''
+        else:
+            with prefix.with_suffix('.stdout').open('wb') as out,prefix.with_suffix('.stderr').open('wb') as err:
+                prefix.with_suffix('.stdout').chmod(0o600);prefix.with_suffix('.stderr').chmod(0o600)
+                result=subprocess.run([str(a) for a in argv],cwd=cwd,env=runtime_env() if env is None else env,input=input,stdout=out,stderr=err,timeout=timeout)
+            stdout=prefix.with_suffix('.stdout').read_bytes();stderr=prefix.with_suffix('.stderr').read_bytes()
+            if file:file.write(stdout);file.write(stderr)
+        if result.returncode:
+            error=RuntimeError('M7_COMMAND_FAILED:'+Path(str(argv[0])).name);error.stderr=stderr;error.returncode=result.returncode
+            raise error
+        return None if file else stdout if binary else stdout.decode()
+    except Exception as error:
+        failure=type(error).__name__
+        raise
+    finally:
+        if prefix is not None:
+            write(prefix.with_suffix('.json'),{'program':Path(str(argv[0])).name,'phase':phase or Path(str(argv[0])).name,
+                  'startedAt':started,'elapsedSeconds':time.time()-started,'returncode':result.returncode if result else None,
+                  'timeoutSeconds':timeout,'failureType':failure,'stdout':prefix.with_suffix('.stdout').name,'stderr':prefix.with_suffix('.stderr').name,
+                  'scope':'PRIVATE; raw output may contain credentials; do not publish'})
 
 
 def document(path):
@@ -174,6 +208,18 @@ def prepare(args):
         commit(repo, args.core_commit if repo == args.core_repo else args.deploy_commit)
     pinned = instrument()
     target.mkdir(parents=True, mode=0o700)
+    try:
+        with private_commands(target/'prepare-commands'):
+            return prepare_staged(args,target,pinned)
+    except Exception as error:
+        text=str(error)
+        write(target/'prepare-failure.json',{'kind':'source-preparation-failure','prepared':False,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},
+              'instrument':pinned['sha256'],'publicCode':text if re.fullmatch(r'M7_[A-Z_]+(?::[a-zA-Z0-9_.-]+)?',text) else 'M7_PREPARE_REFUSED',
+              'privateArtifacts':'prepare-commands','fullAcceptance':'NOT_RUN','capacity':'NO-MEASUREMENT'})
+        raise
+
+
+def prepare_staged(args,target,pinned):
     nonce = uuid.uuid4().hex
     m = {"version": 1, "directory": str(target), "owner": nonce, "project": "nsm7-" + nonce[:12] + "-n" + str(args.tenants) + "-a" + str(args.replicas),
          "pair": {"core": args.core_commit, "deploy": args.deploy_commit}, "coreRepository": str(Path(args.core_repo).resolve()),
@@ -189,13 +235,13 @@ def prepare(args):
     overlay = core / "deploy/multitenant"
     shutil.rmtree(overlay)
     overlay.mkdir(parents=True)
-    archive = subprocess.check_output(["git", "-C", args.deploy_repo, "archive", args.deploy_commit + ":bindings/compose/multitenant"])
+    archive = command(["git", "-C", args.deploy_repo, "archive", args.deploy_commit + ":bindings/compose/multitenant"],binary=True,phase="deploy-archive")
     command(["tar", "-x", "-C", overlay], input=archive)
     write(overlay / ".overlay.json", {"version": 1, "deployRepository": m["deployRepository"], "deployCommit": args.deploy_commit})
     for name in ("commission-restore.js","publish-primer.js"):
         require((overlay/name).is_file(),"M7_BINDING_COMMISSION_CAPABILITY_MISSING")
     env = runtime_env({"NS_API_REPLICAS": str(args.replicas)})
-    command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"])], cwd=overlay, env=env)
+    command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"])], cwd=overlay,env=env,phase="product-prepare")
     shutil.move(overlay / ".env", target / "env")
     with (target / "env").open("a") as output:
         output.write("NS_DEMO_IMAGE=" + args.image + "\nNS_DEMO_TENANTS=" + str(args.tenants) + "\nNS_API_REPLICAS=" + str(args.replicas) + "\n")
@@ -203,7 +249,7 @@ def prepare(args):
     base_args = ["docker", "compose", "-p", m["project"], "--env-file", target / "env"]
     for file in source_files:
         base_args.extend(["-f", file])
-    config = json.loads(command([*base_args, "--profile", "ops", "config", "--format", "json"]))
+    config = json.loads(command([*base_args, "--profile", "ops", "config", "--format", "json"],phase="compose-config"))
     serving_mounts(config)
     for spec in config["services"].values():
         for volume in spec.get("volumes", []):
@@ -275,9 +321,57 @@ def deployment_plan(config):
         ("remaining-roles","compose",[*start,*remaining,"ui","nginx"])]
 
 
+def generator_tools():
+    result={}
+    for name in ("node","npm"):
+        found=shutil.which(name);require(found,"M7_GENERATOR_TOOL_MISSING:"+name)
+        executable=Path(found).resolve()
+        result[name]={"path":str(executable),"sha256":digest(executable),"version":command([executable,"--version"]).strip()}
+    return result
+
+
+def generator_client(d,tools):
+    # createRequire bypasses ambient NODE_PATH and proves the actual stock SDK
+    # resolves inside this cell, rather than a peer checkout or fixture factory.
+    script="""const fs=require('fs'),path=require('path'),{createRequire}=require('module');
+const root=fs.realpathSync(process.argv[1]),r=createRequire(path.join(root,'package.json'));
+const entry=fs.realpathSync(r.resolve('socket.io-client'));
+if(!entry.startsWith(path.join(root,'node_modules')+path.sep))throw Error('M7_GENERATOR_CLIENT_OUTSIDE_OWN_TREE');
+const client=r('socket.io-client');if(typeof client.io!=='function')throw Error('M7_GENERATOR_CLIENT_INVALID');
+console.log(JSON.stringify({entry,version:r('socket.io-client/package.json').version}));"""
+    value=json.loads(command([tools['node']['path'],'-e',script,d/'dependencies'],phase='generator-client-preflight'))
+    value['entrySha256']=digest(value['entry'])
+    return value
+
+
+def setup_generator(d,m):
+    root=d/'dependencies';root.mkdir(mode=0o700)
+    for name in ('package.json','package-lock.json'):
+        (root/name).write_bytes(command(['git','-C',d/'core','show',m['pair']['core']+':'+name],binary=True))
+    tools=generator_tools();lock=digest(root/'package-lock.json')
+    (root/'.npmrc').write_text('');(root/'.npmrc').chmod(0o600)
+    npm_env=runtime_env({'NPM_CONFIG_USERCONFIG':str(root/'.npmrc'),'NPM_CONFIG_GLOBALCONFIG':'/dev/null','NPM_CONFIG_CACHE':str(root/'.npm-cache')})
+    with private_commands(d/'generator-commands'):
+        command([tools['npm']['path'],'ci','--include=dev','--omit=optional','--ignore-scripts','--force'],cwd=root,env=npm_env,timeout=1200,phase='generator-npm-ci')
+        client=generator_client(d,tools)
+    require(digest(root/'package-lock.json')==lock,'M7_GENERATOR_LOCK_CHANGED')
+    m['generator']={'kind':'owned-lockfile-install','tools':tools,'pair':m['pair'],'packageSha256':digest(root/'package.json'),'lockSha256':lock,'client':client,
+                    'installFlags':['ci','--include=dev','--omit=optional','--ignore-scripts','--force'],'servingImageId':m['imageId']}
+    write(d/'generator-provenance.json',m['generator']);write(d/'owner.json',m)
+
+
+def verify_generator(d,m):
+    expected=m.get('generator');require(expected,'M7_GENERATOR_PROVENANCE_REQUIRED')
+    require(generator_tools()==expected['tools'],'M7_GENERATOR_TOOL_CHANGED')
+    require(digest(d/'dependencies/package.json')==expected['packageSha256'] and digest(d/'dependencies/package-lock.json')==expected['lockSha256'],'M7_DEPENDENCIES_CHANGED')
+    with private_commands(d/'generator-verifications'/uuid.uuid4().hex):
+        require(generator_client(d,expected['tools'])==expected['client'],'M7_GENERATOR_CLIENT_CHANGED')
+
+
 def deploy(d, m):
     frozen(m,"deploy");experiment_host(d,m,"deploy-before");verify(d,m)
     m["imageId"] = image(m)
+    setup_generator(d,m)
     config = document(d / "frozen.compose.json")
     for spec in config["services"].values():
         if "build" in spec:spec["image"] = m["imageId"]
@@ -304,16 +398,6 @@ def deploy(d, m):
     projections=[tenant_projection(document(file),m["tenants"]) for file in candidates]
     require(all(value==projections[0] for value in projections),"M7_PRIMER_OUTPUT_CONFLICT")
     write(d/"tenants.private.json",projections[0])
-    name=m["project"]+"-dependencies"
-    cid=command(["docker","create","--name",name,"--label",OWNER+"="+m["owner"],m["imageId"]]).strip()
-    try:
-        (d/"dependencies").mkdir()
-        command(["docker","cp",cid+":/opt/app/node_modules",d/"dependencies"],timeout=120)
-        command(["docker","cp",cid+":/opt/app/package-lock.json",d/"dependencies/package-lock.json"])
-    finally:
-        owned(json.loads(command(["docker","inspect",cid]))[0],m["owner"])
-        command(["docker","rm","--volumes",cid])
-    m["dependencyImage"]=m["imageId"];m["dependencyLockSha256"]=digest(d/"dependencies/package-lock.json")
     m["restartRoles"]=service_roster(config)
     write(d/"owner.json",m);write(d/"deployment.json",{"stages":stages,"pair":m["pair"],"imageId":m["imageId"]})
 
@@ -468,10 +552,10 @@ def run(d, m, k6_image):
     require(m.get("profile")!="fresh-image-diagnostic","M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY")
     frozen(m,"run");quiet(d,m,"run-before",check_load=False);verify(d,m);image(m)
     require((d / "deploy-before-host.json").exists(), "M7_DEPLOY_QUIET_RECORD_REQUIRED")
-    require(digest(d / "dependencies/package-lock.json") == m["dependencyLockSha256"], "M7_DEPENDENCIES_CHANGED")
+    verify_generator(d,m)
     readiness(d, m)
     k6_id = json.loads(command(["docker", "image", "inspect", k6_image]))[0]["Id"]
-    write(d / "loadgen-image.json", {"k6": k6_id, "probeDependencyImage": m["dependencyImage"]})
+    write(d / "loadgen-image.json", {"k6": k6_id, "generator": m["generator"]})
     # Sparse once-per-phase cgroups/PG snapshots plus a sampler-disabled idle
     # window make collection overhead observable independently of tenant work.
     out = d / "idle-disabled";out.mkdir()
@@ -488,7 +572,7 @@ def run(d, m, k6_image):
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
-        probe_process = subprocess.Popen(["node", str(d / "probe.js"), "--base", "http://127.0.0.1:" + str(m["port"]), "--tenants", str(d / "tenants.private.json"), "--compose", spec,
+        probe_process = subprocess.Popen([m["generator"]["tools"]["node"]["path"], str(d / "probe.js"), "--base", "http://127.0.0.1:" + str(m["port"]), "--tenants", str(d / "tenants.private.json"), "--compose", spec,
             "--runid", runid, "--per", "2", "--open", "5", "--window", str(m["cadence"]["loadSeconds"]), "--probeEvery", "3000", "--restart", "1", "--evalTimeout", "900", "--out", str(out / "probe.json"), "--signal", str(out / ".window")], env=probe_env, stdout=probe_log, stderr=subprocess.STDOUT)
         job_record(out/"probe-job.json",probe_process,m["owner"])
         try:
@@ -542,14 +626,14 @@ def run(d, m, k6_image):
 def diagnose(d,m):
     require(m.get("profile")=="fresh-image-diagnostic","M7_DIAGNOSTIC_PROFILE_REQUIRED")
     scope=frozen(m,"diagnose");experiment_host(d,m,"diagnostic-before");verify(d,m);image(m)
-    require(digest(d/"dependencies/package-lock.json")==m["dependencyLockSha256"],"M7_DEPENDENCIES_CHANGED")
+    verify_generator(d,m)
     out=d/"load";out.mkdir()
     marker="diagnostic-"+m["owner"][:12];(out/"runid").write_text(marker)
     env=runtime_env({"NODE_PATH":str(d/"dependencies/node_modules")})
     failure=None
     try:
         with (out/"diagnostic.log").open("wb") as log:
-            process=subprocess.Popen(["node",str(HERE/"diagnostic.cjs"),str(d),str(scope["trafficSeconds"])],env=env,stdout=log,stderr=subprocess.STDOUT)
+            process=subprocess.Popen([m["generator"]["tools"]["node"]["path"],str(HERE/"diagnostic.cjs"),str(d),str(scope["trafficSeconds"])],env=env,stdout=log,stderr=subprocess.STDOUT)
             job=out/"diagnostic-job.json";job_record(job,process,m["owner"])
             try:require(process.wait(timeout=scope["trafficSeconds"]+15)==0,"M7_DIAGNOSTIC_CLIENT_REFUSED")
             finally:stop_job(job,m["owner"]);process.wait(timeout=10)

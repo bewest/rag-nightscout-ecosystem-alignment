@@ -154,6 +154,27 @@ class Contract(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'SUMMARY_SHAPE'):campaign_check(doc)
         with self.assertRaisesRegex(RuntimeError,'PILOT_SHAPE'):pilot_check(doc)
         with self.assertRaisesRegex(RuntimeError,'NOT_PASSING'):diagnostic_check({**doc,'checks':{'stockRecovery':False}})
+    def test_private_command_failure_capture_precedes_prepared_state_and_never_leaks_public_error(self):
+        with tempfile.TemporaryDirectory(prefix='m7-private-command-test-') as scratch:
+            root=Path(scratch)
+            with adapter.private_commands(root/'prepare-commands'):
+                with self.assertRaises(RuntimeError) as failure:
+                    adapter.command([sys.executable,'-c',"import sys;print('PRIVATE_ONLY_STDOUT');print('PRIVATE_ONLY_STDERR',file=sys.stderr);sys.exit(7)"],phase='product-prepare')
+            self.assertTrue(str(failure.exception).startswith('M7_COMMAND_FAILED:'))
+            self.assertNotIn('PRIVATE_ONLY',str(failure.exception))
+            metadata=list((root/'prepare-commands').glob('*.json'));self.assertEqual(len(metadata),1)
+            value=adapter.document(metadata[0]);self.assertEqual(value['phase'],'product-prepare');self.assertEqual(value['returncode'],7)
+            for key,marker in [('stdout','PRIVATE_ONLY_STDOUT'),('stderr','PRIVATE_ONLY_STDERR')]:
+                file=root/'prepare-commands'/value[key];self.assertIn(marker,file.read_text());self.assertEqual(file.stat().st_mode&0o777,0o600)
+            self.assertFalse((root/'owner.json').exists())
+    def test_generator_missing_actual_client_refuses_before_workload(self):
+        with tempfile.TemporaryDirectory(prefix='m7-missing-client-') as scratch:
+            root=Path(scratch);(root/'dependencies').mkdir();(root/'dependencies/package.json').write_text('{}')
+            with adapter.private_commands(root/'private'):
+                with self.assertRaisesRegex(RuntimeError,'M7_COMMAND_FAILED'):
+                    adapter.generator_client(root,adapter.generator_tools())
+            raw=''.join(file.read_text() for file in (root/'private').glob('*.stderr'))
+            self.assertIn("Cannot find module 'socket.io-client'",raw)
     def test_role_roster_is_derived_from_actual_role_commands(self):
         self.assertEqual(adapter.service_roster({'services':{'api':{'command':['node','entrypoint.js','api']},'api-4':{'command':['node','entrypoint.js','api']},'rt-special':{'command':['node','entrypoint.js','realtime']},'feed-reader':{'command':['node','entrypoint.js','feed-reader']}}}),['api','api-4','rt-special'])
 

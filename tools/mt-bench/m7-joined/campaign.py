@@ -14,7 +14,7 @@ from contract import COUNTS, REPLICAS, PILOT_COUNTS, require, campaign_check, pi
 
 def failure_class(code):
     if code.startswith(('M7_ORACLE_','M7_CONTROL_','M7_FUNCTIONAL_')):return 'functional-block'
-    if code.startswith(('M7_IMAGE_','M7_SOURCE_','M7_OWN_','M7_INSTRUMENT_','M7_RESOURCE_','M7_FOREIGN_','M7_HOST_','M7_FROZEN_')):return 'attribution-or-host-block'
+    if code.startswith(('M7_IMAGE_','M7_SOURCE_','M7_OWN_','M7_INSTRUMENT_','M7_RESOURCE_','M7_FOREIGN_','M7_HOST_','M7_FROZEN_','M7_GENERATOR_')):return 'attribution-or-host-block'
     return 'diagnosis-required'
 
 
@@ -38,6 +38,10 @@ def authorize_profile(profile, master, root, receipt_file):
 
 def ladder(args, profile, root, master):
     require(not master.get("functionalBlock"),"M7_GLOBAL_FUNCTIONAL_BLOCK")
+    tools=adapter.generator_tools()
+    master.setdefault("generatorTools",tools)
+    require(master["generatorTools"]==tools,"M7_GENERATOR_TOOL_CHANGED")
+    adapter.write(root/"campaign.json",master)
     pilot=args.mode=="pilot"
     if not pilot:authorize_profile(profile,master,root,args.ceiling_receipt)
     label="remote-pilot" if pilot else str(profile)

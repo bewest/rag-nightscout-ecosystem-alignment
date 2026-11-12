@@ -2,7 +2,7 @@
 
 This is an explicit diagnostic authorization/result scope. It does **not** fabricate
 joined acceptance, unlock a capacity run or satisfy pilot/ladder gates. The remote
-controller owns all cloud activity and total cost at most$1. This instrument creates
+controller owns all cloud activity and enforces its current maintainer-authorized spending/deadline policy. This instrument creates
 no cloud resources. Use only the coordinator's selected committed source pair and
 matching image/instrument identity. Do not substitute an older image or source mount.
 
@@ -42,7 +42,7 @@ UID/GID1000, local Docker/Git and image prerequisites from REMOTE-SEAM.md still 
 A busy host is captured as **diagnostic-only**, not falsely called a quiet capacity
 host. This permission does not authorize a local/cloud capacity campaign.
 
-The fixed client criterion uses the image-extracted Socket.IO library and registered
+The fixed client criterion uses the owned exact-lock generator Socket.IO library and registered
 hostname URLs with loopback-DNS Agent, never127URL/extraHeaders.Host. It exchanges
 the DATA credential, GETs status, primes one stock polling socket per tenant, POSTs
 one current synthetic SGV per tenant, and requires that tenant's frame to carry the
@@ -68,3 +68,9 @@ the controller owns outer budget abort, evidence checkpoint and VM teardown. Bui
 bootstrap time is outside the client-traffic deadline and stays within the controller's
 separate spend/deadline policy. No actual fresh app/image diagnostic is implied by a
 passing mocked/fixture instrument check.
+
+Fresh generator installation and actual client resolution run before infrastructure
+startup. A development-pruned serving image is valid: its node_modules is never
+borrowed by the generator. Preserve private prepare-commands/, prepare-failure.json,
+generator-commands/, generator-verifications/ and generator-provenance.json on
+failure. Raw stdout/stderr can contain credentials; do not publish these directories.

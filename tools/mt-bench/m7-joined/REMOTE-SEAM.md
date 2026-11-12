@@ -1,7 +1,7 @@
 # Remote controller seam
 
 The controller owns cloud creation/transport/bundling, checkpoints and teardown,
-and enforces the maintainer's **total cost at most $1**. This adapter makes no cloud
+and enforces the maintainer-authorized controller-selected spending/deadline policy. This adapter makes no cloud
 API call and does not estimate or waive that ceiling. Do not start it before the
 coordinator supplies the accepted core/deploy tuple and frozen acceptance receipt.
 A budget/deadline abort is incomplete evidence, never a passing capacity result.
@@ -11,7 +11,10 @@ An explicitly authorized bounded fresh-image diagnostic can precede full accepta
 ## Host and source prerequisites
 
 - Linux, local Unix-socket Docker Engine/Compose v2, cgroup v2, `/proc`, Bash,
-  GNU date/coreutils, procps, OpenSSL, tar, Git, Python3.11+ and Node22+.
+  GNU date/coreutils, procps, OpenSSL, tar, Git, Python3.11+, a source-supported Node version and npm. Exact Node/npm paths,
+  binary hashes and versions are pinned for the generator; changing them refuses
+  a workload or subsequent ladder cell/profile. npm registry access is needed for
+  the separate owned exact-lock install (private cache; lifecycle scripts disabled).
 - Run the product's local preparation as UID/GID1000, matching the shipped app/
   bootstrap user and private0700 state. Another UID refuses before deployment;
   the controller provisions the matching account/Docker access. Do not broaden
@@ -26,7 +29,7 @@ An explicitly authorized bounded fresh-image diagnostic can precede full accepta
   the adapter after source acceptance/quiet-host handoff. Both source labels and
   immutable image ID must match. Have the committed binding's pinned infrastructure
   images and a k6 image available; k6 is resolved to its immutable local ID.
-- Enough disk for image layers, one active core checkout, extracted image dependencies,
+- Enough disk for image layers, one active core checkout, owned lockfile generator dependencies,
   private PG/Vault volumes and raw logs. The controller budgets/checks available RAM,
   disk and runtime before spend. Captured host identity must stay identical across
   all pilot steps; a new/replaced daemon or hardware profile cannot silently join.
@@ -82,7 +85,7 @@ A cell's `owner.json` records source/instrument/file hashes, image IDs, ownershi
 port, profile and dependency provenance. Other outputs include:
 
 - `deployment-stages.json`, stage logs and `deployment.json`;
-- private `state/`, `env`, tenant projection and image-extracted dependencies;
+- private `state/`, `env`, tenant projection and owned lockfile generator dependencies;
 - host inventories before deploy/run/load and after, `runtime-readiness.json`;
 - `idle-disabled/`, `idle/`, `load/` cgroups/process RSS/PG statement snapshots;
 - sampled CPU/memory/PG waits/locks, sampler timing and `loadgen.jsonl`;
