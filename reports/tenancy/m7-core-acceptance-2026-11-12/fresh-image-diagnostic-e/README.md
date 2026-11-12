@@ -1,0 +1,9 @@
+# Fresh-image joined diagnostic E
+
+Reproduced remote bounded diagnostic, not full acceptance or capacity. [Diagnostic receipt](diagnostic.json) pins core `d5e2e874659155c952b5b5deb862f12f982ac02e`, binding `bc7b8c56b19d7a87fea668e0adb8b939e580de1e` and instrument content `7eeca6ca443aaffa6639e773e9edbe438137b7a7769f99cfd38fca699bbbfa1f`. Instrument source commit is `094dcc182af4ee5de88edf458e1433a011a8f1ec`; [its controls](../../m7-joined-instrument-2026-11-12/warming-policy-094dcc18/README.md) retain separate attribution. The published receipt omits only the private host identity. [Original hashes](original-artifacts.json) bind private captures.
+
+Fresh shipping image, two synthetic tenants, two API replicas and one unsharded realtime worker; diagnostics off, traffic capped at 180 seconds. All six diagnostic criteria passed, including stock clients, actual restart/reconnect/current frames and HTTP after recovery. Two writes committed. Independent SQL oracle was green, deliberately broken red, then restored green. [HTTP accounting](http-accounting.json) has eight criterion/eight physical requests, all HTTP200, zero warming probes. This run does not exercise the actual warming retry branch.
+
+Earlier attempts retained independent failure classes: eager dependency import before preparation; absent pinned prerequisite image on a fresh host; overgranted realtime registry admission; and a terminal HTTP refusal whose original status was not captured. That last response remains unclassified; later typed instrumentation cannot retroactively prove warming. Fix/control records and exact client accounting are required before retry.
+
+Private run home: `externals/work/perf-cloud-joined-20261111/joined-diagnostic-20261111-e`. Remote coordination owns checkpoint and teardown evidence. This diagnostic cannot authorize pilot/capacity: full/browser/enabled-corpus and exact final binding acceptance remain required.
