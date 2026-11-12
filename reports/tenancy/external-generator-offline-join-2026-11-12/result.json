@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "kind": "external-generator-real-offline-bundle-preflight",
+  "verdict": "OFFLINE_PREPARATION_PASS",
+  "source": "af146b932467fdaaaa74f7bcadc93b74a39981d6",
+  "transport": "b6da5c7e98d5f43619d97950519d3f9f9e66fd4b",
+  "pair": {
+    "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753"
+  },
+  "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+  "imageArchiveSha256": "4eb4e791f5c2fa0cce8ad135cf02cfa2723e869d2b465555681d657f92559461",
+  "imageArchiveHeader": {
+    "singleImage": true,
+    "configDigestMatchesId": true,
+    "sourceLabelsMatch": true,
+    "os": "linux",
+    "architecture": "amd64"
+  },
+  "runId": "external-smoke-20261112-two",
+  "profile": "joined-external-generator-v1",
+  "levels": [
+    2
+  ],
+  "diagnostics": "off",
+  "cadence": {
+    "warmSeconds": 120,
+    "loadSeconds": 300,
+    "hotFactor": 10,
+    "acceleration": 1,
+    "socketsPerTenant": 2
+  },
+  "bundleSha256": "9d137b4499afe888ff37543820490b5a1274cca9d66b5a397c991fcef86b1a93",
+  "specSha256": "09ac734ceb05d03623dfd157561196b2b8ae156443fd064fe659d2b04f12b11a",
+  "bundleFiles": 29,
+  "baseInstrument": "1e62ae298b465a66b48639c98602c9788668b9a0a3d51ff1c054d75b33c6dc08",
+  "baseInstrumentFiles": 43,
+  "externalSource": {
+    "files": {
+      "app.py": "3866816813b127383da19cf27b05d68d0bbdd984b7ae45f9e4dc5347388f358b",
+      "generator.py": "a56861129fe61972e457162454da61cb91672c2ce6a40e06ac10d1ac53c0fbae",
+      "protocol.py": "e710320d36a7e2610ec9eb7ffe75a64964590d82316e1180a8bc7fe5951b546c",
+      "recovery.cjs": "130cd13e25e8a8f7971111bc9515b29ad77244b5ab5169c7c75570742d83e281",
+      "traffic_probe.py": "18be8599b1abf90070239ab4f974c8b953b9025976f817b287b69274e2a61166"
+    },
+    "profile": "joined-external-generator-v1",
+    "sha256": "d53becad0ef949b66416f94ebffedb571df0eaca07d365f333ccd6a05a2b7c38",
+    "trafficFiles": [
+      "package-lock.json",
+      "package.json",
+      "probe.js",
+      "recovery.cjs",
+      "tenants.private.json",
+      "workload.js"
+    ],
+    "version": 1
+  },
+  "nativeArtifactSha256": "10b32354f6cee9d0bcf1b07efa218d288f59220f25111e3cc580040157a68331",
+  "receiptSha256": "8ea82712ded0eeef9ffede2af3a5ecaec0dbda30c64b69f69b5eb3dfada0c7a7",
+  "evidenceSha256": "203c422119c36b981c0773bba382f90557a8ad540aeaa5313447be50569f6602",
+  "gate": {
+    "commit": "af146b932467fdaaaa74f7bcadc93b74a39981d6",
+    "path": "tools/queue/gates/m7_joined_receipt.py",
+    "bytes": 35213,
+    "sha256": "316a3747e86dd519c8ce302055873903e564862a590cd8e38c4d5bea3b6e7b86"
+  },
+  "packedChecks": {
+    "source": "af146b932467fdaaaa74f7bcadc93b74a39981d6",
+    "bundle": "9d137b4499afe888ff37543820490b5a1274cca9d66b5a397c991fcef86b1a93",
+    "descriptor": {
+      "files": {
+        "app.py": "3866816813b127383da19cf27b05d68d0bbdd984b7ae45f9e4dc5347388f358b",
+        "generator.py": "a56861129fe61972e457162454da61cb91672c2ce6a40e06ac10d1ac53c0fbae",
+        "protocol.py": "e710320d36a7e2610ec9eb7ffe75a64964590d82316e1180a8bc7fe5951b546c",
+        "recovery.cjs": "130cd13e25e8a8f7971111bc9515b29ad77244b5ab5169c7c75570742d83e281",
+        "traffic_probe.py": "18be8599b1abf90070239ab4f974c8b953b9025976f817b287b69274e2a61166"
+      },
+      "profile": "joined-external-generator-v1",
+      "sha256": "d53becad0ef949b66416f94ebffedb571df0eaca07d365f333ccd6a05a2b7c38",
+      "trafficFiles": [
+        "package-lock.json",
+        "package.json",
+        "probe.js",
+        "recovery.cjs",
+        "tenants.private.json",
+        "workload.js"
+      ],
+      "version": 1
+    },
+    "imports": {
+      "runtimeImports": true,
+      "extension": "d53becad0ef949b66416f94ebffedb571df0eaca07d365f333ccd6a05a2b7c38",
+      "baseInstrument": "1e62ae298b465a66b48639c98602c9788668b9a0a3d51ff1c054d75b33c6dc08",
+      "baseFiles": 43
+    },
+    "contractExit": 0,
+    "recoveryExit": 0,
+    "remoteInstall": "UNMEASURED"
+  },
+  "authorityControls": {
+    "findings": [
+      {
+        "name": "wrong-app-pair",
+        "refused": true,
+        "code": "JOINED_ACCEPTANCE_PAIR_MISMATCH",
+        "keyOrOutputCreated": false
+      },
+      {
+        "name": "missing-source-extension",
+        "refused": true,
+        "code": "COMMAND_FAILED",
+        "keyOrOutputCreated": false
+      }
+    ],
+    "restored": {
+      "genuineAdmission": true,
+      "bundleVerified": true,
+      "sourceDescriptorVerified": true
+    }
+  },
+  "qualifiedInstalledRuntime": "UNMEASURED",
+  "remoteTransportInstall": "UNMEASURED",
+  "capacityAcceptance": "NOT_GRANTED",
+  "perWriteSQLLatency": "NOT_RUN/UNMEASURED",
+  "networkOrProviderCalls": 0,
+  "cloudOrDockerActions": 0,
+  "ephemeralSSHKeyGenerated": true,
+  "context": "controller/VPC/OS metadata reused from read-only C offline input; parent must revalidate live context before activation; key/spec remain private"
+}
