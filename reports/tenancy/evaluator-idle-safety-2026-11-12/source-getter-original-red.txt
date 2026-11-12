@@ -1,0 +1,27 @@
+
+
+  !
+
+  0 passing (16ms)
+  1 failing
+
+  1) trusted evaluator scheduling contexts (recording lifetime protocol)
+       observes all four queued clinical slots and the full owned window without driving work:
+     AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ undefined
+- {
+-   acquire: true,
+-   booting: false,
+-   parentAcquire: true,
+-   parentTime: true,
+-   running: true,
+-   time: true
+- }
+
+      at <owned-control>/tests/evaluator-job-context.test.js:154:16
+      at async execute (lib/tenant-lifecycle/operation-window.js:224:23)
+
+
+

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_native_time_witness_cannot_downgrade_to_coherent_historical_v1 (test_m7_joined_receipt.ReceiptTests.test_native_time_witness_cannot_downgrade_to_coherent_historical_v1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<owned-alignment>/tools/queue/gates/test_m7_joined_receipt.py", line 572, in test_native_time_witness_cannot_downgrade_to_coherent_historical_v1
+    with self.assertRaisesRegex(ValueError,'M7_NATIVE_EVALUATOR_TIME_VERSION'):gate.native_time_witness(self.expected,evidence)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.015s
+
+FAILED (failures=1)
