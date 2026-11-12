@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "project": "ns-evaluator-binding-proof-20261112-ready",
+  "nonce": "0dc3af55-99df-4fd9-8b1b-8771f68be6f1",
+  "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+  "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+  "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+  "platform": "linux/amd64",
+  "imageLabels": {
+    "org.opencontainers.image.revision": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+    "org.nightscout.deploy.revision": "cf5bda3f2d189bac5d60269df5644759c40db9e1"
+  },
+  "archive": "/tmp/ns-evaluator-binding-ff515-cf5-export/image.tar",
+  "bytes": 284444672,
+  "sha256": "4358289c768ef758f9647bfd71d97b0bca62ff81879a9ca95c06d85c3dcfffa7",
+  "startedAtMs": 1794509194231,
+  "finishedAtMs": 1794509196531,
+  "configEnvKeys": [
+    "NODE_ENV",
+    "NODE_VERSION",
+    "NS_SOURCE_COMMIT",
+    "PATH",
+    "YARN_VERSION"
+  ],
+  "archiveConfigDigestMatchesImageId": true,
+  "sourceOnlyGitArchiveBuild": true,
+  "privateNoRegistryPush": true
+}

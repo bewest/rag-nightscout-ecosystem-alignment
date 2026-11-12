@@ -1,0 +1,10 @@
+{
+  "hostNode": "v22.23.4",
+  "hostPython": "3.12.3",
+  "sourceOnlyBuild": true,
+  "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+  "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+  "recordedInstrument": "8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61",
+  "instrumentSha256": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+  "instrumentFiles": 37
+}

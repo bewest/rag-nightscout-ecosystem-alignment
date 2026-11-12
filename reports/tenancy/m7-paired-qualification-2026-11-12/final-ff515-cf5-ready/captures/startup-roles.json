@@ -1,0 +1,124 @@
+{
+  "observedAtMs": 1794508610562,
+  "scope": "role and evaluator startup readiness only; tenant HTTP readiness/default frames are NOT asserted here and belong to the stock fixture after its barrier",
+  "defaults": [],
+  "evaluatorOwnedRows": [
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "ready": true,
+      "completedAcquisitions": 1
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "ready": true,
+      "completedAcquisitions": 1
+    }
+  ],
+  "containers": [
+    {
+      "id": "2fe46db7c3fd5cd0e65d5fc639616a05a777859d037290c5fb1c7a6e8bcfe0ce",
+      "service": "nginx",
+      "image": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea",
+      "status": "running",
+      "health": null
+    },
+    {
+      "id": "d3c2bb40e06a78062aaf830be84111fece1d3fdb621e83b222c4c95664f39635",
+      "service": "evaluator-3",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "dcf95d3bc34404b31a38f78576639425bf6e6d36b24be564959ab45b72228120",
+      "service": "evaluator",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "9610e9041b9b85fc2fdecd2dfe367cc53761c93161345537465ddbe48635c978",
+      "service": "evaluator-2",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "ebf05ad4f0ef5fa4e52ebe607b03b0631c7ad360b8568fe11109cc342c57083d",
+      "service": "ui",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "c524eb3115cf807ce00ebf2ee6b9a957071c3e7eff98979416fe78f4fb62564d",
+      "service": "tenant-admin",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "9f8a7902ca449741615f3e7c58d61ecde182be4573a8c7077afa10723dce4841",
+      "service": "realtime",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "b7afd456c2cb4ccd46a105eb2831f733da6e9b8c7455f52dca50cff2bca10688",
+      "service": "socket-edge",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "937ca8a4255aee3a0f322b40ea05aa92ccd5dc66d52820cddd0dcdd4383e8589",
+      "service": "realtime-2",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "ff4b9e8c70a5dbeff907f934570ae0b4cedf84898eebae933c15378dbf4b318b",
+      "service": "api",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "14d460290252aeee6422b3b5526634335f090b4dbab33b4248e75cc0ac4c38dd",
+      "service": "api-2",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "d3f142344ab34335bd7c12b8b1dc0b4ad891695906b1b3844269770ca4088a2d",
+      "service": "feed-reader",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": null
+    },
+    {
+      "id": "b76ad4b6b82a2d044566d5bc15a91c6dcf5d6af4ca0d2ed629e8f7e87262b234",
+      "service": "admin",
+      "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "935ace228fffdd369e6d5380551f4cbd8da96e4df6e0f1ce86fc64bd7b552a92",
+      "service": "postgres",
+      "image": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "status": "running",
+      "health": "healthy"
+    },
+    {
+      "id": "cf99576ceac570b6eed070bb55b2bd6ee47ed016be1a2fd3690d9fd028e0e2da",
+      "service": "vault",
+      "image": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "status": "running",
+      "health": "healthy"
+    }
+  ]
+}

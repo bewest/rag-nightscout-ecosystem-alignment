@@ -1,0 +1,22 @@
+{
+  "build.js": "b2e90a78b5c211381cab170d53cf812398bccb765d610082fd9f3ea688277a28",
+  "Dockerfile": "5dea44ec30130e2d6c22781f01836f4caaf4aa6f7d44530bd4560c2e54a5a17c",
+  "shipping-sharding.integration.test.js": "b890a9407aa828015c95d725ada2ddeefb5bc980e675b38f03279eb9458e224f",
+  "fixtures/api-readiness-host.cjs": "7463d0b716de5c1ba2e95cd6e75db9a702fcb7a24f583a9bc2a4ac415757060f",
+  "fixtures/api-readiness-private.cjs": "c0c2294e0f41b7cb5d267b6c351369dccc27a63444a49a57113f27ad1537d6e7",
+  "fixtures/api-readiness-observation.cjs": "ab687344ae626984e9a0f68d5ba28d73be8a45fa8d685cc477b1adf0f62540df",
+  "shipping-evaluator.integration.test.js": "b7074f0dffab4268f987751c288ca3443d2e8e2d98d94942f700128e8ebb5278",
+  "fixtures/clinical-effect-observation.cjs": "f5aa27ce381e17ee99d7f7b51ea6abeba0ce6e45e76809a54fe9b9735191a649",
+  "fixtures/evaluator-client-diagnostics.cjs": "8e853db1e91561bd7a903e1bad72e003a92415bf3d1dd69ff9682b89736ecd97",
+  "shipping-replacement.integration.test.js": "239554a4a8be83766083169d233629c968aa39a15ffcd3d7663b87d0fb8ba30a",
+  "replace-realtime.js": "dec419081d4e1edaee2d7192c63719d083557b20e83d5fe648f4e7dc61eea214",
+  "fixtures/replacement-probe-contract.cjs": "a4e29dc35fdce9e251a8d456b63c242672318eafb0b509d1bcc8cc7f7220efca",
+  "fixtures/replacement-client-observation.cjs": "889109c972ec4688dc7f9ee11127a224ac0a8ee5dce4eec72b8a7810cd0fd711",
+  "replacement-observation.js": "19b5aa1a58bc7065216a2da878ec8830019404831ee126337d9a3d1ac372ddf1",
+  "replacement-journal.js": "43d53bf4967380a9191337f9a05cda93e144a3e27f128780bd191e98648f3c4e",
+  "placement-control.js": "33c1029373925199b6e6a744aeb1c5909a2b931e1089b2239492e41ca229e89a",
+  "fixtures/evaluator-settings-control.cjs": "3ef92de4e722aee3c524dd53a699069dd118f705640c7e20bc82502bb8800136",
+  "fixtures/evaluator-settings-setup.cjs": "4fdd30338735320f72ae83ed33eef6992b1c6f4d3eb3a7b2e6533604c2c8d574",
+  "fixtures/shipping-private-probe.cjs": "c02b44d0fe4b6b2c5da6abce82dad4b892f21fb63b55ee2251c5e9a73caf5a12",
+  "fixtures/shipping-compose-files.cjs": "6a69ed17ea1ccfdab76e8e79f63c8babfadf8cf70303b3ff65eb5268dc0f5e96"
+}

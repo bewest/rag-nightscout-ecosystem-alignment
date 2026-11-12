@@ -1,0 +1,5 @@
+{"outcome":"synthetic-authority-ready","tenants":2,"boundary":"fixture metadata only"}
+{"outcome":"configured","tenants":2,"wrongTenant":"refused","boundary":"source-lower-port"}
+{"outcome":"refused","reason":"SETTINGS_FORBIDDEN","boundary":"source-lower-port"}
+{"code":"SETTINGS_STORE_UNSAFE"}
+{"outcome":"ready","boundary":"source-lower-port"}

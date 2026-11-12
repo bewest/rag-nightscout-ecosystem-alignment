@@ -1,0 +1,24 @@
+{
+  "operation": "24e54de07777fb91738460de42f5d22d",
+  "phase": "complete",
+  "source": {
+    "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+    "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1"
+  },
+  "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+  "worker": "realtime-2",
+  "oldIdentity": {
+    "id": "937ca8a4255aee3a0f322b40ea05aa92ccd5dc66d52820cddd0dcdd4383e8589",
+    "startedAt": "2026-11-12T18:36:01.730949828Z",
+    "pid": 2918230
+  },
+  "newIdentity": {
+    "id": "e5a7c42629e6e05c6158a092886ea86a1c0d7b266e7e9516122f7eed2329dae6",
+    "startedAt": "2026-11-12T18:43:48.409223907Z",
+    "pid": 3052936
+  },
+  "generations": {
+    "backend.json": 2,
+    "routes.json": 2
+  }
+}

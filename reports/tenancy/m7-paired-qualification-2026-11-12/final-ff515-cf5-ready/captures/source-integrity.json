@@ -1,0 +1,8 @@
+{
+  "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+  "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+  "check": "actual committed build.assertCleanSource after native qualification",
+  "result": "PASS",
+  "scope": "core build inputs and exact committed deploy overlay; private .env/state/overlay marker excluded by the existing build contract",
+  "initialAttempt": "sandbox spawnSync git EPERM; approved read-only execution passed; no native phase was replayed"
+}
