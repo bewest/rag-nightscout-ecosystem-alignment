@@ -27234,9 +27234,9 @@ items:
     title: "Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: ''
-    state: not-started
+    branch: workspace/realtime-cap-20261112
+    base: workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003
+    state: in-progress
     blast_radius: >
       Multitenant realtime (lib/server/realtime/protocol.js, socket-server.js, config.js) and the nightscout-deploy edge
       (decisions.md#realtime-no-socket-cap).
@@ -27253,7 +27253,8 @@ items:
     evidence:
       - reports/tenancy/realtime-restart-disconnect-2026-11-11/README.md
     notes: >
-      2026-11-11: decided; start after the quiet capacity window.
+      2026-11-11: decided; start after the quiet capacity window. 2026-11-12: in progress on workspace/realtime-cap-20261112
+      (worktree externals/work/crm-realtime-cap-20261112); also carries realtime's stat-keyed config cache.
   - id: MT-AUTHZ-COST
     title: "api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request"
     parcel: tenancy
