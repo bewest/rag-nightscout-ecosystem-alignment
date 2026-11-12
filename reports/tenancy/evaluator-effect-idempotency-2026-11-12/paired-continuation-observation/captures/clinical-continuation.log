@@ -1,0 +1,37 @@
+TAP version 13
+# EVALUATOR_CLIENT_PREREQUISITES [{"name":"A/alarm","namespace":"/alarm","connections":1,"subscribed":true,"subscribeAckCount":1,"subscribeAcksTruncated":false,"subscribeAcks":[{"success":true,"message":"Subscribed for alarms"}],"authorizeAckCount":0,"authorizeAcksTruncated":false,"authorizeAcks":[],"initialFrames":0,"events":[{"kind":"connect","atMs":21},{"kind":"subscribe-ack","atMs":150,"success":true,"message":"Subscribed for alarms"}]},{"name":"B/alarm","namespace":"/alarm","connections":1,"subscribed":true,"subscribeAckCount":1,"subscribeAcksTruncated":false,"subscribeAcks":[{"success":true,"message":"Subscribed for alarms"}],"authorizeAckCount":0,"authorizeAcksTruncated":false,"authorizeAcks":[],"initialFrames":0,"events":[{"kind":"connect","atMs":11},{"kind":"subscribe-ack","atMs":165,"success":true,"message":"Subscribed for alarms"}]},{"name":"B/","namespace":"/","connections":1,"subscribed":false,"subscribeAckCount":0,"subscribeAcksTruncated":false,"subscribeAcks":[],"authorizeAckCount":1,"authorizeAcksTruncated":false,"authorizeAcks":[{"read":true,"write":true}],"initialFrames":1,"events":[{"kind":"connect","atMs":11},{"kind":"initial-frame","atMs":222},{"kind":"authorize-ack","atMs":222,"read":true,"write":true}]}]
+# Subtest: actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress
+not ok 1 - actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress
+  ---
+  duration_ms: 9096.759437
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/deploy-evaluator-binding-20261112/bindings/compose/multitenant/shipping-evaluator.integration.test.js:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'attempting'
+    - 'accepted'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'accepted'
+  actual: 'attempting'
+  operator: 'strictEqual'
+  stack: |-
+    Object.verdict (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/deploy-evaluator-binding-20261112/bindings/compose/multitenant/fixtures/clinical-effect-oracle.cjs:23:74)
+    TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/deploy-evaluator-binding-20261112/bindings/compose/multitenant/shipping-evaluator.integration.test.js:51:24)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9146.274738
