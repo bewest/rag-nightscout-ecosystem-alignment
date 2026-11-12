@@ -88,3 +88,11 @@ A status refusal stops the diagnostic. Warming, authentication and unknown servi
 refusals are distinguishable; this observability repair adds no retry, deadline
 extension, credential exchange fallback or role change. A warming-specific status
 poll requires an observed503/TENANT_WARMING cause and a separate reviewed change.
+
+On terminal cleanup the owned Socket.IO HTTP agent rejects late queued polling
+requests before destroying its sockets. Agent.destroy() alone permits later
+requests to create new referenced sockets. Actual spawned CLI controls cover an
+HTTP refusal after one stock socket connects with no frames; failure exits with
+its original diagnostic code rather than waiting for the traffic deadline. Python
+retains that safe terminal code and reports process termination or exit timeout
+separately. This does not force process exit or change the traffic budget.

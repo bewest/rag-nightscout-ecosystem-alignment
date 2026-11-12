@@ -16,7 +16,12 @@ async function run({directory,seconds,ioFactory,restart,deadlinePollMs=50}){
   const io=ioFactory||require('socket.io-client').io;
   const restartFn=restart||require('./restart.cjs').restart;
   const lookup=(hostname,options,callback)=>options&&options.all?callback(null,[{address:'127.0.0.1',family:4}]):callback(null,'127.0.0.1',4);
-  const agent=new http.Agent({keepAlive:true,lookup});agents.push(agent);
+  let shuttingDown=false;
+  const agent=new http.Agent({keepAlive:true,lookup}),addRequest=agent.addRequest.bind(agent);
+  // Socket.IO may enqueue its final polling close request after close() returns.
+  // Agent.destroy() alone allows future requests to create fresh owned sockets.
+  agent.addRequest=(request,options)=>{if(shuttingDown){queueMicrotask(()=>request.destroy(fail('M7_DIAGNOSTIC_STOPPED')));return;}return addRequest(request,options);};
+  agents.push(agent);
   const awaitUntil=async(check,code)=>{while(Date.now()<deadline){if(check())return;await sleep(deadlinePollMs);}throw fail(code);};
   function request(tenant,route,body,context){
     if(!context||!Number.isInteger(context.tenantIndex)||context.tenantIndex<0||context.tenantIndex>=tenants.length||
@@ -82,7 +87,7 @@ async function run({directory,seconds,ioFactory,restart,deadlinePollMs=50}){
     fs.writeFileSync(path.join(out,'diagnostic-observations.json'),JSON.stringify(observation,null,2));
     return observation;
   })(),new Promise((resolve,reject)=>{timer=setTimeout(()=>reject(fail('M7_DIAGNOSTIC_DEADLINE')),seconds*1000);})]);
-  }catch(error){terminalCode=safeCode(error.code)||'M7_DIAGNOSTIC_CLIENT_REFUSED';throw error;}finally{if(!fs.existsSync(path.join(out,'diagnostic-observations.json')))fs.writeFileSync(path.join(out,'diagnostic-observations.json'),JSON.stringify({checks,stage,failureCode:terminalCode,requestTrail:'diagnostic-http.json',dataHttpRequests,sockets:sockets.map(row=>({connects:row.connects,disconnects:row.disconnects,connected:row.connected,frames:row.frames.length,containsExpected:row.frames.some(frame=>frame.mills.includes(row.expectedDate))}))}));clearTimeout(timer);for(const request of requests)request.destroy();for(const cell of sockets)cell.socket.close();for(const agent of agents)agent.destroy();}
+  }catch(error){terminalCode=safeCode(error.code)||'M7_DIAGNOSTIC_CLIENT_REFUSED';throw error;}finally{if(!fs.existsSync(path.join(out,'diagnostic-observations.json')))fs.writeFileSync(path.join(out,'diagnostic-observations.json'),JSON.stringify({checks,stage,failureCode:terminalCode,requestTrail:'diagnostic-http.json',dataHttpRequests,sockets:sockets.map(row=>({connects:row.connects,disconnects:row.disconnects,connected:row.connected,frames:row.frames.length,containsExpected:row.frames.some(frame=>frame.mills.includes(row.expectedDate))}))}));clearTimeout(timer);shuttingDown=true;for(const request of requests)request.destroy();for(const cell of sockets)cell.socket.close();for(const agent of agents)agent.destroy();}
 }
 module.exports={run};
 if(require.main===module)run({directory:process.argv[2],seconds:Number(process.argv[3])}).then(()=>console.log('M7_DIAGNOSTIC_CLIENT_CRITERIA_PASS')).catch(error=>{console.error(/^M7_[A-Z_]+$/.test(error.code||'')?error.code:'M7_DIAGNOSTIC_CLIENT_REFUSED');process.exitCode=1;});

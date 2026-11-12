@@ -167,6 +167,15 @@ class Contract(unittest.TestCase):
             for key,marker in [('stdout','PRIVATE_ONLY_STDOUT'),('stderr','PRIVATE_ONLY_STDERR')]:
                 file=root/'prepare-commands'/value[key];self.assertIn(marker,file.read_text());self.assertEqual(file.stat().st_mode&0o777,0o600)
             self.assertFalse((root/'owner.json').exists())
+    def test_diagnostic_failure_receipt_preserves_only_safe_instrument_code(self):
+        with tempfile.TemporaryDirectory(prefix='m7-failure-code-') as scratch:
+            out=Path(scratch)
+            self.assertEqual(adapter.diagnostic_observed_code(out),'M7_DIAGNOSTIC_CLIENT_REFUSED')
+            adapter.write(out/'diagnostic-observations.json',{'failureCode':'M7_DIAGNOSTIC_HTTP_REFUSED'})
+            self.assertEqual(adapter.diagnostic_observed_code(out),'M7_DIAGNOSTIC_HTTP_REFUSED')
+            for value in [{'failureCode':'M7_DIAGNOSTIC_HTTP_REFUSED private'}, {'failureCode':'TENANT_WARMING'}, [], {'failureCode':42}]:
+                adapter.write(out/'diagnostic-observations.json',value)
+                self.assertEqual(adapter.diagnostic_observed_code(out),'M7_DIAGNOSTIC_CLIENT_REFUSED')
     def test_generator_missing_actual_client_refuses_before_workload(self):
         with tempfile.TemporaryDirectory(prefix='m7-missing-client-') as scratch:
             root=Path(scratch);(root/'dependencies').mkdir();(root/'dependencies/package.json').write_text('{}')

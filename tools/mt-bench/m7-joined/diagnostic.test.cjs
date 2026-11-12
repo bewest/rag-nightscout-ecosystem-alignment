@@ -4,18 +4,19 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto');
 const {run}=require('./diagnostic.cjs');
+const {spawn}=require('node:child_process');
 const core=process.env.M7_DIAGNOSTIC_TEST_CORE;
-async function fixture({wrongHost=false,suppressFrame=false,lateStatus=null}={}){
+async function fixture({wrongHost=false,suppressFrame=false,lateStatus=null,suppressInitialFrames=false}={}){
   const {Server}=require(path.join(core,'node_modules/socket.io')),{io}=require(path.join(core,'node_modules/socket.io-client'));
   const d=fs.mkdtempSync(path.join(os.tmpdir(),'m7-functional-fixture-'));fs.mkdirSync(path.join(d,'load'));
   const tenants=['a','b'].map(letter=>({id:crypto.randomUUID(),host:letter+'.example.test',token:crypto.randomUUID()}));
-  const frames=new Map(tenants.map(row=>[row.host,{sgvs:[]}])) ;let server,socketServer,port;const connections=new Set();
+  const frames=new Map(tenants.map(row=>[row.host,{sgvs:[]}])) ;let server,socketServer,port;const connections=new Set();let authorized=0;
   const begin=async()=>{
     server=http.createServer((req,res)=>{
       const host=(req.headers.host||'').split(':')[0];if(!frames.has(host)){res.writeHead(421);res.end('{}');return;}
       const respond=body=>{res.setHeader('content-type','application/json');res.end(JSON.stringify(body));};
       if(req.url.startsWith('/api/v2/authorization/request/')){respond({token:crypto.randomUUID()});return;}
-      if(req.url.startsWith('/api/v1/status')){if(lateStatus&&host===tenants[1].host){res.statusCode=lateStatus.status;respond(lateStatus.body);return;}respond({status:'ok'});return;}
+      if(req.url.startsWith('/api/v1/status')){if(lateStatus&&host===tenants[1].host){const reply=()=>{res.statusCode=lateStatus.status;respond(lateStatus.body)};if(suppressInitialFrames){const until=Date.now()+1000;const wait=()=>authorized>0||Date.now()>=until?reply():setTimeout(wait,5);wait();}else reply();return;}respond({status:'ok'});return;}
       if(req.method==='POST'){
         const chunks=[];req.on('data',row=>chunks.push(row));req.on('end',()=>{const row=JSON.parse(Buffer.concat(chunks).toString())[0];frames.set(host,{sgvs:[{mills:row.date,mgdl:row.sgv}]});respond([row]);if(!suppressFrame)for(const socket of socketServer.sockets.sockets.values())if(socket.data.host===host)socket.emit('dataUpdate',frames.get(host));});return;
       }
@@ -23,7 +24,7 @@ async function fixture({wrongHost=false,suppressFrame=false,lateStatus=null}={})
     });
     server.on('connection',socket=>{connections.add(socket);socket.on('close',()=>connections.delete(socket));});
     socketServer=new Server(server,{pingInterval:100,pingTimeout:100,allowRequest:(req,callback)=>callback(null,frames.has((req.headers.host||'').split(':')[0]))});
-    socketServer.on('connection',socket=>{socket.data.host=socket.handshake.headers.host.split(':')[0];socket.on('authorize',(body,ack)=>{socket.emit('dataUpdate',frames.get(socket.data.host));ack?.({authorized:true});});});
+    socketServer.on('connection',socket=>{socket.data.host=socket.handshake.headers.host.split(':')[0];socket.on('authorize',(body,ack)=>{authorized++;if(!suppressInitialFrames)socket.emit('dataUpdate',frames.get(socket.data.host));ack?.({authorized:true});});});
     await new Promise(resolve=>server.listen(port||0,'127.0.0.1',resolve));port=server.address().port;
   };
   const stop=async()=>{for(const socket of connections)socket.destroy();await new Promise(resolve=>socketServer.close(resolve));await new Promise(resolve=>server.close(resolve));};
@@ -55,4 +56,17 @@ for(const refusal of [{status:503,body:{error:'TENANT_WARMING'},expected:'TENANT
     const observation=JSON.parse(fs.readFileSync(path.join(f.d,'load/diagnostic-observations.json'),'utf8'));assert.equal(observation.failureCode,'M7_DIAGNOSTIC_HTTP_REFUSED');assert.equal(observation.dataHttpRequests,4);
     assert.equal(fs.existsSync(path.join(f.d,'load/client-acks.json')),false);assert.equal(restarted,false);
   }finally{await f.close();}
+});
+
+for(const status of [503,401])test('spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket '+status,{skip:!core,timeout:5000},async()=>{
+  const f=await fixture({lateStatus:{status,body:{error:status===503?'TENANT_WARMING':'AUTHORITY_FORBIDDEN'}},suppressInitialFrames:true});let child,timer;try{
+    child=spawn(process.execPath,[path.join(__dirname,'diagnostic.cjs'),f.d,'180'],{env:{PATH:process.env.PATH,NODE_PATH:path.join(core,'node_modules')},stdio:['ignore','pipe','pipe']});
+    let stderr='';child.stderr.on('data',bytes=>{stderr+=bytes.toString();assert.ok(stderr.length<4096)});child.stdout.resume();
+    const result=await Promise.race([new Promise((resolve,reject)=>{child.once('exit',(code,signal)=>resolve({code,signal}));child.once('error',reject)}),new Promise(resolve=>{timer=setTimeout(()=>resolve({lingered:true}),1500)})]);
+    assert.ok(stderr.includes('M7_DIAGNOSTIC_HTTP_REFUSED'),'instrument must retain original refusal taxonomy');
+    assert.equal(result.lingered,undefined,'CLI_LINGERED_AFTER_REFUSAL '+stderr);assert.equal(result.code,1);assert.equal(result.signal,null);
+    const observation=JSON.parse(fs.readFileSync(path.join(f.d,'load/diagnostic-observations.json'),'utf8'));
+    assert.equal(observation.dataHttpRequests,4);assert.equal(observation.sockets[0].connects,1);assert.equal(observation.sockets[0].frames,0);
+    const trail=JSON.parse(fs.readFileSync(path.join(f.d,'load/diagnostic-http.json'),'utf8'));assert.equal(trail.requests[3].status,status);
+  }finally{clearTimeout(timer);if(child&&child.exitCode===null&&child.signalCode===null){const exited=new Promise(resolve=>child.once('exit',resolve));child.kill('SIGKILL');await exited;}await f.close();}
 });
