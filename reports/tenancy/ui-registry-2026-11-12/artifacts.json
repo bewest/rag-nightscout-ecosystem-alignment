@@ -1,0 +1,9 @@
+{
+  "deploymentSource": "167332002bc2811b7b4bd656a9d9479e4fcf5554",
+  "coreSource": "d20354797e368b03af171f4417ead60a6282d098",
+  "artifacts": {
+    "unit-final.log": "474b117025f9ba23cbb61186455c1b6c835d70bc1796d336d49325ed72c82dd2",
+    "native-final.log": "e227af72278fac9625018d63975d3fe6174e03f0ed0a00c24089181f556bc761",
+    "freeze-revision-red.log": "87177349fcd5a4f355879e81513f9b18d8872d7b9b6112e6d130ef4ae84052d9"
+  }
+}
