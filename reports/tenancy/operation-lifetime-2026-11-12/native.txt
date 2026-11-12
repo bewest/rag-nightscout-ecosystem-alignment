@@ -1,0 +1,40 @@
+
+
+  operation lifetime marker serialization discriminator (not capacity acceptance)
+LIFETIME_ORIGINAL_MARKER {"operations":128,"elapsedMs":1008.3428159999994,"operationsPerSecond":126.94095496982256,"p50Ms":7.492460999999821,"p95Ms":10.345114000000649,"p99Ms":14.020893999999316,"scope":"bounded functional microbenchmark; host not isolated"}
+    ✔ measures bounded original operation registration and completion with no held response (1041ms)
+LIFETIME_SERIAL_MARKER {"operations":128,"elapsedMs":761.1015450000004,"operationPairsPerSecond":168.17729623712685,"registrationP50Ms":2.979917999999998,"registrationP95Ms":4.466362000000117,"registrationP99Ms":5.894293000000289,"finishP50Ms":2.653505000000223,"finishP95Ms":4.3836810000002515,"finishP99Ms":8.97716600000058,"physicalBackends":1,"scope":"test-only short marker transactions; omits production admission and failure handling; not capacity acceptance"}
+    ✔ discriminates same-backend serial short transactions from response duration without changing marker RLS (769ms)
+LIFETIME_IDENTICAL_PATH_LANES {"lanes":1,"operations":128,"concurrency":16,"heldBodyFraction":0.25,"heldBodyMs":20,"elapsedMs":842.2633999999998,"operationsPerSecond":151.97146165914373,"physicalBackends":1,"entryP50Ms":33.027078000000074,"entryP95Ms":65.06322499999987,"completionP50Ms":83.87841300000036,"completionP95Ms":113.90332499999931,"scope":"same operation-window admission/markers; explicit shared session option; functional discriminator, host not isolated"}
+LIFETIME_IDENTICAL_PATH_LANES {"lanes":2,"operations":128,"concurrency":16,"heldBodyFraction":0.25,"heldBodyMs":20,"elapsedMs":529.5938830000005,"operationsPerSecond":241.69463452809535,"physicalBackends":2,"entryP50Ms":19.965854999999465,"entryP95Ms":47.71104000000014,"completionP50Ms":46.5471120000002,"completionP95Ms":83.1887569999999,"scope":"same operation-window admission/markers; explicit shared session option; functional discriminator, host not isolated"}
+LIFETIME_IDENTICAL_PATH_LANES {"lanes":4,"operations":128,"concurrency":16,"heldBodyFraction":0.25,"heldBodyMs":20,"elapsedMs":372.19329500000003,"operationsPerSecond":343.9073237469256,"physicalBackends":4,"entryP50Ms":12.235728999999992,"entryP95Ms":42.901332999999795,"completionP50Ms":28.99812699999984,"completionP95Ms":63.0742479999999,"scope":"same operation-window admission/markers; explicit shared session option; functional discriminator, host not isolated"}
+    ✔ compares 1/2/4 prototype lanes through identical full production admission and held-body mix (1856ms)
+    ✔ expires queued registrations without later SQL or poisoning other operation lifetimes (343ms)
+    ✔ retains a real committed registration after lost reply and refuses replacement-owner completion (314ms)
+    ✔ reports a lost finish reply without reusing its owner session or rewriting its committed result (109ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-1b08b1cf0ca7eb77","volumes":["e01103c8f87a37e9232e8048c21b396eba8da98da9a2d2cc0e85e76832ec6f42","6d855e543777ae8364321dfd0aade4a46cae67ac109205a3e7f4c1836a4c460e"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-1b08b1cf0ca7eb77","volumes":["dcc264f339f5907a59144c7df964ce98771afefcb93b792cb6fc7f4290ecd932"]}
+
+  actual API lifetime shared sessions with 1 bounded lease lanes
+    ✔ preserves fresh current authorization and cross-tenant denial (119ms)
+    ✔ serves beyond the lane bound while actual A responses fence restore and B continues (406ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-0a5b8ec3bc918cbb","volumes":["daa26d777f03ca685c4f89790534564762ad43df551589f3b5d7b7d9815883dc","2388a89423e6d82d513895cff11e64ab59973a9d57c27410ad15e922324bebf0"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-0a5b8ec3bc918cbb","volumes":["f991f3d9b7d116b67ddfe5e3736644c4816eebc19ffe1dce23f665085d36852c"]}
+
+  actual API lifetime shared sessions with 2 bounded lease lanes
+    ✔ preserves fresh current authorization and cross-tenant denial (117ms)
+    ✔ serves beyond the lane bound while actual A responses fence restore and B continues (419ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-079b581c5b6d29b9","volumes":["9c54e1fdf93ed17f311e7087620db855a5313441d464f7b10c64be9eb735d3fa","9986456341f3640f3870084082320ac9c1f2a23e03b6c4047cb386274b2a3bd6"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-079b581c5b6d29b9","volumes":["ee7ffabe73a0cfb5e2ea4da3e813da556274b54fd3987ba113f20234998f5bfe"]}
+
+  actual API lifetime shared sessions with 4 bounded lease lanes
+    ✔ preserves fresh current authorization and cross-tenant denial (100ms)
+    ✔ serves beyond the lane bound while actual A responses fence restore and B continues (405ms)
+    ✔ control: early lifetime completion makes the held-response exclusion oracle fail (262ms)
+    ✔ refuses a clinical-write grant on its metadata-only lifetime identity
+    ✔ invalidates held wire responses on actual lease-backend death and keeps an orphan across worker replacement (10174ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-3fa359975e56c95e","volumes":["94bc533d5a385254b13d83a5e25354cc8dc324ba97d85de13fac99ff06a524e6","baf0b5d8a2f295962fef2220b9aba3ca9136085a5017923c2e151c36d115dda1"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-3fa359975e56c95e","volumes":["059f5c0856e8904e7654fd7772e02fb9268ce04ca8d64831ac5c8b0094666d9d"]}
+
+
+  15 passing (36s)
