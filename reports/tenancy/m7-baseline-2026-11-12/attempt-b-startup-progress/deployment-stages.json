@@ -1,0 +1,38 @@
+[
+  {
+    "name": "infrastructure",
+    "seconds": 6.386931099999998
+  },
+  {
+    "name": "bootstrap",
+    "seconds": 5.179523982000006
+  },
+  {
+    "name": "admin-feed",
+    "seconds": 3.3757028790000163
+  },
+  {
+    "name": "provision",
+    "seconds": 11.545711210999997
+  },
+  {
+    "name": "commission",
+    "seconds": 1.468079863000014
+  },
+  {
+    "name": "apis",
+    "seconds": 3.325329071999988
+  },
+  {
+    "name": "prime",
+    "seconds": 348.27460565900003
+  },
+  {
+    "name": "publish-primer",
+    "seconds": 0.06424688599997808
+  },
+  {
+    "name": "remaining-roles",
+    "seconds": 21.85272953499998
+  }
+]

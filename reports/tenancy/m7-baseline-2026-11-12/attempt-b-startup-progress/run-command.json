@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/opt/nsperf/alignment/tools/mt-bench/m7-joined/adapter.py",
+    "run",
+    "/opt/nsperf/work/level1-pilot",
+    "--k6-image",
+    "sha256:eeb0db19cd8d263aa57346cdbc7ea18e6fcfb2ba9497746a7ae82ceefc8c9fa5"
+  ],
+  "deadlineSeconds": 4200,
+  "status": "FAIL",
+  "returnCode": 1
+}

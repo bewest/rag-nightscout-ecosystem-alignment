@@ -1,0 +1,64 @@
+{
+  "kind": "baseline-setup-refusal",
+  "outcome": "FAILED_SETUP",
+  "applicationAndLoad": "NOT_RUN",
+  "capacityMeasurements": "UNMEASURED",
+  "sourcePins": {
+    "coreCommit": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "deployCommit": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+    "alignmentCommit": "df18100cf13780cec904a792b2bb1ab8867bfb54",
+    "instrumentCommit": "45863451b886c8cb8cde88a58089e712a50d4f75",
+    "profile": "joined-baseline-diagnostic-v1"
+  },
+  "archiveSHA256": "4eb4e791f5c2fa0cce8ad135cf02cfa2723e869d2b465555681d657f92559461",
+  "archiveVerifiedBeforeLoad": true,
+  "qualifiedConfigId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+  "observedRemoteImageId": "sha256:910637f480ebcf71ecc901cda3f2a13c82b96396487aa6b6dee01017723baa45",
+  "observedRemoteDescriptorMediaType": "application/vnd.oci.image.manifest.v1+json",
+  "refusal": "PILOT_QUALIFIED_IMAGE_ID_MISMATCH",
+  "phases": [
+    {
+      "phase": "provision",
+      "status": "started"
+    },
+    {
+      "phase": "provision",
+      "status": "completed"
+    },
+    {
+      "phase": "deploy",
+      "status": "started"
+    },
+    {
+      "phase": "deploy",
+      "status": "failed"
+    },
+    {
+      "phase": "collect",
+      "status": "started"
+    },
+    {
+      "phase": "collect",
+      "status": "completed"
+    },
+    {
+      "phase": "destroy",
+      "status": "started"
+    },
+    {
+      "phase": "destroy",
+      "status": "verified"
+    }
+  ],
+  "controllerCleanup": "verified",
+  "watchdogCleanup": "verified",
+  "rawSHA256": {
+    "spec.json": "7095209223593da7d402d582b1d5aea98f6458a75b74cd025128fe32140be836",
+    "result.json": "4821e75331d7912afec9b2dae165cbcb0f8e9840dad2b678b0ffff64ce4318fc",
+    "watchdog-result.json": "7a5d30ef8dcbf65efe680fb8e9afe81ab53453ac0fa1936b1cf495a9fea3453a",
+    "decoded/work/qualified-image-provenance.json": "73a845a38ad59e06fbc649c6a222f752ab14622dfc6eb284b12c9fd80eaf670d",
+    "decoded/work/commands/012-qualified-image-inspect.log": "2c09e5616ce6096a7dfce0d21890a3597b10563f2ade799594fde4dab4d9e146",
+    "decoded/work/commands/011-qualified-image-load.log": "b5349ee4c11fef205f8210044df0146d893c69a6059fe304c3597759150f08e7"
+  },
+  "scope": "Whitelisted original process outcome plus separately reproduced archive mapping. No app/load values or process exits are invented."
+}
