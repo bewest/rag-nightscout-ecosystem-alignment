@@ -1,0 +1,54 @@
+{
+  "recordType": "NEW_SELECTED_ANSI_STRIPPED_PATH_REDACTED_LOG_DERIVATIVE",
+  "originalLogSha256": "9ec18ab6844782029ebf2389d046592100681bf504e5314aea57f997fb7f1403",
+  "transformations": [
+    "select final Mocha summary and sole failure",
+    "remove ANSI color escapes",
+    "replace source checkout prefix with logical CORE_SOURCE role"
+  ],
+  "summaryAndFailure": {
+    "originalStartLine": 8311,
+    "lines": [
+      "  3562 passing (1m)",
+      "  1 pending",
+      "  1 failing",
+      "",
+      "  1) Internal service API contracts",
+      "       fixes service ownership, names, wire paths and immutable versioned descriptors:",
+      "",
+      "      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:",
+      "",
+      "2 !== 1",
+      "",
+      "      + expected - actual",
+      "",
+      "      -2",
+      "      +1",
+      "      ",
+      "      at <CORE_SOURCE>/tests/internal-api-contracts.test.js:27:14",
+      "      at Array.flatMap (<anonymous>)",
+      "      at Context.<anonymous> (tests/internal-api-contracts.test.js:25:44)",
+      "",
+      "",
+      ""
+    ]
+  },
+  "optionalPendingLine": {
+    "originalLine": 2691,
+    "text": "- is moment's own parse on every date string of VIEWS_CORPUS_DIR (read in place)"
+  },
+  "mechanism": {
+    "classification": "read-derived from exact frozen source; not another runtime reproduction",
+    "test": "tests/internal-api-contracts.test.js:27",
+    "testVersion2Whitelist": [
+      "connector-inspection",
+      "alarm-delivery",
+      "lifecycle-participant"
+    ],
+    "omittedDescriptor": "evaluator-inspection",
+    "actualFrozenDescriptorVersion": 2,
+    "expectedByFixture": 1,
+    "capturedActual": 2,
+    "repairOwner": "Source owner; minimal fixture repair, wrong-version red/restored controls and refreeze are outside this immutable leaf"
+  }
+}

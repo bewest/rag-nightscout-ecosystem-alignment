@@ -1,0 +1,22 @@
+{
+  "recordType": "NEW_PUBLICATION_VERIFICATION_NOT_REMOTE_RUN",
+  "scope": "No experiment/test campaign rerun; publication checks only",
+  "jsonParsing": "PASS",
+  "manifestHashes": "PASS",
+  "localLinks": "PASS",
+  "boundedPrivacyScan": "PASS",
+  "privateOriginalsUnchanged": "PASS",
+  "whitespace": "PASS",
+  "queueCheck": {
+    "status": "FAIL",
+    "exitCode": 2,
+    "attempts": 1,
+    "stoppedAt": "queue-validate",
+    "laterSteps": "SKIPPED",
+    "existingMissingExternalCwdFailures": 16,
+    "reason": "Existing queue references absent peer worktrees in the isolated evidence checkout. No peer or queue repair attempted.",
+    "output": "queue-check-output.txt",
+    "originalPublicationOutputSha256": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f"
+  },
+  "appTestsBuildsInstallsCloudNetwork": "NOT_RUN"
+}
