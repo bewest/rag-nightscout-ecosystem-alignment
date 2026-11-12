@@ -1,0 +1,52 @@
+
+
+  bounded opt-in M7 diagnostics
+    1) separates held physical clients, active SQL and inclusive outer bodies with fixed labels
+
+
+  0 passing (4ms)
+  1 failing
+
+  1) bounded opt-in M7 diagnostics
+       separates held physical clients, active SQL and inclusive outer bodies with fixed labels:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+      + expected - actual
+
+      -0
+      +1
+
+      at Context.<anonymous> (tests/m7-diagnostics.test.js:54:46)
+
+
+
+M7_DIAGNOSTICS_CONTROL physical-checkedout-zero oracle went red: 0 !== 1
+
+
+  bounded opt-in M7 diagnostics
+    1) separates held physical clients, active SQL and inclusive outer bodies with fixed labels
+
+
+  0 passing (3ms)
+  1 failing
+
+  1) bounded opt-in M7 diagnostics
+       separates held physical clients, active SQL and inclusive outer bodies with fixed labels:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+      + expected - actual
+
+      -0
+      +1
+
+      at Context.<anonymous> (tests/m7-diagnostics.test.js:56:123)
+
+
+
+M7_DIAGNOSTICS_CONTROL held-outer-body-omitted oracle went red: 0 !== 1

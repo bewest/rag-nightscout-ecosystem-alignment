@@ -1,0 +1,15 @@
+
+
+  M7 diagnostics actual CLI default off
+    ✔ preserves stored results/errors and restore drain while separating held responses from SQL (1585ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-b48e9c2fe81add83","volumes":["43918271e0d858bc746ff976dbce9519b4b4203be8b51fd8dad6a9211039403e","9b971435841d050833796aea2bbe3e322562a45024ed04f55c96c2dddc4edca5"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-b48e9c2fe81add83","volumes":["5ed0ddabfbe3776fd2d6a6cd712de5721212b74216f18bcaebcc02bf2929a507"]}
+
+  M7 diagnostics actual CLI enabled
+    ✔ observes real held-pool waiting, acquisition wait and pg_sleep separately from checkedout (314ms)
+    ✔ preserves stored results/errors and restore drain while separating held responses from SQL (2262ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-a800be485dfb7df2","volumes":["1b0ffd3035dd659714cb5b253d28300b4bc224c9f8b6bc2ff7f42423c1f0cfd6","47fd13f8dc229afeb73fe45a7f93c66d54146a30f83744486741e3485f31518d"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-a800be485dfb7df2","volumes":["a753de180a70a981e380e9225b50bddbbf5f25e26373cda16a8f2b610598e6fe"]}
+
+
+  3 passing (14s)
