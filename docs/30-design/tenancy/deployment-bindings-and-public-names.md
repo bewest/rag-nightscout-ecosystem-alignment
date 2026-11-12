@@ -72,9 +72,9 @@ remain the database and admitted secret/artifact stores.
 
 A replica count of one is desired placement, not proof of unique execution.
 Kubernetes Deployments default to rolling updates, which can overlap old and new
-Pods. An initial binding can choose a controlled no-overlap update strategy, but
-must still prove safe replacement and retain application/database safeguards;
-control-plane state alone does not prove an old actor has stopped. Refer to
+Pods. A binding can use a controlled update without overlap.
+It must still prove safe replacement and retain application and database safeguards.
+Control-plane state alone does not prove an old actor has stopped. Refer to
 [Deployment strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy).
 Splitting the same roster across Pods or nodes requires a qualified transport,
 membership and lifetime binding; merely adding Services does not close that gap.
@@ -85,9 +85,8 @@ cover those controls as well as the existing database/Vault/edge boundary.
 
 A role box is not a mandatory service deployment. The
 [logical REST/worker placement map](runtime-topology.md#logical-rest-cohesion-and-worker-placement)
-permits cohesive data/authorization/owner REST modules with separate audiences;
-background connectors/evaluation and privileged maintenance execution have their
-own responsibilities. The [admission review](tenant-admission-and-activity.md)
+permits data, authorization and owner REST modules with separate audiences.
+Background connectors, evaluation and privileged maintenance have their own responsibilities. The [admission review](tenant-admission-and-activity.md)
 distinguishes generic participant gating from owning the restoration workflow.
 
 ### Configurable transports and independently scaled API
@@ -105,9 +104,9 @@ The [current cohort specification](https://github.com/nightscout/cgm-remote-moni
 already permits explicitly declared API replicas as separate participants.
 The [API implementation](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/preview-api.js#L129)
 acquires fresh request frames and exposes invalidation of local startup/readiness
-state. Stateless request handling means durable authority is external and local
-state can be reconstructed; it does not mean an instance has no connections,
-caches, in-flight responses or restore obligations.
+state. Stateless request handling keeps durable authority outside the process.
+Local state can be reconstructed. Each instance still has connections, caches,
+in-flight responses and restore obligations.
 
 The shared transport implements service schemas and named clients over UDS or
 explicit TCP/HTTP endpoints. The [original implementation record](../../../reports/tenancy/internal-service-api-2026-11-09/README.md)
@@ -115,10 +114,11 @@ and [joined acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-ac
 retain their tested scope; current deployment qualification is recorded separately
 in [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
-Bindings render the adopted [`serve.internal` listener](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern):
-one private listener per role process, a Unix socket by default or an explicit
-`NS_SERVE_INTERNAL_HOST`/`_PORT` for network exposure, and peer addresses such as
-`NS_API_INTERNAL_URL` for callers. A dial service name may differ from the bind
+Bindings render the adopted [`serve.internal` listener](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+Each role process has one private listener. Its default is a Unix socket.
+Network exposure uses explicit `NS_SERVE_INTERNAL_HOST`/`_PORT` settings.
+Callers use peer addresses such as `NS_API_INTERNAL_URL`.
+A dial service name may differ from the bind
 interface. Public/management listeners remain separate. Code selects the contract
 modules; configuration cannot move them between authority planes. The binding's
 termination grace must exceed the listener's
@@ -142,15 +142,14 @@ The calls have different addressing semantics:
 | Evaluator notification to realtime | A destination whose receipt/fanout contract reaches the intended connected viewers. | Load-balancing one handoff to one realtime replica does not broadcast it to sockets on other replicas. Qualify fanout or explicit delivery ownership and durable retry/deduplication. |
 | Browser to realtime | A connection-owning realtime instance. | Socket connections, rooms and local projections are retained state. Current polling plus WebSocket compatibility needs session affinity for polling, and correct cross-instance delivery. A generic URL alone does not solve that. See [Socket.IO multiple-node guidance](https://socket.io/docs/v4/using-multiple-nodes/). |
 
-Start API scale-out with an explicit fixed roster if desired. Prove concurrent
-requests on different APIs, current revocation/config consistency, actual drain
-of an in-flight response, all-replica invalidation, replica death/replacement,
-foreign-tenant refusal and unchanged mutation replies. Database pool/connection
+Start API scale-out with an explicit fixed roster if desired. Prove concurrent requests on different APIs and current revocation and configuration checks.
+Test response drain, all-replica invalidation and replica replacement.
+Check foreign-tenant refusal and unchanged mutation replies. Database pool/connection
 limits and load tests must account for the aggregate across replicas. Ordinary
 API replication does not inherently need the evaluator's single-producer
-ownership protocol. Dynamic joins/leaves still need an admission/drain rule
-serialized with maintenance; that can use the existing authoritative database
-and does not inherently require a new consensus/discovery product.
+ownership protocol. Dynamic joins and removals need admission and drain rules serialized with maintenance.
+These can use the existing authoritative database. They do not inherently require
+a new consensus or discovery product.
 
 Preserve deadlines, cancellation, byte bounds and actual acknowledgement
 semantics across both transports. An ambiguous mutation response must not cause
@@ -159,29 +158,26 @@ than fabricating success. Network/partition tests add cases to prove; they do no
 make API scale-out theoretically invalid. Evaluator scheduling/notification
 production and realtime fanout retain their own independent ownership questions.
 
-The inspected node-multienv source provides narrower prior art: its
+The inspected node-multienv source provides narrower prior art. Its
 [redirector listener](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L160)
-passes configured listen values through and handles a filesystem socket, while
-[backend selection](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L97)
+passes configured listen values through and handles a filesystem socket.
+Its [backend selection](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L97)
 constructs a remote URL. This source reading does not establish one uniformly
 interchangeable Unix/HTTP/HTTPS client abstraction across that project. That historical source assessment supplies no
 transport-parity or replica runtime measurement; later evidence retains its own scope.
 
 ### Jsonnet and node-multienv integration boundary
 
-A Jsonnet or other declarative binding takes a deployment identifier, named role set,
-image/config generation, private tenant-resolution configuration, edge placement,
-resource limits and secret **references**. It should render resources and an
+A declarative binding takes a deployment identifier, role set and image/configuration generation.
+Inputs also specify tenant resolution, edge placement, resource limits and secret **references**. It should render resources and an
 inspectable inventory, never embed live credentials or clinical data. Keep public
 name/access-policy records separate from internal service-discovery endpoints.
 
 The reviewed [node-multienv prior art](production-critical-path.md#prior-art-from-the-existing-projects)
 can inform renderer inputs, reconciliation, resource ownership and provisioned vs
 serving states. It does not make an existing per-site resource schema the required
-shape for shared multitenant roles. A binding is independently deliverable once
-it renders deterministically, exposes the same logical endpoints and passes the
-cold-start, restart, restore, current-authority and teardown scenarios on its
-actual topology. Renderer implementation and Kubernetes runtime equivalence have separate evidence.
+shape for shared multitenant roles. A binding must render deterministically and expose the same logical endpoints.
+Test cold start, restart, restore, current authority and cleanup on its actual topology. Renderer implementation and Kubernetes runtime equivalence have separate evidence.
 Use release records for delivered bindings; this contract does not select a new
 operator dependency or infer actual-cluster acceptance from rendered resources.
 
@@ -206,9 +202,8 @@ reproduced. Generic synthetic scenarios suffice; private service facts are not
 needed in public configuration examples.
 
 A recipe lists which configurations are supported and which upgrades require
-coordinated replacement. Protocol versions, schemas and actual role incarnations
-must agree; a service endpoint or a Kubernetes readiness response does not prove
-every API replica has initialized every relevant tenant. Ready/drain preconditions
+coordinated replacement. Protocol versions, schemas and actual role incarnations must agree.
+A service endpoint or Kubernetes readiness response does not prove every replica has initialized every relevant tenant. Ready/drain preconditions
 may precede a steady-serving or continuity window whose declared oracle requires
 zero refusals; warm refusals during that window remain failures. Intentionally
 cold/startup/refusal experiments keep their separately declared expected outcomes. Preserve exact evidence when reusing a completed component in a new
@@ -262,10 +257,9 @@ contract. Alias-bound group/policy behavior and schedule precedence need a bound
 decision packet before claiming the feature. Ordinary production identity
 acceptance does not imply these richer sharing policies are already implemented.
 
-Evidence for an admitted policy includes synthetic anonymous/allowed/blocked
-users, overlapping groups, membership revocation, issuer outage, exact schedule
-boundaries, alias rotation/reassignment, cached/reconnected sockets and independent
-stored effects. Exercise every exposed path. OIDC-provider outage follows the adopted bounded-existing-access rule with
+Use synthetic anonymous, allowed and blocked users to test a policy.
+Include overlapping groups, revocation, issuer outage and exact schedule boundaries.
+Test alias rotation and reassignment, cached and reconnected sockets, and independent stored effects. Exercise every exposed path. OIDC-provider outage follows the adopted bounded-existing-access rule with
 current local authority still available. If current alias/group/schedule authority
 cannot be established, refuse the protected operation; never expand permissions. The first production scope must state which of these public-name
 features it offers and qualify those features before publication of user data.

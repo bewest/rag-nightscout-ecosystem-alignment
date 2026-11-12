@@ -137,8 +137,8 @@ def accepted():
 
 
 def current():
-    p = Plate('Private API composition: one internal listener per role', 'Read-derived from the 2026-11-10 lanes joined on codex/batch-join-20261110 • in acceptance, not pushed',
-        'IN ACCEPTANCE  |  serve.internal per role (lane 78ecba76); #8898 head b70ad83f still opens one listener per contract', True)
+    p = Plate('Private API composition: one internal listener per role', 'Historical role layout from the 2026-11-10 lanes • source-scoped architecture example',
+        'HISTORICAL STRUCTURE  |  serve.internal per role; current source and acceptance are in the release records', True)
     p.zone(198, 134, '1  CLIENT / REFERENCE INGRESS', 'Network reachability and application authority are separate', '#f1f5fb')
     p.card(300, 246, 1000, 'Browsers, apps, uploaders and owner/operator clients', ['Only nginx is host-published by the synthetic Compose binding'], h=70)
     p.arrow([(800,316),(800,350)])
@@ -183,13 +183,13 @@ def current():
         ('TRUST','Deployment → internal listener reachability','Socket default under a 0700 runtime directory; host/port needs explicit network trust. Service/version headers identify contracts, not credentials.'),
     ])
     p.text(48,y+36,'Source: lanes 78ecba76 (internal listener), 1376c294 + 66655756 (admin role), 07981b55 (activity), 956d0940 (alarm repeat).',18,MUTED)
-    p.text(48,y+64,'Joined acceptance is in progress; HTTP beyond loopback, Kubernetes and multi-host admission remain UNMEASURED.',18,AMBER,'600')
+    p.text(48,y+64,'Historical source scope only; consult release records for current acceptance and deployment qualification.',18,AMBER,'600')
     p.text(48,y+92,'Evidence: reports/tenancy/internal-listener-2026-11-10/README.md and admin-lifecycle-2026-11-10/; diagram is a read-derived view.',17,MUTED)
     return p.finish(y+105,'current-internal-api-topology')
 
 
 def proposed():
-    p=Plate('Proposed fixed-roster API-scale target','One serve.internal per role instance • deployment-selected socket or host/port • exact maintenance instances','PROPOSED SCALE — NOT IMPLEMENTED  |  Starts from one internal listener per role (in acceptance)',True)
+    p=Plate('Fixed-roster API-scale placement example','One serve.internal per role instance • deployment-selected socket or host/port • exact maintenance instances','PLACEMENT EXAMPLE  |  Replica mechanisms and qualification are separate; no capacity or production claim',True)
     p.zone(198,115,'1  PUBLIC / DMZ', 'DNS supplies reachability, not permission', '#f1f5fb')
     p.card(300,241,1000,'Clients / browsers → public DNS name',['Permanent or temporary name binds to current tenant/access policy'],h=64)
     p.arrow([(800,305),(800,332)])
@@ -221,8 +221,8 @@ def proposed():
     p.text(68,1387,'OIDC IdP ↔ optional shared human-session integration: separate current-authority adapter; no implicit DATA/root grant.',19,MUTED)
     y=p.table(1472,[
         ('DATA','Edge → UI / API service / realtime','TLS public ingress; tenant selection, current access policy and client authority still apply. Public operator ingress is forbidden.'),
-        ('N1','Realtime → REST service → replica A or B','socket-authority on each replica serve.internal; replica routing is proposed. Deployment controls access; existing tenant/client authority remains.'),
-        ('N2','Evaluator singleton → realtime singleton','Same alarm-delivery contract over selected binding. Remote deployment acceptance remains open. Realtime replication needs separate fanout ownership.'),
+        ('N1','Realtime → REST service → replica A or B','socket-authority on each replica serve.internal; the binding selects routing. Deployment controls access; existing tenant/client authority remains.'),
+        ('N2','Evaluator singleton → realtime singleton','Same alarm-delivery contract over selected binding. Qualify the selected remote binding. Realtime replication needs separate fanout ownership.'),
         ('C1…C5','Controller → each exact role instance','lifecycle-participant on each instance serve.internal. Complete roster and pinned incarnation remain mandatory; a load-balanced sample is insufficient.'),
         ('OPS','Monitoring → each private listener','Proposed health/readiness/metrics contract on serve.internal with fixed method/path registration and operation-specific lifetime rules. No metrics API is implied by a worker box.'),
         ('EDGE','nginx / gateway → decision projection','Optional JSON/status/header projection of existing application authority for gateway consumers. Direct app-to-app APIs keep the same authority without a mandatory gateway hop or authentication redesign. Message/write gates remain.'),
@@ -230,7 +230,7 @@ def proposed():
         ('OWNER','Owner client → authenticated private control','Separately authenticated listener or admitted edge route. Optional OIDC requires its own joined provider/session acceptance; operator control remains private.'),
         ('ADMIN','Operator → admin listener','ownership-operations on the operator plane (ADMIN_HOSTNAME/ADMIN_PORT) with its own ownership_operator identity; not a lifecycle participant and not scaled with API replicas.'),
     ])
-    p.text(48,y+36,'Remaining: operational contract, remote binding qualification, fixed-roster replicas and their acceptance (work plan).',18,AMBER,'600')
+    p.text(48,y+36,'Qualify the selected binding, exact replica roster and operating limits; use release records for current work state.',18,AMBER,'600')
     p.text(48,y+64,'Acceptance: public/private isolation, no self-blocking control drain, exact roster, replacement, ambiguity and pool/load bounds.',18,MUTED)
     p.text(48,y+92,'No dynamic API membership, replicated realtime or production/HA claim. MT-EVALUATOR-PARTITION is separate M7 work.',18,AMBER,'600')
     p.text(48,y+120,'Design source: docs/30-design/tenancy/runtime-topology.md and selectable-endpoints-and-api-scaling-plan.md.',17,MUTED)

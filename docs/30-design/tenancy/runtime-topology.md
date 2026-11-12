@@ -7,6 +7,40 @@ records. This Markdown generates the site's `runtime-topology.html`. The
 implementation and acceptance criteria; the [queue](../../../queue/work-queue.yaml)
 owns claimed work state. A diagram is not deployment or capacity acceptance.*
 
+## Reuse the components across profiles
+
+A deployment profile selects where the same roles run and how they share work.
+Configuration can select a supported capability. It cannot supply missing ownership,
+migration or recovery behavior.
+
+```mermaid
+flowchart TB
+  R["Reusable roles: API, evaluator, realtime, admin and change feed"]
+  R --> S["Small group<br/>Roles can share a host"]
+  R --> O["Operator deployment<br/>Scale roles separately"]
+  R -.-> F["Proposed fleet<br/>Several bounded deployment groups"]
+  S --> C["Same authority, write, ownership and recovery contracts"]
+  O --> C
+  F -.-> C
+```
+
+The arrows show composition choices, not an upgrade sequence or a capacity claim.
+Fleet placement and tenant moves need separate design and qualification.
+The [scale envelopes](#scale-envelopes-and-fleet-planning) define the evidence needed
+for each profile. The [deployment guide](deployment-bindings-and-public-names.md#experiment-rigs-and-deployment-recipes)
+distinguishes experimental rigs from operating recipes.
+
+| Term | Meaning here |
+|---|---|
+| Role | A responsibility, such as serving API requests or evaluating tenant data. |
+| Replica | Another instance of a role. It needs a valid work-assignment rule. |
+| Cohort | The declared processes that cooperate on a workload and its maintenance. |
+| Instance / incarnation | An actual process / one lifetime of that process. A replacement has a new incarnation. |
+| Shard / partition | A selected share of tenant work. The role's assignment rule determines its owner. |
+| Cell | A proposed bounded deployment, datastore and recovery unit. Several cells could form a fleet. |
+| Admission / fencing | Checks that permit work / controls that prevent an old or invalid actor from continuing it. |
+| Hint / checkpoint | A signal to inspect authoritative state / a position or revision in a named input stream or snapshot. Its contract states what completion it proves. |
+
 ## Read the diagrams
 
 The three plates preserve different architectural scopes: the historical accepted
@@ -64,15 +98,15 @@ lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant;
 tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
 unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
 listener finishes in-flight calls up to a deadline ([graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)).
-The `admin` role keeps its own operator-plane listener (`ADMIN_HOSTNAME`/`ADMIN_PORT`) for
-ownership operations, with its own `ownership_operator` database identity; it is not a lifecycle
-participant ([restore census](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
+The `admin` role serves ownership operations on its operator listener
+(`ADMIN_HOSTNAME`/`ADMIN_PORT`). It uses the `ownership_operator` database identity.
+It is not a lifecycle participant ([restore census](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
 [same address, different port](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-plane-same-address-different-port)). Evaluator's in-process
 `health()` result is not a remote metrics endpoint.
 
-The private application arrows are different calls, not a generic proxy chain:
-`evaluator → realtime` delivers notifications; `realtime → API` asks for current
-permissions and forwards authorized client writes/acknowledgements. Realtime
+The private arrows show specific calls.
+`evaluator → realtime` delivers notifications.
+`realtime → API` checks current permissions and forwards authorized writes and acknowledgements. Realtime
 owns Socket.IO semantics, subscriptions and fanout. It also checks recipients'
 current permissions during delivery. That synchronous authority dependency is
 read-derived; its latency, load and failure effects need measurement.
@@ -84,12 +118,12 @@ read-derived; its latency, load and failure effects need measurement.
 
 [PNG preview](diagrams/proposed-fixed-roster-network-topology.png) · [SVG source](diagrams/proposed-fixed-roster-network-topology.svg)
 
-Keep public/management and private interfaces independently bound. The adopted
-shape ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern), 2026-11-10) gives each role
-process one private listener, `serve.internal`, serving the contract modules the
-role's code selects; configuration chooses only `host`/`port` or `socket`
-(default: a unix socket under a runtime directory) and cannot move or merge
-contracts. On SIGTERM it [drains in-flight calls up to a deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
+Bind public, management and private interfaces separately.
+Each role has one private listener, `serve.internal`, under the
+[adopted decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+The role's code selects its contract modules. Configuration selects a socket or
+host/port; it cannot move or merge contracts. The default is a Unix socket.
+On SIGTERM, the listener [drains in-flight calls up to a deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
 Operational inspection is another explicit private contract; its existence does
 not imply a public metrics endpoint or complete production monitoring.
 
@@ -152,9 +186,8 @@ Cell/fleet arrangement is **PROPOSED**, requiring explicit maintainer adoption.
 This adds no gate or prerequisite to current acceptance or the pilot.*
 
 10,000 tenants is an arbitrary experimental point and current preview bound,
-not an overall product goal. Planning must cover efficient groups of 10–100
-tenants, operators serving hundreds or thousands, and a credible path to
-100,000+ tenants **in total across a fleet**. Record tenants, human users,
+not an overall product goal. Planning covers small groups of 10–100 tenants and operators with hundreds or thousands.
+It also needs a credible path to 100,000+ tenants **across a fleet**. Record tenants, human users,
 concurrent sockets, active evaluation tenants and active alarm/delivery demand
 separately; none is a multiplier implied by another. A cohort is the selected
 workload/participant scope. A proposed cell is a bounded deployment/datastore
@@ -168,36 +201,38 @@ control-plane recovery are additional responsibilities: adding replicas does
 not implement them. The existing [deployment/fault-domain guide](deployment-and-rig-testing.md#deployment-choices-and-fault-domains)
 keeps per-tenant cells distinct from shared-cohort and multi-host choices.
 
-| Envelope | Evidence needed, with exact source/profile and population | Later owner, decision trigger and smallest discriminating experiment |
+| Envelope | Evidence needed | Next bounded proof and owner |
 |---|---|---|
-| Small group: idle and steady fixed cost | Whole-stack idle/steady vCPU, RAM, storage/IOPS and dependency cost at 10–100 tenants, with identical functional/freshness/recovery checks. Include edge, UI, control, feed, PostgreSQL, Vault/Agent and selected identity/monitoring dependencies. | M7 measurement owner with deployment owner: after the frozen baseline, compare two explicitly selected profiles at one small population and the same workload; change one axis. A reproduced fixed-cost difference can motivate a packaging/profile proposal, not automatic adoption. |
-| Operator density: hundreds/thousands | Whole-stack cost per tenant-month at stated utilization, including retained data, backups, dependency charges and reserved N−1 recovery headroom. Measure correctness, data/alarm freshness and recovery ceilings under steady/hot load and loss of one selected participant or failure domain; name the actual fault scope. | Deployment/recovery owner with M7 measurement owner: run one matched-density baseline and one candidate, then one supported controlled failure/recovery. A measured bottleneck or recovery ceiling triggers review of the affected component/placement design; fewer nodes alone proves no cost advantage. |
-| Fleet: 100,000+ total path | Bound coordination/roster work and database growth per proposed unit and across units: routing, provisioning, retention, migration, backup/restore, feed/WAL and maintenance remain accounted for. Preserve tenant isolation, current authority, clinical outcomes and freshness/recovery ceilings across placement changes. | Architecture/control-plane and storage owners: first inventory boundaries, then a two-unit synthetic routing/move/recovery discriminator with independent stored-data and ownership oracles. Only an explicit reviewed adoption of placement, cross-database move and control recovery contracts can select a cell/fleet arrangement; this experiment is not fleet-capacity proof. |
+| Small group | Whole-stack fixed and marginal cost at idle and steady load. Include application, database, secrets and platform resources. | Measurement and deployment owners compare two selected profiles after the baseline. Use one population and workload; change one axis. |
+| Operator fleet | Density and total cost within freshness, correctness and recovery limits. Include capacity after the declared node or dependency failure. | Measurement and deployment owners test one stated failure on a selected topology. Check independent tenant progress and recovery before recommending a recipe. |
+| Large fleet, proposed | Bounded routing, provisioning, database growth, maintenance and recovery across deployment groups. Total fleet size is not one database's capacity. | Architecture and storage owners first inventory boundaries. A two-group synthetic move/recovery proof can inform an explicit placement and migration decision. |
 
-Design should preserve topology-independent behavior before stress testing:
-current tenant authority/revocation; committed write outcomes and uncertainty;
-owned work/checkpoint continuity; lifecycle fencing and response drain; timer
-semantics and public client contracts. Proposed compatibility seams are versioned
+Small-profile cost differences can justify packaging changes. They do not adopt a
+new production profile. Fleet experiments require independent stored-data and
+ownership checks. They do not prove fleet capacity or adopt a cell architecture.
+
+Keep the same behavior across topology choices. Preserve current tenant authority
+and revocation, committed write outcomes and uncertainty. Preserve owned work,
+checkpoints, lifecycle fencing, response drain, timer rules and public client contracts.
+Proposed compatibility seams are versioned
 internal contracts/capabilities **or explicit coordinated-upgrade refusal**, not
 a blanket mixed-version promise. Keep role instance/incarnation distinct from a
 service address, durable tenant identity distinct from a worker, and hints
 distinct from durable truth. Transport adapters share a behavioral contract;
 these seams do not require a universal framework or a new broker.
 
-For each later design brief, state the invariant and concrete code/call boundary,
-smallest necessary implementation, compatibility/migration/failure behavior,
-owner, one focused discriminating control and the evidence that would justify
-infrastructure changes. Classify it as required correctness/compatibility,
+Each design brief states the required property, affected code and smallest necessary change.
+It names the owner and explains compatibility, migration and failure behavior.
+It specifies one discriminating control and the evidence needed to justify infrastructure changes. Classify it as required correctness/compatibility,
 measured optimization, bounded prototype or deferred hypothesis. This is a
 **proposed tracking rubric**, preserving adopted decisions rather than choosing
 a fleet topology or adding current acceptance requirements.
 
 Comparative baselines and savings remain **ASSUMPTION** until reproduced with
 whole-stack resource/cost accounting, workload, retention, prices and availability
-scope. Before proposing any higher preview limit, inventory every all-roster
-O(N) path, pool/connection and file-descriptor budget, queue/backpressure bound,
-WAL/slot retention, database/index growth and complete maintenance participant
-set. Identify bounded work per request/tick and explicit degraded recovery;
+scope. Before raising a preview limit, inventory work that scans the whole tenant roster.
+Account for connection pools, file descriptors, queues, backpressure, WAL retention and database growth.
+Include every maintenance participant. Identify bounded work per request/tick and explicit degraded recovery;
 extra worker count does not remove these constraints. The maintainer adopts
 later architecture/profile choices from those measurements with the named
 owners. These envelopes neither raise current limits nor infer PostgreSQL HA,
@@ -224,10 +259,10 @@ The durable qualification questions are:
 
 These are separate from production/default admission. Gateway hooks, additional
 brokers and new fleet protocols are selected by a concrete requirement or measured
-constraint, not by diagram shape. This page owns component/topology interpretation;
-the [deployment guide](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
-owns binding responsibilities, the [production guide](production-critical-path.md)
-owns admission sequencing, and the queue/release homes own current state.
+constraint, not by diagram shape. This page explains components and topology.
+The [deployment guide](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
+owns binding responsibilities. The [production guide](production-critical-path.md) explains admission order.
+The queue and release records own current state.
 
 Figures are generated by
 [`render_tenancy_topologies.py`](../../../tools/site/render_tenancy_topologies.py).
@@ -269,9 +304,8 @@ must name the actual rule rather than inventing token-range metadata.
 Stable assignment intends one evaluator owner per tenant. The adopted M7 policy
 allows a bounded overlap window with idempotent effects during membership change;
 it does not establish instantaneous exactly-once execution or automatic takeover.
-Transition and duplicate-effect claims require their actual source-scoped evidence. The operational API
-must report conflicts and blocked work even when it refuses evaluation; querying
-inspection must not itself create work, acquire ownership or clear suspension.
+Transition and duplicate-effect claims require their actual source-scoped evidence. The operational API must report conflicts and blocked work, including when evaluation refuses.
+Inspection must not create work, acquire ownership or clear suspension.
 
 Evaluator is not the only component with ownership-sensitive state. A ring is
 one possible assignment mechanism, not a universal scaling rule:

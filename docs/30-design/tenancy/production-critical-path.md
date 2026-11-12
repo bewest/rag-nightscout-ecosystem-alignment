@@ -118,10 +118,9 @@ explains authentication, group policy and native credential preservation.
 
 ## Prior art from the existing projects
 
-Reuse the operational lessons: initialize durable resources before serving;
-separate public names from stable tenant identity; make ownership, deletion,
-consent and partial provisioning explicit; preserve data and keys independently
-of compute. Existing per-tenant process designs do not establish shared-role
+Initialize durable resources before serving. Separate public names from stable tenant identity.
+Make ownership, deletion, consent and partial provisioning explicit.
+Preserve data and keys independently of compute. Existing per-tenant process designs do not establish shared-role
 resource or failure limits.
 
 The [retained November source assessment](../../archive/tenancy/production-path-assessment-2026-11-10.md#prior-art-from-the-existing-projects)
