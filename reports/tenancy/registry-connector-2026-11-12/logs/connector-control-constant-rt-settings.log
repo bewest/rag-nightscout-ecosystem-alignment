@@ -1,0 +1,25 @@
+
+
+  !
+
+  0 passing (2s)
+  1 failing
+
+  1) registry realtime persisted settings discriminator
+       RT_REGISTRY_D15: stored units/plugins/thresholds reach both HTTP status and socket frames; update changes identity and missing state refuses:
+
+      AssertionError [ERR_ASSERTION]: RT_REGISTRY_D15 realtime uses committed units
+
+'mg/dl' !== 'mmol'
+
+      + expected - actual
+
+      -mg/dl
+      +mmol
+      
+      at Context.<anonymous> (tests/registry-realtime-settings.integration.test.js:46:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+
+

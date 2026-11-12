@@ -1,0 +1,16 @@
+
+
+  !
+
+  0 passing (2s)
+  1 failing
+
+  1) durable connector source definitions and registry refresh (native PostgreSQL)
+       CS_MAINTENANCE: config writes refuse during a real exclusive lock or suspended window and succeed afterwards:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/connector-sources.integration.test.js:88:7)
+
+
+
+
