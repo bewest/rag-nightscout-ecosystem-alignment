@@ -1,0 +1,3 @@
+2026-11-12T02:29:41Z load=4.15 3.85 9.26 window start
+2026-11-12T02:44:44Z load=6.79 7.17 8.19 window end
+2026-11-12T02:48:27Z load=8.89 8.90 8.72 restart phase end

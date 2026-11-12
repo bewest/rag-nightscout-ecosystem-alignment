@@ -1,0 +1,25 @@
+nsdemo_evaluator	602	12748.4	21.177	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_realtime	603	12661.6	20.998	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_lifetime_evaluator	11036	12033.9	1.090	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_na
+nsdemo_outbox	80310	11478.7	0.143	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity AND c.relforcerowsecurity AS s
+nsdemo_outbox	20077	11092.3	0.552	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplication, pg_has_role(current_user,
+nsdemo_outbox	20077	10309.0	0.513	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_realtime	19120	10125.3	0.530	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_suppression	10039	10095.6	1.006	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM 
+nsdemo_lifetime_evaluator	11036	9324.4	0.845	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	11040	8902.7	0.806	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_suppression	10039	5213.8	0.519	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_evaluator	7000	3649.0	0.521	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_api	5760	2953.7	0.513	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_realtime	892	966.9	1.084	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_na
+nsdemo_lifetime_realtime	892	715.7	0.802	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_api	640	705.2	1.102	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_lifetime_realtime	892	678.0	0.760	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_lifetime_evaluator	11040	644.5	0.058	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_lifetime_api	640	542.4	0.848	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_api	640	518.0	0.809	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_evaluator	1000	357.2	0.357	SELECT table_schema || $2 || table_name AS name FROM information_schema.columns WHERE column_name = $3 AND (table_schema || $4 || table_name
+nsdemo_suppression	10039	249.0	0.025	SELECT c.relrowsecurity AND c.relforcerowsecurity AS secured, pg_has_role(current_user,c.relowner,$2) AS owns, has_table_privilege(c.oid,$3)
+nsdemo_outbox	20079	244.2	0.012	SELECT /* notification-readiness-ledger */ name,checksum FROM "nsdemo_outbox".schema_migrations ORDER BY name
+nsdemo_outbox	10039	234.4	0.023	SELECT * FROM "nsdemo_outbox".tenant_notification_state WHERE tenant_id=$1 AND consumer=$2 FOR UPDATE
+nsdemo_outbox	10039	151.3	0.015	SELECT * FROM "nsdemo_outbox".tenant_notification_requests /* notification-producer-active */ WHERE tenant_id=$1 AND consumer=$2 AND state I

@@ -1,0 +1,25 @@
+nsdemo_realtime	603	12433.0	20.619	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_evaluator	602	12396.9	20.593	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_lifetime_evaluator	11000	12362.0	1.124	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_outbox	80000	11528.6	0.144	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity AND c.relforcerowsecurity AS s
+nsdemo_outbox	20000	11098.3	0.555	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplication, pg_has_role(current_user,
+nsdemo_outbox	20000	10382.7	0.519	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_suppression	10000	10183.4	1.018	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws($1,coalesce($2||coalesce((SELECT oid::text FROM pg_name
+nsdemo_lifetime_evaluator	11000	9535.1	0.867	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_realtime	17760	9240.8	0.520	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_lifetime_evaluator	11000	9075.7	0.825	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_suppression	10000	5286.0	0.529	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_evaluator	7000	4298.4	0.614	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_realtime	888	1013.4	1.141	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_na
+nsdemo_lifetime_realtime	888	745.6	0.840	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	888	667.4	0.752	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_lifetime_evaluator	11000	647.7	0.059	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_evaluator	1000	422.6	0.423	SELECT table_schema || $2 || table_name AS name FROM information_schema.columns WHERE column_name = $3 AND (table_schema || $4 || table_name
+nsdemo_suppression	10000	249.6	0.025	SELECT c.relrowsecurity AND c.relforcerowsecurity AS secured, pg_has_role(current_user,c.relowner,$2) AS owns, has_table_privilege(c.oid,$3)
+nsdemo_outbox	20000	244.4	0.012	SELECT /* notification-readiness-ledger */ name,checksum FROM "nsdemo_outbox".schema_migrations ORDER BY name
+nsdemo_outbox	10000	237.4	0.024	SELECT * FROM "nsdemo_outbox".tenant_notification_state WHERE tenant_id=$1 AND consumer=$2 FOR UPDATE
+nsdemo_outbox	10000	151.6	0.015	SELECT * FROM "nsdemo_outbox".tenant_notification_requests /* notification-producer-active */ WHERE tenant_id=$1 AND consumer=$2 AND state I
+nsdemo_outbox	10000	136.1	0.014	SELECT * FROM "nsdemo_outbox".tenant_notification_requests WHERE tenant_id=$1 AND consumer=$2 AND dedup_key LIKE $3 AND ((state IN ($6,$7) A
+nsdemo_realtime	888	100.5	0.113	UPDATE "nsdemo_rt_checkpoint"."tenant_consumer_checkpoint" SET checkpoint=$3, projection=$4::jsonb, contract_digest=$5 WHERE tenant_id=$1 AN
+nsdemo_suppression	10000	100.1	0.010	SELECT tenant_id,alarm_group,alarm_level,acked_at,expires_at FROM "nsdemo_alarm".tenant_alarm_suppression WHERE tenant_id=$1 AND expires_at 
+nsdemo_lifetime_evaluator	22000	77.4	0.004	SELECT set_config($2,$1,$3)

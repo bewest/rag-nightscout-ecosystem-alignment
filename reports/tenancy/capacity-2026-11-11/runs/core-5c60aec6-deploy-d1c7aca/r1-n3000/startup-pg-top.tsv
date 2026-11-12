@@ -1,0 +1,25 @@
+nsdemo_api	60102	51386.8	0.855	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_evaluator	24001	21651.5	0.902	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_evaluator	11853	21304.9	1.797	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_lifetime_evaluator	11849	17521.2	1.479	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	11842	16131.6	1.362	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_lifetime_api	6908	12321.3	1.784	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_realtime	13601	11970.1	0.880	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_api	6904	10879.5	1.576	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_suppression	5850	10232.0	1.749	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws($1,coalesce($2||coalesce((SELECT oid::text FROM pg_name
+nsdemo_lifetime_api	6904	9246.7	1.339	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_outbox	34764	8590.8	0.247	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity AND c.relforcerowsecurity AS s
+nsdemo_outbox	8692	8346.0	0.960	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplication, pg_has_role(current_user,
+nsdemo_outbox	8691	7599.6	0.874	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_realtime	96	7372.8	76.800	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_lifetime_realtime	3384	6077.4	1.796	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_evaluator	70	5701.8	81.455	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_suppression	5848	5044.6	0.863	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_realtime	3380	4944.9	1.463	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	3380	4633.9	1.371	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_evaluator	3000	1830.2	0.610	SELECT table_schema || $2 || table_name AS name FROM information_schema.columns WHERE column_name = $3 AND (table_schema || $4 || table_name
+nsdemo_lifetime_evaluator	11842	1645.4	0.139	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_lifetime_api	6904	951.5	0.138	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_api	30003	911.3	0.030	SELECT c.anonymous_roles, s.subject_id AS found_subject, l.role_name, r.name AS found_role, r.permissions FROM "nsdemo_authorization".tenant
+nsdemo_readiness	9013	692.9	0.077	SELECT to_regclass($1) IS NOT NULL AS present
+nsdemo_evaluator	3000	535.5	0.179	UPDATE "nsdemo_eval_checkpoint"."tenant_consumer_checkpoint" SET checkpoint=$3, projection=$4::jsonb, contract_digest=$5 WHERE tenant_id=$1 

@@ -1,0 +1,25 @@
+nsdemo_api	20102	15349.8	0.764	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_evaluator	4004	6727.4	1.680	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_evaluator	8001	6573.8	0.822	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_evaluator	4000	5682.1	1.421	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	4000	5203.8	1.301	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_lifetime_api	2293	3714.0	1.620	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_realtime	4242	3412.3	0.804	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_api	2289	3358.5	1.467	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_suppression	2006	3208.9	1.600	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws($1,coalesce($2||coalesce((SELECT oid::text FROM pg_name
+nsdemo_lifetime_api	2289	2889.4	1.262	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_outbox	3005	2725.3	0.907	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplication, pg_has_role(current_user,
+nsdemo_outbox	12020	2721.6	0.226	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity AND c.relforcerowsecurity AS s
+nsdemo_outbox	3004	2364.5	0.787	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_realtime	1116	1815.1	1.626	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_suppression	2004	1571.0	0.784	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_realtime	1112	1518.1	1.365	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	1112	1404.1	1.263	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_realtime	29	726.3	25.046	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_evaluator	1000	578.4	0.578	SELECT table_schema || $2 || table_name AS name FROM information_schema.columns WHERE column_name = $3 AND (table_schema || $4 || table_name
+nsdemo_lifetime_evaluator	4000	546.2	0.137	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_evaluator	17	403.9	23.761	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_lifetime_evaluator	5	302.7	60.547	SELECT /* operation-window-role lifetime */ n.oid AS namespace_oid,n.nspowner AS owner_oid, r.rolsuper OR r.rolbypassrls OR r.rolcreaterole 
+nsdemo_lifetime_realtime	5	297.3	59.455	SELECT /* operation-window-role lifetime */ n.oid AS namespace_oid,n.nspowner AS owner_oid, r.rolsuper OR r.rolbypassrls OR r.rolcreaterole 
+nsdemo_lifetime_api	2289	291.2	0.127	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_api	10003	276.5	0.028	SELECT c.anonymous_roles, s.subject_id AS found_subject, l.role_name, r.name AS found_role, r.permissions FROM "nsdemo_authorization".tenant

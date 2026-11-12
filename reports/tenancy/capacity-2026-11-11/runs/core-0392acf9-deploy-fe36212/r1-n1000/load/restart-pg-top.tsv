@@ -1,0 +1,25 @@
+nsdemo_lifetime_api	25462	57379.4	2.254	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_api	25466	48487.1	1.904	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_lifetime_api	25461	33144.8	1.302	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_api	38140	30559.9	0.801	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_realtime	23400	17447.7	0.746	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_evaluator	6059	12389.8	2.045	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_na
+nsdemo_lifetime_evaluator	6055	9751.5	1.610	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	6055	9168.4	1.514	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_evaluator	8386	8701.6	1.038	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_suppression	4006	7725.6	1.929	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws($1,coalesce($2||coalesce((SELECT oid::text FROM pg_name
+nsdemo_outbox	28020	7195.0	0.257	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity AND c.relforcerowsecurity AS s
+nsdemo_outbox	7005	7179.2	1.025	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplication, pg_has_role(current_user,
+nsdemo_outbox	7004	6657.9	0.951	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_realtime	268	5763.2	21.505	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_lifetime_realtime	3138	5125.2	1.633	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace
+nsdemo_lifetime_realtime	3134	4692.6	1.497	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_evaluator	173	4404.9	25.462	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_suppression	4004	3884.2	0.970	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws($2,coalesce($3||coalesce((SELECT oid::text FROM pg_namespace WH
+nsdemo_lifetime_realtime	3134	3739.7	1.193	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_lifetime_api	25461	3331.6	0.131	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_api	5752	1071.4	0.186	INSERT INTO "nsdemo_secrets".secret_audit (event_id, tenant_id, principal, consumer, operation, secret_id, phase, event_time, target_version
+nsdemo_lifetime_evaluator	6055	896.1	0.148	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_evaluator	1055	723.2	0.686	SELECT table_schema || $2 || table_name AS name FROM information_schema.columns WHERE column_name = $3 AND (table_schema || $4 || table_name
+nsdemo_lifetime_api	50923	514.3	0.010	SELECT set_config($2,$1,$3)
+nsdemo_lifetime_api	5	359.3	71.853	SELECT /* operation-window-role lifetime */ n.oid AS namespace_oid,n.nspowner AS owner_oid, r.rolsuper OR r.rolbypassrls OR r.rolcreaterole 

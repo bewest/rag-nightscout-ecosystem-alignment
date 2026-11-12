@@ -1,0 +1,171 @@
+{
+  "args": {
+    "per": 2,
+    "open": 5,
+    "probeEveryMs": 3000,
+    "tenants": 3000,
+    "stockMs": 300000,
+    "recoveryMs": 120000,
+    "evalTimeoutMs": 900000
+  },
+  "exchangeMs": 20655,
+  "prime": {
+    "sockets": 6000,
+    "primed": 138,
+    "dark": 5862,
+    "serverDisconnected": 0,
+    "ms": 300070,
+    "reasons": {
+      "transport error": 27517,
+      "connect_error:xhr post error": 13467,
+      "connect_error:xhr poll error": 169229,
+      "connect_error:timeout": 8635,
+      "ping timeout": 419,
+      "transport close": 18
+    }
+  },
+  "window": {
+    "ms": 656518,
+    "writes": {
+      "ok": 0,
+      "failed": 209
+    },
+    "sockets": 6000,
+    "connectedAtEnd": 28,
+    "serverDisconnectsInWindow": 0,
+    "writeToFrameMs": {
+      "n": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "writeToFirstFrameMs": {
+      "n": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "deliveredFrames": 0,
+    "expectedFrames": 418,
+    "writeToEvaluationMs": {
+      "n": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "evaluationMissedWithin120s": 0,
+    "reasons": {
+      "transport error": 102681,
+      "connect_error:xhr post error": 59966,
+      "connect_error:xhr poll error": 640624,
+      "connect_error:timeout": 30959,
+      "ping timeout": 1186,
+      "transport close": 101
+    }
+  },
+  "restart": {
+    "restartIso": "2026-11-12T02:08:39.605Z",
+    "healthyMs": {
+      "api": 11153,
+      "tenant-admin": 11153,
+      "realtime": 26285,
+      "evaluator": 40557
+    },
+    "firstServedMs": {
+      "0": {
+        "ms": 11207,
+        "statuses": {
+          "200": 5,
+          "502": 12,
+          "503": 1
+        }
+      },
+      "1500": {
+        "ms": 10848,
+        "statuses": {
+          "200": 4,
+          "502": 12,
+          "503": 2
+        }
+      },
+      "2999": {
+        "ms": 10851,
+        "statuses": {
+          "200": 4,
+          "502": 12,
+          "503": 2
+        }
+      }
+    },
+    "healthCheckPassMs": {
+      "api": 10873,
+      "tenant-admin": 3239,
+      "realtime": 26171,
+      "evaluator": 40490
+    },
+    "edgeAfterRoleRestart": [
+      401,
+      401,
+      401
+    ],
+    "edgeRestarted": {
+      "atMs": 21679,
+      "commandMs": 11895,
+      "async": true
+    },
+    "evalGap": {
+      "tenants": 3000,
+      "evaluatorReadyMs": 40244,
+      "evaluatedAfterReady": 3000,
+      "sinceRestartMs": {
+        "p25": 66386,
+        "p50": 96091,
+        "p90": 181666,
+        "max": 209842
+      },
+      "within": {
+        "60s": 556,
+        "300s": 3000,
+        "900s": 3000
+      },
+      "notEvaluatedWithinTimeout": 0,
+      "backendsSeen": 16,
+      "timeoutS": 900,
+      "pollLoopMs": {
+        "n": 131,
+        "first10": [
+          543,
+          275,
+          379,
+          337,
+          327,
+          289,
+          289,
+          343,
+          546,
+          453
+        ],
+        "max": 1303
+      }
+    },
+    "stockRecovered": 0,
+    "stockAllRecoveredMs": null,
+    "retryAllRecoveredMs": null,
+    "retryRecovered": 0,
+    "sockets": 6000,
+    "restartCommandMs": 10847,
+    "reasons": {
+      "transport error": 137544,
+      "connect_error:xhr post error": 78412,
+      "connect_error:xhr poll error": 895166,
+      "connect_error:timeout": 44107,
+      "ping timeout": 1698,
+      "transport close": 195
+    },
+    "serverDisconnectsBy5s": {},
+    "serverDisconnectsBeforeRestart": 0
+  }
+}

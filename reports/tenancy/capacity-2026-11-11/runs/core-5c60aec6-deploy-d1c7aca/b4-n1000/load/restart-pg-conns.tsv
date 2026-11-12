@@ -1,0 +1,10 @@
+nsdemo_api	active	3
+nsdemo_api	idle	9
+nsdemo_evaluator	idle	1
+nsdemo_lifetime_api	active	4
+nsdemo_lifetime_api	idle	4
+nsdemo_lifetime_evaluator	idle	5
+nsdemo_lifetime_realtime	idle	4
+nsdemo_outbox	idle	2
+nsdemo_realtime	idle	4
+nsdemo_suppression	idle	2

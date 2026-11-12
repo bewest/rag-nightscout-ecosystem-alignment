@@ -1,0 +1,7 @@
+date_utc=2026-11-12T02:15:43Z
+uptime= 18:15:43 up 46 days,  9:53,  1 user,  load average: 24.35, 24.44, 19.27
+loadavg=24.35 24.44 19.27
+cores=16
+mem_available_kb=32507384
+containers_running=43
+containers_other=35

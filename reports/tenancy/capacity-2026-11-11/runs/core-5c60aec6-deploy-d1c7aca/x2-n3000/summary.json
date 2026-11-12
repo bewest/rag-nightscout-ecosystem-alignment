@@ -1,0 +1,1599 @@
+{
+  "tenants": 3000,
+  "deploy": {
+    "tenants": 3000,
+    "port": 33270,
+    "image": "nscap:5c60aec6-d1c7aca",
+    "bootstrapSeconds": 58.7,
+    "realtimeMaxSockets": 12000,
+    "socketCapPerTenant": "4",
+    "configMaxBytes": "4194304"
+  },
+  "host": {
+    "deploy": {
+      "date_utc": "2026-11-12T01:11:42Z",
+      "uptime": " 17:11:42 up 46 days,  8:49,  1 user,  load average: 2.67, 6.33, 7.89",
+      "loadavg": "2.67 6.33 7.89",
+      "cores": "16",
+      "mem_available_kb": "36717436",
+      "containers_running": "35",
+      "containers_other": "35"
+    },
+    "idleBefore": {
+      "date_utc": "2026-11-12T01:14:26Z",
+      "uptime": " 17:14:26 up 46 days,  8:52,  1 user,  load average: 8.57, 7.02, 7.85",
+      "loadavg": "8.57 7.02 7.85",
+      "cores": "16",
+      "mem_available_kb": "32789636",
+      "containers_running": "43",
+      "containers_other": "35"
+    },
+    "loadBefore": {
+      "date_utc": "2026-11-12T01:19:29Z",
+      "uptime": " 17:19:29 up 46 days,  8:57,  1 user,  load average: 3.42, 4.59, 6.53",
+      "loadavg": "3.42 4.59 6.53",
+      "cores": "16",
+      "mem_available_kb": "33095004",
+      "containers_running": "43",
+      "containers_other": "35"
+    },
+    "loadAfter": {
+      "date_utc": "2026-11-12T01:42:16Z",
+      "uptime": " 17:42:16 up 46 days,  9:19,  1 user,  load average: 20.73, 19.63, 15.22",
+      "loadavg": "20.73 19.63 15.22",
+      "cores": "16",
+      "mem_available_kb": "33092340",
+      "containers_running": "43",
+      "containers_other": "35"
+    },
+    "loadavgIdle": {
+      "min": 2.88,
+      "max": 8.57,
+      "mean": 4.1
+    },
+    "loadavgLoad": {
+      "min": 3.63,
+      "max": 26.45,
+      "mean": 15.8
+    }
+  },
+  "startup": {
+    "firstServedMs": [
+      5677,
+      6557,
+      6563
+    ],
+    "roles": {
+      "api": {
+        "healthyMs": 5814,
+        "exit": null,
+        "containerStartMs": 268,
+        "listenerOpenMs": 1731,
+        "warmDrainedMs": 96941,
+        "drainedLine": "Tenant warm drained: ready 3000 failed 0 deferred 0 after 95256 ms",
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      },
+      "realtime": {
+        "healthyMs": 5945,
+        "exit": null,
+        "containerStartMs": 2890,
+        "listenerOpenMs": 3875,
+        "warmDrainedMs": 97020,
+        "drainedLine": "Tenant warm drained: ready 3000 failed 0 deferred 0 after 93192 ms",
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      },
+      "evaluator": {
+        "healthyMs": 29597,
+        "exit": null,
+        "containerStartMs": 5554,
+        "listenerOpenMs": null,
+        "warmDrainedMs": 21700,
+        "drainedLine": "Tenant warm drained: ready 3000 failed 0 deferred 0 after 15114 ms",
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      },
+      "tenant-admin": {
+        "healthyMs": 6202,
+        "exit": null,
+        "containerStartMs": 2889,
+        "listenerOpenMs": 3674,
+        "warmDrainedMs": null,
+        "drainedLine": null,
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      }
+    }
+  },
+  "idle": {
+    "minutes": 5,
+    "roles": {
+      "api": {
+        "cpuMsPerMin": 7379.6,
+        "cpuMsPerTenantMin": 2.46,
+        "cpuCores": 0.123,
+        "memMiB": 1986.9,
+        "anonMiB": 1922.4,
+        "anonMiBPerTenant": 0.641
+      },
+      "realtime": {
+        "cpuMsPerMin": 16821.5,
+        "cpuMsPerTenantMin": 5.607,
+        "cpuCores": 0.28,
+        "memMiB": 229.3,
+        "anonMiB": 218.3,
+        "anonMiBPerTenant": 0.073
+      },
+      "evaluator": {
+        "cpuMsPerMin": 32779.3,
+        "cpuMsPerTenantMin": 10.926,
+        "cpuCores": 0.546,
+        "memMiB": 775.9,
+        "anonMiB": 748,
+        "anonMiBPerTenant": 0.249
+      },
+      "tenant-admin": {
+        "cpuMsPerMin": 5638,
+        "cpuMsPerTenantMin": 1.879,
+        "cpuCores": 0.094,
+        "memMiB": 52.5,
+        "anonMiB": 48.9,
+        "anonMiBPerTenant": 0.016
+      },
+      "postgres": {
+        "cpuMsPerMin": 83758.5,
+        "cpuMsPerTenantMin": 27.919,
+        "cpuCores": 1.396,
+        "memMiB": 244.8,
+        "anonMiB": 61.3,
+        "anonMiBPerTenant": 0.02
+      },
+      "nginx": {
+        "cpuMsPerMin": 11.2,
+        "cpuMsPerTenantMin": 0.004,
+        "cpuCores": 0,
+        "memMiB": 16.1,
+        "anonMiB": 10.2,
+        "anonMiBPerTenant": 0.003
+      }
+    },
+    "dbMsPerTenantMin": 12.532,
+    "dbMsTotal": 188829.7,
+    "dbByRole": {
+      "outbox": {
+        "calls": 452592,
+        "ms": 58436.6
+      },
+      "lifetime_evaluator": {
+        "calls": 193800,
+        "ms": 48713.6
+      },
+      "realtime": {
+        "calls": 176066,
+        "ms": 32752.5
+      },
+      "suppression": {
+        "calls": 145349,
+        "ms": 27645.8
+      },
+      "evaluator": {
+        "calls": 906,
+        "ms": 17361
+      },
+      "lifetime_realtime": {
+        "calls": 14496,
+        "ms": 3920.2
+      }
+    },
+    "connections": 15,
+    "connectionsByIdentity": {
+      "nsdemo_evaluator": 1,
+      "nsdemo_lifetime_evaluator": 4,
+      "nsdemo_lifetime_realtime": 2,
+      "nsdemo_outbox": 2,
+      "nsdemo_realtime": 4,
+      "nsdemo_suppression": 2
+    }
+  },
+  "idleMaxBackends": 43,
+  "load": {
+    "minutes": 15.4,
+    "roles": {
+      "api": {
+        "cpuMsPerMin": 272803.4,
+        "cpuMsPerTenantMin": 90.934,
+        "cpuCores": 4.547,
+        "memMiB": 2389.4,
+        "anonMiB": 2316,
+        "anonMiBPerTenant": 0.772
+      },
+      "realtime": {
+        "cpuMsPerMin": 141626.6,
+        "cpuMsPerTenantMin": 47.209,
+        "cpuCores": 2.36,
+        "memMiB": 504.6,
+        "anonMiB": 534.6,
+        "anonMiBPerTenant": 0.178
+      },
+      "evaluator": {
+        "cpuMsPerMin": 43415.4,
+        "cpuMsPerTenantMin": 14.472,
+        "cpuCores": 0.724,
+        "memMiB": 836.6,
+        "anonMiB": 805,
+        "anonMiBPerTenant": 0.268
+      },
+      "tenant-admin": {
+        "cpuMsPerMin": 8803.8,
+        "cpuMsPerTenantMin": 2.935,
+        "cpuCores": 0.147,
+        "memMiB": 52.1,
+        "anonMiB": 47.6,
+        "anonMiBPerTenant": 0.016
+      },
+      "postgres": {
+        "cpuMsPerMin": 108584.1,
+        "cpuMsPerTenantMin": 36.195,
+        "cpuCores": 1.81,
+        "memMiB": 277.6,
+        "anonMiB": 74.1,
+        "anonMiBPerTenant": 0.025
+      },
+      "nginx": {
+        "cpuMsPerMin": 20628.6,
+        "cpuMsPerTenantMin": 6.876,
+        "cpuCores": 0.344,
+        "memMiB": 191.1,
+        "anonMiB": 96.8,
+        "anonMiBPerTenant": 0.032
+      }
+    },
+    "dbMsPerTenantMin": 17.195,
+    "dbMsTotal": 794362.6,
+    "dbByRole": {
+      "outbox": {
+        "calls": 671847,
+        "ms": 172712.9
+      },
+      "lifetime_evaluator": {
+        "calls": 323911,
+        "ms": 169668.3
+      },
+      "evaluator": {
+        "calls": 167833,
+        "ms": 118409.4
+      },
+      "realtime": {
+        "calls": 206472,
+        "ms": 102139.5
+      },
+      "suppression": {
+        "calls": 215981,
+        "ms": 84081.5
+      },
+      "api": {
+        "calls": 499457,
+        "ms": 83291.2
+      },
+      "lifetime_api": {
+        "calls": 98148,
+        "ms": 54498.9
+      },
+      "lifetime_realtime": {
+        "calls": 18960,
+        "ms": 9560.9
+      }
+    },
+    "connections": 23,
+    "connectionsByIdentity": {
+      "nsdemo_api": 6,
+      "nsdemo_evaluator": 1,
+      "nsdemo_lifetime_api": 7,
+      "nsdemo_lifetime_evaluator": 4,
+      "nsdemo_outbox": 2,
+      "nsdemo_realtime": 1,
+      "nsdemo_suppression": 2
+    }
+  },
+  "loadMaxBackends": 52,
+  "http": null,
+  "probe": {
+    "exchangeMs": 21443,
+    "prime": {
+      "sockets": 6000,
+      "primed": 128,
+      "dark": 5872,
+      "serverDisconnected": 0,
+      "ms": 300149,
+      "reasons": {
+        "connect_error:xhr poll error": 149122,
+        "connect_error:xhr post error": 9544,
+        "transport error": 23307,
+        "connect_error:timeout": 6520,
+        "ping timeout": 369,
+        "transport close": 14
+      }
+    },
+    "window": {
+      "ms": 619496,
+      "writes": {
+        "ok": 1,
+        "failed": 197
+      },
+      "sockets": 6000,
+      "connectedAtEnd": 18,
+      "serverDisconnectsInWindow": 0,
+      "writeToFrameMs": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "max": null
+      },
+      "writeToFirstFrameMs": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "max": null
+      },
+      "deliveredFrames": 0,
+      "expectedFrames": 396,
+      "writeToEvaluationMs": {
+        "n": 1,
+        "p50": 5983,
+        "p95": 5983,
+        "p99": 5983,
+        "max": 5983
+      },
+      "evaluationMissedWithin120s": 0,
+      "reasons": {
+        "connect_error:xhr poll error": 572483,
+        "connect_error:xhr post error": 54126,
+        "transport error": 97662,
+        "connect_error:timeout": 29542,
+        "ping timeout": 1121,
+        "transport close": 101
+      }
+    }
+  },
+  "restart": {
+    "restartIso": "2026-11-12T01:35:12.310Z",
+    "healthyMs": {
+      "api": 10879,
+      "tenant-admin": 10879,
+      "realtime": 27024,
+      "evaluator": 33753
+    },
+    "firstServedMs": {
+      "0": {
+        "ms": 11019,
+        "statuses": {
+          "200": 4,
+          "502": 9,
+          "503": 1
+        }
+      },
+      "1500": {
+        "ms": 10998,
+        "statuses": {
+          "200": 4,
+          "502": 9,
+          "503": 1
+        }
+      },
+      "2999": {
+        "ms": 10980,
+        "statuses": {
+          "200": 4,
+          "502": 9,
+          "503": 1
+        }
+      }
+    },
+    "healthCheckPassMs": {
+      "api": 10718,
+      "tenant-admin": 3278,
+      "realtime": 26679,
+      "evaluator": 33752
+    },
+    "edgeAfterRoleRestart": [
+      401,
+      401,
+      401
+    ],
+    "edgeRestarted": {
+      "atMs": 19814,
+      "commandMs": 11674,
+      "async": true
+    },
+    "evalGap": {
+      "tenants": 3000,
+      "evaluatorReadyMs": 33645,
+      "evaluatedAfterReady": 3000,
+      "sinceRestartMs": {
+        "p25": 52098,
+        "p50": 70701,
+        "p90": 113991,
+        "max": 130033
+      },
+      "within": {
+        "60s": 1077,
+        "300s": 3000,
+        "900s": 3000
+      },
+      "notEvaluatedWithinTimeout": 0,
+      "backendsSeen": 16,
+      "timeoutS": 900,
+      "pollLoopMs": {
+        "n": 88,
+        "first10": [
+          545,
+          286,
+          381,
+          359,
+          482,
+          295,
+          313,
+          322,
+          764,
+          407
+        ],
+        "max": 1183
+      }
+    },
+    "stockRecovered": 0,
+    "stockAllRecoveredMs": null,
+    "retryAllRecoveredMs": null,
+    "retryRecovered": 0,
+    "sockets": 6000,
+    "restartCommandMs": 10839,
+    "serverDisconnectsBy5s": {},
+    "serverDisconnectsBeforeRestart": 0,
+    "logs": {
+      "since": 1794447312310,
+      "roles": {
+        "api": {
+          "listenerOpenMs": 8515,
+          "warmDrainedMs": null,
+          "drainedLine": null,
+          "readinessAlerts": 5670
+        },
+        "realtime": {
+          "listenerOpenMs": 12300,
+          "warmDrainedMs": null,
+          "drainedLine": null,
+          "readinessAlerts": 2925
+        },
+        "evaluator": {
+          "listenerOpenMs": null,
+          "warmDrainedMs": 21221,
+          "drainedLine": "Tenant warm drained: ready 3000 failed 0 deferred 0 after 19100 ms",
+          "readinessAlerts": 0
+        },
+        "tenant-admin": {
+          "listenerOpenMs": 1799,
+          "warmDrainedMs": null,
+          "drainedLine": null,
+          "readinessAlerts": 0
+        }
+      }
+    }
+  },
+  "realtimeDiag": {
+    "startupAllReadyMs": null,
+    "runtimeAllHealthyMs": null,
+    "startupFailedMax": 15,
+    "failedFirstSeenMs": 62998,
+    "failedLastSeenMs": 421006,
+    "failedRecoveredBeforeRetry": false,
+    "failedTimeline": [
+      [
+        13,
+        0,
+        2996,
+        0,
+        0
+      ],
+      [
+        23,
+        0,
+        2964,
+        16,
+        4
+      ],
+      [
+        34,
+        0,
+        2948,
+        20,
+        7
+      ],
+      [
+        44,
+        0,
+        2939,
+        23,
+        9
+      ],
+      [
+        54,
+        0,
+        2935,
+        26,
+        12
+      ],
+      [
+        64,
+        1,
+        2931,
+        27,
+        4
+      ],
+      [
+        74,
+        1,
+        2928,
+        27,
+        3
+      ],
+      [
+        84,
+        2,
+        2924,
+        27,
+        1
+      ],
+      [
+        95,
+        4,
+        2917,
+        27,
+        0
+      ],
+      [
+        105,
+        4,
+        2911,
+        27,
+        0
+      ],
+      [
+        115,
+        6,
+        2908,
+        27,
+        0
+      ],
+      [
+        125,
+        7,
+        2906,
+        34,
+        1
+      ],
+      [
+        135,
+        8,
+        2900,
+        38,
+        3
+      ],
+      [
+        146,
+        8,
+        2899,
+        38,
+        1
+      ],
+      [
+        156,
+        8,
+        2898,
+        40,
+        1
+      ],
+      [
+        166,
+        8,
+        2897,
+        41,
+        0
+      ],
+      [
+        176,
+        9,
+        2895,
+        41,
+        0
+      ],
+      [
+        186,
+        9,
+        2895,
+        41,
+        0
+      ],
+      [
+        196,
+        9,
+        2895,
+        41,
+        0
+      ],
+      [
+        207,
+        8,
+        2892,
+        45,
+        0
+      ],
+      [
+        217,
+        9,
+        2890,
+        45,
+        0
+      ],
+      [
+        227,
+        9,
+        2890,
+        45,
+        0
+      ],
+      [
+        237,
+        9,
+        2888,
+        45,
+        0
+      ],
+      [
+        247,
+        8,
+        2887,
+        48,
+        0
+      ],
+      [
+        257,
+        9,
+        2886,
+        48,
+        0
+      ],
+      [
+        268,
+        10,
+        2885,
+        48,
+        0
+      ],
+      [
+        278,
+        10,
+        2885,
+        48,
+        0
+      ],
+      [
+        288,
+        10,
+        2885,
+        48,
+        0
+      ],
+      [
+        298,
+        10,
+        2885,
+        48,
+        0
+      ],
+      [
+        308,
+        10,
+        2884,
+        49,
+        0
+      ],
+      [
+        318,
+        12,
+        2876,
+        56,
+        1
+      ],
+      [
+        329,
+        13,
+        2874,
+        58,
+        2
+      ],
+      [
+        339,
+        14,
+        2872,
+        59,
+        2
+      ],
+      [
+        349,
+        14,
+        2872,
+        59,
+        1
+      ],
+      [
+        359,
+        15,
+        2870,
+        60,
+        1
+      ],
+      [
+        369,
+        14,
+        2869,
+        63,
+        2
+      ],
+      [
+        379,
+        14,
+        2869,
+        63,
+        1
+      ],
+      [
+        389,
+        14,
+        2869,
+        63,
+        1
+      ],
+      [
+        399,
+        14,
+        2869,
+        63,
+        0
+      ],
+      [
+        410,
+        14,
+        2869,
+        63,
+        0
+      ],
+      [
+        420,
+        14,
+        2869,
+        63,
+        0
+      ]
+    ],
+    "socketTimelineColumns": [
+      "s",
+      "sockets",
+      "authorizeInFlight",
+      "recheckFailures",
+      "coldOrWarming",
+      "primed"
+    ],
+    "socketTimeline": [
+      [
+        13,
+        39,
+        30,
+        0,
+        2996,
+        0
+      ],
+      [
+        23,
+        361,
+        272,
+        0,
+        2964,
+        4
+      ],
+      [
+        34,
+        469,
+        318,
+        0,
+        2948,
+        7
+      ],
+      [
+        44,
+        959,
+        623,
+        0,
+        2939,
+        9
+      ],
+      [
+        54,
+        1179,
+        683,
+        9,
+        2935,
+        12
+      ],
+      [
+        64,
+        1169,
+        707,
+        9,
+        2931,
+        4
+      ],
+      [
+        74,
+        1274,
+        730,
+        9,
+        2928,
+        3
+      ],
+      [
+        84,
+        1106,
+        670,
+        10,
+        2924,
+        1
+      ],
+      [
+        95,
+        1103,
+        687,
+        10,
+        2917,
+        0
+      ],
+      [
+        105,
+        1173,
+        712,
+        10,
+        2911,
+        0
+      ],
+      [
+        115,
+        1170,
+        702,
+        10,
+        2908,
+        0
+      ],
+      [
+        125,
+        1180,
+        640,
+        10,
+        2906,
+        1
+      ],
+      [
+        135,
+        1154,
+        669,
+        10,
+        2900,
+        3
+      ],
+      [
+        146,
+        1082,
+        638,
+        14,
+        2899,
+        1
+      ],
+      [
+        156,
+        1041,
+        590,
+        16,
+        2898,
+        1
+      ],
+      [
+        166,
+        1019,
+        597,
+        16,
+        2897,
+        0
+      ],
+      [
+        176,
+        1039,
+        597,
+        16,
+        2895,
+        0
+      ],
+      [
+        186,
+        976,
+        573,
+        16,
+        2895,
+        0
+      ],
+      [
+        196,
+        972,
+        556,
+        16,
+        2895,
+        0
+      ],
+      [
+        207,
+        929,
+        528,
+        16,
+        2892,
+        0
+      ],
+      [
+        217,
+        955,
+        535,
+        16,
+        2890,
+        0
+      ],
+      [
+        227,
+        926,
+        527,
+        16,
+        2890,
+        0
+      ],
+      [
+        237,
+        930,
+        541,
+        16,
+        2888,
+        0
+      ],
+      [
+        247,
+        957,
+        545,
+        16,
+        2887,
+        0
+      ],
+      [
+        257,
+        935,
+        555,
+        16,
+        2886,
+        0
+      ],
+      [
+        268,
+        924,
+        522,
+        16,
+        2885,
+        0
+      ],
+      [
+        278,
+        923,
+        528,
+        16,
+        2885,
+        0
+      ],
+      [
+        288,
+        921,
+        513,
+        16,
+        2885,
+        0
+      ],
+      [
+        298,
+        952,
+        561,
+        16,
+        2885,
+        0
+      ],
+      [
+        308,
+        969,
+        545,
+        16,
+        2884,
+        0
+      ],
+      [
+        318,
+        994,
+        551,
+        17,
+        2876,
+        1
+      ],
+      [
+        329,
+        977,
+        544,
+        18,
+        2874,
+        2
+      ],
+      [
+        339,
+        971,
+        533,
+        24,
+        2872,
+        2
+      ],
+      [
+        349,
+        942,
+        539,
+        24,
+        2872,
+        1
+      ],
+      [
+        359,
+        918,
+        526,
+        27,
+        2870,
+        1
+      ],
+      [
+        369,
+        925,
+        519,
+        28,
+        2869,
+        2
+      ],
+      [
+        379,
+        918,
+        516,
+        31,
+        2869,
+        1
+      ],
+      [
+        389,
+        933,
+        535,
+        32,
+        2869,
+        1
+      ],
+      [
+        399,
+        962,
+        523,
+        35,
+        2869,
+        0
+      ],
+      [
+        410,
+        974,
+        547,
+        35,
+        2869,
+        0
+      ],
+      [
+        420,
+        1006,
+        569,
+        35,
+        2869,
+        0
+      ]
+    ],
+    "authorizeInFlightMax": 731,
+    "recheckFailuresEnd": 35,
+    "tenantWarmFailedAlerts": 370,
+    "drainedLines": [],
+    "at30s": {
+      "t": 1794447341851,
+      "p": {
+        "authorizeCalls": 1916,
+        "framesSent": 6,
+        "primeRetries": 1450,
+        "invalidated": 0,
+        "primeRefreshes": 6,
+        "primeRefreshFailures": 0,
+        "parked": 75,
+        "recheckFailures": 0,
+        "resends": 0,
+        "authorizeInFlight": 362,
+        "authorizeInFlightMax": 371,
+        "sockets": 481,
+        "primed": 6,
+        "queued": 93
+      },
+      "r": {
+        "ticks": 5,
+        "refreshes": 22,
+        "detected": 5,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 18,
+        "failed": 0
+      },
+      "s": {
+        "ready": true,
+        "warming": 6,
+        "cold": 2949,
+        "deferred": 0,
+        "failed": 0
+      },
+      "a": {},
+      "cfg": {
+        "readCurrent": {
+          "calls": 2063,
+          "ns": 2432692946
+        },
+        "readAll": {
+          "calls": 5,
+          "ns": 6377662
+        }
+      },
+      "cpu": {
+        "user": 22397949,
+        "system": 7200689
+      },
+      "elu": 0.89,
+      "lagMs": {
+        "p99": 148.9,
+        "max": 148.9
+      }
+    },
+    "at60s": {
+      "t": 1794447372223,
+      "p": {
+        "authorizeCalls": 6515,
+        "framesSent": 13,
+        "primeRetries": 5249,
+        "invalidated": 0,
+        "primeRefreshes": 15,
+        "primeRefreshFailures": 0,
+        "parked": 139,
+        "recheckFailures": 9,
+        "resends": 0,
+        "authorizeInFlight": 705,
+        "authorizeInFlightMax": 748,
+        "sockets": 1251,
+        "primed": 5,
+        "queued": 424
+      },
+      "r": {
+        "ticks": 7,
+        "refreshes": 38,
+        "detected": 7,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 27,
+        "failed": 0
+      },
+      "s": {
+        "ready": true,
+        "warming": 5,
+        "cold": 2928,
+        "deferred": 0,
+        "failed": 0
+      },
+      "a": {},
+      "cfg": {
+        "readCurrent": {
+          "calls": 7172,
+          "ns": 8348321995
+        },
+        "readAll": {
+          "calls": 7,
+          "ns": 8390202
+        }
+      },
+      "cpu": {
+        "user": 68732816,
+        "system": 20487456
+      },
+      "elu": 1,
+      "lagMs": {
+        "p99": 66.3,
+        "max": 66.3
+      }
+    },
+    "at120s": {
+      "t": 1794447431276,
+      "p": {
+        "authorizeCalls": 16456,
+        "framesSent": 13,
+        "primeRetries": 13813,
+        "invalidated": 0,
+        "primeRefreshes": 16,
+        "primeRefreshFailures": 0,
+        "parked": 267,
+        "recheckFailures": 10,
+        "resends": 0,
+        "authorizeInFlight": 673,
+        "authorizeInFlightMax": 754,
+        "sockets": 1188,
+        "primed": 0,
+        "queued": 444
+      },
+      "r": {
+        "ticks": 8,
+        "refreshes": 38,
+        "detected": 8,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 27,
+        "failed": 1
+      },
+      "s": {
+        "ready": true,
+        "warming": 5,
+        "cold": 2902,
+        "deferred": 0,
+        "failed": 6
+      },
+      "a": {
+        "TENANT_WARM_FAILED:TENANT_WARM_FAILED": 6
+      },
+      "cfg": {
+        "readCurrent": {
+          "calls": 18323,
+          "ns": 21241327602
+        },
+        "readAll": {
+          "calls": 8,
+          "ns": 9788745
+        }
+      },
+      "cpu": {
+        "user": 165259778,
+        "system": 48787955
+      },
+      "elu": 1,
+      "lagMs": {
+        "p99": 95.8,
+        "max": 95.8
+      }
+    },
+    "last": {
+      "t": 1794447733316,
+      "p": {
+        "authorizeCalls": 59104,
+        "framesSent": 25,
+        "primeRetries": 52219,
+        "invalidated": 0,
+        "primeRefreshes": 30,
+        "primeRefreshFailures": 0,
+        "parked": 572,
+        "recheckFailures": 35,
+        "resends": 0,
+        "authorizeInFlight": 560,
+        "authorizeInFlightMax": 754,
+        "sockets": 961,
+        "primed": 0,
+        "queued": 319
+      },
+      "r": {
+        "ticks": 17,
+        "refreshes": 90,
+        "detected": 17,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 63,
+        "failed": 2
+      },
+      "s": {
+        "ready": true,
+        "warming": 7,
+        "cold": 2862,
+        "deferred": 0,
+        "failed": 14
+      },
+      "a": {
+        "TENANT_WARM_FAILED:TENANT_WARM_FAILED": 15,
+        "TENANT_COLD_BEYOND_BOUND:TENANT_WARM_FAILED": 15,
+        "TENANT_COLD_BEYOND_BOUND": 2868
+      },
+      "cfg": {
+        "readCurrent": {
+          "calls": 66364,
+          "ns": 81261600224
+        },
+        "readAll": {
+          "calls": 17,
+          "ns": 19064346
+        }
+      },
+      "cpu": {
+        "user": 689866058,
+        "system": 185663784
+      },
+      "elu": 1,
+      "lagMs": {
+        "p99": 69.9,
+        "max": 69.9
+      }
+    }
+  },
+  "realtimeConfigReads": {
+    "idle": {
+      "seconds": 300.5,
+      "readCurrent": {
+        "callsPerSec": 12,
+        "msPerCall": 0.65,
+        "msPerSec": 7.8
+      },
+      "readAll": {
+        "callsPerSec": 1,
+        "msPerCall": 0.78,
+        "msPerSec": 0.8
+      },
+      "realtimeCpuMsPerSec": 210.4,
+      "readShareOfRealtimeCpu": 0.041
+    },
+    "load": {
+      "seconds": 923.3,
+      "readCurrent": {
+        "callsPerSec": 184.9,
+        "msPerCall": 1.1,
+        "msPerSec": 202.5
+      },
+      "readAll": {
+        "callsPerSec": 0.7,
+        "msPerCall": 1.12,
+        "msPerSec": 0.8
+      },
+      "realtimeCpuMsPerSec": 2313.2,
+      "readShareOfRealtimeCpu": 0.088
+    }
+  },
+  "alertsAfterRestart": {
+    "api": {
+      "logAlertCodes": {
+        "Tenant readiness alert TENANT_WARM_FAILED": 110,
+        "Tenant readiness alert TENANT_COLD_BEYOND_BOUND": 5560
+      },
+      "drained": [],
+      "startupHealth": {
+        "worstFailed": 105,
+        "worstAtMs": 411527,
+        "worstCauses": {
+          "TENANT_COLD_BEYOND_BOUND": 2446,
+          "TENANT_COLD_BEYOND_BOUND:TENANT_WARM_FAILED": 105,
+          "TENANT_WARM_FAILED:TENANT_WARM_FAILED": 105
+        },
+        "end": {
+          "ready": true,
+          "warming": 0,
+          "cold": 2437,
+          "deferred": 0,
+          "failed": 105
+        },
+        "endCauses": {
+          "TENANT_COLD_BEYOND_BOUND": 2437,
+          "TENANT_COLD_BEYOND_BOUND:TENANT_WARM_FAILED": 105,
+          "TENANT_WARM_FAILED:TENANT_WARM_FAILED": 105
+        },
+        "fromMs": 8515,
+        "allReadyMs": null
+      }
+    },
+    "realtime": {
+      "logAlertCodes": {
+        "Tenant readiness alert TENANT_WARM_FAILED": 17,
+        "Tenant readiness alert TENANT_COLD_BEYOND_BOUND": 2908
+      },
+      "drained": [],
+      "startupHealth": {
+        "worstFailed": 15,
+        "worstAtMs": 353919,
+        "worstCauses": {
+          "TENANT_WARM_FAILED:TENANT_WARM_FAILED": 16,
+          "TENANT_COLD_BEYOND_BOUND:TENANT_WARM_FAILED": 16,
+          "TENANT_COLD_BEYOND_BOUND": 2869
+        },
+        "end": {
+          "ready": true,
+          "warming": 7,
+          "cold": 2862,
+          "deferred": 0,
+          "failed": 14
+        },
+        "endCauses": {
+          "TENANT_WARM_FAILED:TENANT_WARM_FAILED": 15,
+          "TENANT_COLD_BEYOND_BOUND:TENANT_WARM_FAILED": 15,
+          "TENANT_COLD_BEYOND_BOUND": 2868
+        },
+        "fromMs": 12300,
+        "allReadyMs": null
+      }
+    },
+    "evaluator": {
+      "logAlertCodes": {
+        "Evaluator alert EVALUATOR_NOT_EVALUATED_WITHIN_BOUND": 722
+      },
+      "drained": [
+        "Tenant warm drained: ready 3000 failed 0 deferred 0 after 19100 ms"
+      ]
+    },
+    "tenant-admin": {
+      "logAlertCodes": {},
+      "drained": []
+    },
+    "realtimeHealthEndpoint": {
+      "status": 200,
+      "alertCauses": {},
+      "live": true,
+      "readiness": "serve",
+      "ready": true,
+      "configured": 3000,
+      "healthy": 65,
+      "failed": 2
+    }
+  },
+  "mainThread": {
+    "api": {
+      "idle": {
+        "samples": 150,
+        "eluMean": 0.032,
+        "eluMax": 0.379,
+        "lagP99MaxMs": 11.4,
+        "lagMaxMs": 99,
+        "processCores": 0.05,
+        "threadCores": {
+          "main": 0.03,
+          "V8Worker": 0.02
+        }
+      },
+      "load": {
+        "samples": 451,
+        "eluMean": 0.993,
+        "eluMax": 1,
+        "lagP99MaxMs": 985.7,
+        "lagMaxMs": 985.7,
+        "processCores": 4.5,
+        "threadCores": {
+          "V8Worker": 3.54,
+          "main": 0.96,
+          "libuv-worker": 0.01
+        }
+      }
+    },
+    "realtime": {
+      "idle": {
+        "samples": 301,
+        "eluMean": 0.11,
+        "eluMax": 0.194,
+        "lagP99MaxMs": 16.4,
+        "lagMaxMs": 105.6,
+        "processCores": 0.21
+      },
+      "load": {
+        "samples": 909,
+        "eluMean": 0.978,
+        "eluMax": 1,
+        "lagP99MaxMs": 318.5,
+        "lagMaxMs": 318.5,
+        "processCores": 2.31
+      }
+    }
+  },
+  "loadGenerators": {
+    "samples": 205,
+    "k6CpuPctMean": null,
+    "k6CpuPctMax": null,
+    "probeCpuPctMean": 80,
+    "probeCpuPctMax": 88.9
+  },
+  "pgActive": {
+    "idle": {
+      "samples": 73,
+      "mean": 1.5,
+      "max": 8
+    },
+    "load": {
+      "samples": 320,
+      "mean": 3,
+      "max": 13
+    }
+  },
+  "pgPeakByRole": {
+    "idle": {
+      "byRole": {
+        "nsdemo_api": 15,
+        "nsdemo_evaluator": 1,
+        "nsdemo_lifetime_api": 5,
+        "nsdemo_lifetime_evaluator": 8,
+        "nsdemo_lifetime_realtime": 6,
+        "nsdemo_outbox": 2,
+        "nsdemo_realtime": 4,
+        "nsdemo_suppression": 2
+      },
+      "sumOfRolePeaks": 43,
+      "concurrentMax": 43
+    },
+    "load": {
+      "byRole": {
+        "nsdemo_api": 17,
+        "nsdemo_evaluator": 4,
+        "nsdemo_lifetime_api": 8,
+        "nsdemo_lifetime_evaluator": 8,
+        "nsdemo_lifetime_realtime": 8,
+        "nsdemo_outbox": 2,
+        "nsdemo_realtime": 4,
+        "nsdemo_suppression": 2,
+        "nsdemo_lifetime_tenant_admin": 1,
+        "nsdemo_owner_reader": 1,
+        "nsdemo_owner_writer": 1,
+        "nsdemo_alarm": 1,
+        "nsdemo_root_writer": 1,
+        "postgres": 1,
+        "nsdemo_readiness": 1
+      },
+      "sumOfRolePeaks": 60,
+      "concurrentMax": 50
+    }
+  },
+  "authorizeRate": {
+    "perSecondByMinute": [
+      167,
+      208,
+      191,
+      180,
+      186,
+      168,
+      149,
+      138,
+      138,
+      143,
+      144,
+      154,
+      152,
+      158,
+      167
+    ],
+    "peak": 208,
+    "total": 149599
+  },
+  "oracle": null,
+  "oracleControl": "CONTROL FAIL"
+}

@@ -1,0 +1,29 @@
+{
+  "since": 1794422731552,
+  "roles": {
+    "api": {
+      "listenerOpenMs": 2480,
+      "warmDrainedMs": 142523,
+      "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 140113 ms",
+      "readinessAlerts": 824
+    },
+    "realtime": {
+      "listenerOpenMs": 1656,
+      "warmDrainedMs": 135046,
+      "drainedLine": "Tenant warm drained: ready 611 failed 384 deferred 0 after 133448 ms",
+      "readinessAlerts": 1272
+    },
+    "evaluator": {
+      "listenerOpenMs": null,
+      "warmDrainedMs": 8786,
+      "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 7414 ms",
+      "readinessAlerts": 0
+    },
+    "tenant-admin": {
+      "listenerOpenMs": 1270,
+      "warmDrainedMs": null,
+      "drainedLine": null,
+      "readinessAlerts": 0
+    }
+  }
+}

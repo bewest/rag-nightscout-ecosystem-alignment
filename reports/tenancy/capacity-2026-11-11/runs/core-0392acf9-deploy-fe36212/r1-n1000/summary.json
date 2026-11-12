@@ -1,0 +1,981 @@
+{
+  "tenants": 1000,
+  "deploy": {
+    "tenants": 1000,
+    "port": 31320,
+    "image": "nscap:0392acf9-fe36212",
+    "bootstrapSeconds": 23.3
+  },
+  "host": {
+    "deploy": {
+      "date_utc": "2026-11-11T18:18:51Z",
+      "uptime": " 10:18:51 up 46 days,  1:56,  1 user,  load average: 1.05, 1.22, 1.17",
+      "loadavg": "1.05 1.22 1.17",
+      "cores": "16",
+      "mem_available_kb": "36093664",
+      "containers_running": "43",
+      "containers_other": "43"
+    },
+    "idleBefore": {
+      "date_utc": "2026-11-11T18:19:50Z",
+      "uptime": " 10:19:50 up 46 days,  1:57,  1 user,  load average: 5.73, 2.31, 1.54",
+      "loadavg": "5.73 2.31 1.54",
+      "cores": "16",
+      "mem_available_kb": "34425804",
+      "containers_running": "43",
+      "containers_other": "35"
+    },
+    "loadBefore": {
+      "date_utc": "2026-11-11T18:29:53Z",
+      "uptime": " 10:29:53 up 46 days,  2:07,  1 user,  load average: 1.68, 1.54, 1.44",
+      "loadavg": "1.68 1.54 1.44",
+      "cores": "16",
+      "mem_available_kb": "34724816",
+      "containers_running": "43",
+      "containers_other": "35"
+    },
+    "loadAfter": {
+      "date_utc": "2026-11-11T18:48:25Z",
+      "uptime": " 10:48:25 up 46 days,  2:26,  1 user,  load average: 9.81, 9.81, 6.72",
+      "loadavg": "9.81 9.81 6.72",
+      "cores": "16",
+      "mem_available_kb": "33784160",
+      "containers_running": "43",
+      "containers_other": "35"
+    },
+    "loadavgIdle": {
+      "min": 0.8,
+      "max": 5.75,
+      "mean": 1.7
+    },
+    "loadavgLoad": {
+      "min": 1.68,
+      "max": 13.4,
+      "mean": 7.9
+    }
+  },
+  "startup": {
+    "firstServedMs": [
+      5646,
+      6485,
+      6536
+    ],
+    "roles": {
+      "api": {
+        "healthyMs": 5796,
+        "exit": null,
+        "containerStartMs": 248,
+        "listenerOpenMs": 1271,
+        "warmDrainedMs": 28091,
+        "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 26861 ms",
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      },
+      "realtime": {
+        "healthyMs": 5918,
+        "exit": null,
+        "containerStartMs": 2892,
+        "listenerOpenMs": 3679,
+        "warmDrainedMs": 24064,
+        "drainedLine": "Tenant warm drained: ready 360 failed 640 deferred 0 after 20426 ms",
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      },
+      "evaluator": {
+        "healthyMs": 14966,
+        "exit": null,
+        "containerStartMs": 5522,
+        "listenerOpenMs": null,
+        "warmDrainedMs": 11558,
+        "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 5163 ms",
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      },
+      "tenant-admin": {
+        "healthyMs": 6145,
+        "exit": null,
+        "containerStartMs": 250,
+        "listenerOpenMs": 883,
+        "warmDrainedMs": null,
+        "drainedLine": null,
+        "readinessAlerts": 0,
+        "status": "running",
+        "exitCode": 0
+      }
+    }
+  },
+  "idle": {
+    "minutes": 10,
+    "roles": {
+      "api": {
+        "cpuMsPerMin": 3633.7,
+        "cpuMsPerTenantMin": 3.634,
+        "cpuCores": 0.061,
+        "memMiB": 748.5,
+        "anonMiB": 719.8,
+        "anonMiBPerTenant": 0.72
+      },
+      "realtime": {
+        "cpuMsPerMin": 5334.5,
+        "cpuMsPerTenantMin": 5.335,
+        "cpuCores": 0.089,
+        "memMiB": 200.7,
+        "anonMiB": 188.1,
+        "anonMiBPerTenant": 0.188
+      },
+      "evaluator": {
+        "cpuMsPerMin": 7933.4,
+        "cpuMsPerTenantMin": 7.933,
+        "cpuCores": 0.132,
+        "memMiB": 398.1,
+        "anonMiB": 380.8,
+        "anonMiBPerTenant": 0.381
+      },
+      "tenant-admin": {
+        "cpuMsPerMin": 2876.9,
+        "cpuMsPerTenantMin": 2.877,
+        "cpuCores": 0.048,
+        "memMiB": 60.6,
+        "anonMiB": 52.9,
+        "anonMiBPerTenant": 0.053
+      },
+      "postgres": {
+        "cpuMsPerMin": 29921.2,
+        "cpuMsPerTenantMin": 29.921,
+        "cpuCores": 0.499,
+        "memMiB": 142,
+        "anonMiB": 37.3,
+        "anonMiBPerTenant": 0.037
+      },
+      "nginx": {
+        "cpuMsPerMin": 6.3,
+        "cpuMsPerTenantMin": 0.006,
+        "cpuCores": 0,
+        "memMiB": 16.3,
+        "anonMiB": 10.3,
+        "anonMiBPerTenant": 0.01
+      }
+    },
+    "dbMsPerTenantMin": 12.813,
+    "dbMsTotal": 128420.8,
+    "dbByRole": {
+      "outbox": {
+        "calls": 281150,
+        "ms": 33803.8
+      },
+      "lifetime_evaluator": {
+        "calls": 132456,
+        "ms": 31040.8
+      },
+      "realtime": {
+        "calls": 143309,
+        "ms": 23433.9
+      },
+      "evaluator": {
+        "calls": 56809,
+        "ms": 17048
+      },
+      "suppression": {
+        "calls": 90371,
+        "ms": 15763.6
+      },
+      "api": {
+        "calls": 40322,
+        "ms": 3100.2
+      },
+      "lifetime_realtime": {
+        "calls": 10704,
+        "ms": 2419.1
+      },
+      "lifetime_api": {
+        "calls": 7680,
+        "ms": 1811.4
+      }
+    },
+    "connections": 9,
+    "connectionsByIdentity": {
+      "nsdemo_evaluator": 1,
+      "nsdemo_lifetime_evaluator": 4,
+      "nsdemo_outbox": 2,
+      "nsdemo_realtime": 1,
+      "nsdemo_suppression": 1
+    }
+  },
+  "idleMaxBackends": 38,
+  "load": {
+    "minutes": 15.4,
+    "roles": {
+      "api": {
+        "cpuMsPerMin": 50451.4,
+        "cpuMsPerTenantMin": 50.451,
+        "cpuCores": 0.841,
+        "memMiB": 2593.6,
+        "anonMiB": 2511.7,
+        "anonMiBPerTenant": 2.512
+      },
+      "realtime": {
+        "cpuMsPerMin": 25459.1,
+        "cpuMsPerTenantMin": 25.459,
+        "cpuCores": 0.424,
+        "memMiB": 336.7,
+        "anonMiB": 313.5,
+        "anonMiBPerTenant": 0.313
+      },
+      "evaluator": {
+        "cpuMsPerMin": 11822.3,
+        "cpuMsPerTenantMin": 11.822,
+        "cpuCores": 0.197,
+        "memMiB": 398,
+        "anonMiB": 380.8,
+        "anonMiBPerTenant": 0.381
+      },
+      "tenant-admin": {
+        "cpuMsPerMin": 3564.2,
+        "cpuMsPerTenantMin": 3.564,
+        "cpuCores": 0.059,
+        "memMiB": 73.8,
+        "anonMiB": 66.2,
+        "anonMiBPerTenant": 0.066
+      },
+      "postgres": {
+        "cpuMsPerMin": 233229.5,
+        "cpuMsPerTenantMin": 233.23,
+        "cpuCores": 3.887,
+        "memMiB": 293.2,
+        "anonMiB": 123.1,
+        "anonMiBPerTenant": 0.123
+      },
+      "nginx": {
+        "cpuMsPerMin": 2318,
+        "cpuMsPerTenantMin": 2.318,
+        "cpuCores": 0.039,
+        "memMiB": 67,
+        "anonMiB": 37.6,
+        "anonMiBPerTenant": 0.038
+      }
+    },
+    "dbMsPerTenantMin": 96.557,
+    "dbMsTotal": 1486903.1,
+    "dbByRole": {
+      "api": {
+        "calls": 9079593,
+        "ms": 972011.9
+      },
+      "lifetime_api": {
+        "calls": 579696,
+        "ms": 192240.9
+      },
+      "lifetime_evaluator": {
+        "calls": 221220,
+        "ms": 78064.5
+      },
+      "outbox": {
+        "calls": 423222,
+        "ms": 77448.8
+      },
+      "realtime": {
+        "calls": 456095,
+        "ms": 70384.5
+      },
+      "evaluator": {
+        "calls": 191703,
+        "ms": 40285.4
+      },
+      "suppression": {
+        "calls": 135066,
+        "ms": 35992.9
+      },
+      "lifetime_realtime": {
+        "calls": 63684,
+        "ms": 20474.2
+      }
+    },
+    "connections": 38,
+    "connectionsByIdentity": {
+      "nsdemo_api": 16,
+      "nsdemo_evaluator": 4,
+      "nsdemo_lifetime_api": 8,
+      "nsdemo_lifetime_evaluator": 4,
+      "nsdemo_lifetime_realtime": 2,
+      "nsdemo_realtime": 4
+    }
+  },
+  "loadMaxBackends": 49,
+  "http": {
+    "POST v1 entries": {
+      "n": 3001,
+      "p50": 251.6,
+      "p95": 595.4,
+      "p99": 833.4,
+      "max": 1273.4,
+      "failedRate": 0
+    },
+    "POST v1 devicestatus": {
+      "n": 3000,
+      "p50": 253.1,
+      "p95": 600.8,
+      "p99": 903.7,
+      "max": 1341.4,
+      "failedRate": 0
+    },
+    "GET v1 sgv": {
+      "n": 15001,
+      "p50": 219.5,
+      "p95": 573.9,
+      "p99": 832.4,
+      "max": 1319.3,
+      "failedRate": 0
+    },
+    "GET v1 devicestatus": {
+      "n": 3000,
+      "p50": 229.5,
+      "p95": 562.8,
+      "p99": 828.7,
+      "max": 1255.2,
+      "failedRate": 0
+    },
+    "GET v1 treatments": {
+      "n": 3000,
+      "p50": 229.8,
+      "p95": 557,
+      "p99": 841.1,
+      "max": 1262.6,
+      "failedRate": 0
+    },
+    "GET v1 status": {
+      "n": 3001,
+      "p50": 345.1,
+      "p95": 705.7,
+      "p99": 977.1,
+      "max": 1420.6,
+      "failedRate": 0
+    },
+    "iterations": 30003,
+    "droppedIterations": 0,
+    "writesOk": 6001,
+    "writesUncertain": 0,
+    "writesRefused": 0
+  },
+  "probe": {
+    "exchangeMs": 5754,
+    "prime": {
+      "sockets": 2000,
+      "primed": 2000,
+      "dark": 0,
+      "serverDisconnected": 0,
+      "ms": 14004,
+      "reasons": {}
+    },
+    "window": {
+      "ms": 916537,
+      "writes": {
+        "ok": 302,
+        "failed": 0
+      },
+      "sockets": 2000,
+      "connectedAtEnd": 2000,
+      "serverDisconnectsInWindow": 0,
+      "writeToFrameMs": {
+        "n": 604,
+        "p50": 450,
+        "p95": 1490,
+        "p99": 1536,
+        "max": 1655
+      },
+      "writeToFirstFrameMs": {
+        "n": 302,
+        "p50": 448,
+        "p95": 1490,
+        "p99": 1536,
+        "max": 1654
+      },
+      "deliveredFrames": 604,
+      "expectedFrames": 604,
+      "writeToEvaluationMs": {
+        "n": 302,
+        "p50": 1277,
+        "p95": 1994,
+        "p99": 2725,
+        "max": 2868
+      },
+      "evaluationMissedWithin120s": 0,
+      "reasons": {}
+    }
+  },
+  "restart": {
+    "restartIso": "2026-11-11T18:45:31.552Z",
+    "healthyMs": {
+      "tenant-admin": 3125,
+      "api": 5191,
+      "realtime": 5191,
+      "evaluator": 14725
+    },
+    "firstServedMs": {
+      "0": {
+        "ms": 2568,
+        "statuses": {
+          "200": 1,
+          "502": 4
+        }
+      },
+      "500": {
+        "ms": 39707,
+        "statuses": {
+          "0": 3,
+          "200": 1,
+          "502": 4,
+          "503": 12
+        }
+      },
+      "999": {
+        "ms": 41584,
+        "statuses": {
+          "0": 3,
+          "200": 1,
+          "502": 4,
+          "503": 15
+        }
+      }
+    },
+    "edgeAfterRoleRestart": [
+      401,
+      0,
+      0
+    ],
+    "edgeRestarted": {
+      "atMs": 19907,
+      "commandMs": 11116
+    },
+    "evalGap": {
+      "tenants": 1000,
+      "evaluatorReadyMs": 14725,
+      "evaluatedAfterReady": 1000,
+      "sinceRestartMs": {
+        "p25": 18906,
+        "p50": 31024,
+        "p90": 72227,
+        "max": 74898
+      },
+      "within": {
+        "60s": 865,
+        "300s": 1000,
+        "900s": 1000
+      },
+      "notEvaluatedWithinTimeout": 0,
+      "backendsSeen": 13,
+      "timeoutS": 900
+    },
+    "stockRecovered": 2000,
+    "stockAllRecoveredMs": 171798,
+    "retryAllRecoveredMs": 0,
+    "retryRecovered": 2000,
+    "sockets": 2000,
+    "restartCommandMs": 1114,
+    "logs": {
+      "since": 1794422731552,
+      "roles": {
+        "api": {
+          "listenerOpenMs": 2480,
+          "warmDrainedMs": 142523,
+          "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 140113 ms",
+          "readinessAlerts": 824
+        },
+        "realtime": {
+          "listenerOpenMs": 1656,
+          "warmDrainedMs": 135046,
+          "drainedLine": "Tenant warm drained: ready 611 failed 384 deferred 0 after 133448 ms",
+          "readinessAlerts": 1272
+        },
+        "evaluator": {
+          "listenerOpenMs": null,
+          "warmDrainedMs": 8786,
+          "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 7414 ms",
+          "readinessAlerts": 0
+        },
+        "tenant-admin": {
+          "listenerOpenMs": 1270,
+          "warmDrainedMs": null,
+          "drainedLine": null,
+          "readinessAlerts": 0
+        }
+      }
+    }
+  },
+  "realtimeDiag": {
+    "startupAllReadyMs": 172284,
+    "runtimeAllHealthyMs": 172284,
+    "startupFailedMax": 384,
+    "failedFirstSeenMs": 2616,
+    "failedLastSeenMs": 171282,
+    "failedRecoveredBeforeRetry": false,
+    "failedTimeline": [
+      [
+        3,
+        22,
+        978,
+        0,
+        0
+      ],
+      [
+        13,
+        32,
+        968,
+        0,
+        0
+      ],
+      [
+        23,
+        39,
+        956,
+        5,
+        8
+      ],
+      [
+        33,
+        50,
+        939,
+        11,
+        20
+      ],
+      [
+        43,
+        113,
+        848,
+        37,
+        52
+      ],
+      [
+        53,
+        203,
+        715,
+        77,
+        100
+      ],
+      [
+        63,
+        214,
+        697,
+        88,
+        141
+      ],
+      [
+        73,
+        231,
+        673,
+        95,
+        190
+      ],
+      [
+        83,
+        251,
+        632,
+        112,
+        224
+      ],
+      [
+        93,
+        287,
+        571,
+        142,
+        284
+      ],
+      [
+        103,
+        321,
+        477,
+        175,
+        350
+      ],
+      [
+        113,
+        357,
+        356,
+        219,
+        438
+      ],
+      [
+        123,
+        378,
+        243,
+        258,
+        516
+      ],
+      [
+        133,
+        384,
+        42,
+        323,
+        644
+      ],
+      [
+        143,
+        303,
+        2,
+        419,
+        838
+      ],
+      [
+        153,
+        159,
+        0,
+        616,
+        1232
+      ],
+      [
+        163,
+        61,
+        0,
+        809,
+        1618
+      ]
+    ],
+    "socketTimelineColumns": [
+      "s",
+      "sockets",
+      "authorizeInFlight",
+      "recheckFailures",
+      "coldOrWarming",
+      "primed"
+    ],
+    "socketTimeline": [
+      [
+        3,
+        47,
+        34,
+        0,
+        978,
+        0
+      ],
+      [
+        13,
+        1934,
+        1069,
+        0,
+        968,
+        0
+      ],
+      [
+        23,
+        2000,
+        798,
+        0,
+        956,
+        8
+      ],
+      [
+        33,
+        908,
+        460,
+        0,
+        939,
+        20
+      ],
+      [
+        43,
+        908,
+        71,
+        0,
+        848,
+        52
+      ],
+      [
+        53,
+        1263,
+        327,
+        0,
+        715,
+        100
+      ],
+      [
+        63,
+        2000,
+        390,
+        0,
+        697,
+        141
+      ],
+      [
+        73,
+        2000,
+        228,
+        0,
+        673,
+        190
+      ],
+      [
+        83,
+        2000,
+        166,
+        0,
+        632,
+        224
+      ],
+      [
+        93,
+        2000,
+        104,
+        0,
+        571,
+        284
+      ],
+      [
+        103,
+        2000,
+        57,
+        0,
+        477,
+        350
+      ],
+      [
+        113,
+        2000,
+        40,
+        0,
+        356,
+        438
+      ],
+      [
+        123,
+        2000,
+        22,
+        0,
+        243,
+        516
+      ],
+      [
+        133,
+        2000,
+        13,
+        0,
+        42,
+        644
+      ],
+      [
+        143,
+        2000,
+        2,
+        0,
+        2,
+        838
+      ],
+      [
+        153,
+        2000,
+        9,
+        0,
+        0,
+        1232
+      ],
+      [
+        163,
+        2000,
+        0,
+        0,
+        0,
+        1618
+      ]
+    ],
+    "authorizeInFlightMax": 1072,
+    "recheckFailuresEnd": 0,
+    "tenantWarmFailedAlerts": 632,
+    "drainedLines": [
+      "Tenant warm drained: ready 611 failed 384 deferred 0 after 133448 ms"
+    ],
+    "at30s": {
+      "t": 1794422761298,
+      "p": {
+        "authorizeCalls": 6333,
+        "framesSent": 15,
+        "primeRetries": 4580,
+        "invalidated": 0,
+        "primeRefreshes": 10,
+        "primeRefreshFailures": 0,
+        "parked": 99,
+        "recheckFailures": 0,
+        "resends": 0,
+        "authorizeInFlight": 645,
+        "authorizeInFlightMax": 1094,
+        "sockets": 2000,
+        "primed": 15,
+        "queued": 695
+      },
+      "r": {
+        "ticks": 6,
+        "refreshes": 10,
+        "detected": 6,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 8,
+        "failed": 13
+      },
+      "s": {
+        "ready": true,
+        "warming": 17,
+        "cold": 932,
+        "deferred": 0,
+        "failed": 43
+      }
+    },
+    "at60s": {
+      "t": 1794422791329,
+      "p": {
+        "authorizeCalls": 11422,
+        "framesSent": 135,
+        "primeRetries": 9485,
+        "invalidated": 0,
+        "primeRefreshes": 113,
+        "primeRefreshFailures": 0,
+        "parked": 702,
+        "recheckFailures": 0,
+        "resends": 0,
+        "authorizeInFlight": 496,
+        "authorizeInFlightMax": 1094,
+        "sockets": 1981,
+        "primed": 135,
+        "queued": 936
+      },
+      "r": {
+        "ticks": 26,
+        "refreshes": 121,
+        "detected": 26,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 85,
+        "failed": 10
+      },
+      "s": {
+        "ready": true,
+        "warming": 16,
+        "cold": 687,
+        "deferred": 0,
+        "failed": 211
+      }
+    },
+    "at120s": {
+      "t": 1794422850796,
+      "p": {
+        "authorizeCalls": 21109,
+        "framesSent": 478,
+        "primeRetries": 21513,
+        "invalidated": 0,
+        "primeRefreshes": 297,
+        "primeRefreshFailures": 0,
+        "parked": 6331,
+        "recheckFailures": 0,
+        "resends": 0,
+        "authorizeInFlight": 54,
+        "authorizeInFlightMax": 1094,
+        "sockets": 2000,
+        "primed": 478,
+        "queued": 1430
+      },
+      "r": {
+        "ticks": 64,
+        "refreshes": 335,
+        "detected": 64,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 239,
+        "failed": 8
+      },
+      "s": {
+        "ready": true,
+        "warming": 12,
+        "cold": 277,
+        "deferred": 0,
+        "failed": 372
+      }
+    },
+    "last": {
+      "t": 1794422903836,
+      "p": {
+        "authorizeCalls": 24413,
+        "framesSent": 2000,
+        "primeRetries": 28164,
+        "invalidated": 0,
+        "primeRefreshes": 1058,
+        "primeRefreshFailures": 0,
+        "parked": 16245,
+        "recheckFailures": 0,
+        "resends": 0,
+        "authorizeInFlight": 0,
+        "authorizeInFlightMax": 1094,
+        "sockets": 0,
+        "primed": 0,
+        "queued": 0
+      },
+      "r": {
+        "ticks": 255,
+        "refreshes": 1109,
+        "detected": 254,
+        "detectFailures": 0
+      },
+      "h": {
+        "healthy": 1000,
+        "failed": 0
+      },
+      "s": {
+        "ready": true,
+        "warming": 0,
+        "cold": 0,
+        "deferred": 0,
+        "failed": 0
+      }
+    }
+  },
+  "realtimeConfigReads": null,
+  "alertsAfterRestart": {
+    "api": {
+      "logAlertCodes": {
+        "Tenant readiness alert TENANT_WARM_FAILED": 8,
+        "Tenant readiness alert TENANT_COLD_BEYOND_BOUND": 816
+      },
+      "drained": [
+        "Tenant warm drained: ready 1000 failed 0 deferred 0 after 140113 ms"
+      ]
+    },
+    "realtime": {
+      "logAlertCodes": {
+        "Tenant readiness alert TENANT_WARM_FAILED": 632,
+        "Tenant readiness alert TENANT_COLD_BEYOND_BOUND": 640
+      },
+      "drained": [
+        "Tenant warm drained: ready 611 failed 384 deferred 0 after 133448 ms"
+      ],
+      "startupHealth": {
+        "worstFailed": 384,
+        "worstAtMs": 126257,
+        "worstCauses": {},
+        "end": {
+          "ready": true,
+          "warming": 0,
+          "cold": 0,
+          "deferred": 0,
+          "failed": 0
+        },
+        "endCauses": {},
+        "fromMs": 1656,
+        "allReadyMs": 172284
+      }
+    },
+    "evaluator": {
+      "logAlertCodes": {},
+      "drained": [
+        "Tenant warm drained: ready 1000 failed 0 deferred 0 after 7414 ms"
+      ]
+    },
+    "tenant-admin": {
+      "logAlertCodes": {},
+      "drained": []
+    },
+    "realtimeHealthEndpoint": null
+  },
+  "oracle": "ORACLE GREEN: tenants 1000, mismatched 0, stored 6001, accepted 6001, uncertain 0",
+  "oracleControl": "CONTROL PASS"
+}

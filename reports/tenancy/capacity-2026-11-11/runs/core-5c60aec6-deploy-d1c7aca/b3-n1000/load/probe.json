@@ -1,0 +1,155 @@
+{
+  "args": {
+    "per": 2,
+    "open": 5,
+    "probeEveryMs": 3000,
+    "tenants": 1000,
+    "stockMs": 300000,
+    "recoveryMs": 120000,
+    "evalTimeoutMs": 900000
+  },
+  "exchangeMs": 5722,
+  "prime": {
+    "sockets": 2000,
+    "primed": 2000,
+    "dark": 0,
+    "serverDisconnected": 0,
+    "ms": 14006,
+    "reasons": {}
+  },
+  "window": {
+    "ms": 916861,
+    "writes": {
+      "ok": 302,
+      "failed": 0
+    },
+    "sockets": 2000,
+    "connectedAtEnd": 2000,
+    "serverDisconnectsInWindow": 0,
+    "writeToFrameMs": {
+      "n": 604,
+      "p50": 634,
+      "p95": 756,
+      "p99": 1628,
+      "max": 1757
+    },
+    "writeToFirstFrameMs": {
+      "n": 302,
+      "p50": 634,
+      "p95": 756,
+      "p99": 1628,
+      "max": 1755
+    },
+    "deliveredFrames": 604,
+    "expectedFrames": 604,
+    "writeToEvaluationMs": {
+      "n": 302,
+      "p50": 1301,
+      "p95": 1921,
+      "p99": 2042,
+      "max": 2892
+    },
+    "evaluationMissedWithin120s": 0,
+    "reasons": {}
+  },
+  "restart": {
+    "restartIso": "2026-11-11T23:58:14.224Z",
+    "healthyMs": {
+      "realtime": 2853,
+      "tenant-admin": 2853,
+      "api": 3141,
+      "evaluator": 13682
+    },
+    "firstServedMs": {
+      "0": {
+        "ms": 5620,
+        "statuses": {
+          "200": 1,
+          "502": 16
+        }
+      },
+      "500": {
+        "ms": 64607,
+        "statuses": {
+          "0": 31,
+          "200": 1,
+          "502": 16,
+          "503": 24
+        }
+      },
+      "999": {
+        "ms": 74925,
+        "statuses": {
+          "0": 29,
+          "200": 1,
+          "502": 16,
+          "503": 41
+        }
+      }
+    },
+    "healthCheckPassMs": {
+      "realtime": 2873,
+      "tenant-admin": 2678,
+      "api": 2995,
+      "evaluator": 13516
+    },
+    "edgeAfterRoleRestart": [
+      502,
+      502,
+      401
+    ],
+    "edgeRestarted": {
+      "atMs": 9567,
+      "commandMs": 11204,
+      "async": true
+    },
+    "evalGap": {
+      "tenants": 1000,
+      "evaluatorReadyMs": 13365,
+      "evaluatedAfterReady": 1000,
+      "sinceRestartMs": {
+        "p25": 18916,
+        "p50": 24444,
+        "p90": 32808,
+        "max": 73683
+      },
+      "within": {
+        "60s": 926,
+        "300s": 1000,
+        "900s": 1000
+      },
+      "notEvaluatedWithinTimeout": 0,
+      "backendsSeen": 13,
+      "timeoutS": 900,
+      "pollLoopMs": {
+        "n": 55,
+        "first10": [
+          253,
+          239,
+          300,
+          300,
+          298,
+          319,
+          394,
+          364,
+          494,
+          375
+        ],
+        "max": 494
+      }
+    },
+    "stockRecovered": 1501,
+    "stockAllRecoveredMs": null,
+    "retryAllRecoveredMs": 6297,
+    "retryRecovered": 2000,
+    "sockets": 2000,
+    "restartCommandMs": 821,
+    "reasons": {
+      "transport close": 1999,
+      "transport error": 1975,
+      "connect_error:xhr poll error": 12023,
+      "connect_error:xhr post error": 797,
+      "io server disconnect": 499
+    }
+  }
+}

@@ -1,0 +1,25 @@
+nsdemo_outbox	129280	20116.0	0.156	SELECT /* notification-readiness-table */ c.relkind AS kind,c.relpersistence AS persistence, c.relrowsecurity AND c.relforcerowsecurity AS s
+nsdemo_lifetime_evaluator	16158	18953.5	1.173	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_na
+nsdemo_outbox	32320	18711.9	0.579	SELECT /* notification-readiness-role */ r.rolsuper,r.rolbypassrls,r.rolcreaterole,r.rolcreatedb,r.rolreplication, pg_has_role(current_user,
+nsdemo_outbox	32320	18005.8	0.557	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_suppression	16159	17749.5	1.098	SELECT /* evaluator-consumer-suppression-epoch */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM 
+nsdemo_evaluator	302	17358.8	57.480	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_realtime	302	17005.7	56.310	SELECT f.version, s.tenant_id::text AS tenant, s.last_stamp::text AS stamp, s.last_delete_stamp::text AS deleted FROM (SELECT p.xmin::text |
+nsdemo_realtime	24160	14897.1	0.617	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_lifetime_evaluator	16158	14622.2	0.905	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_evaluator	16162	13935.0	0.862	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_suppression	16159	9146.8	0.566	SELECT /* operation-window-epoch lower */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_names
+nsdemo_lifetime_realtime	1208	1575.3	1.304	SELECT /* operation-window-epoch lifetime */ encode(sha256(convert_to(concat_ws('|',coalesce('17155:'||coalesce((SELECT oid::text FROM pg_na
+nsdemo_lifetime_realtime	1208	1167.4	0.966	INSERT INTO "nsdemo_control".tenant_lifecycle_operations (tenant_id,operation_id,generation) VALUES ($1,$2,$3)
+nsdemo_lifetime_realtime	1208	1084.0	0.897	UPDATE "nsdemo_control".tenant_lifecycle_operations SET finished=$4 WHERE tenant_id=$1 AND operation_id=$2 AND generation=$3 AND finished=$5
+nsdemo_lifetime_evaluator	16162	1027.7	0.064	SELECT backend_start FROM pg_catalog.pg_stat_activity WHERE pid = pg_catalog.pg_backend_pid()
+nsdemo_outbox	16158	430.4	0.027	SELECT * FROM "nsdemo_outbox".tenant_notification_state WHERE tenant_id=$1 AND consumer=$2 FOR UPDATE
+nsdemo_outbox	32321	417.4	0.013	SELECT /* notification-readiness-ledger */ name,checksum FROM "nsdemo_outbox".schema_migrations ORDER BY name
+nsdemo_suppression	16159	413.2	0.026	SELECT c.relrowsecurity AND c.relforcerowsecurity AS secured, pg_has_role(current_user,c.relowner,$2) AS owns, has_table_privilege(c.oid,$3)
+nsdemo_outbox	16158	262.3	0.016	SELECT * FROM "nsdemo_outbox".tenant_notification_requests /* notification-producer-active */ WHERE tenant_id=$1 AND consumer=$2 AND state I
+nsdemo_outbox	16162	235.4	0.015	SELECT * FROM "nsdemo_outbox".tenant_notification_requests WHERE tenant_id=$1 AND consumer=$2 AND dedup_key LIKE $3 AND ((state IN ($6,$7) A
+nsdemo_suppression	16159	175.3	0.011	SELECT tenant_id,alarm_group,alarm_level,acked_at,expires_at FROM "nsdemo_alarm".tenant_alarm_suppression WHERE tenant_id=$1 AND expires_at 
+nsdemo_realtime	1208	154.1	0.128	UPDATE "nsdemo_rt_checkpoint"."tenant_consumer_checkpoint" SET checkpoint=$3, projection=$4::jsonb, contract_digest=$5 WHERE tenant_id=$1 AN
+nsdemo_lifetime_evaluator	32320	118.1	0.004	SELECT set_config($2,$1,$3)
+nsdemo_outbox	32320	93.4	0.003	SELECT set_config($2, $1, $3)
+nsdemo_realtime	24160	76.2	0.003	SELECT set_config($2, $1, $3)

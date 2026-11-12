@@ -1,0 +1,8 @@
+baseline: ORACLE GREEN: tenants 3000, mismatched 0, stored 33, accepted 33, uncertain 17768
+altered: BEGIN
+300000b2-3333-4333-8333-0000000000b2 6af506c802c3057c7bc88fe8
+UPDATE 1
+COMMIT
+broken:   ORACLE RED: tenants 3000, mismatched 1, stored 32, accepted 33, uncertain 17768
+restored: ORACLE GREEN: tenants 3000, mismatched 0, stored 33, accepted 33, uncertain 17768
+CONTROL PASS

@@ -1,0 +1,2802 @@
+t	role	state	wait_event_type	wait_event	n
+1794423656.521095438	nsdemo_api	active			1
+1794423656.521095438	nsdemo_api	active	LWLock	WALWrite	2
+1794423656.521095438	nsdemo_api	idle	Client	ClientRead	8
+1794423656.521095438	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423656.521095438	nsdemo_evaluator	idle	Client	ClientRead	1
+1794423656.521095438	nsdemo_lifetime_api	active			1
+1794423656.521095438	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423656.521095438	nsdemo_realtime	idle	Client	ClientRead	1
+1794423660.671890358	nsdemo_api	active			2
+1794423660.671890358	nsdemo_api	idle	Client	ClientRead	7
+1794423660.671890358	nsdemo_api	idle in transaction			1
+1794423660.671890358	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423660.671890358	nsdemo_api	idle in transaction	IO	WALWrite	1
+1794423660.671890358	nsdemo_evaluator	idle	Client	ClientRead	1
+1794423660.671890358	nsdemo_lifetime_api	active			2
+1794423660.671890358	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423660.671890358	nsdemo_realtime	idle	Client	ClientRead	1
+1794423664.820245987	nsdemo_api	idle	Client	ClientRead	10
+1794423664.820245987	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423664.820245987	nsdemo_evaluator	idle	Client	ClientRead	1
+1794423664.820245987	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423664.820245987	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423664.820245987	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794423664.820245987	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794423664.820245987	nsdemo_realtime	idle	Client	ClientRead	2
+1794423668.995338804	nsdemo_api	active			1
+1794423668.995338804	nsdemo_api	idle	Client	ClientRead	7
+1794423668.995338804	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794423668.995338804	nsdemo_evaluator	idle	Client	ClientRead	1
+1794423668.995338804	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423668.995338804	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794423668.995338804	nsdemo_lifetime_realtime	idle in transaction	Client	ClientRead	1
+1794423668.995338804	nsdemo_realtime	idle	Client	ClientRead	2
+1794423673.193818653	nsdemo_api	active			2
+1794423673.193818653	nsdemo_api	active	IO	WALSync	1
+1794423673.193818653	nsdemo_api	active	LWLock	WALWrite	1
+1794423673.193818653	nsdemo_api	idle			1
+1794423673.193818653	nsdemo_api	idle	Client	ClientRead	7
+1794423673.193818653	nsdemo_evaluator	idle	Client	ClientRead	1
+1794423673.193818653	nsdemo_lifetime_api	active			1
+1794423673.193818653	nsdemo_lifetime_api	active	Client	ClientRead	1
+1794423673.193818653	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423673.193818653	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423673.193818653	nsdemo_lifetime_realtime	idle in transaction			2
+1794423673.193818653	nsdemo_lifetime_realtime	idle in transaction	Client	ClientRead	1
+1794423673.193818653	nsdemo_realtime	idle	Client	ClientRead	2
+1794423677.369156076	nsdemo_api	active			2
+1794423677.369156076	nsdemo_api	active	Client	ClientRead	1
+1794423677.369156076	nsdemo_api	idle	Client	ClientRead	11
+1794423677.369156076	nsdemo_api	idle in transaction			2
+1794423677.369156076	nsdemo_evaluator	idle	Client	ClientRead	3
+1794423677.369156076	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423677.369156076	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423677.369156076	nsdemo_lifetime_evaluator	idle	Client	ClientRead	3
+1794423677.369156076	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794423677.369156076	nsdemo_realtime	idle	Client	ClientRead	4
+1794423681.513159528	nsdemo_api	active			1
+1794423681.513159528	nsdemo_api	active	IO	WALSync	1
+1794423681.513159528	nsdemo_api	idle	Client	ClientRead	9
+1794423681.513159528	nsdemo_api	idle in transaction	Client	ClientRead	5
+1794423681.513159528	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423681.513159528	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423681.513159528	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794423681.513159528	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423681.513159528	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794423681.513159528	nsdemo_realtime	idle	Client	ClientRead	4
+1794423685.661011636	nsdemo_api	idle	Client	ClientRead	16
+1794423685.661011636	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423685.661011636	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423685.661011636	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423685.661011636	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794423685.661011636	nsdemo_realtime	idle	Client	ClientRead	4
+1794423689.804494006	nsdemo_api	active			1
+1794423689.804494006	nsdemo_api	active	Client	ClientRead	1
+1794423689.804494006	nsdemo_api	idle	Client	ClientRead	13
+1794423689.804494006	nsdemo_api	idle in transaction			1
+1794423689.804494006	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423689.804494006	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423689.804494006	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423689.804494006	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423689.804494006	nsdemo_realtime	active			3
+1794423689.804494006	nsdemo_realtime	idle in transaction			1
+1794423693.958963504	nsdemo_api	active			3
+1794423693.958963504	nsdemo_api	idle	Client	ClientRead	12
+1794423693.958963504	nsdemo_api	idle in transaction			1
+1794423693.958963504	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423693.958963504	nsdemo_lifetime_api	active			1
+1794423693.958963504	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423693.958963504	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794423693.958963504	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423693.958963504	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423693.958963504	nsdemo_outbox	idle in transaction	Client	ClientRead	2
+1794423693.958963504	nsdemo_realtime	idle	Client	ClientRead	4
+1794423693.958963504	nsdemo_suppression	active			2
+1794423698.145053719	nsdemo_api	active			3
+1794423698.145053719	nsdemo_api	active	Client	ClientRead	1
+1794423698.145053719	nsdemo_api	idle	Client	ClientRead	10
+1794423698.145053719	nsdemo_api	idle in transaction			2
+1794423698.145053719	nsdemo_evaluator	active			1
+1794423698.145053719	nsdemo_evaluator	idle	Client	ClientRead	3
+1794423698.145053719	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423698.145053719	nsdemo_lifetime_evaluator	active			1
+1794423698.145053719	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423698.145053719	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423698.145053719	nsdemo_outbox	idle	Client	ClientRead	1
+1794423698.145053719	nsdemo_outbox	idle in transaction			1
+1794423698.145053719	nsdemo_realtime	idle	Client	ClientRead	4
+1794423698.145053719	nsdemo_suppression	idle	Client	ClientRead	2
+1794423702.321932399	nsdemo_api	active			1
+1794423702.321932399	nsdemo_api	active	Client	ClientRead	1
+1794423702.321932399	nsdemo_api	idle	Client	ClientRead	11
+1794423702.321932399	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794423702.321932399	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423702.321932399	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423702.321932399	nsdemo_lifetime_evaluator	active			1
+1794423702.321932399	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423702.321932399	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423702.321932399	nsdemo_outbox	active			1
+1794423702.321932399	nsdemo_outbox	idle in transaction			1
+1794423702.321932399	nsdemo_realtime	idle	Client	ClientRead	4
+1794423702.321932399	nsdemo_suppression	idle	Client	ClientRead	2
+1794423706.500409503	nsdemo_api	active			2
+1794423706.500409503	nsdemo_api	active	Client	ClientRead	3
+1794423706.500409503	nsdemo_api	active	IO	WALSync	1
+1794423706.500409503	nsdemo_api	idle	Client	ClientRead	8
+1794423706.500409503	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423706.500409503	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423706.500409503	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423706.500409503	nsdemo_lifetime_evaluator	active			2
+1794423706.500409503	nsdemo_lifetime_evaluator	active	Client	ClientRead	1
+1794423706.500409503	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794423706.500409503	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423706.500409503	nsdemo_outbox	active			1
+1794423706.500409503	nsdemo_outbox	idle	Client	ClientRead	1
+1794423706.500409503	nsdemo_realtime	idle	Client	ClientRead	4
+1794423706.500409503	nsdemo_suppression	idle	Client	ClientRead	2
+1794423710.668603741	nsdemo_api	idle	Client	ClientRead	13
+1794423710.668603741	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794423710.668603741	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423710.668603741	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423710.668603741	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	2
+1794423710.668603741	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423710.668603741	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423710.668603741	nsdemo_outbox	idle	Client	ClientRead	2
+1794423710.668603741	nsdemo_realtime	idle	Client	ClientRead	4
+1794423710.668603741	nsdemo_suppression	idle	Client	ClientRead	2
+1794423714.822575455	nsdemo_api	active			5
+1794423714.822575455	nsdemo_api	active	Client	ClientRead	1
+1794423714.822575455	nsdemo_api	idle	Client	ClientRead	9
+1794423714.822575455	nsdemo_api	idle in transaction			1
+1794423714.822575455	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423714.822575455	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423714.822575455	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423714.822575455	nsdemo_lifetime_realtime	active	IO	WALSync	1
+1794423714.822575455	nsdemo_lifetime_realtime	active	LWLock	WALWrite	1
+1794423714.822575455	nsdemo_outbox	idle	Client	ClientRead	2
+1794423714.822575455	nsdemo_realtime	idle	Client	ClientRead	4
+1794423714.822575455	nsdemo_suppression	idle	Client	ClientRead	2
+1794423718.986265696	nsdemo_api	active			2
+1794423718.986265696	nsdemo_api	active	Client	ClientRead	1
+1794423718.986265696	nsdemo_api	idle	Client	ClientRead	12
+1794423718.986265696	nsdemo_api	idle in transaction	IO	WALSync	1
+1794423718.986265696	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423718.986265696	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423718.986265696	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423718.986265696	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423718.986265696	nsdemo_realtime	idle	Client	ClientRead	4
+1794423723.137191891	nsdemo_api	active			1
+1794423723.137191891	nsdemo_api	idle	Client	ClientRead	15
+1794423723.137191891	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423723.137191891	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423723.137191891	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423723.137191891	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423723.137191891	nsdemo_realtime	idle	Client	ClientRead	4
+1794423727.279422906	nsdemo_api	active			1
+1794423727.279422906	nsdemo_api	idle	Client	ClientRead	15
+1794423727.279422906	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423727.279422906	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423727.279422906	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423727.279422906	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423727.279422906	nsdemo_realtime	idle	Client	ClientRead	4
+1794423731.421917403	nsdemo_api	idle	Client	ClientRead	14
+1794423731.421917403	nsdemo_api	idle in transaction			2
+1794423731.421917403	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423731.421917403	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423731.421917403	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423731.421917403	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423731.421917403	nsdemo_realtime	idle	Client	ClientRead	4
+1794423735.568347413	nsdemo_api	active			1
+1794423735.568347413	nsdemo_api	active	Client	ClientRead	2
+1794423735.568347413	nsdemo_api	idle	Client	ClientRead	11
+1794423735.568347413	nsdemo_api	idle in transaction			1
+1794423735.568347413	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423735.568347413	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423735.568347413	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423735.568347413	nsdemo_lifetime_api	idle in transaction			1
+1794423735.568347413	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423735.568347413	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423735.568347413	nsdemo_realtime	idle	Client	ClientRead	4
+1794423739.710887460	nsdemo_api	idle			1
+1794423739.710887460	nsdemo_api	idle	Client	ClientRead	10
+1794423739.710887460	nsdemo_api	idle in transaction			1
+1794423739.710887460	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794423739.710887460	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423739.710887460	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423739.710887460	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423739.710887460	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423739.710887460	nsdemo_realtime	idle	Client	ClientRead	4
+1794423743.859155487	nsdemo_api	active			3
+1794423743.859155487	nsdemo_api	idle	Client	ClientRead	13
+1794423743.859155487	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423743.859155487	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423743.859155487	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423743.859155487	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423743.859155487	nsdemo_realtime	active			1
+1794423743.859155487	nsdemo_realtime	idle	Client	ClientRead	3
+1794423748.013795178	nsdemo_api	active			3
+1794423748.013795178	nsdemo_api	active	Client	ClientRead	1
+1794423748.013795178	nsdemo_api	idle	Client	ClientRead	10
+1794423748.013795178	nsdemo_api	idle in transaction			2
+1794423748.013795178	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423748.013795178	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423748.013795178	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794423748.013795178	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423748.013795178	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423748.013795178	nsdemo_realtime	idle	Client	ClientRead	4
+1794423752.171042448	nsdemo_api	idle	Client	ClientRead	13
+1794423752.171042448	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794423752.171042448	nsdemo_evaluator	active			1
+1794423752.171042448	nsdemo_evaluator	idle	Client	ClientRead	3
+1794423752.171042448	nsdemo_lifetime_api	active			1
+1794423752.171042448	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423752.171042448	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794423752.171042448	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423752.171042448	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423752.171042448	nsdemo_realtime	idle	Client	ClientRead	4
+1794423756.348574262	nsdemo_api	active	Client	ClientRead	3
+1794423756.348574262	nsdemo_api	idle	Client	ClientRead	13
+1794423756.348574262	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423756.348574262	nsdemo_lifetime_api	active			1
+1794423756.348574262	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423756.348574262	nsdemo_lifetime_evaluator	active			1
+1794423756.348574262	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794423756.348574262	nsdemo_lifetime_evaluator	idle in transaction	IO	WALSync	1
+1794423756.348574262	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423756.348574262	nsdemo_outbox	active			1
+1794423756.348574262	nsdemo_outbox	idle	Client	ClientRead	1
+1794423756.348574262	nsdemo_realtime	idle	Client	ClientRead	4
+1794423756.348574262	nsdemo_suppression	idle	Client	ClientRead	2
+1794423760.538560890	nsdemo_api	idle	Client	ClientRead	12
+1794423760.538560890	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794423760.538560890	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423760.538560890	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423760.538560890	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423760.538560890	nsdemo_lifetime_evaluator	idle in transaction	IO	WALSync	1
+1794423760.538560890	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423760.538560890	nsdemo_outbox	active			2
+1794423760.538560890	nsdemo_realtime	idle	Client	ClientRead	4
+1794423760.538560890	nsdemo_suppression	idle	Client	ClientRead	2
+1794423764.726560511	nsdemo_api	active			1
+1794423764.726560511	nsdemo_api	idle			2
+1794423764.726560511	nsdemo_api	idle	Client	ClientRead	12
+1794423764.726560511	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423764.726560511	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423764.726560511	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423764.726560511	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794423764.726560511	nsdemo_lifetime_evaluator	active	Client	ClientRead	1
+1794423764.726560511	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423764.726560511	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423764.726560511	nsdemo_outbox	active			1
+1794423764.726560511	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794423764.726560511	nsdemo_realtime	idle	Client	ClientRead	4
+1794423764.726560511	nsdemo_suppression	idle	Client	ClientRead	1
+1794423764.726560511	nsdemo_suppression	idle in transaction			1
+1794423768.923590286	nsdemo_api	active			4
+1794423768.923590286	nsdemo_api	active	Client	ClientRead	2
+1794423768.923590286	nsdemo_api	active	IO	WALSync	1
+1794423768.923590286	nsdemo_api	idle	Client	ClientRead	9
+1794423768.923590286	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423768.923590286	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423768.923590286	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423768.923590286	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423768.923590286	nsdemo_outbox	idle	Client	ClientRead	2
+1794423768.923590286	nsdemo_realtime	idle	Client	ClientRead	4
+1794423768.923590286	nsdemo_suppression	idle	Client	ClientRead	2
+1794423773.095016744	nsdemo_api	active			2
+1794423773.095016744	nsdemo_api	idle	Client	ClientRead	14
+1794423773.095016744	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423773.095016744	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423773.095016744	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423773.095016744	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423773.095016744	nsdemo_outbox	idle	Client	ClientRead	2
+1794423773.095016744	nsdemo_realtime	idle	Client	ClientRead	4
+1794423773.095016744	nsdemo_suppression	idle	Client	ClientRead	2
+1794423777.246908623	nsdemo_api	active			1
+1794423777.246908623	nsdemo_api	idle	Client	ClientRead	13
+1794423777.246908623	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423777.246908623	nsdemo_evaluator	idle	Client	ClientRead	3
+1794423777.246908623	nsdemo_evaluator	idle in transaction	Client	ClientRead	1
+1794423777.246908623	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423777.246908623	nsdemo_lifetime_evaluator	active			1
+1794423777.246908623	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794423777.246908623	nsdemo_lifetime_evaluator	idle in transaction	Client	ClientRead	1
+1794423777.246908623	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423777.246908623	nsdemo_outbox	idle	Client	ClientRead	2
+1794423777.246908623	nsdemo_realtime	idle	Client	ClientRead	4
+1794423777.246908623	nsdemo_suppression	idle	Client	ClientRead	2
+1794423781.403902229	nsdemo_api	active			1
+1794423781.403902229	nsdemo_api	active	Client	ClientRead	1
+1794423781.403902229	nsdemo_api	active	IO	WALSync	1
+1794423781.403902229	nsdemo_api	idle	Client	ClientRead	12
+1794423781.403902229	nsdemo_api	idle in transaction			1
+1794423781.403902229	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423781.403902229	nsdemo_lifetime_api	active	Client	ClientRead	1
+1794423781.403902229	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423781.403902229	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423781.403902229	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423781.403902229	nsdemo_realtime	idle	Client	ClientRead	4
+1794423785.558730875	nsdemo_api	idle	Client	ClientRead	16
+1794423785.558730875	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423785.558730875	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423785.558730875	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423785.558730875	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423785.558730875	nsdemo_realtime	idle	Client	ClientRead	4
+1794423789.692842176	nsdemo_api	active			1
+1794423789.692842176	nsdemo_api	idle	Client	ClientRead	15
+1794423789.692842176	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423789.692842176	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423789.692842176	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423789.692842176	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423789.692842176	nsdemo_realtime	idle	Client	ClientRead	4
+1794423793.850087947	nsdemo_api	active	LWLock	WALWrite	1
+1794423793.850087947	nsdemo_api	idle	Client	ClientRead	13
+1794423793.850087947	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423793.850087947	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423793.850087947	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423793.850087947	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423793.850087947	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423793.850087947	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423793.850087947	nsdemo_realtime	active			4
+1794423798.021033992	nsdemo_api	active			3
+1794423798.021033992	nsdemo_api	idle	Client	ClientRead	9
+1794423798.021033992	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794423798.021033992	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423798.021033992	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423798.021033992	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423798.021033992	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423798.021033992	nsdemo_realtime	idle	Client	ClientRead	4
+1794423802.184615692	nsdemo_api	active			4
+1794423802.184615692	nsdemo_api	active	Client	ClientRead	1
+1794423802.184615692	nsdemo_api	idle	Client	ClientRead	11
+1794423802.184615692	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423802.184615692	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423802.184615692	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423802.184615692	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423802.184615692	nsdemo_realtime	idle	Client	ClientRead	4
+1794423806.399087276	nsdemo_api	active	Client	ClientRead	1
+1794423806.399087276	nsdemo_api	active	IO	WALSync	1
+1794423806.399087276	nsdemo_api	active	LWLock	WALWrite	2
+1794423806.399087276	nsdemo_api	idle			1
+1794423806.399087276	nsdemo_api	idle	Client	ClientRead	10
+1794423806.399087276	nsdemo_api	idle in transaction			1
+1794423806.399087276	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423806.399087276	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423806.399087276	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423806.399087276	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423806.399087276	nsdemo_realtime	idle	Client	ClientRead	4
+1794423810.569677621	nsdemo_api	active			5
+1794423810.569677621	nsdemo_api	active	LWLock	WALWrite	1
+1794423810.569677621	nsdemo_api	idle	Client	ClientRead	10
+1794423810.569677621	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423810.569677621	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423810.569677621	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423810.569677621	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423810.569677621	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423810.569677621	nsdemo_realtime	idle	Client	ClientRead	4
+1794423814.719036575	nsdemo_api	active			2
+1794423814.719036575	nsdemo_api	active	IO	WALSync	1
+1794423814.719036575	nsdemo_api	idle			1
+1794423814.719036575	nsdemo_api	idle	Client	ClientRead	12
+1794423814.719036575	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423814.719036575	nsdemo_lifetime_api	active			3
+1794423814.719036575	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794423814.719036575	nsdemo_lifetime_evaluator	active			1
+1794423814.719036575	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	1
+1794423814.719036575	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794423814.719036575	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423814.719036575	nsdemo_outbox	active			1
+1794423814.719036575	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794423814.719036575	nsdemo_realtime	idle	Client	ClientRead	4
+1794423814.719036575	nsdemo_suppression	active			1
+1794423814.719036575	nsdemo_suppression	idle	Client	ClientRead	1
+1794423818.891374844	nsdemo_api	active			3
+1794423818.891374844	nsdemo_api	active	IO	WALSync	1
+1794423818.891374844	nsdemo_api	active	LWLock	WALWrite	1
+1794423818.891374844	nsdemo_api	idle	Client	ClientRead	10
+1794423818.891374844	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423818.891374844	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423818.891374844	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423818.891374844	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423818.891374844	nsdemo_lifetime_realtime	active			1
+1794423818.891374844	nsdemo_lifetime_realtime	active	LWLock	WALWrite	1
+1794423818.891374844	nsdemo_outbox	active			1
+1794423818.891374844	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794423818.891374844	nsdemo_realtime	idle	Client	ClientRead	4
+1794423818.891374844	nsdemo_suppression	idle	Client	ClientRead	2
+1794423823.086871892	nsdemo_api	idle	Client	ClientRead	12
+1794423823.086871892	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794423823.086871892	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423823.086871892	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423823.086871892	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794423823.086871892	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423823.086871892	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423823.086871892	nsdemo_outbox	active			2
+1794423823.086871892	nsdemo_realtime	idle	Client	ClientRead	4
+1794423823.086871892	nsdemo_suppression	idle	Client	ClientRead	2
+1794423827.258634902	nsdemo_api	active			2
+1794423827.258634902	nsdemo_api	active	Client	ClientRead	1
+1794423827.258634902	nsdemo_api	idle			1
+1794423827.258634902	nsdemo_api	idle	Client	ClientRead	10
+1794423827.258634902	nsdemo_api	idle in transaction			1
+1794423827.258634902	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423827.258634902	nsdemo_evaluator	active			3
+1794423827.258634902	nsdemo_evaluator	active	Client	ClientRead	1
+1794423827.258634902	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423827.258634902	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794423827.258634902	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423827.258634902	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423827.258634902	nsdemo_outbox	active			1
+1794423827.258634902	nsdemo_outbox	active	Client	ClientRead	1
+1794423827.258634902	nsdemo_realtime	idle	Client	ClientRead	4
+1794423827.258634902	nsdemo_suppression	idle	Client	ClientRead	2
+1794423831.433685969	nsdemo_api	idle	Client	ClientRead	16
+1794423831.433685969	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423831.433685969	nsdemo_lifetime_api	active			4
+1794423831.433685969	nsdemo_lifetime_api	active	Client	ClientRead	1
+1794423831.433685969	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794423831.433685969	nsdemo_lifetime_api	idle in transaction			1
+1794423831.433685969	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423831.433685969	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423831.433685969	nsdemo_outbox	idle	Client	ClientRead	2
+1794423831.433685969	nsdemo_realtime	idle	Client	ClientRead	4
+1794423831.433685969	nsdemo_suppression	idle	Client	ClientRead	2
+1794423835.588669540	nsdemo_api	active			3
+1794423835.588669540	nsdemo_api	active	Client	ClientRead	1
+1794423835.588669540	nsdemo_api	idle	Client	ClientRead	12
+1794423835.588669540	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423835.588669540	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423835.588669540	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423835.588669540	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423835.588669540	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423835.588669540	nsdemo_outbox	idle	Client	ClientRead	2
+1794423835.588669540	nsdemo_realtime	idle	Client	ClientRead	4
+1794423835.588669540	nsdemo_suppression	idle	Client	ClientRead	2
+1794423839.728438584	nsdemo_api	active			5
+1794423839.728438584	nsdemo_api	active	Client	ClientRead	1
+1794423839.728438584	nsdemo_api	idle	Client	ClientRead	10
+1794423839.728438584	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423839.728438584	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423839.728438584	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423839.728438584	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423839.728438584	nsdemo_realtime	idle	Client	ClientRead	4
+1794423843.890424613	nsdemo_api	active			6
+1794423843.890424613	nsdemo_api	idle	Client	ClientRead	10
+1794423843.890424613	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423843.890424613	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423843.890424613	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423843.890424613	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423843.890424613	nsdemo_realtime	active			4
+1794423848.048342556	nsdemo_api	active			5
+1794423848.048342556	nsdemo_api	active	IO	WALSync	1
+1794423848.048342556	nsdemo_api	idle	Client	ClientRead	9
+1794423848.048342556	nsdemo_api	idle in transaction			1
+1794423848.048342556	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423848.048342556	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423848.048342556	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423848.048342556	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423848.048342556	nsdemo_realtime	idle	Client	ClientRead	4
+1794423852.199947710	nsdemo_api	active			1
+1794423852.199947710	nsdemo_api	active	IO	WALSync	1
+1794423852.199947710	nsdemo_api	active	LWLock	WALWrite	2
+1794423852.199947710	nsdemo_api	idle	Client	ClientRead	12
+1794423852.199947710	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423852.199947710	nsdemo_lifetime_api	active			2
+1794423852.199947710	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423852.199947710	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423852.199947710	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423852.199947710	nsdemo_realtime	idle	Client	ClientRead	4
+1794423856.349425438	nsdemo_api	active	Client	ClientRead	1
+1794423856.349425438	nsdemo_api	active	LWLock	WALWrite	2
+1794423856.349425438	nsdemo_api	idle	Client	ClientRead	12
+1794423856.349425438	nsdemo_api	idle in transaction			1
+1794423856.349425438	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423856.349425438	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423856.349425438	nsdemo_lifetime_api	active	LWLock	WALWrite	2
+1794423856.349425438	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794423856.349425438	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423856.349425438	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423856.349425438	nsdemo_realtime	idle	Client	ClientRead	4
+1794423860.521773716	nsdemo_api	active	Client	ClientRead	1
+1794423860.521773716	nsdemo_api	active	Lock	transactionid	1
+1794423860.521773716	nsdemo_api	idle			1
+1794423860.521773716	nsdemo_api	idle	Client	ClientRead	13
+1794423860.521773716	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423860.521773716	nsdemo_lifetime_api	active			1
+1794423860.521773716	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423860.521773716	nsdemo_lifetime_api	active	LWLock	WALWrite	2
+1794423860.521773716	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794423860.521773716	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423860.521773716	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423860.521773716	nsdemo_realtime	idle	Client	ClientRead	4
+1794423864.679236528	nsdemo_api	active			2
+1794423864.679236528	nsdemo_api	active	Client	ClientRead	1
+1794423864.679236528	nsdemo_api	active	IO	WALSync	1
+1794423864.679236528	nsdemo_api	active	LWLock	WALWrite	2
+1794423864.679236528	nsdemo_api	idle	Client	ClientRead	9
+1794423864.679236528	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423864.679236528	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423864.679236528	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423864.679236528	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423864.679236528	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423864.679236528	nsdemo_realtime	idle	Client	ClientRead	4
+1794423868.834482675	nsdemo_api	active			4
+1794423868.834482675	nsdemo_api	active	Client	ClientRead	1
+1794423868.834482675	nsdemo_api	active	IO	WALSync	1
+1794423868.834482675	nsdemo_api	idle	Client	ClientRead	8
+1794423868.834482675	nsdemo_api	idle in transaction			1
+1794423868.834482675	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423868.834482675	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423868.834482675	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794423868.834482675	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423868.834482675	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423868.834482675	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423868.834482675	nsdemo_realtime	active			1
+1794423868.834482675	nsdemo_realtime	idle	Client	ClientRead	3
+1794423873.016431541	nsdemo_api	active			6
+1794423873.016431541	nsdemo_api	active	IO	WALSync	1
+1794423873.016431541	nsdemo_api	idle	Client	ClientRead	9
+1794423873.016431541	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423873.016431541	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423873.016431541	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423873.016431541	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423873.016431541	nsdemo_realtime	idle	Client	ClientRead	4
+1794423877.183340205	nsdemo_api	active			5
+1794423877.183340205	nsdemo_api	active	Client	ClientRead	2
+1794423877.183340205	nsdemo_api	idle	Client	ClientRead	9
+1794423877.183340205	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423877.183340205	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423877.183340205	nsdemo_lifetime_evaluator	active			1
+1794423877.183340205	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794423877.183340205	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794423877.183340205	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423877.183340205	nsdemo_outbox	active			1
+1794423877.183340205	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794423877.183340205	nsdemo_realtime	idle	Client	ClientRead	4
+1794423877.183340205	nsdemo_suppression	active			1
+1794423877.183340205	nsdemo_suppression	idle	Client	ClientRead	1
+1794423881.354257918	nsdemo_api	active			5
+1794423881.354257918	nsdemo_api	idle	Client	ClientRead	9
+1794423881.354257918	nsdemo_api	idle in transaction			1
+1794423881.354257918	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423881.354257918	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423881.354257918	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423881.354257918	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423881.354257918	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423881.354257918	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423881.354257918	nsdemo_outbox	active			1
+1794423881.354257918	nsdemo_outbox	active	Client	ClientRead	1
+1794423881.354257918	nsdemo_realtime	idle	Client	ClientRead	4
+1794423881.354257918	nsdemo_suppression	idle	Client	ClientRead	2
+1794423885.527794943	nsdemo_api	active			1
+1794423885.527794943	nsdemo_api	active	IO	WALSync	1
+1794423885.527794943	nsdemo_api	active	LWLock	WALWrite	1
+1794423885.527794943	nsdemo_api	idle	Client	ClientRead	12
+1794423885.527794943	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423885.527794943	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423885.527794943	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423885.527794943	nsdemo_lifetime_evaluator	active			1
+1794423885.527794943	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	1
+1794423885.527794943	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794423885.527794943	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423885.527794943	nsdemo_outbox	active			1
+1794423885.527794943	nsdemo_outbox	active	Client	ClientRead	1
+1794423885.527794943	nsdemo_realtime	idle	Client	ClientRead	4
+1794423885.527794943	nsdemo_suppression	idle	Client	ClientRead	2
+1794423889.700936218	nsdemo_api	active	IO	WALSync	1
+1794423889.700936218	nsdemo_api	idle	Client	ClientRead	12
+1794423889.700936218	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794423889.700936218	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423889.700936218	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423889.700936218	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423889.700936218	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423889.700936218	nsdemo_outbox	idle	Client	ClientRead	2
+1794423889.700936218	nsdemo_realtime	idle	Client	ClientRead	4
+1794423889.700936218	nsdemo_suppression	idle	Client	ClientRead	2
+1794423893.868555368	nsdemo_api	idle	Client	ClientRead	13
+1794423893.868555368	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794423893.868555368	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423893.868555368	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423893.868555368	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423893.868555368	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423893.868555368	nsdemo_outbox	idle	Client	ClientRead	2
+1794423893.868555368	nsdemo_realtime	active			4
+1794423893.868555368	nsdemo_suppression	idle	Client	ClientRead	2
+1794423898.019972556	nsdemo_api	active			3
+1794423898.019972556	nsdemo_api	active	Client	ClientRead	1
+1794423898.019972556	nsdemo_api	idle	Client	ClientRead	11
+1794423898.019972556	nsdemo_api	idle in transaction			1
+1794423898.019972556	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423898.019972556	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423898.019972556	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423898.019972556	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423898.019972556	nsdemo_outbox	idle	Client	ClientRead	2
+1794423898.019972556	nsdemo_realtime	idle	Client	ClientRead	4
+1794423898.019972556	nsdemo_suppression	idle	Client	ClientRead	2
+1794423902.167771579	nsdemo_api	active	Client	ClientRead	1
+1794423902.167771579	nsdemo_api	active	IO	WALSync	1
+1794423902.167771579	nsdemo_api	idle	Client	ClientRead	14
+1794423902.167771579	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423902.167771579	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423902.167771579	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423902.167771579	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423902.167771579	nsdemo_realtime	idle	Client	ClientRead	4
+1794423906.307561482	nsdemo_api	active			1
+1794423906.307561482	nsdemo_api	active	IO	WALSync	1
+1794423906.307561482	nsdemo_api	active	Lock	transactionid	1
+1794423906.307561482	nsdemo_api	idle	Client	ClientRead	12
+1794423906.307561482	nsdemo_api	idle in transaction			1
+1794423906.307561482	nsdemo_evaluator	active			2
+1794423906.307561482	nsdemo_evaluator	idle	Client	ClientRead	1
+1794423906.307561482	nsdemo_evaluator	idle in transaction			1
+1794423906.307561482	nsdemo_lifetime_api	active			2
+1794423906.307561482	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423906.307561482	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423906.307561482	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423906.307561482	nsdemo_realtime	idle	Client	ClientRead	4
+1794423910.472731725	nsdemo_api	active			3
+1794423910.472731725	nsdemo_api	active	IO	WALSync	1
+1794423910.472731725	nsdemo_api	idle	Client	ClientRead	10
+1794423910.472731725	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423910.472731725	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423910.472731725	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423910.472731725	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423910.472731725	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423910.472731725	nsdemo_realtime	idle	Client	ClientRead	4
+1794423914.637118736	nsdemo_api	active			1
+1794423914.637118736	nsdemo_api	active	IO	WALSync	1
+1794423914.637118736	nsdemo_api	idle	Client	ClientRead	12
+1794423914.637118736	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423914.637118736	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423914.637118736	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423914.637118736	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423914.637118736	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423914.637118736	nsdemo_realtime	idle	Client	ClientRead	4
+1794423918.806544829	nsdemo_api	active			3
+1794423918.806544829	nsdemo_api	idle	Client	ClientRead	9
+1794423918.806544829	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794423918.806544829	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423918.806544829	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423918.806544829	nsdemo_lifetime_api	idle in transaction	IO	WALWrite	1
+1794423918.806544829	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423918.806544829	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423918.806544829	nsdemo_realtime	idle	Client	ClientRead	4
+1794423922.979653349	nsdemo_api	active			2
+1794423922.979653349	nsdemo_api	active	Client	ClientRead	1
+1794423922.979653349	nsdemo_api	active	IO	WALSync	1
+1794423922.979653349	nsdemo_api	idle	Client	ClientRead	11
+1794423922.979653349	nsdemo_api	idle in transaction			1
+1794423922.979653349	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423922.979653349	nsdemo_lifetime_api	active	LWLock	WALWrite	2
+1794423922.979653349	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423922.979653349	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423922.979653349	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423922.979653349	nsdemo_realtime	idle	Client	ClientRead	4
+1794423927.174040326	nsdemo_api	active			3
+1794423927.174040326	nsdemo_api	active	Client	ClientRead	2
+1794423927.174040326	nsdemo_api	idle	Client	ClientRead	10
+1794423927.174040326	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423927.174040326	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423927.174040326	nsdemo_lifetime_api	active			2
+1794423927.174040326	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423927.174040326	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794423927.174040326	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423927.174040326	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423927.174040326	nsdemo_realtime	idle	Client	ClientRead	4
+1794423931.338953646	nsdemo_api	idle			1
+1794423931.338953646	nsdemo_api	idle	Client	ClientRead	12
+1794423931.338953646	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794423931.338953646	nsdemo_evaluator	active			4
+1794423931.338953646	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423931.338953646	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794423931.338953646	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423931.338953646	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423931.338953646	nsdemo_realtime	idle	Client	ClientRead	4
+1794423935.524156195	nsdemo_api	active			2
+1794423935.524156195	nsdemo_api	idle	Client	ClientRead	14
+1794423935.524156195	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423935.524156195	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423935.524156195	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794423935.524156195	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423935.524156195	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423935.524156195	nsdemo_outbox	active			1
+1794423935.524156195	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794423935.524156195	nsdemo_realtime	idle	Client	ClientRead	4
+1794423935.524156195	nsdemo_suppression	idle	Client	ClientRead	2
+1794423939.696248049	nsdemo_api	active	IO	WALSync	1
+1794423939.696248049	nsdemo_api	active	LWLock	WALWrite	1
+1794423939.696248049	nsdemo_api	idle	Client	ClientRead	13
+1794423939.696248049	nsdemo_api	idle in transaction	LWLock	WALWrite	1
+1794423939.696248049	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423939.696248049	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423939.696248049	nsdemo_lifetime_evaluator	active			1
+1794423939.696248049	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423939.696248049	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423939.696248049	nsdemo_outbox	active			2
+1794423939.696248049	nsdemo_realtime	idle	Client	ClientRead	4
+1794423939.696248049	nsdemo_suppression	idle	Client	ClientRead	2
+1794423943.869831441	nsdemo_api	active			4
+1794423943.869831441	nsdemo_api	idle	Client	ClientRead	11
+1794423943.869831441	nsdemo_api	idle in transaction			1
+1794423943.869831441	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423943.869831441	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423943.869831441	nsdemo_lifetime_evaluator	active			1
+1794423943.869831441	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423943.869831441	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423943.869831441	nsdemo_outbox	active			2
+1794423943.869831441	nsdemo_realtime	idle	Client	ClientRead	1
+1794423943.869831441	nsdemo_realtime	idle in transaction	Client	ClientRead	3
+1794423943.869831441	nsdemo_suppression	idle	Client	ClientRead	2
+1794423948.052598460	nsdemo_api	active			4
+1794423948.052598460	nsdemo_api	idle	Client	ClientRead	12
+1794423948.052598460	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423948.052598460	nsdemo_lifetime_api	active			1
+1794423948.052598460	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423948.052598460	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423948.052598460	nsdemo_lifetime_evaluator	active			1
+1794423948.052598460	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423948.052598460	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423948.052598460	nsdemo_outbox	active			2
+1794423948.052598460	nsdemo_realtime	idle	Client	ClientRead	4
+1794423948.052598460	nsdemo_suppression	idle	Client	ClientRead	2
+1794423952.222504238	nsdemo_api	idle	Client	ClientRead	11
+1794423952.222504238	nsdemo_api	idle in transaction	Client	ClientRead	5
+1794423952.222504238	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423952.222504238	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423952.222504238	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423952.222504238	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423952.222504238	nsdemo_outbox	idle	Client	ClientRead	2
+1794423952.222504238	nsdemo_realtime	idle	Client	ClientRead	4
+1794423952.222504238	nsdemo_suppression	idle	Client	ClientRead	2
+1794423956.379003680	nsdemo_api	active			4
+1794423956.379003680	nsdemo_api	active	Client	ClientRead	1
+1794423956.379003680	nsdemo_api	idle	Client	ClientRead	10
+1794423956.379003680	nsdemo_api	idle in transaction			1
+1794423956.379003680	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423956.379003680	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423956.379003680	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794423956.379003680	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423956.379003680	nsdemo_outbox	idle	Client	ClientRead	2
+1794423956.379003680	nsdemo_realtime	idle	Client	ClientRead	4
+1794423956.379003680	nsdemo_suppression	idle	Client	ClientRead	2
+1794423960.548210291	nsdemo_api	active			1
+1794423960.548210291	nsdemo_api	active	Client	ClientRead	1
+1794423960.548210291	nsdemo_api	idle	Client	ClientRead	12
+1794423960.548210291	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423960.548210291	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423960.548210291	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423960.548210291	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423960.548210291	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423960.548210291	nsdemo_realtime	idle	Client	ClientRead	4
+1794423964.698429807	nsdemo_api	active			3
+1794423964.698429807	nsdemo_api	active	IO	WALSync	1
+1794423964.698429807	nsdemo_api	active	LWLock	WALWrite	2
+1794423964.698429807	nsdemo_api	idle	Client	ClientRead	8
+1794423964.698429807	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423964.698429807	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423964.698429807	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423964.698429807	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423964.698429807	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423964.698429807	nsdemo_realtime	idle	Client	ClientRead	4
+1794423968.860833903	nsdemo_api	active			6
+1794423968.860833903	nsdemo_api	active	Client	ClientRead	1
+1794423968.860833903	nsdemo_api	idle	Client	ClientRead	7
+1794423968.860833903	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423968.860833903	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423968.860833903	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423968.860833903	nsdemo_lifetime_api	idle in transaction			1
+1794423968.860833903	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423968.860833903	nsdemo_lifetime_realtime	active	IO	WALSync	1
+1794423968.860833903	nsdemo_lifetime_realtime	active	LWLock	WALWrite	1
+1794423968.860833903	nsdemo_realtime	idle	Client	ClientRead	4
+1794423973.040761609	nsdemo_api	active			6
+1794423973.040761609	nsdemo_api	idle	Client	ClientRead	10
+1794423973.040761609	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423973.040761609	nsdemo_lifetime_api	active			1
+1794423973.040761609	nsdemo_lifetime_api	active	IO	WALSync	1
+1794423973.040761609	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794423973.040761609	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423973.040761609	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423973.040761609	nsdemo_realtime	idle	Client	ClientRead	4
+1794423977.212978709	nsdemo_api	active			1
+1794423977.212978709	nsdemo_api	active	Client	ClientRead	1
+1794423977.212978709	nsdemo_api	active	IO	WALSync	1
+1794423977.212978709	nsdemo_api	idle	Client	ClientRead	11
+1794423977.212978709	nsdemo_api	idle in transaction			1
+1794423977.212978709	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423977.212978709	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423977.212978709	nsdemo_lifetime_api	active			3
+1794423977.212978709	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794423977.212978709	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794423977.212978709	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423977.212978709	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423977.212978709	nsdemo_realtime	idle	Client	ClientRead	4
+1794423981.391185702	nsdemo_api	active			2
+1794423981.391185702	nsdemo_api	active	Client	ClientRead	1
+1794423981.391185702	nsdemo_api	active	IO	WALSync	1
+1794423981.391185702	nsdemo_api	active	LWLock	WALWrite	1
+1794423981.391185702	nsdemo_api	idle	Client	ClientRead	11
+1794423981.391185702	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423981.391185702	nsdemo_lifetime_api	active			1
+1794423981.391185702	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794423981.391185702	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794423981.391185702	nsdemo_lifetime_api	idle in transaction			1
+1794423981.391185702	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423981.391185702	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423981.391185702	nsdemo_realtime	idle	Client	ClientRead	4
+1794423985.566239860	nsdemo_api	active			6
+1794423985.566239860	nsdemo_api	idle	Client	ClientRead	10
+1794423985.566239860	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423985.566239860	nsdemo_lifetime_api	active			1
+1794423985.566239860	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794423985.566239860	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423985.566239860	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423985.566239860	nsdemo_realtime	idle	Client	ClientRead	4
+1794423989.744945631	nsdemo_api	active			1
+1794423989.744945631	nsdemo_api	active	IO	WALSync	1
+1794423989.744945631	nsdemo_api	idle	Client	ClientRead	14
+1794423989.744945631	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423989.744945631	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423989.744945631	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423989.744945631	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423989.744945631	nsdemo_realtime	idle	Client	ClientRead	4
+1794423993.910027418	nsdemo_api	active			3
+1794423993.910027418	nsdemo_api	idle			1
+1794423993.910027418	nsdemo_api	idle	Client	ClientRead	10
+1794423993.910027418	nsdemo_api	idle in transaction			1
+1794423993.910027418	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794423993.910027418	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423993.910027418	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423993.910027418	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794423993.910027418	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423993.910027418	nsdemo_outbox	active			2
+1794423993.910027418	nsdemo_realtime	active			2
+1794423993.910027418	nsdemo_realtime	idle	Client	ClientRead	2
+1794423998.091377541	nsdemo_api	active			2
+1794423998.091377541	nsdemo_api	idle	Client	ClientRead	12
+1794423998.091377541	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794423998.091377541	nsdemo_evaluator	idle	Client	ClientRead	4
+1794423998.091377541	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794423998.091377541	nsdemo_lifetime_evaluator	active	Client	ClientRead	1
+1794423998.091377541	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794423998.091377541	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794423998.091377541	nsdemo_outbox	idle	Client	ClientRead	1
+1794423998.091377541	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794423998.091377541	nsdemo_realtime	idle	Client	ClientRead	4
+1794423998.091377541	nsdemo_suppression	active			1
+1794423998.091377541	nsdemo_suppression	idle	Client	ClientRead	1
+1794424002.269537361	nsdemo_api	active			2
+1794424002.269537361	nsdemo_api	active	IO	WALSync	1
+1794424002.269537361	nsdemo_api	idle	Client	ClientRead	11
+1794424002.269537361	nsdemo_api	idle in transaction			2
+1794424002.269537361	nsdemo_evaluator	active			1
+1794424002.269537361	nsdemo_evaluator	idle	Client	ClientRead	3
+1794424002.269537361	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424002.269537361	nsdemo_lifetime_evaluator	active			1
+1794424002.269537361	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424002.269537361	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424002.269537361	nsdemo_outbox	active	Client	ClientRead	1
+1794424002.269537361	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424002.269537361	nsdemo_realtime	idle	Client	ClientRead	4
+1794424002.269537361	nsdemo_suppression	active			1
+1794424002.269537361	nsdemo_suppression	idle	Client	ClientRead	1
+1794424006.446207020	nsdemo_api	active			5
+1794424006.446207020	nsdemo_api	active	Client	ClientRead	1
+1794424006.446207020	nsdemo_api	idle	Client	ClientRead	8
+1794424006.446207020	nsdemo_api	idle in transaction			1
+1794424006.446207020	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424006.446207020	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424006.446207020	nsdemo_lifetime_api	active			1
+1794424006.446207020	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424006.446207020	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424006.446207020	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424006.446207020	nsdemo_outbox	active			1
+1794424006.446207020	nsdemo_outbox	active	Client	ClientRead	1
+1794424006.446207020	nsdemo_realtime	idle	Client	ClientRead	4
+1794424006.446207020	nsdemo_suppression	idle	Client	ClientRead	2
+1794424010.627761225	nsdemo_api	active			8
+1794424010.627761225	nsdemo_api	active	Client	ClientRead	1
+1794424010.627761225	nsdemo_api	idle	Client	ClientRead	7
+1794424010.627761225	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424010.627761225	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424010.627761225	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424010.627761225	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424010.627761225	nsdemo_outbox	idle	Client	ClientRead	2
+1794424010.627761225	nsdemo_realtime	idle	Client	ClientRead	4
+1794424010.627761225	nsdemo_suppression	idle	Client	ClientRead	2
+1794424014.786876614	nsdemo_api	idle	Client	ClientRead	10
+1794424014.786876614	nsdemo_api	idle in transaction	Client	ClientRead	6
+1794424014.786876614	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424014.786876614	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424014.786876614	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424014.786876614	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424014.786876614	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424014.786876614	nsdemo_outbox	idle	Client	ClientRead	2
+1794424014.786876614	nsdemo_realtime	idle	Client	ClientRead	4
+1794424014.786876614	nsdemo_suppression	idle	Client	ClientRead	2
+1794424018.948999069	nsdemo_api	active			2
+1794424018.948999069	nsdemo_api	active	IO	WALSync	1
+1794424018.948999069	nsdemo_api	idle	Client	ClientRead	12
+1794424018.948999069	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424018.948999069	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424018.948999069	nsdemo_lifetime_api	active			1
+1794424018.948999069	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424018.948999069	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424018.948999069	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424018.948999069	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424018.948999069	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424018.948999069	nsdemo_realtime	idle	Client	ClientRead	2
+1794424018.948999069	nsdemo_realtime	idle in transaction			1
+1794424018.948999069	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424023.135245671	nsdemo_api	active			2
+1794424023.135245671	nsdemo_api	active	IO	WALSync	1
+1794424023.135245671	nsdemo_api	active	LWLock	WALWrite	1
+1794424023.135245671	nsdemo_api	idle	Client	ClientRead	11
+1794424023.135245671	nsdemo_api	idle in transaction			1
+1794424023.135245671	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424023.135245671	nsdemo_lifetime_api	active			2
+1794424023.135245671	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424023.135245671	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424023.135245671	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424023.135245671	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424023.135245671	nsdemo_realtime	idle	Client	ClientRead	4
+1794424027.304668357	nsdemo_api	idle	Client	ClientRead	15
+1794424027.304668357	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424027.304668357	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424027.304668357	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424027.304668357	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424027.304668357	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424027.304668357	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424027.304668357	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424027.304668357	nsdemo_realtime	idle	Client	ClientRead	4
+1794424031.466181265	nsdemo_api	active			1
+1794424031.466181265	nsdemo_api	active	Client	ClientRead	1
+1794424031.466181265	nsdemo_api	active	IO	WALSync	1
+1794424031.466181265	nsdemo_api	idle	Client	ClientRead	10
+1794424031.466181265	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424031.466181265	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424031.466181265	nsdemo_lifetime_api	idle			1
+1794424031.466181265	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424031.466181265	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424031.466181265	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424031.466181265	nsdemo_realtime	idle	Client	ClientRead	4
+1794424035.629229514	nsdemo_api	active			6
+1794424035.629229514	nsdemo_api	idle	Client	ClientRead	9
+1794424035.629229514	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424035.629229514	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424035.629229514	nsdemo_lifetime_api	active			1
+1794424035.629229514	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424035.629229514	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424035.629229514	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424035.629229514	nsdemo_realtime	idle	Client	ClientRead	4
+1794424039.793064941	nsdemo_api	active			2
+1794424039.793064941	nsdemo_api	active	Client	ClientRead	1
+1794424039.793064941	nsdemo_api	idle	Client	ClientRead	12
+1794424039.793064941	nsdemo_api	idle in transaction			1
+1794424039.793064941	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424039.793064941	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424039.793064941	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424039.793064941	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424039.793064941	nsdemo_realtime	idle	Client	ClientRead	4
+1794424043.953677518	nsdemo_api	active			3
+1794424043.953677518	nsdemo_api	idle			1
+1794424043.953677518	nsdemo_api	idle	Client	ClientRead	11
+1794424043.953677518	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424043.953677518	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424043.953677518	nsdemo_lifetime_api	active			1
+1794424043.953677518	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424043.953677518	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424043.953677518	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424043.953677518	nsdemo_realtime	active			4
+1794424048.131781237	nsdemo_api	active			6
+1794424048.131781237	nsdemo_api	active	Client	ClientRead	1
+1794424048.131781237	nsdemo_api	active	IO	WALSync	1
+1794424048.131781237	nsdemo_api	active	LWLock	WALWrite	1
+1794424048.131781237	nsdemo_api	idle	Client	ClientRead	7
+1794424048.131781237	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424048.131781237	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424048.131781237	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424048.131781237	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424048.131781237	nsdemo_realtime	idle	Client	ClientRead	4
+1794424052.292087879	nsdemo_api	active			3
+1794424052.292087879	nsdemo_api	active	LWLock	WALWrite	1
+1794424052.292087879	nsdemo_api	idle	Client	ClientRead	10
+1794424052.292087879	nsdemo_api	idle in transaction			2
+1794424052.292087879	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424052.292087879	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424052.292087879	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424052.292087879	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424052.292087879	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424052.292087879	nsdemo_realtime	idle	Client	ClientRead	4
+1794424056.437033606	nsdemo_api	active			2
+1794424056.437033606	nsdemo_api	idle	Client	ClientRead	14
+1794424056.437033606	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424056.437033606	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424056.437033606	nsdemo_lifetime_api	active	LWLock	WALWrite	3
+1794424056.437033606	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424056.437033606	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424056.437033606	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424056.437033606	nsdemo_outbox	active			1
+1794424056.437033606	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424056.437033606	nsdemo_realtime	idle	Client	ClientRead	4
+1794424056.437033606	nsdemo_suppression	active			1
+1794424056.437033606	nsdemo_suppression	idle	Client	ClientRead	1
+1794424060.598462379	nsdemo_api	active	IO	WALSync	1
+1794424060.598462379	nsdemo_api	active	LWLock	WALWrite	2
+1794424060.598462379	nsdemo_api	idle	Client	ClientRead	13
+1794424060.598462379	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424060.598462379	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424060.598462379	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424060.598462379	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424060.598462379	nsdemo_outbox	active			1
+1794424060.598462379	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424060.598462379	nsdemo_realtime	idle	Client	ClientRead	4
+1794424060.598462379	nsdemo_suppression	active			1
+1794424060.598462379	nsdemo_suppression	idle	Client	ClientRead	1
+1794424064.779035269	nsdemo_api	active	IO	WALSync	1
+1794424064.779035269	nsdemo_api	idle	Client	ClientRead	14
+1794424064.779035269	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424064.779035269	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424064.779035269	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424064.779035269	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	2
+1794424064.779035269	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424064.779035269	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424064.779035269	nsdemo_outbox	active			1
+1794424064.779035269	nsdemo_outbox	active	Client	ClientRead	1
+1794424064.779035269	nsdemo_realtime	idle	Client	ClientRead	4
+1794424064.779035269	nsdemo_suppression	idle	Client	ClientRead	2
+1794424068.946926947	nsdemo_api	active			2
+1794424068.946926947	nsdemo_api	active	Client	ClientRead	1
+1794424068.946926947	nsdemo_api	idle	Client	ClientRead	12
+1794424068.946926947	nsdemo_api	idle in transaction			1
+1794424068.946926947	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424068.946926947	nsdemo_lifetime_api	active			1
+1794424068.946926947	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424068.946926947	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424068.946926947	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424068.946926947	nsdemo_outbox	active	IO	WALSync	1
+1794424068.946926947	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424068.946926947	nsdemo_realtime	active	Client	ClientRead	1
+1794424068.946926947	nsdemo_realtime	idle			1
+1794424068.946926947	nsdemo_realtime	idle	Client	ClientRead	2
+1794424068.946926947	nsdemo_suppression	active			1
+1794424068.946926947	nsdemo_suppression	idle	Client	ClientRead	1
+1794424073.135195278	nsdemo_api	active			4
+1794424073.135195278	nsdemo_api	active	Client	ClientRead	1
+1794424073.135195278	nsdemo_api	active	IO	WALSync	1
+1794424073.135195278	nsdemo_api	active	LWLock	WALWrite	2
+1794424073.135195278	nsdemo_api	idle	Client	ClientRead	8
+1794424073.135195278	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424073.135195278	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424073.135195278	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424073.135195278	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424073.135195278	nsdemo_outbox	idle	Client	ClientRead	2
+1794424073.135195278	nsdemo_realtime	idle	Client	ClientRead	4
+1794424073.135195278	nsdemo_suppression	idle	Client	ClientRead	2
+1794424077.305028255	nsdemo_api	active			4
+1794424077.305028255	nsdemo_api	idle	Client	ClientRead	11
+1794424077.305028255	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424077.305028255	nsdemo_evaluator	active			1
+1794424077.305028255	nsdemo_evaluator	idle	Client	ClientRead	3
+1794424077.305028255	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424077.305028255	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424077.305028255	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424077.305028255	nsdemo_outbox	idle	Client	ClientRead	2
+1794424077.305028255	nsdemo_realtime	idle	Client	ClientRead	4
+1794424077.305028255	nsdemo_suppression	idle	Client	ClientRead	2
+1794424081.466207736	nsdemo_api	active			2
+1794424081.466207736	nsdemo_api	active	IO	WALSync	1
+1794424081.466207736	nsdemo_api	idle	Client	ClientRead	11
+1794424081.466207736	nsdemo_api	idle in transaction			1
+1794424081.466207736	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424081.466207736	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424081.466207736	nsdemo_lifetime_api	active			1
+1794424081.466207736	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424081.466207736	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424081.466207736	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424081.466207736	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424081.466207736	nsdemo_realtime	idle	Client	ClientRead	4
+1794424085.643899992	nsdemo_api	idle	Client	ClientRead	7
+1794424085.643899992	nsdemo_api	idle in transaction	Client	ClientRead	9
+1794424085.643899992	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424085.643899992	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424085.643899992	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424085.643899992	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424085.643899992	nsdemo_realtime	idle	Client	ClientRead	4
+1794424089.806798515	nsdemo_api	active			4
+1794424089.806798515	nsdemo_api	active	Client	ClientRead	1
+1794424089.806798515	nsdemo_api	active	IO	WALSync	1
+1794424089.806798515	nsdemo_api	idle	Client	ClientRead	9
+1794424089.806798515	nsdemo_api	idle in transaction			1
+1794424089.806798515	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424089.806798515	nsdemo_lifetime_api	active			1
+1794424089.806798515	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424089.806798515	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424089.806798515	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424089.806798515	nsdemo_realtime	idle	Client	ClientRead	4
+1794424093.969387082	nsdemo_api	active			3
+1794424093.969387082	nsdemo_api	active	IO	WALSync	1
+1794424093.969387082	nsdemo_api	idle	Client	ClientRead	12
+1794424093.969387082	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424093.969387082	nsdemo_lifetime_api	active			1
+1794424093.969387082	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424093.969387082	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424093.969387082	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424093.969387082	nsdemo_realtime	active			1
+1794424093.969387082	nsdemo_realtime	active	Client	ClientRead	2
+1794424093.969387082	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424098.141524446	nsdemo_api	active			2
+1794424098.141524446	nsdemo_api	active	Client	ClientRead	1
+1794424098.141524446	nsdemo_api	idle	Client	ClientRead	12
+1794424098.141524446	nsdemo_api	idle in transaction			1
+1794424098.141524446	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424098.141524446	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424098.141524446	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424098.141524446	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424098.141524446	nsdemo_realtime	idle	Client	ClientRead	4
+1794424102.289108396	nsdemo_api	active			1
+1794424102.289108396	nsdemo_api	active	Client	ClientRead	1
+1794424102.289108396	nsdemo_api	idle	Client	ClientRead	14
+1794424102.289108396	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424102.289108396	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424102.289108396	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424102.289108396	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424102.289108396	nsdemo_realtime	idle	Client	ClientRead	4
+1794424106.443569584	nsdemo_api	active	Client	ClientRead	1
+1794424106.443569584	nsdemo_api	active	IO	WALSync	1
+1794424106.443569584	nsdemo_api	idle			1
+1794424106.443569584	nsdemo_api	idle	Client	ClientRead	12
+1794424106.443569584	nsdemo_api	idle in transaction			1
+1794424106.443569584	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424106.443569584	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424106.443569584	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424106.443569584	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424106.443569584	nsdemo_realtime	idle	Client	ClientRead	4
+1794424110.596658264	nsdemo_api	active			4
+1794424110.596658264	nsdemo_api	idle	Client	ClientRead	11
+1794424110.596658264	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424110.596658264	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424110.596658264	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424110.596658264	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424110.596658264	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424110.596658264	nsdemo_realtime	idle	Client	ClientRead	4
+1794424114.748642982	nsdemo_api	active	IO	WALSync	1
+1794424114.748642982	nsdemo_api	idle	Client	ClientRead	8
+1794424114.748642982	nsdemo_api	idle in transaction			2
+1794424114.748642982	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794424114.748642982	nsdemo_api	idle in transaction	LWLock	WALWrite	1
+1794424114.748642982	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424114.748642982	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424114.748642982	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424114.748642982	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424114.748642982	nsdemo_outbox	active			1
+1794424114.748642982	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424114.748642982	nsdemo_realtime	idle	Client	ClientRead	4
+1794424114.748642982	nsdemo_suppression	active			1
+1794424114.748642982	nsdemo_suppression	idle	Client	ClientRead	1
+1794424118.917706895	nsdemo_api	active	IO	WALSync	1
+1794424118.917706895	nsdemo_api	active	LWLock	WALWrite	3
+1794424118.917706895	nsdemo_api	idle	Client	ClientRead	12
+1794424118.917706895	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424118.917706895	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424118.917706895	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	4
+1794424118.917706895	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424118.917706895	nsdemo_lifetime_realtime	active	LWLock	WALWrite	2
+1794424118.917706895	nsdemo_outbox	idle	Client	ClientRead	2
+1794424118.917706895	nsdemo_realtime	idle	Client	ClientRead	4
+1794424118.917706895	nsdemo_suppression	idle	Client	ClientRead	2
+1794424123.095159639	nsdemo_api	active	IO	WALSync	1
+1794424123.095159639	nsdemo_api	idle	Client	ClientRead	12
+1794424123.095159639	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424123.095159639	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424123.095159639	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424123.095159639	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	1
+1794424123.095159639	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424123.095159639	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424123.095159639	nsdemo_outbox	active			2
+1794424123.095159639	nsdemo_realtime	idle	Client	ClientRead	4
+1794424123.095159639	nsdemo_suppression	idle	Client	ClientRead	2
+1794424127.268096614	nsdemo_api	active			5
+1794424127.268096614	nsdemo_api	active	Client	ClientRead	2
+1794424127.268096614	nsdemo_api	idle	Client	ClientRead	7
+1794424127.268096614	nsdemo_api	idle in transaction			2
+1794424127.268096614	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424127.268096614	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424127.268096614	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424127.268096614	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424127.268096614	nsdemo_outbox	active			2
+1794424127.268096614	nsdemo_realtime	idle	Client	ClientRead	4
+1794424127.268096614	nsdemo_suppression	idle	Client	ClientRead	2
+1794424131.440869817	nsdemo_api	active			4
+1794424131.440869817	nsdemo_api	active	Client	ClientRead	1
+1794424131.440869817	nsdemo_api	active	IO	WALSync	1
+1794424131.440869817	nsdemo_api	idle	Client	ClientRead	10
+1794424131.440869817	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424131.440869817	nsdemo_lifetime_api	active	LWLock	WALWrite	2
+1794424131.440869817	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424131.440869817	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424131.440869817	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424131.440869817	nsdemo_outbox	idle	Client	ClientRead	2
+1794424131.440869817	nsdemo_realtime	idle	Client	ClientRead	4
+1794424131.440869817	nsdemo_suppression	idle	Client	ClientRead	2
+1794424135.609413125	nsdemo_api	active			3
+1794424135.609413125	nsdemo_api	active	IO	WALSync	1
+1794424135.609413125	nsdemo_api	idle	Client	ClientRead	11
+1794424135.609413125	nsdemo_api	idle in transaction			1
+1794424135.609413125	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424135.609413125	nsdemo_lifetime_api	active			3
+1794424135.609413125	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424135.609413125	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424135.609413125	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424135.609413125	nsdemo_outbox	idle	Client	ClientRead	2
+1794424135.609413125	nsdemo_realtime	idle	Client	ClientRead	4
+1794424135.609413125	nsdemo_suppression	idle	Client	ClientRead	2
+1794424139.777339245	nsdemo_api	active			1
+1794424139.777339245	nsdemo_api	active	Client	ClientRead	1
+1794424139.777339245	nsdemo_api	idle	Client	ClientRead	11
+1794424139.777339245	nsdemo_api	idle in transaction			1
+1794424139.777339245	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424139.777339245	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424139.777339245	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424139.777339245	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424139.777339245	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424139.777339245	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424139.777339245	nsdemo_realtime	idle	Client	ClientRead	4
+1794424143.939748061	nsdemo_api	active			4
+1794424143.939748061	nsdemo_api	active	IO	WALSync	1
+1794424143.939748061	nsdemo_api	active	LWLock	WALWrite	1
+1794424143.939748061	nsdemo_api	idle	Client	ClientRead	10
+1794424143.939748061	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424143.939748061	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424143.939748061	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424143.939748061	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424143.939748061	nsdemo_realtime	idle	Client	ClientRead	4
+1794424148.121951108	nsdemo_api	active			5
+1794424148.121951108	nsdemo_api	active	Client	ClientRead	1
+1794424148.121951108	nsdemo_api	active	IO	WALSync	1
+1794424148.121951108	nsdemo_api	idle			1
+1794424148.121951108	nsdemo_api	idle	Client	ClientRead	6
+1794424148.121951108	nsdemo_api	idle in transaction			1
+1794424148.121951108	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424148.121951108	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424148.121951108	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424148.121951108	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424148.121951108	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424148.121951108	nsdemo_realtime	idle	Client	ClientRead	4
+1794424152.282942193	nsdemo_api	active			3
+1794424152.282942193	nsdemo_api	active	IO	WALSync	1
+1794424152.282942193	nsdemo_api	idle	Client	ClientRead	10
+1794424152.282942193	nsdemo_api	idle in transaction			2
+1794424152.282942193	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424152.282942193	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424152.282942193	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424152.282942193	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424152.282942193	nsdemo_realtime	idle	Client	ClientRead	4
+1794424156.438236526	nsdemo_api	active			3
+1794424156.438236526	nsdemo_api	active	IO	WALSync	1
+1794424156.438236526	nsdemo_api	idle	Client	ClientRead	10
+1794424156.438236526	nsdemo_api	idle in transaction			1
+1794424156.438236526	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424156.438236526	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424156.438236526	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424156.438236526	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424156.438236526	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424156.438236526	nsdemo_realtime	idle	Client	ClientRead	4
+1794424160.597676128	nsdemo_api	active			2
+1794424160.597676128	nsdemo_api	active	IO	WALSync	1
+1794424160.597676128	nsdemo_api	active	LWLock	WALWrite	1
+1794424160.597676128	nsdemo_api	idle	Client	ClientRead	12
+1794424160.597676128	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424160.597676128	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424160.597676128	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424160.597676128	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424160.597676128	nsdemo_realtime	idle	Client	ClientRead	4
+1794424164.745785448	nsdemo_api	active			3
+1794424164.745785448	nsdemo_api	idle	Client	ClientRead	13
+1794424164.745785448	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424164.745785448	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424164.745785448	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424164.745785448	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424164.745785448	nsdemo_realtime	idle	Client	ClientRead	4
+1794424168.897029941	nsdemo_api	active			4
+1794424168.897029941	nsdemo_api	active	IO	WALSync	1
+1794424168.897029941	nsdemo_api	idle	Client	ClientRead	11
+1794424168.897029941	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424168.897029941	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424168.897029941	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424168.897029941	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424168.897029941	nsdemo_realtime	idle	Client	ClientRead	4
+1794424173.053514421	nsdemo_api	active			1
+1794424173.053514421	nsdemo_api	active	IO	WALSync	1
+1794424173.053514421	nsdemo_api	idle	Client	ClientRead	14
+1794424173.053514421	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424173.053514421	nsdemo_lifetime_api	active			1
+1794424173.053514421	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424173.053514421	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424173.053514421	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424173.053514421	nsdemo_realtime	idle	Client	ClientRead	4
+1794424177.219940580	nsdemo_api	active			3
+1794424177.219940580	nsdemo_api	idle	Client	ClientRead	12
+1794424177.219940580	nsdemo_api	idle in transaction			1
+1794424177.219940580	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424177.219940580	nsdemo_lifetime_api	active			1
+1794424177.219940580	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424177.219940580	nsdemo_lifetime_evaluator	active			1
+1794424177.219940580	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424177.219940580	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424177.219940580	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424177.219940580	nsdemo_outbox	active			2
+1794424177.219940580	nsdemo_realtime	idle	Client	ClientRead	4
+1794424177.219940580	nsdemo_suppression	idle	Client	ClientRead	2
+1794424181.427476836	nsdemo_api	active			4
+1794424181.427476836	nsdemo_api	idle			1
+1794424181.427476836	nsdemo_api	idle	Client	ClientRead	10
+1794424181.427476836	nsdemo_api	idle in transaction			1
+1794424181.427476836	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424181.427476836	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424181.427476836	nsdemo_lifetime_evaluator	idle			1
+1794424181.427476836	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424181.427476836	nsdemo_lifetime_evaluator	idle in transaction	Client	ClientRead	2
+1794424181.427476836	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424181.427476836	nsdemo_outbox	idle	Client	ClientRead	1
+1794424181.427476836	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424181.427476836	nsdemo_realtime	idle	Client	ClientRead	4
+1794424181.427476836	nsdemo_suppression	idle	Client	ClientRead	2
+1794424185.620998778	nsdemo_api	active			4
+1794424185.620998778	nsdemo_api	active	Client	ClientRead	1
+1794424185.620998778	nsdemo_api	idle	Client	ClientRead	9
+1794424185.620998778	nsdemo_api	idle in transaction			1
+1794424185.620998778	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424185.620998778	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424185.620998778	nsdemo_lifetime_api	active			2
+1794424185.620998778	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424185.620998778	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424185.620998778	nsdemo_lifetime_evaluator	active			2
+1794424185.620998778	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424185.620998778	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424185.620998778	nsdemo_outbox	active			1
+1794424185.620998778	nsdemo_outbox	idle in transaction			1
+1794424185.620998778	nsdemo_realtime	idle	Client	ClientRead	4
+1794424185.620998778	nsdemo_suppression	idle	Client	ClientRead	2
+1794424189.799020493	nsdemo_api	active			8
+1794424189.799020493	nsdemo_api	active	IO	WALSync	1
+1794424189.799020493	nsdemo_api	idle	Client	ClientRead	7
+1794424189.799020493	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424189.799020493	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424189.799020493	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424189.799020493	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424189.799020493	nsdemo_outbox	idle	Client	ClientRead	2
+1794424189.799020493	nsdemo_realtime	idle	Client	ClientRead	4
+1794424189.799020493	nsdemo_suppression	idle	Client	ClientRead	2
+1794424193.958721639	nsdemo_api	idle	Client	ClientRead	15
+1794424193.958721639	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424193.958721639	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424193.958721639	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424193.958721639	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424193.958721639	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424193.958721639	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424193.958721639	nsdemo_outbox	idle	Client	ClientRead	2
+1794424193.958721639	nsdemo_realtime	active			3
+1794424193.958721639	nsdemo_realtime	idle	Client	ClientRead	1
+1794424193.958721639	nsdemo_suppression	idle	Client	ClientRead	2
+1794424198.135061891	nsdemo_api	active			3
+1794424198.135061891	nsdemo_api	active	IO	WALSync	1
+1794424198.135061891	nsdemo_api	idle			1
+1794424198.135061891	nsdemo_api	idle	Client	ClientRead	10
+1794424198.135061891	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424198.135061891	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424198.135061891	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424198.135061891	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424198.135061891	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424198.135061891	nsdemo_outbox	idle	Client	ClientRead	2
+1794424198.135061891	nsdemo_realtime	idle	Client	ClientRead	4
+1794424198.135061891	nsdemo_suppression	idle	Client	ClientRead	2
+1794424202.312365147	nsdemo_api	active			1
+1794424202.312365147	nsdemo_api	active	IO	WALSync	1
+1794424202.312365147	nsdemo_api	active	LWLock	WALWrite	2
+1794424202.312365147	nsdemo_api	idle	Client	ClientRead	12
+1794424202.312365147	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424202.312365147	nsdemo_lifetime_api	active	LWLock	WALWrite	3
+1794424202.312365147	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424202.312365147	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424202.312365147	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424202.312365147	nsdemo_realtime	idle	Client	ClientRead	4
+1794424206.472264090	nsdemo_api	active			4
+1794424206.472264090	nsdemo_api	idle	Client	ClientRead	11
+1794424206.472264090	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424206.472264090	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424206.472264090	nsdemo_lifetime_api	active			3
+1794424206.472264090	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424206.472264090	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424206.472264090	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424206.472264090	nsdemo_realtime	idle	Client	ClientRead	4
+1794424210.654128432	nsdemo_api	idle	Client	ClientRead	14
+1794424210.654128432	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424210.654128432	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424210.654128432	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424210.654128432	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424210.654128432	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424210.654128432	nsdemo_realtime	idle	Client	ClientRead	4
+1794424214.806142431	nsdemo_api	active			2
+1794424214.806142431	nsdemo_api	idle	Client	ClientRead	14
+1794424214.806142431	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424214.806142431	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424214.806142431	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424214.806142431	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424214.806142431	nsdemo_realtime	idle	Client	ClientRead	4
+1794424218.954879531	nsdemo_api	idle	Client	ClientRead	14
+1794424218.954879531	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424218.954879531	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424218.954879531	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424218.954879531	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424218.954879531	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424218.954879531	nsdemo_realtime	active			3
+1794424218.954879531	nsdemo_realtime	idle	Client	ClientRead	1
+1794424223.115976186	nsdemo_api	active			3
+1794424223.115976186	nsdemo_api	idle	Client	ClientRead	11
+1794424223.115976186	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424223.115976186	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424223.115976186	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424223.115976186	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424223.115976186	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424223.115976186	nsdemo_realtime	idle	Client	ClientRead	4
+1794424227.271896558	nsdemo_api	idle			1
+1794424227.271896558	nsdemo_api	idle	Client	ClientRead	11
+1794424227.271896558	nsdemo_api	idle in transaction			1
+1794424227.271896558	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424227.271896558	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424227.271896558	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424227.271896558	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424227.271896558	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424227.271896558	nsdemo_realtime	idle	Client	ClientRead	4
+1794424231.432169362	nsdemo_api	active			1
+1794424231.432169362	nsdemo_api	active	IO	WALSync	1
+1794424231.432169362	nsdemo_api	active	LWLock	WALWrite	1
+1794424231.432169362	nsdemo_api	idle	Client	ClientRead	13
+1794424231.432169362	nsdemo_evaluator	active			4
+1794424231.432169362	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424231.432169362	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424231.432169362	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424231.432169362	nsdemo_realtime	idle	Client	ClientRead	4
+1794424235.592756863	nsdemo_api	active			2
+1794424235.592756863	nsdemo_api	active	IO	WALSync	1
+1794424235.592756863	nsdemo_api	active	LWLock	WALWrite	1
+1794424235.592756863	nsdemo_api	idle	Client	ClientRead	12
+1794424235.592756863	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424235.592756863	nsdemo_lifetime_api	active			1
+1794424235.592756863	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424235.592756863	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424235.592756863	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424235.592756863	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424235.592756863	nsdemo_outbox	active			1
+1794424235.592756863	nsdemo_outbox	active	LWLock	WALWrite	1
+1794424235.592756863	nsdemo_realtime	idle	Client	ClientRead	4
+1794424235.592756863	nsdemo_suppression	idle	Client	ClientRead	2
+1794424239.759972735	nsdemo_api	active			1
+1794424239.759972735	nsdemo_api	active	IO	WALSync	1
+1794424239.759972735	nsdemo_api	active	LWLock	WALWrite	2
+1794424239.759972735	nsdemo_api	idle	Client	ClientRead	11
+1794424239.759972735	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424239.759972735	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424239.759972735	nsdemo_lifetime_api	active	LWLock	WALWrite	2
+1794424239.759972735	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424239.759972735	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424239.759972735	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424239.759972735	nsdemo_outbox	active	LWLock	WALWrite	1
+1794424239.759972735	nsdemo_outbox	idle	Client	ClientRead	1
+1794424239.759972735	nsdemo_realtime	idle	Client	ClientRead	4
+1794424239.759972735	nsdemo_suppression	idle	Client	ClientRead	2
+1794424243.934296905	nsdemo_api	active			1
+1794424243.934296905	nsdemo_api	active	LWLock	WALWrite	1
+1794424243.934296905	nsdemo_api	idle	Client	ClientRead	13
+1794424243.934296905	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424243.934296905	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424243.934296905	nsdemo_lifetime_api	active	Client	ClientRead	1
+1794424243.934296905	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424243.934296905	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424243.934296905	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	1
+1794424243.934296905	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424243.934296905	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424243.934296905	nsdemo_outbox	active			1
+1794424243.934296905	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424243.934296905	nsdemo_realtime	active			2
+1794424243.934296905	nsdemo_realtime	idle	Client	ClientRead	2
+1794424243.934296905	nsdemo_suppression	idle	Client	ClientRead	2
+1794424248.126724002	nsdemo_api	idle	Client	ClientRead	13
+1794424248.126724002	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424248.126724002	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424248.126724002	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424248.126724002	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424248.126724002	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424248.126724002	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424248.126724002	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424248.126724002	nsdemo_outbox	active			1
+1794424248.126724002	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424248.126724002	nsdemo_realtime	idle	Client	ClientRead	4
+1794424248.126724002	nsdemo_suppression	active			1
+1794424248.126724002	nsdemo_suppression	idle	Client	ClientRead	1
+1794424252.302171597	nsdemo_api	active			4
+1794424252.302171597	nsdemo_api	active	Client	ClientRead	1
+1794424252.302171597	nsdemo_api	idle	Client	ClientRead	11
+1794424252.302171597	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424252.302171597	nsdemo_lifetime_api	active			1
+1794424252.302171597	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424252.302171597	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424252.302171597	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424252.302171597	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424252.302171597	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424252.302171597	nsdemo_outbox	idle	Client	ClientRead	2
+1794424252.302171597	nsdemo_realtime	idle	Client	ClientRead	4
+1794424252.302171597	nsdemo_suppression	idle	Client	ClientRead	2
+1794424256.471124013	nsdemo_api	active			3
+1794424256.471124013	nsdemo_api	active	IO	WALSync	1
+1794424256.471124013	nsdemo_api	idle	Client	ClientRead	9
+1794424256.471124013	nsdemo_api	idle in transaction			1
+1794424256.471124013	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424256.471124013	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424256.471124013	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424256.471124013	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424256.471124013	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424256.471124013	nsdemo_outbox	idle	Client	ClientRead	2
+1794424256.471124013	nsdemo_realtime	idle	Client	ClientRead	4
+1794424256.471124013	nsdemo_suppression	idle	Client	ClientRead	2
+1794424260.651087678	nsdemo_api	active			6
+1794424260.651087678	nsdemo_api	active	Client	ClientRead	1
+1794424260.651087678	nsdemo_api	active	IO	WALSync	1
+1794424260.651087678	nsdemo_api	idle	Client	ClientRead	8
+1794424260.651087678	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424260.651087678	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424260.651087678	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424260.651087678	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424260.651087678	nsdemo_realtime	idle	Client	ClientRead	4
+1794424264.824779385	nsdemo_api	active			3
+1794424264.824779385	nsdemo_api	active	Client	ClientRead	1
+1794424264.824779385	nsdemo_api	active	IO	WALSync	1
+1794424264.824779385	nsdemo_api	idle	Client	ClientRead	10
+1794424264.824779385	nsdemo_api	idle in transaction			1
+1794424264.824779385	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424264.824779385	nsdemo_lifetime_api	active			1
+1794424264.824779385	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424264.824779385	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424264.824779385	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424264.824779385	nsdemo_realtime	idle	Client	ClientRead	4
+1794424268.990074389	nsdemo_api	active			3
+1794424268.990074389	nsdemo_api	active	IO	WALSync	1
+1794424268.990074389	nsdemo_api	idle			1
+1794424268.990074389	nsdemo_api	idle	Client	ClientRead	10
+1794424268.990074389	nsdemo_api	idle in transaction			1
+1794424268.990074389	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424268.990074389	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424268.990074389	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424268.990074389	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424268.990074389	nsdemo_realtime	active			2
+1794424268.990074389	nsdemo_realtime	idle	Client	ClientRead	2
+1794424273.170727868	nsdemo_api	active			3
+1794424273.170727868	nsdemo_api	idle			1
+1794424273.170727868	nsdemo_api	idle	Client	ClientRead	9
+1794424273.170727868	nsdemo_api	idle in transaction			1
+1794424273.170727868	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424273.170727868	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424273.170727868	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424273.170727868	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424273.170727868	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424273.170727868	nsdemo_realtime	idle	Client	ClientRead	4
+1794424277.329717514	nsdemo_api	active			4
+1794424277.329717514	nsdemo_api	idle	Client	ClientRead	11
+1794424277.329717514	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424277.329717514	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424277.329717514	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424277.329717514	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424277.329717514	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424277.329717514	nsdemo_realtime	idle	Client	ClientRead	4
+1794424281.487483234	nsdemo_api	active			2
+1794424281.487483234	nsdemo_api	active	Client	ClientRead	1
+1794424281.487483234	nsdemo_api	idle	Client	ClientRead	13
+1794424281.487483234	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424281.487483234	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424281.487483234	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424281.487483234	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424281.487483234	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424281.487483234	nsdemo_realtime	idle	Client	ClientRead	4
+1794424285.637689101	nsdemo_api	active			3
+1794424285.637689101	nsdemo_api	idle	Client	ClientRead	13
+1794424285.637689101	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424285.637689101	nsdemo_lifetime_api	active			6
+1794424285.637689101	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424285.637689101	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424285.637689101	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424285.637689101	nsdemo_realtime	idle	Client	ClientRead	4
+1794424289.791454390	nsdemo_api	active			1
+1794424289.791454390	nsdemo_api	idle	Client	ClientRead	13
+1794424289.791454390	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424289.791454390	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424289.791454390	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424289.791454390	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424289.791454390	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424289.791454390	nsdemo_realtime	idle	Client	ClientRead	4
+1794424293.945795866	nsdemo_api	active			2
+1794424293.945795866	nsdemo_api	idle			1
+1794424293.945795866	nsdemo_api	idle	Client	ClientRead	13
+1794424293.945795866	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424293.945795866	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424293.945795866	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424293.945795866	nsdemo_lifetime_realtime	active	IO	WALSync	1
+1794424293.945795866	nsdemo_lifetime_realtime	active	LWLock	WALWrite	1
+1794424293.945795866	nsdemo_outbox	active			2
+1794424293.945795866	nsdemo_realtime	idle	Client	ClientRead	4
+1794424298.110913673	nsdemo_api	active			1
+1794424298.110913673	nsdemo_api	active	LWLock	WALWrite	2
+1794424298.110913673	nsdemo_api	idle	Client	ClientRead	13
+1794424298.110913673	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424298.110913673	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424298.110913673	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424298.110913673	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424298.110913673	nsdemo_lifetime_realtime	active	LWLock	WALWrite	1
+1794424298.110913673	nsdemo_lifetime_realtime	idle	Client	ClientRead	1
+1794424298.110913673	nsdemo_outbox	idle in transaction	Client	ClientRead	2
+1794424298.110913673	nsdemo_realtime	idle	Client	ClientRead	4
+1794424298.110913673	nsdemo_suppression	active			1
+1794424298.110913673	nsdemo_suppression	idle	Client	ClientRead	1
+1794424302.289278452	nsdemo_api	idle	Client	ClientRead	10
+1794424302.289278452	nsdemo_api	idle in transaction			1
+1794424302.289278452	nsdemo_api	idle in transaction	Client	ClientRead	5
+1794424302.289278452	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424302.289278452	nsdemo_lifetime_api	active	Client	ClientRead	1
+1794424302.289278452	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424302.289278452	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424302.289278452	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424302.289278452	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	2
+1794424302.289278452	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424302.289278452	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424302.289278452	nsdemo_outbox	active			1
+1794424302.289278452	nsdemo_outbox	idle	Client	ClientRead	1
+1794424302.289278452	nsdemo_realtime	idle	Client	ClientRead	4
+1794424302.289278452	nsdemo_suppression	idle	Client	ClientRead	2
+1794424306.461236594	nsdemo_api	active			3
+1794424306.461236594	nsdemo_api	active	Client	ClientRead	2
+1794424306.461236594	nsdemo_api	idle	Client	ClientRead	10
+1794424306.461236594	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424306.461236594	nsdemo_evaluator	active			3
+1794424306.461236594	nsdemo_evaluator	active	Client	ClientRead	1
+1794424306.461236594	nsdemo_lifetime_api	active			1
+1794424306.461236594	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424306.461236594	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424306.461236594	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424306.461236594	nsdemo_outbox	active			1
+1794424306.461236594	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424306.461236594	nsdemo_realtime	idle	Client	ClientRead	4
+1794424306.461236594	nsdemo_suppression	active			1
+1794424306.461236594	nsdemo_suppression	idle	Client	ClientRead	1
+1794424310.638811136	nsdemo_api	active			3
+1794424310.638811136	nsdemo_api	idle			1
+1794424310.638811136	nsdemo_api	idle	Client	ClientRead	12
+1794424310.638811136	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424310.638811136	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424310.638811136	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424310.638811136	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424310.638811136	nsdemo_outbox	idle	Client	ClientRead	2
+1794424310.638811136	nsdemo_realtime	idle	Client	ClientRead	4
+1794424310.638811136	nsdemo_suppression	idle	Client	ClientRead	2
+1794424310.638811136	postgres	idle			1
+1794424314.805205805	nsdemo_api	active			2
+1794424314.805205805	nsdemo_api	active	Client	ClientRead	2
+1794424314.805205805	nsdemo_api	active	IO	WALSync	1
+1794424314.805205805	nsdemo_api	active	LWLock	WALWrite	2
+1794424314.805205805	nsdemo_api	idle			1
+1794424314.805205805	nsdemo_api	idle	Client	ClientRead	7
+1794424314.805205805	nsdemo_api	idle in transaction			1
+1794424314.805205805	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424314.805205805	nsdemo_lifetime_api	active			1
+1794424314.805205805	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424314.805205805	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424314.805205805	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424314.805205805	nsdemo_outbox	idle	Client	ClientRead	2
+1794424314.805205805	nsdemo_realtime	idle	Client	ClientRead	4
+1794424314.805205805	nsdemo_suppression	idle	Client	ClientRead	2
+1794424318.965400911	nsdemo_api	active			1
+1794424318.965400911	nsdemo_api	idle	Client	ClientRead	13
+1794424318.965400911	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424318.965400911	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424318.965400911	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424318.965400911	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424318.965400911	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424318.965400911	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424318.965400911	nsdemo_outbox	idle	Client	ClientRead	2
+1794424318.965400911	nsdemo_realtime	active			2
+1794424318.965400911	nsdemo_realtime	idle	Client	ClientRead	2
+1794424318.965400911	nsdemo_suppression	idle	Client	ClientRead	2
+1794424323.129422798	nsdemo_api	active			1
+1794424323.129422798	nsdemo_api	active	IO	WALSync	1
+1794424323.129422798	nsdemo_api	active	LWLock	WALWrite	2
+1794424323.129422798	nsdemo_api	idle	Client	ClientRead	11
+1794424323.129422798	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424323.129422798	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424323.129422798	nsdemo_lifetime_api	active			1
+1794424323.129422798	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424323.129422798	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424323.129422798	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424323.129422798	nsdemo_realtime	idle	Client	ClientRead	4
+1794424327.306379665	nsdemo_api	active	Client	ClientRead	1
+1794424327.306379665	nsdemo_api	active	IO	WALSync	1
+1794424327.306379665	nsdemo_api	active	LWLock	WALWrite	1
+1794424327.306379665	nsdemo_api	idle	Client	ClientRead	13
+1794424327.306379665	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424327.306379665	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424327.306379665	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424327.306379665	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424327.306379665	nsdemo_realtime	idle	Client	ClientRead	4
+1794424331.464826645	nsdemo_api	active			2
+1794424331.464826645	nsdemo_api	idle	Client	ClientRead	14
+1794424331.464826645	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424331.464826645	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424331.464826645	nsdemo_lifetime_evaluator	active			2
+1794424331.464826645	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424331.464826645	nsdemo_lifetime_evaluator	idle in transaction			1
+1794424331.464826645	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424331.464826645	nsdemo_realtime	idle	Client	ClientRead	4
+1794424335.619701029	nsdemo_api	active			1
+1794424335.619701029	nsdemo_api	idle	Client	ClientRead	14
+1794424335.619701029	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424335.619701029	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424335.619701029	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424335.619701029	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424335.619701029	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424335.619701029	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424335.619701029	nsdemo_realtime	idle	Client	ClientRead	4
+1794424339.785973588	nsdemo_api	active			4
+1794424339.785973588	nsdemo_api	active	Client	ClientRead	2
+1794424339.785973588	nsdemo_api	idle	Client	ClientRead	10
+1794424339.785973588	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424339.785973588	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424339.785973588	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424339.785973588	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424339.785973588	nsdemo_realtime	idle	Client	ClientRead	4
+1794424343.950264342	nsdemo_api	active			3
+1794424343.950264342	nsdemo_api	idle	Client	ClientRead	13
+1794424343.950264342	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424343.950264342	nsdemo_lifetime_api	active			1
+1794424343.950264342	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424343.950264342	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424343.950264342	nsdemo_lifetime_realtime	active	IO	WALSync	1
+1794424343.950264342	nsdemo_lifetime_realtime	idle	Client	ClientRead	1
+1794424343.950264342	nsdemo_realtime	active			1
+1794424343.950264342	nsdemo_realtime	idle	Client	ClientRead	3
+1794424348.125197220	nsdemo_api	active	IO	WALSync	1
+1794424348.125197220	nsdemo_api	active	LWLock	WALWrite	2
+1794424348.125197220	nsdemo_api	idle	Client	ClientRead	12
+1794424348.125197220	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424348.125197220	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424348.125197220	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424348.125197220	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424348.125197220	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424348.125197220	nsdemo_realtime	idle	Client	ClientRead	4
+1794424352.296524940	nsdemo_api	active			1
+1794424352.296524940	nsdemo_api	active	IO	WALSync	1
+1794424352.296524940	nsdemo_api	active	LWLock	WALWrite	1
+1794424352.296524940	nsdemo_api	idle	Client	ClientRead	13
+1794424352.296524940	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424352.296524940	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424352.296524940	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424352.296524940	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424352.296524940	nsdemo_realtime	idle	Client	ClientRead	4
+1794424356.448613687	nsdemo_api	idle	Client	ClientRead	14
+1794424356.448613687	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424356.448613687	nsdemo_evaluator	active			4
+1794424356.448613687	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424356.448613687	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424356.448613687	nsdemo_lifetime_evaluator	active			1
+1794424356.448613687	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424356.448613687	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424356.448613687	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424356.448613687	nsdemo_outbox	active			2
+1794424356.448613687	nsdemo_realtime	idle	Client	ClientRead	4
+1794424356.448613687	nsdemo_suppression	idle	Client	ClientRead	2
+1794424360.622601616	nsdemo_api	active			2
+1794424360.622601616	nsdemo_api	active	Client	ClientRead	1
+1794424360.622601616	nsdemo_api	active	LWLock	WALWrite	2
+1794424360.622601616	nsdemo_api	idle			1
+1794424360.622601616	nsdemo_api	idle	Client	ClientRead	10
+1794424360.622601616	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424360.622601616	nsdemo_lifetime_api	active			1
+1794424360.622601616	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424360.622601616	nsdemo_lifetime_evaluator	active			1
+1794424360.622601616	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424360.622601616	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424360.622601616	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424360.622601616	nsdemo_outbox	active			1
+1794424360.622601616	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424360.622601616	nsdemo_realtime	idle	Client	ClientRead	4
+1794424360.622601616	nsdemo_suppression	active			1
+1794424360.622601616	nsdemo_suppression	idle	Client	ClientRead	1
+1794424364.810145336	nsdemo_api	active			2
+1794424364.810145336	nsdemo_api	active	Client	ClientRead	2
+1794424364.810145336	nsdemo_api	active	IO	WALSync	1
+1794424364.810145336	nsdemo_api	active	LWLock	WALWrite	1
+1794424364.810145336	nsdemo_api	idle	Client	ClientRead	6
+1794424364.810145336	nsdemo_api	idle in transaction			3
+1794424364.810145336	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424364.810145336	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424364.810145336	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424364.810145336	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424364.810145336	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424364.810145336	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424364.810145336	nsdemo_outbox	active			1
+1794424364.810145336	nsdemo_outbox	active	Client	ClientRead	1
+1794424364.810145336	nsdemo_realtime	idle	Client	ClientRead	4
+1794424364.810145336	nsdemo_suppression	idle	Client	ClientRead	2
+1794424369.045703976	nsdemo_api	idle	Client	ClientRead	15
+1794424369.045703976	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424369.045703976	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424369.045703976	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424369.045703976	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424369.045703976	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424369.045703976	nsdemo_outbox	active			1
+1794424369.045703976	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424369.045703976	nsdemo_realtime	active			3
+1794424369.045703976	nsdemo_realtime	idle in transaction			1
+1794424369.045703976	nsdemo_suppression	active			1
+1794424369.045703976	nsdemo_suppression	idle	Client	ClientRead	1
+1794424373.241815978	nsdemo_api	active			2
+1794424373.241815978	nsdemo_api	active	IO	WALSync	1
+1794424373.241815978	nsdemo_api	active	LWLock	WALWrite	3
+1794424373.241815978	nsdemo_api	idle			1
+1794424373.241815978	nsdemo_api	idle	Client	ClientRead	7
+1794424373.241815978	nsdemo_api	idle in transaction			2
+1794424373.241815978	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424373.241815978	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424373.241815978	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424373.241815978	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424373.241815978	nsdemo_outbox	idle	Client	ClientRead	2
+1794424373.241815978	nsdemo_realtime	idle	Client	ClientRead	4
+1794424373.241815978	nsdemo_suppression	idle	Client	ClientRead	2
+1794424377.407523721	nsdemo_api	idle	Client	ClientRead	14
+1794424377.407523721	nsdemo_api	idle in transaction			1
+1794424377.407523721	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424377.407523721	nsdemo_evaluator	active			1
+1794424377.407523721	nsdemo_evaluator	idle	Client	ClientRead	3
+1794424377.407523721	nsdemo_lifetime_api	active			1
+1794424377.407523721	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424377.407523721	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	2
+1794424377.407523721	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424377.407523721	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424377.407523721	nsdemo_outbox	idle	Client	ClientRead	2
+1794424377.407523721	nsdemo_realtime	idle	Client	ClientRead	4
+1794424377.407523721	nsdemo_suppression	idle	Client	ClientRead	2
+1794424381.578210925	nsdemo_api	active			3
+1794424381.578210925	nsdemo_api	active	IO	WALSync	1
+1794424381.578210925	nsdemo_api	idle	Client	ClientRead	10
+1794424381.578210925	nsdemo_api	idle in transaction			1
+1794424381.578210925	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424381.578210925	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424381.578210925	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424381.578210925	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424381.578210925	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424381.578210925	nsdemo_realtime	idle	Client	ClientRead	4
+1794424385.773053433	nsdemo_api	active			5
+1794424385.773053433	nsdemo_api	active	LWLock	WALWrite	1
+1794424385.773053433	nsdemo_api	idle	Client	ClientRead	10
+1794424385.773053433	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424385.773053433	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424385.773053433	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424385.773053433	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424385.773053433	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424385.773053433	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424385.773053433	nsdemo_realtime	idle	Client	ClientRead	4
+1794424389.928029319	nsdemo_api	active			4
+1794424389.928029319	nsdemo_api	active	IO	WALSync	1
+1794424389.928029319	nsdemo_api	active	LWLock	WALWrite	1
+1794424389.928029319	nsdemo_api	idle	Client	ClientRead	10
+1794424389.928029319	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424389.928029319	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424389.928029319	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424389.928029319	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424389.928029319	nsdemo_realtime	active			1
+1794424389.928029319	nsdemo_realtime	idle	Client	ClientRead	3
+1794424394.103304945	nsdemo_api	active			4
+1794424394.103304945	nsdemo_api	active	Client	ClientRead	1
+1794424394.103304945	nsdemo_api	idle	Client	ClientRead	11
+1794424394.103304945	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424394.103304945	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424394.103304945	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424394.103304945	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424394.103304945	nsdemo_realtime	idle	Client	ClientRead	4
+1794424398.268239059	nsdemo_api	active			4
+1794424398.268239059	nsdemo_api	active	IO	WALSync	1
+1794424398.268239059	nsdemo_api	idle			2
+1794424398.268239059	nsdemo_api	idle	Client	ClientRead	9
+1794424398.268239059	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424398.268239059	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424398.268239059	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424398.268239059	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424398.268239059	nsdemo_realtime	idle	Client	ClientRead	4
+1794424402.426634871	nsdemo_api	active			1
+1794424402.426634871	nsdemo_api	active	Client	ClientRead	1
+1794424402.426634871	nsdemo_api	idle	Client	ClientRead	13
+1794424402.426634871	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424402.426634871	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424402.426634871	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424402.426634871	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424402.426634871	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424402.426634871	nsdemo_realtime	idle	Client	ClientRead	4
+1794424406.586909989	nsdemo_api	active			2
+1794424406.586909989	nsdemo_api	active	IO	WALSync	1
+1794424406.586909989	nsdemo_api	active	LWLock	WALWrite	1
+1794424406.586909989	nsdemo_api	idle	Client	ClientRead	12
+1794424406.586909989	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424406.586909989	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424406.586909989	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424406.586909989	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424406.586909989	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424406.586909989	nsdemo_realtime	idle	Client	ClientRead	4
+1794424410.742447615	nsdemo_api	active			4
+1794424410.742447615	nsdemo_api	idle	Client	ClientRead	12
+1794424410.742447615	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424410.742447615	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424410.742447615	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424410.742447615	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424410.742447615	nsdemo_realtime	idle	Client	ClientRead	4
+1794424414.888827555	nsdemo_api	active	IO	WALSync	1
+1794424414.888827555	nsdemo_api	idle	Client	ClientRead	13
+1794424414.888827555	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424414.888827555	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424414.888827555	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424414.888827555	nsdemo_lifetime_evaluator	active			1
+1794424414.888827555	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424414.888827555	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424414.888827555	nsdemo_outbox	active			1
+1794424414.888827555	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424414.888827555	nsdemo_realtime	idle	Client	ClientRead	4
+1794424414.888827555	nsdemo_suppression	active	Client	ClientRead	1
+1794424414.888827555	nsdemo_suppression	idle	Client	ClientRead	1
+1794424419.070491080	nsdemo_api	active			1
+1794424419.070491080	nsdemo_api	active	IO	WALSync	1
+1794424419.070491080	nsdemo_api	active	LWLock	WALWrite	1
+1794424419.070491080	nsdemo_api	idle	Client	ClientRead	13
+1794424419.070491080	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424419.070491080	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424419.070491080	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424419.070491080	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424419.070491080	nsdemo_outbox	active			1
+1794424419.070491080	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424419.070491080	nsdemo_realtime	idle	Client	ClientRead	4
+1794424419.070491080	nsdemo_suppression	active			1
+1794424419.070491080	nsdemo_suppression	idle	Client	ClientRead	1
+1794424423.267156459	nsdemo_api	active	LWLock	WALWrite	4
+1794424423.267156459	nsdemo_api	idle	Client	ClientRead	12
+1794424423.267156459	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424423.267156459	nsdemo_lifetime_api	active			1
+1794424423.267156459	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424423.267156459	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	3
+1794424423.267156459	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424423.267156459	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424423.267156459	nsdemo_outbox	active	LWLock	WALWrite	1
+1794424423.267156459	nsdemo_outbox	idle	Client	ClientRead	1
+1794424423.267156459	nsdemo_realtime	idle	Client	ClientRead	4
+1794424423.267156459	nsdemo_suppression	idle	Client	ClientRead	2
+1794424427.428222381	nsdemo_api	active			2
+1794424427.428222381	nsdemo_api	idle	Client	ClientRead	12
+1794424427.428222381	nsdemo_api	idle in transaction			1
+1794424427.428222381	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424427.428222381	nsdemo_evaluator	active			1
+1794424427.428222381	nsdemo_evaluator	idle	Client	ClientRead	3
+1794424427.428222381	nsdemo_lifetime_api	active			1
+1794424427.428222381	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424427.428222381	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	2
+1794424427.428222381	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424427.428222381	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424427.428222381	nsdemo_outbox	active			1
+1794424427.428222381	nsdemo_outbox	idle in transaction			1
+1794424427.428222381	nsdemo_realtime	idle	Client	ClientRead	4
+1794424427.428222381	nsdemo_suppression	idle	Client	ClientRead	2
+1794424431.624458024	nsdemo_api	active	IO	WALSync	1
+1794424431.624458024	nsdemo_api	active	LWLock	WALWrite	1
+1794424431.624458024	nsdemo_api	idle	Client	ClientRead	10
+1794424431.624458024	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794424431.624458024	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424431.624458024	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424431.624458024	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424431.624458024	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424431.624458024	nsdemo_outbox	idle	Client	ClientRead	2
+1794424431.624458024	nsdemo_realtime	idle	Client	ClientRead	4
+1794424431.624458024	nsdemo_suppression	idle	Client	ClientRead	2
+1794424435.797143937	nsdemo_api	active			3
+1794424435.797143937	nsdemo_api	active	IO	WALSync	1
+1794424435.797143937	nsdemo_api	idle	Client	ClientRead	9
+1794424435.797143937	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424435.797143937	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424435.797143937	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424435.797143937	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424435.797143937	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424435.797143937	nsdemo_outbox	idle	Client	ClientRead	2
+1794424435.797143937	nsdemo_realtime	idle	Client	ClientRead	4
+1794424435.797143937	nsdemo_suppression	idle	Client	ClientRead	2
+1794424439.965112314	nsdemo_api	active			4
+1794424439.965112314	nsdemo_api	active	Client	ClientRead	1
+1794424439.965112314	nsdemo_api	active	IO	WALSync	1
+1794424439.965112314	nsdemo_api	idle	Client	ClientRead	8
+1794424439.965112314	nsdemo_api	idle in transaction			2
+1794424439.965112314	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424439.965112314	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424439.965112314	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424439.965112314	nsdemo_lifetime_realtime	active	LWLock	WALWrite	2
+1794424439.965112314	nsdemo_realtime	idle	Client	ClientRead	4
+1794424444.142608867	nsdemo_api	active			2
+1794424444.142608867	nsdemo_api	active	Client	ClientRead	1
+1794424444.142608867	nsdemo_api	idle			1
+1794424444.142608867	nsdemo_api	idle	Client	ClientRead	11
+1794424444.142608867	nsdemo_api	idle in transaction			1
+1794424444.142608867	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424444.142608867	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424444.142608867	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424444.142608867	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424444.142608867	nsdemo_realtime	idle	Client	ClientRead	4
+1794424448.319388521	nsdemo_api	active	Client	ClientRead	2
+1794424448.319388521	nsdemo_api	idle	Client	ClientRead	14
+1794424448.319388521	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424448.319388521	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424448.319388521	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424448.319388521	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424448.319388521	nsdemo_realtime	idle	Client	ClientRead	4
+1794424452.481936616	nsdemo_api	active			1
+1794424452.481936616	nsdemo_api	active	IO	WALSync	1
+1794424452.481936616	nsdemo_api	idle	Client	ClientRead	12
+1794424452.481936616	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424452.481936616	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424452.481936616	nsdemo_lifetime_api	active			1
+1794424452.481936616	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424452.481936616	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424452.481936616	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424452.481936616	nsdemo_realtime	idle	Client	ClientRead	4
+1794424456.643744295	nsdemo_api	active			2
+1794424456.643744295	nsdemo_api	idle	Client	ClientRead	14
+1794424456.643744295	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424456.643744295	nsdemo_lifetime_api	active			5
+1794424456.643744295	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424456.643744295	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424456.643744295	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424456.643744295	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424456.643744295	nsdemo_realtime	idle	Client	ClientRead	4
+1794424460.798612038	nsdemo_api	active			3
+1794424460.798612038	nsdemo_api	active	IO	WALSync	1
+1794424460.798612038	nsdemo_api	idle	Client	ClientRead	11
+1794424460.798612038	nsdemo_api	idle in transaction			1
+1794424460.798612038	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424460.798612038	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424460.798612038	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424460.798612038	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424460.798612038	nsdemo_realtime	idle	Client	ClientRead	4
+1794424464.950825947	nsdemo_api	active			2
+1794424464.950825947	nsdemo_api	active	Client	ClientRead	2
+1794424464.950825947	nsdemo_api	active	IO	WALSync	1
+1794424464.950825947	nsdemo_api	idle	Client	ClientRead	10
+1794424464.950825947	nsdemo_api	idle in transaction			1
+1794424464.950825947	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424464.950825947	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424464.950825947	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424464.950825947	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424464.950825947	nsdemo_realtime	idle	Client	ClientRead	3
+1794424464.950825947	nsdemo_realtime	idle in transaction			1
+1794424469.112718429	nsdemo_api	active			3
+1794424469.112718429	nsdemo_api	idle	Client	ClientRead	13
+1794424469.112718429	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424469.112718429	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424469.112718429	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424469.112718429	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424469.112718429	nsdemo_realtime	idle	Client	ClientRead	4
+1794424473.288836287	nsdemo_api	active			6
+1794424473.288836287	nsdemo_api	idle	Client	ClientRead	10
+1794424473.288836287	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424473.288836287	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424473.288836287	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424473.288836287	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424473.288836287	nsdemo_realtime	idle	Client	ClientRead	4
+1794424477.444071655	nsdemo_api	active			2
+1794424477.444071655	nsdemo_api	active	Client	ClientRead	1
+1794424477.444071655	nsdemo_api	active	LWLock	WALWrite	1
+1794424477.444071655	nsdemo_api	idle	Client	ClientRead	8
+1794424477.444071655	nsdemo_api	idle in transaction			1
+1794424477.444071655	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424477.444071655	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424477.444071655	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424477.444071655	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424477.444071655	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	1
+1794424477.444071655	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424477.444071655	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424477.444071655	nsdemo_outbox	active			1
+1794424477.444071655	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424477.444071655	nsdemo_realtime	idle	Client	ClientRead	4
+1794424477.444071655	nsdemo_suppression	idle	Client	ClientRead	2
+1794424481.624820826	nsdemo_api	active			6
+1794424481.624820826	nsdemo_api	active	Client	ClientRead	2
+1794424481.624820826	nsdemo_api	active	LWLock	WALWrite	1
+1794424481.624820826	nsdemo_api	idle	Client	ClientRead	7
+1794424481.624820826	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424481.624820826	nsdemo_lifetime_api	active			1
+1794424481.624820826	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424481.624820826	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424481.624820826	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424481.624820826	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	2
+1794424481.624820826	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424481.624820826	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424481.624820826	nsdemo_outbox	idle	Client	ClientRead	1
+1794424481.624820826	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424481.624820826	nsdemo_realtime	idle	Client	ClientRead	4
+1794424481.624820826	nsdemo_suppression	active			1
+1794424481.624820826	nsdemo_suppression	idle	Client	ClientRead	1
+1794424485.799114604	nsdemo_api	active			3
+1794424485.799114604	nsdemo_api	active	IO	WALSync	1
+1794424485.799114604	nsdemo_api	active	LWLock	WALWrite	1
+1794424485.799114604	nsdemo_api	idle	Client	ClientRead	10
+1794424485.799114604	nsdemo_api	idle in transaction			1
+1794424485.799114604	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424485.799114604	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424485.799114604	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424485.799114604	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424485.799114604	nsdemo_outbox	active			1
+1794424485.799114604	nsdemo_outbox	active	LWLock	WALWrite	1
+1794424485.799114604	nsdemo_realtime	idle	Client	ClientRead	4
+1794424485.799114604	nsdemo_suppression	idle	Client	ClientRead	2
+1794424489.968798965	nsdemo_api	active			2
+1794424489.968798965	nsdemo_api	active	IO	WALSync	1
+1794424489.968798965	nsdemo_api	active	LWLock	WALWrite	2
+1794424489.968798965	nsdemo_api	idle	Client	ClientRead	10
+1794424489.968798965	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424489.968798965	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424489.968798965	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424489.968798965	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424489.968798965	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424489.968798965	nsdemo_outbox	idle	Client	ClientRead	2
+1794424489.968798965	nsdemo_realtime	idle	Client	ClientRead	4
+1794424489.968798965	nsdemo_suppression	idle	Client	ClientRead	2
+1794424494.150180699	nsdemo_api	active	Client	ClientRead	1
+1794424494.150180699	nsdemo_api	idle			1
+1794424494.150180699	nsdemo_api	idle	Client	ClientRead	8
+1794424494.150180699	nsdemo_api	idle in transaction	Client	ClientRead	6
+1794424494.150180699	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424494.150180699	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424494.150180699	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	2
+1794424494.150180699	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424494.150180699	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424494.150180699	nsdemo_outbox	idle	Client	ClientRead	2
+1794424494.150180699	nsdemo_realtime	idle	Client	ClientRead	4
+1794424494.150180699	nsdemo_suppression	idle	Client	ClientRead	2
+1794424498.330234865	nsdemo_api	active			4
+1794424498.330234865	nsdemo_api	active	IO	WALSync	1
+1794424498.330234865	nsdemo_api	idle	Client	ClientRead	10
+1794424498.330234865	nsdemo_api	idle in transaction			1
+1794424498.330234865	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424498.330234865	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424498.330234865	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424498.330234865	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424498.330234865	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424498.330234865	nsdemo_outbox	idle	Client	ClientRead	2
+1794424498.330234865	nsdemo_realtime	idle	Client	ClientRead	4
+1794424498.330234865	nsdemo_suppression	idle	Client	ClientRead	2
+1794424502.498094883	nsdemo_api	idle	Client	ClientRead	12
+1794424502.498094883	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794424502.498094883	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424502.498094883	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424502.498094883	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424502.498094883	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424502.498094883	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424502.498094883	nsdemo_realtime	idle	Client	ClientRead	4
+1794424506.661062892	nsdemo_api	active			6
+1794424506.661062892	nsdemo_api	idle	Client	ClientRead	10
+1794424506.661062892	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424506.661062892	nsdemo_lifetime_api	active			1
+1794424506.661062892	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424506.661062892	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424506.661062892	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424506.661062892	nsdemo_realtime	idle	Client	ClientRead	4
+1794424510.837653448	nsdemo_api	active			2
+1794424510.837653448	nsdemo_api	idle	Client	ClientRead	13
+1794424510.837653448	nsdemo_api	idle in transaction			1
+1794424510.837653448	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424510.837653448	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424510.837653448	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424510.837653448	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424510.837653448	nsdemo_realtime	idle	Client	ClientRead	4
+1794424514.996307987	nsdemo_api	active			4
+1794424514.996307987	nsdemo_api	active	IO	WALSync	1
+1794424514.996307987	nsdemo_api	idle	Client	ClientRead	11
+1794424514.996307987	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424514.996307987	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424514.996307987	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424514.996307987	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424514.996307987	nsdemo_realtime	active			2
+1794424514.996307987	nsdemo_realtime	idle	Client	ClientRead	2
+1794424519.169699056	nsdemo_api	active			2
+1794424519.169699056	nsdemo_api	active	Client	ClientRead	1
+1794424519.169699056	nsdemo_api	idle	Client	ClientRead	9
+1794424519.169699056	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794424519.169699056	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424519.169699056	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424519.169699056	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424519.169699056	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424519.169699056	nsdemo_realtime	idle	Client	ClientRead	4
+1794424523.331282997	nsdemo_api	active			1
+1794424523.331282997	nsdemo_api	active	IO	WALSync	1
+1794424523.331282997	nsdemo_api	active	LWLock	WALWrite	1
+1794424523.331282997	nsdemo_api	idle	Client	ClientRead	13
+1794424523.331282997	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424523.331282997	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424523.331282997	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424523.331282997	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424523.331282997	nsdemo_realtime	idle	Client	ClientRead	4
+1794424527.491545214	nsdemo_api	active			3
+1794424527.491545214	nsdemo_api	idle	Client	ClientRead	12
+1794424527.491545214	nsdemo_api	idle in transaction			1
+1794424527.491545214	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424527.491545214	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424527.491545214	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424527.491545214	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424527.491545214	nsdemo_realtime	idle	Client	ClientRead	4
+1794424531.655524141	nsdemo_api	idle	Client	ClientRead	14
+1794424531.655524141	nsdemo_api	idle in transaction	Client	ClientRead	2
+1794424531.655524141	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424531.655524141	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424531.655524141	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424531.655524141	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424531.655524141	nsdemo_realtime	idle	Client	ClientRead	4
+1794424535.803883239	nsdemo_api	active			4
+1794424535.803883239	nsdemo_api	active	LWLock	WALWrite	1
+1794424535.803883239	nsdemo_api	idle	Client	ClientRead	11
+1794424535.803883239	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424535.803883239	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424535.803883239	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424535.803883239	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424535.803883239	nsdemo_lifetime_evaluator	idle in transaction	LWLock	WALWrite	1
+1794424535.803883239	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424535.803883239	nsdemo_outbox	active			2
+1794424535.803883239	nsdemo_realtime	idle	Client	ClientRead	4
+1794424535.803883239	nsdemo_suppression	idle	Client	ClientRead	2
+1794424539.988589959	nsdemo_api	active			4
+1794424539.988589959	nsdemo_api	active	IO	WALSync	1
+1794424539.988589959	nsdemo_api	idle	Client	ClientRead	9
+1794424539.988589959	nsdemo_api	idle in transaction			1
+1794424539.988589959	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424539.988589959	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424539.988589959	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424539.988589959	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	1
+1794424539.988589959	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424539.988589959	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424539.988589959	nsdemo_outbox	active			1
+1794424539.988589959	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424539.988589959	nsdemo_realtime	active			4
+1794424539.988589959	nsdemo_suppression	active			1
+1794424539.988589959	nsdemo_suppression	idle	Client	ClientRead	1
+1794424544.192841859	nsdemo_api	active			3
+1794424544.192841859	nsdemo_api	active	Client	ClientRead	1
+1794424544.192841859	nsdemo_api	active	IO	WALSync	1
+1794424544.192841859	nsdemo_api	active	LWLock	WALWrite	3
+1794424544.192841859	nsdemo_api	idle	Client	ClientRead	8
+1794424544.192841859	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424544.192841859	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424544.192841859	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424544.192841859	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	1
+1794424544.192841859	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424544.192841859	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424544.192841859	nsdemo_outbox	active	Client	ClientRead	1
+1794424544.192841859	nsdemo_outbox	active	LWLock	WALWrite	1
+1794424544.192841859	nsdemo_realtime	idle	Client	ClientRead	4
+1794424544.192841859	nsdemo_suppression	idle	Client	ClientRead	2
+1794424548.385861463	nsdemo_api	active			1
+1794424548.385861463	nsdemo_api	active	LWLock	WALWrite	1
+1794424548.385861463	nsdemo_api	idle	Client	ClientRead	13
+1794424548.385861463	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424548.385861463	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424548.385861463	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424548.385861463	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424548.385861463	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424548.385861463	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424548.385861463	nsdemo_lifetime_evaluator	active			1
+1794424548.385861463	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424548.385861463	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424548.385861463	nsdemo_outbox	active			1
+1794424548.385861463	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424548.385861463	nsdemo_realtime	idle	Client	ClientRead	4
+1794424548.385861463	nsdemo_suppression	active			1
+1794424548.385861463	nsdemo_suppression	idle	Client	ClientRead	1
+1794424552.566505445	nsdemo_api	active			6
+1794424552.566505445	nsdemo_api	active	Client	ClientRead	1
+1794424552.566505445	nsdemo_api	idle	Client	ClientRead	9
+1794424552.566505445	nsdemo_evaluator	idle	Client	ClientRead	3
+1794424552.566505445	nsdemo_evaluator	idle in transaction	Client	ClientRead	1
+1794424552.566505445	nsdemo_lifetime_api	active			2
+1794424552.566505445	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424552.566505445	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424552.566505445	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424552.566505445	nsdemo_lifetime_evaluator	idle in transaction	Client	ClientRead	1
+1794424552.566505445	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424552.566505445	nsdemo_outbox	idle	Client	ClientRead	2
+1794424552.566505445	nsdemo_realtime	idle	Client	ClientRead	4
+1794424552.566505445	nsdemo_suppression	idle	Client	ClientRead	2
+1794424556.742688045	nsdemo_api	active			2
+1794424556.742688045	nsdemo_api	active	Client	ClientRead	3
+1794424556.742688045	nsdemo_api	idle			1
+1794424556.742688045	nsdemo_api	idle	Client	ClientRead	8
+1794424556.742688045	nsdemo_api	idle in transaction			1
+1794424556.742688045	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424556.742688045	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424556.742688045	nsdemo_lifetime_api	active			1
+1794424556.742688045	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424556.742688045	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424556.742688045	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424556.742688045	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424556.742688045	nsdemo_outbox	idle	Client	ClientRead	2
+1794424556.742688045	nsdemo_realtime	idle	Client	ClientRead	4
+1794424556.742688045	nsdemo_suppression	idle	Client	ClientRead	2
+1794424560.907987832	nsdemo_api	active			5
+1794424560.907987832	nsdemo_api	active	Client	ClientRead	2
+1794424560.907987832	nsdemo_api	idle	Client	ClientRead	9
+1794424560.907987832	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424560.907987832	nsdemo_lifetime_api	active			1
+1794424560.907987832	nsdemo_lifetime_api	idle	Client	ClientRead	7
+1794424560.907987832	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424560.907987832	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424560.907987832	nsdemo_realtime	idle	Client	ClientRead	4
+1794424565.071751221	nsdemo_api	active			1
+1794424565.071751221	nsdemo_api	idle	Client	ClientRead	12
+1794424565.071751221	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424565.071751221	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424565.071751221	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424565.071751221	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424565.071751221	nsdemo_lifetime_realtime	active	IO	WALSync	1
+1794424565.071751221	nsdemo_lifetime_realtime	idle	Client	ClientRead	1
+1794424565.071751221	nsdemo_realtime	active			4
+1794424569.265884162	nsdemo_api	active			2
+1794424569.265884162	nsdemo_api	idle			1
+1794424569.265884162	nsdemo_api	idle	Client	ClientRead	9
+1794424569.265884162	nsdemo_api	idle in transaction	Client	ClientRead	4
+1794424569.265884162	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424569.265884162	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424569.265884162	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424569.265884162	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424569.265884162	nsdemo_realtime	idle	Client	ClientRead	4
+1794424573.429864374	nsdemo_api	active			7
+1794424573.429864374	nsdemo_api	active	IO	WALSync	1
+1794424573.429864374	nsdemo_api	idle	Client	ClientRead	7
+1794424573.429864374	nsdemo_api	idle in transaction			1
+1794424573.429864374	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424573.429864374	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424573.429864374	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424573.429864374	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424573.429864374	nsdemo_realtime	idle	Client	ClientRead	4
+1794424577.583375897	nsdemo_api	idle	Client	ClientRead	16
+1794424577.583375897	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424577.583375897	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424577.583375897	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424577.583375897	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424577.583375897	nsdemo_realtime	idle	Client	ClientRead	4
+1794424581.738640516	nsdemo_api	idle	Client	ClientRead	16
+1794424581.738640516	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424581.738640516	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424581.738640516	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424581.738640516	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424581.738640516	nsdemo_realtime	idle	Client	ClientRead	4
+1794424585.944437951	nsdemo_api	idle	Client	ClientRead	16
+1794424585.944437951	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424585.944437951	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424585.944437951	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424585.944437951	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424585.944437951	nsdemo_realtime	active			1
+1794424585.944437951	nsdemo_realtime	idle	Client	ClientRead	3
+1794424590.138536682	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424590.138536682	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424590.138536682	nsdemo_realtime	idle	Client	ClientRead	1
+1794424594.312577265	nsdemo_alarm	idle	Client	ClientRead	1
+1794424594.312577265	nsdemo_api	active			1
+1794424594.312577265	nsdemo_api	idle	Client	ClientRead	4
+1794424594.312577265	nsdemo_evaluator	active			1
+1794424594.312577265	nsdemo_evaluator	active	Client	ClientRead	1
+1794424594.312577265	nsdemo_evaluator	idle	Client	ClientRead	2
+1794424594.312577265	nsdemo_lifetime_api	active			6
+1794424594.312577265	nsdemo_lifetime_api	idle	Client	ClientRead	1
+1794424594.312577265	nsdemo_lifetime_evaluator	active			1
+1794424594.312577265	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424594.312577265	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424594.312577265	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424594.312577265	nsdemo_lifetime_tenant_admin	idle	Client	ClientRead	1
+1794424594.312577265	nsdemo_outbox	active			2
+1794424594.312577265	nsdemo_owner_reader	idle	Client	ClientRead	1
+1794424594.312577265	nsdemo_owner_writer	idle	Client	ClientRead	1
+1794424594.312577265	nsdemo_realtime	idle	Client	ClientRead	3
+1794424594.312577265	nsdemo_root_writer	idle	Client	ClientRead	1
+1794424594.312577265	nsdemo_suppression	active			1
+1794424594.312577265	nsdemo_suppression	idle in transaction	Client	ClientRead	1
+1794424598.555890897	nsdemo_alarm	idle	Client	ClientRead	1
+1794424598.555890897	nsdemo_api	idle	Client	ClientRead	10
+1794424598.555890897	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424598.555890897	nsdemo_lifetime_api	active			4
+1794424598.555890897	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424598.555890897	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424598.555890897	nsdemo_lifetime_api	idle	Client	ClientRead	1
+1794424598.555890897	nsdemo_lifetime_evaluator	active			2
+1794424598.555890897	nsdemo_lifetime_evaluator	active	LWLock	WALWrite	2
+1794424598.555890897	nsdemo_lifetime_evaluator	idle	Client	ClientRead	2
+1794424598.555890897	nsdemo_lifetime_evaluator	idle in transaction	Client	ClientRead	2
+1794424598.555890897	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424598.555890897	nsdemo_lifetime_tenant_admin	idle	Client	ClientRead	1
+1794424598.555890897	nsdemo_outbox	active			1
+1794424598.555890897	nsdemo_outbox	idle	Client	ClientRead	1
+1794424598.555890897	nsdemo_owner_reader	idle	Client	ClientRead	1
+1794424598.555890897	nsdemo_owner_writer	idle	Client	ClientRead	1
+1794424598.555890897	nsdemo_realtime	idle	Client	ClientRead	4
+1794424598.555890897	nsdemo_root_writer	idle	Client	ClientRead	1
+1794424598.555890897	nsdemo_suppression	active			1
+1794424598.555890897	nsdemo_suppression	idle	Client	ClientRead	1
+1794424602.814511277	nsdemo_alarm	idle	Client	ClientRead	1
+1794424602.814511277	nsdemo_api	idle	Client	ClientRead	10
+1794424602.814511277	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424602.814511277	nsdemo_lifetime_api	active			5
+1794424602.814511277	nsdemo_lifetime_evaluator	active			2
+1794424602.814511277	nsdemo_lifetime_evaluator	idle	Client	ClientRead	6
+1794424602.814511277	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794424602.814511277	nsdemo_lifetime_tenant_admin	idle	Client	ClientRead	1
+1794424602.814511277	nsdemo_outbox	active			2
+1794424602.814511277	nsdemo_owner_reader	idle	Client	ClientRead	1
+1794424602.814511277	nsdemo_owner_writer	idle	Client	ClientRead	1
+1794424602.814511277	nsdemo_realtime	idle	Client	ClientRead	4
+1794424602.814511277	nsdemo_root_writer	idle	Client	ClientRead	1
+1794424602.814511277	nsdemo_suppression	idle	Client	ClientRead	2
+1794424607.068754883	nsdemo_api	idle	Client	ClientRead	6
+1794424607.068754883	nsdemo_evaluator	active			3
+1794424607.068754883	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424607.068754883	nsdemo_lifetime_api	active			2
+1794424607.068754883	nsdemo_lifetime_api	active	Client	ClientRead	1
+1794424607.068754883	nsdemo_lifetime_api	idle			1
+1794424607.068754883	nsdemo_lifetime_api	idle in transaction			1
+1794424607.068754883	nsdemo_lifetime_evaluator	active			2
+1794424607.068754883	nsdemo_lifetime_evaluator	active	IO	WALSync	1
+1794424607.068754883	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424607.068754883	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794424607.068754883	nsdemo_outbox	active			2
+1794424607.068754883	nsdemo_realtime	idle	Client	ClientRead	2
+1794424607.068754883	nsdemo_suppression	idle	Client	ClientRead	2
+1794424611.356660809	nsdemo_api	idle	Client	ClientRead	7
+1794424611.356660809	nsdemo_evaluator	active	Client	ClientRead	1
+1794424611.356660809	nsdemo_evaluator	idle	Client	ClientRead	2
+1794424611.356660809	nsdemo_evaluator	idle in transaction	Client	ClientRead	1
+1794424611.356660809	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424611.356660809	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424611.356660809	nsdemo_lifetime_evaluator	active			1
+1794424611.356660809	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424611.356660809	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424611.356660809	nsdemo_outbox	idle in transaction	Client	ClientRead	2
+1794424611.356660809	nsdemo_realtime	idle	Client	ClientRead	2
+1794424611.356660809	nsdemo_suppression	idle	Client	ClientRead	2
+1794424615.596377547	nsdemo_api	active			1
+1794424615.596377547	nsdemo_api	idle	Client	ClientRead	6
+1794424615.596377547	nsdemo_evaluator	active			2
+1794424615.596377547	nsdemo_evaluator	active	Client	ClientRead	1
+1794424615.596377547	nsdemo_evaluator	idle in transaction			1
+1794424615.596377547	nsdemo_lifetime_api	active			1
+1794424615.596377547	nsdemo_lifetime_api	idle	Client	ClientRead	3
+1794424615.596377547	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424615.596377547	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424615.596377547	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794424615.596377547	nsdemo_outbox	active	IO	WALSync	1
+1794424615.596377547	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424615.596377547	nsdemo_realtime	idle	Client	ClientRead	2
+1794424615.596377547	nsdemo_suppression	idle	Client	ClientRead	2
+1794424619.840513576	nsdemo_api	idle	Client	ClientRead	7
+1794424619.840513576	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424619.840513576	nsdemo_evaluator	idle in transaction	Client	ClientRead	3
+1794424619.840513576	nsdemo_lifetime_api	active			1
+1794424619.840513576	nsdemo_lifetime_api	idle	Client	ClientRead	3
+1794424619.840513576	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424619.840513576	nsdemo_lifetime_evaluator	idle	Client	ClientRead	7
+1794424619.840513576	nsdemo_lifetime_evaluator	idle in transaction	Client	ClientRead	1
+1794424619.840513576	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424619.840513576	nsdemo_outbox	idle	Client	ClientRead	1
+1794424619.840513576	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424619.840513576	nsdemo_realtime	idle	Client	ClientRead	4
+1794424619.840513576	nsdemo_suppression	idle	Client	ClientRead	2
+1794424624.080003649	nsdemo_api	idle	Client	ClientRead	7
+1794424624.080003649	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424624.080003649	nsdemo_lifetime_api	active			2
+1794424624.080003649	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424624.080003649	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424624.080003649	nsdemo_lifetime_realtime	idle	Client	ClientRead	7
+1794424624.080003649	nsdemo_outbox	active			2
+1794424624.080003649	nsdemo_realtime	idle	Client	ClientRead	4
+1794424624.080003649	nsdemo_suppression	idle	Client	ClientRead	2
+1794424628.312452192	nsdemo_api	idle	Client	ClientRead	10
+1794424628.312452192	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424628.312452192	nsdemo_lifetime_api	active			4
+1794424628.312452192	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424628.312452192	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	2
+1794424628.312452192	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424628.312452192	nsdemo_lifetime_realtime	active			2
+1794424628.312452192	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424628.312452192	nsdemo_outbox	idle	Client	ClientRead	2
+1794424628.312452192	nsdemo_readiness	idle	Client	ClientRead	1
+1794424628.312452192	nsdemo_realtime	idle	Client	ClientRead	4
+1794424628.312452192	nsdemo_suppression	idle	Client	ClientRead	2
+1794424632.520581686	nsdemo_api	active			1
+1794424632.520581686	nsdemo_api	idle	Client	ClientRead	11
+1794424632.520581686	nsdemo_evaluator	idle	Client	ClientRead	4
+1794424632.520581686	nsdemo_lifetime_api	active			5
+1794424632.520581686	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424632.520581686	nsdemo_lifetime_api	idle	Client	ClientRead	1
+1794424632.520581686	nsdemo_lifetime_evaluator	idle	Client	ClientRead	8
+1794424632.520581686	nsdemo_lifetime_realtime	active			1
+1794424632.520581686	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424632.520581686	nsdemo_outbox	idle	Client	ClientRead	2
+1794424632.520581686	nsdemo_realtime	idle	Client	ClientRead	4
+1794424632.520581686	nsdemo_suppression	idle	Client	ClientRead	2
+1794424636.706516717	nsdemo_api	idle	Client	ClientRead	14
+1794424636.706516717	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424636.706516717	nsdemo_lifetime_api	active			1
+1794424636.706516717	nsdemo_lifetime_api	idle	Client	ClientRead	3
+1794424636.706516717	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	2
+1794424636.706516717	nsdemo_lifetime_evaluator	idle	Client	ClientRead	4
+1794424636.706516717	nsdemo_lifetime_realtime	active			1
+1794424636.706516717	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794424636.706516717	nsdemo_outbox	idle	Client	ClientRead	2
+1794424636.706516717	nsdemo_realtime	idle	Client	ClientRead	4
+1794424636.706516717	nsdemo_suppression	idle	Client	ClientRead	2
+1794424640.894328995	nsdemo_api	active			2
+1794424640.894328995	nsdemo_api	active	Client	ClientRead	1
+1794424640.894328995	nsdemo_api	idle	Client	ClientRead	12
+1794424640.894328995	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424640.894328995	nsdemo_lifetime_api	active			5
+1794424640.894328995	nsdemo_lifetime_api	idle	Client	ClientRead	3
+1794424640.894328995	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424640.894328995	nsdemo_lifetime_realtime	idle	Client	ClientRead	7
+1794424640.894328995	nsdemo_realtime	active			1
+1794424640.894328995	nsdemo_realtime	idle	Client	ClientRead	3
+1794424645.103960141	nsdemo_api	idle	Client	ClientRead	13
+1794424645.103960141	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424645.103960141	nsdemo_lifetime_api	active			3
+1794424645.103960141	nsdemo_lifetime_api	idle	Client	ClientRead	1
+1794424645.103960141	nsdemo_lifetime_api	idle in transaction			1
+1794424645.103960141	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424645.103960141	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424645.103960141	nsdemo_realtime	idle	Client	ClientRead	4
+1794424649.336089763	nsdemo_api	idle	Client	ClientRead	13
+1794424649.336089763	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424649.336089763	nsdemo_lifetime_api	active			2
+1794424649.336089763	nsdemo_lifetime_api	idle			1
+1794424649.336089763	nsdemo_lifetime_api	idle	Client	ClientRead	1
+1794424649.336089763	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424649.336089763	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424649.336089763	nsdemo_lifetime_realtime	active			2
+1794424649.336089763	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794424649.336089763	nsdemo_realtime	active			3
+1794424649.336089763	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424653.523860996	nsdemo_api	idle	Client	ClientRead	12
+1794424653.523860996	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424653.523860996	nsdemo_lifetime_api	active			5
+1794424653.523860996	nsdemo_lifetime_api	active	Client	ClientRead	1
+1794424653.523860996	nsdemo_lifetime_api	idle	Client	ClientRead	1
+1794424653.523860996	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424653.523860996	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424653.523860996	nsdemo_realtime	idle	Client	ClientRead	4
+1794424657.724033299	nsdemo_api	idle	Client	ClientRead	11
+1794424657.724033299	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424657.724033299	nsdemo_lifetime_api	active			1
+1794424657.724033299	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424657.724033299	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	5
+1794424657.724033299	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424657.724033299	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424657.724033299	nsdemo_realtime	idle	Client	ClientRead	4
+1794424661.931257689	nsdemo_api	active			1
+1794424661.931257689	nsdemo_api	idle	Client	ClientRead	10
+1794424661.931257689	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424661.931257689	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424661.931257689	nsdemo_lifetime_api	active			2
+1794424661.931257689	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424661.931257689	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424661.931257689	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794424661.931257689	nsdemo_readiness	idle in transaction	Client	ClientRead	1
+1794424661.931257689	nsdemo_realtime	idle	Client	ClientRead	4
+1794424666.113658429	nsdemo_api	active			1
+1794424666.113658429	nsdemo_api	idle	Client	ClientRead	12
+1794424666.113658429	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424666.113658429	nsdemo_lifetime_api	active			3
+1794424666.113658429	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424666.113658429	nsdemo_lifetime_api	idle	Client	ClientRead	3
+1794424666.113658429	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424666.113658429	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424666.113658429	nsdemo_outbox	active			1
+1794424666.113658429	nsdemo_outbox	active	Client	ClientRead	1
+1794424666.113658429	nsdemo_readiness	active			1
+1794424666.113658429	nsdemo_realtime	idle	Client	ClientRead	3
+1794424666.113658429	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424666.113658429	nsdemo_suppression	idle	Client	ClientRead	2
+1794424670.363766667	nsdemo_api	active			1
+1794424670.363766667	nsdemo_api	idle	Client	ClientRead	12
+1794424670.363766667	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424670.363766667	nsdemo_lifetime_api	active			5
+1794424670.363766667	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424670.363766667	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424670.363766667	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424670.363766667	nsdemo_outbox	active	Client	ClientRead	1
+1794424670.363766667	nsdemo_outbox	idle in transaction	Client	ClientRead	1
+1794424670.363766667	nsdemo_realtime	idle	Client	ClientRead	3
+1794424670.363766667	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424670.363766667	nsdemo_suppression	active			1
+1794424670.363766667	nsdemo_suppression	idle	Client	ClientRead	1
+1794424674.591590222	nsdemo_api	active	Client	ClientRead	1
+1794424674.591590222	nsdemo_api	idle	Client	ClientRead	11
+1794424674.591590222	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424674.591590222	nsdemo_lifetime_api	active			2
+1794424674.591590222	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424674.591590222	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424674.591590222	nsdemo_lifetime_realtime	active			1
+1794424674.591590222	nsdemo_lifetime_realtime	idle	Client	ClientRead	5
+1794424674.591590222	nsdemo_outbox	active			1
+1794424674.591590222	nsdemo_outbox	idle	Client	ClientRead	1
+1794424674.591590222	nsdemo_realtime	idle	Client	ClientRead	4
+1794424674.591590222	nsdemo_suppression	idle	Client	ClientRead	2
+1794424678.818822800	nsdemo_api	idle	Client	ClientRead	12
+1794424678.818822800	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424678.818822800	nsdemo_lifetime_api	active			2
+1794424678.818822800	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424678.818822800	nsdemo_lifetime_api	idle	Client	ClientRead	2
+1794424678.818822800	nsdemo_lifetime_evaluator	idle	Client	ClientRead	3
+1794424678.818822800	nsdemo_lifetime_evaluator	idle in transaction	Client	ClientRead	2
+1794424678.818822800	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424678.818822800	nsdemo_outbox	idle in transaction	Client	ClientRead	2
+1794424678.818822800	nsdemo_realtime	active			1
+1794424678.818822800	nsdemo_realtime	idle	Client	ClientRead	3
+1794424678.818822800	nsdemo_suppression	idle	Client	ClientRead	2
+1794424683.047420884	nsdemo_api	idle	Client	ClientRead	13
+1794424683.047420884	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424683.047420884	nsdemo_lifetime_api	active			5
+1794424683.047420884	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424683.047420884	nsdemo_lifetime_api	idle	Client	ClientRead	1
+1794424683.047420884	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424683.047420884	nsdemo_lifetime_realtime	active			1
+1794424683.047420884	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424683.047420884	nsdemo_outbox	idle	Client	ClientRead	2
+1794424683.047420884	nsdemo_realtime	idle	Client	ClientRead	3
+1794424683.047420884	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424683.047420884	nsdemo_suppression	idle	Client	ClientRead	2
+1794424687.247477554	nsdemo_api	active			1
+1794424687.247477554	nsdemo_api	idle	Client	ClientRead	12
+1794424687.247477554	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424687.247477554	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424687.247477554	nsdemo_lifetime_api	active			5
+1794424687.247477554	nsdemo_lifetime_api	idle	Client	ClientRead	3
+1794424687.247477554	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424687.247477554	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424687.247477554	nsdemo_outbox	idle	Client	ClientRead	2
+1794424687.247477554	nsdemo_realtime	idle	Client	ClientRead	3
+1794424687.247477554	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424687.247477554	nsdemo_suppression	idle	Client	ClientRead	2
+1794424691.455463666	nsdemo_api	idle	Client	ClientRead	14
+1794424691.455463666	nsdemo_api	idle in transaction	Client	ClientRead	1
+1794424691.455463666	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424691.455463666	nsdemo_lifetime_api	active			1
+1794424691.455463666	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424691.455463666	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	2
+1794424691.455463666	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424691.455463666	nsdemo_lifetime_realtime	active			1
+1794424691.455463666	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424691.455463666	nsdemo_realtime	active			4
+1794424695.663898377	nsdemo_api	active			2
+1794424695.663898377	nsdemo_api	idle	Client	ClientRead	11
+1794424695.663898377	nsdemo_api	idle in transaction	Client	ClientRead	3
+1794424695.663898377	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424695.663898377	nsdemo_lifetime_api	idle	Client	ClientRead	5
+1794424695.663898377	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424695.663898377	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424695.663898377	nsdemo_realtime	active	Client	ClientRead	2
+1794424695.663898377	nsdemo_realtime	idle in transaction			1
+1794424695.663898377	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424699.863476843	nsdemo_api	active			2
+1794424699.863476843	nsdemo_api	idle			1
+1794424699.863476843	nsdemo_api	idle	Client	ClientRead	13
+1794424699.863476843	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424699.863476843	nsdemo_lifetime_api	active			2
+1794424699.863476843	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424699.863476843	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424699.863476843	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424699.863476843	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424699.863476843	nsdemo_lifetime_realtime	idle	Client	ClientRead	7
+1794424699.863476843	nsdemo_readiness	active			1
+1794424699.863476843	nsdemo_realtime	idle	Client	ClientRead	4
+1794424704.056676417	nsdemo_api	active			2
+1794424704.056676417	nsdemo_api	active	IO	WALSync	1
+1794424704.056676417	nsdemo_api	active	LWLock	WALWrite	1
+1794424704.056676417	nsdemo_api	idle	Client	ClientRead	12
+1794424704.056676417	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424704.056676417	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424704.056676417	nsdemo_lifetime_api	idle in transaction			1
+1794424704.056676417	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424704.056676417	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424704.056676417	nsdemo_realtime	active	Client	ClientRead	1
+1794424704.056676417	nsdemo_realtime	idle	Client	ClientRead	2
+1794424704.056676417	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424708.254523309	nsdemo_api	active			2
+1794424708.254523309	nsdemo_api	idle			1
+1794424708.254523309	nsdemo_api	idle	Client	ClientRead	11
+1794424708.254523309	nsdemo_api	idle in transaction			2
+1794424708.254523309	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424708.254523309	nsdemo_lifetime_api	active			2
+1794424708.254523309	nsdemo_lifetime_api	idle	Client	ClientRead	6
+1794424708.254523309	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424708.254523309	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424708.254523309	nsdemo_realtime	idle	Client	ClientRead	4
+1794424712.444432288	nsdemo_api	idle	Client	ClientRead	15
+1794424712.444432288	nsdemo_api	idle in transaction			1
+1794424712.444432288	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424712.444432288	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424712.444432288	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424712.444432288	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424712.444432288	nsdemo_lifetime_api	idle in transaction	Client	ClientRead	1
+1794424712.444432288	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424712.444432288	nsdemo_lifetime_realtime	idle	Client	ClientRead	6
+1794424712.444432288	nsdemo_realtime	active			2
+1794424712.444432288	nsdemo_realtime	idle	Client	ClientRead	2
+1794424716.612156900	nsdemo_api	idle	Client	ClientRead	16
+1794424716.612156900	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424716.612156900	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424716.612156900	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424716.612156900	nsdemo_lifetime_realtime	active			2
+1794424716.612156900	nsdemo_lifetime_realtime	idle	Client	ClientRead	2
+1794424716.612156900	nsdemo_realtime	idle	Client	ClientRead	4
+1794424720.763976777	nsdemo_api	idle	Client	ClientRead	16
+1794424720.763976777	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424720.763976777	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424720.763976777	nsdemo_lifetime_evaluator	idle	Client	ClientRead	1
+1794424720.763976777	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424720.763976777	nsdemo_realtime	active			3
+1794424720.763976777	nsdemo_realtime	active	Client	ClientRead	1
+1794424724.922552263	nsdemo_api	active			1
+1794424724.922552263	nsdemo_api	idle	Client	ClientRead	6
+1794424724.922552263	nsdemo_api	idle in transaction			1
+1794424724.922552263	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424724.922552263	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424724.922552263	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424724.922552263	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424724.922552263	nsdemo_outbox	active			2
+1794424724.922552263	nsdemo_realtime	idle	Client	ClientRead	4
+1794424724.922552263	nsdemo_suppression	idle	Client	ClientRead	2
+1794424729.085021972	nsdemo_api	idle	Client	ClientRead	8
+1794424729.085021972	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424729.085021972	nsdemo_lifetime_api	active			1
+1794424729.085021972	nsdemo_lifetime_api	idle	Client	ClientRead	3
+1794424729.085021972	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424729.085021972	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424729.085021972	nsdemo_outbox	active			2
+1794424729.085021972	nsdemo_realtime	active			1
+1794424729.085021972	nsdemo_realtime	idle	Client	ClientRead	2
+1794424729.085021972	nsdemo_realtime	idle in transaction			1
+1794424729.085021972	nsdemo_suppression	idle	Client	ClientRead	2
+1794424733.254631899	nsdemo_api	active			1
+1794424733.254631899	nsdemo_api	idle	Client	ClientRead	6
+1794424733.254631899	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424733.254631899	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424733.254631899	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424733.254631899	nsdemo_lifetime_realtime	active	IO	WALSync	1
+1794424733.254631899	nsdemo_lifetime_realtime	idle	Client	ClientRead	3
+1794424733.254631899	nsdemo_outbox	active	LWLock	WALWrite	2
+1794424733.254631899	nsdemo_realtime	active			1
+1794424733.254631899	nsdemo_realtime	idle	Client	ClientRead	3
+1794424733.254631899	nsdemo_suppression	idle	Client	ClientRead	2
+1794424737.424298787	nsdemo_api	active			2
+1794424737.424298787	nsdemo_api	active	LWLock	WALWrite	2
+1794424737.424298787	nsdemo_api	idle	Client	ClientRead	8
+1794424737.424298787	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424737.424298787	nsdemo_lifetime_api	active			2
+1794424737.424298787	nsdemo_lifetime_api	active	IO	WALSync	1
+1794424737.424298787	nsdemo_lifetime_api	active	LWLock	WALWrite	1
+1794424737.424298787	nsdemo_lifetime_api	idle	Client	ClientRead	4
+1794424737.424298787	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424737.424298787	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424737.424298787	nsdemo_outbox	idle	Client	ClientRead	2
+1794424737.424298787	nsdemo_realtime	idle	Client	ClientRead	3
+1794424737.424298787	nsdemo_realtime	idle in transaction	Client	ClientRead	1
+1794424737.424298787	nsdemo_suppression	idle	Client	ClientRead	2
+1794424741.608674433	nsdemo_api	idle	Client	ClientRead	12
+1794424741.608674433	nsdemo_evaluator	idle	Client	ClientRead	1
+1794424741.608674433	nsdemo_lifetime_api	idle	Client	ClientRead	8
+1794424741.608674433	nsdemo_lifetime_evaluator	idle	Client	ClientRead	5
+1794424741.608674433	nsdemo_lifetime_realtime	idle	Client	ClientRead	4
+1794424741.608674433	nsdemo_outbox	idle	Client	ClientRead	2
+1794424741.608674433	nsdemo_realtime	idle	Client	ClientRead	4
+1794424741.608674433	nsdemo_suppression	idle	Client	ClientRead	2

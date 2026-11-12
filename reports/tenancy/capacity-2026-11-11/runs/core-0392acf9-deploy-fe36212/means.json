@@ -1,0 +1,64 @@
+{
+  "1000": {
+    "idle": {
+      "roles": {
+        "api": {
+          "cpuMsPerMin": 3633.566666666666,
+          "anonMiB": 713.9666666666667
+        },
+        "realtime": {
+          "cpuMsPerMin": 5304.333333333333,
+          "anonMiB": 192.66666666666666
+        },
+        "evaluator": {
+          "cpuMsPerMin": 7857.166666666667,
+          "anonMiB": 384.6666666666667
+        },
+        "tenant-admin": {
+          "cpuMsPerMin": 2894.3000000000006,
+          "anonMiB": 48.43333333333334
+        },
+        "postgres": {
+          "cpuMsPerMin": 29816.433333333334,
+          "anonMiB": 20.599999999999998
+        },
+        "nginx": {
+          "cpuMsPerMin": 6.2,
+          "anonMiB": 10.3
+        }
+      },
+      "dbMsPerMin": 12765.333333333334,
+      "runs": 3
+    },
+    "load": {
+      "roles": {
+        "api": {
+          "cpuMsPerMin": 50346.5,
+          "anonMiB": 2512.8333333333335
+        },
+        "realtime": {
+          "cpuMsPerMin": 25747.433333333334,
+          "anonMiB": 304.1666666666667
+        },
+        "evaluator": {
+          "cpuMsPerMin": 11633.666666666666,
+          "anonMiB": 380.2
+        },
+        "tenant-admin": {
+          "cpuMsPerMin": 3555.433333333333,
+          "anonMiB": 58.73333333333333
+        },
+        "postgres": {
+          "cpuMsPerMin": 231804.4,
+          "anonMiB": 123.73333333333333
+        },
+        "nginx": {
+          "cpuMsPerMin": 2325.3333333333335,
+          "anonMiB": 37.6
+        }
+      },
+      "dbMsPerMin": 96369.66666666667,
+      "runs": 3
+    }
+  }
+}

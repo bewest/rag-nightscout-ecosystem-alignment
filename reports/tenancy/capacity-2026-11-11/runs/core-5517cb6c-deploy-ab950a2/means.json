@@ -1,0 +1,64 @@
+{
+  "1000": {
+    "idle": {
+      "roles": {
+        "api": {
+          "cpuMsPerMin": 3267,
+          "anonMiB": 720.6
+        },
+        "realtime": {
+          "cpuMsPerMin": 5445.4,
+          "anonMiB": 178.4
+        },
+        "evaluator": {
+          "cpuMsPerMin": 8060,
+          "anonMiB": 551.6
+        },
+        "tenant-admin": {
+          "cpuMsPerMin": 2962.2,
+          "anonMiB": 44.1
+        },
+        "postgres": {
+          "cpuMsPerMin": 28467.8,
+          "anonMiB": 12
+        },
+        "nginx": {
+          "cpuMsPerMin": 8,
+          "anonMiB": 10.3
+        }
+      },
+      "dbMsPerMin": 12244,
+      "runs": 1
+    },
+    "load": {
+      "roles": {
+        "api": {
+          "cpuMsPerMin": 50652.3,
+          "anonMiB": 2517.8
+        },
+        "realtime": {
+          "cpuMsPerMin": 28472.1,
+          "anonMiB": 295.3
+        },
+        "evaluator": {
+          "cpuMsPerMin": 11914.4,
+          "anonMiB": 390.7
+        },
+        "tenant-admin": {
+          "cpuMsPerMin": 3689.7,
+          "anonMiB": 45.4
+        },
+        "postgres": {
+          "cpuMsPerMin": 233016.2,
+          "anonMiB": 124.8
+        },
+        "nginx": {
+          "cpuMsPerMin": 2358.8,
+          "anonMiB": 37.5
+        }
+      },
+      "dbMsPerMin": 96915,
+      "runs": 1
+    }
+  }
+}

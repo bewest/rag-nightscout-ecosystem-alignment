@@ -1,0 +1,1 @@
+{"tenants":3000,"port":33020,"image":"nscap:5c60aec6-d1c7aca","bootstrapSeconds":59.5,"realtimeMaxSockets":12000,"socketCapPerTenant":"4","configMaxBytes":"4194304"}

@@ -1,0 +1,4 @@
+api Up About a minute (healthy)
+realtime Up About a minute (healthy)
+evaluator Up About a minute (healthy)
+tenant-admin Up About a minute (healthy)

@@ -1,0 +1,133 @@
+{
+  "args": {
+    "per": 2,
+    "open": 5,
+    "probeEveryMs": 3000,
+    "tenants": 1000,
+    "stockMs": 300000,
+    "recoveryMs": 120000,
+    "evalTimeoutMs": 900000
+  },
+  "exchangeMs": 5773,
+  "prime": {
+    "sockets": 2000,
+    "primed": 2000,
+    "dark": 0,
+    "serverDisconnected": 0,
+    "ms": 13780,
+    "reasons": {}
+  },
+  "window": {
+    "ms": 916779,
+    "writes": {
+      "ok": 302,
+      "failed": 0
+    },
+    "sockets": 2000,
+    "connectedAtEnd": 2000,
+    "serverDisconnectsInWindow": 0,
+    "writeToFrameMs": {
+      "n": 604,
+      "p50": 604,
+      "p95": 1570,
+      "p99": 1684,
+      "max": 1740
+    },
+    "writeToFirstFrameMs": {
+      "n": 302,
+      "p50": 602,
+      "p95": 1570,
+      "p99": 1684,
+      "max": 1740
+    },
+    "deliveredFrames": 604,
+    "expectedFrames": 604,
+    "writeToEvaluationMs": {
+      "n": 302,
+      "p50": 1470,
+      "p95": 2010,
+      "p99": 2095,
+      "max": 2847
+    },
+    "evaluationMissedWithin120s": 0,
+    "reasons": {
+      "ping timeout": 2
+    }
+  },
+  "restart": {
+    "restartIso": "2026-11-11T23:25:19.214Z",
+    "healthyMs": {
+      "api": 3183,
+      "realtime": 3183,
+      "tenant-admin": 3183,
+      "evaluator": 26082
+    },
+    "firstServedMs": {
+      "0": {
+        "ms": 2503,
+        "statuses": {
+          "200": 1,
+          "502": 2,
+          "503": 1
+        }
+      },
+      "500": {
+        "ms": 2812,
+        "statuses": {
+          "200": 1,
+          "502": 2,
+          "503": 2
+        }
+      },
+      "999": {
+        "ms": 2807,
+        "statuses": {
+          "200": 1,
+          "502": 2,
+          "503": 2
+        }
+      }
+    },
+    "edgeAfterRoleRestart": [
+      401,
+      401,
+      0
+    ],
+    "edgeRestarted": {
+      "atMs": 13171,
+      "commandMs": 11204
+    },
+    "evalGap": {
+      "tenants": 1000,
+      "evaluatorReadyMs": 26082,
+      "evaluatedAfterReady": 1000,
+      "sinceRestartMs": {
+        "p25": 29014,
+        "p50": 73310,
+        "p90": 80123,
+        "max": 81413
+      },
+      "within": {
+        "60s": 444,
+        "300s": 1000,
+        "900s": 1000
+      },
+      "notEvaluatedWithinTimeout": 0,
+      "backendsSeen": 13,
+      "timeoutS": 900
+    },
+    "stockRecovered": 2000,
+    "stockAllRecoveredMs": 95003,
+    "retryAllRecoveredMs": 0,
+    "retryRecovered": 2000,
+    "sockets": 2000,
+    "restartCommandMs": 890,
+    "reasons": {
+      "ping timeout": 1854,
+      "transport close": 2000,
+      "connect_error:xhr poll error": 5351,
+      "transport error": 74,
+      "connect_error:xhr post error": 25
+    }
+  }
+}

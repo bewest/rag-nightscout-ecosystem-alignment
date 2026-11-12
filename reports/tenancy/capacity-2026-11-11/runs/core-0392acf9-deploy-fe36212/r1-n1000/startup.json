@@ -1,0 +1,98 @@
+{
+  "t0": 1794421160298,
+  "roles": {
+    "api": {
+      "healthyMs": 5796,
+      "exit": null,
+      "containerStartMs": 248,
+      "listenerOpenMs": 1271,
+      "warmDrainedMs": 28091,
+      "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 26861 ms",
+      "readinessAlerts": 0,
+      "status": "running",
+      "exitCode": 0
+    },
+    "realtime": {
+      "healthyMs": 5918,
+      "exit": null,
+      "containerStartMs": 2892,
+      "listenerOpenMs": 3679,
+      "warmDrainedMs": 24064,
+      "drainedLine": "Tenant warm drained: ready 360 failed 640 deferred 0 after 20426 ms",
+      "readinessAlerts": 0,
+      "status": "running",
+      "exitCode": 0
+    },
+    "evaluator": {
+      "healthyMs": 14966,
+      "exit": null,
+      "containerStartMs": 5522,
+      "listenerOpenMs": null,
+      "warmDrainedMs": 11558,
+      "drainedLine": "Tenant warm drained: ready 1000 failed 0 deferred 0 after 5163 ms",
+      "readinessAlerts": 0,
+      "status": "running",
+      "exitCode": 0
+    },
+    "tenant-admin": {
+      "healthyMs": 6145,
+      "exit": null,
+      "containerStartMs": 250,
+      "listenerOpenMs": 883,
+      "warmDrainedMs": null,
+      "drainedLine": null,
+      "readinessAlerts": 0,
+      "status": "running",
+      "exitCode": 0
+    }
+  },
+  "firstServed": {
+    "0": {
+      "firstServedMs": 5646,
+      "statuses": {
+        "200": 1
+      }
+    },
+    "500": {
+      "firstServedMs": 6485,
+      "statuses": {
+        "200": 1,
+        "503": 1
+      }
+    },
+    "999": {
+      "firstServedMs": 6536,
+      "statuses": {
+        "200": 1,
+        "503": 1
+      }
+    }
+  },
+  "summary": {
+    "firstServedMs": [
+      5646,
+      6485,
+      6536
+    ],
+    "api": [
+      1271,
+      5796,
+      28091
+    ],
+    "realtime": [
+      3679,
+      5918,
+      24064
+    ],
+    "evaluator": [
+      null,
+      14966,
+      11558
+    ],
+    "tenant-admin": [
+      883,
+      6145,
+      null
+    ]
+  }
+}

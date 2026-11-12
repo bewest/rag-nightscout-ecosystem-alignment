@@ -1,0 +1,1 @@
+waited_s=30 quiet_threshold=3

@@ -1,0 +1,1 @@
+waited_s=0 quiet_threshold=3
