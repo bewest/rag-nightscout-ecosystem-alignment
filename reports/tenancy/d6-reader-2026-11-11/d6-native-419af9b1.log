@@ -1,0 +1,15 @@
+
+
+  D6 native metadata feed, privilege and failure controls
+    ✔ uses EXECUTE-only reader authority, emits metadata hints and preserves RLS for tenant reads (199ms)
+    ✔ duplicates hints after lost acknowledgement without advancing before a committed notification (127ms)
+    ✔ recovers lost notifications, reader outage and listener reconnect using paged current truth (188ms)
+    ✔ recovers a backend interruption inside notification COMMIT without early acknowledgement (116ms)
+    ✔ signals pause/suspend/resume with no data write while another tenant progresses (262ms)
+    ✔ refuses unsafe wrapper owner/configuration and wrong publication/slot before consuming (45ms)
+    ✔ refuses an oversized complete transaction without ACK; backstop still sees its current truth (67ms)
+    ✔ boots and gracefully stops the dedicated feed-reader CLI role (187ms)
+
+
+  8 passing (3s)
+
