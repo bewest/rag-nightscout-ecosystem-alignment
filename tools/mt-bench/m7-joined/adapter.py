@@ -598,7 +598,8 @@ def readiness(d, m):
             cost=getattr(error,'collection',{})
             if value is None:queries+=cost.get('queries',0);bytes_seen+=cost.get('bytes',0)
             else:cost={k:value[k] for k in ('queries','bytes','wallSeconds')}
-            observations.append({'verdict':error.verdict,'code':str(error),'collection':cost})
+            observations.append({'verdict':error.verdict,'code':str(error),'collection':cost,
+                                 'diagnostic':getattr(error,'diagnostic',None) or ({'predicate':'COMPLETED_ACQUISITION_REQUIRED','field':'completedAcquisitions'} if str(error)=='M7_EVALUATOR_PROGRESS_WARMING' else None)})
             if queries>evaluator_progress.POLICY['readinessMaxQueries'] or bytes_seen>evaluator_progress.POLICY['readinessMaxBytes']:
                 error=evaluator_progress.Refused('M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
             write(d/'runtime-readiness.json',{'verdict':error.verdict,'policy':evaluator_progress.POLICY,'observations':observations})

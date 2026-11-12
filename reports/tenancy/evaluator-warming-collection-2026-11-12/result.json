@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "kind": "evaluator-first-release-recording-proof",
+  "source": "56f28928a8d0ffed5d0398dccc7b7608c32f9931",
+  "instrument": "1e62ae298b465a66b48639c98602c9788668b9a0a3d51ff1c054d75b33c6dc08",
+  "gate": {
+    "sha256": "316a3747e86dd519c8ce302055873903e564862a590cd8e38c4d5bea3b6e7b86",
+    "bytes": 35213
+  },
+  "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+  "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+  "checks": {
+    "warming": 7,
+    "progress": 14,
+    "idle": 12,
+    "contract": 19,
+    "unaccepted": 9,
+    "skips": 0
+  },
+  "baselineHistoricalCause": "UNCLASSIFIED",
+  "actualServingNativeExecution": "UNMEASURED",
+  "resourcesActivated": false,
+  "scope": "actual runtime/window/inspection with recording database protocol; collector tests and controls only"
+}

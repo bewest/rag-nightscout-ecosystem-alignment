@@ -1,0 +1,55 @@
+test_actual_readiness_waits_held_release_and_keeps_failure_fatal (test_evaluator_warming.Warming.test_actual_readiness_waits_held_release_and_keeps_failure_fatal) ... ok
+test_actual_runtime_window_release_old_new_restore (test_evaluator_warming.Warming.test_actual_runtime_window_release_old_new_restore) ... FAIL
+test_diagnostics_are_bounded_field_predicate_indices_without_values (test_evaluator_warming.Warming.test_diagnostics_are_bounded_field_predicate_indices_without_values) ... ok
+test_first_release_is_warming_without_completion_credit (test_evaluator_warming.Warming.test_first_release_is_warming_without_completion_credit) ... FAIL
+test_missing_fields_and_bad_status_still_refuse (test_evaluator_warming.Warming.test_missing_fields_and_bad_status_still_refuse) ... ok
+test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) ... 
+  test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) (key='completedAcquisitions', valueType='int') ... FAIL
+  test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) (key='completedTimeCycles', valueType='int') ... FAIL
+  test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) (key='failedCompletions', valueType='int') ... FAIL
+test_remaining_contract_and_error_diagnostics_name_only_fixed_fields (test_evaluator_warming.Warming.test_remaining_contract_and_error_diagnostics_name_only_fixed_fields) ... ok
+
+======================================================================
+FAIL: test_actual_runtime_window_release_old_new_restore (test_evaluator_warming.Warming.test_actual_runtime_window_release_old_new_restore)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 84, in test_actual_runtime_window_release_old_new_restore
+    with self.assertRaisesRegex(p.Refused,'CONTRACT'):self.collect(held,warming=False)
+AssertionError: Refused not raised
+
+======================================================================
+FAIL: test_first_release_is_warming_without_completion_credit (test_evaluator_warming.Warming.test_first_release_is_warming_without_completion_credit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 26, in test_first_release_is_warming_without_completion_credit
+    with self.assertRaisesRegex(p.Refused,'CONTRACT'):self.collect(self.frame(),warming=False)
+AssertionError: Refused not raised
+
+======================================================================
+FAIL: test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) (key='completedAcquisitions', valueType='int')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 30, in test_nonzero_counters_or_invalid_age_are_not_first_admission
+    with self.subTest(key=key,valueType=type(value).__name__),self.assertRaisesRegex(p.Refused,'CONTRACT'):self.collect(frame)
+AssertionError: Refused not raised
+
+======================================================================
+FAIL: test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) (key='completedTimeCycles', valueType='int')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 30, in test_nonzero_counters_or_invalid_age_are_not_first_admission
+    with self.subTest(key=key,valueType=type(value).__name__),self.assertRaisesRegex(p.Refused,'CONTRACT'):self.collect(frame)
+AssertionError: Refused not raised
+
+======================================================================
+FAIL: test_nonzero_counters_or_invalid_age_are_not_first_admission (test_evaluator_warming.Warming.test_nonzero_counters_or_invalid_age_are_not_first_admission) (key='failedCompletions', valueType='int')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-progress-warming-20261112/tools/mt-bench/m7-joined/test_evaluator_warming.py", line 30, in test_nonzero_counters_or_invalid_age_are_not_first_admission
+    with self.subTest(key=key,valueType=type(value).__name__),self.assertRaisesRegex(p.Refused,'CONTRACT'):self.collect(frame)
+AssertionError: Refused not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.065s
+
+FAILED (failures=5)
