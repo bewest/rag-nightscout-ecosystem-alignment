@@ -41,8 +41,8 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 81 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST |
-| `in-progress` | 20 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY |
+| `not-started` | 80 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, MT-API-FIXED-ROSTER, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB, MT-REALTIME-SOCKET-CAP |
+| `in-progress` | 21 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-AUTHZ-COST |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
 | `ready-to-push` | 10 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
 | `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, MT-TENANT-LIVE-ADD |
@@ -8485,7 +8485,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-TENANT-REGISTRY` | Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming | `in-progress` | `workspace/tenant-registry-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-TENANT-LIVE-ADD` | Running evaluator and realtime pick up newly provisioned tenants without a restart | `blocked` | `-` | n/a | 0 run + 1 no-gate |
 | `MT-REALTIME-SOCKET-CAP` | Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits | `not-started` | `-` | n/a | 0 run + 1 no-gate |
-| `MT-AUTHZ-COST` | api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request | `not-started` | `-` | n/a | 0 run + 1 no-gate |
+| `MT-AUTHZ-COST` | api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request | `in-progress` | `workspace/authz-cost-20261112` | n/a | 0 run + 1 no-gate |
 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order | `ready-to-push` | `codex/eval-cost-20261111` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
@@ -11866,10 +11866,10 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `-` |
+| branch | `workspace/authz-cost-20261112` |
+| base | `workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer; security review (credential caching and revocation) |
@@ -11888,7 +11888,7 @@ alarm-readiness items, and the seam branch refresh.
 
 - `reports/tenancy/api-cost-vs-n-2026-11-11/README.md`
 
-**Notes.** 2026-11-12: decided. Starts once the capacity record is committed.
+**Notes.** 2026-11-12: decided. Starts once the capacity record is committed. 2026-11-12: started on workspace/authz-cost-20261112 (worktree externals/work/crm-authz- cost-20261112); step 1 is the profile.
 
 ### `MT-EVAL-COST` &mdash; Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order
 

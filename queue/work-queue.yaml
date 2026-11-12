@@ -27258,9 +27258,9 @@ items:
     title: "api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: ''
-    state: not-started
+    branch: workspace/authz-cost-20261112
+    base: workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003
+    state: in-progress
     blast_radius: >
       Multitenant api request and socket-authorization path (decisions.md#authorize-cost-first); authorization decisions
       must be unchanged.
@@ -27277,7 +27277,8 @@ items:
     evidence:
       - reports/tenancy/api-cost-vs-n-2026-11-11/README.md
     notes: >
-      2026-11-12: decided. Starts once the capacity record is committed.
+      2026-11-12: decided. Starts once the capacity record is committed. 2026-11-12: started on
+      workspace/authz-cost-20261112 (worktree externals/work/crm-authz-cost-20261112); step 1 is the profile.
   - id: MT-EVAL-COST
     title: "Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order"
     parcel: tenancy

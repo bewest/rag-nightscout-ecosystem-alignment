@@ -191,7 +191,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or r | `not-started` | &mdash; |
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
-| 1 | `MT-AUTHZ-COST` | api authorization cost: profile, cache verified credentials, one permission quer | `not-started` | &mdash; |
+| 1 | `MT-AUTHZ-COST` | api authorization cost: profile, cache verified credentials, one permission quer | `in-progress` | &mdash; |
 | 1 | `MT-BATCH-JOIN-1110` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | `in-flight-upstream` | &mdash; |
 | 1 | `MT-CAPACITY-FIXES` | Capacity campaign fixes: operator-set config size cap, realtime warm retry, boot | `in-progress` | &mdash; |
 | 1 | `MT-ENDPOINT-TRANSPORT` | Component-private UDS/HTTP API composition and deployment acceptance | `in-progress` | &mdash; |
