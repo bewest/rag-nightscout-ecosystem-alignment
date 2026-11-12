@@ -1,0 +1,105 @@
+{
+  "source": "2d0ae0354a38b4a88f43bc2ae5ec60c085058f64",
+  "binding": "dcc4a70bafd4edf31c5cab4bf3099883bd7e37f9",
+  "imageId": "sha256:b16e338214d19a409333a079a3950cb97eed9cd7cc00b5eacbff28e4bd72054d",
+  "instrumentCommit": "c33acdc48208586354002573b93ce4f33d6c0c6a",
+  "instrumentSha256": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+  "nonce": "a8d9cc6f-2c1a-4749-8bf4-b350cc39a4bf",
+  "defaultIdleSafety": {
+    "status": "PASS",
+    "scope": "startup default-normal idle safety BEFORE stock/settings mutations",
+    "result": {
+      "version": 1,
+      "phase": "idle",
+      "verdict": "PASS",
+      "policy": {
+        "version": 1,
+        "kind": "evaluator-idle-safety",
+        "moduleVersion": 2,
+        "strictWorkPolicy": {
+          "version": 2,
+          "moduleVersion": 2,
+          "selectorRows": 128,
+          "maxTenants": 10000,
+          "maxInstances": 4,
+          "roundsPerPhase": 3,
+          "maxQueriesPerPhase": 1024,
+          "maxBytesPerPhase": 67108864,
+          "responseMaxBytes": 1048576,
+          "rpcTimeoutMs": 5000,
+          "roundDeadlineMs": 15000,
+          "idleWitness": "successful-time-only-completion",
+          "loadWitness": "successful-work-progression",
+          "recoveryCadenceMs": 15000,
+          "recoveryTimeoutMs": 900000,
+          "recoveryMaxRounds": 60,
+          "readinessMaxQueries": 25600,
+          "readinessMaxBytes": 268435456,
+          "readinessMaxRounds": 80,
+          "deadlineClaim": false,
+          "workloadCohortChanged": false,
+          "dueState": "captured-only-not-opportunity-assessed"
+        },
+        "meaning": "NO_EVALUATOR_TIME_DEMAND or observed successful time work",
+        "quietMeaning": "TIME_NOT_EXERCISED",
+        "clockGuard": "common-bracketed-realtime-minus-monotonic-offset",
+        "jobEncoding": "six-fixed-clinical-flags-bitmask-v1",
+        "newClinicalDemand": "UNMEASURED",
+        "explicitNullDue": "NO_TIMER_DECLARED_WITH_COMPLETE_JOB_OBSERVATION",
+        "missingDue": "UNMEASURED",
+        "nativeTimeWitnessRequired": true,
+        "deadlineClaim": false,
+        "continuousQuiescenceClaim": false
+      },
+      "scope": "sampled evaluator idle safety; not a work witness or active-alarm capacity",
+      "tenants": 2,
+      "instances": {
+        "evaluator": {
+          "runtimeId": "761e652a-e4af-43c3-83bf-126c12af2c9b",
+          "ordinal": 0
+        },
+        "evaluator-2": {
+          "runtimeId": "b1928743-e722-41e7-a9d2-4dc00d1b7110",
+          "ordinal": 1
+        },
+        "evaluator-3": {
+          "runtimeId": "0a49d893-f4f6-4e54-91fb-77b317b54cc6",
+          "ordinal": 2
+        }
+      },
+      "classifications": {
+        "TIME_EXERCISED": 0,
+        "TIME_NOT_EXERCISED": 2,
+        "NO_TIMER_DECLARED": 0,
+        "FUTURE_DUE": 2
+      },
+      "completedTimeDelta": 0,
+      "timeWitness": false,
+      "clockGuard": {
+        "offsetLowerUs": 1790439739219283,
+        "offsetUpperUs": 1790439739219286
+      },
+      "queries": 9,
+      "responseBytes": 19999,
+      "collectorWallSeconds": 1.0226605697534978
+    }
+  },
+  "stockRestore": {
+    "status": "FAILED",
+    "code": "B_SETTINGS_STATUS_503_TENANT_WARMING",
+    "cause": "UNCLASSIFIED_IN_THIS_LEAF",
+    "evidence": {
+      "owner": "realtime_review",
+      "artifactSha256": "d210b34fc7b0ba88454dc95e64e48569b7d79dccda211168198469ee0f95fc0b",
+      "scope": "post-failure read-only log/role classification; no new HTTP",
+      "cause": "original request timestamps/upstream IDs absent; cold tenant identity not established",
+      "canonicalReport": "reports/tenancy/api-readiness-continuity-2026-11-12/original/README.md"
+    },
+    "typedResponses": 3
+  },
+  "settingsClinicalQualification": "NOT_RUN",
+  "strictNativeTime": "NOT_RUN",
+  "controlledRealtimeMove": "NOT_RUN",
+  "deploymentExport": "NOT_RUN",
+  "collectorAdditionalQueries": "NONE"
+}
