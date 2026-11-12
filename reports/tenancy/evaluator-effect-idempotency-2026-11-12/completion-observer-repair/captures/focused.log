@@ -1,0 +1,166 @@
+TAP version 13
+# Subtest: only absent/pending/attempting or incomplete fanout are explicit waiting states
+ok 1 - only absent/pending/attempting or incomplete fanout are explicit waiting states
+  ---
+  duration_ms: 3.170336
+  type: 'test'
+  ...
+# Subtest: duplicate/clear/uncertainty/cancellation/unknown identity refusals never become waiting
+ok 2 - duplicate/clear/uncertainty/cancellation/unknown identity refusals never become waiting
+  ---
+  duration_ms: 0.884244
+  type: 'test'
+  ...
+# Subtest: waits through attempting and minimum1500ms, preserves strict final verdict and bounded timestamps/history
+ok 3 - waits through attempting and minimum1500ms, preserves strict final verdict and bounded timestamps/history
+  ---
+  duration_ms: 2.489399
+  type: 'test'
+  ...
+# Subtest: copies fanout before SQL read so a concurrently arriving event is observed next poll
+ok 4 - copies fanout before SQL read so a concurrently arriving event is observed next poll
+  ---
+  duration_ms: 0.664234
+  type: 'test'
+  ...
+# Subtest: fatal duplicate is sticky even if next snapshot would be clean
+ok 5 - fatal duplicate is sticky even if next snapshot would be clean
+  ---
+  duration_ms: 0.587736
+  type: 'test'
+  ...
+# Subtest: rechecks monotonic and repeat deadlines after SQL, retains final typed snapshot on failure
+ok 6 - rechecks monotonic and repeat deadlines after SQL, retains final typed snapshot on failure
+  ---
+  duration_ms: 0.334141
+  type: 'test'
+  ...
+# Subtest: frame is required and missing completion cannot create a new deadline
+ok 7 - frame is required and missing completion cannot create a new deadline
+  ---
+  duration_ms: 0.349734
+  type: 'test'
+  ...
+# Subtest: completion SQL uses bounded session statement timeout and CLI budget without changing generic reads
+ok 8 - completion SQL uses bounded session statement timeout and CLI budget without changing generic reads
+  ---
+  duration_ms: 0.593914
+  type: 'test'
+  ...
+# Subtest: a duplicate received during final SQL read is included in strict final fanout verdict
+ok 9 - a duplicate received during final SQL read is included in strict final fanout verdict
+  ---
+  duration_ms: 1.85293
+  type: 'test'
+  ...
+# Subtest: allows one intentional B payload transition and classifies cancelled superseded rows
+ok 10 - allows one intentional B payload transition and classifies cancelled superseded rows
+  ---
+  duration_ms: 1.059452
+  type: 'test'
+  ...
+# Subtest: rejects an accepted identical early A effect even with changed B input
+ok 11 - rejects an accepted identical early A effect even with changed B input
+  ---
+  duration_ms: 0.851931
+  type: 'test'
+  ...
+# Subtest: rejects a second accepted identical B401 effect
+ok 12 - rejects a second accepted identical B401 effect
+  ---
+  duration_ms: 0.257465
+  type: 'test'
+  ...
+# Subtest: rejects extra pending identical effects before they can be handed off
+ok 13 - rejects extra pending identical effects before they can be handed off
+  ---
+  duration_ms: 0.704772
+  type: 'test'
+  ...
+# Subtest: rejects fabricated clear, duplicate socket fanout, and a proof crossing the real repeat deadline
+ok 14 - rejects fabricated clear, duplicate socket fanout, and a proof crossing the real repeat deadline
+  ---
+  duration_ms: 0.364394
+  type: 'test'
+  ...
+# Subtest: refuses absent typed digest metadata before classifying an effect
+ok 15 - refuses absent typed digest metadata before classifying an effect
+  ---
+  duration_ms: 0.159364
+  type: 'test'
+  ...
+# Subtest: keeps original successful ACK/frame predicates without making authorize ACK a new requirement
+ok 16 - keeps original successful ACK/frame predicates without making authorize ACK a new requirement
+  ---
+  duration_ms: 1.457598
+  type: 'test'
+  ...
+# Subtest: separately records connect_error and failed subscribe without leaking credentials
+ok 17 - separately records connect_error and failed subscribe without leaking credentials
+  ---
+  duration_ms: 0.655685
+  type: 'test'
+  ...
+# Subtest: distinguishes rejected authorize ACK from successful authorization with missing first frame
+ok 18 - distinguishes rejected authorize ACK from successful authorization with missing first frame
+  ---
+  duration_ms: 0.31038
+  type: 'test'
+  ...
+# Subtest: bounds diagnostic history and records disconnect/reconnect metadata only
+ok 19 - bounds diagnostic history and records disconnect/reconnect metadata only
+  ---
+  duration_ms: 0.369123
+  type: 'test'
+  ...
+# Subtest: bounds exported ACK tails while preserving raw predicates and total counts
+ok 20 - bounds exported ACK tails while preserving raw predicates and total counts
+  ---
+  duration_ms: 1.933612
+  type: 'test'
+  ...
+# Subtest: shipping instruments compose every explicitly selected API/realtime/evaluator overlay
+ok 21 - shipping instruments compose every explicitly selected API/realtime/evaluator overlay
+  ---
+  duration_ms: 4.332914
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses a missing selected participant overlay
+ok 22 - shipping composition refuses a missing selected participant overlay
+  ---
+  duration_ms: 1.760064
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses unselected or unknown overlay compose.realtime.yaml
+ok 23 - shipping composition refuses unselected or unknown overlay compose.realtime.yaml
+  ---
+  duration_ms: 1.90898
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses unselected or unknown overlay compose.unknown.yaml
+ok 24 - shipping composition refuses unselected or unknown overlay compose.unknown.yaml
+  ---
+  duration_ms: 0.866602
+  type: 'test'
+  ...
+# Subtest: shipping composition preserves unsharded evaluator-only selection and refuses another state
+ok 25 - shipping composition preserves unsharded evaluator-only selection and refuses another state
+  ---
+  duration_ms: 1.143666
+  type: 'test'
+  ...
+# Subtest: actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress
+ok 26 - actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress # SKIP
+  ---
+  duration_ms: 0.582644
+  type: 'test'
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 69.067693

@@ -1,0 +1,68 @@
+TAP version 13
+# Subtest: only absent/pending/attempting or incomplete fanout are explicit waiting states
+ok 1 - only absent/pending/attempting or incomplete fanout are explicit waiting states
+  ---
+  duration_ms: 2.243892
+  type: 'test'
+  ...
+# Subtest: duplicate/clear/uncertainty/cancellation/unknown identity refusals never become waiting
+ok 2 - duplicate/clear/uncertainty/cancellation/unknown identity refusals never become waiting
+  ---
+  duration_ms: 1.359749
+  type: 'test'
+  ...
+# Subtest: waits through attempting and minimum1500ms, preserves strict final verdict and bounded timestamps/history
+not ok 3 - waits through attempting and minimum1500ms, preserves strict final verdict and bounded timestamps/history
+  ---
+  duration_ms: 4.007133
+  type: 'test'
+  location: '/tmp/clinical-observation-minimum-control-3k0xkg36/clinical-effect-observation.test.js:9:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(h.time>=1500)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/tmp/clinical-observation-minimum-control-3k0xkg36/clinical-effect-observation.test.js:9:288)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: copies fanout before SQL read so a concurrently arriving event is observed next poll
+ok 4 - copies fanout before SQL read so a concurrently arriving event is observed next poll
+  ---
+  duration_ms: 0.63664
+  type: 'test'
+  ...
+# Subtest: fatal duplicate is sticky even if next snapshot would be clean
+ok 5 - fatal duplicate is sticky even if next snapshot would be clean
+  ---
+  duration_ms: 0.515189
+  type: 'test'
+  ...
+# Subtest: rechecks monotonic and repeat deadlines after SQL, retains final typed snapshot on failure
+ok 6 - rechecks monotonic and repeat deadlines after SQL, retains final typed snapshot on failure
+  ---
+  duration_ms: 0.3944
+  type: 'test'
+  ...
+# Subtest: frame is required and missing completion cannot create a new deadline
+ok 7 - frame is required and missing completion cannot create a new deadline
+  ---
+  duration_ms: 0.459541
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 6
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 16.133928
