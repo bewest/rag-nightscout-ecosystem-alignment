@@ -1,0 +1,20 @@
+
+
+  !
+
+  0 passing (7s)
+  1 failing
+
+  1) actual fixed-roster realtime sharding
+       SHARD_NATIVE_MOVE: actual polling/WebSocket/API3 and alarm clients follow confirmed ownership; checkpoint continuity and healthy B survive:
+     Error: SHARD_NATIVE_HANDOFF synthetic B during unrelated target warm: REALTIME_HANDOFF_UNAVAILABLE
+      at <core>/tests/realtime-sharding-native.integration.test.js:80:217
+      at <core>/lib/server/realtime/alarm-transport.js:41:15
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+     Caused by: Error: REALTIME_HANDOFF_UNAVAILABLE
+      at <core>/lib/server/realtime/alarm-transport.js:41:24
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+
+
