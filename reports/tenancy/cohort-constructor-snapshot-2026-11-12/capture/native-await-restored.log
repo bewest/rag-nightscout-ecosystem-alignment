@@ -1,0 +1,10 @@
+
+
+  native cohort constructor admission cuts
+    ✔ waits for every captured real backend while a continuous B-like constructor stream remains independent (65ms)
+    ✔ keeps an unadmitted physical backend refused at a bounded timeout
+    ✔ refuses a native rejected role and an admitted backend in another database (40ms)
+
+
+  3 passing (3s)
+

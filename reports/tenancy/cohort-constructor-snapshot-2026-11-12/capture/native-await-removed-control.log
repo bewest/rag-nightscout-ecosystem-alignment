@@ -1,0 +1,34 @@
+
+
+  native cohort constructor admission cuts
+(node:2995572) PromiseRejectionHandledWarning: Promise rejection was handled asynchronously (rejection id: 1)
+(Use `node --trace-warnings ...` to show where the warning was created)
+    1) waits for every captured real backend while a continuous B-like constructor stream remains independent
+    2) keeps an unadmitted physical backend refused at a bounded timeout
+    ✔ refuses a native rejected role and an admitted backend in another database
+
+
+  1 passing (3s)
+  2 failing
+
+  1) native cohort constructor admission cuts
+       waits for every captured real backend while a continuous B-like constructor stream remains independent:
+     Error: PostgreSQL cohort datastore unavailable
+      at AsyncFunction.cohortSnapshot (lib/storage/postgres-connection.js:402:128)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  2) native cohort constructor admission cuts
+       keeps an unadmitted physical backend refused at a bounded timeout:
+     AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ Comparison {}
+- Comparison {
+-   code: 'POSTGRES_COHORT_INITIALIZATION_TIMEOUT'
+- }
+
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/postgres-cohort-snapshot.integration.test.js:59:71)
+
+
+
