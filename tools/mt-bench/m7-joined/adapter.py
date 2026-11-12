@@ -216,6 +216,8 @@ def prepare(args):
     m["prepared"] = True
     m["sourceCompose"] = {str(f.relative_to(target)): digest(f) for f in source_files}
     m["composeSha256"] = digest(target / "frozen.compose.json")
+    shutil.copyfile(HERE / "restart.cjs", target / "restart.cjs")
+    m["restartHelperSha256"]=digest(target / "restart.cjs")
     m["probe"] = generate(ROOT, target / "probe.js")
     m["workload"] = generate_workload(ROOT, target / "k6/workload.js")
     write(target / "owner.json", m)
@@ -225,6 +227,7 @@ def prepare(args):
 def verify(d, m):
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
+    require(digest(d / "restart.cjs")==m["restartHelperSha256"], "M7_RESTART_HELPER_CHANGED")
     require(digest(d / "probe.js") == m["probe"]["adaptedSha256"], "M7_PROBE_CHANGED")
     require(digest(d / "k6/workload.js") == m["workload"]["adaptedSha256"], "M7_WORKLOAD_CHANGED")
     for file, sha in m["sourceCompose"].items():

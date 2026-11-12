@@ -62,6 +62,7 @@ class Contract(unittest.TestCase):
             self.assertNotIn('tenant_lifecycle_operations',source)
             self.assertIn('runtimeAcquisitionObservation',source);self.assertIn('M7_RESTART_ROLES',source)
             self.assertIn('hotTenantWriteToFrameMs',source);self.assertIn('M7_ESTABLISHED_SOCKETS_INCOMPLETE',source)
+            self.assertIn("require('./restart.cjs').restart",source)
             self.assertEqual(record['adaptedSha256'],digest(file))
             subprocess.run(['node','--check',str(file)],check=True,capture_output=True)
     def test_current_deterministic_workload_and_functional_refusal_counter(self):

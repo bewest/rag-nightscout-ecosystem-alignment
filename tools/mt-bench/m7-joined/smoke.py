@@ -83,6 +83,10 @@ def main():
         adapter.oracle_control(scratch)
         actual=adapter.document(load/'oracle-control.json')
         require(actual=={'baseline':'GREEN','broken':'RED','restored':'GREEN'},'M7_SMOKE_CONTROL_FAILED')
+        compose_args=['compose','-p',m['project'],'--env-file',str(scratch/'env'),'-f',str(scratch/'frozen.compose.json')]
+        script="const h=require(process.argv[1]),args=JSON.parse(process.argv[2]);(async()=>{const first=await h.restart({composeArgs:args,roles:['postgres']});let refused=false;try{await h.restart({composeArgs:args,roles:['postgres'],run:a=>a.includes('restart')?Promise.resolve(''):h.execute(a)});}catch(error){if(error.code!=='M7_RESTART_NOT_OBSERVED')throw error;refused=true;}if(!refused)throw new Error('M7_RESTART_CONTROL_VACUOUS');const restored=await h.restart({composeArgs:args,roles:['postgres']});console.log(JSON.stringify({baseline:'observed',broken:'M7_RESTART_NOT_OBSERVED',restored:'observed'}));})().catch(e=>{console.error(e.code||e.message);process.exitCode=1;});"
+        restart_control=json.loads(adapter.command(['node','-e',script,adapter.HERE/'restart.cjs',json.dumps(compose_args)],timeout=30))
+        adapter.write(output/'restart-control.json',restart_control)
         shutil.copyfile(load/'oracle-control.json',output/'oracle-control.json')
         adapter.write(output/'proof.json',{'kind':'instrument-smoke-only','acceptedWrites':sum(metrics[k] for k in ['writes_ok']),'tenants':2,'domains':3,'sourceOwnedPayloadFunctions':True,
             'instrument':captured_instrument,'workload':workload_record,'foreignActiveContainers':sum(not row['owned'] for row in host['containers']),
