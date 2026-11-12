@@ -1,0 +1,24 @@
+{
+  "sourceInstrument": "668db69bb02fc8d7a9dafb7de85c001d7160782f",
+  "instrumentSha256": "1d181b5646ee61036610ec79f930dc514d0bbc367acf560e955675f9a2683015",
+  "scope": "owned generator install and real client fixture only",
+  "sourceCore": "a50130e67e8a8e066ce866535aeb8b627a068904",
+  "deployment": "NOT_RUN",
+  "cloud": "NOT_RUN",
+  "capacity": "NO-MEASUREMENT",
+  "fullAcceptance": "NOT_RUN",
+  "freshInstall": true,
+  "privateRawInstallOutput": "retained locally; not published",
+  "clientMissingControl": [
+    "BASELINE_GREEN",
+    "REMOVED_CLIENT_RED:M7_COMMAND_FAILED:node",
+    "RESTORED_GREEN"
+  ],
+  "fixture": "real Socket.IO server + default diagnostic stock client; synthetic application, not product acceptance",
+  "initialSetupFailure": {
+    "phase": "generator-npm-ci",
+    "symptom": "npm duplicate-loading /dev/null as user and global config",
+    "classification": "setup-only red; corrected to distinct private user config"
+  },
+  "privatePreparationCapture": "synthetic child exit7; both raw streams mode0600; no prepared/owner receipt; sanitized public error"
+}

@@ -18,7 +18,15 @@ peer's `nsauthz-base-n1000`, or start a capacity campaign during other work.
 archives the deployment's committed Compose tree over its deployment directory,
 and writes the product build overlay marker. Every remaining core input must pass
 the shipping build's two-source admission. There is no borrowed node_modules:
-probe dependencies are extracted from the exact labelled application image.
+probe dependencies use a separate owned install of the exact committed core package.json
+and lockfile with npm ci --include=dev --omit=optional --ignore-scripts --force.
+The serving image still prunes development dependencies. generator-provenance.json
+pins host Node/npm paths, hashes and versions, manifests, client entry/version/hash;
+actual stock-client resolution is checked before deployment traffic and each workload.
+The controller must preserve that host toolchain across cells/profiles.
+Preparation failures retain private prepare-commands/ raw stdout/stderr even before
+owner.json exists; prepare-failure.json contains only a sanitized error code.
+Generator installation output is private under generator-commands/.
 The image's core/deployment labels and immutable image ID are checked. Serving
 mounts cannot replace `/opt/app` or any subtree; all existing binding mounts must
 resolve within this cell's own private state. External/shared resources refuse.
@@ -79,7 +87,7 @@ or Vault seeding in the campaign adapter.
 
 `campaign.py pilot` supplies a distinct500→750→1000 remote pilot. See
 [the remote controller seam](REMOTE-SEAM.md) for host prerequisites, cost ownership,
-commands, stage order, verdicts and artifacts. The controller enforces the$1 ceiling;
+commands, stage order, verdicts and artifacts. The controller enforces its current maintainer-authorized spending/deadline policy;
 this adapter performs no cloud action.
 
 `campaign.py all` accepts the same source/image/freeze arguments plus `--work` and

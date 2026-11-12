@@ -34,7 +34,7 @@ async function fixture({wrongHost=false,suppressFrame=false}={}){
     restart:async()=>{await stop();await begin();return {commandMs:1,starts:{realtime:{observed:true}}};},close:async()=>{await stop();fs.rmSync(d,{recursive:true,force:true});}};
 }
 test('bounded diagnostic uses registered-host stock polling, current frame and unaided recovery', {skip:!core,timeout:10000}, async()=>{
-  const f=await fixture();try{const result=await run({directory:f.d,seconds:5,ioFactory:f.ioFactory,restart:f.restart});assert.ok(Object.values(result.checks).every(Boolean));assert.equal(result.acceptedWrites,2);assert.equal(result.tenants,2);}catch(error){console.log('FIXTURE_OBSERVATION',fs.readFileSync(path.join(f.d,'load/diagnostic-observations.json'),'utf8'));throw error;}finally{await f.close();}
+  const f=await fixture();try{const result=await run({directory:f.d,seconds:5,restart:f.restart});assert.ok(Object.values(result.checks).every(Boolean));assert.equal(result.acceptedWrites,2);assert.equal(result.tenants,2);}catch(error){console.log('FIXTURE_OBSERVATION',fs.readFileSync(path.join(f.d,'load/diagnostic-observations.json'),'utf8'));throw error;}finally{await f.close();}
 });
 test('wrong127URL/extraHeaders client model is rejected instead of measured as product latency', {skip:!core,timeout:5000}, async()=>{
   const f=await fixture({wrongHost:true});try{await assert.rejects(run({directory:f.d,seconds:1,ioFactory:f.ioFactory,restart:f.restart}),error=>['M7_DIAGNOSTIC_DEADLINE','M7_DIAGNOSTIC_STOCK_PRIME_FAILED'].includes(error.code));}finally{await f.close();}

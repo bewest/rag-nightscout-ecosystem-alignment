@@ -1,0 +1,32 @@
+{
+  "kind": "owned-lockfile-install",
+  "tools": {
+    "node": {
+      "sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+      "version": "v22.23.4"
+    },
+    "npm": {
+      "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7",
+      "version": "10.9.9"
+    }
+  },
+  "pair": {
+    "core": "a50130e67e8a8e066ce866535aeb8b627a068904",
+    "deploy": "UNMEASURED-generator-only"
+  },
+  "packageSha256": "6bd42fb8f7c0d475209ef7d050a6ebaed7f2b461e12cb254124feabf0fd42a5f",
+  "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+  "client": {
+    "entry": "node_modules/socket.io-client/build/cjs/index.js",
+    "version": "4.8.3",
+    "entrySha256": "6b39eee0bb9bfe63c29d350d20176648f2e8cc30bb60783bad8841840925f8fa"
+  },
+  "installFlags": [
+    "ci",
+    "--include=dev",
+    "--omit=optional",
+    "--ignore-scripts",
+    "--force"
+  ],
+  "servingImageId": "NOT_RUN-generator-only"
+}
