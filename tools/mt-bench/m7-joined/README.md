@@ -251,6 +251,12 @@ No additional request, phase duration, clinical write, plugin change or work tri
 is introduced. Notification polling and read-only signature/backstop confirmations
 are allowed and never count as successful clinical time work.
 
+Both idle-safety classifications require every sampled owner clinical flag to
+be false. Any running/booting/queued clinical job is UNMEASURED/BUSY even when
+time completions are present; complete raw counters remain retained, and this is
+not a stall/error claim. Strict native TIME/load/recovery may observe active jobs.
+This idle-baseline rule is not a universal active-work capacity policy.
+
 The private DTO exposes six existing clinical states: running (through complete
 window resolution), booting, owned acquire/time and borrowed acquire/time tickets.
 The new compact artifact encodes these in that order as a validated integer

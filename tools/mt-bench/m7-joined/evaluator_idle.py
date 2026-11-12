@@ -94,6 +94,7 @@ def assess(rounds,ids,phase='idle'):
         first=rounds[0]['owners'][tenant];last=rounds[-1]['owners'][tenant]
         delta=last['completedTimeCycles']-first['completedTimeCycles'];completed+=delta
         rows=[r['owners'][tenant] for r in rounds]
+        p.need(all(not any(jobs(row['jobs']).values()) for row in rows),'M7_EVALUATOR_IDLE_JOB_PENDING')
         opportunities=[i for i,row in enumerate(rows) if row['dueAt'] is not None and row['dueAt']<=final_end]
         if opportunities:
             # A later future due cannot erase an earlier observed opportunity.
@@ -103,7 +104,6 @@ def assess(rounds,ids,phase='idle'):
         else:
             p.need(delta==0,'M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME')
             p.need(last['legacyCycles']==first['legacyCycles'],'M7_EVALUATOR_IDLE_UNCREDITED_WORK')
-            p.need(all(not any(jobs(row['jobs']).values()) for row in rows),'M7_EVALUATOR_IDLE_JOB_PENDING')
             outcomes[tenant]={'classification':'TIME_NOT_EXERCISED','completedTimeDelta':0,'meaning':'NO_EVALUATOR_TIME_DEMAND','scheduledState':'NO_TIMER_DECLARED' if last['dueAt'] is None else 'FUTURE_DUE'}
     return {'version':1,'phase':'idle','verdict':'PASS','policy':POLICY,'scope':'sampled evaluator idle safety; not a work witness or active-alarm capacity',
             'tenants':len(ids),'instances':rounds[0]['instances'],'classifications':{key:sum(row.get('classification')==key or row.get('scheduledState')==key for row in outcomes.values()) for key in ('TIME_EXERCISED','TIME_NOT_EXERCISED','NO_TIMER_DECLARED','FUTURE_DUE')},'completedTimeDelta':completed,

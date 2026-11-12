@@ -254,3 +254,8 @@ timer or a quiet native capture cannot substitute. Any earlier source exception
 requires an explicit reviewed attribution pin; equivalence is never inferred.
 This support criterion does not turn quiet-baseline metrics into active-alarm
 capacity and does not add capacity requirements to functional acceptance alone.
+
+Both idle-safety branches require all six sampled owner clinical flags clear; a
+queued/running/boot job yields UNMEASURED/BUSY even alongside real time completion.
+The complete counter rows remain evidence. This is not a scheduler-stall failure
+or a change to strict native TIME/load/recovery acceptance.

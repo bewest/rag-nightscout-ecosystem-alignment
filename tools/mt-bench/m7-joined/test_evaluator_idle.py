@@ -41,6 +41,15 @@ class Idle(unittest.TestCase):
                 rounds=self.rounds(due);rounds[1]['owners'][A]['jobs'][key]=True;self.refuse(rounds,'JOB_PENDING')
         for value in (None,{},dict.fromkeys(idle.FLAGS,0)):
             rounds=self.rounds();rounds[0]['owners'][A]['jobs']=value;self.refuse(rounds,'IDLE_JOBS')
+    def test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured(self):
+        for flag in idle.FLAGS:
+            rounds=self.rounds();rounds[0]['owners'][A]['dueAt']=1
+            for step in (1,2):rounds[step]['owners'][A].update(completedTimeCycles=step,legacyCycles=step+1)
+            self.assertEqual(idle.assess(rounds,[A,B])['classifications']['TIME_EXERCISED'],1)
+            rounds[1]['owners'][A]['jobs'][flag]=True
+            with self.assertRaisesRegex(p.Refused,'JOB_PENDING') as caught:idle.assess(rounds,[A,B])
+            self.assertEqual(caught.exception.verdict,'UNMEASURED')
+            self.assertEqual(rounds[-1]['owners'][A]['completedTimeCycles'],2,'BUSY_DOES_NOT_ERASE_SUCCESSFUL_COMPLETION')
     def test_failures_resets_new_demand_foreign_and_unhealthy_cannot_be_quiet(self):
         for field,value,code in [('failedCompletions',1,'HIDDEN_FAILURE'),('generation',2,'RESET'),('completedAcquisitions',2,'NEW_DEMAND'),('ready',False,'ERROR'),('code','EVALUATOR_WINDOW_REFUSED','ERROR')]:
             rounds=self.rounds();rounds[1]['owners'][A][field]=value;self.refuse(rounds,code)
