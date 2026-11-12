@@ -1,0 +1,23 @@
+deploy-base-1000 base exit 0
+deploy-base-1000 candidate exit 0
+IDENTICAL cycles base=46801 candidate=46801 differing=0 alarmTransitions base=17 candidate=17
+
+deploy-due-1000 base exit 0
+deploy-due-1000 candidate exit 0
+IDENTICAL cycles base=6093 candidate=6093 differing=0 alarmTransitions base=17 candidate=17
+
+deploy-due-60000 base exit 0
+deploy-due-60000 candidate exit 0
+IDENTICAL cycles base=288 candidate=288 differing=0 alarmTransitions base=17 candidate=17
+
+full-base-1000 base exit 0
+full-base-1000 candidate exit 0
+IDENTICAL cycles base=46801 candidate=46801 differing=0 alarmTransitions base=52 candidate=52
+
+full-due-1000 base exit 0
+full-due-1000 candidate exit 0
+IDENTICAL cycles base=46917 candidate=46917 differing=0 alarmTransitions base=52 candidate=52
+
+full-due-60000 base exit 0
+full-due-60000 candidate exit 0
+IDENTICAL cycles base=1032 candidate=1032 differing=0 alarmTransitions base=52 candidate=52

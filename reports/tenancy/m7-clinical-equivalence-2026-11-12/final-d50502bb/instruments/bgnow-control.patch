@@ -1,0 +1,5 @@
+--- lib/plugins/bgnow.js (frozen candidate)
++++ lib/plugins/bgnow.js (isolated synthetic control only)
+@@
+-      details.mean = mean;
++      details.mean = mean + 1; // synthetic clinical-control perturbation

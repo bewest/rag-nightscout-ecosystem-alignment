@@ -1,0 +1,26 @@
+[
+  {
+    "case": "deploy-base-1000",
+    "exit": 0
+  },
+  {
+    "case": "deploy-due-1000",
+    "exit": 0
+  },
+  {
+    "case": "deploy-due-60000",
+    "exit": 0
+  },
+  {
+    "case": "full-base-1000",
+    "exit": 0
+  },
+  {
+    "case": "full-due-1000",
+    "exit": 0
+  },
+  {
+    "case": "full-due-60000",
+    "exit": 0
+  }
+]

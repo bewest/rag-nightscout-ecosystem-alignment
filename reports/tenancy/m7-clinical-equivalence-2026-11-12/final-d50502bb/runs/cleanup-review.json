@@ -1,0 +1,5 @@
+{
+  "status": "REJECTED_BEFORE_EXECUTION",
+  "toolMessage": "This action was rejected due to unacceptable risk.\nReason: The cleanup irreversibly deletes Docker volumes and private credential files, contrary to the user's explicit instruction to retain containers, volumes, and private state; publishing local evidence does not authorize that destructive cleanup.\nDo not bypass this rejection through a workaround or indirect execution. Continue with a safer alternative, or carry out checks to prove that the action is authorized or low risk before trying again. Complete unaffected work without asking for confirmation. Report anything that remains blocked, clarify why it was blocked by auto-review, inform the user of the risk and ask for approval.",
+  "resolution": "Read-only ownership/mount proof, coordinator scope clarification, then separately approved exact-container-only removal without volume flag; private files/logs retained0600."
+}
