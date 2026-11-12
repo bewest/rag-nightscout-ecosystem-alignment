@@ -1,190 +1,158 @@
-# From accepted one-host preview to production
+# From multitenant preview to production
 
-*Living contributor-facing decision-preparation guide, 2026-11-08; M6 rows 2026-11-10. This is a
-**read-derived** dependency analysis and prior-art survey, not production
-acceptance or an adopted topology/SLO decision. Existing requirements retain their
-canonical homes in the [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md),
-[owner authority](owner-authority.md) and [delivery roadmap](multitenant-delivery-roadmap.md).
-The [dashboard](multitenant-delivery-dashboard.md) owns milestone claims; release
-contents and named reports own execution/publication. No application campaign
-was run for this guide.*
+*Living contributor-facing production guide, reconciled 2026-11-12 against the
+release decisions at alignment `8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61`.
+This is **read-derived** sequencing and explanation, not an application measurement.
+[Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md) own
+adopted policy; the [queue](../../../queue/work-queue.yaml) owns claimed work state;
+[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md) and linked
+reports own executed acceptance, source heads and publication. Use those records
+for the current candidate and blockers.*
 
-The [deployment binding and public-name contract](deployment-bindings-and-public-names.md)
-records the clarified portability, public-access and emergent-load target.
-Kubernetes packaging is distinct from adding distributed application ownership.
+Production means a particular deployment is admitted for a stated workload and
+failure/recovery envelope. It is a stronger claim than implementing a component,
+passing a functional preview or running a capacity experiment. This guide explains
+how those pieces join without making every later production feature a prerequisite
+to testing an independently ready capability.
 
 ## The proposed first production boundary
 
-**Recommendation for review:** qualify a bounded deployment with one fixed
-cooperating application cohort first, if its declared availability and recovery
-objectives permit a host outage and operator-led recovery. Keep the existing
-separate API, realtime, evaluator and tenant-admin processes. Define how many
-and what kinds of tenants it admits before promising service. This is a proposed
-production scope, not a new approval or a waiver of M6.
+Qualify a bounded deployment of the reusable API, evaluator, realtime, admin and
+supporting roles. The [runtime topology](runtime-topology.md) explains their
+contracts and scale profiles; the [deployment binding guide](deployment-bindings-and-public-names.md)
+explains placement, transport and public access. Colocating roles and scaling them
+independently are different configurations of capabilities that still need their
+own deployment proof. A role diagram is not a required number of Pods or nodes.
 
-A production service can have an explicit maintenance/outage budget without
-active-active replicas. It still needs safe operation, observable failure,
-recoverable data and credentials, and a practiced response. If the required
-availability or recovery time cannot tolerate replacement of one host, HA is
-part of the first production target and must move onto its critical path.
+**Recommendation for review:** start with the smallest topology that meets the
+chosen workload and outage objectives. A single application host is an option
+only when its outage and operator-led recovery are acceptable. Multiple application
+nodes, a replicated database or an external secrets service are not automatic
+proofs of availability. Specify which dependency or failure domain may be lost,
+what continues serving, and what recovery must establish before service resumes.
 
-“One host” here describes the application cohort. Selecting an external or
-managed PostgreSQL/Vault service changes dependency and connection behavior;
-it does not automatically require distributed application membership, and it
-does not inherit failover acceptance from this preview. Declare actual placement
-and test dependency reconnection, backend identity and commit uncertainty.
-
-**Already useful:** the [accepted operation-window family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
-proves bounded one-host restore/history/client convergence and healthy-tenant
-continuity, including shared-role restart with another tenant suspended. ed2
-cold/client/full, c23 native/browser and 39f4 corpus retain their actual source
-attribution. R72/R73 retain the bounded M0–M5 scope. None supplies a production
-workload limit, host-loss recovery objective or whole-M6 admission.
+The capacity campaign's tenant levels are experimental points. The
+[adopted capacity gate](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate)
+defines its current milestone and stretch target; it does not select a production
+node type or an ultimate fleet size. Small-group efficiency and a larger fleet's
+bounded growth must be evaluated separately. Multiple independently admitted
+deployments are a fleet option, not an adopted cell architecture or implemented
+tenant-migration service.
 
 ## Dependency map
 
-This is a dependency path, not a measured longest-duration schedule: effort,
-workload limits and recovery objectives are not yet estimated here. Independent
-capability work can proceed together; acceptance joins on a coherent candidate.
+There are two boundaries: learn from a scoped-ready capability, then admit a
+coherent deployment. Independent experiments can run before full acceptance;
+their results keep their exact scope and cannot substitute for final acceptance.
 
 ```mermaid
 flowchart TD
-  A["Accepted one-host reference"] --> B["Declare production topology, workloads and recovery objectives"]
-  A --> C["Owner and signed human-session capability"]
-  A --> D["Production provisioning, edge trust and Vault service identity"]
-  A --> E["Complete lifecycle, key custody and operator recovery"]
-  A --> F["Connector and required client journeys"]
-  B --> G["Measure operating limits and shared fault behavior"]
-  C --> H["Freeze and accept coherent application candidate"]
-  D --> H
-  E --> H
-  F --> H
-  G --> H
-  H --> I["Qualify actual deployment: live probes and recovery rehearsal"]
-  B --> I
-  I --> J["Reviewed release and explicit operator admission"]
-  J --> K["Bounded production cohort within accepted limits"]
-  B -. "Required only if objectives depend on it" .-> L["Multi-host ownership, fencing and failover proof"]
-  L -. "Then joins the same acceptance boundary" .-> H
+  C["Completed capability and explicit question"] --> D["Focused diagnostic on pinned inputs"]
+  D --> R["Repair concrete failures and join"]
+  R --> F["Freeze coherent candidate"]
+  F --> A["Full applicable functional acceptance"]
+  A --> M["Matched capacity and recovery measurements"]
+  M --> P["Select deployment profile and operating limits"]
+  P --> Q["Deployment trust and recovery qualification"]
+  Q --> O["Reviewed release and explicit operator admission"]
+  X["Selected candidate’s applicable identity/lifecycle/client scope"] --> F
 ```
 
-The current implementation/admission gap is not another storage-seam prototype.
-The owner/OIDC source now has joined acceptance records
-([M6a](../../../reports/tenancy/m6a-join-2026-11-09/README.md),
-[M6b](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md));
-production trust, lifecycle/recovery, connector/client completion and
-operating-envelope work progress alongside. Existing source and acceptance owners remain those in
-[release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md);
-this map does not redispatch their lanes.
+This is a dependency explanation, not a new serial reservation process. The
+[completion schedule](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination)
+owns integration practice. Ready diagnostics may run in parallel with isolated
+state and an aggregate resource budget. Production scope work on separate branches
+must not silently change a frozen experiment or delay its agreed deliverable.
+A failed level with correct measurement is useful capacity evidence; it is not
+permission to admit that workload to production.
 
 ## What blocks the path, and what closes it
 
-Rows summarize canonical criteria rather than adding queue claims. “Required”
-below means required by the current milestone or production contract; proposed
-operating procedures and numeric objectives still need operator agreement.
-Every claimed closure needs source/image and instrument pins, actual commands,
-independent outcomes, meaningful failure controls and restoration. A skipped or
-pending case remains UNMEASURED.
+These are enduring closure criteria, not a second live task list. Identify each
+remaining implementation change in the queue and its exact failing or missing
+criterion in the release record. Existing measurements are evidence inputs, not
+blanket admission for a changed source or topology. A skipped criterion remains
+UNMEASURED.
 
-| Boundary / prerequisite | Gap that blocks the declared scope | Evidence that closes it | Canonical home / integration owner |
-|---|---|---|---|
-| **Production envelope** — measured before limits are set | No measured workload, availability, freshness or recovery figures exist yet. A synthetic functional pass does not define tenant capacity. | Benchmark the reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove component-wise horizontal/vertical scaling with a binding inventory. Then agree recovery time and acceptable loss from the measurements and use them as thresholds ([decision 2026-11-09](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-envelope-measured-not-declared)). | `MT-BENCH-BASELINE`, `MT-BENCH-CONTRAST`, `MT-SCALE-UNBOUND`; measurement owner, coordinator schedules the windows. |
-| **Human identity and owner authority** — M6a | The disposable-harness OIDC matrix and the joined suites pass on the M6a and M6b candidates ([M6b record](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)); real identity-provider interoperability is synthetic only. Wider adopted settings/threshold/credential consumers still need their actual acceptance. | Real generic-adapter provider login/renewal/logout/outage over HTTPS with synthetic people; Mongo/PG enabled/disabled parity; current tenant membership/key/session and next-operation revocation across HTTP/streams/workers; management freshness and renewal races; legacy clients unchanged; actual owner settings consumed by API/evaluator/realtime. Authentik must pass the adopted reference proof or use the measured fallback direction. | [Owner authority](owner-authority.md), [current decision index](m5-m6-decision-list.md), [source capability record](../../../reports/tenancy/shared-oidc-sessions-2026-11-07/README.md); current combined source/acceptance owners. |
-| **Production provisioning, ingress and secrets** — required before production use | Demo bootstrap seeds synthetic tenants and restricts its database; it is not a general production provisioner. Peer/client-IP trust unification and production Vault login/renewal/custody need implementation or live acceptance. | Explicit operator provisioning and append-only migrations with effective grants/RLS/read-only readiness; safe partial-failure refusal and retry/inspection. Real TLS edge tests for host/selector conflict, spoof, unknown tenant, sockets, client IP and private owner/operator/database reachability. Vault Agent sidecar auto-auth (one AppRole per deployment), token-file renewal/expiry/revocation, seal/outage, CA verification/rotation and recoverable unseal custody. Wrong or missing authority refuses without fallback. | [Deployment/trust decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07), [Vault Agent sidecar](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-agent-sidecar), [deploy-tree home](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-home-now) (`DEPLOY-VAULT-AGENT` in `nightscout-deploy`, `MT-VAULT-TOKEN-FILE` in core), [ed2 credential inventory](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/CREDENTIALS.md); source integration + deployment operator. |
-| **Lifecycle, keys and recovery** — M6b plus actual deployment recovery | Bounded restore is accepted; key retention/destruction and operator-assisted ownership are in the M6b joined acceptance, while ownership in a serving role, the production key custodian and recoverable operation after unresolved suspension remain open. Fail-closed is safe refusal, not demonstrated eventual recovery. | Actual provision/pause/suspend/export/delete/ownership flows with race and current-authority controls, including the adopted [activity policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend), [restore census](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase) and [export removal at key destruction](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#key-destruction-removes-export); artifact/key-reference fidelity, cancellation vs execution, recovery within retention and destruction/after-window refusal. Rehearse interrupted restore/upgrade, lost acknowledgements, participant death and host/dependency replacement using supported operator procedures. Verify A state/history and independent B state. Record when recovery must stop; never clear orphans or replay uncertain activation blindly. | [M6 acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families), [recovery guide](deployment-and-rig-testing.md#credential-and-recovery-boundaries); lifecycle/source owner + operator. |
-| **Connector and client journeys** — adopted preview scope | The outbound pull against a tenant has a [Docker lab measurement](../../../reports/tenancy/connector-sync-2026-11-10/README.md) (entries only); cadence, token refresh, real ingress, the tenant-side connector role and relevant client/device cases remain open. | Existing single-site connector pulls with a pre-issued tenant reader first, with independent stored/history outcomes and retry/revocation checks. Tenant-side inbound connector uses the adopted tenant-bound API/secrets/egress contract before claiming that direction. Complete retained Android requirement and the declared supported-client/rig checks; name iOS/all-client exclusions. Any scope reduction needs an explicit decision. | [First external channel](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#first-preview-no-push-provider), [roadmap](multitenant-delivery-roadmap.md); connector/client owner, coordinated into final candidate. |
-| **Measured operating behavior** — after envelope declaration, on representative inputs | No production capacity/freshness/recovery budget follows from existing functional campaigns. Shared roles/pool/database create interference paths. | Quiet steady-state and burst/soak evidence with independent stored-state oracle: hot tenant alongside healthy tenants, large history, evaluator backlog, reconnect flood, slow/down dependencies, restores/upgrades, disk/backup growth and egress refusal. Measure latency tails, freshness, pool/lock/memory costs and recovery against agreed bounds. Verify limits shed/refuse work while preserving other tenants and authorized effects. | [Experiment contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments); operations/measurement owner and acceptance coordinator. |
-| **Coherent release and deployment admission** — join the preceding rows | A collection of source slices, or the old ed2 campaign, cannot qualify a changed production candidate. M6 promotion, release and deployment trust are separate decisions. | Frozen joined candidate with applicable full/default-browser/enabled-corpus/client/native acceptance and final prcheck; exact pending/unsupported inventory and controls. Then actual deployment trust record plus live spoof/conflict/outage probes, backup restore/recovery rehearsal, observable service failures and operator response. Reviewed release/rollback and explicit real-data/identity/role admission precede the production cohort. | [Batching rules](multitenant-integration-batching-plan-2026-11-06.md#3-batch-rules), [deployment admission](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-admission-probes-and-trust-record), release records; coordinator, maintainer and deployment operator. |
+| Boundary | Design question | Closing evidence and canonical home |
+|---|---|---|
+| Workload and resource envelope | How much useful work fits, including interference and recovery? | Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow [M7 measurement policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-envelope-measured-not-declared) and the [capacity gate](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate). The latter closes the separate single-site contrast requirement. Historical counts or node density are assumptions until reproduced on comparable inputs. |
+| Human identity and owner authority | Does the selected identity provider preserve current tenant authority throughout sessions and streams? | Actual provider/HTTPS login, renewal, logout, revocation and outage behavior, owner settings consumed by roles, legacy-client compatibility and strict audience separation. [Owner authority](owner-authority.md), M6a criteria in the [roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration). |
+| Provisioning, ingress and secrets | Are storage, authority and keys ready before serving; are private controls actually private? | Operator provisioning and recoverable partial failures; current grants/RLS; TLS/host/selector/client-IP/socket probes; service credential renewal, expiry, revocation and outage/recovery, CA verification/rotation and recoverable Vault unseal custody. A disposable lab bootstrap is not an operator provisioner. Existing Agent proofs retain their scope; the selected deployment needs a [trust record and probes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-admission-probes-and-trust-record). |
+| Lifecycle, keys and recovery | Can supported operations finish or stop safely, and can an operator recover? | Provision/pause/suspend/export/delete/ownership, retained-key destruction, production key-custodian responsibilities and artifact fidelity; interrupted restore/upgrade, lost acknowledgement, participant death and dependency/host replacement. Verify the affected tenant and an independent tenant's progress. Use [M6 acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families) and the [recovery boundaries](deployment-and-rig-testing.md#credential-and-recovery-boundaries). Safe refusal is distinct from eventual recovery. |
+| Connectors and supported clients | Which actual journeys work through the selected ingress and credentials? | Declared collection coverage, independent stored/history outcomes, cadence/retry/revocation and supported credential renewal; required Android and pinned client journeys. Source-pattern replay is distinct from executing a client binary. [Roadmap](multitenant-delivery-roadmap.md) and current release evidence own the supported scope; do not infer an all-client claim or treat an old entries-only run as the latest result. |
+| Shared-fault and operating behavior | What happens when bursts or outages affect many tenants together? | Hot tenant, reconnect flood, large history, active-alarm work, backlog, slow/down dependencies, restores/upgrades and storage/backup growth. Measure other-tenant progress and authorized effects while queues fill and recover. [Experiment contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments). |
+| Release and deployment admission | Are the actual source, configuration, image and operational procedure qualified together? | Applicable full/browser/enabled-corpus/native/client acceptance, named pending cases, final prcheck, deployment trust and recovery rehearsal, rollback and explicit operator admission. [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md), [deployment admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-admission-probes-and-trust-record). |
 
-The production deployment must establish custody/private ingress and the
-declared cooperative application roster under the
+Do not reopen completed capability work merely because this guide names its
+production criterion. Conversely, ancestry or an old green report does not prove
+new inputs. Reuse evidence through an explicit affected-input assessment and keep
+its original source/instrument attribution.
+
+The supported application cohort follows the
 [exclusive application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership).
-External direct SQL writers are unsupported and their effects are undefined
-behavior; arbitrary-writer exclusion is not an admission gate for this supported
-topology. Every supported internal participant must still follow its authority,
-write and lifecycle contracts. A current-session census is diagnostic, not proof
-of credential custody or complete participant registration. The existing
-[separate-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes)
-does not require inventing a stronger database fence merely to keep processes
-separate. Transaction pooling is outside the accepted reference.
-
-Monitoring and runbooks should expose tenant unavailable/suspended state, evaluator
-and data freshness, failed renewals, dependency failures, pool/disk pressure and
-backup/recovery outcomes without logging credentials or clinical data. This is
-proposed operating coverage for the declared service, not a claim that the current
-preview already supplies an admitted operations console.
+External direct SQL writers are outside that contract. Every supported participant
+still follows its authority, write and lifecycle rules; current connections alone
+do not prove complete membership or credential custody. A load-balanced address
+is not a census of actual role instances.
 
 ## Multi-host and HA work that can wait
 
-Deferral is conditional on the chosen first-production objectives. These are later
-capabilities, not prerequisites invented for the fixed one-host reference.
+Deferral depends on the declared deployment profile and recovery objectives, not
+on the application being unable to reuse its components at another scale.
 
-| Work | Can wait when | Required before widening the topology |
+| Capability | Can wait when | Required before enabling it |
 |---|---|---|
-| Autoscaling/dynamic application membership | A fixed deployment meets placement, restart and operating limits. Kubernetes/Jsonnet may already package that fixed deployment. | Explicit membership, producer fencing, resource ownership and safe scale-down. See the [binding contract](deployment-bindings-and-public-names.md#what-a-kubernetes-binding-must-preserve) for packaging equivalence. |
-| Dynamic API membership | A fixed declared API roster meets workload and outage objectives; API request serving need not be singleton. | Every replica participates in current authority, drain/invalidation and replacement acceptance; dynamic membership must serialize admission/removal with maintenance. A load-balanced API destination and per-instance control endpoints serve different purposes. See [API scaling and endpoint contracts](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api). |
-| Replicated realtime/evaluator workloads | The admitted runtime meets workload and outage objectives. | Realtime connection affinity/fanout and consumer state, plus evaluator/notification producer ownership and duplicate/missed work controls. A checkpoint lock is not a distributed producer lease; these requirements are distinct from ordinary API replication. |
-| Cross-host restore and dynamic participant discovery | The complete trusted roster and private same-host transport remain fixed. | Authenticated cross-host transport, complete membership/incarnation agreement, partition/late-join refusal, draining and invalidation acknowledgements across all actual participants. |
-| Automatic host failover or regional failover | Operator-led recovery fits accepted recovery time/data-loss limits. | Split-ownership exclusion, dependency failover/commit uncertainty, restored key custody, stale routing/producer refusal and measured recovery. Backups and restoration practice remain required now. |
-| Transaction-pooling proxies | Direct database connections fit the admitted envelope. | Re-prove backend identity, transaction binding, RLS, operation lifetime and recovery under the proxy; the reference currently refuses this topology. |
-| Alternative secrets providers, universal result-publication service and every-transition event recovery | The adopted Vault/polling/snapshot reference meets the declared feature and operating scope. | Their own interface/compatibility/recovery proofs; no current requirement selects them to achieve HA. |
+| Dynamic API membership | A fixed roster meets workload and outage needs | Admission/removal serialized with maintenance; all-instance drain/invalidation and incarnation-aware replacement. Request replicas are not evaluator owners. |
+| Additional evaluator/realtime workers | The qualified worker set meets its measured budget | Explicit tenant assignments, complete participant coverage, checkpoint/effect continuity and safe moves. Additional workers distribute ownership; they are not automatically standby failover replicas. |
+| Cross-host placement | The selected local transport and fixed roster meet the profile | Qualified private reachability, lifetime/uncertainty behavior, complete direct instance control and partition/late-join refusal. The application owns these semantics; the platform supplies placement/network primitives. |
+| Automatic failover | Operator-led recovery meets the outage/data-loss objectives | Old-owner exclusion, uncertain commits, dependency/key recovery and measured cutover. Backups and rehearsed restoration remain necessary with or without HA. |
+| Fleet placement and tenant migration | Independently provisioned deployments suffice | Durable tenant-to-deployment mapping, compatible target initialization, credential/data/checkpoint handling and a controlled routing cutover. This is a separate design proposal, not a replica-count flag. |
+| Transaction-pooling proxy | Direct connection budgets suffice | Re-prove backend identity, RLS/transaction binding, operation lifetimes and recovery. Do not add a proxy to hide multiplied pools without qualifying its semantics. |
+| Broker, cache or alternate CDC transport | Current signalling and authoritative-state recovery meet measured needs | A named missing capability or measured cost/lag bottleneck, publication/replay/idempotency and authority contracts, bounded failure/recovery, and a comparative experiment. No product is selected merely by a tenant-count target. |
 
-Live push providers, self-service ownership transfer and a new first-party owner UI
-remain separately scoped under existing decisions. The clarified public-name target
-includes explicit anonymous/authenticated access and group policy; schedule-specific
-semantics and their first-production scope require a bounded decision and acceptance
-in the [public-name contract](deployment-bindings-and-public-names.md#authenticated-sharing-and-group-policies). Deferring HA does not defer signed human/owner acceptance,
-key custody, safe upgrades/recovery, current authority or an operating envelope.
-
-Growing through several independently admitted deployments is another possible
-step before distributing one cohort. It needs durable tenant-to-deployment routing
-and an admitted cutover/migration ceremony; it is an option for review, not an
-adopted cell architecture or proof of cross-deployment mobility.
+Live external providers, self-service ownership transfer, first-party owner UI and
+richer sharing schedules retain their own adopted scope and decision boundaries.
+The [public-name contract](deployment-bindings-and-public-names.md#authenticated-sharing-and-group-policies)
+explains authentication, group policy and native credential preservation.
 
 ## Prior art from the existing projects
 
-These are **read-derived source mechanisms**, inspected from tracked local HEADs;
-no services/tests or existing provider deployments were exercised. Source links
-are commit-pinned. No old timing, resource count or operational success claim is
-transferred to this production path. Existing private env/log/data files were
-outside the survey. The WWW working copy has a pre-existing invitations edit;
-its citations below use the committed version only.
+Reuse the operational lessons: initialize durable resources before serving;
+separate public names from stable tenant identity; make ownership, deletion,
+consent and partial provisioning explicit; preserve data and keys independently
+of compute. Existing per-tenant process designs do not establish shared-role
+resource or failure limits.
 
-| Project / inspected source | Experience worth carrying forward | Re-proof needed for shared multitenant production |
-|---|---|---|
-| **node-multienv**, `2602c94ee2f9ceefc886907f1df63ef2e172daf4`: [storage before compute activation](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/cmd/webhook/handlers/tenant-composite-sync.js#L627), [desired-input hash](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/cmd/webhook/handlers/tenant-composite-sync.js#L730) | Separate provisioned resources, initialized state and serving admission; record intended generation and convergence. This can shape the production operator lifecycle without requiring Kubernetes. | Admit a tenant inside existing shared processes rather than equating activation with Pod creation. Bind readiness to current schema/roles/credentials; a desired-state hash does not fence in-flight operations or stale producers. |
-| Same source: [final snapshot ceremony](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/cmd/webhook/handlers/decorator-finalize.js#L15) | Keep data lifetime distinct from compute lifetime; make deletion/capture an explicit policy and observable state transition. | Snapshot readiness alone does not establish logical fidelity or recoverable keys. A shared physical PG backup includes other tenants; tenant-local restore/deletion needs its own contract. |
-| Same source: [resource discovery](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/cmd/webhook/handlers/tenant-composite-customize.js#L27) | Prior operating experience with per-tenant workloads informs controller/object/watch/rollout cost and ownership inventories. | A fleet of independent processes/databases and shared RLS roles have different failure and resource boundaries. Measure shared-pool/process interference afresh; do not import an old tenant-count limit. |
-| **nightscout-roles-gateway**, `90840acee1ec641d881512e91f1728f7ed8f7817`: [name registry](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/policies/index.js#L33), [edge decision chain](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/routes.js#L327) | Public routing, registered upstreams and policy decisions are distinct responsibilities. Use this experience to specify alias changes, unknown/suspended-site behavior, socket forwarding and edge outage probes. | This fronts separate Nightscout upstreams. An edge identity assertion or upstream selection does not supply shared clinical RLS, current tenant grants or the restore protocol. Keep operator unreachability and owner authentication explicit. |
-| Same source: [active policy joined to membership](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/policies/index.js#L150), [weekly schedules](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/migrations/20220516233454_add_filter_only_active_schedule_segments.js#L8), [upstream token broker](https://github.com/t1pal/nightscout-roles-gateway/blob/90840acee1ec641d881512e91f1728f7ed8f7817/lib/tokens/index.js#L11) | Authenticate a person separately from membership, permission and a site's native device credential. Care-group/schedule journeys are concrete future delegation requirements. | Current owner/data audiences, delegation ceilings, tenant/principal/key/session-scoped caches, expiry/revocation and long-lived stream behavior need current contracts and controls. Weekly schedule logic is not full delegated-authority acceptance. Avoid expanding first production to every gateway feature. |
-| **nightscout-gateway-www**, `67cbe4660a96ca776c3f5f8092efaa549089d9a3`: [joined sites and invitations](https://github.com/t1pal/nightscout-gateway-www/blob/67cbe4660a96ca776c3f5f8092efaa549089d9a3/lib/dashboard.js#L20), [consent/join](https://github.com/t1pal/nightscout-gateway-www/blob/67cbe4660a96ca776c3f5f8092efaa549089d9a3/lib/hydra.js#L263), [group exit](https://github.com/t1pal/nightscout-gateway-www/blob/67cbe4660a96ca776c3f5f8092efaa549089d9a3/lib/groups.js#L41) | Reuse the user journeys and vocabulary: what sites I own/can visit, why I have access, what I consent to, how I leave. A UI can become an adapter over the headless owner API after its behavior is accepted. | Neither login success nor account deletion proves tenant ownership transfer, credential revocation, clinical deletion/retention or production session custody. Use the adopted generic OIDC/current-authority contract. A first-party owner UI remains deferred. |
-
-The useful inheritance is **operational scenarios, state transitions, authority
-boundaries and user journeys**. Reusing an old gateway's implementation wholesale
-would also import its provider coupling, session/cache/lifecycle assumptions and
-separate-upstream model. Those assumptions require review and acceptance before
-any implementation reuse. This survey provides no security or production sign-off
-for the older projects.
+The [retained November source assessment](../../archive/tenancy/production-path-assessment-2026-11-10.md#prior-art-from-the-existing-projects)
+contains commit-pinned node-multienv, roles-gateway and WWW mechanisms, their
+original hypotheses and re-proof boundaries. Those source readings are not
+measurements of deployed services or security/production approval of those projects.
 
 ## Where provider experience changes the decisions
 
-Provider experience is most valuable before choosing an envelope and while
-defining failure controls. The source survey cannot establish what happened in
-an actual service; incident frequency, customer workloads and support burden
-remain unmeasured here until supplied and characterized. Use aggregate/synthetic
-cases, without tenant identifiers, credentials or glucose traces.
+Use aggregate or synthetic descriptions to define representative work and failure
+scenarios. Keep private organization names, adoption estimates, real identifiers,
+credentials and clinical traces out of public plans and metric labels.
 
-| Experience to extract | Decision it informs | Concrete output for acceptance |
-|---|---|---|
-| Typical and busiest active sites, uploaders, history sizes and reconnect storms | Shared-process density, pool/scan limits and admission capacity | Representative workload families and a hot-tenant interference benchmark; no invented uniform “tenant” unit. |
-| Worst common-mode outage: edge, identity, database, storage, secrets or controller | First production fault domain; whether one host/manual recovery meets expectations | Dependency/fault map and one synthetic failure/recovery drill per shared dependency; agreed outage and recovery objectives. |
-| Actual restores, lost keys, expired credentials and upgrades | Custody, backup retention, rollover, operator steps and recovery support | Independently verified restoration rehearsal including ciphertext/key availability, current authority and client history; explicit uncertain-state stop conditions. |
-| Alias reuse, tenant movement and partial provisioning | Stable tenant identity, routing publication/cutover and reconcile semantics | Idempotent provision/rename/suspend/cutover scenarios with stale mapping and partial-failure controls. |
-| Sharing/revocation incidents and invitation/support journeys | Minimal owner surface and future delegated/group features | Accepted current-owner/session cases now; a bounded future delegation backlog rather than adding every UI feature to production. |
-| Upgrade/certificate/credential rotation cadence and on-call capacity | Maintenance policy and whether automation or HA pays for itself | Practiced deployment/rollback/rotation procedure, alert routing, operator handoff and workload-based release checks. |
+| Input | Design or measurement it informs |
+|---|---|
+| Active/quiet mix, histories, viewers, uploads, enabled plugins and alarms | Workload families, fixed/marginal resource cost and interference; tenant count alone is insufficient. |
+| Common-mode outages and available operator response | Failure domains, redundancy, spare capacity, recovery time and acceptable loss. |
+| Restores, key loss, credential expiry and upgrades | Custody, retention, rotation, rehearsal and uncertain-state stop conditions. |
+| Alias changes, tenant movement and partial provisioning | Stable identity, routing publication and recoverable reconciliation. |
+| Sharing, revocation and support journeys | Current-owner/session proof and separately scoped delegation requirements. |
 
-The proposed direction favors a small qualified topology for maintenance and
-backward compatibility, preserves explicit service boundaries for future growth,
-and makes reliability/performance claims depend on measurements. Production
-placement and any HA deferral remain operator/maintainer decisions once the
-workload, recovery objectives and provider experience are available.
+Publish deployment recommendations only after connecting these requirements to
+measurements on named resources. Fewer nodes are an economic hypothesis: include
+all application and dependency resources, storage/backups/network and operational
+cost, plus capacity surviving the declared failure. Neither a stress rig nor a
+single successful run supplies that recipe.
+
+## Retained planning baseline
+
+The [November 8–10 assessment](../../archive/tenancy/production-path-assessment-2026-11-10.md)
+preserves the original gap table, topology/HA proposals and source survey from
+alignment `8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61`. Its present-tense statuses
+belong to that capture. Use this guide for sequencing, runtime topology for
+architecture, and the release/queue/report homes for current state and evidence.

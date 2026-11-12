@@ -1,6 +1,6 @@
 # Runtime topology: zones, components and private APIs
 
-*Living contributor-facing architecture guide, refreshed 2026-11-10. Structure is
+*Living contributor-facing architecture guide, reconciled 2026-11-12. Structure is
 **read-derived**; measured acceptance retains its exact source in the linked
 records. This Markdown generates the site's `runtime-topology.html`. The
 [endpoint/API work plan](selectable-endpoints-and-api-scaling-plan.md) owns remaining
@@ -9,9 +9,11 @@ owns claimed work state. A diagram is not deployment or capacity acceptance.*
 
 ## Read the diagrams
 
-The three plates answer different questions: the historical accepted deployment,
-the internal-listener composition in the batch join (in acceptance), and the proposed
-fixed-roster scale target. Read downward through client ingress, edge, service destinations,
+The three plates preserve different architectural scopes: the historical accepted
+deployment, the November private-listener composition, and a fixed-roster scale
+placement example. Their captured heads and publication labels belong to those
+plates; use release contents for current implementation and acceptance.
+Read downward through client ingress, edge, service destinations,
 actual role processes and backing resources. Components sit on a grid; named
 terminals and a communication ledger replace long crossing connectors.
 
@@ -38,15 +40,14 @@ OIDC, network transport, scaling or production measurements.
 
 [PNG preview](diagrams/current-internal-api-topology.png) · [SVG source](diagrams/current-internal-api-topology.svg)
 
-The plate draws the [internal-listener decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern)
-as built on lane `78ecba76` and joined, with the admin-role, activity and alarm-repeat lanes, on
-`codex/batch-join-20261110`. That join is **in acceptance, not pushed**; the
-[lane evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md) records its focused,
-Compose and break-it runs. Draft #8898 at `b70ad83f` still opens one listener per contract
-(`alarm.sock`, `cohort-<role>.sock`); its [joined acceptance](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)
-retains that source. The shared transport, contracts, schemas and named clients came with `dc795bd1`
-([acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)).
-These measurements do not qualify a remote HTTP deployment or multiple API replicas.
+The plate illustrates the [adopted listener composition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+One private listener belongs to each role process; explicit contract modules
+select its operations. The [listener evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md)
+and [shared-transport acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
+retain their executed heads and controls. Their source-scoped passes do not qualify
+every network, topology or later candidate. Current integration/publication belongs
+in [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md), not
+in a second chronological account here.
 
 **Both application and lifecycle operations are private APIs.** The labels name
 purpose, not different networks or mandatory sockets:
@@ -76,7 +77,8 @@ owns Socket.IO semantics, subscriptions and fanout. It also checks recipients'
 current permissions during delivery. That synchronous authority dependency is
 read-derived; its latency, load and failure effects need measurement.
 
-### Proposed fixed-roster API-scale target
+<a id="proposed-fixed-roster-api-scale-target"></a>
+### Fixed-roster API-scale placement example
 
 ![Proposed fixed-roster API scale target](diagrams/proposed-fixed-roster-network-topology.svg)
 
@@ -88,18 +90,18 @@ process one private listener, `serve.internal`, serving the contract modules the
 role's code selects; configuration chooses only `host`/`port` or `socket`
 (default: a unix socket under a runtime directory) and cannot move or merge
 contracts. On SIGTERM it [drains in-flight calls up to a deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
-An operational contract would be another module on that listener. #8898 at
-`b70ad83f` still opens one listener per contract; the composition is built and
-accepted in the 2026-11-10 batch join (`MT-INTERNAL-LISTENER`, `MT-BATCH-JOIN-1110`),
-which is not pushed.
+Operational inspection is another explicit private contract; its existence does
+not imply a public metrics endpoint or complete production monitoring.
 
-The target also shows two equivalent REST replicas behind a service destination,
-with directly addressable private instance endpoints for maintenance. It is not
-an accepted multihost or Kubernetes deployment. Realtime tenant placement and recovery have their own
-[sharding proposal](realtime-sharding-plan.md); the two-API fixture shown here
-retains one realtime process and does not establish realtime scale-out. Evaluator partitioning is separately
-adopted/queued under `MT-EVALUATOR-PARTITION`; the current reference remains one
-active owner. A replica count is not a workload-assignment rule.
+The plate shows equivalent REST replicas behind a service destination, with
+directly addressable private instance endpoints for maintenance. Implementation
+and bounded native checks for fixed API rosters, evaluator partitions and realtime
+placement are recorded in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+Qualification still belongs to the exact source/image, transport and deployment;
+this example does not establish multi-host, Kubernetes, capacity or failover admission.
+Realtime [sharding and recovery](realtime-sharding-plan.md) uses tenant ownership;
+evaluator partitioning uses its selected membership/ordinal policy. A replica count
+alone establishes neither assignment nor safe handoff.
 
 ## Logical REST cohesion and worker placement
 
@@ -201,30 +203,31 @@ later architecture/profile choices from those measurements with the named
 owners. These envelopes neither raise current limits nor infer PostgreSQL HA,
 automatic realtime failover or a production capacity claim.
 
-## Work needed to reach the target
+<a id="work-needed-to-reach-the-target"></a>
+## Qualification and delivery boundaries
 
 The [work plan](selectable-endpoints-and-api-scaling-plan.md#remaining-work-and-acceptance)
-defines owners, integration boundaries and controls. It separates code already
-incorporated in `dc795bd1` from these remaining changes:
+retains the implementation seams and intended failure controls. Consult the queue
+and release records before treating a listed seam as missing implementation.
+The durable qualification questions are:
 
-1. The adopted `serve.internal` listener per role, with graceful shutdown and
-   explicit lifetime policies; define operational endpoints without pretending
-   `/metrics` already exists.
-2. Deployment binding and remote UDS/HTTP parity, preserving the selected trust,
-   actual acknowledgement and suspension semantics. Gateway hooks are an optional
-   deployment integration, not a new authentication prerequisite.
-3. Fixed-roster API service/instance addressing and native concurrency,
-   all-instance restore, replacement and uncertainty acceptance.
-4. [Realtime sharding and recovery](realtime-sharding-plan.md), including a
-   measured co-location option, stable assignment and complete owner coverage.
-5. Measured scaling/fanout costs and separately scoped evaluator partitioning.
+1. Does the selected private binding preserve authority, exact operations,
+   response completion, shutdown and commit/response uncertainty?
+2. Do all actual API instances initialize the relevant tenant and participate in
+   maintenance, including actors outside ordinary service routing?
+3. Do evaluator partition changes and realtime moves preserve checkpoints,
+   current authority and durable effect identity without duplicate protected output?
+4. Is successful evaluator work distinguished from healthy quiet state, failed
+   work and inspection? A health response is not proof of per-tenant progress.
+5. What workload and resource envelope does the admitted topology meet, including
+   restart, dependency outage and other-tenant interference?
 
-No milestone promotion, default enablement or production admission follows from
-this reconciliation. Historical captures remain unchanged; stale living prose
-is corrected in place rather than kept as a second current design. The
-[deployment guide](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
-owns platform/binding examples. This page owns topology interpretation; the work
-plan owns the acceptance matrix; the queue owns work state.
+These are separate from production/default admission. Gateway hooks, additional
+brokers and new fleet protocols are selected by a concrete requirement or measured
+constraint, not by diagram shape. This page owns component/topology interpretation;
+the [deployment guide](deployment-bindings-and-public-names.md#configurable-transports-and-independently-scaled-api)
+owns binding responsibilities, the [production guide](production-critical-path.md)
+owns admission sequencing, and the queue/release homes own current state.
 
 Figures are generated by
 [`render_tenancy_topologies.py`](../../../tools/site/render_tenancy_topologies.py).
@@ -234,13 +237,14 @@ freshness and layout, not application runtime acceptance.
 
 ## Evaluator inspection and workload ownership
 
-The planned evaluator operational API includes read-only assignment and membership
-inspection, not only process liveness. `MT-ENDPOINT-TRANSPORT` owns the shared
-operational listener/module plumbing; `MT-EVALUATOR-PARTITION` owns the evaluator's
-assignment facts, membership rules, payload/schema and scaling controls. Neither
-the current lifecycle status response nor in-process `health()` exposes a ring API.
+The private evaluator inspection contract exposes bounded read-only state and
+successful-completion observations. Its schema and current implementation are
+owned by the source capability and [release evidence](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+It does not drive evaluation or turn a process health check into workload proof.
+Membership/assignment health and workload progress are distinct concepts; a field
+must name the actual rule and observation rather than inventing a generic ring.
 
-The inspection contract must distinguish:
+The interpretation and any extension of that contract must distinguish:
 
 - Configured mode and assignment rule/version, member count, this instance's
   ordinal and actual incarnation, and intended hash slice.
@@ -265,7 +269,7 @@ must name the actual rule rather than inventing token-range metadata.
 Stable assignment intends one evaluator owner per tenant. The adopted M7 policy
 allows a bounded overlap window with idempotent effects during membership change;
 it does not establish instantaneous exactly-once execution or automatic takeover.
-Those transition/duplicate-effect criteria remain unmeasured. The operational API
+Transition and duplicate-effect claims require their actual source-scoped evidence. The operational API
 must report conflicts and blocked work even when it refuses evaluation; querying
 inspection must not itself create work, acquire ownership or clear suspension.
 
@@ -276,7 +280,7 @@ one possible assignment mechanism, not a universal scaling rule:
 |---|---|---|
 | Clinical evaluator | Tenant's scheduled acquisition/time-based evaluation | Selected M7 member-count/ordinal assignment; partition inspection belongs here. |
 | Notification producer/consumer | Tenant/consumer state and individual durable delivery attempts | Current consumer timers are serialized per tenant within each process; the store locks state and records attempt tokens/deadlines. Co-located consumers must follow the evaluator's admitted assignment, or have a separately qualified work-claim distribution model. A ring alone does not establish exactly-once external delivery. |
-| Connector actors | Tenant/source account, polling cursor/session and upstream effects | Future tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. `MT-CONNECTOR-SYNC` currently tests an external existing connector; it does not implement a partitioned tenant-side pool. |
+| Connector actors | Tenant/source account, polling cursor/session and upstream effects | Tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. External connector-to-tenant and tenant-side connector directions have separate evidence; use the release record for joined scope rather than infer either direction from the other. |
 | Realtime | Client connections/rooms and per-tenant projection/checkpoint consumers | It has scheduled refresh work and retained state. Replication needs affinity, checkpoint ownership and complete notification fanout; it is not ordinary stateless replication and does not inherently require one realtime instance per tenant. |
 | REST/owner request serving | Individual admitted request/transaction, plus instance drain state | Equivalent replicas serve tenants without assigning each tenant to exactly one API. Every actual replica still participates in maintenance. |
 | Maintenance jobs | Exclusive claim for the affected tenant/operation | Existing database/lifecycle claim and census rules serialize destructive work; a tenant ring is not required for all maintenance jobs. |

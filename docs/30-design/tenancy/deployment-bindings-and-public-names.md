@@ -1,24 +1,21 @@
 # Deployment bindings, public names and load behavior
 
-*Living contributor-facing requirements and decision-preparation guide, refreshed 2026-11-10.
-The maintainer clarified the target: ordinary Kubernetes resources should be able
-to express the bounded deployment, public-name lifetime must be distinct from
-private tenant identity, and shareable names need explicit authentication and
-access policy. Jsonnet bindings and emergent-load measurement are useful next
-work. Concrete resource composition, policy defaults and scheduling semantics
-below are proposals; no Kubernetes binding, group/schedule engine or new production
-acceptance is claimed. This analysis is **read-derived** from the accepted
-[application cohort contract](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/docs/tenant-operation-cohort.md),
-existing [tenant decisions](multitenancy-decisions.md) and Kubernetes documentation.
-No cluster or provider deployment was inspected or exercised.*
+*Living contributor-facing deployment contract and decision-preparation guide,
+reconciled 2026-11-12 against release decisions at alignment
+`8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61`. Mechanisms below are **read-derived**;
+this edit runs no cluster or provider. [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
+and named reports own implementation, qualification and publication; the
+[queue](../../../queue/work-queue.yaml) owns claimed state. Resource profiles,
+sharing schedules and fleet arrangements are proposals unless adopted in their
+canonical decision home.*
 
-The [grid topology plates](runtime-topology.md) show public-to-backing-store
-zones without crossing connection arms. The
-[endpoint/API implementation plan](selectable-endpoints-and-api-scaling-plan.md)
-is queued as MT-ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER. Current work proves
-component contracts using native processes; Kubernetes deployment proof and
-Jsonnet are deferred. Existing platform lifecycle/discovery/identity primitives
-are inputs to the architecture, not products to reimplement.
+A deployment binding translates application contracts into processes, addresses,
+credentials, placement and lifecycle actions. It reuses the same roles across
+supported topology choices; it cannot create missing ownership, migration or
+failover behavior through configuration. Start with [runtime topology](runtime-topology.md)
+for role contracts and scale envelopes, then [production sequencing](production-critical-path.md)
+for qualification and admission. Existing platform scheduling/discovery primitives
+are inputs, not application services to reimplement.
 
 ## Portability is distinct from distributed application ownership
 
@@ -52,11 +49,12 @@ it supplies neither tenant authority nor permission to see data.
 
 ## What a Kubernetes binding must preserve
 
-The current native reference uses a fixed participant roster and private Unix
-control sockets. A normal TCP Service does not transport that filesystem socket
-contract. The smallest candidate translation is separate role containers in one
-Pod with a private shared socket volume; this is a proposal to measure, not a
-requirement that every future binding use one Pod. Multi-container Pods can share
+The colocated reference uses a fixed participant roster and private Unix control
+sockets. A normal TCP Service does not transport a filesystem socket. A colocated
+binding can place role containers in one Pod with a private shared socket volume.
+Independent role placement instead requires the selected private network binding
+and direct participant inventory. A complete-cohort Pod is not an independently
+replicated workload: its replica count cannot replace per-role ownership rules. Multi-container Pods can share
 an [emptyDir volume](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir).
 The volume can hold IPC endpoints; durable operations, tenant identity, keys and
 recovery evidence must survive Pod replacement elsewhere. Their durable homes
@@ -111,24 +109,19 @@ state. Stateless request handling means durable authority is external and local
 state can be reconstructed; it does not mean an instance has no connections,
 caches, in-flight responses or restore obligations.
 
-The current joined `dc795bd1` implementation has a shared HTTP/JSON transport,
-service schemas and named clients with selectable UDS or explicit TCP/HTTP
-endpoints. The [implementation record](../../../reports/tenancy/internal-service-api-2026-11-09/README.md)
+The shared transport implements service schemas and named clients over UDS or
+explicit TCP/HTTP endpoints. The [original implementation record](../../../reports/tenancy/internal-service-api-2026-11-09/README.md)
 and [joined acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
-retain their actual source and tested scope. The reference Compose binding still
-uses UDS; remote HTTP beyond loopback and replicated API behavior are not qualified
-by those records.
+retain their tested scope; current deployment qualification is recorded separately
+in [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
-Bindings render the adopted [`serve.internal` listener](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern)
-described in the [endpoint contract](selectable-endpoints-and-api-scaling-plan.md#endpoint-and-compatibility-contract):
-one private listener per role process, a unix socket by default or an explicit
+Bindings render the adopted [`serve.internal` listener](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern):
+one private listener per role process, a Unix socket by default or an explicit
 `NS_SERVE_INTERNAL_HOST`/`_PORT` for network exposure, and peer addresses such as
-`NS_API_INTERNAL_URL` for callers. A dial service name can differ from the
-listener's bind interface. Public/management listeners remain separate from the
-private contracts. The current `dc795bd1` transport still binds one contract per
-listener through per-contract references; the adopted composition is
-`MT-ENDPOINT-TRANSPORT` work, not a reason to multiply mandatory deployment
-services. The termination grace a binding sets must exceed the listener's
+`NS_API_INTERNAL_URL` for callers. A dial service name may differ from the bind
+interface. Public/management listeners remain separate. Code selects the contract
+modules; configuration cannot move them between authority planes. The binding's
+termination grace must exceed the listener's
 [graceful-shutdown deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
 
 The current adapter supports `http:`, not direct `https:`. The deployment owns
@@ -171,12 +164,12 @@ The inspected node-multienv source provides narrower prior art: its
 passes configured listen values through and handles a filesystem socket, while
 [backend selection](https://github.com/bewest/node-multienv/blob/2602c94ee2f9ceefc886907f1df63ef2e172daf4/redirector-server.js#L97)
 constructs a remote URL. This source reading does not establish one uniformly
-interchangeable Unix/HTTP/HTTPS client abstraction across that project. No
-transport-parity or replica runtime campaign was run for this assessment.
+interchangeable Unix/HTTP/HTTPS client abstraction across that project. That historical source assessment supplies no
+transport-parity or replica runtime measurement; later evidence retains its own scope.
 
 ### Jsonnet and node-multienv integration boundary
 
-A proposed Jsonnet binding should take a deployment identifier, named role set,
+A Jsonnet or other declarative binding takes a deployment identifier, named role set,
 image/config generation, private tenant-resolution configuration, edge placement,
 resource limits and secret **references**. It should render resources and an
 inspectable inventory, never embed live credentials or clinical data. Keep public
@@ -188,7 +181,38 @@ serving states. It does not make an existing per-site resource schema the requir
 shape for shared multitenant roles. A binding is independently deliverable once
 it renders deterministically, exposes the same logical endpoints and passes the
 cold-start, restart, restore, current-authority and teardown scenarios on its
-actual topology. No Jsonnet implementation or new operator dependency is selected.
+actual topology. Renderer implementation and Kubernetes runtime equivalence have separate evidence.
+Use release records for delivered bindings; this contract does not select a new
+operator dependency or infer actual-cluster acceptance from rendered resources.
+
+## Experiment rigs and deployment recipes
+
+An experiment isolates a question on pinned inputs. A deployment recipe specifies
+a complete supported installation. The [runtime scale envelopes](runtime-topology.md)
+keep small-group efficiency, operator density and fleet growth distinct.
+
+| Artifact | Must state | What it can establish |
+|---|---|---|
+| Diagnostic or stress rig | Exact source/image/instrument, role counts, resources, workload, changed axis, scope and stop condition | A bounded correctness finding or measured bottleneck; no deployment recommendation follows from a stress-only pass. |
+| Qualified deployment recipe | Actual placement and trust, total application/dependency resources, workload mix and retention, admission limits, failure/recovery behavior, upgrade/rollback and cost basis | An operator can select and operate the named profile within its accepted envelope. |
+| Fleet design proposal | Bounded group/database responsibilities, stable tenant placement, routing/control authority and migration/recovery boundaries | An explicit design decision to evaluate; not implemented cross-database mobility or a claim that one database supports the fleet. |
+
+Resource accounting includes aggregate per-role pools, all replicas' retained
+state, storage/index/WAL/backup growth, load generators and platform overhead.
+Node count and Pod density alone are not cost or redundancy measurements. A
+consolidation comparison uses matched workload and surviving capacity after the
+declared failure, with private operator baselines labelled assumptions until
+reproduced. Generic synthetic scenarios suffice; private service facts are not
+needed in public configuration examples.
+
+A recipe lists which configurations are supported and which upgrades require
+coordinated replacement. Protocol versions, schemas and actual role incarnations
+must agree; a service endpoint or a Kubernetes readiness response does not prove
+every API replica has initialized every relevant tenant. Ready/drain preconditions
+may precede a steady-serving or continuity window whose declared oracle requires
+zero refusals; warm refusals during that window remain failures. Intentionally
+cold/startup/refusal experiments keep their separately declared expected outcomes. Preserve exact evidence when reusing a completed component in a new
+profile, and qualify the changed composition instead of rerunning unrelated proofs.
 
 ## Public name, tenant identity and access policy
 
