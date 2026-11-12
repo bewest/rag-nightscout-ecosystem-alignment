@@ -1,0 +1,19 @@
+{
+  "README.md": "1e008502aa7df4860bdf363f9d3e03fbbfc4bbba8dbbf2561dbeef1cf4021bb3",
+  "captures/sharding-actual-census-native.txt": "1642989803d2d3dd5e2d50b8c1f4372a67eb939160883d3398383173be0a897e",
+  "captures/sharding-control-two-view-generation.txt": "2f00853a0d135e211b8eb3562a63d265c64eb6f614fe4a763195ad08ad198f3a",
+  "captures/sharding-corpus-list.txt": "f0a27dc5248c266b87dc3b1061f2360c5efa47cb05468bfb0331a2c2c83c02a3",
+  "captures/sharding-exact-controls.txt": "e8fc7b7076e83e82fd01b8e823a7338bacdeeca8409744bceecd8b3f03391e3a",
+  "captures/sharding-exact-head-native.txt": "841351de5830cc71ca88e5a22d5676ca7088d68cc376f45d965f0eea74bce198",
+  "captures/sharding-exact-restored-focused.txt": "2bd6e8f2ad992104de1f2ff17a54c95ccd7d2638aa3df6a25c8f91192085a9f4",
+  "captures/sharding-final-focused.txt": "6c99aad2e7873ac09170aa7b0b553e21af2622dcf9830cc8b27b810a89278608",
+  "captures/sharding-final-lint.txt": "4dfa7a43d6664267f4740122547d0e9e8d9f95116ae72a4b1383f59889baed09",
+  "captures/sharding-helper-exact-focused.txt": "25682a87ae01a664a727fdebd00b462dc02309584509b520ebaf5843f5043138",
+  "captures/sharding-helper-exact-registry-native.txt": "8df09478d31a459da42bf76d9cd5d4c07ce73b5333aef6ee8bbd0ea17643eb4f",
+  "captures/sharding-readiness-ledger-discriminator.txt": "891a9fbcec18eac736d730b95b6d411ed0bb45bab3a0e5fbcb14f0c10df0c89f",
+  "captures/sharding-two-view-native-after.txt": "616e8c1d48154323a8afef2f7cfedb4d52ec25bf926bea4d1ec9a14646963c31",
+  "captures/sharding-warm-isolation-after.txt": "1642989803d2d3dd5e2d50b8c1f4372a67eb939160883d3398383173be0a897e",
+  "captures/sharding-warm-isolation-before.txt": "0f65dba4f55993f99d77e5a22c995a80c6e0838adc47c2d973f31f0822c05852",
+  "instruments/controls.py": "612fec3d02dabbff0ba42abed135d82844fa63963f17c0ba103580371c8b4461",
+  "instruments/native-run.cjs": "e599e30c09a1bf343860403fd8f989135476abfd2cb0aaf11f238597b26b4a11"
+}

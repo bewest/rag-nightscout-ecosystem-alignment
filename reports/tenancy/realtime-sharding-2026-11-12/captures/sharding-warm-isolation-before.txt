@@ -1,0 +1,18 @@
+
+
+  !
+
+  0 passing (12s)
+  1 failing
+
+  1) actual fixed-roster realtime sharding
+       SHARD_NATIVE_MOVE: actual polling/WebSocket/API3 and alarm clients follow confirmed ownership; checkpoint continuity and healthy B survive:
+     Error: SHARD_NATIVE_WAIT: SHARD_NATIVE_B_PROGRESS_DURING_WARM
+      at Object.until (tests/fixtures/realtime-sharding-native.js:21:190)
+      at runNextTicks (node:internal/process/task_queues:64:5)
+      at process.processTimers (node:internal/timers:518:9)
+      at async Context.<anonymous> (tests/realtime-sharding-native.integration.test.js:90:7)
+
+
+
+

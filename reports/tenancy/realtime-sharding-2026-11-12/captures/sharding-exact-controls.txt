@@ -1,0 +1,100 @@
+CONTROL strict-generation exit 1
+
+
+  !
+
+  0 passing (7s)
+  1 failing
+
+  1) actual fixed-roster realtime sharding
+       SHARD_NATIVE_MOVE: actual polling/WebSocket/API3 and alarm clients follow confirmed ownership; checkpoint continuity and healthy B survive:
+     Error: SHARD_NATIVE_HANDOFF synthetic B during unrelated target warm: REALTIME_HANDOFF_UNAVAILABLE
+      at <core>/tests/realtime-sharding-native.integration.test.js:104:217
+      at <core>/lib/server/realtime/alarm-transport.js:41:15
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+     Caused by: Error: REALTIME_HANDOFF_UNAVAILABLE
+      at <core>/lib/server/realtime/alarm-transport.js:41:24
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+
+
+
+RESTORED strict-generation
+CONTROL cohort-omission exit 1
+
+
+  !
+
+  0 passing (7ms)
+  1 failing
+
+  1) placement-derived fixed maintenance coverage
+       SHARD_COHORT_OMISSION: a second realtime role does not excuse omitting another declared worker:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async Context.<anonymous> (tests/realtime-placement-cohort.test.js:60:26)
+
+
+
+
+RESTORED cohort-omission
+CONTROL publication-pin exit 1
+
+
+  !
+
+  0 passing (2s)
+  1 failing
+
+  1) controlled placement publication and actual maintenance pin
+       SHARD_PUBLICATION: pin, unknown alive and suspended window refuse without file change; confirmed stopped transition publishes once:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/realtime-placement-publication.integration.test.js:42:7)
+
+
+
+
+
+RESTORED publication-pin
+CONTROL alarm-envelope exit 1
+
+
+  !
+
+  0 passing (86ms)
+  1 failing
+
+  1) sharded alarm envelope bound
+       reserves the maximum placement tuple only for the selected sharded transport:
+     AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at Context.<anonymous> (tests/realtime-placement.test.js:80:12)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+
+
+RESTORED alarm-envelope
+CONTROL registry-label exit 1
+
+
+  !
+
+  0 passing (4s)
+  1 failing
+
+  1) actual fixed-roster realtime sharding
+       SHARD_REGISTRY_STATUS: actual unsharded registry API lifecycle status preserves its one exact registry cohort label:
+     Error: SOCKET_IPC_UNAVAILABLE
+      at unavailable (lib/server/internal-api/transport.js:39:47)
+      at fail (lib/server/internal-api/transport.js:328:49)
+      at IncomingMessage.<anonymous> (lib/server/internal-api/transport.js:344:21)
+      at IncomingMessage.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1698:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+
+
+
+
+
+RESTORED registry-label

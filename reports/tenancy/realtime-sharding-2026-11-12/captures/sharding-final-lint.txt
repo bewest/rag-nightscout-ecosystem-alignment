@@ -1,0 +1,55 @@
+
+<core>/lib/realtime-placement/publish.js
+  20:22  warning  Found lstat from package "node:fs/promises" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  67:26  warning  Found open from package "node:fs/promises" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  69:11  warning  Found rename from package "node:fs/promises" with non literal argument at index 0,1  security/detect-non-literal-fs-filename
+  70:29  warning  Found open from package "node:fs/promises" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  84:36  warning  Found unlink from package "node:fs/promises" with non literal argument at index 0    security/detect-non-literal-fs-filename
+
+<core>/lib/server/realtime/config.js
+  62:24  warning  Found statSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<core>/scripts/test-multitenant.js
+  328:24  warning  Found readFileSync from package "node:fs" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  607:7   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+<core>/tests/fixtures/realtime-sharding-controls.cjs
+  14:9   warning  Found existsSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  14:32  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  15:12  warning  Found existsSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  17:9   warning  Found existsSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+
+<core>/tests/fixtures/realtime-sharding-native.js
+   43:120  warning  Found non-literal argument to RegExp Constructor                                 security/detect-non-literal-regexp
+   44:26   warning  Found non-literal argument to RegExp Constructor                                 security/detect-non-literal-regexp
+   67:7    warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  129:5    warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  133:7    warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  161:7    warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  171:5    warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  172:5    warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  178:5    warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  183:7    warning  Found chmodSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+  235:39   warning  Found readdirSync from package "node:fs" with non literal argument at index 0    security/detect-non-literal-fs-filename
+  235:133  warning  Found unlinkSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  251:746  warning  Found renameSync from package "node:fs" with non literal argument at index 0,1   security/detect-non-literal-fs-filename
+
+<core>/tests/realtime-placement-publication.integration.test.js
+  39:13   warning  Found writeFile from package "node:fs/promises" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  39:80   warning  Found readFile from package "node:fs/promises" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  42:115  warning  Found readFile from package "node:fs/promises" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  45:26   warning  Found readFile from package "node:fs/promises" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  47:104  warning  Found readFile from package "node:fs/promises" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  49:143  warning  Found readFile from package "node:fs/promises" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  50:41   warning  Found readFile from package "node:fs/promises" with non literal argument at index 0   security/detect-non-literal-fs-filename
+  52:30   warning  Found readdir from package "node:fs/promises" with non literal argument at index 0    security/detect-non-literal-fs-filename
+
+<core>/tests/realtime-sharding-native.integration.test.js
+   66:75  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+   72:7   warning  Found unlinkSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  139:70  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  149:25  warning  Found existsSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+  158:7   warning  Found unlinkSync from package "node:fs" with non literal argument at index 0     security/detect-non-literal-fs-filename
+
+✖ 38 problems (0 errors, 38 warnings)
+
