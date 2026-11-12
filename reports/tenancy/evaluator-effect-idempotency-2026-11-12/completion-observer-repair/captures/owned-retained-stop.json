@@ -1,0 +1,883 @@
+{
+  "beforeAt": 1794494154387,
+  "beforeLoad": [
+    9.52734375,
+    8.9296875,
+    8.16748046875
+  ],
+  "before": [
+    {
+      "id": "59b1a195dd2920ed2882e1f973fadcb20502eceed9f1d101b8ae0201d17e2b69",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-evaluator-3-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "4509864ec15455df44a3ecf89be0b418fda908fa6ce43ec02b747ec8f26ae335",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-evaluator-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "7295fd8c88562813ccb01f0534b3d6ec0c99f3fc83767216c730b0d58dddb4cd",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-evaluator-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "5cc8a9bbc08d9eda630dd925d7219e67931aebc124386f577b3bb771c64de977",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-nginx-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "ab98f92ac552e968dfb0e0948bf85580e666ae9b3227f64110e012c1c0cddcf6",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-realtime-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "6a5c581fe1746d4dfef7ba45ae1d84ba3664d7a9b51db71df7b59a2a40a0ba4e",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-ui-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "89e69f4bb4324ae7c576502bd8c7e9438f7a981b61b197ad01e04e3ff63e70fb",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-tenant-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "a400623a24a37d2aa057776ed73a9beab9f07ec01f1d220ac451793853ffaa22",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-realtime-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "f241dcf1a999d5ee08ebd7d9869655a9d1d24a26df04848e408c43fdb9f243b4",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-socket-edge-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "ea9d8ef7efa0c71d7d5c555307cafe361d2039dd2b2d57f828b2b14a64924d15",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-api-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "4b4166e2e6b4c49ab88741c3e17726d224d1ad44eb4101cc08182a0fde752f10",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-api-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "8e04ffc78d75aaffc395f30b094d6787ba3723105a38a49f6b1da73fba931916",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-feed-reader-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "24fbc8655771911629fae794ddedad9002aa9050bb61380fb37c5602c5e4c075",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "5f66015a79fe590f1fc3ec04ca36a4a2f94e5b7704e80b620ed276188a756cb8",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-postgres-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "b8d0ec5a88e519c5a8bcd5718de6754105f5d128f8c8a936b5a389c98118cc67",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-vault-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "efeabddb35990431fefd143e340c5989b4105afb6f60dfcb2b815407d319c6d9",
+      "name": "/ns-evaluator-binding-proof-20261112-final-nginx-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "015afd5f8684d75f6e43744c34adc5fe98bbc41bf3e6552f9260a7dc253773eb",
+      "name": "/ns-evaluator-binding-proof-20261112-final-evaluator-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "b122e4fddf2e11d5e3eddf9acd9f554d5755cfd015739ccd5402de378c228bde",
+      "name": "/ns-evaluator-binding-proof-20261112-final-evaluator-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "681e4b3f0a3e3c4ee7281d07772f30e04465c44e5d82008c6bf7ed5ddd432aec",
+      "name": "/ns-evaluator-binding-proof-20261112-final-evaluator-3-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "aeb17bfb7a75b0732dbbf20e7687001fcfa1288d9de6aabf6b30982d73d89969",
+      "name": "/ns-evaluator-binding-proof-20261112-final-tenant-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "60c9282638d20db2054fd3dec8fbff5611351138aa9166929b755010c0815e63",
+      "name": "/ns-evaluator-binding-proof-20261112-final-ui-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "09b17fdc9763733c40e4029e05ab5658b00fe032b6c9bd4841e0f43447b23142",
+      "name": "/ns-evaluator-binding-proof-20261112-final-socket-edge-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "3ef6a026218282482cf4e163e845d6621de1262786fe76520d2e0a1ff6341344",
+      "name": "/ns-evaluator-binding-proof-20261112-final-realtime-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "1ebe9ffef3c4c45dc7379fd0746547a4e74cef7f0a2122af864e83e1639703af",
+      "name": "/ns-evaluator-binding-proof-20261112-final-realtime-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "27dc015f9f34190d000165c5c9f7b52f1e21c96cac224c11b86f17391b2e8e75",
+      "name": "/ns-evaluator-binding-proof-20261112-final-api-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "e0bb490af5d5ae59324d4b2c3b2f5166493f3febaeb5399b542b1936f101126c",
+      "name": "/ns-evaluator-binding-proof-20261112-final-api-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "27a0096bfc46d89f99eeefa90f3ed4daa448ac0ed8a61542351189697828409d",
+      "name": "/ns-evaluator-binding-proof-20261112-final-feed-reader-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "99fb6e04ddde31e7ef6495fc94622817a82bc4e42eb89b52e16a3f9225f27ed2",
+      "name": "/ns-evaluator-binding-proof-20261112-final-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "2f32b218c58d749538616d08f5b6c9d9b0c39cfa3c422b81af4a4828546b5206",
+      "name": "/ns-evaluator-binding-proof-20261112-final-postgres-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "fa61aa3ffa2049ad18c35700055d1b4f00ac49dfbaac83241e14f013758b0a25",
+      "name": "/ns-evaluator-binding-proof-20261112-final-vault-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "f66cb1857315dfe7c38b3c86939665505272447e4224f2c19cbab5b4e7187656",
+      "name": "/ns-evaluator-binding-proof-20261112-nginx-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "40910affd2cae05cde1f6df57847e8342771f4c63d8431b70f659a180ebfe696",
+      "name": "/ns-evaluator-binding-proof-20261112-evaluator-2-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "0c77beef908415160195a2af95a8fa12cefea99504238eba19a6700e29f4eee5",
+      "name": "/ns-evaluator-binding-proof-20261112-evaluator-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "d04146b4f4302951cdc69e294e6d4f663cae05d265227277c6a4112755663d1c",
+      "name": "/ns-evaluator-binding-proof-20261112-evaluator-3-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "4f03c5bdb6bab3de86b433f57abe90797eabc1d38abf9f4277acbe2c01a130c9",
+      "name": "/ns-evaluator-binding-proof-20261112-ui-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "58a8fa57f3bf60193f8237b1f7f93f83a9951446b5af325f687224329b3a5fdc",
+      "name": "/ns-evaluator-binding-proof-20261112-realtime-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "b1a8a70f217abae447db304dc0479e56cc4888b9d58475d18d54aa9ac42c5a5f",
+      "name": "/ns-evaluator-binding-proof-20261112-tenant-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "acb2de111cf6df4626f2079af36ced15f864094138f448eabdb7981ac84ea9fb",
+      "name": "/ns-evaluator-binding-proof-20261112-api-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "60e4611e93e59e089f26db82b0ec89463fdcbecba24167b02fdae0c1ad2a5f15",
+      "name": "/ns-evaluator-binding-proof-20261112-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "bdbc1defbc3470558fbb6fab9598a16f4598e48a5b19ef9166a5859b064b9e37",
+      "name": "/ns-evaluator-binding-proof-20261112-feed-reader-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "872d104da19a19657686e46c9c0b276004d8b59c5a8ed3daeeee6cc4991d4e35",
+      "name": "/ns-evaluator-binding-proof-20261112-vault-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "1dd7d1a6d7daf571a2c5ad4409667e4047cfd47aaa54c754bc91b11f7782c797",
+      "name": "/ns-evaluator-binding-proof-20261112-postgres-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "11ed96d33fe076f973911b7d810c79c949515cc689e10c29735707dd5ee4b091",
+      "name": "/ns-evaluator-binding-20261112-evaluator-3-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "6ca550b35401fed51ba44b9ec438f7387d2cb6d9ac0ee7c6d86de3ab599153c1",
+      "name": "/ns-evaluator-binding-20261112-nginx-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "e0d7736506cc144e6f6d32f67b9c80d2c9bc2e732f8c4aed8c19b9b588711487",
+      "name": "/ns-evaluator-binding-20261112-evaluator-2-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "3ba855b067497bd3ac4ec06f86e94a5e1dab1ef7c811b987ccf7976f8121431e",
+      "name": "/ns-evaluator-binding-20261112-evaluator-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "fb7dacf41266b07e25843478a83c6ca556aa26e3044c9dd2888c34633a8ca261",
+      "name": "/ns-evaluator-binding-20261112-realtime-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "72102b0a1a9c9f9405ed5b8cc80e4044ffd2abbad7c7419565506e5e42751558",
+      "name": "/ns-evaluator-binding-20261112-tenant-admin-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "de6e28e5e3faad06a126b6a24c31bc5ab2b9f937ce3756317f325eb4138ec7fb",
+      "name": "/ns-evaluator-binding-20261112-ui-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "ec62f58a3b5610a40c99e89a1f1910cd0b0a5197147e4932d03e8069a54c8f10",
+      "name": "/ns-evaluator-binding-20261112-api-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "86916faf7fac4872b650de3f4fcdffa1fe39fa5ddca93303e06dd1085410b089",
+      "name": "/ns-evaluator-binding-20261112-admin-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "55e0101fcb1b997243019f886c563f2489c5199f503d28f4093b36a7dda949f7",
+      "name": "/ns-evaluator-binding-20261112-feed-reader-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "dc5e90d014143326acf96504d56f38bdc2c9f331467b7f657ff9dc4459082790",
+      "name": "/ns-evaluator-binding-20261112-postgres-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    },
+    {
+      "id": "99a20ede33b21a95bf46cd2051e095d12f1c9ef8759090f17c5304584e7f8d82",
+      "name": "/ns-evaluator-binding-20261112-vault-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "running",
+      "running": true
+    }
+  ],
+  "stopExit": 0,
+  "afterAt": 1794494158046,
+  "afterLoad": [
+    10.0458984375,
+    9.04736328125,
+    8.2099609375
+  ],
+  "after": [
+    {
+      "id": "59b1a195dd2920ed2882e1f973fadcb20502eceed9f1d101b8ae0201d17e2b69",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-evaluator-3-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "4509864ec15455df44a3ecf89be0b418fda908fa6ce43ec02b747ec8f26ae335",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-evaluator-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "7295fd8c88562813ccb01f0534b3d6ec0c99f3fc83767216c730b0d58dddb4cd",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-evaluator-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "5cc8a9bbc08d9eda630dd925d7219e67931aebc124386f577b3bb771c64de977",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-nginx-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "ab98f92ac552e968dfb0e0948bf85580e666ae9b3227f64110e012c1c0cddcf6",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-realtime-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "6a5c581fe1746d4dfef7ba45ae1d84ba3664d7a9b51db71df7b59a2a40a0ba4e",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-ui-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "89e69f4bb4324ae7c576502bd8c7e9438f7a981b61b197ad01e04e3ff63e70fb",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-tenant-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "a400623a24a37d2aa057776ed73a9beab9f07ec01f1d220ac451793853ffaa22",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-realtime-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "f241dcf1a999d5ee08ebd7d9869655a9d1d24a26df04848e408c43fdb9f243b4",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-socket-edge-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "ea9d8ef7efa0c71d7d5c555307cafe361d2039dd2b2d57f828b2b14a64924d15",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-api-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "4b4166e2e6b4c49ab88741c3e17726d224d1ad44eb4101cc08182a0fde752f10",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-api-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "8e04ffc78d75aaffc395f30b094d6787ba3723105a38a49f6b1da73fba931916",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-feed-reader-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "24fbc8655771911629fae794ddedad9002aa9050bb61380fb37c5602c5e4c075",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "5f66015a79fe590f1fc3ec04ca36a4a2f94e5b7704e80b620ed276188a756cb8",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-postgres-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "b8d0ec5a88e519c5a8bcd5718de6754105f5d128f8c8a936b5a389c98118cc67",
+      "name": "/ns-evaluator-binding-proof-20261112-repair-vault-1",
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-repairpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "efeabddb35990431fefd143e340c5989b4105afb6f60dfcb2b815407d319c6d9",
+      "name": "/ns-evaluator-binding-proof-20261112-final-nginx-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "015afd5f8684d75f6e43744c34adc5fe98bbc41bf3e6552f9260a7dc253773eb",
+      "name": "/ns-evaluator-binding-proof-20261112-final-evaluator-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "b122e4fddf2e11d5e3eddf9acd9f554d5755cfd015739ccd5402de378c228bde",
+      "name": "/ns-evaluator-binding-proof-20261112-final-evaluator-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "681e4b3f0a3e3c4ee7281d07772f30e04465c44e5d82008c6bf7ed5ddd432aec",
+      "name": "/ns-evaluator-binding-proof-20261112-final-evaluator-3-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "aeb17bfb7a75b0732dbbf20e7687001fcfa1288d9de6aabf6b30982d73d89969",
+      "name": "/ns-evaluator-binding-proof-20261112-final-tenant-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "60c9282638d20db2054fd3dec8fbff5611351138aa9166929b755010c0815e63",
+      "name": "/ns-evaluator-binding-proof-20261112-final-ui-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "09b17fdc9763733c40e4029e05ab5658b00fe032b6c9bd4841e0f43447b23142",
+      "name": "/ns-evaluator-binding-proof-20261112-final-socket-edge-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "3ef6a026218282482cf4e163e845d6621de1262786fe76520d2e0a1ff6341344",
+      "name": "/ns-evaluator-binding-proof-20261112-final-realtime-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "1ebe9ffef3c4c45dc7379fd0746547a4e74cef7f0a2122af864e83e1639703af",
+      "name": "/ns-evaluator-binding-proof-20261112-final-realtime-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "27dc015f9f34190d000165c5c9f7b52f1e21c96cac224c11b86f17391b2e8e75",
+      "name": "/ns-evaluator-binding-proof-20261112-final-api-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "e0bb490af5d5ae59324d4b2c3b2f5166493f3febaeb5399b542b1936f101126c",
+      "name": "/ns-evaluator-binding-proof-20261112-final-api-2-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "27a0096bfc46d89f99eeefa90f3ed4daa448ac0ed8a61542351189697828409d",
+      "name": "/ns-evaluator-binding-proof-20261112-final-feed-reader-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "99fb6e04ddde31e7ef6495fc94622817a82bc4e42eb89b52e16a3f9225f27ed2",
+      "name": "/ns-evaluator-binding-proof-20261112-final-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "2f32b218c58d749538616d08f5b6c9d9b0c39cfa3c422b81af4a4828546b5206",
+      "name": "/ns-evaluator-binding-proof-20261112-final-postgres-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "fa61aa3ffa2049ad18c35700055d1b4f00ac49dfbaac83241e14f013758b0a25",
+      "name": "/ns-evaluator-binding-proof-20261112-final-vault-1",
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-finalpair-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "f66cb1857315dfe7c38b3c86939665505272447e4224f2c19cbab5b4e7187656",
+      "name": "/ns-evaluator-binding-proof-20261112-nginx-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "40910affd2cae05cde1f6df57847e8342771f4c63d8431b70f659a180ebfe696",
+      "name": "/ns-evaluator-binding-proof-20261112-evaluator-2-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "0c77beef908415160195a2af95a8fa12cefea99504238eba19a6700e29f4eee5",
+      "name": "/ns-evaluator-binding-proof-20261112-evaluator-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "d04146b4f4302951cdc69e294e6d4f663cae05d265227277c6a4112755663d1c",
+      "name": "/ns-evaluator-binding-proof-20261112-evaluator-3-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "4f03c5bdb6bab3de86b433f57abe90797eabc1d38abf9f4277acbe2c01a130c9",
+      "name": "/ns-evaluator-binding-proof-20261112-ui-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "58a8fa57f3bf60193f8237b1f7f93f83a9951446b5af325f687224329b3a5fdc",
+      "name": "/ns-evaluator-binding-proof-20261112-realtime-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "b1a8a70f217abae447db304dc0479e56cc4888b9d58475d18d54aa9ac42c5a5f",
+      "name": "/ns-evaluator-binding-proof-20261112-tenant-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "acb2de111cf6df4626f2079af36ced15f864094138f448eabdb7981ac84ea9fb",
+      "name": "/ns-evaluator-binding-proof-20261112-api-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "60e4611e93e59e089f26db82b0ec89463fdcbecba24167b02fdae0c1ad2a5f15",
+      "name": "/ns-evaluator-binding-proof-20261112-admin-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "bdbc1defbc3470558fbb6fab9598a16f4598e48a5b19ef9166a5859b064b9e37",
+      "name": "/ns-evaluator-binding-proof-20261112-feed-reader-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "872d104da19a19657686e46c9c0b276004d8b59c5a8ed3daeeee6cc4991d4e35",
+      "name": "/ns-evaluator-binding-proof-20261112-vault-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "1dd7d1a6d7daf571a2c5ad4409667e4047cfd47aaa54c754bc91b11f7782c797",
+      "name": "/ns-evaluator-binding-proof-20261112-postgres-1",
+      "project": "ns-evaluator-binding-proof-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-proof-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "11ed96d33fe076f973911b7d810c79c949515cc689e10c29735707dd5ee4b091",
+      "name": "/ns-evaluator-binding-20261112-evaluator-3-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "6ca550b35401fed51ba44b9ec438f7387d2cb6d9ac0ee7c6d86de3ab599153c1",
+      "name": "/ns-evaluator-binding-20261112-nginx-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "e0d7736506cc144e6f6d32f67b9c80d2c9bc2e732f8c4aed8c19b9b588711487",
+      "name": "/ns-evaluator-binding-20261112-evaluator-2-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "3ba855b067497bd3ac4ec06f86e94a5e1dab1ef7c811b987ccf7976f8121431e",
+      "name": "/ns-evaluator-binding-20261112-evaluator-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "fb7dacf41266b07e25843478a83c6ca556aa26e3044c9dd2888c34633a8ca261",
+      "name": "/ns-evaluator-binding-20261112-realtime-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "72102b0a1a9c9f9405ed5b8cc80e4044ffd2abbad7c7419565506e5e42751558",
+      "name": "/ns-evaluator-binding-20261112-tenant-admin-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "de6e28e5e3faad06a126b6a24c31bc5ab2b9f937ce3756317f325eb4138ec7fb",
+      "name": "/ns-evaluator-binding-20261112-ui-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "ec62f58a3b5610a40c99e89a1f1910cd0b0a5197147e4932d03e8069a54c8f10",
+      "name": "/ns-evaluator-binding-20261112-api-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "86916faf7fac4872b650de3f4fcdffa1fe39fa5ddca93303e06dd1085410b089",
+      "name": "/ns-evaluator-binding-20261112-admin-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "55e0101fcb1b997243019f886c563f2489c5199f503d28f4093b36a7dda949f7",
+      "name": "/ns-evaluator-binding-20261112-feed-reader-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "dc5e90d014143326acf96504d56f38bdc2c9f331467b7f657ff9dc4459082790",
+      "name": "/ns-evaluator-binding-20261112-postgres-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "99a20ede33b21a95bf46cd2051e095d12f1c9ef8759090f17c5304584e7f8d82",
+      "name": "/ns-evaluator-binding-20261112-vault-1",
+      "project": "ns-evaluator-binding-20261112",
+      "workingDir": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-binding-20261112/deploy/multitenant",
+      "status": "exited",
+      "running": false
+    }
+  ]
+}
