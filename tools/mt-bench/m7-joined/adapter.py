@@ -617,13 +617,13 @@ def run(d, m, k6_image):
     host = inventory(m["owner"]);write(d / "run-after-host.json", host)
     result_probe = document(out / "probe.json")
     fingerprint_result=profile_provenance.fingerprint_check(document(out/"k6-summary.json")["metrics"])
-    correctness = [fingerprint_result["verdict"]=="PASS", result["verdict"] == "GREEN", result["uncertain"] == 0, not any(not r["owned"] for r in host["containers"]),
+    correctness = [result["verdict"] == "GREEN", result["uncertain"] == 0, not any(not r["owned"] for r in host["containers"]),
                    result_probe["prime"]["primed"] == 2*m["tenants"], result_probe["window"]["deliveredFrames"] == result_probe["window"]["expectedFrames"],
                    result_probe["restart"]["stockRecovered"] == 2*m["tenants"], result_probe["restart"]["runtimeAcquisitionObservation"]["missing"] == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
-                   result_probe["window"]["writes"]["failed"] == 0]
+                   result_probe["window"]["writes"]["failed"] == 0, fingerprint_result["verdict"]=="PASS"]
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
