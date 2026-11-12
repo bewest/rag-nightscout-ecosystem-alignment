@@ -1,0 +1,34 @@
+
+
+  private management issuance key and HTTP boundaries
+    ✔ chooses highest matching explicit version and preserves an enabled retry mapping
+    ✔ refuses missing, ambiguous, exported or retired authority mappings
+    ✔ bounds a token callback that never resolves and sanitizes transport errors
+    ✔ serves strict private POSTs with no-store and logs no token or subject
+
+  management issuer configuration and protocol
+    ✔ parses a standalone issuer with explicit identities and a bounded default
+    ✔ refuses widened lifetimes, merged namespaces, implicit subjects and missing secrets
+    ✔ uses the existing management protocol without embedding permission grants
+
+  private operator management sessions (owned PostgreSQL/Vault and serving API cohort)
+    ✔ selects and signs only the current registry-mapped management key
+    ✔ creates a current tenant-bound credential, is idempotent concurrently and never persists plaintext (131ms)
+admin: {"operation":"management-session-issue","outcome":"created"}
+admin: {"operation":"management-session-issue","outcome":"existing"}
+    ✔ issues through the actual private admin composition and stays absent on API listeners (64ms)
+    ✔ refuses revoked and expired sessions and requires an explicit fresh request (73ms)
+    ✔ serializes the real owner revocation writer against signing, then refuses the next request (189ms)
+    ✔ serializes the real active-key revoke writer and refuses the next issuance (196ms)
+    ✔ refuses a session that expires during a provider call without committing new authority (47ms)
+    ✔ rolls back all issuance rows after signing when the durable audit insert fails (72ms)
+    ✔ keeps its live metadata-only backend compatible with actual restore and rejects a clinical-write grant (370ms)
+    ✔ holds the actual restore data window until issuance ends and refuses issuance after suspension (208ms)
+    ✔ blocks the actual deletion activity writer until issuance commits and refuses subsequent issuance (189ms)
+    ✔ pins explicit Vault versions across rotation and refuses retired signing versions (124ms)
+    ✔ rechecks exact authority function and extra EXECUTE grants before every issuance (189ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-57f3ea7f5eba792a","volumes":["445b355cb593004aebb686ffbebac889308f7948ed564d3f8531396d7b3cbbff","1dcfadf1a2df0234d51acf77f66c625ff56804dfe115a625a0af09ad9a538b00"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-57f3ea7f5eba792a","volumes":["bd914f9327ca6a293aa0721888f8f93476bad613b228c47a9cde7d8b2f87579b"]}
+
+
+  20 passing (7s)
