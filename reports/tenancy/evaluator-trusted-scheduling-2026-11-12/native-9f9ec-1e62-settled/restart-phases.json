@@ -1,0 +1,33 @@
+{
+  "originalSha256": "3453bed58ab6a3202dade81d5c39a7a761434bd0fde79cd0e3b1a146e025cb86",
+  "phases": {
+    "start-infrastructure": {
+      "startedAtMs": 1794523561355,
+      "finishedAtMs": 1794523561623,
+      "returnCode": 0
+    },
+    "unseal-existing-vault": {
+      "startedAtMs": 1794523563697,
+      "finishedAtMs": 1794523563814,
+      "returnCode": 0
+    },
+    "start-existing-control": {
+      "startedAtMs": 1794523563820,
+      "finishedAtMs": 1794523564090,
+      "returnCode": 0
+    },
+    "start-existing-api": {
+      "startedAtMs": 1794523566186,
+      "finishedAtMs": 1794523566456,
+      "returnCode": 0
+    },
+    "start-existing-roles": {
+      "startedAtMs": 1794523569049,
+      "finishedAtMs": 1794523570369,
+      "returnCode": 0
+    }
+  },
+  "outcome": null,
+  "verified": true,
+  "stoppedRetained15": null
+}

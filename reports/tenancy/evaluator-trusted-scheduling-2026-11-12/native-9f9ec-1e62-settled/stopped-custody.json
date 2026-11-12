@@ -1,0 +1,142 @@
+{
+  "originalSha256": "1d4ebd9e54348a56bca8577a9abafb06a5e1d38d6df1e24a4b5c2a3945a0ec6f",
+  "retained15": true,
+  "containers": [
+    {
+      "id": "29dffb32fbc9002034a9e1cc99d6ab11be25040d8b4bed4e4c2b3a60c4cc36d9",
+      "service": "evaluator-2",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:09.07622954Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "13b0bf2865ba3a94dcfa9c97fa07c4ef6bc9a4a00fd43e34a1fce1224eac5068",
+      "service": "evaluator",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:09.186155509Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "faca78fd3eb5b286c2e9d2865d23ed7764570c75147ec288bfe6ac094d487484",
+      "service": "evaluator-3",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:09.300709024Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "ef80c8956e7a40979e2337e56c4e16c5fe2124783e1dc909ae9eedd04588db28",
+      "service": "nginx",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea",
+      "startedAt": "2026-11-12T22:46:09.420407195Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "c43fd7f26d1fa9cd5350c240cd3459ad7ef8107c6346f63a320cf9b9ee4d5899",
+      "service": "socket-edge",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:09.594457814Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "609feda4243c39c1763495ea66a0cad41bbbb98b415bbc56893246ad41fe96d9",
+      "service": "tenant-admin",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:09.723421279Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "30e2847b2355e1272450996a6f2dfeebe080f58a71d06e1f02c12f277bd75a78",
+      "service": "realtime",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:09.852930933Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "a2b7c12516857ee88ead331b166a185fe4e16e62e44fb5e97803d2e6b87879a4",
+      "service": "ui",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:10.00161518Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "61f890c98eaa8e7a153a4844546343b18be32092bfd40c863862d04939055cb2",
+      "service": "realtime-2",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:10.161214462Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "a5690d3b5fcc7c49a8f2897355a6dd621b9294bb32003181963898ee482a5605",
+      "service": "api-2",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:06.342918899Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "b3330ecc0dc0b1f0357d52b94e65d2f578d1a21cf4754a1a8bdadbf6bf2fe725",
+      "service": "api",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:06.22772293Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "ace48f8b14068eb22a1a54a4add352d58f59f6107c7d441debb0463304a7035d",
+      "service": "admin",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:03.859798634Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "5daa2d70a659b7d9d702000ab8008a2950bd40b4b0776f5b1670988ee581873c",
+      "service": "feed-reader",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "startedAt": "2026-11-12T22:46:03.965398495Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "09b0534282f4c086ffd9306c368effaeb5380e2c17d56e8478243f73e23d71ea",
+      "service": "postgres",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "startedAt": "2026-11-12T22:46:01.390616266Z",
+      "status": "exited",
+      "running": false
+    },
+    {
+      "id": "64422f3a5a07d136512cd98d8dcbc892bf56f286ba6625ef7800f1f48da6b66a",
+      "service": "vault",
+      "project": "ns-evaluator-binding-proof-20261112-guard",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "startedAt": "2026-11-12T22:46:01.497531601Z",
+      "status": "exited",
+      "running": false
+    }
+  ],
+  "privateFullIdentityChecks": "before/after IDs/images/labels/mounts; no resources removed"
+}

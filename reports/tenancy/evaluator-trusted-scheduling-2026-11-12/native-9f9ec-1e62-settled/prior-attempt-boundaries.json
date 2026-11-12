@@ -1,0 +1,64 @@
+[
+  {
+    "attempt": "log-path-collision",
+    "originalSequenceSha256": "db48691d04196d6762e537a363da12bd2851b93d41bf02d701ca0523e0c8de72",
+    "outcome": "STOPPED_FAILURE",
+    "collector": "NOT_RUN",
+    "phases": {
+      "readiness": {
+        "returnCode": 0,
+        "timedOut": null,
+        "startedAtMs": 1794522001759,
+        "finishedAtMs": 1794522002625
+      },
+      "fresh-ingestion": {
+        "returnCode": 0,
+        "timedOut": null,
+        "startedAtMs": 1794522002625,
+        "finishedAtMs": 1794522004743
+      },
+      "select-current-spec": {
+        "returnCode": 0,
+        "timedOut": null,
+        "startedAtMs": 1794522004744,
+        "finishedAtMs": 1794522005309
+      },
+      "strict-time": {
+        "returnCode": 1,
+        "timedOut": null,
+        "startedAtMs": 1794522005309,
+        "finishedAtMs": 1794522005341
+      },
+      "stop-retain-final15": {
+        "returnCode": 0,
+        "timedOut": null,
+        "startedAtMs": 1794522005362,
+        "finishedAtMs": 1794522006178
+      }
+    },
+    "rawObservationExists": false,
+    "retainedStopped15": true
+  },
+  {
+    "attempt": "immediate-authority-refusal",
+    "originalSequenceSha256": "c99fd4173c74b0cb765786c1a33319be75f2fd2465d196dc53748dae42d81e46",
+    "outcome": "STOPPED_FAILURE",
+    "collector": "NOT_RUN",
+    "phases": {
+      "readiness": {
+        "returnCode": 1,
+        "timedOut": null,
+        "startedAtMs": 1794522163828,
+        "finishedAtMs": 1794522164093
+      },
+      "stop-retain-final15": {
+        "returnCode": 0,
+        "timedOut": null,
+        "startedAtMs": 1794522164114,
+        "finishedAtMs": 1794522164929
+      }
+    },
+    "rawObservationExists": false,
+    "retainedStopped15": true
+  }
+]

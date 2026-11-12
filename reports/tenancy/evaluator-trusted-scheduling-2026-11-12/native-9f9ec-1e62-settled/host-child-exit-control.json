@@ -1,0 +1,14 @@
+[
+  {
+    "case": "child-exit7",
+    "actualOuterExit": 7,
+    "directChildExit": 7,
+    "childExecuted": true
+  },
+  {
+    "case": "restored-child-exit0",
+    "actualOuterExit": 0,
+    "directChildExit": 0,
+    "childExecuted": true
+  }
+]

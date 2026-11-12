@@ -1,0 +1,57 @@
+{
+  "scope": "actual artifact recomputation only, no new resource/observation",
+  "verdict": {
+    "version": 2,
+    "phase": "idle",
+    "verdict": "PASS",
+    "policy": {
+      "version": 2,
+      "moduleVersion": 2,
+      "selectorRows": 128,
+      "maxTenants": 10000,
+      "maxInstances": 4,
+      "roundsPerPhase": 3,
+      "maxQueriesPerPhase": 1024,
+      "maxBytesPerPhase": 67108864,
+      "responseMaxBytes": 1048576,
+      "rpcTimeoutMs": 5000,
+      "roundDeadlineMs": 15000,
+      "idleWitness": "successful-time-only-completion",
+      "loadWitness": "successful-work-progression",
+      "recoveryCadenceMs": 15000,
+      "recoveryTimeoutMs": 900000,
+      "recoveryMaxRounds": 60,
+      "readinessMaxQueries": 25600,
+      "readinessMaxBytes": 268435456,
+      "readinessMaxRounds": 80,
+      "deadlineClaim": false,
+      "workloadCohortChanged": false,
+      "dueState": "captured-only-not-opportunity-assessed"
+    },
+    "tenants": 2,
+    "instances": {
+      "evaluator": {
+        "runtimeId": "ed188c60-06aa-46b1-aaed-335309a6858f",
+        "ordinal": 0
+      },
+      "evaluator-2": {
+        "runtimeId": "c5159eb3-dfb2-4016-8323-9ed2e70ca13f",
+        "ordinal": 1
+      },
+      "evaluator-3": {
+        "runtimeId": "09e08e90-b469-497c-b4fa-4d5b3ea1e00a",
+        "ordinal": 2
+      }
+    },
+    "completedWorkDelta": 38,
+    "completedTimeDelta": 38,
+    "tenantsWithTimeProgress": 2,
+    "minimumCompletedWorkDelta": 19,
+    "failedCompletionDelta": 0,
+    "queries": 9,
+    "responseBytes": 20017,
+    "collectorWallSeconds": 1.2251609843224287,
+    "scope": "bookend/midpoint successful work; no strict deadline or true cold load cohort claim"
+  },
+  "rawSha256": "10b32354f6cee9d0bcf1b07efa218d288f59220f25111e3cc580040157a68331"
+}
