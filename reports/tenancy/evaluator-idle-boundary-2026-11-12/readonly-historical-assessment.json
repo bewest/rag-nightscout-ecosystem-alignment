@@ -1,0 +1,73 @@
+{
+  "kind": "READ_ONLY_HISTORICAL_ROUNDS_ASSESSED_UNDER_REPAIRED_COLLECTOR",
+  "originalArtifactSha256": "602164ec7b8ebc49b9906ecbc92e3635c8c30bbbc0dd1afcef4481d2f56c3b67",
+  "originalExecutedAlignment": "9f9ec51715a0dd1eb284eba24bbad991ecb21fac",
+  "originalResultUnchanged": {
+    "verdict": "UNMEASURED",
+    "code": "M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED"
+  },
+  "historicalWireRefusal": "M7_EVALUATOR_IDLE_VERSION",
+  "newRuntimeExecution": "NOT_RUN",
+  "capacityAcceptance": "NOT_GRANTED",
+  "candidateFileHashes": {
+    "evaluator_idle.py": "c4c59abb7e53619e8da76de2d36a8242539299085f0e47d98e07d7d4da02d1a5",
+    "adapter.py": "ad2b95eb91ed236b7d0e935fad69fd316b3351b43a11e98ab664aef442aa1b5d",
+    "capabilities.json": "279687005516f9ee1098ef81ebaaaee6a4a51d7cd3e03498286a55d0983e45c3"
+  },
+  "scope": "same immutable C rounds re-evaluated offline; no C result rewrite/current-source runtime or native proof",
+  "newAssessorResult": {
+    "version": 1,
+    "phase": "idle",
+    "verdict": "PASS",
+    "policy": {
+      "version": 1,
+      "kind": "evaluator-idle-safety",
+      "moduleVersion": 3,
+      "strictWorkPolicy": {
+        "version": 2,
+        "moduleVersion": 2,
+        "selectorRows": 128,
+        "maxTenants": 10000,
+        "maxInstances": 4,
+        "roundsPerPhase": 3,
+        "maxQueriesPerPhase": 1024,
+        "maxBytesPerPhase": 67108864,
+        "responseMaxBytes": 1048576,
+        "rpcTimeoutMs": 5000,
+        "roundDeadlineMs": 15000,
+        "idleWitness": "successful-time-only-completion",
+        "loadWitness": "successful-work-progression",
+        "recoveryCadenceMs": 15000,
+        "recoveryTimeoutMs": 900000,
+        "recoveryMaxRounds": 60,
+        "readinessMaxQueries": 25600,
+        "readinessMaxBytes": 268435456,
+        "readinessMaxRounds": 80,
+        "deadlineClaim": false,
+        "workloadCohortChanged": false,
+        "dueState": "captured-only-not-opportunity-assessed"
+      },
+      "meaning": "NO_EVALUATOR_TIME_DEMAND or observed successful time work",
+      "quietMeaning": "TIME_NOT_EXERCISED",
+      "clockGuard": "common-bracketed-realtime-minus-monotonic-offset",
+      "jobEncoding": "six-fixed-clinical-flags-bitmask-v1",
+      "newClinicalDemand": "UNMEASURED",
+      "explicitNullDue": "NO_TIMER_DECLARED_WITH_COMPLETE_JOB_OBSERVATION",
+      "missingDue": "UNMEASURED",
+      "nativeTimeWitnessRequired": true,
+      "deadlineClaim": false,
+      "continuousQuiescenceClaim": false
+    },
+    "tenants": 500,
+    "classifications": {
+      "TIME_EXERCISED": 23,
+      "TIME_NOT_EXERCISED": 477,
+      "NO_TIMER_DECLARED": 0,
+      "FUTURE_DUE": 477
+    },
+    "completedTimeDelta": 23,
+    "timeWitness": false,
+    "queries": 12,
+    "responseBytes": 922648
+  }
+}

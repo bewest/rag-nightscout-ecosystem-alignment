@@ -1,0 +1,82 @@
+[
+  {
+    "name": "receipt-focused",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_m7_joined_receipt.ReceiptTests.test_native_time_witness_cannot_downgrade_to_coherent_historical_v1",
+      "test_m7_joined_receipt.ReceiptTests.test_idle_safety_requires_independent_exact_native_time_and_refuses_quiet_as_witness",
+      "test_m7_joined_receipt.ReceiptTests.test_current_progress_receipt_cannot_downgrade_to_legacy_unknown_due",
+      "test_m7_joined_receipt.ReceiptTests.test_progress_missing_hidden_error_wrong_identity_and_gzip_budgets_refuse"
+    ],
+    "cwd": "tools/queue/gates",
+    "exitCode": 0
+  },
+  {
+    "name": "old-boundary",
+    "command": [
+      "python3",
+      "-B",
+      "tools/mt-bench/m7-joined/idle-boundary-control.py",
+      "old-boundary"
+    ],
+    "cwd": null,
+    "exitCode": 1
+  },
+  {
+    "name": "mask-all-opportunities",
+    "command": [
+      "python3",
+      "-B",
+      "tools/mt-bench/m7-joined/idle-boundary-control.py",
+      "mask-all-opportunities"
+    ],
+    "cwd": null,
+    "exitCode": 1
+  },
+  {
+    "name": "omit-after-finally",
+    "command": [
+      "python3",
+      "-B",
+      "tools/mt-bench/m7-joined/idle-boundary-control.py",
+      "omit-after-finally"
+    ],
+    "cwd": null,
+    "exitCode": 1
+  },
+  {
+    "name": "restored-idle",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_evaluator_idle.py"
+    ],
+    "cwd": null,
+    "exitCode": 0
+  },
+  {
+    "name": "restored-bookends",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/mt-bench/m7-joined",
+      "-p",
+      "test_idle_bookends.py"
+    ],
+    "cwd": null,
+    "exitCode": 0
+  }
+]
