@@ -8,7 +8,8 @@ const A='11111111-1111-4111-8111-111111111111';
  const f=require(path.join(root,'tests/fixtures/operation-window-runtime-protocol'))();
  const jobs=require(path.join(root,'lib/server/serve/evaluator-job-context')).create('clinical');
  const timers=[];let componentCalls=0;
- const result=()=>({checkpoint:1,signature:{stamp:1,deleted:0},emitted:[],requested:[],properties:{},due:{dueAt:Date.now()+1000,reason:'synthetic-time',slow:[]}});
+ const env=require(path.join(root,'lib/server/tenant-app/environment'))({settings:{enable:['pump']},extendedSettings:{pump:{warnClock:1/7}}});
+ const result=()=>{const at=Date.now(),due=require(path.join(root,'lib/data/evaluator-due')).nextDue({env,ddata:{devicestatus:[{mills:at,pump:{clock:new Date(at).toISOString()}}]},result:{requested:[]},at});assert(Number.isFinite(due.dueAt)&&!Number.isInteger(due.dueAt));return{checkpoint:1,signature:{stamp:1,deleted:0},emitted:[],requested:[],properties:{},due};};
  const runtime=await require(path.join(root,'lib/server/serve/evaluator-runtime'))({tenants:[A],operationWindow:f.window,jobContext:jobs,readCurrent:async()=>({tenant:A,identity:'a'.repeat(64)}),create:async()=>({evaluate:async()=>{componentCalls++;return result();},evaluateTime:async()=>{componentCalls++;return result();},close(){}}),recoveryIntervalMs:10000,timeIntervalMs:10000,schedule:()=>({}),cancel(){},setTimer:fn=>{const timer={fn};timers.push(timer);return timer;},clearTimer(){}});
  const inspect=require(path.join(root,'lib/server/serve/evaluator-inspection'))({tenants:new Map([[A,{}]]),runtime,gate:{inspect:async()=>({configured:{ordinal:0,mode:'standalone'},gate:{eligible:true,reason:null},owner:()=>0,admits:()=>true})},startup:{health(){throw Error('UNBOUNDED_STARTUP_READ');}}});
  try{

@@ -212,6 +212,8 @@ def prepare(args):
         commit(repo, args.core_commit if repo == args.core_repo else args.deploy_commit)
     progress_contract=json.loads(git(args.core_repo,"show",args.core_commit+":lib/server/internal-api/contracts/evaluator-inspection.json"))
     require(progress_contract.get("version")==2,"M7_EVALUATOR_PROGRESS_SOURCE_REQUIRED")
+    due=progress_contract['operations']['inspectEvaluator']['response']['properties']['tenants']['items']
+    require(all(key in due.get('properties',{}) and key in due.get('required',[]) for key in ('dueAt','dueReason')),'M7_EVALUATOR_DUE_SOURCE_REQUIRED')
     pinned = instrument()
     target.mkdir(parents=True, mode=0o700)
     try:

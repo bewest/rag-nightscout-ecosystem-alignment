@@ -211,3 +211,21 @@ M7_PROGRESS_CORE=/absolute/owned/core python3 -m unittest discover \
 This uses actual runtime/window/inspection with a recording SQL port and synthetic
 component. Native product scheduling/durability and final paired-image transport
 remain separately required. An omitted source fixture is explicitly skipped.
+
+Due-observation completeness uses capabilities3, observation contract2 and explicit
+`evaluator-progress-phase-v2` / `evaluator-recovery-v2` artifacts. Compact tuples
+now retain dueAt/dueReason for EVERY owner/foreign row; safe finite fractional
+numbers are preserved without rounding. Missing/malformed current fields refuse
+rather than becoming null. Preparing a new cell requires these fields in its
+exact source's private-v2 response schema, and its image/client must use that
+source. An older strict private-v2 client refuses the added response fields;
+there is no mixed-source compatibility claim.
+
+This changes observation retention, not the progress predicate, deadline, cadence,
+threshold, query/decompression budget or clinical claim. No future/past due value
+is automatically interpreted as sufficient opportunity or a passed phase. Historical
+phase/recovery v1 artifacts retain their original policy/version/columns and can
+be decoded/verified as historical records. Missing old due fields stay UNKNOWN
+(absent), distinct from an observed null/no timer. Current cell receipts require
+v2 artifacts and cannot downgrade to an old unknown-due shape. The actual historical
+195c PASS and repaired cd462 UNMEASURED captures are tested read-only and unchanged.
