@@ -128,7 +128,9 @@ retained files for FAIL comparisons. Duplicate/missing/wrong-source cells refuse
 Cells retain the producer's `verdict == PASS iff all(correctness)` assessment and
 oracle/uncertainty consistency. Claimed targets must PASS. All selected cells need
 complete actual numeric HTTP and role observations, positive sample counts, and
-observed windows covering the existing profile cadence. The gate reuses existing
+observed windows covering the existing profile cadence. The expectation must pin `capacityInventories["<profile>:<replicas>"]` as `{httpShapes, windows}`. `httpShapes` is the exact seven names from the selected workload. `windows` contains `idle-disabled`, `idle`, `load`; each maps logical `api`, `realtime`, `evaluator`, `postgres`, `vault-agent` (and optional `other`) to the actual Compose service names selected for that profile/window. API inventory length matches the replica count. Actual role keys and shape keys must match exactly; names are not guessed by the checker. Co-located roles may explicitly share a container observation, which does not create separate per-role CPU/RSS figures.
+
+Every selected serving role requires finite nonnegative snapshot CPU/cgroup memory fields, `counterReset: false`, and its actual `processRssKiBAfter` Docker `top -eo pid,comm,rss` table with numeric RSS KiB rows. Idle/load additionally require positive sample count and finite sampled CPU/memory observations. The 60-second sampler-disabled control requires its actual snapshot fields, not invented sampler values. RSS is not replaced with cgroup memory or labelled as JS heap. Already-exited load generators belong to their separate resource observations, not fabricated serving-role snapshots. The gate reuses existing
 profile/ladder contracts without altering them or inventing latency thresholds.
 Stable capacity-profile 1k, adopted 3k, 5k observations and 10k stretch remain
 explicit targets, not aliases for a small functional diagnostic.

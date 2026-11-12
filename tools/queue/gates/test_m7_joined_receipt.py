@@ -78,16 +78,29 @@ class ReceiptTests(unittest.TestCase):
         for count in (1000, 3000, 5000, 10000):
             for replicas in (1, 2, 4):
                 document['cells'].append({**self.identity, 'hostIdentity': '2' * 64, 'tenants': count, 'replicas': replicas,
-                                          'profile': 'capacity', 'cadence': gate.campaign_contract().CADENCE['capacity'], 'verdict': 'PASS', 'measurements': self.measurements(),
+                                          'profile': 'capacity', 'cadence': gate.campaign_contract().CADENCE['capacity'], 'verdict': 'PASS', 'measurements': self.measurements(replicas=replicas),
                                           'correctness': [True, True, True], 'oracle': {'verdict': 'GREEN', 'uncertain': 0}})
         self.receipt['capacity'] = self.artifact('capacity.json', document)
         return document
 
-    def measurements(self, profile='capacity'):
-        return {'complete': True,
-                'httpShapes': {str(i): {'count': 10, 'p50': 1, 'p95': 2, 'p99': 3} for i in range(7)},
-                'windows': {phase: {'seconds': gate.campaign_contract().CADENCE[profile][phase + 'Seconds'], 'roles': {'api': {'sampleCount': 10, 'cpuCoresMean': 1.5}}}
-                            for phase in ('idle', 'load')}}
+    def measurements(self, profile='capacity', replicas=1):
+        groups = {'api': ['api-' + str(i) for i in range(replicas)], 'realtime': ['rt-worker'],
+                  'evaluator': ['eval-worker'], 'postgres': ['pg-server'], 'vault-agent': ['vault-sidecar']}
+        shapes = ['shape-' + str(i) for i in range(7)]
+        phases = ('idle-disabled', 'idle', 'load')
+        self.expected.setdefault('capacityInventories', {})[profile + ':' + str(replicas)] = {
+            'httpShapes': shapes, 'windows': {phase: copy.deepcopy(groups) for phase in phases}}
+        window = {}
+        for phase in phases:
+            metrics = {'cpuUsecDelta': 10, 'cpuCoresMean': 1.5, 'cpuMsPerTenantMinute': 10,
+                       'counterReset': False, 'anonBytesAfter': 100, 'memoryCurrentBytesAfter': 100,
+                       'anonBytesPerTenant': 1, 'processRssKiBAfter': 'PID COMMAND RSS\n1 synthetic 100\n'}
+            if phase != 'idle-disabled':
+                metrics.update(sampleCount=10, cpuPctMean=1.5, cpuPctMax=2, dockerMemoryBytesMax=100)
+            window[phase] = {'seconds': 60 if phase == 'idle-disabled' else gate.campaign_contract().CADENCE[profile][phase + 'Seconds'],
+                             'roles': {role: dict(metrics) for names in groups.values() for role in names}}
+        return {'complete': True, 'httpShapes': {shape: {'count': 10, 'p50': 1, 'p95': 2, 'p99': 3} for shape in shapes},
+                'windows': window}
 
     def milestone(self):
         full = self.capacity()
@@ -297,7 +310,38 @@ class ReceiptTests(unittest.TestCase):
         cells = self.milestone()
         cells[0]['measurements'] = {'complete': True}
         self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cells[0])
-        self.refuses('CAPACITY_NOT_MEASURED', 'capacity-milestone')
+        self.refuses('HTTP_SHAPE_INVENTORY', 'capacity-milestone')
+
+    def test_wrong_http_shape_set_with_seven_entries_refuses(self):
+        cells = self.milestone()
+        shapes = cells[0]['measurements']['httpShapes']
+        shapes['wrong-shape'] = shapes.pop('shape-0')
+        self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cells[0])
+        self.refuses('HTTP_SHAPE_INVENTORY', 'capacity-milestone')
+
+    def test_missing_serving_role_or_rss_refuses(self):
+        cells = self.milestone()
+        roles = cells[0]['measurements']['windows']['load']['roles']
+        saved = roles.pop('rt-worker')
+        self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cells[0])
+        self.refuses('CAPACITY_ROLE_INVENTORY', 'capacity-milestone')
+        roles['rt-worker'] = saved
+        roles['rt-worker'].pop('processRssKiBAfter')
+        self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cells[0])
+        self.refuses('RSS_OBSERVATION', 'capacity-milestone')
+
+    def test_negative_cpu_or_memory_and_non_numeric_rss_refuse(self):
+        cells = self.milestone()
+        row = cells[0]['measurements']['windows']['load']['roles']['rt-worker']
+        for field in ('cpuCoresMean', 'anonBytesAfter', 'dockerMemoryBytesMax'):
+            saved = row[field]
+            row[field] = -1
+            self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cells[0])
+            self.refuses('ROLE_METRIC', 'capacity-milestone')
+            row[field] = saved
+        row['processRssKiBAfter'] = 'PID COMMAND RSS\n1 synthetic UNMEASURED\n'
+        self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cells[0])
+        self.refuses('RSS_OBSERVATION', 'capacity-milestone')
 
     def test_pilot_remains_a_separate_small_scope(self):
         full = self.capacity()
@@ -310,12 +354,13 @@ class ReceiptTests(unittest.TestCase):
             full['cells'].append({**self.identity, 'hostIdentity': '2' * 64, 'tenants': count, 'replicas': 1,
                 'profile': 'remote-pilot', 'cadence': gate.campaign_contract().CADENCE['remote-pilot'],
                 'verdict': 'PASS', 'correctness': [True, True], 'oracle': {'verdict': 'GREEN', 'uncertain': 0},
-                'measurements': self.measurements('remote-pilot')})
+                'measurements': self.measurements('remote-pilot', replicas=1)})
         self.receipt['pilot'] = self.artifact('pilot.json', full)
         for replicas in (1, 2, 4):
             self.expected['pilotReplicas'] = replicas
             for row in full['cells']:
                 row['replicas'] = replicas
+                row['measurements'] = self.measurements('remote-pilot', replicas=replicas)
             self.receipt['pilot'] = self.artifact('pilot.json', full)
             self.check('pilot')
         self.expected['pilotReplicas'] = 2
@@ -399,6 +444,42 @@ class ReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'MISSING_CONTROL_FALSE_PASS'):
             require_refusal(mutant)
         require_refusal(Path(gate.__file__))
+
+    def test_capacity_inventory_oracles_go_red_when_their_guards_are_removed(self):
+        cells = self.milestone()
+        original = copy.deepcopy(cells[0])
+        expected = self.root / 'expected.json'
+        receipt = self.root / 'receipt.json'
+        script = self.root / 'tools/queue/gates/mutant.py'
+        contract = self.root / 'tools/mt-bench/m7-joined/contract.py'
+        script.parent.mkdir(parents=True)
+        contract.parent.mkdir(parents=True)
+        contract.write_bytes((Path(gate.__file__).resolve().parents[2] / 'mt-bench/m7-joined/contract.py').read_bytes())
+        source = Path(gate.__file__).read_text()
+        mutations = [
+            ("set(roles) == required_roles", "bool(roles)", 'M7_CAPACITY_ROLE_INVENTORY'),
+            ("set(shapes) == set(shape_names)", "len(shapes) == 7", 'M7_HTTP_SHAPE_INVENTORY')]
+        for needle, replacement, code in mutations:
+            cell = copy.deepcopy(original)
+            if code == 'M7_CAPACITY_ROLE_INVENTORY':
+                cell['measurements']['windows']['load']['roles'].pop('rt-worker')
+            else:
+                shapes = cell['measurements']['httpShapes']
+                shapes['wrong-shape'] = shapes.pop('shape-0')
+            self.receipt['milestoneCells'][0] = self.artifact('cell-1.json', cell)
+            expected.write_text(json.dumps(self.expected))
+            receipt.write_text(json.dumps(self.receipt))
+            self.assertEqual(source.count(needle), 1)
+            script.write_text(source.replace(needle, replacement))
+
+            def require_refusal(program):
+                result = subprocess.run([sys.executable, str(program), '--expected', str(expected), '--receipt', str(receipt), '--scope', 'capacity-milestone'], capture_output=True, text=True)
+                self.assertEqual(result.returncode, 1, 'CAPACITY_INCOMPLETE_FALSE_PASS ' + result.stdout)
+                self.assertIn(code, result.stdout)
+
+            with self.assertRaisesRegex(AssertionError, 'CAPACITY_INCOMPLETE_FALSE_PASS'):
+                require_refusal(script)
+            require_refusal(Path(gate.__file__))
 
     def test_full_ladder_cli_does_not_write_import_bytecode(self):
         self.capacity()

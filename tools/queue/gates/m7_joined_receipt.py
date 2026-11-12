@@ -247,21 +247,44 @@ def cell_measurement(cell, expected, profile, host):
          oracle.get('verdict') in ('GREEN', 'RED') and integer(oracle.get('uncertain')) and
          correctness[0] == (oracle['verdict'] == 'GREEN') and correctness[1] == (oracle['uncertain'] == 0), 'M7_CAPACITY_ASSESSMENT')
     need(cell.get('verdict') == ('PASS' if all(correctness) else 'FAIL'), 'M7_CAPACITY_ASSESSMENT')
+    inventory = expected.get('capacityInventories', {}).get(profile + ':' + str(cell['replicas']))
+    need(isinstance(inventory, dict) and set(inventory) == {'httpShapes', 'windows'}, 'M7_CAPACITY_INVENTORY')
+    shape_names = inventory['httpShapes']
+    need(isinstance(shape_names, list) and len(shape_names) == 7 and len(set(shape_names)) == 7 and
+         all(isinstance(name, str) and NAME.fullmatch(name) for name in shape_names), 'M7_HTTP_SHAPE_POLICY')
     measured = cell.get('measurements', {})
     shapes, windows = measured.get('httpShapes', {}), measured.get('windows', {})
-    need(measured.get('complete') is True and isinstance(shapes, dict) and len(shapes) == 7 and
-         isinstance(windows, dict), 'M7_CAPACITY_NOT_MEASURED')
+    need(measured.get('complete') is True and isinstance(shapes, dict) and set(shapes) == set(shape_names), 'M7_HTTP_SHAPE_INVENTORY')
+    need(isinstance(windows, dict) and set(windows) == {'idle-disabled', 'idle', 'load'} and
+         isinstance(inventory['windows'], dict) and set(inventory['windows']) == set(windows), 'M7_CAPACITY_WINDOW_INVENTORY')
     for row in shapes.values():
         need(isinstance(row, dict) and integer(row.get('count'), 1) and all(
             type(row.get(key)) in (int, float) and math.isfinite(row[key]) and row[key] >= 0
             for key in ('p50', 'p95', 'p99')), 'M7_CAPACITY_NOT_MEASURED')
-    for phase in ('idle', 'load'):
-        window = windows.get(phase, {})
-        need(type(window.get('seconds')) in (int, float) and math.isfinite(window['seconds']) and window['seconds'] >= campaign_contract().CADENCE[profile][phase + 'Seconds'] and
-             isinstance(window.get('roles'), dict) and window['roles'] and all(
-                 isinstance(row, dict) and integer(row.get('sampleCount'), 1) and
-                 type(row.get('cpuCoresMean')) in (int, float) and math.isfinite(row['cpuCoresMean'])
-                 for row in window['roles'].values()), 'M7_CAPACITY_NOT_MEASURED')
+    for phase, window in windows.items():
+        groups = inventory['windows'][phase]
+        need(isinstance(groups, dict) and set(COMPONENTS) <= set(groups) and set(groups) <= set(COMPONENTS) | {'other'} and all(
+            isinstance(names, list) and names and len(set(names)) == len(names) and
+            all(isinstance(name, str) and NAME.fullmatch(name) for name in names) for names in groups.values()), 'M7_ROLE_POLICY')
+        need(len(groups['api']) == cell['replicas'], 'M7_ROLE_POLICY')
+        roles = window.get('roles', {})
+        required_roles = {name for names in groups.values() for name in names}
+        need(isinstance(roles, dict) and set(roles) == required_roles, 'M7_CAPACITY_ROLE_INVENTORY')
+        seconds = 60 if phase == 'idle-disabled' else campaign_contract().CADENCE[profile][phase + 'Seconds']
+        need(type(window.get('seconds')) in (int, float) and math.isfinite(window['seconds']) and window['seconds'] >= seconds, 'M7_CAPACITY_NOT_MEASURED')
+        for row in roles.values():
+            need(isinstance(row, dict) and row.get('counterReset') is False, 'M7_ROLE_METRIC')
+            metrics = ('cpuUsecDelta', 'cpuCoresMean', 'cpuMsPerTenantMinute', 'anonBytesAfter', 'memoryCurrentBytesAfter', 'anonBytesPerTenant')
+            if phase != 'idle-disabled':
+                need(integer(row.get('sampleCount'), 1), 'M7_ROLE_METRIC')
+                metrics += ('cpuPctMean', 'cpuPctMax', 'dockerMemoryBytesMax')
+            need(all(type(row.get(key)) in (int, float) and math.isfinite(row[key]) and row[key] >= 0 for key in metrics), 'M7_ROLE_METRIC')
+            # Producer retains docker top -eo pid,comm,rss, not a numeric RSS scalar.
+            rss = row.get('processRssKiBAfter')
+            need(isinstance(rss, str), 'M7_RSS_OBSERVATION')
+            lines = rss.strip().splitlines()
+            need(len(lines) >= 2 and lines[0].split() == ['PID', 'COMMAND', 'RSS'] and all(
+                re.fullmatch(r'\s*[0-9]+\s+.+?\s+[0-9]+\s*', line) for line in lines[1:]), 'M7_RSS_OBSERVATION')
 
 
 def check_ladder(expected, receipt, evidence, pilot=False):
