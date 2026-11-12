@@ -2,6 +2,7 @@ import copy
 import importlib.util
 import io
 import os
+import signal
 import threading
 import time
 import json
@@ -146,6 +147,31 @@ class ServerEvidence(unittest.TestCase):
             args = [oracle, recovered, measured, generator, b];args[index] = value
             with self.subTest(index=index, value=value), self.assertRaises(RuntimeError):
                 server_verdict(*args)
+
+    def test_supervisor_hangup_and_abort_unwind_cleanup_once_and_never_pass(self):
+        import generator
+        for terminating in (signal.SIGHUP, signal.SIGTERM):
+            trace = []
+            previous = {kind: signal.getsignal(kind) for kind in (signal.SIGHUP, signal.SIGTERM)}
+            def interrupted_session(*args):
+                try:
+                    signal.raise_signal(terminating)
+                    trace.append('false-pass')
+                finally:
+                    trace.append('owned-cleanup')
+                    # A second controller signal cannot interrupt or reenter it.
+                    signal.raise_signal(signal.SIGHUP)
+                    signal.raise_signal(signal.SIGTERM)
+                    trace.append('cleanup-finished')
+            with tempfile.TemporaryDirectory() as scratch:
+                binding_file = Path(scratch) / 'binding.json'
+                binding_file.write_text('{}')
+                with mock.patch.object(sys, 'argv', ['generator.py', '--directory', scratch, '--binding', str(binding_file)]), \
+                     mock.patch.object(generator, 'session', side_effect=interrupted_session):
+                    with self.assertRaisesRegex(RuntimeError, 'EXTERNAL_CONTROLLER_LOST'):
+                        generator.main()
+            self.assertEqual(trace, ['owned-cleanup', 'cleanup-finished'])
+            self.assertEqual({kind: signal.getsignal(kind) for kind in previous}, previous)
 
     def test_metrics_timeout_and_bound_never_publish_complete(self):
         import generator

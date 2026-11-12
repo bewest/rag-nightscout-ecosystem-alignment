@@ -1,5 +1,6 @@
 """Trusted phase supervisor; traffic children have neither sudo nor Docker access."""
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -17,6 +18,25 @@ from protocol import Channel, binding, need, source_identity, TRAFFIC_FILES, wri
 UID = 1001
 GID = 1001
 HERE = Path(__file__).resolve().parent
+
+
+@contextmanager
+def termination_guard():
+    # SSH loss and controller abort must unwind the exact-owned cleanup. Ignore
+    # later termination signals while it runs so cleanup cannot be reentered.
+    watched = (signal.SIGHUP, signal.SIGTERM)
+    previous = {kind: signal.getsignal(kind) for kind in watched}
+    def interrupted(kind, frame):
+        for watched_kind in watched:
+            signal.signal(watched_kind, signal.SIG_IGN)
+        raise RuntimeError('EXTERNAL_CONTROLLER_LOST')
+    try:
+        for kind in watched:
+            signal.signal(kind, interrupted)
+        yield
+    finally:
+        for kind, handler in previous.items():
+            signal.signal(kind, handler)
 
 
 def executable(path):
@@ -218,7 +238,8 @@ def main():
     p.add_argument('--directory', required=True)
     p.add_argument('--binding', required=True)
     args = p.parse_args()
-    session(args.directory, json.loads(Path(args.binding).read_text()))
+    with termination_guard():
+        session(args.directory, json.loads(Path(args.binding).read_text()))
 
 if __name__ == '__main__':
     try:
