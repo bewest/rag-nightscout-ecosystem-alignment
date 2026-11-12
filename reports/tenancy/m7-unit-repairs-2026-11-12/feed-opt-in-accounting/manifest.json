@@ -1,0 +1,12 @@
+{
+  "files": {
+    "README.md": "832d7fa3fbb5dd32e2ba67b9b41b4aafd006d7886ccc7416a7c726cbda777fb4",
+    "default-fixed.txt": "0a7af0b2b3a182fb53a17841397d99e8f5a11f6fd4ea5888734de599b4b8fdc3",
+    "default-original-red.txt": "f861a1200133a419c31d91261692534f549cb2fe8367b8efa62c3194cd0cb963",
+    "execution-guards.txt": "2ed979e571e603d796b1d72d9320411f3b599552a104dc9ec8cbf826772da2c9",
+    "package-checks.txt": "70ca0e8c7010727323207bdad1c4c685e4c2d2f071369dc47fd28290f166ec6b",
+    "runtime-input-comparison.json": "c27371d28c1a8b3e701717429335e679103d18886723efd68481d24972ee6a11",
+    "source-identity.txt": "a758c7d69014a15f74137d428be0b7602cc24a17bdf87d48c517ed768d5a9a9b",
+    "tier-inventory.txt": "e4af21508bb60bfb5667d328379c93b39b872630cd47e0d5389d9e32021d0ac9"
+  }
+}

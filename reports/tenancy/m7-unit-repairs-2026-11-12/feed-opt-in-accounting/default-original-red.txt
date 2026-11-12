@@ -1,0 +1,18 @@
+
+
+  D6 native metadata feed, privilege and failure controls
+    - uses EXECUTE-only reader authority, emits metadata hints and preserves RLS for tenant reads
+    - duplicates hints after lost acknowledgement without advancing before a committed notification
+    - recovers lost notifications, reader outage and listener reconnect using paged current truth
+    - recovers a backend interruption inside notification COMMIT without early acknowledgement
+    - signals pause/suspend/resume with no data write while another tenant progresses
+    - refuses unsafe wrapper owner/configuration and wrong publication/slot before consuming
+    - refuses an oversized complete transaction without ACK; backstop still sees its current truth
+    - signals settings and policy metadata promptly without plaintext feed grants or a data-clock write
+    - boots and gracefully stops the dedicated feed-reader CLI role
+
+
+  0 passing (2ms)
+  9 pending
+
+TEST_EXECUTION: no test body completed in tests/change-feed.integration.test.js
