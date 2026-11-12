@@ -11523,12 +11523,18 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/README.md`
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/native-2d0-dcc4-first-only/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/original/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/cold-precondition/README.md`
+- `reports/tenancy/core-d-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/evaluator-contract-version/README.md`
 - `reports/tenancy/m7-profile-provenance-2026-11-12/README.md`
 - `reports/tenancy/m7-receipt-validator-2026-11-12/README.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
-**Notes.** 2026-11-12: source correctness, profile provenance and receipt instruments are active; actual joined scaling is UNMEASURED. The default Vault-server profile cannot substitute for an explicitly selected Agent profile. Current capacity startup/frame/SQL observations do not establish continued evaluator computation; BF-238 repair and the bounded successful-completion oracle precede new capacity runs. Component profiles remain distinct from the API- only replica comparison. Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read-derived at dc795bd1: realtime protocol current- authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Realtime horizontal measurement consumes the sharding correctness capability; vertical baselines can run before it. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
+**Notes.** 2026-11-12: source correctness, profile provenance and receipt instruments are active; actual joined scaling is UNMEASURED. The default Vault-server profile cannot substitute for an explicitly selected Agent profile. Current capacity startup/frame/SQL observations do not establish continued evaluator computation; BF-238 repair and the bounded successful-completion oracle precede new capacity runs. Idle safety now separates honest quiet observation from strict native TIME support; final stock readiness and comprehensive acceptance remain open. CoreD first-tier failure is repaired only in the existing fixture at coreff515; no new campaign until planned repairs join. Exact tested-image adoption is required for remote capacity. Component profiles remain distinct from the API-only replica comparison. Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read- derived at dc795bd1: realtime protocol current-authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Realtime horizontal measurement consumes the sharding correctness capability; vertical baselines can run before it. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
 
 ### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a pool-membership table
 
@@ -11556,6 +11562,12 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/README.md`
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/native-2d0-dcc4-first-only/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/original/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/cold-precondition/README.md`
+- `reports/tenancy/core-d-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/evaluator-contract-version/README.md`
 - `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/repair/README.md`
 - `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-listener-195c-f0f91/README.md`
 - `reports/tenancy/evaluator-effect-idempotency-2026-11-12/original/README.md`
@@ -11569,7 +11581,7 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** 2026-11-12: BF-238 scheduling and BF-240 empty inspection are fixed in local core195c9322; bounded actual-listener completed-work qualification passes. Actual paired evaluator2-to-3 clinical acceptance fails on BF-239 early duplicate accepted normal effects; repeat-null origins and independent reducer/native warm-gap reproduction isolate lost repeat state. BF-239 is fixed locally on cd4629159; original/red and repaired native controls plus independent safety review pass. Fresh subsequent cd462/0f8749 paired stock/restore, strict clinical 2-to-3 and controlled realtime move PASS with separately attributed host instrument e91. Earlier initial-timeout and in- flight-sample failures stay preserved. The once-only completed-work capture is UNMEASURED: A completes 19 time cycles, B zero, stable identities/ownership, no failures or foreign work. B actual due is not exported by private DTO; narrow existing-runtime due metadata export precedes classification/refreeze, with no cadence/threshold change or blind extension. Comprehensive acceptance/capacity remain UNMEASURED. Remote CoreC was cancelled before all test tiers/corpus and independently cleaned up. The private configured/observed/ progress API is implemented v2, callable while eligibility is refused and bounded by explicit selectors; inspection must not drive work. Decision evaluator-static-partition uses member-level metadata, not a per-tenant lease; required durable effect idempotency must pass before promotion. Realtime and other actors retain their independent ownership/maintenance contracts; this ring is not imposed on every component.
+**Notes.** 2026-11-12: BF-238 scheduling, BF-239 repeat-clock preservation and BF-240 empty inspection are fixed locally; original/red and repaired native controls retain their exact source scopes. Earlier cd462/0f paired clinical and realtime proofs pass; later 47b/be952 stock/clinical and strict native TIME pass before the unclassified publisher failure. Source2d adds six read-only clinical-job flags; capability4/profile3 idle safety can honestly report no exercised TIME while preserving strict native TIME/load/recovery requirements and bounded observers. Actual2d/dcc first quiet capture passes with zeroTIME/timeWitnessfalse; subsequent stock/restore continuity fails with three B TENANT_WARMING responses, cause unclassified. Later clinical/TIME/realtime movement did not run. Every API/tenant initialization precondition and stage observation are being repaired without tolerating warming during measured continuity. CoreD unit stops on one stale service- version assertion; test-only coreff515 fixes it with red/restored checks. Comprehensive acceptance, final paired native proof and capacity remain open. No cadence/seed/plugin/traffic change, blind phase extension or fake work witness. Member-level configured/observed/progress v2 metadata is independent of per-tenant durable leases; inspection does not drive work. Other actors retain their own ownership and maintenance contracts.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 
