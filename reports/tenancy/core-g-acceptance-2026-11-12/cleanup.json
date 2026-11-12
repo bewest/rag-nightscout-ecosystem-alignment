@@ -1,0 +1,47 @@
+{
+  "kind": "sanitized-captured-cleanup",
+  "workerOwnedMongoCleanupVerified": true,
+  "fixtureResiduals": [],
+  "fixtureVolumeResiduals": [],
+  "corpusOwnedCreatedCount": 2,
+  "corpusOwnedRemoved": [
+    {
+      "kind": "vault",
+      "verifiedAbsent": true,
+      "anonymousVolumeCount": 2
+    },
+    {
+      "kind": "postgres",
+      "verifiedAbsent": true,
+      "anonymousVolumeCount": 1
+    }
+  ],
+  "corpusRemaining": [],
+  "controller": {
+    "cancelled": false,
+    "cleanup": "verified",
+    "outcome": "failed",
+    "finishedAt": "2026-11-12T19:55:50.902Z"
+  },
+  "watchdog": {
+    "cleanup": "verified",
+    "finishedAt": "2026-11-12T19:55:58.370Z"
+  },
+  "savedProviderInventory": {
+    "verifiedAt": "2026-11-12T19:56:48.437703+00:00",
+    "remainingDroplets": 0,
+    "remainingFirewalls": 0,
+    "remainingRunTags": 0
+  },
+  "inventoryObservation": "Read from retained parent capture; no reviewer provider query.",
+  "parentObservedEphemeralKeyFilesPresent": {
+    "private": false,
+    "public": false
+  },
+  "keyObservation": "Parent filesystem observation reported in hash-bound assessment; not independently re-observed.",
+  "capturedComputeEstimate": {
+    "scope": "compute estimate, not invoice; controllerstart throughwatchdog includingpreprovision; minimumUSD0.01",
+    "seconds": 1586.8499999046326,
+    "estimatedComputeUSD": 0.22039583332008786
+  }
+}
