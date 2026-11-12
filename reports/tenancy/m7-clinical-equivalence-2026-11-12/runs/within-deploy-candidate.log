@@ -1,0 +1,29 @@
+LAB hours=12 drop=rawbg,timeago,ar2,errorcodes,cage,sage,iage,bage,pump,loop,upbat,iob,cob,bwp,basal,profile,devicestatus records=200 load=5.72 3.81 3.04
+RUN base {"cycles":46801,"acquisitions":{"n":198,"cpuMsMean":5.48,"cpuMsP50":4.59,"cpuMsP95":12.11,"wallMsP50":3.69,"wallMsP95":6.47},"timeOnly":{"n":46603,"cpuMsMean":1.22,"cpuMsP50":0.93,"cpuMsP95":4.29,"wallMsP50":0.92,"wallMsP95":1.93},"alarmTransitions":17,"contentTransitions":19} elapsed_s=47.3
+TRANSITIONS base
+  23:00:00 (none)
+  23:00:10 treatmentnotify|0||Site Change
+  23:10:00 (none)
+  23:30:10 treatmentnotify|0||Insulin Change
+  23:40:00 (none)
+  00:00:10 treatmentnotify|0||Pump Battery Change
+  00:10:00 (none)
+  01:00:20 simplealarms|2||Urgent LOW
+  01:20:20 (none)
+  01:30:10 treatmentnotify|0||Correction Bolus
+  01:40:00 (none)
+  02:00:20 simplealarms|2||Urgent HIGH
+  02:20:20 (none)
+  04:10:10 treatmentnotify|0||Meal Bolus
+  04:20:00 (none)
+  05:00:20 treatmentnotify|0||Calibration
+  05:10:00 (none)
+RUN due slow=1000 {"cycles":6093,"acquisitions":{"n":198,"cpuMsMean":5.02,"cpuMsP50":4.38,"cpuMsP95":9.64,"wallMsP50":3.63,"wallMsP95":6.75},"timeOnly":{"n":5895,"cpuMsMean":1.03,"cpuMsP50":0.75,"cpuMsP95":3.8,"wallMsP50":0.75,"wallMsP95":1.58},"alarmTransitions":17,"contentTransitions":19} elapsed_s=5.6
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=1000 :: 19 base content transitions, 19 due
+CYCLES slow=1000 base 46801 due 6093 (7.7x fewer)
+RUN due slow=60000 {"cycles":288,"acquisitions":{"n":198,"cpuMsMean":4.27,"cpuMsP50":3.71,"cpuMsP95":9.68,"wallMsP50":3.45,"wallMsP95":5.95},"timeOnly":{"n":90,"cpuMsMean":1.19,"cpuMsP50":0.86,"cpuMsP95":5,"wallMsP50":0.82,"wallMsP95":1.98},"alarmTransitions":17,"contentTransitions":19} elapsed_s=0.8
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=60000 :: 19 base content transitions, 19 due
+CYCLES slow=60000 base 46801 due 288 (162.5x fewer)
+{"pgPoolQueries":0,"pgPoolConnects":0}

@@ -1,0 +1,2 @@
+TRACE plugins=deploy mode=due slow=60000 cycles=288 cpuMsMean=5.78 elapsed_s=1.1 load=4.34 2.92 2.53
+{"pgPoolQueries":0,"pgPoolConnects":0}
