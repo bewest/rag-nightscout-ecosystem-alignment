@@ -1,0 +1,1 @@
+RECORDING_ONLY: supervisor retains actual spawned exit0 and7; exact-once refuses both repeated launches. No native capture.
