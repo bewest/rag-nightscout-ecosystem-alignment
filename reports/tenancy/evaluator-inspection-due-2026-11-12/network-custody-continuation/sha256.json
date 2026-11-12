@@ -1,0 +1,10 @@
+{
+  "custody.cjs": "650b81a29604d43fc784a50521cebee21fd7a486fc6784f52fc238d2a5e805a2",
+  "custody.test.cjs": "4df84fcaef2f74e9e78ab652ffef918f95575ceba0bc6b70a9a71c5cdfc6006e",
+  "captures/initial-network-failure.log": "500eef01d8671623b388aadc828330c6936466d8950c0e20c2300c3a075b94f5",
+  "captures/remedy-summary.json": "0b3864d0a42bdfe4e2def4803c2c430fc3cd90b8aca7b731a64f7418afc53a96",
+  "captures/canonical-verification.json": "e63d5ca471ea8480ae4953227741701af319b492e6a5dd373786787900abf977",
+  "captures/guard-controls.log": "589c4b4706a8541aabec8e0984510edbc470c9f7c470c58e0be60bfec60e46fd",
+  "captures/semantic-guard-ablation.log": "7371215a1c08ef954f4b92f8300860e40d0fe7f03f296c7e62bf72babe10ac3b",
+  "captures/orchestration-boundary.json": "ac76183820f38e4fc86c73661ffb24a2c16b906ddaf7e479e58bd505ccde7b46"
+}

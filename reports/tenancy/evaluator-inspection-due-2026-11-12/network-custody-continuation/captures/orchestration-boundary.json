@@ -1,0 +1,19 @@
+{
+  "originalOrderSensitiveEquality": false,
+  "privateArchiveSha256": "9c4fdb7c3219ce313b9efe6b33bf4a235af1c94a8a4e38aaf47fa643c992a450",
+  "privateArchiveIncludes": "full network configs/IDs/labels/IPAM/options and before/after container metadata; not published",
+  "actualStartupContinuationCompleted": true,
+  "phases": [
+    "image-check",
+    "infrastructure",
+    "private-admin-feed",
+    "registry-provision",
+    "restore-commission",
+    "pool-initial-two",
+    "fixed-api-start",
+    "api-lab-prime",
+    "private-primer-publish",
+    "remaining-fixed-roles"
+  ],
+  "custodyGuardUsedFor": "subsequent stock/settings/clinical qualification only; not retroactively applied to already completed startup"
+}
