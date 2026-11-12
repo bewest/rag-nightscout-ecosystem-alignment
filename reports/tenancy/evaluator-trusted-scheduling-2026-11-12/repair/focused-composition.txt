@@ -1,0 +1,157 @@
+
+
+  trusted evaluator scheduling contexts (recording lifetime protocol)
+    ✔ refuses tenant, active, expired and closed inherited window authority without mutating it
+    ✔ requires a branded single-owner context and preserves no-window construction
+    ✔ runs due timers with fresh admission, credits resolved jobs, and refuses late application work
+    ✔ preserves active-parent two-acquire coalescing on one client, refuses late/foreign callers and independent parent joins
+2026-11-12T12:49:20.165Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+    ✔ preserves explicit consumer wake rejection when its activity port fails, then progresses after recovery
+    ✔ selects runtime health without walking the full tenant map or alert census
+    ✔ does not credit unfinished windows, failed completion or generation-invalidated results
+
+  bounded evaluator inspection v2
+EVALUATOR_SELECTED_DTO_BYTES 50502
+    ✔ selects at most 128 without whole-roster summaries, including empty summary, and refuses unknown/duplicate selectors
+    ✔ carries selected v2 bodies over the actual private UDS client and refuses the prior module version
+
+  evaluator output revision follows content, not cycles
+2026-11-12T12:49:20.246Z	EMITTING ALARM:
+  {"level":"Warning","title":"Stale data, check rig?","message":"Last received: 21 mins ago\nBG Now: 120 mg/dl","group":"Time Ago","plugin":"timeago","debug":{"value":21,"label":"mins ago","shortLabel":"m"}}
+    ✔ keeps the revision and frozen output for an identical time-only cycle and bumps it when only time passes into a stale-data alarm
+    ✔ defines content as exactly the fields consumers and the producer read
+
+  explicit evaluator consumer configuration
+    ✔ is default-off and admits same datastore with different restricted principals rather than equal credential URLs
+    ✔ refuses unknown routes unsafe namespace/datastore and missing or non-Node-compatible explicit bounds
+    ✔ requires restart for consumer infrastructure or credential changes while rereading current tenant admission (68ms)
+
+  selected actual database consumer readiness protocols
+    ✔ challenges actual selected connections with one scoped nonce and refuses another datastore without credential comparison
+    ✔ screens the selected suppression snapshot role table policy shape and exact read-only catalogue
+
+  actual runtime alarm outbox consumer source composition
+2026-11-12T12:49:20.330Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.333Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.339Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+    ✔ consumes successful role outputs with committed intent before handoff and normal RT repeats
+2026-11-12T12:49:20.346Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.346Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.354Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.354Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+    ✔ polls actual runtime timer outputs and retries uncertain same IDs without coupling delivery to clinical progress
+2026-11-12T12:49:20.359Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.359Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.364Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.369Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"default - Warning was ack'd","group":"default","plugin":"<none>"}
+Warning alarm is silenced for 0 minutes more
+    ✔ defers failed clinical/config cycles and newly snoozed pending work without stopping the other tenant
+2026-11-12T12:49:20.375Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T12:49:20.375Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+    ✔ aborts owned delivery waits on close while clinical scheduling and results remain independent
+
+  selected evaluator role consumes notification composition
+Tenant warm drained: ready 1 failed 0 deferred 0 after 0 ms
+    ✔ boots starts and wakes the actual selected composition without awaiting handoff latency and closes all owned resources
+
+  Selected suppression control read scope source protocol
+    ✔ reproduces the supplied three-control-SELECT ACL refusal without selection, then admits only the actual window
+    ✔ keeps unrelated reads, private authority/audit SELECT and mutations refused; fresh restored scope passes
+    ✔ threads actual selection into prepare and every later screened reader snapshot
+    ✔ detects omission at the actual prepare call site and passes fresh restored source
+    ✔ retains actual unconditional outbox metadata refusal before any tenant reader effects
+
+  evaluator partitioning: pool gate
+    ✔ standalone admits every configured tenant and inspects without a lease
+    ✔ partitioned admits nothing before the first read or while refused, and reports a change of slice
+
+  evaluator partitioning: runtime and consumers
+2026-11-12T12:49:20.410Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+    ✔ works only admitted tenants; a withdrawn tenant has no output, cycle or delivery; re-admission starts with an acquisition
+    ✔ fences a cycle in flight when membership changes before it publishes
+    ✔ reads membership once per scheduled pass
+
+  evaluator partitioning: private contracts
+    ✔ fixes the evaluator inspection read: configured beside observed, codes and counts only
+    ✔ fixes the pool-operations service: a kind and a count, or a denial
+
+  evaluator evaluation-gap alert
+    ✔ a tenant whose evaluation is suppressed alerts once past the bound; the others do not; it clears when evaluated
+    ✔ a paused or withdrawn tenant is not expected to be evaluated and does not alert
+
+  evaluator serve-then-warm boot
+    ✔ returns before acquiring, acquires warm tenants first, at most bootConcurrency at once, and the backstop leaves queued tenants alone
+
+  evaluator backstop: one write clock read per pass
+    ✔ reads once per pass for every admitted tenant and acquires only a tenant whose pair moved
+    ✔ a refused read checks no tenant that pass; a tenant missing from the read acquires
+
+  serve.internal: one private listener per role process
+Internal listener for api,realtime on /tmp/ns-internal-8cp0yC/api+realtime.sock routes POST /authorize, POST /mutate, POST /alarm
+    ✔ composes the contracts the roles own on one listener, before the roles boot; a co-resident caller reaches api during realtime boot
+    ✔ opens no private listener when the process serves no internal contract
+Internal listener for realtime,evaluator on /tmp/ns-internal-YBxtXj/rt.sock routes POST /alarm
+Internal listener for realtime,evaluator on /tmp/ns-internal-YBxtXj/rt.sock routes POST /alarm
+Internal listener for realtime,evaluator on /tmp/ns-internal-YBxtXj/rt.sock routes POST /alarm
+    ✔ refuses at start-up a role that binds a contract it does not own, or leaves an owned contract unbound
+    ✔ plans contracts from role code only, refusing a contract on a role that does not own it
+Internal listener for realtime,evaluator on /tmp/ns-internal-t7iG6w/rt.sock routes POST /alarm
+    ✔ control: without the ownership check, a role binding a foreign contract is accepted
+
+  Composed component-private listener over uds
+    ✔ serves two contracts from one explicit route table through their named clients
+    ✔ refuses a request naming a foreign or unregistered service before dispatch
+    ✔ refuses a duplicate method/path or duplicate service registration before binding
+
+  Composed component-private listener over http
+    ✔ serves two contracts from one explicit route table through their named clients
+    ✔ refuses a request naming a foreign or unregistered service before dispatch
+    ✔ refuses a duplicate method/path or duplicate service registration before binding
+
+  Composition registration rules
+    ✔ refuses duplicate routes within one service and partial or foreign lifetime policies
+    ✔ refuses unsupported per-operation methods, media types and bounds at registration
+    ✔ control: duplicate-route refusal goes red when the collision check is removed
+    ✔ control: co-resident foreign-service refusal goes red when the route owner fence is removed
+
+  Per-operation media, byte and deadline bounds
+    ✔ applies the operation byte bound to requests and responses at both ends
+    ✔ applies the operation deadline independently of a longer listener deadline (383ms)
+    ✔ requires the operation media type on requests and responses
+    ✔ client refuses a response whose media type differs from the operation type
+    ✔ control: byte bound test goes red when operation bounds are replaced by the listener bound
+
+  Per-module lifetime on a composed listener
+    ✔ keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over uds
+    ✔ keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over http
+    ✔ drains a held A application response before the window closes, while lifecycle status stays callable (55ms)
+    ✔ control: a blanket listener-wide window mutant fails the lifecycle invalidation assertion
+
+  actual inherited evaluator consumer fixture setup protocol
+    ✔ runs base reset during inherited open before extension schemas exist and waits to reset extension until installed
+    ✔ cleans only roles actually created after failRoleSuffix refusal
+    ✔ cleans only roles actually created after failConsumerRoleSuffix refusal
+CONSUMER_SETUP_INTERRUPTION_BOUNDARIES {"count":18}
+    ✔ drains exactly successful created resources when interrupted after every actual fixture SQL creation boundary (40ms)
+    ✔ does not adopt or drop an already-present exact extension schema when CREATE refuses
+    ✔ does not adopt or drop an already-present exact extension role when CREATE refuses
+    ✔ consumes each explicitly supplied synthetic environment in actual fixture open without sharing a process environment
+
+
+  69 passing (966ms)
+

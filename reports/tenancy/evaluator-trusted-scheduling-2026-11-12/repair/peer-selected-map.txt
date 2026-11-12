@@ -1,0 +1,1 @@
+{"source":"5ad00a523d12b5f4ef9c55c107b09f328be73309","configuredTenants":10000,"selectedRows":128,"selectedMapGets":256,"selectedCurrentReads":128,"metadataGateReads":3,"fullScanControlRefusals":3,"selectedPathFullIterations":0,"scope":"actual runtime/consumer/inspection; synthetic components, no native PG"}

@@ -1,0 +1,16 @@
+
+
+  trusted evaluator scheduling contexts (recording lifetime protocol)
+    1) preserves explicit consumer wake rejection when its activity port fails, then progresses after recovery
+
+
+  0 passing (11ms)
+  1 failing
+
+  1) trusted evaluator scheduling contexts (recording lifetime protocol)
+       preserves explicit consumer wake rejection when its activity port fails, then progresses after recovery:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async Context.<anonymous> (tests/evaluator-job-context.test.js:114:7)
+
+
+

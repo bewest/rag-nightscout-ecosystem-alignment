@@ -1,0 +1,18 @@
+{
+  "source": "53a8ad725049e6bdacdd903ea8bd759c64781c8d",
+  "base": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+  "oldModuleSha256": "807cb6417530060dd8811a5f38cfb32503ac75b6aea8241003818c53a83ed8df",
+  "newModuleSha256": "005dd7281bdde2a8f2037f5b60fff002da30e808574350c6b6d6d679c526c735",
+  "executeParentGuardByteIdentical": true,
+  "executeParentGuardSha256": "b1c4a682595815bcffffd020a6d9e5ccc6be5e2c4572e75941cf358677c20678",
+  "history": [
+    "5ad00a523d12b5f4ef9c55c107b09f328be73309",
+    "6e52fbf4580a72db371a21066f390497357a503c",
+    "53a8ad725049e6bdacdd903ea8bd759c64781c8d",
+    "f145c341f9502473094d1877736e04daac0b2a8e",
+    "195c932293f3abc648da8fbe4356bf7360acd002"
+  ],
+  "joinedSource": "195c932293f3abc648da8fbe4356bf7360acd002",
+  "nativeInstrumentUnchangedAcrossJoinedFixtureCommits": true,
+  "nativeInstrumentSha256": "0e2d4600db45a7a2a5bc5df8bb050d64c939aead49d31ba9510234607f682d44"
+}

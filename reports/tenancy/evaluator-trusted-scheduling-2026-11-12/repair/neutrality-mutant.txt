@@ -1,0 +1,17 @@
+
+
+  trusted evaluator scheduling contexts (recording lifetime protocol)
+    1) runs due timers with fresh admission, credits resolved jobs, and refuses late application work
+
+
+  0 passing (530ms)
+  1 failing
+
+  1) trusted evaluator scheduling contexts (recording lifetime protocol)
+       runs due timers with fresh admission, credits resolved jobs, and refuses late application work:
+     AssertionError [ERR_ASSERTION]: SCHEDULER_PROGRESS_TIMEOUT
+      at wait (tests/evaluator-job-context.test.js:11:93)
+      at async Context.<anonymous> (tests/evaluator-job-context.test.js:71:7)
+
+
+

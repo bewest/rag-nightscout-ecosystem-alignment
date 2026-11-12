@@ -1,0 +1,373 @@
+
+
+  D6 bounded signalling
+    ✔ requires bounded explicit configs and a dedicated feed-reader process
+    ✔ commits LISTEN before first reconcile; pages with constant cost at different N
+    ✔ recovers a lost hint with healthy paging, ignores unknown tenant and coalesces duplicate hints
+    ✔ degrades on missing heartbeat, reconnects listener and reconciles after LISTEN again
+    ✔ adds/removes a dynamic roster without stale hints and recovers a newly added tenant after listener loss
+    ✔ never advances after decode/notification refusal; notification commit precedes acknowledgement
+    ✔ rejects truncated, unsupported and oversized binary messages without returning a checkpoint
+    ✔ targets realtime detection after a hint, not the full configured roster
+    ✔ paused realtime data work stops while a control page can discover resumption
+    ✔ uses subset evaluator recovery and disarms/reacquires paused tenants without data writes
+    ✔ RSS soft refusal issues no peek and cannot acknowledge a batch
+    ✔ keeps the evaluation-gap watchdog deadline independent of the page cursor
+
+  tenant activity policy
+    ✔ has exactly pause and suspend, suspend wins, and the operation matrix of the decision
+    ✔ lets an owner pause and unpause only; never suspend or act on a suspended site
+    ✔ states in plain language that alarms stop while paused
+    ✔ classifies HTTP requests: writes, preflight and the credential exchange are uploads; everything else is a read
+    ✔ builds connector work lists from eligibility, not configuration
+    ✔ parses the operator selection and refuses unsafe or ambiguous namespaces
+
+  evaluator work list from durable activity (actual runtime, synthetic component)
+    ✔ runs no acquisition, component, timer cycle or output for a paused tenant; B is unaffected
+    ✔ retires output on pause and recomputes by acquisition before publishing on unpause
+    ✔ does not publish a cycle that was in flight when the tenant was paused
+Evaluator stopped for tenant 11111111-1111-4111-8111-111111111111: EVALUATOR_ACTIVITY_NOT_PROVISIONED
+    ✔ treats suspended, unprovisioned and unreadable activity as ineligible with distinct codes
+    ✔ stops only A when A's activity read fails, with a health code and one warning; B keeps cycling
+    ✔ keeps a paused tenant paused across invalidation (restore activation) and restart
+
+  owner pause/unpause API (actual router, synthetic authenticator and store)
+    ✔ lets the owner of A pause and unpause A with an audit row and the plain-language notice
+    ✔ refuses the owner of A on B, owner suspend, and owner action on a suspended site
+
+  realtime sockets under pause and suspend (actual protocol and runtime, synthetic sockets)
+    ✔ disconnects A sockets and refuses new ones while paused; B keeps its socket and updates
+    ✔ disconnects A sockets and refuses new ones while suspended; B keeps its socket and updates
+
+  live registry admission and dynamic worker rosters
+    ✔ keeps a new tenant invisible until preparation commits, then activates without restarting B
+    ✔ retries failed warm and rolls back activation failure rather than exposing a ghost tenant
+    ✔ hides removal before drain and cannot resurrect a removed tenant from late preparation
+    ✔ starts empty, bounds burst admission concurrency, and reads no full roster on unchanged revision
+    ✔ adds and removes empty evaluator/realtime/feed rosters while static empty contracts still refuse
+    ✔ gives a newly added evaluator its own watchdog age and preserves pool-owned/unowned selection
+
+  actual durable producer and outbox recreation protocol
+2026-11-12T12:54:03.541Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.545Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.552Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ retries an unchanged meaningful uncertain request with its original UUID after actual producer/component recreation; identical output from the new runtime admits no new event
+2026-11-12T12:54:03.559Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.560Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.571Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"default - Urgent was ack'd","group":"default","plugin":"<none>"}
+Alarm has already been snoozed, don't snooze it again, level: 1 , group: default
+    ✔ consumes fresh committed control ACK after restart initial acquisition refusal without inventing a clinical result
+2026-11-12T12:54:03.572Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.572Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.573Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ selects again against the newer evaluator output published during a selection instead of refusing
+2026-11-12T12:54:03.573Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.574Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.575Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ hands off a committed request when a newer evaluator output is published during its attempt
+2026-11-12T12:54:03.577Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.578Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.581Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ repeats an unacknowledged alarm on the heartbeat clock, not on identical evaluator output
+2026-11-12T12:54:03.584Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.584Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.587Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"default - Urgent was ack'd","group":"default","plugin":"<none>"}
+Urgent alarm is silenced for 58 minutes more
+Urgent alarm is silenced for 57 minutes more
+Urgent alarm is silenced for 56 minutes more
+    ✔ does not repeat an acknowledged alarm during its silence
+2026-11-12T12:54:03.592Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.593Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ does not advance durable producer revision for an unchanged output after JSONB-like object-key reordering
+2026-11-12T12:54:03.594Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.594Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.595Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ rolls producer state and request intents back together when durable COMMIT refuses
+2026-11-12T12:54:03.598Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.598Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+auto acking 2  -  default
+2026-11-12T12:54:03.601Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"Auto ack'd alarm(s)","group":"default","plugin":"<none>"}
+2026-11-12T12:54:03.603Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T12:54:03.603Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ atomically retires an obsolete normal request and a stale clear origin before a newer alarm can hand off
+
+  Separate-process fixed cohort source protocol
+    ✔ pins all actual peer incarnations, unions actual backend identities, and invalidates only A before ACK
+    ✔ refuses lost ACK, missing peer, unknown actor and wrong actual operator database
+    ✔ classifies one actor born after a status cut only by a full pinned peer re-observation
+    ✔ retains an initially admitted SQL actor that closes while a later actor triggers re-observation
+    ✔ does not restart the configured snapshot budget after elapsed census work
+    ✔ refuses a closed cohort or released exact pin after a held snapshot reply
+    ✔ detects a removed post-await live-ownership fence and passes restored source
+    ✔ refuses restarted participants during a claim and allows fresh registration after release
+    ✔ detects a broken incarnation fence and passes restored source
+    ✔ refuses manifest omissions and duplicate endpoints, while admitting explicit API replicas
+
+  Fixed process configuration v2
+    ✔ derives participant addresses from serve.internal and peer addresses and refuses missing role coverage/local selection
+
+  Window and lower lease actual datastore binding
+    ✔ refuses an identically migrated foreign datastore before lifetime registration
+    ✔ detects removal of the datastore comparison and passes restored source
+
+  Actual private IPC client cohort path admission
+    ✔ maps exactly both named cohort operations to their registered paths
+    ✔ detects a wrong wire path and passes restored source
+    ✔ exposes no caller-selected path dispatch before filesystem or transport access
+
+  Actual operation cohort composition source protocol
+    ✔ requires actual complete constructors, matching tenants and unique pending role boots
+    ✔ matches launcher coverage when activity uses the actual operation-control namespace
+    ✔ refreshes cached retired/new actors on the same operator before each strict comparison
+    ✔ detects omitted refresh and passes fresh restored source
+    ✔ awaits refresh completion; a started but unawaited clear remains red
+    ✔ propagates same-client refresh refusal before any actor query
+    ✔ matches PID, birth and database role, never an application label; invalidates A only
+    ✔ accepts a non-participant only when the catalogue reports no clinical-table privilege for its identity
+    ✔ detects a broken census comparison and passes the restored source
+
+  Explicit operation cohort configuration
+    ✔ defaults off and rejects duplicate locks, unsafe namespaces and absent environment references
+
+  Selected evaluator control-table read admission
+    ✔ allows only a branded physically admitted window and retains unrelated-write refusal (63ms)
+
+  Private IPC lifetime extends through actual response completion
+    ✔ keeps durable unfinished operation until response finish
+    ✔ detects prematurely released IPC lifetime and passes restored source
+
+  Actual serving and CLI selection composition (source protocol)
+    ✔ collects every selected store, boots API before realtime and drains contexts before releasing control
+synthetic: Static tenant lists in use (MULTITENANT_STATIC_TENANTS=lab, lab and test only): api
+    ✔ loads the private cohort only for multitenant commands and passes selection to serving
+
+  owner configuration persistence source boundaries
+    ✔ new immutable catalogue defaults capability false and forces tenant RLS
+    ✔ keeps unselected legacy settings persistence independent of capability table
+    ✔ current capability is exact actor bound and absence does not inherit other grants
+    ✔ requires sentinel-only UPDATE and refuses logical capability mutation grants
+    ✔ fences committed configure revocation after initial authorization before state/history
+    ✔ write-fence ablation actually mutates state/history and falsifies the refusal oracle
+    ✔ locks configuration actor before operator policy and commits history after current state
+    ✔ policy-generation race refuses independently and omission control proves a real write
+    ✔ history append failure rolls back current state after both fences
+    ✔ policy read factory has no writer and refuses privilege escalation
+    ✔ policy reader never converts missing or malformed policy to open defaults
+    ✔ shared resolver preserves precedence/provenance without mutating snapshots
+
+  projected owner catalogue and next-cycle source consumers
+    ✔ covers exactly actual projected keys, enable and thresholds; aliases stay compatible and unsupported names refuse
+    ✔ preserves typed array bounds, operator defaults/pins, independent snapshots and whole rollback refusal
+    ✔ projects all effective values into fresh presentation state without modifying stored mg/dL thresholds or another tenant
+For the Basal plugin to function you need a treatment profile
+2026-11-12T12:54:03.847Z	EMITTING ALARM:
+  {"level":"Warning","title":"Warning HIGH","message":"BG Now: 10.5 mmol/L","group":"default","plugin":"simplealarms","debug":{"lastSGV":10.5,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ actual clinical evaluator consumes committed thresholds on next time cycle without acquisition, unit rewrite or tenant B change
+2026-11-12T12:54:03.857Z	EMITTING ALARM:
+  {"level":"Warning","title":"Warning HIGH","message":"BG Now: 190 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":190,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+For the Basal plugin to function you need a treatment profile
+    ✔ actual clinical evaluator consumes committed alarm disable on next time cycle
+For the Basal plugin to function you need a treatment profile
+For the Basal plugin to function you need a treatment profile
+2026-11-12T12:54:03.889Z	EMITTING ALARM:
+  {"level":"Warning","title":"Warning HIGH","message":"BG Now: 10.5 mmol/L","group":"default","plugin":"simplealarms","debug":{"lastSGV":10.5,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ stale-settings corruption actually suppresses the expected clinical alarm and restoration passes
+    ✔ removing complete-threshold validation makes the independent stored partial-row oracle red
+    ✔ appends reviewed migration without changing recorded original bytes and both tables retain independent typed checks
+
+  explicit owner settings evaluator configuration read composition
+    ✔ actual load/readCurrent shares committed identities with metadata, closes finite readers and refuses static overlap/outage
+
+  bounded read-through and pinned atomic publication cache
+    ✔ HOT_SAME_STAT: identical metadata cannot hide an in-place edit; unchanged bytes parse only once
+    ✔ HOT_SYMLINK: legacy valid symlinks keep immediate in-place freshness and refuse missing/nonregular targets
+    ✔ ATOMIC_SAME_FD: bytes and cached identity come from the same descriptor during a concurrent rename
+    ✔ ATOMIC_PIN: one accepted inode is held across missed publications; same-time/same-size replacement is current
+    ✔ ATOMIC_SYMLINK: valid symlinks follow target replacement/repoint and every refusal releases the pinned inode
+    ✔ ATOMIC_BOUND: current bound/permissions refuse and release; growth is bounded by actual bytes independently of stat size
+    ✔ PLACEMENT_FAILED_CONFIG: malformed pool credential encodings refuse before acquiring a placement descriptor
+    ✔ EVALUATOR_HOT_same-stat: actual legacy loader preserves next-call freshness and current bound
+    ✔ EVALUATOR_HOT_current-bound: actual legacy loader preserves next-call freshness and current bound
+    ✔ EVALUATOR_REGISTRY_CURRENT: actual registry boot seam uses per-tenant settings with zero legacy file/roster reads
+    ✔ PLACEMENT_EVALUATOR_VALIDATE: pure refusals acquire no handles and repeated hot parses retain only boot transport
+    ✔ PLACEMENT_CLI_later-role: CLI closes previously parsed placement on later refusal
+    ✔ PLACEMENT_CLI_static-mode: CLI closes previously parsed placement on later refusal
+    ✔ PLACEMENT_CLI_start: CLI closes previously parsed placement on later refusal
+    ✔ PLACEMENT_PRECHECK_listener: serve closes supplied readers on pre-boot refusal
+    ✔ PLACEMENT_PRECHECK_replica: serve closes supplied readers on pre-boot refusal
+    ✔ PLACEMENT_PRECHECK_checkpoint: serve closes supplied readers on pre-boot refusal
+    ✔ PLACEMENT_PRECHECK_admin: serve closes supplied readers on pre-boot refusal
+    ✔ PLACEMENT_PRECHECK_feed: serve closes supplied readers on pre-boot refusal
+    ✔ PLACEMENT_CLOSE_boot: actual role composition closes the pinned reader on every exit
+    ✔ PLACEMENT_CLOSE_shutdown: actual role composition closes the pinned reader on every exit
+    ✔ PLACEMENT_CLOSE_none: actual role composition closes the pinned reader on every exit
+    ✔ PLACEMENT_WRITER: actual fenced publisher uses fsync/rename and actual placement reader observes its generation
+
+  private tenant restore controller (simulated backend protocol)
+    ✔ commits suspension before callback, joins its transaction, invalidates before activation and closes stale claims
+    ✔ clearing the maintenance hold never re-enables a paused tenant (actual evaluator runtime on invalidation)
+    ✔ admits registration FK references with a bounded non-key claim and still drains before restore
+    ✔ refuses a competing maintenance row lock before suspension without retry or effects
+    ✔ publishes claim-bound effects only after definite outer DATA commit
+    ✔ never publishes effects after rollback
+    ✔ never publishes effects after ambiguous DATA commit
+    ✔ refuses an incomplete cohort before metadata or mutation and releases its client
+    ✔ refuses current operator authority without suspending A
+    ✔ never clears orphan/pending operations or reopens after the drain deadline
+    ✔ does not queue a global lock or enter restore when A shared holders remain
+    ✔ rolls back data after revoked operator and keeps A suspended
+    ✔ rolls back data after lost exclusive lock and keeps A suspended
+    ✔ rolls back data after replaced backend and keeps A suspended
+    ✔ refuses forged/foreign claims and independent transaction control
+    ✔ does not reactivate after actual cohort invalidation fails
+    ✔ retains actual durable outcomes after lost SUSPENSION COMMIT response
+    ✔ retains actual durable outcomes after lost DATA COMMIT response
+    ✔ retains actual durable outcomes after lost ACTIVATION COMMIT response
+    ✔ refuses reissuing an existing suspended claim rather than treating retry as recovery
+
+  Tenant operation window source protocol (not PostgreSQL evidence)
+    ✔ registers durably before the actual callback and finishes only after it settles
+    ✔ refuses held exclusive lock before registration or callback
+    ✔ refuses suspended state before registration or callback
+    ✔ refuses changed lock binding before registration or callback
+    ✔ refuses privileged role before registration or callback
+    ✔ finishes a failed callback whose lease connection remains healthy
+    ✔ keeps a durable pending record after lease connection loss and invalidates current scope
+    ✔ reuses same-tenant outer lifetime and refuses cross-tenant nesting
+    ✔ reports unlock loss instead of returning an ordinary success
+    ✔ refuses unknown tenants and closed windows before pool access
+    ✔ runs the full catalogue admission only for an epoch it has not admitted
+    ✔ refuses when the epoch keeps changing during admission, before registration or callback
+    ✔ reads the epoch and the window row inside the transaction, after the lock
+
+  Actual consumers use operation-window lifetimes (source protocol)
+    ✔ covers actual tenant HTTP response finish and refuses suspension before the data handler
+    1) covers actual evaluator cycles and excludes retained output outside an admitted lifetime
+    ✔ covers realtime acquisition/fanout and recovers after a refused window
+2026-11-12T12:54:04.106Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T12:54:04.106Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+    ✔ covers the actual notification producer/retry/adapter handoff and refuses suspended work
+2026-11-12T12:54:04.117Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T12:54:04.117Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+    ✔ invalidates A consumer intents and health without changing B or delivering retained A output
+    ✔ covers the actual socket forwarding acknowledgement and refuses without acknowledgement
+
+  Selected lower-port window cannot be omitted (source protocol)
+    ✔ rejects a transaction-pooler identity instead of adopting SQL labels
+    ✔ requires successful lower pool drain before registry release and retains failed drains
+    ✔ reads the backend identity once per pooled client and again on a different backend
+    ✔ applies the actual selected window when a helper omits it and refuses suspended body SQL
+    ✔ admits the reserved startup metadata binding only in a DB-confirmed read-only transaction
+    ✔ refuses fabricated/duplicate/closed installation and stale release cannot clear a newer owner
+
+  independent tenant startup admission (source protocol)
+    ✔ defers only genuine suspended A and initializes it on later actual admission, including invalidation
+    ✔ hard refuses wrong binding, wrong datastore, metadata failure, fake window and application code lookalikes
+    ✔ boots actual realtime with suspended A, keeps B progress and retries A on activation; all paused retains control liveness
+    ✔ preserves actual realtime startup hard failure for ordinary acquisition errors with and without a window
+    ✔ actual API boot defers roots/dates and exposes lazy initializer to both HTTP and private socket composition (NS_TENANT_READINESS=all)
+    ✔ actual evaluator boot preserves shared failures, initializes B and checks deferred A before resumed component creation (NS_TENANT_READINESS=all)
+    2) actual consumer prepare uses metadata-only sameDB challenge and screens shared ACL even with every tenant paused
+    ✔ actual HTTP window middleware waits for lazy initialization and refuses suspended A without entering routes
+    ✔ coalesces initializer work and rejects stale completion after invalidation without marking the next generation ready
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/body-parser/lib/types/json.js:93:21)
+    at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/body-parser/lib/read.js:194:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/raw-body/index.js:238:16)
+    at done (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/raw-body/index.js:227:7)
+    at Readable.onEnd (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/raw-body/index.js:287:7)
+    at Readable.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  expose: true,
+  statusCode: 400,
+  status: 400,
+  body: '{',
+  type: 'entity.parse.failed'
+}
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/body-parser/lib/types/json.js:93:21)
+    at /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/body-parser/lib/read.js:194:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/raw-body/index.js:238:16)
+    at done (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/raw-body/index.js:227:7)
+    at Readable.onEnd (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-capacity-fixes-20261111/node_modules/raw-body/index.js:287:7)
+    at Readable.emit (node:events:519:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  expose: true,
+  statusCode: 400,
+  status: 400,
+  body: '{',
+  type: 'entity.parse.failed'
+}
+    ✔ preserves actual resolver refusals before the API3 parser when lazy startup has no window
+
+  multitenant inventory executable environment consumption
+    ✔ accepts the actual source-only bootstrap test without hiding its synthetic admin URI document (229ms)
+    ✔ detects an unlisted actual admin-URI-only database suite (50ms)
+    ✔ detects unlisted actual flag-consuming database suites and a planted flag-only opt-in (50ms)
+    ✔ preserves direct bracket destructured aliased and imported process environment reads
+    ✔ does not execute or count comments source examples synthetic environments shadowed process or write-only assignments
+    ✔ fails closed when candidate source cannot be parsed and preserves ordinary inventory membership checks
+
+
+  177 passing (1s)
+  2 failing
+
+  1) Actual consumers use operation-window lifetimes (source protocol)
+       covers actual evaluator cycles and excludes retained output outside an admitted lifetime:
+     Error: EVALUATOR_JOB_CONTEXT_REFUSED
+      at refused (lib/server/serve/evaluator-job-context.js:6:37)
+      at Object.claim (lib/server/serve/evaluator-job-context.js:35:77)
+      at evaluatorRuntime (lib/server/serve/evaluator-runtime.js:96:69)
+      at Context.<anonymous> (tests/tenant-operation-window.test.js:122:75)
+      at process.processImmediate (node:internal/timers:484:21)
+      at process.callbackTrampoline (node:internal/async_hooks:130:17)
+
+  2) independent tenant startup admission (source protocol)
+       actual consumer prepare uses metadata-only sameDB challenge and screens shared ACL even with every tenant paused:
+     Error: EVALUATOR_JOB_CONTEXT_REFUSED
+      at refused (lib/server/serve/evaluator-job-context.js:6:37)
+      at Object.claim (lib/server/serve/evaluator-job-context.js:35:77)
+      at coordinate (lib/server/serve/evaluator-consumers.js:37:69)
+      at Object.prepare (lib/server/serve/evaluator-consumers.js:292:19)
+      at async Context.<anonymous> (tests/tenant-startup-admission.test.js:157:24)
+
+
+

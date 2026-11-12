@@ -1,0 +1,21 @@
+
+
+  bounded evaluator inspection v2
+    1) carries selected v2 bodies over the actual private UDS client and refuses the prior module version
+
+
+  0 passing (48ms)
+  1 failing
+
+  1) bounded evaluator inspection v2
+       carries selected v2 bodies over the actual private UDS client and refuses the prior module version:
+     Error: SOCKET_IPC_UNAVAILABLE
+      at unavailable (lib/server/internal-api/transport.js:39:47)
+      at fail (lib/server/internal-api/transport.js:328:49)
+      at IncomingMessage.<anonymous> (lib/server/internal-api/transport.js:344:21)
+      at IncomingMessage.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1698:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+
+
+
