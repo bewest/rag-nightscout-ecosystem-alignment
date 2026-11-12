@@ -1,0 +1,21 @@
+{
+  "recordType": "NEW_PATH_REDACTED_DERIVATIVE",
+  "originalPrivateCaptureSha256": "35105351589ed927347668f640358e08386be040a6de5b5a83b4a430da6e467d",
+  "transformation": "Replace local path prefixes with logical roles only; measured values unchanged. Not a new execution.",
+  "data": {
+    "argv": [
+      "node",
+      "<PRIVATE_EVIDENCE>/full-projection-confirmation.cjs"
+    ],
+    "exitCode": 0,
+    "scriptSha256": "2e605729b9a40baa1626b95851ca832a3b65839171ab335a0ba040a4065068c8",
+    "environmentKeys": [
+      "PATH",
+      "LANG",
+      "TZ",
+      "NODE_PATH"
+    ],
+    "NODE_PATH": "<DEPENDENCY_NODE_MODULES>",
+    "noInstallBuildServerOrNetwork": true
+  }
+}

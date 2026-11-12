@@ -1,0 +1,13 @@
+{
+  "recordType": "NEW_PATH_REDACTED_DERIVATIVE",
+  "streams": {
+    "full-projection-confirmation.stdout": {
+      "originalPrivateSha256": "65a89324db36623cfd740d9a2177313aca863996dfc41d1ef4a7fb05d0bc5d3d",
+      "pathRedactedText": "{\"cases\":14,\"acquisitions\":2,\"initial\":[{\"sgv\":123,\"due\":{\"dueAt\":1794485399000,\"reason\":\"sgv-recent-10\",\"slow\":[]},\"dueInMs\":599000,\"requested\":[]},{\"sgv\":177,\"due\":{\"dueAt\":1794485399000,\"reason\":\"sgv-recent-10\",\"slow\":[]},\"dueInMs\":599000,\"requested\":[]}],\"dependencyFiles\":382}\n"
+    },
+    "full-projection-confirmation.stderr": {
+      "originalPrivateSha256": "91c111466d1ec1c572936c5121bb9e7538bb83a7daacdf71ae1ff40ab9658b0d",
+      "pathRedactedText": "For the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\nFor the Basal plugin to function you need a treatment profile\n"
+    }
+  }
+}

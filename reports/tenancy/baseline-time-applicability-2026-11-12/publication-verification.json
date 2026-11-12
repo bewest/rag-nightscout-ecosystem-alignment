@@ -1,0 +1,37 @@
+{
+  "scope": "Publication-only checks; no experiment rerun",
+  "leafJsonHashesLinksPrivacyCounts": "PASS",
+  "whitespace": "PASS",
+  "queueCheck": {
+    "exitCode": 2,
+    "stoppedAt": "queue-validate",
+    "inventory": {
+      "items": 411,
+      "parcels": 7,
+      "runnableGates": 452,
+      "explicitNoGateMarkers": 413
+    },
+    "diagnostic": "Selected isolated alignment worktree does not contain external peer worktrees referenced by the existing queue. No queue or peer files changed; later queue-check steps were not reached.",
+    "missingCwdFailures": [
+      "P0-F gates[0]: externals/work/nc-jitter",
+      "P0-F gates[1]: externals/work/nc-jitter",
+      "MT-ENDPOINT-TRANSPORT gates[0]: externals/work/crm-m6b-join-20261110",
+      "MT-OWNERSHIP-OPS gates[0]: externals/work/crm-m6b-join-20261110",
+      "MT-ADMIN-ROLE-OWNERSHIP gates[0]: externals/work/crm-ownership-role-20261110",
+      "MT-ROOT-ADMIN-PARITY gates[0]: externals/work/crm-root-admin-parity-20261110",
+      "MT-INTERNAL-LISTENER gates[0]: externals/work/crm-internal-listener-20261110",
+      "MT-ACTIVITY-ELIGIBILITY gates[0]: externals/work/crm-activity-eligibility-20261110",
+      "MT-EXPORT-EXPIRY gates[0]: externals/work/crm-export-expiry-20261110",
+      "MT-ADMIN-LIFECYCLE-FIT gates[0]: externals/work/crm-admin-lifecycle-20261110",
+      "MT-CONSUMER-STALE-RESELECT gates[0]: externals/work/crm-consumer-refusal-20261110",
+      "MT-TENANT-EXTENDED-SETTINGS gates[0]: externals/work/crm-tenant-extended-settings-20261110",
+      "MT-BATCH-JOIN-1110 gates[0]: externals/work/crm-batch-join-20261110",
+      "MT-OWNER-LAST-GUARD gates[0]: externals/work/crm-m6b-followups-20261110",
+      "MT-KEY-RETENTION gates[0]: externals/work/crm-m6b-join-20261110",
+      "MT-VAULT-TOKEN-FILE gates[0]: externals/work/crm-vault-token-file-20261109"
+    ],
+    "retainedOutput": "queue-check-output.txt",
+    "laterSteps": "SKIPPED because queue-validate failed"
+  },
+  "noApplicationGatesBuildsInstallsCloudOrNetwork": true
+}

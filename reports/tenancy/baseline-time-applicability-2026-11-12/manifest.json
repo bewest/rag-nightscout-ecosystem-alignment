@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "kind": "immutable-pure-baseline-time-applicability-leaf",
+  "measurementDate": "2026-11-12",
+  "sourceBinding": "source-binding.json",
+  "files": {
+    "README.md": "a0203480440f709631bd1c4db856585c9e617c2a21537c3302d1d7aaecff2c8d",
+    "controls.json": "4af47491d56eef58782bdbc172e2a9599b445af52f71db4c0a3239fa3e0b8277",
+    "dependencies.json": "d9a6ee30510abc95ed01f4d5fa1507e5f5eeb70269fa581d2d5b89302a2e9e08",
+    "execution.json": "36864dc6cb5307f938206db393ebb2c38d7bf5186e320b71b3fb1e2ce517991e",
+    "full-projection.json": "bb235c9c8f25c2500aa48eded15c098186f007b58ac52cc03a951b6d01fb841d",
+    "instrument-path-redacted.cjs": "08b83c0d0a17d76e70d9f726c81c3abbcde84daa11b147bbdf9a7b149fe822a3",
+    "publication-verification.json": "cb0e7c401b679b4a4cbfa026009a6672b826d8fec6a32acf5efe811851d18c2e",
+    "queue-check-output.txt": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f",
+    "source-binding.json": "72560c861749e931866f120c72171eea76954f128449d78262733ce8ba1432bd",
+    "streams.json": "a15d0ea36507f7fcd9f673508e36845e480872d749f9ae6e7559fd9408d64992",
+    "toolchain.json": "978a72f81a1638c700e98a2d3c770a2076e12d7c54ce096ea3224509b4a3b4a0"
+  }
+}
