@@ -1,0 +1,86 @@
+TAP version 13
+# Subtest: every exact API/tenant tuple must initialize; only typed warming is retried before the barrier
+ok 1 - every exact API/tenant tuple must initialize; only typed warming is retried before the barrier
+  ---
+  duration_ms: 1.836458
+  type: 'test'
+  ...
+# Subtest: cold exact replica fails despite other tuples being hot; late200 cannot cross the shared bound
+ok 2 - cold exact replica fails despite other tuples being hot; late200 cannot cross the shared bound
+  ---
+  duration_ms: 1.089894
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 401/CREDENTIAL_REFUSED
+ok 3 - other precondition refusal is terminal 401/CREDENTIAL_REFUSED
+  ---
+  duration_ms: 0.257065
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 503/AUTHORITY_UNAVAILABLE
+ok 4 - other precondition refusal is terminal 503/AUTHORITY_UNAVAILABLE
+  ---
+  duration_ms: 0.23363
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 503/null
+ok 5 - other precondition refusal is terminal 503/null
+  ---
+  duration_ms: 0.177965
+  type: 'test'
+  ...
+# Subtest: other precondition refusal is terminal 200/API_READINESS_RESPONSE_INVALID
+not ok 6 - other precondition refusal is terminal 200/API_READINESS_RESPONSE_INVALID
+  ---
+  duration_ms: 0.592543
+  type: 'test'
+  location: '/tmp/m7-readiness-controls-33y86hkj/invalid-200/api-readiness-observation.test.js:15:217'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/tmp/m7-readiness-controls-33y86hkj/invalid-200/api-readiness-observation.test.js:15:424)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: other precondition refusal is terminal 423/TENANT_SUSPENDED
+ok 7 - other precondition refusal is terminal 423/TENANT_SUSPENDED
+  ---
+  duration_ms: 0.156048
+  type: 'test'
+  ...
+# Subtest: hung/transport requests fail closed and abort outstanding reads
+ok 8 - hung/transport requests fail closed and abort outstanding reads
+  ---
+  duration_ms: 10.668209
+  type: 'test'
+  ...
+# Subtest: all four measured edge workers need first success and any during-restore warming remains a strict failure
+ok 9 - all four measured edge workers need first success and any during-restore warming remains a strict failure
+  ---
+  duration_ms: 2.076835
+  type: 'test'
+  ...
+# Subtest: one fast worker cannot satisfy four-worker precondition and chronology is bounded/sanitized
+ok 10 - one fast worker cannot satisfy four-worker precondition and chronology is bounded/sanitized
+  ---
+  duration_ms: 1.121258
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 9
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21.950268
