@@ -205,3 +205,19 @@ campaign with an explicitly approved earlier deployment metadata pin does not
 prove the final binding. Wrong/missing approval refuses; any different core
 refuses; a binding proof attributed to the earlier metadata deployment refuses
 when the final deployment is required. No receipt or source identity is relabelled.
+
+Capacity/pilot cells now require coordinator-pinned `evaluatorProgressArtifacts`
+keyed `profile:tenants:replicas`, with exactly idle/load/recovery gzip references.
+The summary's `evaluatorProgress` fields must match independently recomputed
+counters, coverage, identity, generation and hidden-error checks from complete rows.
+The policy is fixed in profile-selection version2; previous cycle-only observation
+is insufficient. Recovery additionally requires changed runtimes and successful
+owned acquisitions, separately from time-only idle/load progression.
+
+Only these explicit progress artifact types are gzip-decoded. Streaming decoding
+refuses more than16MiB per artifact or64MiB total decoded progress per invocation,
+in addition to existing compressed/general evidence limits. The optional large
+ladder can therefore remain UNMEASURED when its complete proof exceeds the budget;
+there is no raised cap, omitted foreign evidence or inferred PASS. Full functional
+acceptance alone still does not require future capacity proof. Root owns expected
+artifact/source policies and queue wiring; these helpers never write a receipt.

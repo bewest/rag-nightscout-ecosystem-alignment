@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Joined M7 instrument. No operation attaches to or tears down an existing stack."""
 import argparse
+import gzip
 import contextlib
 import contextvars
 import hashlib
@@ -27,6 +28,7 @@ from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, requi
 from probe import generate
 from workload import generate as generate_workload
 import profile_provenance
+import evaluator_progress
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
           "tools/mt-bench/compose-baseline/probes/sample.sh", "tools/mt-bench/compose-baseline/oracle/disk.sh"]
@@ -208,6 +210,8 @@ def prepare(args):
     require(not target.exists() and not any(p in (".git", "node_modules") for p in target.parts), "M7_TARGET_MUST_BE_NEW")
     for repo in (args.core_repo, args.deploy_repo):
         commit(repo, args.core_commit if repo == args.core_repo else args.deploy_commit)
+    progress_contract=json.loads(git(args.core_repo,"show",args.core_commit+":lib/server/internal-api/contracts/evaluator-inspection.json"))
+    require(progress_contract.get("version")==2,"M7_EVALUATOR_PROGRESS_SOURCE_REQUIRED")
     pinned = instrument()
     target.mkdir(parents=True, mode=0o700)
     try:
@@ -292,6 +296,7 @@ def verify(d, m):
     profile_provenance.state_environment(d/"state",document(d/"frozen.compose.json"),m["diagnostics"])
     require(digest(d / "restart.cjs")==m["restartHelperSha256"], "M7_RESTART_HELPER_CHANGED")
     require(digest(d / "probe.js") == m["probe"]["adaptedSha256"], "M7_PROBE_CHANGED")
+    require(m['probe'].get('recoveryHelpers') and all(digest(d/name)==sha for name,sha in m['probe']['recoveryHelpers'].items()),'M7_RECOVERY_HELPER_CHANGED')
     require(digest(d / "k6/workload.js") == m["workload"]["adaptedSha256"], "M7_WORKLOAD_CHANGED")
     for file, sha in m["sourceCompose"].items():
         require(digest(d / file) == sha, "M7_SOURCE_COMPOSE_CHANGED")
@@ -524,21 +529,67 @@ def oracle_control(d):
     write(d / "load/oracle-control.json", {"baseline": baseline["verdict"], "broken": broken["verdict"], "restored": restored["verdict"]})
 
 
+def progress_services(d):
+    config=document(d/"frozen.compose.json")
+    services=sorted(name for name,spec in config["services"].items() if isinstance(spec.get("command"),list) and spec["command"][-1:]==["evaluator"])
+    evaluator_progress.need(1<=len(services)<=evaluator_progress.POLICY['maxInstances'],"M7_EVALUATOR_PROGRESS_INSTANCE_BOUND")
+    return services
+
+
+def progress_fetch(d,service,ids,queries,budget):
+    prefix="const M7_PROGRESS_IDS="+json.dumps(ids)+";const M7_PROGRESS_QUERY_BUDGET="+str(queries)+";const M7_PROGRESS_BYTE_BUDGET="+str(budget)+";\n"
+    code=prefix+(HERE/"evaluator-progress.cjs").read_text()
+    try:return compose(d,"exec","-T",service,"node","-",input=code.encode(),timeout=20)
+    except Exception:raise evaluator_progress.Refused("M7_EVALUATOR_PROGRESS_UNAVAILABLE")
+
+
+def progress_attribution(m):
+    return {"pair":m["pair"],"imageId":m["imageId"],"instrument":m["instrument"]["sha256"],"profileSelection":m["profileSelection"]["sha256"],"tenants":m["tenants"],"replicas":m["replicas"],"profile":m["profile"],"hostIdentity":m["hostIdentity"]}
+
+
+def write_progress(out,value,m):
+    before=time.monotonic();cpu=time.process_time()
+    packed={**evaluator_progress.pack(value),"attribution":{"pair":m["pair"],"imageId":m["imageId"],"instrument":m["instrument"]["sha256"],"profileSelection":m["profileSelection"]["sha256"],"tenants":m["tenants"],"replicas":m["replicas"],"profile":m["profile"],"hostIdentity":m["hostIdentity"]}};raw=json.dumps(packed,separators=(',',':')).encode()+b'\n'
+    file=out/'evaluator-progress.json';file.write_bytes(raw);file.chmod(0o600)
+    compressed=out/'evaluator-progress.json.gz';compressed.write_bytes(gzip.compress(raw,mtime=0));compressed.chmod(0o600)
+    write(out/'evaluator-progress-publication.json',{'wallSeconds':time.monotonic()-before,'processCpuSeconds':time.process_time()-cpu,'rawBytes':len(raw),'gzipBytes':compressed.stat().st_size,'scope':'serialization, gzip and primary-file writes; sidecar publication excluded'})
+
+
+def progress_summary(out):
+    value=document(out/'evaluator-progress.json');result={k:v for k,v in value.items() if k not in ('kind','columns','rounds','attribution')}
+    return {**result,'rawSha256':digest(out/'evaluator-progress.json'),'gzipSha256':digest(out/'evaluator-progress.json.gz')}
+
+
+def observe_progress(d,m,out,phase):
+    ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
+    return evaluator_progress.Observer(progress_services(d),ids,lambda *args:progress_fetch(d,*args),m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
+
+
 def readiness(d, m):
-    script = "require('./deploy/multitenant/load-env');const own=require('./lib/server/internal-api/listener-config').resolve(['evaluator'],process.env);require('./lib/server/internal-api/clients').evaluatorInspection(own.peer('evaluator',{maxBytes:16777216,timeoutMs:5000})).inspectEvaluator({}).then(v=>console.log(JSON.stringify(v))).catch(()=>{process.exitCode=1;});"
-    deadline = time.monotonic() + 1200
-    observations = []
-    while time.monotonic() < deadline:
-        before = time.monotonic()
-        raw = compose(d, "exec", "-T", "evaluator", "node", "-e", script)
-        view = json.loads(raw)
-        require(isinstance(view.get("tenants"), list), "M7_EVALUATOR_NO_INSTRUMENT")
-        ready = sum(row.get("ready") is True and row.get("cycles", 0) > 0 for row in view["tenants"])
-        observations.append({"at":time.time(),"ready":ready,"expected":m["tenants"],"bytes":len(raw.encode()),"wallSeconds":time.monotonic()-before})
-        write(d / "runtime-readiness.json", {"observations":observations,"cadenceSeconds":15,"meaning":"runtime acquisition confirmed; not clinical-equivalence proof"})
-        if ready == m["tenants"]:return
+    ids=sorted(row['id'] for row in document(d/'tenants.private.json'));services=progress_services(d)
+    deadline=time.monotonic()+1200;observations=[];queries=0;bytes_seen=0
+    while time.monotonic()<deadline and len(observations)<evaluator_progress.POLICY['readinessMaxRounds']:
+        value=None
+        try:
+            value=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True)
+            queries+=value['queries'];bytes_seen+=value['bytes']
+            evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
+            evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
+            evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
+            observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
+            write(d/'runtime-readiness.json',{'verdict':'PASS','policy':evaluator_progress.POLICY,'observations':observations,'meaning':'completed fresh-window acquisitions; legacy cycles alone are insufficient'})
+            return
+        except evaluator_progress.Refused as error:
+            cost=getattr(error,'collection',{})
+            if value is None:queries+=cost.get('queries',0);bytes_seen+=cost.get('bytes',0)
+            else:cost={k:value[k] for k in ('queries','bytes','wallSeconds')}
+            observations.append({'verdict':error.verdict,'code':str(error),'collection':cost})
+            if queries>evaluator_progress.POLICY['readinessMaxQueries'] or bytes_seen>evaluator_progress.POLICY['readinessMaxBytes']:
+                error=evaluator_progress.Refused('M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
+            write(d/'runtime-readiness.json',{'verdict':error.verdict,'policy':evaluator_progress.POLICY,'observations':observations})
+            if error.verdict=='FAIL' or str(error) not in ('M7_EVALUATOR_PROGRESS_WARMING','M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_GATE','M7_EVALUATOR_PROGRESS_COVERAGE'):raise
         time.sleep(15)
-    raise RuntimeError("M7_RUNTIME_NOT_READY")
+    raise evaluator_progress.Refused('M7_RUNTIME_NOT_READY')
 
 
 @contextlib.contextmanager
@@ -575,12 +626,12 @@ def run(d, m, k6_image):
     for name, seconds in (("idle", m["cadence"]["idleSeconds"]),):
         out = d / name;out.mkdir();quiet(d, m, name + "-before", check_load=False)
         psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before")
-        with sampling(d, out):time.sleep(seconds)
+        with sampling(d, out), observe_progress(d,m,out,'idle') as idle_progress:time.sleep(seconds)
         phase_snapshot(d, out, "after")
     out = d / "load";out.mkdir()
     runid = "m7-" + m["owner"][:12];(out / "runid").write_text(runid)
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
-    probe_env = runtime_env({"NODE_PATH": str(d / "dependencies/node_modules"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "STOCK_MS": "300000", "RECOVERY_MS": "120000"})
+    probe_env = runtime_env({"NODE_PATH": str(d / "dependencies/node_modules"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "M7_EVALUATOR_SERVICES": json.dumps(progress_services(d)), "M7_PROGRESS_PYTHON": sys.executable, "M7_PROGRESS_ATTRIBUTION":json.dumps(progress_attribution(m)), "STOCK_MS": "300000", "RECOVERY_MS": "120000"})
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
@@ -596,7 +647,7 @@ def run(d, m, k6_image):
             phase_snapshot(d, out, "after-prime")
             psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before")
             monitor = loadgen_process(d, probe_process);monitor.__enter__()
-            with (out / "k6.log").open("wb") as output:
+            with observe_progress(d,m,out,'load') as load_progress, (out / "k6.log").open("wb") as output:
                 command(["docker", "run", "--rm", "--name", m["project"] + "-k6", "--label", OWNER + "=" + m["owner"], "--label", "com.docker.compose.project=" + m["project"], "--label", "com.docker.compose.service=k6",
                     "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(d / "tenants.private.json") + ":/tenants.private.json:ro",
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
@@ -619,15 +670,17 @@ def run(d, m, k6_image):
     fingerprint_result=profile_provenance.fingerprint_check(document(out/"k6-summary.json")["metrics"])
     correctness = [result["verdict"] == "GREEN", result["uncertain"] == 0, not any(not r["owned"] for r in host["containers"]),
                    result_probe["prime"]["primed"] == 2*m["tenants"], result_probe["window"]["deliveredFrames"] == result_probe["window"]["expectedFrames"],
-                   result_probe["restart"]["stockRecovered"] == 2*m["tenants"], result_probe["restart"]["runtimeAcquisitionObservation"]["missing"] == 0,
+                   result_probe["restart"]["stockRecovered"] == 2*m["tenants"], result_probe["restart"]["runtimeAcquisitionObservation"].get("verdict") == "PASS" and result_probe["restart"]["runtimeAcquisitionObservation"]["missing"] == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
-                   result_probe["window"]["writes"]["failed"] == 0, fingerprint_result["verdict"]=="PASS"]
+                   result_probe["window"]["writes"]["failed"] == 0, fingerprint_result["verdict"]=="PASS", idle_progress.result["verdict"]=="PASS", load_progress.result["verdict"]=="PASS"]
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
                "profileSelection":m["profileSelection"],"settingsFingerprint":m["settingsFingerprint"],"settingsFingerprintObservation":fingerprint_result,
+               "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("idle","load")},"recovery":document(out/"evaluator-recovery.private.json.publication.json")},
+               "evaluatorProgress":{**{phase:progress_summary(d/phase) for phase in ("idle","load")},"recovery":{**{k:v for k,v in result_probe["restart"]["runtimeAcquisitionObservation"].items() if k not in ("baselineObservation","evidence")},**result_probe["restart"]["runtimeAcquisitionObservation"]["evidence"]}},
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
     from reduce import measurements
     summary["measurements"] = measurements(d, m)

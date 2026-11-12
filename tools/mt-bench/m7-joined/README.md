@@ -165,3 +165,49 @@ The restart observer rejects command failure or an unchanged container StartedAt
 its own PG smoke control skips a restart, requires refusal, then actually restarts
 and observes a new process. Sharded placement additionally requires its committed
 controlled-replacement binding helper; raw restart is refused until that seam exists.
+
+## Successful evaluator completion observer
+
+Profile-selection version2 pins the `evaluatorProgress` policy in capabilities.json.
+The source must expose evaluator-inspection module v2 before preparation. Selectors
+contain at most128 unique synthetic UUIDs. One read-only process per exact evaluator
+instance pages ALL configured synthetic IDs, including foreign rows; no hash-based
+query prefilter hides duplicate evaluation. Inspection invokes no clinical work.
+
+The existing enabled-idle phase starts before either k6 or the socket/write probe:
+its body only sleeps for the unchanged120s pilot/600s capacity interval. It is the
+no-clinical-write time witness. All tenants still receive the original load phase;
+there is no additional cold cohort, plugin change, HTTP request, or deadline SLO.
+Idle requires successful time-only completion for every owner; load requires
+successful work progression. Legacy `cycles` and evaluation age cannot satisfy
+this check. Missing opportunity is UNMEASURED; error, ownership, runtime or lifecycle
+generation changes refuse. Input/output revisions may advance normally. Every ID
+must have exactly one admitted ready owner; foreign counters must remain unchanged
+from their explicitly retained phase baseline. Hidden recovered errors refuse.
+
+Three bookend/midpoint snapshots use at most4 instances,10000 IDs,1024 private
+requests and64MiB response bytes per phase. Each request retains the existing
+server caps and uses a conservative1MiB client cap,128 selected rows and5s timeout.
+Private raw and deterministic-gzip artifacts retain compact complete rows and
+source/image/instrument/profile attribution. Partial body failures preserve collected
+evidence before propagating the original failure. Query/response/wall overhead and
+serialization/gzip/primary-file publication CPU/wall costs are recorded separately.
+
+Recovery is a separate scope: a bounded pre-restart runtime baseline, then the
+existing900s/15s cadence. Every exact evaluator must have a different runtime ID,
+at least one successful fresh owned acquisition, two stable coverage/counter
+observations, and no failure/foreign progress. Its private recovery artifact is
+separate from capacity-phase progression. Missing/error/stale-worker receipts cannot
+pass. The restart helper still independently proves actual container starts.
+Neither observer proves clinical output equivalence or native transport by itself.
+
+Focused component controls can use a NEW owned exact product source:
+
+```bash
+M7_PROGRESS_CORE=/absolute/owned/core python3 -m unittest discover \
+  -s tools/mt-bench/m7-joined -p test_evaluator_progress.py
+```
+
+This uses actual runtime/window/inspection with a recording SQL port and synthetic
+component. Native product scheduling/durability and final paired-image transport
+remain separately required. An omitted source fixture is explicitly skipped.
