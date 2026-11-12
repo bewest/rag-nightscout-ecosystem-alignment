@@ -1,0 +1,12 @@
+{
+  "scope": "synthetic dependency-free source preparation and focused serving checks; no image/cloud/capacity acceptance",
+  "rawBeforePrivateSha256": "7c377ed4db7b7478064361c73c2563d2565fd931992b5865a0a23013d53f0559",
+  "publicSanitization": "owned absolute source path prefix only",
+  "files": {
+    "clean-before.txt": "3b3437017a09d954812e3fec5f2d513ea47421af0325ecc45e7f5f0844c86640",
+    "clean-prepare.txt": "612bc63dfd4eb86e487fdd2e4314bc5426722152b0b98c807479e1b940ae06d5",
+    "dependency-control.txt": "acf6887c5b427bba6391ffdf4d96c1f3e8ffb38b2b009df25c1659f2bdecbe96",
+    "focused.txt": "f4684274ff2bcdf0d6a0461c4eb41c1e97c2b3c4190eafa148e03879da2df6b4",
+    "restored.txt": "282104fa9135d35c1b581a9d35eefeb184b6a8bd546b6e46a067ec71298751f3"
+  }
+}
