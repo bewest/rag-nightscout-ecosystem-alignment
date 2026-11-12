@@ -1,0 +1,1052 @@
+{
+ "base": {
+  "summary": {
+   "cycles": 46801,
+   "acquisitions": {
+    "n": 198,
+    "cpuMsMean": 6.26,
+    "cpuMsP50": 5.2,
+    "cpuMsP95": 13.47,
+    "wallMsP50": 4.27,
+    "wallMsP95": 8.15
+   },
+   "timeOnly": {
+    "n": 46603,
+    "cpuMsMean": 1.99,
+    "cpuMsP50": 1.4,
+    "cpuMsP95": 6.58,
+    "wallMsP50": 1.39,
+    "wallMsP95": 3.4
+   },
+   "alarmTransitions": 52,
+   "contentTransitions": 245
+  },
+  "transitions": [
+   {
+    "at": "2026-11-09T23:00:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Site Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Insulin Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T00:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Pump Battery Change"
+    ]
+   },
+   {
+    "at": "2026-11-10T00:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:00:00.000Z",
+    "set": [
+     "cage|0|CAGE|Cannula age 2 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:00:20.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW",
+     "cage|0|CAGE|Cannula age 2 hours",
+     "simplealarms|2||Urgent LOW"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:20:20.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH predicted",
+     "cage|0|CAGE|Cannula age 2 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:21:00.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH predicted"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:25:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Correction Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T02:00:00.000Z",
+    "set": [
+     "cage|1|CAGE|Cannula age 3 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:00:20.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH",
+     "bwp|2||Urgent, Check BG, time to bolus?",
+     "cage|1|CAGE|Cannula age 3 hours",
+     "simplealarms|2||Urgent HIGH"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:20:20.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW predicted",
+     "cage|1|CAGE|Cannula age 3 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:21:00.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW predicted"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:25:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T03:00:00.000Z",
+    "set": [
+     "cage|2|CAGE|Cannula age 4 hours",
+     "sage|0|SAGE|Sensor age 0 days 5 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:10:01.000Z",
+    "set": [
+     "cage|2|CAGE|Cannula age 4 hours",
+     "sage|0|SAGE|Sensor age 0 days 5 hours",
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:21:00.000Z",
+    "set": [
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:25:01.000Z",
+    "set": [
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:25:31.000Z",
+    "set": [
+     "loop|1|Loop|Loop isn't looping",
+     "pump|1|Pump|Warning, Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:55:31.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "sage|1|SAGE|Sensor age 0 days 6 hours",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:20.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:40.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:10:10.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours",
+     "treatmentnotify|0||Meal Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:20:00.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:21:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:00:00.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:00:20.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours",
+     "treatmentnotify|0||Calibration"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:10:00.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:21:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:30:00.000Z",
+    "set": [
+     "iage|0|IAGE|Insulin reservoir age 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T06:30:00.000Z",
+    "set": [
+     "iage|1|IAGE|Insulin reservoir age 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T06:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T07:30:00.000Z",
+    "set": [
+     "iage|2|IAGE|Insulin reservoir age 8 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T07:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T08:10:01.000Z",
+    "set": [
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:25:01.000Z",
+    "set": [
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:25:31.000Z",
+    "set": [
+     "loop|1|Loop|Loop isn't looping",
+     "pump|1|Pump|Warning, Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:55:31.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:00:00.000Z",
+    "set": [
+     "bage|0|BAGE|Pump battery age 9 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:55:31.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T10:00:00.000Z",
+    "set": [
+     "bage|1|BAGE|Pump battery age 10 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T10:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T11:00:00.000Z",
+    "set": [
+     "bage|2|BAGE|Pump battery age 11 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T11:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   }
+  ]
+ },
+ "due-1000": {
+  "summary": {
+   "cycles": 46917,
+   "acquisitions": {
+    "n": 198,
+    "cpuMsMean": 5.79,
+    "cpuMsP50": 4.76,
+    "cpuMsP95": 14.14,
+    "wallMsP50": 4.33,
+    "wallMsP95": 8.94
+   },
+   "timeOnly": {
+    "n": 46719,
+    "cpuMsMean": 2,
+    "cpuMsP50": 1.38,
+    "cpuMsP95": 7.31,
+    "wallMsP50": 1.38,
+    "wallMsP95": 4.41
+   },
+   "alarmTransitions": 52,
+   "contentTransitions": 245
+  },
+  "transitions": [
+   {
+    "at": "2026-11-09T23:00:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Site Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Insulin Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T00:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Pump Battery Change"
+    ]
+   },
+   {
+    "at": "2026-11-10T00:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:00:00.000Z",
+    "set": [
+     "cage|0|CAGE|Cannula age 2 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:00:20.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW",
+     "cage|0|CAGE|Cannula age 2 hours",
+     "simplealarms|2||Urgent LOW"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:20:20.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH predicted",
+     "cage|0|CAGE|Cannula age 2 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:21:00.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH predicted"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:25:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Correction Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T02:00:00.000Z",
+    "set": [
+     "cage|1|CAGE|Cannula age 3 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:00:20.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH",
+     "bwp|2||Urgent, Check BG, time to bolus?",
+     "cage|1|CAGE|Cannula age 3 hours",
+     "simplealarms|2||Urgent HIGH"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:20:20.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW predicted",
+     "cage|1|CAGE|Cannula age 3 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:21:00.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW predicted"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:25:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T03:00:00.000Z",
+    "set": [
+     "cage|2|CAGE|Cannula age 4 hours",
+     "sage|0|SAGE|Sensor age 0 days 5 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:10:00.001Z",
+    "set": [
+     "cage|2|CAGE|Cannula age 4 hours",
+     "sage|0|SAGE|Sensor age 0 days 5 hours",
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:21:00.000Z",
+    "set": [
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:25:00.001Z",
+    "set": [
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:25:30.001Z",
+    "set": [
+     "loop|1|Loop|Loop isn't looping",
+     "pump|1|Pump|Warning, Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:55:30.001Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "sage|1|SAGE|Sensor age 0 days 6 hours",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:20.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:40.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:10:10.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours",
+     "treatmentnotify|0||Meal Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:20:00.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:21:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:00:00.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:00:20.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours",
+     "treatmentnotify|0||Calibration"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:10:00.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:21:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:30:00.000Z",
+    "set": [
+     "iage|0|IAGE|Insulin reservoir age 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T06:30:00.000Z",
+    "set": [
+     "iage|1|IAGE|Insulin reservoir age 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T06:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T07:30:00.000Z",
+    "set": [
+     "iage|2|IAGE|Insulin reservoir age 8 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T07:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T08:10:00.001Z",
+    "set": [
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:25:00.001Z",
+    "set": [
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:25:30.001Z",
+    "set": [
+     "loop|1|Loop|Loop isn't looping",
+     "pump|1|Pump|Warning, Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:55:30.001Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:00:00.000Z",
+    "set": [
+     "bage|0|BAGE|Pump battery age 9 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:55:30.001Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T10:00:00.000Z",
+    "set": [
+     "bage|1|BAGE|Pump battery age 10 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T10:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T11:00:00.000Z",
+    "set": [
+     "bage|2|BAGE|Pump battery age 11 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T11:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   }
+  ]
+ },
+ "due-60000": {
+  "summary": {
+   "cycles": 1032,
+   "acquisitions": {
+    "n": 198,
+    "cpuMsMean": 5.56,
+    "cpuMsP50": 4.41,
+    "cpuMsP95": 13.68,
+    "wallMsP50": 4.18,
+    "wallMsP95": 9.76
+   },
+   "timeOnly": {
+    "n": 834,
+    "cpuMsMean": 2.4,
+    "cpuMsP50": 1.52,
+    "cpuMsP95": 8.45,
+    "wallMsP50": 1.49,
+    "wallMsP95": 5.21
+   },
+   "alarmTransitions": 52,
+   "contentTransitions": 156
+  },
+  "transitions": [
+   {
+    "at": "2026-11-09T23:00:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Site Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Insulin Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T00:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Pump Battery Change"
+    ]
+   },
+   {
+    "at": "2026-11-10T00:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:00:00.000Z",
+    "set": [
+     "cage|0|CAGE|Cannula age 2 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:00:20.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW",
+     "cage|0|CAGE|Cannula age 2 hours",
+     "simplealarms|2||Urgent LOW"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:20:20.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH predicted",
+     "cage|0|CAGE|Cannula age 2 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:21:00.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH predicted"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:25:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Correction Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T02:00:00.000Z",
+    "set": [
+     "cage|1|CAGE|Cannula age 3 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:00:20.000Z",
+    "set": [
+     "ar2|2||Urgent, HIGH",
+     "bwp|2||Urgent, Check BG, time to bolus?",
+     "cage|1|CAGE|Cannula age 3 hours",
+     "simplealarms|2||Urgent HIGH"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:20:20.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW predicted",
+     "cage|1|CAGE|Cannula age 3 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:21:00.000Z",
+    "set": [
+     "ar2|2||Urgent, LOW predicted"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:25:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T03:00:00.000Z",
+    "set": [
+     "cage|2|CAGE|Cannula age 4 hours",
+     "sage|0|SAGE|Sensor age 0 days 5 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:10:00.001Z",
+    "set": [
+     "cage|2|CAGE|Cannula age 4 hours",
+     "sage|0|SAGE|Sensor age 0 days 5 hours",
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:21:00.000Z",
+    "set": [
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:25:00.001Z",
+    "set": [
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:25:30.001Z",
+    "set": [
+     "loop|1|Loop|Loop isn't looping",
+     "pump|1|Pump|Warning, Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T03:55:30.001Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "sage|1|SAGE|Sensor age 0 days 6 hours",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:20.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:00:40.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:10:10.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours",
+     "treatmentnotify|0||Meal Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:20:00.000Z",
+    "set": [
+     "sage|1|SAGE|Sensor age 0 days 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:21:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:00:00.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:00:20.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours",
+     "treatmentnotify|0||Calibration"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:10:00.000Z",
+    "set": [
+     "sage|2|SAGE|Sensor age 0 days 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:21:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:30:00.000Z",
+    "set": [
+     "iage|0|IAGE|Insulin reservoir age 6 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T06:30:00.000Z",
+    "set": [
+     "iage|1|IAGE|Insulin reservoir age 7 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T06:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T07:30:00.000Z",
+    "set": [
+     "iage|2|IAGE|Insulin reservoir age 8 hours"
+    ]
+   },
+   {
+    "at": "2026-11-10T07:51:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T08:10:00.001Z",
+    "set": [
+     "timeago|1|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:25:00.001Z",
+    "set": [
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:25:30.001Z",
+    "set": [
+     "loop|1|Loop|Loop isn't looping",
+     "pump|1|Pump|Warning, Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T08:55:30.001Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:00:00.000Z",
+    "set": [
+     "bage|0|BAGE|Pump battery age 9 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "pump|2|Pump|URGENT: Pump data stale",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T09:55:30.001Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T10:00:00.000Z",
+    "set": [
+     "bage|1|BAGE|Pump battery age 10 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T10:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T11:00:00.000Z",
+    "set": [
+     "bage|2|BAGE|Pump battery age 11 hours",
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   },
+   {
+    "at": "2026-11-10T11:21:00.000Z",
+    "set": [
+     "loop|2|Loop|Loop isn't looping",
+     "timeago|2|Time Ago|Stale data, check rig?"
+    ]
+   }
+  ]
+ }
+}

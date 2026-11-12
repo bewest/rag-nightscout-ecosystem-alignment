@@ -1,0 +1,82 @@
+[
+  {
+    "run": "deploy-base-1000-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "deploy-base-1000-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "deploy-due-1000-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "deploy-due-1000-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "deploy-due-60000-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "deploy-due-60000-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "full-base-1000-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "full-base-1000-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "full-due-1000-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "full-due-1000-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "full-due-60000-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "full-due-60000-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "within-deploy-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "within-deploy-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "within-full-base.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  },
+  {
+    "run": "within-full-candidate.log",
+    "pgPoolQueries": 0,
+    "pgPoolConnects": 0
+  }
+]

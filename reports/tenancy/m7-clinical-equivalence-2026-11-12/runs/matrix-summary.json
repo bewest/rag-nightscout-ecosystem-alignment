@@ -1,0 +1,38 @@
+[
+  {
+    "case": "deploy-base-1000",
+    "cycles": 46801,
+    "sha256": "14eed211f10fd4545c96f525757a75160ba024be7961e977a803ee7c9c892313",
+    "identical": true
+  },
+  {
+    "case": "deploy-due-1000",
+    "cycles": 6093,
+    "sha256": "42ad3814845469ed5e738a3381df4b99f0faf42a99cd9cb59e5dad12e3c0858e",
+    "identical": true
+  },
+  {
+    "case": "deploy-due-60000",
+    "cycles": 288,
+    "sha256": "13086e5c70fa9b28f43b0bdef0ae203d236cda07ae6ea7d0bb0ae9ef082f5b29",
+    "identical": true
+  },
+  {
+    "case": "full-base-1000",
+    "cycles": 46801,
+    "sha256": "907f77b43fb6c84f8ce32398753add59573aa5d9ca4cf37f010317d42e7c0d6f",
+    "identical": true
+  },
+  {
+    "case": "full-due-1000",
+    "cycles": 46917,
+    "sha256": "914fe1eb0f91ff2a5d57490ce7d0237c862eb1b202cff12629e79a85ab706d2a",
+    "identical": true
+  },
+  {
+    "case": "full-due-60000",
+    "cycles": 1032,
+    "sha256": "a6148329e75e569d066d94eee41dd61ab6850768b1d519f0061f01431c880d83",
+    "identical": true
+  }
+]

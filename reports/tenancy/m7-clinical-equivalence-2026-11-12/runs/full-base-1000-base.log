@@ -1,0 +1,2 @@
+TRACE plugins=full mode=base cycles=46801 cpuMsMean=2.09 elapsed_s=83.5 load=4.01 3.15 2.65
+{"pgPoolQueries":0,"pgPoolConnects":0}
