@@ -1,0 +1,114 @@
+{
+  "scope": "real Compose config projection only; no container startup",
+  "services": {
+    "admin": {
+      "configDirectories": [
+        "admin"
+      ],
+      "placementReadOnly": []
+    },
+    "api": {
+      "configDirectories": [
+        "api"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "api-2": {
+      "configDirectories": [
+        "api-2"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "bootstrap": {
+      "configDirectories": [],
+      "placementReadOnly": []
+    },
+    "demo": {
+      "configDirectories": [
+        "ops"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "evaluator": {
+      "configDirectories": [
+        "evaluator"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "feed-reader": {
+      "configDirectories": [
+        "feed-reader"
+      ],
+      "placementReadOnly": []
+    },
+    "nginx": {
+      "configDirectories": [],
+      "placementReadOnly": []
+    },
+    "postgres": {
+      "configDirectories": [],
+      "placementReadOnly": []
+    },
+    "primer": {
+      "configDirectories": [],
+      "placementReadOnly": []
+    },
+    "realtime": {
+      "configDirectories": [
+        "realtime"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "realtime-2": {
+      "configDirectories": [
+        "realtime-2"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "socket-edge": {
+      "configDirectories": [
+        "ui"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "tenant-admin": {
+      "configDirectories": [
+        "tenant-admin"
+      ],
+      "placementReadOnly": [
+        true
+      ]
+    },
+    "ui": {
+      "configDirectories": [
+        "ui"
+      ],
+      "placementReadOnly": []
+    },
+    "vault": {
+      "configDirectories": [],
+      "placementReadOnly": []
+    }
+  },
+  "nginxDependsOn": [
+    "api",
+    "api-2",
+    "realtime",
+    "socket-edge",
+    "ui"
+  ]
+}
