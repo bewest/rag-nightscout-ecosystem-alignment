@@ -1,0 +1,18 @@
+
+
+  Actual operation cohort composition source protocol
+    1) matches launcher coverage when activity uses the actual operation-control namespace
+
+
+  0 passing (16ms)
+  1 failing
+
+  1) Actual operation cohort composition source protocol
+       matches launcher coverage when activity uses the actual operation-control namespace:
+     Error: RESTORE_COHORT_NAMESPACE_MISMATCH
+      at fail (lib/server/serve/operation-cohort.js:13:36)
+      at Object.boot (lib/server/serve/operation-cohort.js:63:93)
+      at Context.<anonymous> (tests/operation-cohort.test.js:54:22)
+
+
+

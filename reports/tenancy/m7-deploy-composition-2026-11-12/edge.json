@@ -1,0 +1,59 @@
+{
+  "deploy_head": "ef048e5316410bb668a2a0091785ff9470de865e",
+  "dirty_prototype": false,
+  "scope": "edge boundary with mock upstreams; not application/client/capacity acceptance",
+  "images": [
+    "nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+    "node@sha256:5ec23b7c622b00547753bc6ffd78085dd868a68aeb41c8e0a1418f033e13d96d"
+  ],
+  "checks": {
+    "baseline_healthy": true,
+    "handshake_budget_refuses": true,
+    "existing_sessions_skip_handshake_budget": true,
+    "per_ip_concurrency_refuses": true,
+    "removed_rate_control_is_red": true,
+    "restored_default_budget_serves": true
+  },
+  "harness_sha256": "a84f67a9dfaacef15b54f220b64c14cae87935f738b2a18e0a9285faab14021e",
+  "handshake_statuses": [
+    200,
+    200,
+    429,
+    429,
+    429,
+    429
+  ],
+  "existing_statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "held_statuses": [
+    200,
+    200,
+    429
+  ],
+  "mutant_statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "restored_statuses": [
+    200,
+    200,
+    200
+  ],
+  "verdict": "PASS",
+  "cleanup": {
+    "ns-m7-edge-e6cf48c30c-edge": 0,
+    "ns-m7-edge-e6cf48c30c-mock": 0,
+    "ns-m7-edge-e6cf48c30c-ingress": 0,
+    "ns-m7-edge-e6cf48c30c": 0
+  }
+}

@@ -1,0 +1,57 @@
+
+
+  Actual operation cohort composition source protocol
+    ✔ requires actual complete constructors, matching tenants and unique pending role boots
+    ✔ matches launcher coverage when activity uses the actual operation-control namespace
+    ✔ refreshes cached retired/new actors on the same operator before each strict comparison
+    ✔ detects omitted refresh and passes fresh restored source
+    ✔ awaits refresh completion; a started but unawaited clear remains red
+    ✔ propagates same-client refresh refusal before any actor query
+    ✔ matches PID, birth and database role, never an application label; invalidates A only
+    ✔ accepts a non-participant only when the catalogue reports no clinical-table privilege for its identity
+    ✔ detects a broken census comparison and passes the restored source
+
+  Explicit operation cohort configuration
+    ✔ defaults off and rejects duplicate locks, unsafe namespaces and absent environment references
+
+  Selected evaluator control-table read admission
+    ✔ allows only a branded physically admitted window and retains unrelated-write refusal (64ms)
+
+  Private IPC lifetime extends through actual response completion
+    ✔ keeps durable unfinished operation until response finish
+    ✔ detects prematurely released IPC lifetime and passes restored source
+
+  Actual serving and CLI selection composition (source protocol)
+    ✔ collects every selected store, boots API before realtime and drains contexts before releasing control
+synthetic: Static tenant lists in use (MULTITENANT_STATIC_TENANTS=lab, lab and test only): api
+    ✔ loads the private cohort only for multitenant commands and passes selection to serving
+
+  Fixed-roster api replicas: instance addresses beside the service address
+    ✔ loads two api participants on their own addresses while the api service address stays the routing destination
+    ✔ refuses a replicated role row without its own address
+    ✔ refuses a participant addressed by a service destination (service-aliased participant)
+    ✔ refuses two participants on one address, and a self address that cannot be this listener
+    ✔ accepts a self row on its own address at the role start check, and refuses another port
+
+  Separate-process fixed cohort source protocol
+    ✔ pins all actual peer incarnations, unions actual backend identities, and invalidates only A before ACK
+    ✔ refuses lost ACK, missing peer, unknown actor and wrong actual operator database
+    ✔ refuses restarted participants during a claim and allows fresh registration after release
+    ✔ detects a broken incarnation fence and passes restored source
+    ✔ refuses manifest omissions and duplicate endpoints, while admitting explicit API replicas
+
+  Fixed process configuration v2
+    ✔ derives participant addresses from serve.internal and peer addresses and refuses missing role coverage/local selection
+
+  Window and lower lease actual datastore binding
+    ✔ refuses an identically migrated foreign datastore before lifetime registration
+    ✔ detects removal of the datastore comparison and passes restored source
+
+  Actual private IPC client cohort path admission
+    ✔ maps exactly both named cohort operations to their registered paths
+    ✔ detects a wrong wire path and passes restored source
+    ✔ exposes no caller-selected path dispatch before filesystem or transport access
+
+
+  31 passing (153ms)
+
