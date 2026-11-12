@@ -1,0 +1,63 @@
+..E..E...............F......................
+======================================================================
+ERROR: test_capacity_has_actual_existing_contract_cells (test_m7_joined_receipt.ReceiptTests.test_capacity_has_actual_existing_contract_cells)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/test_m7_joined_receipt.py", line 250, in test_capacity_has_actual_existing_contract_cells
+    self.check('full-ladder')
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/test_m7_joined_receipt.py", line 69, in check
+    return gate.validate(self.expected, self.receipt, gate.Evidence(self.root), scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/m7_joined_receipt.py", line 352, in validate
+    check_ladder(expected, receipt, evidence)
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/m7_joined_receipt.py", line 301, in check_ladder
+    contract.campaign_check(document)
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/mt-bench/m7-joined/contract.py", line 110, in campaign_check
+    from profile_provenance import check_identity, observation_check
+ModuleNotFoundError: No module named 'profile_provenance'
+
+======================================================================
+ERROR: test_capacity_wrong_identity_or_oracle_refuses (test_m7_joined_receipt.ReceiptTests.test_capacity_wrong_identity_or_oracle_refuses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/test_m7_joined_receipt.py", line 264, in test_capacity_wrong_identity_or_oracle_refuses
+    self.refuses('CAPACITY_IDENTITY', 'full-ladder')
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/test_m7_joined_receipt.py", line 73, in refuses
+    self.check(scope)
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/test_m7_joined_receipt.py", line 69, in check
+    return gate.validate(self.expected, self.receipt, gate.Evidence(self.root), scope)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/m7_joined_receipt.py", line 352, in validate
+    check_ladder(expected, receipt, evidence)
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/m7_joined_receipt.py", line 301, in check_ladder
+    contract.campaign_check(document)
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/mt-bench/m7-joined/contract.py", line 110, in campaign_check
+    from profile_provenance import check_identity, observation_check
+ModuleNotFoundError: No module named 'profile_provenance'
+
+======================================================================
+FAIL: test_full_ladder_cli_does_not_write_import_bytecode (test_m7_joined_receipt.ReceiptTests.test_full_ladder_cli_does_not_write_import_bytecode)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-receipt-validator-20261112/tools/queue/gates/test_m7_joined_receipt.py", line 522, in test_full_ladder_cli_does_not_write_import_bytecode
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/tmp/m7-receipt-test-1oktiy_3/tools/queue/gates/m7_joined_receipt.py", line 418, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/tmp/m7-receipt-test-1oktiy_3/tools/queue/gates/m7_joined_receipt.py", line 408, in main
+    result = validate(read_json(options.expected), read_json(options.receipt), Evidence(options.evidence_root or options.receipt.parent), options.scope)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/m7-receipt-test-1oktiy_3/tools/queue/gates/m7_joined_receipt.py", line 352, in validate
+    check_ladder(expected, receipt, evidence)
+  File "/tmp/m7-receipt-test-1oktiy_3/tools/queue/gates/m7_joined_receipt.py", line 301, in check_ladder
+    contract.campaign_check(document)
+  File "/tmp/m7-receipt-test-1oktiy_3/tools/mt-bench/m7-joined/contract.py", line 110, in campaign_check
+    from profile_provenance import check_identity, observation_check
+ModuleNotFoundError: No module named 'profile_provenance'
+
+
+----------------------------------------------------------------------
+Ran 44 tests in 2.974s
+
+FAILED (failures=1, errors=2)
