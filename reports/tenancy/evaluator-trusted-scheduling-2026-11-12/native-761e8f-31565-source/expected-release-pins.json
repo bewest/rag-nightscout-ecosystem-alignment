@@ -1,0 +1,13 @@
+{
+  "source": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+  "binding": "31565abe437ea84214aa0068f75de1246c06e45e",
+  "imageId": "sha256:2ad267c7fc382597085c369eb838e8e360ec9c17770d7581c2ad4af240a5241d",
+  "nonce": "1f412947-27e2-4ef3-8e4d-5c71b62792dc",
+  "coreOverlay": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-sourcepair-20261112",
+  "project": "ns-evaluator-binding-proof-20261112-source",
+  "port": 18384,
+  "instrumentCommit": "502b46b05bc9a581d2c371f18f7e0e71852f0578",
+  "instrumentSha256": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+  "phase": "RT_EXPLICIT_POST_CLINICAL_RELEASED",
+  "ownedPairSha256": "e93d2eac9d3d346b14be973ca14883769d4e75256137f57c2b2f11378f35924e"
+}
