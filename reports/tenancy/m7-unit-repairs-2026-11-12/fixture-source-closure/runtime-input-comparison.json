@@ -1,0 +1,82 @@
+{
+  "kind": "read-derived-runtime-input-comparison",
+  "coreBefore": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+  "coreAfter": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+  "deployBefore": "31565abe437ea84214aa0068f75de1246c06e45e",
+  "deployAfter": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+  "coreBuildInputsWithModes": {
+    "package.json": {
+      "before": "100644 blob 0ac60a074d1e07631ee3558acdba10b43531c40d\tpackage.json",
+      "after": "100644 blob 0ac60a074d1e07631ee3558acdba10b43531c40d\tpackage.json"
+    },
+    "package-lock.json": {
+      "before": "100644 blob 34013c3fcd4348762571f664b8d55e2b4edd35d0\tpackage-lock.json",
+      "after": "100644 blob 34013c3fcd4348762571f664b8d55e2b4edd35d0\tpackage-lock.json"
+    },
+    ".babelrc": {
+      "before": "100644 blob ff3059c3f099e7703b0e3bb5b9843dcbd0a37153\t.babelrc",
+      "after": "100644 blob ff3059c3f099e7703b0e3bb5b9843dcbd0a37153\t.babelrc"
+    },
+    ".browserslistrc": {
+      "before": "100644 blob 34e99e5f0fc9642cf420e3adddef3fc965f462d3\t.browserslistrc",
+      "after": "100644 blob 34e99e5f0fc9642cf420e3adddef3fc965f462d3\t.browserslistrc"
+    },
+    ".dockerignore": {
+      "before": "100644 blob 6bb7bc1e29cf10b1807c642e49efd7220009f495\t.dockerignore",
+      "after": "100644 blob 6bb7bc1e29cf10b1807c642e49efd7220009f495\t.dockerignore"
+    },
+    "bundle": {
+      "before": "040000 tree c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458\tbundle",
+      "after": "040000 tree c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458\tbundle"
+    },
+    "webpack": {
+      "before": "040000 tree 7aa4b78fd4ad48d466a9efa803a0f17d98f074ef\twebpack",
+      "after": "040000 tree 7aa4b78fd4ad48d466a9efa803a0f17d98f074ef\twebpack"
+    },
+    "bin": {
+      "before": "040000 tree a0afba03b03b47e1e21f68a9b5638e19995a31df\tbin",
+      "after": "040000 tree a0afba03b03b47e1e21f68a9b5638e19995a31df\tbin"
+    },
+    "lib": {
+      "before": "040000 tree c3e8b95cf3eb959ed9f013e2cd5142d5a494f840\tlib",
+      "after": "040000 tree c3e8b95cf3eb959ed9f013e2cd5142d5a494f840\tlib"
+    },
+    "static": {
+      "before": "040000 tree 645a3fba5f269611f1949f9174144ef9945835e8\tstatic",
+      "after": "040000 tree 645a3fba5f269611f1949f9174144ef9945835e8\tstatic"
+    },
+    "views": {
+      "before": "040000 tree d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8\tviews",
+      "after": "040000 tree d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8\tviews"
+    },
+    "translations": {
+      "before": "040000 tree 105b1847130fe57f06ca010e9d4b709d09b6f2e9\ttranslations",
+      "after": "040000 tree 105b1847130fe57f06ca010e9d4b709d09b6f2e9\ttranslations"
+    },
+    "migrations": {
+      "before": "040000 tree aa71098f942959dd7889586bcf6ecc0141aeecfa\tmigrations",
+      "after": "040000 tree aa71098f942959dd7889586bcf6ecc0141aeecfa\tmigrations"
+    },
+    "scripts/diagnose-data.js": {
+      "before": "100644 blob 9869466b39493985907a9914a7a3ccb710584d6b\tscripts/diagnose-data.js",
+      "after": "100644 blob 9869466b39493985907a9914a7a3ccb710584d6b\tscripts/diagnose-data.js"
+    },
+    "deploy/multitenant": {
+      "before": "040000 tree fdc9f8dd2644b8789c86abeb030fbc0ad7304780\tdeploy/multitenant",
+      "after": "040000 tree fdc9f8dd2644b8789c86abeb030fbc0ad7304780\tdeploy/multitenant"
+    },
+    "server.js": {
+      "before": "100644 blob d1c3f30897b5d74635db1490a81f1b3be9910877\tserver.js",
+      "after": "100644 blob d1c3f30897b5d74635db1490a81f1b3be9910877\tserver.js"
+    }
+  },
+  "bindingTreeBefore": "3ba19b609af18184082cbd8aa5f978c9cfde016c",
+  "bindingTreeAfter": "3ba19b609af18184082cbd8aa5f978c9cfde016c",
+  "coreChangedPaths": [
+    "tests/admin-provisioning.integration.test.js"
+  ],
+  "deployChangedPaths": [
+    "bindings/compose/SOURCE.md"
+  ],
+  "scope": "Only permission test fixture and SOURCE metadata change. Historical native criteria retain actual source/image/environment; no new execution/image identity inferred. New primary strictTIME/image custody remains required."
+}

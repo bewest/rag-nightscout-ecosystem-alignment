@@ -11490,13 +11490,20 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md`
+- `reports/tenancy/core-g-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-core-acceptance-2026-11-12/core-e-f-failures/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/primary-761-315-source/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-761e8f-31565-source/README.md`
 - `reports/tenancy/realtime-sharding-2026-11-12/README.md`
 - `reports/tenancy/m7-realtime-binding-2026-11-12/initial/README.md`
 - `docs/30-design/tenancy/realtime-sharding-plan.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
-**Notes.** 2026-11-12: original core leaf 079a3b4c9a6ece9610b32025a0826f756fbb23f0 joined. Stable logical mapping, owner-incarnation admission, separate backend and routed generations, checkpoint continuity and controlled old-owner-stop moves are implemented. Focused native evidence is linked; final coherent source-paired binding and full/corpus acceptance remain coordinator gates. A tenant is bounded by one owner; automatic uncertain-owner failover, durable missed-viewer alarm replay and connection-sharded hot tenants remain separate.
+**Notes.** 2026-11-12: original core leaf 079a3b4c9a6ece9610b32025a0826f756fbb23f0 joined. Stable logical mapping, owner-incarnation admission, separate backend and routed generations, checkpoint continuity and controlled old-owner-stop moves are implemented. Paired ff515/cf5 native controlled moves now pass, with stopped old-owner exclusion, warm checkpoint admission and unrelated B progress; original publisher failure remains unclassified. Full/corpus acceptance and horizontal capacity remain coordinator gates. A tenant is bounded by one owner; automatic uncertain-owner failover, durable missed- viewer alarm replay and connection-sharded hot tenants remain separate.
 
 ### `MT-SCALE-UNBOUND` &mdash; M7: prove each component scales horizontally or vertically as intended, with no hidden binding
 
@@ -11523,6 +11530,13 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md`
+- `reports/tenancy/core-g-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-core-acceptance-2026-11-12/core-e-f-failures/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/primary-761-315-source/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-761e8f-31565-source/README.md`
 - `reports/tenancy/evaluator-idle-safety-2026-11-12/README.md`
 - `reports/tenancy/evaluator-idle-safety-2026-11-12/native-2d0-dcc4-first-only/README.md`
 - `reports/tenancy/api-readiness-continuity-2026-11-12/original/README.md`
@@ -11534,7 +11548,7 @@ alarm-readiness items, and the seam branch refresh.
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
-**Notes.** 2026-11-12: source correctness, profile provenance and receipt instruments are active; actual joined scaling is UNMEASURED. The default Vault-server profile cannot substitute for an explicitly selected Agent profile. Current capacity startup/frame/SQL observations do not establish continued evaluator computation; BF-238 repair and the bounded successful-completion oracle precede new capacity runs. Idle safety now separates honest quiet observation from strict native TIME support; final stock readiness and comprehensive acceptance remain open. CoreD first-tier failure is repaired only in the existing fixture at coreff515; no new campaign until planned repairs join. Exact tested-image adoption is required for remote capacity. Component profiles remain distinct from the API-only replica comparison. Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read- derived at dc795bd1: realtime protocol current-authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Realtime horizontal measurement consumes the sharding correctness capability; vertical baselines can run before it. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
+**Notes.** 2026-11-12: source correctness, profile provenance and receipt instruments are active; actual joined scaling is UNMEASURED. The default Vault-server profile cannot substitute for an explicitly selected Agent profile. Current capacity startup/frame/SQL observations do not establish continued evaluator computation; BF-238 repair and the bounded successful-completion oracle precede new capacity runs. Idle safety now separates honest quiet observation from strict native TIME support; native stock/readiness, controlled realtime movement and clinical/TIME criteria now pass at their exact linked source pairs. CoreG passes eight default tiers but its corpus fails one permission- fixture assertion. Core9db fixes only that fixture with reproduced real-CLI red/restored controls; final source acceptance remains open. E/F/G failures retain independent outcome and cleanup scopes. Exact tested-image adoption is required for remote capacity. Component profiles remain distinct from the API- only replica comparison. Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read-derived at dc795bd1: realtime protocol current- authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Realtime horizontal measurement consumes the sharding correctness capability; vertical baselines can run before it. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
 
 ### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a pool-membership table
 
@@ -11562,6 +11576,13 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md`
+- `reports/tenancy/core-g-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-core-acceptance-2026-11-12/core-e-f-failures/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/primary-761-315-source/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-761e8f-31565-source/README.md`
 - `reports/tenancy/evaluator-idle-safety-2026-11-12/README.md`
 - `reports/tenancy/evaluator-idle-safety-2026-11-12/native-2d0-dcc4-first-only/README.md`
 - `reports/tenancy/api-readiness-continuity-2026-11-12/original/README.md`
@@ -11581,7 +11602,7 @@ alarm-readiness items, and the seam branch refresh.
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** 2026-11-12: BF-238 scheduling, BF-239 repeat-clock preservation and BF-240 empty inspection are fixed locally; original/red and repaired native controls retain their exact source scopes. Earlier cd462/0f paired clinical and realtime proofs pass; later 47b/be952 stock/clinical and strict native TIME pass before the unclassified publisher failure. Source2d adds six read-only clinical-job flags; capability4/profile3 idle safety can honestly report no exercised TIME while preserving strict native TIME/load/recovery requirements and bounded observers. Actual2d/dcc first quiet capture passes with zeroTIME/timeWitnessfalse; subsequent stock/restore continuity fails with three B TENANT_WARMING responses, cause unclassified. Later clinical/TIME/realtime movement did not run. Every API/tenant initialization precondition and stage observation are being repaired without tolerating warming during measured continuity. CoreD unit stops on one stale service- version assertion; test-only coreff515 fixes it with red/restored checks. Comprehensive acceptance, final paired native proof and capacity remain open. No cadence/seed/plugin/traffic change, blind phase extension or fake work witness. Member-level configured/observed/progress v2 metadata is independent of per-tenant durable leases; inspection does not drive work. Other actors retain their own ownership and maintenance contracts.
+**Notes.** 2026-11-12: BF-238 scheduling, BF-239 repeat-clock preservation and BF-240 empty inspection are fixed locally; original/red and repaired native controls retain their exact source scopes. Earlier cd462/0f paired clinical and realtime proofs pass; later 47b/be952 stock/clinical and strict native TIME pass before the unclassified publisher failure. Source2d adds six read-only clinical-job flags; capability4/profile3 idle safety can honestly report no exercised TIME while preserving strict native TIME/load/recovery requirements and bounded observers. Actual2d/dcc first quiet capture passes with zeroTIME/timeWitnessfalse; subsequent stock/restore continuity fails with three B TENANT_WARMING responses, cause unclassified. Later clinical/TIME/realtime movement did not run. The repaired exact API/tenant barrier and subsequent ff515/cf5 stock, restore, clinical handoff, strict TIME and realtime movement now pass. Fresh minimal761/315 clinical/TIME proof passes at its own image; unchanged older criteria retain original attribution. CoreG passes eight default tiers but corpus838/1pending/1failure blocks source acceptance. Optional HTTP benchmark pending is not performance evidence. Comprehensive acceptance and capacity remain open; no failed campaign counts are stitched. No cadence/seed/plugin/traffic change, blind phase extension or fake work witness. Member-level configured/observed/progress v2 metadata is independent of per-tenant durable leases; inspection does not drive work. Other actors retain their own ownership and maintenance contracts.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 
