@@ -1,0 +1,21 @@
+{
+  "oldReadyNonce": "0dc3af55-99df-4fd9-8b1b-8771f68be6f1",
+  "oldReadyStoppedRetained": 15,
+  "oldReadyStopReturnCode": 0,
+  "oldReadyPrivateArchiveSha256": "a1514b50210e7066598a06e622281d9d0dd3befd26f43c639bd94f7be3d375c6",
+  "oldIdleNetworkRemovalReturnCode": 0,
+  "removedOnly": [
+    "1916c8d3ade3e50180a6631757ea1b8c993eb83d1d035d7d52ec9fd6a8bc6888",
+    "4d883810e01ed36d9ae86abf4bcc6683a2ccc3706cfd6081ae473e06fa0fcad7"
+  ],
+  "beforeNetworks": 33,
+  "afterNetworks": 31,
+  "oldIdleStoppedRetained": 15,
+  "networkPrivateArchiveSha256": "34aab86cb3c907b0843045efad2522d28cb7c533d5d2777ebc190b743d1b0bb1",
+  "canonicalGuard": {
+    "verified": true,
+    "containers": 15,
+    "comparison": "all keys; order-insensitive nested arrays/multisets"
+  },
+  "limitation": "Only these empty historical network IDs removed; retained containers require deliberate networking reconstruction to restart. Volumes/state/images retained."
+}
