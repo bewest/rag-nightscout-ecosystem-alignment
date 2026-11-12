@@ -1,0 +1,19 @@
+{
+  "kind": "independent-read-only-Git-object-reconfirmation",
+  "candidateCore": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+  "candidatePorcelain": [],
+  "clinicalExecutedCore": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+  "nativeIdentityExecutedCore": "195c932293f3abc648da8fbe4356bf7360acd002",
+  "clinicalClosureCount": 128,
+  "clinicalBlobsUnchanged": true,
+  "packageAndLockBlobsUnchanged": true,
+  "identityHarnessFileCount": 20,
+  "identityHarnessSHA256AndGitBlobsUnchanged": true,
+  "identitySelectedFileCount": 11,
+  "identitySelectedBlobsUnchanged": true,
+  "changedProductFiles": [
+    "lib/tenant-notifications/producer-state.js"
+  ],
+  "reviewSha256": "a52d634537ab7ab62152b560fbb7a75feac9f9662d8e333193042f43cb4af087",
+  "newRuntimeOrClinicalExecution": false
+}
