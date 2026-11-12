@@ -5,6 +5,8 @@ and enforces the maintainer's **total cost at most $1**. This adapter makes no c
 API call and does not estimate or waive that ceiling. Do not start it before the
 coordinator supplies the accepted core/deploy tuple and frozen acceptance receipt.
 A budget/deadline abort is incomplete evidence, never a passing capacity result.
+An explicitly authorized bounded fresh-image diagnostic can precede full acceptance;
+[its separate receipt/result contract](DIAGNOSTIC-SEAM.md) cannot unlock pilot/CAP.
 
 ## Host and source prerequisites
 

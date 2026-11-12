@@ -22,7 +22,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
 from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, require, digest, labels_match, owned,
-                      tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity)
+                      tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity, receipt_scope, diagnostic_check)
 from probe import generate
 from workload import generate as generate_workload
 BASE = ROOT / "tools/mt-bench/compose-baseline"
@@ -135,11 +135,16 @@ def quiet(d, m, phase, check_load=True):
         require(host["load"][0] <= m["quietLoad"], "M7_HOST_NOT_QUIET")
 
 
-def frozen(m):
-    require(Path(m["freeze"]).is_file(), "M7_FROZEN_ACCEPTANCE_REQUIRED")
-    receipt = document(m["freeze"])
-    require(receipt.get("kind") == "joined-acceptance" and receipt.get("status") == "PASS" and receipt.get("pair") == m["pair"], "M7_FROZEN_ACCEPTANCE_REQUIRED")
-    require(isinstance(receipt.get("evidenceSha256"), str) and re.fullmatch(r"[0-9a-f]{64}", receipt["evidenceSha256"]), "M7_ACCEPTANCE_EVIDENCE_REQUIRED")
+def frozen(m,operation):
+    require(Path(m["freeze"]).is_file(),"M7_FROZEN_OR_DIAGNOSTIC_RECEIPT_REQUIRED")
+    return receipt_scope(m,document(m["freeze"]),operation)
+
+
+def experiment_host(d,m,phase):
+    if m.get("profile")=="fresh-image-diagnostic":
+        host=inventory(m["owner"]);host["scope"]="diagnostic-only; not quiet-host capacity"
+        write(d/(phase+"-host.json"),host)
+    else:quiet(d,m,phase)
 
 
 def image(m):
@@ -158,6 +163,7 @@ def port():
 
 def prepare(args):
     require(os.getuid()==1000 and os.getgid()==1000,"M7_HOST_RUNTIME_UID_REQUIRED")
+    if args.profile=="fresh-image-diagnostic":require(1<=args.tenants<=10 and 1<=args.replicas<=2,"M7_DIAGNOSTIC_LIMIT_INVALID")
     require(1<=args.tenants<=10000 and args.replicas in REPLICAS and args.profile in CADENCE, "M7_CAPACITY_CELL_INVALID")
     require(math.isfinite(args.quiet_load) and 0 <= args.quiet_load <= (os.cpu_count() or 1), "M7_QUIET_BOUND_INVALID")
     require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./:@-]{1,255}", args.image), "M7_IMAGE_REFERENCE_INVALID")
@@ -270,7 +276,7 @@ def deployment_plan(config):
 
 
 def deploy(d, m):
-    frozen(m);quiet(d, m, "deploy-before");verify(d, m)
+    frozen(m,"deploy");experiment_host(d,m,"deploy-before");verify(d,m)
     m["imageId"] = image(m)
     config = document(d / "frozen.compose.json")
     for spec in config["services"].values():
@@ -386,7 +392,7 @@ def stored(d, runid):
 
 
 def count_oracle(d, strict=True):
-    out = d / "load";metrics = document(out / "k6-summary.json")["metrics"]
+    out = d / "load";metrics = document(out / ("client-acks.json" if document(d/"owner.json").get("profile")=="fresh-image-diagnostic" else "k6-summary.json"))["metrics"]
     probes = document(out / "fanout.json")["probeWrites"]["byTenant"]
     values = stored(d, (out / "runid").read_text().strip())
     write(out / "stored-counts.json", values)
@@ -459,7 +465,8 @@ def loadgen_process(d, process):
 
 
 def run(d, m, k6_image):
-    frozen(m);quiet(d, m, "run-before", check_load=False);verify(d, m);image(m)
+    require(m.get("profile")!="fresh-image-diagnostic","M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY")
+    frozen(m,"run");quiet(d,m,"run-before",check_load=False);verify(d,m);image(m)
     require((d / "deploy-before-host.json").exists(), "M7_DEPLOY_QUIET_RECORD_REQUIRED")
     require(digest(d / "dependencies/package-lock.json") == m["dependencyLockSha256"], "M7_DEPENDENCIES_CHANGED")
     readiness(d, m)
@@ -532,8 +539,38 @@ def run(d, m, k6_image):
     require(summary["verdict"] == "PASS", "M7_CORRECTNESS_GROWTH_GATE_FAILED")
 
 
+def diagnose(d,m):
+    require(m.get("profile")=="fresh-image-diagnostic","M7_DIAGNOSTIC_PROFILE_REQUIRED")
+    scope=frozen(m,"diagnose");experiment_host(d,m,"diagnostic-before");verify(d,m);image(m)
+    require(digest(d/"dependencies/package-lock.json")==m["dependencyLockSha256"],"M7_DEPENDENCIES_CHANGED")
+    out=d/"load";out.mkdir()
+    marker="diagnostic-"+m["owner"][:12];(out/"runid").write_text(marker)
+    env=runtime_env({"NODE_PATH":str(d/"dependencies/node_modules")})
+    failure=None
+    try:
+        with (out/"diagnostic.log").open("wb") as log:
+            process=subprocess.Popen(["node",str(HERE/"diagnostic.cjs"),str(d),str(scope["trafficSeconds"])],env=env,stdout=log,stderr=subprocess.STDOUT)
+            job=out/"diagnostic-job.json";job_record(job,process,m["owner"])
+            try:require(process.wait(timeout=scope["trafficSeconds"]+15)==0,"M7_DIAGNOSTIC_CLIENT_REFUSED")
+            finally:stop_job(job,m["owner"]);process.wait(timeout=10)
+        counted=count_oracle(d)
+        require(counted["verdict"]=="GREEN","M7_ORACLE_DIAGNOSTIC_RED")
+        oracle_control(d)
+        outcome=document(out/"diagnostic-observations.json")
+        result={"kind":"m7-joined-fresh-image-diagnostic","profile":m["profile"],"pair":m["pair"],"instrument":m["instrument"]["sha256"],
+                "hostIdentity":m["hostIdentity"],"imageId":m["imageId"],"tenants":m["tenants"],"replicas":m["replicas"],"verdict":"PASS",
+                "checks":outcome["checks"],"acceptedWrites":outcome["acceptedWrites"],"dataHttpRequests":outcome["dataHttpRequests"],"oracle":counted["verdict"],"oracleControl":document(out/"oracle-control.json"),
+                "fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT","trafficDeadlineSeconds":scope["trafficSeconds"]}
+        diagnostic_check(result);write(d/"diagnostic.json",result)
+        print("M7_DIAGNOSTIC_PASS_ONLY")
+    except Exception as error:
+        failure=str(error) if str(error).startswith("M7_") else "M7_DIAGNOSTIC_REFUSED"
+        write(d/"diagnostic.json",{"kind":"m7-joined-fresh-image-diagnostic","pair":m["pair"],"instrument":m["instrument"]["sha256"],"imageId":m["imageId"],"hostIdentity":m["hostIdentity"],"verdict":"FAIL","error":failure,"fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT"})
+        raise
+
+
 def down(d, m):
-    for file in list(d.glob("*/sampler-job.json"))+list(d.glob("*/probe-job.json")):stop_job(file,m["owner"])
+    for file in list(d.glob("*/sampler-job.json"))+list(d.glob("*/probe-job.json"))+list(d.glob("*/diagnostic-job.json")):stop_job(file,m["owner"])
     assert_owned(m)
     if m.get("prepared"):
         verify(d, m)
@@ -555,14 +592,16 @@ def parser():
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("prepare")
-    for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image", "freeze"):prep.add_argument("--"+name, required=True)
+    for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image"):prep.add_argument("--"+name, required=True)
+    prep.add_argument("--freeze","--receipt",dest="freeze",required=True)
     prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)
-    for cmd in ("verify", "build", "deploy", "run", "control", "down", "host-identity"):
+    for cmd in ("verify", "build", "deploy", "run", "diagnose", "control", "down", "host-identity"):
         own = sub.add_parser(cmd);own.add_argument("directory")
         if cmd == "run":own.add_argument("--k6-image", required=True)
     check = sub.add_parser("check-campaign");check.add_argument("summary")
     check = sub.add_parser("check-pilot");check.add_argument("summary")
+    check = sub.add_parser("check-diagnostic");check.add_argument("summary")
     sub.add_parser("manifest")
     return p
 
@@ -573,6 +612,7 @@ def main():
     if args.command == "prepare":return prepare(args)
     if args.command == "check-campaign":campaign_check(document(args.summary));return print("M7_CAMPAIGN_COMPLETE")
     if args.command == "check-pilot":pilot_check(document(args.summary));return print("M7_REMOTE_PILOT_COMPLETE")
+    if args.command == "check-diagnostic":diagnostic_check(document(args.summary));return print("M7_DIAGNOSTIC_PASS_ONLY")
     d, m = load(args.directory)
     if args.command == "host-identity":
         observed=inventory(m["owner"]);write(d/"host-identity-inventory.json",observed)
@@ -580,13 +620,14 @@ def main():
         return print(json.dumps({"hostIdentity":m["hostIdentity"],"pair":m["pair"],"instrument":m["instrument"]["sha256"]}))
     if args.command == "verify":verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
     elif args.command == "build":
-        frozen(m);quiet(d, m, "build-before");verify(d, m)
+        frozen(m,"build");experiment_host(d,m,"build-before");verify(d,m)
         overlay = d / "core/deploy/multitenant"
         shutil.copyfile(d / "env", overlay / ".env")
         try:command(["node", overlay / "build.js"], cwd=overlay, timeout=1800)
         finally:(overlay / ".env").unlink(missing_ok=True)
     elif args.command == "deploy":deploy(d, m)
-    elif args.command == "run":run(d, m, args.k6_image)
+    elif args.command == "run":run(d,m,args.k6_image)
+    elif args.command == "diagnose":diagnose(d,m)
     elif args.command == "control":control(d, m)
     elif args.command == "down":down(d, m)
 
