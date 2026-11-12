@@ -1,0 +1,128 @@
+{
+  "kind": "measured-startup-connection-diagnostic",
+  "samples": 44,
+  "sampleFailCount": 0,
+  "settings": {
+    "max_connections": 100,
+    "superuser_reserved_connections": 3,
+    "reserved_connections": 0
+  },
+  "firstClientBackends": 1,
+  "finalClientBackends": 46,
+  "barrierFailure": {
+    "code": "API_READINESS_REFUSED",
+    "observation": {
+      "sequence": 1,
+      "stage": "precondition",
+      "service": "api-2",
+      "tenantOrdinal": 1,
+      "workerOrdinal": null,
+      "upstreamUnknown": false,
+      "startedAt": 1794523064423,
+      "endedAt": 1794523064620,
+      "durationMs": 197.317992,
+      "status": 503,
+      "errorCode": "AUTHORITY_UNAVAILABLE"
+    }
+  },
+  "barrierChild": {
+    "startedAtMs": 1794523064346,
+    "timedOut": false,
+    "returnCode": 1,
+    "endedAtMs": 1794523064630,
+    "stdoutSha256": "7fb593daf3b9d37eaca9d624cc44e798eb29db6f2a1d814e2380d2e23ba5bde7",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "passive": {
+    "requestedSeconds": 35,
+    "availableSeconds": 35.0,
+    "startedAtMs": 1794523064679,
+    "elapsedSeconds": 35.00010794401169,
+    "endedAtMs": 1794523099679
+  },
+  "samplerReceipt": {
+    "samples": 44,
+    "bytes": 162879,
+    "wallSeconds": 43.80907938210294,
+    "failed": false,
+    "observerConnectionMode": "one-new-admin-connection-per-command",
+    "scope": "startup-connection diagnosis; restart may evaluate existing data; no new clinical scenario/write/handoff"
+  },
+  "retained15": true,
+  "rawSamplesSha256": "9011f247d56895299c5eedf5bcb121868b3a6f471c1c155b83f81d3d89b63278",
+  "scope": "one startup connection diagnosis; no new inputs/TIME; existing data may naturally evaluate; no 1Hz peak interpolation or cause claim",
+  "peakSample": {
+    "atMs": 1794523064935,
+    "sequence": 10,
+    "stage": "passive-after-barrier",
+    "clientBackendsIncludingObserver": 97,
+    "activityRows": 102
+  },
+  "phases": {
+    "start-infrastructure": {
+      "returnCode": 0,
+      "timedOut": false,
+      "startedAtMs": 1794523053317,
+      "finishedAtMs": 1794523053581
+    },
+    "existing-vault-unseal": {
+      "returnCode": 0,
+      "timedOut": false,
+      "startedAtMs": 1794523055756,
+      "finishedAtMs": 1794523055870
+    },
+    "start-control": {
+      "returnCode": 0,
+      "timedOut": false,
+      "startedAtMs": 1794523055957,
+      "finishedAtMs": 1794523056221
+    },
+    "start-api": {
+      "returnCode": 0,
+      "timedOut": false,
+      "startedAtMs": 1794523058370,
+      "finishedAtMs": 1794523058634
+    },
+    "start-remaining": {
+      "returnCode": 0,
+      "timedOut": false,
+      "startedAtMs": 1794523060791,
+      "finishedAtMs": 1794523062108
+    },
+    "strict-api-barrier": {
+      "returnCode": 1,
+      "timedOut": false,
+      "startedAtMs": 1794523064308,
+      "finishedAtMs": 1794523064672
+    },
+    "stop-retain-exact15": {
+      "returnCode": 0,
+      "timedOut": false,
+      "startedAtMs": 1794523099747,
+      "finishedAtMs": 1794523100613
+    }
+  },
+  "outer": {
+    "startedAtMs": 1794523053242,
+    "timedOut": false,
+    "returnCode": 0,
+    "finishedAtMs": 1794523100667
+  },
+  "pair": {
+    "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753"
+  },
+  "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+  "alignment": "9f9ec51715a0dd1eb284eba24bbad991ecb21fac",
+  "instrument": "1e62ae298b465a66b48639c98602c9788668b9a0a3d51ff1c054d75b33c6dc08",
+  "originalSummarySha256": "d8e94c52b4b353f3904959fee231639f43b795adfcdcdea94d3228a2fb8cc5f9",
+  "originalOutcomeSha256": "5a4e0398abff52fbf53eece9700b7a216b5d7a997dc004a88a8d1a93e1a53ca0",
+  "peakClientStates": {
+    "idle": 96,
+    "active": 1
+  },
+  "finalClientStates": {
+    "idle": 45,
+    "active": 1
+  }
+}

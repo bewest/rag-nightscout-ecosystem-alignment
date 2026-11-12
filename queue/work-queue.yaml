@@ -26774,6 +26774,10 @@ items:
     blocks_on:
       - MT-M6A-JOIN
     evidence:
+      - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9f9ec-1e62-settled/README.md
+      - reports/tenancy/m7-startup-connections-2026-11-12/guard-9db-d76/README.md
+      - reports/tenancy/evaluator-warming-collection-2026-11-12/README.md
+      - reports/tenancy/m7-baseline-2026-11-12/attempt-b-startup-progress/README.md
       - reports/tenancy/m7-baseline-2026-11-12/attempt-a-image-store/README.md
       - reports/tenancy/m7-joined-acceptance-2026-11-12/9db-d76-293/README.md
       - reports/tenancy/core-h-acceptance-2026-11-12/README.md
@@ -26783,25 +26787,31 @@ items:
       - docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md
       - docs/30-design/tenancy/m5-m6-decision-list.md
     notes: >
-      2026-11-12 final application batch: core9db/deploymentd76/image293 is locally
-      accepted after CoreH full/default-browser/enabled-corpus execution, current
-      readiness/clinical/TIME/export, scoped older proof reuse and final prcheck.
-      Actual capacity and production M7 remain unmeasured; the linked receipt claims
-      acceptance only. Earlier failed and unmeasured episodes retain their outcomes.
-      BaselineA stops at image import before startup/load: Docker29 returns the
-      manifest identity from the same archive whose config ID is qualified293.
-      Next accepted-mode attempt pins classic storage on a fresh owned empty rig,
-      preserving the exact ID guard. No capacity measurements yet.
-      2026-11-12: maintainer directs parallel source acceptance and baseline observation
-      on independent rigs. Exact-run unaccepted authorization and distinct result
-      scopes preserve all workload/oracle/quietness/native-image requirements;
-      accepted-capacity checks refuse these observations until a separate immutable
-      qualification joins actual same-candidate acceptance. Source/transport review and current native TIME are closed. The next
-      accepted-mode baseline verifies classic storage/exact image and starts500;
-      completed-cell capacity remains UNMEASURED until captured.
-      Maintainer 2026-11-09: for M7 we benchmark what the numbers are rather than
-      declare them first; limits are set from measurement afterwards. Uses the
-      disposable-harness pattern (containers by digest, reaper cleanup).
+      2026-11-12: core9db/deploymentd76/image293 is locally accepted at the linked
+      functional receipt scope after CoreH, current primary/native proof, scoped
+      older evidence reuse and final prcheck. Capacity and production M7 remain
+      UNMEASURED. BaselineA refuses an image-store identity form before startup;
+      BaselineB passes exact import/deployment and stops at evaluator readiness
+      before idle/load/recovery. Its failed raw rows were not retained, so its
+      exact predicate remains unknown. Both captures and cleanup outcomes stay
+      immutable. No completed500/750/1000 cell exists.
+      The collector's separately reproduced first-release zero-credit transition
+      is fixed only for warming; readiness still requires completed acquisition.
+      New instrument qualification retains honest source attribution and does not
+      relabel the older native witness. The separate settled-startup native TIME
+      observation now passes on the actual repaired instrument; its setup interval
+      does not close immediate-startup admission work. A retained two-tenant startup census also
+      reproduces immediate-post-health API refusal with nearby PostgreSQL slot
+      pressure. The linked census owns the measurements; a separately recorded
+      settled-startup experiment does not fix or erase that admission finding.
+      Matched remote preparation is released after actual new-instrument native
+      qualification. Same workload, source-paired image, oracles, quietness and
+      genuine accepted receipt remain required; no pool or database limit is
+      retuned to pass the setup. Earlier unaccepted authorizations keep their
+      original mode and cannot become accepted captures by metadata rewriting.
+      Maintainer 2026-11-09: benchmark the numbers rather than declare them first;
+      set limits from measurement afterwards. Use disposable owned rigs with
+      controller/watchdog/independent cleanup, preserving useful failed levels.
 
   - id: MT-BENCH-CONTRAST
     title: "M7: contrast the multitenant cohort with existing deployment shapes at equal load"
@@ -26945,6 +26955,7 @@ items:
       - MT-REALTIME-SHARDING
       - MT-EVALUATOR-PARTITION
     evidence:
+      - reports/tenancy/m7-startup-connections-2026-11-12/guard-9db-d76/README.md
       - reports/tenancy/m7-joined-acceptance-2026-11-12/9db-d76-293/README.md
       - reports/tenancy/core-h-acceptance-2026-11-12/README.md
       - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/README.md
@@ -26968,6 +26979,9 @@ items:
       - docs/30-design/tenancy/runtime-topology.md
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
     notes: >
+      2026-11-12 startup connection-budget/admission finding remains open at the
+      linked two-tenant census scope. Its settled-startup follow-up cannot stand
+      in for component-load or cold-restart admission proof.
       2026-11-12 final application batch: core9db/deploymentd76/image293 is locally
       accepted after CoreH full/default-browser/enabled-corpus execution, current
       readiness/clinical/TIME/export, scoped older proof reuse and final prcheck.
