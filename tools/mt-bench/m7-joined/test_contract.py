@@ -6,6 +6,8 @@ import sys
 import tempfile
 import unittest
 import uuid
+from unittest.mock import patch
+from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import adapter
 from contract import *
@@ -103,6 +105,29 @@ class Contract(unittest.TestCase):
             self.assertEqual(value['windows']['load']['roles']['api']['dockerMemoryBytesMax'],1024**2)
             (root/'idle/docker-stats.tsv').write_text('t\tcontainer\tcpu_pct\tmem\n')
             self.assertFalse(measurements(root,{'project':'owned','tenants':2})['complete'])
+    def test_shipping_deployment_orders_commission_api_prime_publish_before_remaining_roles(self):
+        config={'services':{name:{'command':['node','entrypoint.js',role]} for name,role in [('api','api'),('api-2','api'),('realtime','realtime'),('evaluator','evaluator'),('tenant-admin','tenant-admin')]}}
+        plan=adapter.deployment_plan(config)
+        self.assertEqual([row[0] for row in plan],['infrastructure','bootstrap','admin-feed','provision','commission','apis','prime','publish-primer','remaining-roles'])
+        self.assertNotIn('realtime',next(r[2] for r in plan if r[0]=='apis'))
+        self.assertIn('commission-restore.js',' '.join(next(r[2] for r in plan if r[0]=='commission')))
+        self.assertEqual(next(r[1] for r in plan if r[0]=='publish-primer'),'local')
+    def test_remote_pilot_is_distinct_and_does_not_skip_750(self):
+        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'verdict':'PASS','measurements':{'complete':True},'profile':'remote-pilot','replicas':1}
+        doc={'kind':'m7-joined-remote-pilot','pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':row['imageId'],'cells':[{**row,'tenants':n} for n in PILOT_COUNTS]}
+        self.assertTrue(pilot_check(doc));doc['cells'].pop(1)
+        with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):pilot_check(doc)
+        self.assertEqual(CADENCE['remote-pilot']['accel'],1);self.assertEqual(CADENCE['remote-pilot']['loadSeconds'],300)
+    def test_pilot_orchestrator_routes_explicit_counts_and_profile_without_duplicate_args(self):
+        with tempfile.TemporaryDirectory(prefix='m7-orchestrator-test-') as scratch:
+            root=Path(scratch);seen=[];pair={'core':'a'*40,'deploy':'b'*40};master={'pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'cells':[]}
+            args=SimpleNamespace(mode='pilot',replicas=None,ceiling_receipt=None,k6_image='not-run')
+            def prepare(options):
+                seen.append((options.tenants,options.replicas,options.profile));folder=Path(options.directory);folder.mkdir();adapter.write(folder/'owner.json',{})
+            def run(folder,manifest,image):adapter.write(folder/'summary.json',{'pair':pair,'imageId':'sha256:'+'e'*64,'instrument':'c'*64})
+            with patch.object(adapter,'prepare',prepare),patch.object(adapter,'load',lambda folder:(Path(folder),{})),patch.object(adapter,'deploy'),patch.object(adapter,'run',run),patch.object(adapter,'down'):
+                campaign.ladder(args,1,root,master)
+            self.assertEqual(seen,[(500,1,'remote-pilot'),(750,1,'remote-pilot'),(1000,1,'remote-pilot')])
     def test_role_roster_is_derived_from_actual_role_commands(self):
         self.assertEqual(adapter.service_roster({'services':{'api':{'command':['node','entrypoint.js','api']},'api-4':{'command':['node','entrypoint.js','api']},'rt-special':{'command':['node','entrypoint.js','realtime']},'feed-reader':{'command':['node','entrypoint.js','feed-reader']}}}),['api','api-4','rt-special'])
 

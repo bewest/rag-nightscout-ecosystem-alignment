@@ -6,6 +6,9 @@ from pathlib import Path
 
 COUNTS = (1000, 3000, 5000, 10000)
 REPLICAS = (1, 2, 4)
+PILOT_COUNTS = (500, 750, 1000)
+CADENCE = {"capacity":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":600,"loadSeconds":900},
+           "remote-pilot":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":120,"loadSeconds":300}}
 UUID = re.compile(r"^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
 OWNER = "org.nightscout.m7.owner"
@@ -105,4 +108,15 @@ def campaign_check(document):
         require(row.get("pair") == pair and row.get("instrument") == document.get("instrument"), "M7_SUMMARY_MIXED_SOURCE")
         require(row.get("imageId")==document["imageId"] and row.get("measurements",{}).get("complete") is True, "M7_SUMMARY_UNMEASURED_CELL")
         require(row.get("verdict") == "PASS", "M7_SUMMARY_NONPASS_CELL")
+    return True
+
+
+def pilot_check(document):
+    require(document.get("kind")=="m7-joined-remote-pilot", "M7_PILOT_SHAPE")
+    cells=document.get("cells",[])
+    require(len(cells)==3 and {(r.get("tenants"),r.get("replicas")) for r in cells}=={(n,1) for n in PILOT_COUNTS},"M7_PILOT_MISSING_CELL")
+    require(re.fullmatch(r"[0-9a-f]{64}",document.get("instrument","")) and re.fullmatch(r"[0-9a-f]{64}",document.get("hostIdentity","")),"M7_PILOT_IDENTITY_REQUIRED")
+    for row in cells:
+        require(row.get("pair")==document.get("pair") and row.get("instrument")==document["instrument"] and row.get("imageId")==document.get("imageId"),"M7_PILOT_MIXED_SOURCE")
+        require(row.get("verdict")=="PASS" and row.get("measurements",{}).get("complete") is True and row.get("profile")=="remote-pilot","M7_PILOT_NONPASS_CELL")
     return True

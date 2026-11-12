@@ -21,8 +21,8 @@ import math
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
-from contract import (COUNTS, REPLICAS, OWNER, SHA, require, digest, labels_match, owned,
-                      tenant_projection, metric, oracle, serving_mounts, campaign_check)
+from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, require, digest, labels_match, owned,
+                      tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check)
 from probe import generate
 from workload import generate as generate_workload
 BASE = ROOT / "tools/mt-bench/compose-baseline"
@@ -157,7 +157,8 @@ def port():
 
 
 def prepare(args):
-    require(args.tenants in COUNTS and args.replicas in REPLICAS, "M7_CAPACITY_CELL_INVALID")
+    require(os.getuid()==1000 and os.getgid()==1000,"M7_HOST_RUNTIME_UID_REQUIRED")
+    require(1<=args.tenants<=10000 and args.replicas in REPLICAS and args.profile in CADENCE, "M7_CAPACITY_CELL_INVALID")
     require(math.isfinite(args.quiet_load) and 0 <= args.quiet_load <= (os.cpu_count() or 1), "M7_QUIET_BOUND_INVALID")
     require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./:@-]{1,255}", args.image), "M7_IMAGE_REFERENCE_INVALID")
     target = Path(args.directory).resolve()
@@ -172,7 +173,7 @@ def prepare(args):
          "pair": {"core": args.core_commit, "deploy": args.deploy_commit}, "coreRepository": str(Path(args.core_repo).resolve()),
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
-         "freeze": str(Path(args.freeze).resolve()), "cadence": {"accel": 1, "hotFactor": 10, "socketsPerTenant": 2, "idleSeconds": 600, "loadSeconds": 900}}
+         "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":CADENCE[args.profile]}
     write(target / "owner.json", m)
     # Refuse preexisting project resources; no broad cleanup/nearest substitute.
     require(not resources(m), "M7_PROJECT_EXISTS")
@@ -184,6 +185,8 @@ def prepare(args):
     archive = subprocess.check_output(["git", "-C", args.deploy_repo, "archive", args.deploy_commit + ":bindings/compose/multitenant"])
     command(["tar", "-x", "-C", overlay], input=archive)
     write(overlay / ".overlay.json", {"version": 1, "deployRepository": m["deployRepository"], "deployCommit": args.deploy_commit})
+    for name in ("commission-restore.js","publish-primer.js"):
+        require((overlay/name).is_file(),"M7_BINDING_COMMISSION_CAPABILITY_MISSING")
     env = runtime_env({"NS_API_REPLICAS": str(args.replicas)})
     command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"])], cwd=overlay, env=env)
     shutil.move(overlay / ".env", target / "env")
@@ -247,49 +250,64 @@ def service_roster(config):
             if isinstance(spec.get("command"), list) and spec["command"][-1:] and spec["command"][-1] in ("api", "realtime", "evaluator", "tenant-admin")]
 
 
+def deployment_plan(config):
+    roster=service_roster(config)
+    apis=[name for name in roster if config["services"][name]["command"][-1]=="api"]
+    remaining=[name for name in roster if name not in apis]
+    start=["up","-d","--no-build","--pull","never","--wait","--wait-timeout","1200"]
+    return [
+        ("infrastructure","compose",[*start,"postgres","vault"]),
+        ("bootstrap","compose",["--profile","ops","run","--rm","bootstrap"]),
+        ("admin-feed","compose",[*start,"admin","feed-reader"]),
+        ("provision","compose",["--profile","ops","run","--rm","primer","node","deploy/multitenant/prime.js","provision"]),
+        ("commission","compose",["--profile","ops","run","--rm","--no-deps","bootstrap","node","deploy/multitenant/commission-restore.js"]),
+        ("apis","compose",[*start,*apis]),
+        ("prime","compose",["--profile","ops","run","--rm","--no-deps","primer","node","deploy/multitenant/prime.js","prime"]),
+        ("publish-primer","local",["publish-primer.js"]),
+        ("remaining-roles","compose",[*start,*remaining,"ui","nginx"])]
+
+
 def deploy(d, m):
     frozen(m);quiet(d, m, "deploy-before");verify(d, m)
     m["imageId"] = image(m)
     config = document(d / "frozen.compose.json")
     for spec in config["services"].values():
-        if "build" in spec:
-            spec["image"] = m["imageId"]
+        if "build" in spec:spec["image"] = m["imageId"]
     write(d / "frozen.compose.json", config);m["composeSha256"] = digest(d / "frozen.compose.json");write(d / "owner.json", m)
-    stages = []
-    def stage(name, *argv):
-        before = time.monotonic()
-        with (d / (name + ".log")).open("wb") as output:
-            compose(d, *argv, file=output, timeout=1800)
-        stages.append({"name": name, "seconds": time.monotonic() - before})
-    stage("infrastructure", "up", "-d", "--no-build", "--pull", "never", "--wait", "postgres", "vault")
-    psql(d, "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")  # Maintenance DB only.
-    stage("bootstrap", "--profile", "ops", "run", "--rm", "bootstrap")
-    layout = document(d / "state/bootstrap/layout.json")
-    require(all(layout.get("namespaces", {}).get(kind) == "nsdemo_" + kind for kind in ("entries","devicestatus","treatments","clock","eval_checkpoint")), "M7_ORACLE_SCHEMA_CONTRACT_CHANGED")
-    stage("admin", "up", "-d", "--no-build", "--pull", "never", "--wait", "admin")
-    stage("provision", "--profile", "ops", "run", "--rm", "primer", "node", "deploy/multitenant/prime.js", "provision")
-    roster = service_roster(config)
-    stage("roles", "up", "-d", "--no-build", "--pull", "never", "--wait", "--wait-timeout", "1200", "feed-reader", *roster, "ui", "nginx")
-    stage("prime", "--profile", "ops", "run", "--rm", "primer", "node", "deploy/multitenant/prime.js", "prime")
-    candidates = [file for file in (d / "state/primer/tenants.json", d / "state/ops/tenants.json") if file.exists()]
-    require(candidates, "M7_PRIMER_OUTPUT_MISSING")
-    projections = [tenant_projection(document(file), m["tenants"]) for file in candidates]
-    require(all(value == projections[0] for value in projections), "M7_PRIMER_OUTPUT_CONFLICT")
-    write(d / "tenants.private.json", projections[0])
-    # Host probe dependencies are extracted from this exact paired image,
-    # never borrowed from a peer checkout or copied into a serving container.
-    name = m["project"] + "-dependencies"
-    cid = command(["docker", "create", "--name", name, "--label", OWNER + "=" + m["owner"], m["imageId"]]).strip()
+    stages=[]
+    for name,scope,args in deployment_plan(config):
+        before=time.monotonic()
+        with (d/(name+".log")).open("wb") as output:
+            if scope=="local":command(["node",d/"core/deploy/multitenant"/args[0],d/"state"],file=output)
+            else:compose(d,*args,file=output,timeout=1800)
+        stages.append({"name":name,"seconds":time.monotonic()-before})
+        write(d/"deployment-stages.json",stages)
+        if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
+        if name=="bootstrap":
+            layout=document(d/"state/bootstrap/layout.json")
+            require(all(layout.get("namespaces",{}).get(kind)=="nsdemo_"+kind for kind in ("entries","devicestatus","treatments","clock","eval_checkpoint")),"M7_ORACLE_SCHEMA_CONTRACT_CHANGED")
+            # Raw restart is not a valid controlled-placement replacement.
+            # The coordinator must supply the committed sharding helper seam.
+            for name in service_roster(config):
+                file=d/"state"/name/"env.json"
+                if file.exists():require(not document(file).get("MULTITENANT_REALTIME_PLACEMENT"),"M7_SHARDED_RESTART_HELPER_REQUIRED")
+    candidates=[file for file in (d/"state/primer/tenants.json",d/"state/ops/tenants.json") if file.exists()]
+    require(candidates,"M7_PRIMER_OUTPUT_MISSING")
+    projections=[tenant_projection(document(file),m["tenants"]) for file in candidates]
+    require(all(value==projections[0] for value in projections),"M7_PRIMER_OUTPUT_CONFLICT")
+    write(d/"tenants.private.json",projections[0])
+    name=m["project"]+"-dependencies"
+    cid=command(["docker","create","--name",name,"--label",OWNER+"="+m["owner"],m["imageId"]]).strip()
     try:
-        (d / "dependencies").mkdir()
-        command(["docker", "cp", cid + ":/opt/app/node_modules", d / "dependencies"], timeout=120)
-        command(["docker", "cp", cid + ":/opt/app/package-lock.json", d / "dependencies/package-lock.json"])
+        (d/"dependencies").mkdir()
+        command(["docker","cp",cid+":/opt/app/node_modules",d/"dependencies"],timeout=120)
+        command(["docker","cp",cid+":/opt/app/package-lock.json",d/"dependencies/package-lock.json"])
     finally:
-        owned(json.loads(command(["docker", "inspect", cid]))[0], m["owner"])
-        command(["docker", "rm", cid])
-    m["dependencyImage"] = m["imageId"];m["dependencyLockSha256"] = digest(d / "dependencies/package-lock.json")
-    m["restartRoles"] = roster
-    write(d / "owner.json", m);write(d / "deployment.json", {"stages": stages, "pair": m["pair"], "imageId": m["imageId"]})
+        owned(json.loads(command(["docker","inspect",cid]))[0],m["owner"])
+        command(["docker","rm","--volumes",cid])
+    m["dependencyImage"]=m["imageId"];m["dependencyLockSha256"]=digest(d/"dependencies/package-lock.json")
+    m["restartRoles"]=service_roster(config)
+    write(d/"owner.json",m);write(d/"deployment.json",{"stages":stages,"pair":m["pair"],"imageId":m["imageId"]})
 
 
 def phase_snapshot(d, out, name):
@@ -475,7 +493,7 @@ def run(d, m, k6_image):
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
                    result_probe["window"]["writes"]["failed"] == 0]
-    summary = {"pair": m["pair"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
+    summary = {"pair": m["pair"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
@@ -509,18 +527,23 @@ def parser():
     sub = p.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("prepare")
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image", "freeze"):prep.add_argument("--"+name, required=True)
-    prep.add_argument("--tenants", type=int, choices=COUNTS, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)
+    prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
+    prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)
     for cmd in ("verify", "build", "deploy", "run", "control", "down"):
         own = sub.add_parser(cmd);own.add_argument("directory")
         if cmd == "run":own.add_argument("--k6-image", required=True)
     check = sub.add_parser("check-campaign");check.add_argument("summary")
+    check = sub.add_parser("check-pilot");check.add_argument("summary")
+    sub.add_parser("manifest")
     return p
 
 
 def main():
     args = parser().parse_args()
+    if args.command == "manifest":return print(json.dumps(instrument(),indent=2))
     if args.command == "prepare":return prepare(args)
     if args.command == "check-campaign":campaign_check(document(args.summary));return print("M7_CAMPAIGN_COMPLETE")
+    if args.command == "check-pilot":pilot_check(document(args.summary));return print("M7_REMOTE_PILOT_COMPLETE")
     d, m = load(args.directory)
     if args.command == "verify":verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
     elif args.command == "build":

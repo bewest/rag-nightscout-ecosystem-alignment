@@ -9,7 +9,7 @@ import sys
 from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import adapter
-from contract import COUNTS, REPLICAS, require, campaign_check
+from contract import COUNTS, REPLICAS, PILOT_COUNTS, require, campaign_check, pilot_check
 
 
 def host_identity(host):
@@ -43,12 +43,14 @@ def authorize_profile(profile, master, root, receipt_file):
 
 
 def ladder(args, profile, root, master):
-    authorize_profile(profile,master,root,args.ceiling_receipt)
-    require(not (root/('profile-'+str(profile)+'.json')).exists(),'M7_PROFILE_ALREADY_RECORDED')
+    pilot=args.mode=="pilot"
+    if not pilot:authorize_profile(profile,master,root,args.ceiling_receipt)
+    label="remote-pilot" if pilot else str(profile)
+    require(not (root/('profile-'+label+'.json')).exists(),'M7_PROFILE_ALREADY_RECORDED')
     result={'profile':profile,'pair':master['pair'],'instrument':master['instrument'],'hostIdentity':master['hostIdentity'],'status':'RUNNING','cells':[]}
-    for tenants in COUNTS:
+    for tenants in (PILOT_COUNTS if pilot else COUNTS):
         folder=root/('n'+str(tenants)+'-a'+str(profile))
-        options=SimpleNamespace(**vars(args),directory=str(folder),tenants=tenants,replicas=profile)
+        options=SimpleNamespace(**{**vars(args),"profile":"remote-pilot" if pilot else "capacity","directory":str(folder),"tenants":tenants,"replicas":profile})
         error=None
         try:
             adapter.prepare(options);d,m=adapter.load(folder);adapter.deploy(d,m);adapter.run(d,m,args.k6_image)
@@ -67,33 +69,35 @@ def ladder(args, profile, root, master):
             text=str(error);code=text if text.startswith('M7_') else 'M7_PROFILE_DIAGNOSIS_REQUIRED'
             result.update(status='FAIL',failedTenants=tenants,error=code,failureClass=failure_class(code))
             if result['failureClass']=='functional-block':master['functionalBlock']=True
-            adapter.write(root/('profile-'+str(profile)+'.json'),result);adapter.write(root/'campaign.json',master)
+            adapter.write(root/('profile-'+label+'.json'),result);adapter.write(root/'campaign.json',master)
             raise error
         adapter.write(root/'campaign.json',master)
-    result['status']='PASS';adapter.write(root/('profile-'+str(profile)+'.json'),result)
+    result['status']='PASS';adapter.write(root/('profile-'+label+'.json'),result)
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('mode',choices=('all','ladder'))
+    p.add_argument('mode',choices=('all','ladder','pilot'))
     for name in ('work','core-repo','core-commit','deploy-repo','deploy-commit','image','freeze','k6-image'):p.add_argument('--'+name,required=True)
     p.add_argument('--quiet-load',type=float,default=3);p.add_argument('--replicas',type=int,choices=REPLICAS);p.add_argument('--ceiling-receipt')
     args=p.parse_args();root=Path(args.work).resolve()
-    require(args.mode=='all' or args.replicas in REPLICAS,'M7_LADDER_PROFILE_REQUIRED')
+    require(args.mode in ('all','pilot') or args.replicas in REPLICAS,'M7_LADDER_PROFILE_REQUIRED')
     host=adapter.inventory('none');identity=host_identity(host);instrument=adapter.instrument()['sha256']
     pair={'core':args.core_commit,'deploy':args.deploy_commit}
+    kind='m7-joined-remote-pilot' if args.mode=='pilot' else 'm7-joined-capacity'
     if root.exists():
         require((root/'campaign.json').is_file(),'M7_CAMPAIGN_DIRECTORY_NOT_OWNED')
         master=adapter.document(root/'campaign.json')
-        require(master.get('directory')==str(root) and master.get('pair')==pair and master.get('instrument')==instrument
+        require(master.get('directory')==str(root) and master.get('kind')==kind and master.get('pair')==pair and master.get('instrument')==instrument
                 and master.get('hostIdentity')==identity,'M7_CAMPAIGN_IDENTITY_CHANGED')
     else:
         root.mkdir(mode=0o700,parents=True)
-        master={'version':1,'kind':'m7-joined-capacity','directory':str(root),'pair':pair,'instrument':instrument,'hostIdentity':identity,'cells':[]}
+        master={'version':1,'kind':kind,'directory':str(root),'pair':pair,'instrument':instrument,'hostIdentity':identity,'cells':[]}
         adapter.write(root/'campaign.json',master)
-    profiles=REPLICAS if args.mode=='all' else (args.replicas,)
+    profiles=REPLICAS if args.mode=='all' else (1,) if args.mode=='pilot' else (args.replicas,)
     for profile in profiles:ladder(args,profile,root,master)
     if args.mode=='all':campaign_check(master);print('M7_CAMPAIGN_COMPLETE')
+    elif args.mode=='pilot':pilot_check(master);print('M7_REMOTE_PILOT_COMPLETE')
     else:print('M7_REPLICA_LADDER_COMPLETE:'+str(args.replicas))
 
 if __name__=='__main__':

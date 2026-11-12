@@ -64,12 +64,20 @@ python3 tools/mt-bench/m7-joined/adapter.py down /absolute/private/m7-cell
 `build` is unnecessary when the matching image already exists. Docker's resolved
 k6 image ID is recorded and used for execution. No floating tag runs after pinning.
 `prepare` only stages local source/TLS/config; it sends no performance traffic.
-It accepts the adopted counts only. Binding preparation must expose committed
+It accepts explicit diagnostic seed counts1..10000; campaign ladders constrain
+the performance steps. Binding preparation must expose committed
 `primer provision`/`primer prime`, and either private `primer/tenants.json` or
 `ops/tenants.json` with exact `{version:1,tenants:[{id,host,dataToken,...}]}`.
 Conflicting outputs, legacy `token` fields or missing tokens refuse. Provisioning
-uses the private admin API; seeding uses DATA APIs. There is no direct tenant-row
+uses the private admin API; restore commissioning precedes API priming, and a
+private local publisher completes custody before remaining roles start. Seeding
+uses DATA APIs. There is no direct tenant-row
 or Vault seeding in the campaign adapter.
+
+`campaign.py pilot` supplies a distinct500→750→1000 remote pilot. See
+[the remote controller seam](REMOTE-SEAM.md) for host prerequisites, cost ownership,
+commands, stage order, verdicts and artifacts. The controller enforces the$1 ceiling;
+this adapter performs no cloud action.
 
 `campaign.py all` accepts the same source/image/freeze arguments plus `--work` and
 `--k6-image`. It measures 1 API at 1,000 → 3,000 → 5,000 → 10,000, then 2 and 4 APIs
@@ -141,3 +149,8 @@ using the tracked payload functions under deterministic mocks. It proves the
 independent SQL oracle/control wiring, **not** k6 scheduling, product authorization,
 clinical behavior, full deployment, stock sockets or capacity. These remain
 UNMEASURED until the coordinator runs the frozen adapter on a quiet host.
+
+The restart observer rejects command failure or an unchanged container StartedAt;
+its own PG smoke control skips a restart, requires refusal, then actually restarts
+and observes a new process. Sharded placement additionally requires its committed
+controlled-replacement binding helper; raw restart is refused until that seam exists.
