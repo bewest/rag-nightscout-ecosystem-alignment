@@ -10671,6 +10671,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-api-replicas-20261112` |
 | semver | `minor` |
 | review | maintainer; compatibility, architecture and deployment operations review |
+| register | `BF-237` |
 
 **Blast radius.** Shared internal service transport, schemas, named clients and consuming-role UDS/HTTP endpoint configuration exist in joined dc795bd1. Remaining scope: compose explicitly registered application/lifecycle/operational modules on component-private listeners; per-operation lifetime and response-format rules; qualify a selected private network binding. Public/management APIs remain separate.
 
@@ -10688,6 +10689,7 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/cohort-constructor-snapshot-2026-11-12/README.md`
 - `reports/tenancy/m7-join-2026-11-11/README.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/runtime-topology.md`
@@ -11768,6 +11770,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
+| register | `BF-236` |
 
 **Blast radius.** Multitenant preview only. Core: one bounded, operator-set size cap for role config files, with distinct refusal errors; realtime startup warm retries an api that is not ready. nightscout-deploy (deploy/capacity-fixes-20261111): bootstrap error detail, compact JSON, nginx Docker DNS re-resolve, health- ordered start, overlay build path.
 
@@ -11781,10 +11784,11 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/realtime-cache-repair-2026-11-12/README.md`
 - `reports/tenancy/capacity-fixes-2026-11-11/README.md`
 - `reports/tenancy/deploy-capacity-fixes-2026-11-11/README.md`
 
-**Notes.** 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry). Core 5517cb6c (MULTITENANT_CONFIG_MAX_BYTES, distinct CONFIG_FILE_* refusals, SOCKET_IPC_NOT_READY and the realtime warm retry NS_TENANT_WARM_RETRY_MS); deploy 4ebd7ef4. Open: deploy load-env.js bound, edge waits on api and realtime only.
+**Notes.** 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry). BF-236 cache freshness/current-bound repairs are joined; final acceptance remains open. Core 5517cb6c (MULTITENANT_CONFIG_MAX_BYTES, distinct CONFIG_FILE_* refusals, SOCKET_IPC_NOT_READY and the realtime warm retry NS_TENANT_WARM_RETRY_MS); deploy 4ebd7ef4. Open: deploy load-env.js bound, edge waits on api and realtime only.
 
 ### `MT-TENANT-REGISTRY` &mdash; Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming
 

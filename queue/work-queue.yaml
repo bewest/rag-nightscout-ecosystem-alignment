@@ -25730,7 +25730,8 @@ items:
     semver_reason: >
       Opt-in private API/listener configuration. Preserve existing UDS settings and
       public protocol, and specify any internal header/path migration explicitly.
-    register: []
+    register:
+      - BF-237
     gates:
       - run: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/internal-api-composition.test.js
         cwd: externals/work/crm-m6b-join-20261110
@@ -25760,6 +25761,7 @@ items:
           follow-ups.
     blocks_on: []
     evidence:
+      - reports/tenancy/cohort-constructor-snapshot-2026-11-12/README.md
       - reports/tenancy/m7-join-2026-11-11/README.md
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
       - docs/30-design/tenancy/runtime-topology.md
@@ -27171,16 +27173,19 @@ items:
     operator_visible: ''
     semver: n/a
     semver_reason: unreleased preview
-    register: []
+    register:
+      - BF-236
     gates:
       - no-gate: >
           Focused tests and break-it controls in the lane records; the 3k/5k/10k capacity campaign runs on the rebuilt image.
     blocks_on: []
     evidence:
+      - reports/tenancy/realtime-cache-repair-2026-11-12/README.md
       - reports/tenancy/capacity-fixes-2026-11-11/README.md
       - reports/tenancy/deploy-capacity-fixes-2026-11-11/README.md
     notes: >
       2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry).
+      BF-236 cache freshness/current-bound repairs are joined; final acceptance remains open.
       Core 5517cb6c (MULTITENANT_CONFIG_MAX_BYTES, distinct CONFIG_FILE_* refusals, SOCKET_IPC_NOT_READY and the realtime
       warm retry NS_TENANT_WARM_RETRY_MS); deploy 4ebd7ef4. Open: deploy load-env.js bound, edge waits on api and realtime only.
 
