@@ -48,7 +48,8 @@ the DATA credential, GETs status, primes one stock polling socket per tenant, PO
 one current synthetic SGV per tenant, and requires that tenant's frame to carry the
 new timestamp. It observes an actual legacy realtime container restart and requires
 unaided stock reconnect plus current frame, then GETs status again. There are exactly
-4N explicit DATA HTTP requests on success; stock polling/reconnect is bounded by the
+4N successful criterion DATA HTTP requests on success, plus separately counted
+recognized warming probes; stock polling/reconnect is bounded by the
 traffic deadline. No manual reconnect workaround or k6/performance window runs.
 
 Client acknowledgements use `load/client-acks.json` (not a claimed k6 run). Independent
@@ -76,7 +77,7 @@ generator-commands/, generator-verifications/ and generator-provenance.json on
 failure. Raw stdout/stderr can contain credentials; do not publish these directories.
 
 Explicit diagnostic HTTP calls retain `load/diagnostic-http.json` even on refusal.
-The bounded trail contains at most40 records: request number, logical stage,
+The bounded trail contains at most4N+512 records and262,144 serialized bytes: request number, logical stage,
 zero-based tenant index, method, fixed route class, response status, a bounded
 uppercase typed `error` code, and a sanitized local failure code. It records no
 URL, exchange path, query, host, tenant identifier, request/response body or token.
@@ -84,10 +85,22 @@ The private file is mode0600; diagnostic observations link it and retain the
 terminal instrument code. In-flight records can have null status when no response
 arrived. This trail describes explicit DATA HTTP calls, not Socket.IO internals.
 
-A status refusal stops the diagnostic. Warming, authentication and unknown service
-refusals are distinguishable; this observability repair adds no retry, deadline
-extension, credential exchange fallback or role change. A warming-specific status
-poll requires an observed503/TENANT_WARMING cause and a separate reviewed change.
+GET status retries only an actual503 response with exact typed `TENANT_WARMING`.
+The first refusal remains recorded and classified in the current run. Polls use
+200ms cadence inside the existing global deadline, with at most512 recognized
+warming probes globally; reaching the probe limit refuses. Exchange, mutation,
+401, unknown503 and untyped503 refusals stop immediately. No credential fallback,
+role change or deadline extension exists. This policy follows the measured API
+cold-start contract; it does not retroactively classify historical remoteD.
+
+HTTP accounting version2 requires successful `criterionHttpRequests=4N` (also
+retained as `dataHttpRequests`), separate `warmProbeHttpRequests`, and
+`physicalHttpRequests=criterionHttpRequests+warmProbeHttpRequests` for a passing
+result. Trail records equal physical requests and retain the explicit byte bound.
+Failed results can also contain refused or pending requests, so they do not claim
+that passing equation. Warm responses alone never satisfy HTTP, write, SQL, frame,
+observed restart or stock-recovery criteria. Historical profiles/results keep their
+original instrument source; no old capture is reinterpreted as version2.
 
 On terminal cleanup the owned Socket.IO HTTP agent rejects late queued polling
 requests before destroying its sockets. Agent.destroy() alone permits later
