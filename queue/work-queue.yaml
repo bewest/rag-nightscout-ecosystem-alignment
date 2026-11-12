@@ -26600,24 +26600,31 @@ items:
     title: "M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)"
     parcel: tenancy
     repo: nightscout-deploy
-    branch: main
+    branch: codex/m7-join-20261112
     base: main@75f0f61
-    state: ready-to-push
+    state: in-progress
     blast_radius: >
-      bindings/compose: a `vault-agent` service with AppRole auto-auth, a token sink on
-      a shared read-only volume mounted into api/realtime/evaluator/tenant-admin, a
-      Transit policy per tenant key; bootstrap issues the AppRole, not per-tenant root
-      tokens. Probes: renewal after TTL, seal and unseal, AppRole secret rotation.
+      Opt-in registry/static Compose overlay with one AppRole and a constant-size
+      Transit path-pattern policy per deployment. Agent owns auto-auth, sink renewal
+      and max-TTL reauthentication; only the exact selected API roster receives the
+      read-only serving sink. Realtime, evaluator, UI and operation helpers receive
+      no Agent credential. Provisioning and management issuer authority remain separate.
+      Source/state/roster custody, no-fallback refusal, rotation and outages are tested.
     review: maintainer
     operator_visible: ''
     semver: n/a
     semver_reason: deployment repository
     register: []
     gates:
+      - no-gate: >
+          The registry/fixed-replica conversion passes focused and actual Agent/Vault/API
+          criteria on its recorded source pair. Final coherent source-pin refresh,
+          paired acceptance and component capacity remain UNMEASURED. The historical
+          main/ed2 static gate below does not establish those new criteria.
       - run: cd /home/bewest/src/nightscout-deploy && npm test >/dev/null && test -f bindings/compose/vault-agent/compose.vault-agent.yaml && grep -q renew-self bindings/compose/vault-agent/vault-agent-bootstrap.js && tools/compose-identity-check.sh /tmp/crm-tenant-order-integration-20261107 >/dev/null
         kind: static
         describe: >
-          nightscout-deploy main cda38265: overlay present, Agent role grants
+          Historical M6c baseline only, nightscout-deploy main cda38265: overlay present, Agent role grants
           renew-self/lookup-self (the first run showed re-auth each TTL instead of
           renewal without it), imported tree still byte-identical to ed2. The measured
           Compose smoke (renewal past a 2-minute TTL, stopped Agent fails closed with
@@ -26627,15 +26634,20 @@ items:
     blocks_on:
       - MT-VAULT-TOKEN-FILE
     evidence:
+      - reports/tenancy/vault-agent-registry-2026-11-12/README.md
       - docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md
     notes: >
-      Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no
-      service-login adapter is written in core. Decided 2026-11-09
-      (vault-one-approle-per-deployment): one AppRole per deployment; tenant
-      separation at Vault is not a goal. Follow-up: replace the bootstrap's policy
-      union with a path glob over tenant key names.
-      UNMEASURED: re-auth after token_max_ttl, seal/unseal, tokenFile in roles that
-      make no Vault calls at ed2.
+      2026-11-12: original delivery fa558353154c875312da984926a4efd83dfcbef6
+      is joined into local deployment eea9b6cac96d42b48237c00c226394f9bfe37cfb.
+      Native pair d50502bb6126bda2bb0af384569e1d95de114f2f/43cd1e6a85e9b60a5b1b174a840609ce938169f6
+      proves renewal, max-TTL reauthentication, no-fallback expiry/outage refusal and
+      explicit recovery; production bytes are identical in delivery. Coordinator
+      verifies all artifact/source digests, 44 actual API observations and 28 joined
+      focused checks. The prior policy union is replaced, not treated as current
+      capacity evidence. Machine secret-id is consumed, reusable and nonexpiring;
+      serving tokens remain bounded. Final combined acceptance is open.
+      Decision vault-one-approle-per-deployment: tenant separation at Vault is not
+      a goal; no service-login or renewal loop is added to core.
 
   - id: DEPLOY-IDP-PROFILE
     title: "M6c: Authentik identity-provider profile over HTTPS with synthetic people"
@@ -26864,16 +26876,17 @@ items:
     title: "M7: prove each component scales horizontally or vertically as intended, with no hidden binding"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/multitenant-20261102
+    branch: codex/m7-join-20261111
     base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
-    state: not-started
+    state: in-progress
     blast_radius: >
       Under the baseline workload: API replicas 1 -> 2 -> 4 behind the edge (throughput
       must rise near-linearly until PG saturates; restore still addresses every
       instance), realtime vertical then horizontal with connection affinity measured,
-      evaluator vertical (single owner by design: show cycle time scales with CPU and
-      record where partitioning would be needed), PostgreSQL vertical and connection
-      pool bounds, Vault Agent per host. Any shared singleton, lock, cache or file
+      evaluator vertical and opt-in fixed-roster partitioning (measure actual completed
+      acquisition/time work and membership transitions), PostgreSQL vertical and connection
+      pool bounds, Vault Agent per deployment. Each tenant has one selected evaluator
+      owner; independent worker counts do not imply shared partition membership. Any shared singleton, lock, cache or file
       that caps a component's scaling is a finding with file:line. Consumes
       MT-ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER.
     review: maintainer; architecture review
@@ -26890,10 +26903,19 @@ items:
       - MT-BENCH-BASELINE
       - MT-API-FIXED-ROSTER
       - MT-REALTIME-SHARDING
+      - MT-EVALUATOR-PARTITION
     evidence:
+      - reports/tenancy/m7-profile-provenance-2026-11-12/README.md
+      - reports/tenancy/m7-receipt-validator-2026-11-12/README.md
       - docs/30-design/tenancy/runtime-topology.md
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
     notes: >
+      2026-11-12: source correctness, profile provenance and receipt instruments are active;
+      actual joined scaling is UNMEASURED. The default Vault-server profile cannot
+      substitute for an explicitly selected Agent profile. Current capacity startup/frame/SQL
+      observations do not establish continued evaluator computation; BF-238 repair and the
+      bounded successful-completion oracle precede new capacity runs. Component profiles
+      remain distinct from the API-only replica comparison.
       Maintainer 2026-11-09: the architecture must allow scaling different components
       horizontally or vertically as planned, without binding. This item is the proof;
       findings become BF- entries or design changes, not waivers.
