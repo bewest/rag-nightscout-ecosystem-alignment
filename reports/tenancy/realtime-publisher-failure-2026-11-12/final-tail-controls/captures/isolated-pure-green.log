@@ -1,0 +1,154 @@
+TAP version 13
+# Subtest: records event type, clear, source digest and synthetic discriminator without payload or credentials
+ok 1 - records event type, clear, source digest and synthetic discriminator without payload or credentials
+  ---
+  duration_ms: 1.871273
+  type: 'test'
+  ...
+# Subtest: retains bounded connect/ACK/error/disconnect traces and counts independently
+ok 2 - retains bounded connect/ACK/error/disconnect traces and counts independently
+  ---
+  duration_ms: 1.165505
+  type: 'test'
+  ...
+# Subtest: malformed observer-only metadata cannot throw into the socket listener
+ok 3 - malformed observer-only metadata cannot throw into the socket listener
+  ---
+  duration_ms: 0.859032
+  type: 'test'
+  ...
+# Subtest: final tail validates latest exact probes after both awaited census ports and retains final counts
+ok 4 - final tail validates latest exact probes after both awaited census ports and retains final counts
+  ---
+  duration_ms: 1.861947
+  type: 'test'
+  ...
+# Subtest: final tail refuses duplicate B arriving during the last awaited census
+ok 5 - final tail refuses duplicate B arriving during the last awaited census
+  ---
+  duration_ms: 0.98413
+  type: 'test'
+  ...
+# Subtest: final tail refuses cold arriving during the last awaited census
+ok 6 - final tail refuses cold arriving during the last awaited census
+  ---
+  duration_ms: 0.610614
+  type: 'test'
+  ...
+# Subtest: final tail refuses wrong slot arriving during the last awaited census
+ok 7 - final tail refuses wrong slot arriving during the last awaited census
+  ---
+  duration_ms: 0.326633
+  type: 'test'
+  ...
+# Subtest: final tail refuses changed B session arriving during the last awaited census
+ok 8 - final tail refuses changed B session arriving during the last awaited census
+  ---
+  duration_ms: 0.354931
+  type: 'test'
+  ...
+# Subtest: final tail refuses B reconnect arriving during the last awaited census
+ok 9 - final tail refuses B reconnect arriving during the last awaited census
+  ---
+  duration_ms: 0.271773
+  type: 'test'
+  ...
+# Subtest: caught after-start failure retains typed checkpoint and private detail without changing uncertain refusal
+ok 10 - caught after-start failure retains typed checkpoint and private detail without changing uncertain refusal
+  ---
+  duration_ms: 127.253326
+  type: 'test'
+  ...
+# Subtest: readiness failure is distinct from a completed host callback
+ok 11 - readiness failure is distinct from a completed host callback
+  ---
+  duration_ms: 98.418044
+  type: 'test'
+  ...
+# Subtest: holder commit failure keeps its typed inner boundary
+ok 12 - holder commit failure keeps its typed inner boundary
+  ---
+  duration_ms: 106.980668
+  type: 'test'
+  ...
+# Subtest: zero exit with lost completion remains uncertainty, not successful readiness
+ok 13 - zero exit with lost completion remains uncertainty, not successful readiness
+  ---
+  duration_ms: 76.911963
+  type: 'test'
+  ...
+# Subtest: signal and real completion have distinct typed outcomes
+ok 14 - signal and real completion have distinct typed outcomes
+  ---
+  duration_ms: 205.828307
+  type: 'test'
+  ...
+# Subtest: private stream and public event histories are explicitly bounded
+ok 15 - private stream and public event histories are explicitly bounded
+  ---
+  duration_ms: 2450.899253
+  type: 'test'
+  ...
+# Subtest: raw diagnostics refuse a nonprivate host directory without leaking a stream into shared placement
+ok 16 - raw diagnostics refuse a nonprivate host directory without leaking a stream into shared placement
+  ---
+  duration_ms: 1.149723
+  type: 'test'
+  ...
+# Subtest: bounded lifecycle source codes remain typed without exporting arbitrary messages
+ok 17 - bounded lifecycle source codes remain typed without exporting arbitrary messages
+  ---
+  duration_ms: 0.262521
+  type: 'test'
+  ...
+# Subtest: clinical-only B cannot satisfy the private transport proof
+ok 18 - clinical-only B cannot satisfy the private transport proof
+  ---
+  duration_ms: 1.888963
+  type: 'test'
+  ...
+# Subtest: one matching B plus clinical background passes without granting background probe credit
+ok 19 - one matching B plus clinical background passes without granting background probe credit
+  ---
+  duration_ms: 0.337301
+  type: 'test'
+  ...
+# Subtest: unrelated A cannot substitute the intended post-cutover A probe
+ok 20 - unrelated A cannot substitute the intended post-cutover A probe
+  ---
+  duration_ms: 0.295382
+  type: 'test'
+  ...
+# Subtest: duplicate, forbidden cold/held A, wrong namespace/tenant and old nonce refuse
+ok 21 - duplicate, forbidden cold/held A, wrong namespace/tenant and old nonce refuse
+  ---
+  duration_ms: 1.416071
+  type: 'test'
+  ...
+# Subtest: nonce is required and bounded
+ok 22 - nonce is required and bounded
+  ---
+  duration_ms: 0.400559
+  type: 'test'
+  ...
+# Subtest: actual source effect identity retains nonce message, ignores key/debug, and passes all scoped counterexamples
+ok 23 - actual source effect identity retains nonce message, ignores key/debug, and passes all scoped counterexamples
+  ---
+  duration_ms: 0.407524
+  type: 'test'
+  ...
+# Subtest: all four client scopes are mandatory
+ok 24 - all four client scopes are mandatory
+  ---
+  duration_ms: 0.361038
+  type: 'test'
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3127.024198

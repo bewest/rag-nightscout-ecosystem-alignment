@@ -1,0 +1,21 @@
+{
+  "source": "c10ade28f6e411919a8aa8abc29beefb15c9bc94",
+  "coreDependency": "47b43b6246ce7f94f1f1f0d01830495a78b28add:lib/tenant-notifications/contract.js",
+  "coreDependencySha256": "b9fa5d252bed31bc94b5a0424dba84672af3a52f7b3b76ffdb02ccad011cffe6",
+  "command": [
+    "node",
+    "--test",
+    "bindings/compose/multitenant/replacement-observation.test.js",
+    "bindings/compose/multitenant/replacement-probe-contract.test.js",
+    "bindings/compose/multitenant/replacement-client-observation.test.js",
+    "bindings/compose/multitenant/replacement-final-tail.test.js"
+  ],
+  "environmentKeys": [
+    "PATH",
+    "TMPDIR",
+    "NS_UI_TEST_CORE"
+  ],
+  "node": "v22.23.4",
+  "exit": 0,
+  "scope": "isolated committed archives; no node_modules/npm/Docker/native env/live queries"
+}
