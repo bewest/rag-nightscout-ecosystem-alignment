@@ -57,7 +57,8 @@ def measurements(directory, manifest):
                 resident = row.pop("dockerMemoryBytesSamples", [])
                 row.update({"sampleCount": len(values), "cpuPctMean": sum(values)/len(values) if values else None,
                             "cpuPctMax": max(values) if values else None, "dockerMemoryBytesMax": max(resident) if resident else None})
-            activity = [r for r in csv.DictReader((folder / "pg-activity.tsv").open(), delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
+            with (folder / "pg-activity.tsv").open() as source:
+                activity = [r for r in csv.DictReader(source, delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
             complete = complete and len(activity) > 0
             wait = {}
             for row in activity:

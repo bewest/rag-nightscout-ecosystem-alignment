@@ -22,7 +22,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
 from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, require, digest, labels_match, owned,
-                      tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check)
+                      tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity)
 from probe import generate
 from workload import generate as generate_workload
 BASE = ROOT / "tools/mt-bench/compose-baseline"
@@ -174,6 +174,7 @@ def prepare(args):
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
          "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":CADENCE[args.profile]}
+    m["hostIdentity"]=host_identity(inventory(nonce))
     write(target / "owner.json", m)
     # Refuse preexisting project resources; no broad cleanup/nearest substitute.
     require(not resources(m), "M7_PROJECT_EXISTS")
@@ -228,6 +229,7 @@ def prepare(args):
 
 
 def verify(d, m):
+    require(host_identity(inventory(m["owner"]))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
     require(digest(d / "restart.cjs")==m["restartHelperSha256"], "M7_RESTART_HELPER_CHANGED")
@@ -327,6 +329,28 @@ def phase_snapshot(d, out, name):
     (out / (name + "-pg-statements.tsv")).write_text(psql(d, "SELECT r.rolname,s.calls,s.total_exec_time,left(regexp_replace(s.query,'\\s+',' ','g'),500) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY total_exec_time DESC LIMIT 50;"))
 
 
+def job_record(file,process,owner,group=False):
+    raw=Path('/proc/'+str(process.pid)+'/stat').read_text().split(')',1)[1].split()
+    write(file,{'owner':owner,'pid':process.pid,'startTicks':raw[19],'group':group,'completed':False})
+
+
+def stop_job(file,owner):
+    if not file.exists():return
+    job=document(file)
+    require(job.get('owner')==owner and isinstance(job.get('pid'),int) and job['pid']>1,'M7_HOST_JOB_NOT_OWNED')
+    if job.get('completed'):return
+    proc=Path('/proc/'+str(job['pid'])+'/stat')
+    if proc.exists():
+        raw=proc.read_text().split(')',1)[1].split()
+        require(raw[19]==job['startTicks'],'M7_HOST_JOB_IDENTITY_CHANGED')
+        if raw[0]!='Z':
+            if job['group']:
+                require(os.getpgid(job['pid'])==job['pid'],'M7_HOST_JOB_GROUP_CHANGED')
+                os.killpg(job['pid'],signal.SIGTERM)
+            else:os.kill(job['pid'],signal.SIGTERM)
+    job['completed']=True;write(file,job)
+
+
 @contextlib.contextmanager
 def sampling(d, out):
     m = document(d / "owner.json")
@@ -336,13 +360,13 @@ def sampling(d, out):
     empty = d / "empty.compose.json";write(empty, {"services": {}})
     log = (out / "sampler.log").open("wb")
     process = subprocess.Popen([str(BASE / "probes/sample.sh"), m["project"], str(d / "env"), str(d / "frozen.compose.json"), str(empty), str(out)], stdout=log, stderr=log, start_new_session=True)
+    job=out/"sampler-job.json";job_record(job,process,m["owner"],group=True)
     before = time.monotonic()
     cpu_before = resource.getrusage(resource.RUSAGE_SELF)
     try:
         yield
     finally:
-        if process.poll() is None:
-            os.killpg(process.pid, signal.SIGTERM)
+        stop_job(job,m["owner"])
         process.wait(timeout=10)
         log.close()
         write(out / "sampler.json", {"cadenceSeconds": 2, "wallSeconds": time.monotonic()-before, "pid": process.pid,
@@ -459,6 +483,7 @@ def run(d, m, k6_image):
     with sampling(d, out):
         probe_process = subprocess.Popen(["node", str(d / "probe.js"), "--base", "http://127.0.0.1:" + str(m["port"]), "--tenants", str(d / "tenants.private.json"), "--compose", spec,
             "--runid", runid, "--per", "2", "--open", "5", "--window", str(m["cadence"]["loadSeconds"]), "--probeEvery", "3000", "--restart", "1", "--evalTimeout", "900", "--out", str(out / "probe.json"), "--signal", str(out / ".window")], env=probe_env, stdout=probe_log, stderr=subprocess.STDOUT)
+        job_record(out/"probe-job.json",probe_process,m["owner"])
         try:
             deadline = time.monotonic() + 600
             while not (out / ".window").exists():
@@ -478,7 +503,8 @@ def run(d, m, k6_image):
             (out / ".restart").touch()
             require(probe_process.wait(timeout=1500) == 0, "M7_PROBE_FAILED")
         finally:
-            if probe_process.poll() is None:probe_process.terminate();probe_process.wait(timeout=10)
+            stop_job(out/"probe-job.json",m["owner"])
+            probe_process.wait(timeout=10)
             if "monitor" in locals():monitor.__exit__(None,None,None)
             probe_log.close()
     phase_snapshot(d, out, "after-reconnect")
@@ -493,7 +519,7 @@ def run(d, m, k6_image):
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
                    result_probe["window"]["writes"]["failed"] == 0]
-    summary = {"pair": m["pair"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
+    summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
@@ -507,10 +533,13 @@ def run(d, m, k6_image):
 
 
 def down(d, m):
+    for file in list(d.glob("*/sampler-job.json"))+list(d.glob("*/probe-job.json")):stop_job(file,m["owner"])
     assert_owned(m)
     if m.get("prepared"):
         verify(d, m)
         compose(d, "--profile", "ops", "down", "--volumes", "--remove-orphans", timeout=120)
+        for row in resources(m):
+            owned(row,m["owner"]);command(["docker","rm","--force","--volumes",row["Id"]])
     else:
         require(not resources(m), "M7_PARTIAL_PREPARE_HAS_RESOURCES")
     core = d / "core"
@@ -529,7 +558,7 @@ def parser():
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image", "freeze"):prep.add_argument("--"+name, required=True)
     prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)
-    for cmd in ("verify", "build", "deploy", "run", "control", "down"):
+    for cmd in ("verify", "build", "deploy", "run", "control", "down", "host-identity"):
         own = sub.add_parser(cmd);own.add_argument("directory")
         if cmd == "run":own.add_argument("--k6-image", required=True)
     check = sub.add_parser("check-campaign");check.add_argument("summary")
@@ -545,6 +574,10 @@ def main():
     if args.command == "check-campaign":campaign_check(document(args.summary));return print("M7_CAMPAIGN_COMPLETE")
     if args.command == "check-pilot":pilot_check(document(args.summary));return print("M7_REMOTE_PILOT_COMPLETE")
     d, m = load(args.directory)
+    if args.command == "host-identity":
+        observed=inventory(m["owner"]);write(d/"host-identity-inventory.json",observed)
+        require(host_identity(observed)==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
+        return print(json.dumps({"hostIdentity":m["hostIdentity"],"pair":m["pair"],"instrument":m["instrument"]["sha256"]}))
     if args.command == "verify":verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
     elif args.command == "build":
         frozen(m);quiet(d, m, "build-before");verify(d, m)

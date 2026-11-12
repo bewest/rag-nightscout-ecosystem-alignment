@@ -52,8 +52,8 @@ class Contract(unittest.TestCase):
         serving_mounts({'services':{'api':{'volumes':[{'target':'/run/ns-config'}]}}})
         with self.assertRaisesRegex(RuntimeError,'SOURCE_MOUNT_REFUSED'):serving_mounts({'services':{'api':{'volumes':[{'target':'/opt/app/lib'}]}}})
     def test_campaign_requires_all_counts_and_replica_cells_with_same_pair(self):
-        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'instrument':'c'*64,'verdict':'PASS','imageId':'sha256:'+'e'*64,'measurements':{'complete':True}}
-        document={'version':1,'kind':'m7-joined-capacity','pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'cells':[{**row,'tenants':n,'replicas':a} for a in REPLICAS for n in COUNTS]}
+        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'verdict':'PASS','imageId':'sha256:'+'e'*64,'measurements':{'complete':True}}
+        document={'version':1,'kind':'m7-joined-capacity','pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'hostIdentity':'d'*64,'cells':[{**row,'tenants':n,'replicas':a} for a in REPLICAS for n in COUNTS]}
         self.assertTrue(campaign_check(document));broken=copy.deepcopy(document);broken['cells'].pop()
         with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):campaign_check(broken)
         broken=copy.deepcopy(document);broken['cells'][0]['pair']={**pair,'core':'d'*40}
@@ -113,7 +113,7 @@ class Contract(unittest.TestCase):
         self.assertIn('commission-restore.js',' '.join(next(r[2] for r in plan if r[0]=='commission')))
         self.assertEqual(next(r[1] for r in plan if r[0]=='publish-primer'),'local')
     def test_remote_pilot_is_distinct_and_does_not_skip_750(self):
-        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'verdict':'PASS','measurements':{'complete':True},'profile':'remote-pilot','replicas':1}
+        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'verdict':'PASS','measurements':{'complete':True},'profile':'remote-pilot','replicas':1}
         doc={'kind':'m7-joined-remote-pilot','pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':row['imageId'],'cells':[{**row,'tenants':n} for n in PILOT_COUNTS]}
         self.assertTrue(pilot_check(doc));doc['cells'].pop(1)
         with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):pilot_check(doc)
@@ -124,10 +124,19 @@ class Contract(unittest.TestCase):
             args=SimpleNamespace(mode='pilot',replicas=None,ceiling_receipt=None,k6_image='not-run')
             def prepare(options):
                 seen.append((options.tenants,options.replicas,options.profile));folder=Path(options.directory);folder.mkdir();adapter.write(folder/'owner.json',{})
-            def run(folder,manifest,image):adapter.write(folder/'summary.json',{'pair':pair,'imageId':'sha256:'+'e'*64,'instrument':'c'*64})
+            def run(folder,manifest,image):adapter.write(folder/'summary.json',{'pair':pair,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'instrument':'c'*64})
             with patch.object(adapter,'prepare',prepare),patch.object(adapter,'load',lambda folder:(Path(folder),{})),patch.object(adapter,'deploy'),patch.object(adapter,'run',run),patch.object(adapter,'down'):
                 campaign.ladder(args,1,root,master)
             self.assertEqual(seen,[(500,1,'remote-pilot'),(750,1,'remote-pilot'),(1000,1,'remote-pilot')])
+    def test_owned_host_job_cannot_kill_a_reused_identity(self):
+        with tempfile.TemporaryDirectory(prefix='m7-job-test-') as scratch:
+            process=subprocess.Popen(['sleep','30'],start_new_session=True);file=Path(scratch)/'job.json'
+            try:
+                adapter.job_record(file,process,'ours',True);value=adapter.document(file);bad={**value,'startTicks':'wrong'};adapter.write(file,bad)
+                with self.assertRaisesRegex(RuntimeError,'IDENTITY_CHANGED'):adapter.stop_job(file,'ours')
+                self.assertIsNone(process.poll());adapter.write(file,value);adapter.stop_job(file,'ours');self.assertIsNotNone(process.wait(timeout=2));adapter.stop_job(file,'ours')
+            finally:
+                if process.poll() is None:process.terminate();process.wait(timeout=2)
     def test_role_roster_is_derived_from_actual_role_commands(self):
         self.assertEqual(adapter.service_roster({'services':{'api':{'command':['node','entrypoint.js','api']},'api-4':{'command':['node','entrypoint.js','api']},'rt-special':{'command':['node','entrypoint.js','realtime']},'feed-reader':{'command':['node','entrypoint.js','feed-reader']}}}),['api','api-4','rt-special'])
 

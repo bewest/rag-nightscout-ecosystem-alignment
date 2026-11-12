@@ -9,13 +9,7 @@ import sys
 from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import adapter
-from contract import COUNTS, REPLICAS, PILOT_COUNTS, require, campaign_check, pilot_check
-
-
-def host_identity(host):
-    values={key:host[key] for key in ('cores','cpuModel','kernel','dockerDaemonId','dockerContext')}
-    values['memTotalKiB']=host['memory']['MemTotal']
-    return hashlib.sha256(json.dumps(values,sort_keys=True).encode()).hexdigest()
+from contract import COUNTS, REPLICAS, PILOT_COUNTS, require, campaign_check, pilot_check, host_identity
 
 
 def failure_class(code):
@@ -43,6 +37,7 @@ def authorize_profile(profile, master, root, receipt_file):
 
 
 def ladder(args, profile, root, master):
+    require(not master.get("functionalBlock"),"M7_GLOBAL_FUNCTIONAL_BLOCK")
     pilot=args.mode=="pilot"
     if not pilot:authorize_profile(profile,master,root,args.ceiling_receipt)
     label="remote-pilot" if pilot else str(profile)
@@ -55,6 +50,7 @@ def ladder(args, profile, root, master):
         try:
             adapter.prepare(options);d,m=adapter.load(folder);adapter.deploy(d,m);adapter.run(d,m,args.k6_image)
             cell=adapter.document(folder/'summary.json')
+            require(cell.get('hostIdentity')==master['hostIdentity'],'M7_HOST_IDENTITY_CHANGED')
             master.setdefault('imageId',cell['imageId']);require(master['imageId']==cell['imageId'],'M7_IMAGE_ID_CHANGED')
             result['cells'].append(cell);master['cells'].append(cell)
         except Exception as caught:

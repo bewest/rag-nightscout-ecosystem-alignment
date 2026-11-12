@@ -97,3 +97,21 @@ That verifies resource ownership and removes only the recorded project/volumes/
 private state/dependencies/worktree; raw phase evidence remains. If identity or
 ownership changed, teardown refuses for coordinator diagnosis. Do not force-remove
 unknown resources. The remote controller retains VM-level cleanup responsibility.
+
+
+For controller checkpoints, the same pilot is available as granular cell commands:
+`prepare --profile remote-pilot --tenants 500 --replicas 1`, then `deploy`,
+`host-identity`, `run --k6-image ...`, and `down`. Repeat with fresh owned directories
+for750 and1000 only after the previous `summary.json` is PASS. Assemble their cells
+under `kind:m7-joined-remote-pilot` and check with `check-pilot`; it requires identical
+pair/instrument/image/host and all three rows. The full `campaign.py pilot` is the
+convenience form, not a resumable partially measured window. Preserve completed
+cell checkpoints; an interrupted window restarts as a new cell, not a continuation
+whose elapsed time is silently stitched together. `host-identity` returns only the
+identity/source hashes and keeps its full inventory private.
+
+Running sampler/probe host jobs are recorded with owner, PID and process-start
+identity. `down` refuses changed/reused identities and stops only its own recorded
+jobs before its own Docker resources. This supports budget-interruption cleanup
+without a process-name sweep or stopping a peer. The controller still owns its
+outer runner session and VM teardown.
