@@ -1,0 +1,17 @@
+{"kind": "native-bounded-evaluator-listener-qualification", "source": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7", "binding": "0f8749bc954812b9d384528da733680930e3b236", "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab", "imagePair": {"org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7", "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"}, "helperSha256": "c9e0370e8a3ca4d08dfd70b1290a36a0d57f33c34f3a5639a2e6d81b77b707e8", "secondsBetween": 10, "elapsedSeconds": 21.259140285197645, "scope": "short read-only native smoke, not pilot/capacity/restart/clinical acceptance", "result": {"verdict": "UNMEASURED", "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED"}}
+Traceback (most recent call last):
+  File "<owned-state>/observe.py", line 65, in <module>
+    if __name__=='__main__':main(json.loads(Path(sys.argv[1]).read_text()))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<owned-state>/observe.py", line 63, in main
+    if error is not None:raise error
+                         ^^^^^^^^^^^
+  File "<owned-state>/observe.py", line 52, in main
+    result=p.assess(rounds,ids,'idle')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/evaluator_progress.py", line 121, in assess
+    need(work>0 and (phase!='idle' or delta>0),'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/evaluator_progress.py", line 21, in need
+    if not value:raise Refused(code,verdict)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evaluator_progress.Refused: M7_EVALUATOR_PROGRESS_NOT_OBSERVED
