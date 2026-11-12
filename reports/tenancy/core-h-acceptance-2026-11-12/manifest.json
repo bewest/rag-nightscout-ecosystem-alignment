@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "kind": "immutable-core-h-functional-execution-leaf",
+  "captureDate": "2026-11-12",
+  "files": {
+    "README.md": "c83cb5af45e968d951ffddf7b0f3a484fa2358b96fa1d306a8b5c26a5abac211",
+    "cleanup-and-cost.json": "f1cb6efc3a08e71b677a26487e20fb1d5266e402a1bd6110d1a0497c702596ab",
+    "corpus.json": "331e3784fc572b3f0ec88d1d4e87ad696a2019a4fdf93df5158d6569c35a6fc2",
+    "derivation-controls.json": "9434f622070f124ae39c3fd4d1b868fcf922fc5a1be91859e2257065d91d83f8",
+    "execution.json": "f53e884ba12a44f0cd738d4cd335a73c5a99c2c553f1c61f1444e51199221628",
+    "provenance.json": "7664e386542fcdf24b53259c2fb7de7e094ef1ecd6a5470e8870e538e3162a52",
+    "publication-verification.json": "b8cd25a81629fb00363cd37fc9e4f94dadc13ae4cd47f897fcce6ac2b50f7f90",
+    "queue-check-output.txt": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f"
+  }
+}
