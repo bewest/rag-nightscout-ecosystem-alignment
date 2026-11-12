@@ -1,0 +1,14 @@
+
+
+  ...........................................      RS_RESTART_COST 101 tenants: enumerate + build 17 ms (1 enumeration)
+      RS_RESTART_COST 1001 tenants: enumerate + build 59 ms (1 enumeration)
+      RS_RESTART_COST 3001 tenants: enumerate + build 141 ms (1 enumeration)
+...      AR_NEW_TENANT served after 436 ms (refresh 500 ms)
+..{"event":"owned-pg-schema","name":"hh_access_be13d6de8ee95925","oid":19050}
+{"event":"owned-pg-schema","name":"hh_authority_be13d6de8ee95925","oid":19107}
+{"event":"owned-pg-schema","name":"hh_human_be13d6de8ee95925","oid":19205}
+.
+
+  49 passing (14s)
+
+

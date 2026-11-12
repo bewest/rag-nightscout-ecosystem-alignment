@@ -1,0 +1,15 @@
+
+
+  !
+
+  0 passing (87ms)
+  1 failing
+
+  1) durable connector source configuration
+       CS_REQUEST_GATE: actual connector transports send no request after configuration/activity admission is withdrawn:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/connector-sources.test.js:101:7)
+
+
+

@@ -1,0 +1,10 @@
+
+<core>/lib/tenant-connector/source-rest.js
+   5:15  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+  28:16  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+
+<core>/tests/connector-sources.integration.test.js
+  124:71  warning  Found chmodSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+✖ 3 problems (0 errors, 3 warnings)
+
