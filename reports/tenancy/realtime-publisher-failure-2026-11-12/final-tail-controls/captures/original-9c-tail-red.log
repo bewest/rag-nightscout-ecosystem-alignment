@@ -1,0 +1,116 @@
+TAP version 13
+# Subtest: final tail validates latest exact probes after both awaited census ports and retains final counts
+not ok 1 - final tail validates latest exact probes after both awaited census ports and retains final counts
+  ---
+  duration_ms: 4.742254
+  type: 'test'
+  location: '/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:9:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(entry)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:9:398)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: final tail refuses duplicate B arriving during the last awaited census
+not ok 2 - final tail refuses duplicate B arriving during the last awaited census
+  ---
+  duration_ms: 0.950547
+  type: 'test'
+  location: '/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:454'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:541)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: final tail refuses cold arriving during the last awaited census
+not ok 3 - final tail refuses cold arriving during the last awaited census
+  ---
+  duration_ms: 0.281579
+  type: 'test'
+  location: '/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:454'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:541)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: final tail refuses wrong slot arriving during the last awaited census
+not ok 4 - final tail refuses wrong slot arriving during the last awaited census
+  ---
+  duration_ms: 0.244249
+  type: 'test'
+  location: '/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:454'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:541)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: final tail refuses changed B session arriving during the last awaited census
+not ok 5 - final tail refuses changed B session arriving during the last awaited census
+  ---
+  duration_ms: 0.186754
+  type: 'test'
+  location: '/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:454'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:541)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: final tail refuses B reconnect arriving during the last awaited census
+not ok 6 - final tail refuses B reconnect arriving during the last awaited census
+  ---
+  duration_ms: 0.227033
+  type: 'test'
+  location: '/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:454'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/replacement-tail-9c-control-1sddn0mr/replacement-final-tail.test.js:10:541)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 0
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13.639764

@@ -1,0 +1,45 @@
+TAP version 13
+# Subtest: mount order, network dictionary key order and alias order do not change custody
+ok 1 - mount order, network dictionary key order and alias order do not change custody
+  ---
+  duration_ms: 5.724987
+  type: 'test'
+  ...
+# Subtest: semantic mount/network/image/ownership changes refuse before startup side effect
+not ok 2 - semantic mount/network/image/ownership changes refuse before startup side effect
+  ---
+  duration_ms: 0.659912
+  type: 'test'
+  location: '/tmp/custody-sequencing-control-a1c4t7n_/custody.test.cjs:6:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected rejection.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: [Function (anonymous)]
+  operator: 'rejects'
+  stack: |-
+    async TestContext.<anonymous> (/tmp/custody-sequencing-control-a1c4t7n_/custody.test.cjs:6:540)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: valid custody permits exactly one explicitly supplied startup callback
+ok 3 - valid custody permits exactly one explicitly supplied startup callback
+  ---
+  duration_ms: 0.211213
+  type: 'test'
+  ...
+# Subtest: a failure AFTER starting the explicit callback is not mislabeled NOT_RUN
+ok 4 - a failure AFTER starting the explicit callback is not mislabeled NOT_RUN
+  ---
+  duration_ms: 0.845095
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 3
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13.34593

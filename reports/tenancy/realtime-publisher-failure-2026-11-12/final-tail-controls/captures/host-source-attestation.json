@@ -1,0 +1,19 @@
+{
+  "hostControllerAndFixtureCommit": "c10ade28f6e411919a8aa8abc29beefb15c9bc94",
+  "parent": "9c889035eea93fbfff7ae373bee9054776f65625",
+  "runtimeUnderOriginalFailure": {
+    "core": "47b43b6246ce7f94f1f1f0d01830495a78b28add",
+    "deploy": "be95214a6cae427e1898b0ca6ce39825163ee291",
+    "image": "sha256:6138dbf5cec8dc7c4897e3c1d969868a37bb7fb3eb0af46feca7595fdbb3f361",
+    "moveVerdict": "FAIL / UNCLASSIFIED"
+  },
+  "sha256": {
+    "replace-realtime.js": "dec419081d4e1edaee2d7192c63719d083557b20e83d5fe648f4e7dc61eea214",
+    "replacement-observation.js": "19b5aa1a58bc7065216a2da878ec8830019404831ee126337d9a3d1ac372ddf1",
+    "shipping-replacement.integration.test.js": "239554a4a8be83766083169d233629c968aa39a15ffcd3d7663b87d0fb8ba30a",
+    "fixtures/shipping-private-probe.cjs": "c02b44d0fe4b6b2c5da6abce82dad4b892f21fb63b55ee2251c5e9a73caf5a12",
+    "fixtures/replacement-probe-contract.cjs": "a4e29dc35fdce9e251a8d456b63c242672318eafb0b509d1bcc8cc7f7220efca",
+    "fixtures/replacement-client-observation.cjs": "889109c972ec4688dc7f9ee11127a224ac0a8ee5dce4eec72b8a7810cd0fd711",
+    "replacement-final-tail.test.js": "4c47e42c9cb8ea0a6fd1ead3b3a4d729cb4e4c5807a5af5dff5a7234e9f596b2"
+  }
+}
