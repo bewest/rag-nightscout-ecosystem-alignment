@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Read-only M7 recorded-evidence gate. Never executes an application or emits a receipt."""
 import argparse
+import gzip
+import io
 import hashlib
 import importlib.util
 import json
@@ -241,7 +243,8 @@ def campaign_contract():
 
 def profile_selection(cell, expected):
     chosen=expected.get('profileSelection')
-    need(isinstance(chosen,dict) and set(chosen)=={'version','settings','diagnostics','topology','sha256'} and type(chosen['version']) is int and chosen['version']==1,'M7_PROFILE_SELECTION_PIN')
+    need(isinstance(chosen,dict) and set(chosen)=={'version','settings','diagnostics','topology','sha256','evaluatorProgress'} and type(chosen['version']) is int and chosen['version']==2,'M7_PROFILE_SELECTION_PIN')
+    need(chosen['evaluatorProgress']==progress_contract().POLICY,'M7_PROFILE_EVALUATOR_PROGRESS_PIN')
     digest=hashlib.sha256(json.dumps({k:v for k,v in chosen.items() if k!='sha256'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
     need(chosen['sha256']==digest,'M7_PROFILE_SELECTION_HASH')
     settings=chosen['settings']
@@ -255,7 +258,46 @@ def profile_selection(cell, expected):
     need(isinstance(observed,dict) and observed.get('verdict')=='PASS' and integer(observed.get('observations'),1) and type(observed.get('invalid')) is int and observed['invalid']==0 and type(observed.get('mismatch')) is int and observed['mismatch']==0,'M7_FINGERPRINT_UNMEASURED')
 
 
-def cell_measurement(cell, expected, profile, host):
+def progress_contract():
+    file=Path(__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_progress.py'
+    spec=importlib.util.spec_from_file_location('m7_progress_contract',file)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+
+
+def recovery_contract():
+    directory=Path(__file__).resolve().parents[2]/'mt-bench/m7-joined'
+    saved=sys.path[:]
+    try:
+        sys.path.insert(0,str(directory))
+        spec=importlib.util.spec_from_file_location('m7_recovery_contract',directory/'evaluator_recovery.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+    finally:sys.path[:]=saved
+
+
+def progress_measurement(cell,expected,evidence):
+    module=progress_contract()
+    key=cell['profile']+':'+str(cell['tenants'])+':'+str(cell['replicas'])
+    references=expected.get('evaluatorProgressArtifacts',{}).get(key)
+    need(isinstance(references,dict) and set(references)=={'idle','load','recovery'},'M7_EVALUATOR_PROGRESS_ARTIFACTS')
+    recorded=cell.get('evaluatorProgress',{})
+    need(isinstance(recorded,dict) and set(recorded)=={'idle','load','recovery'},'M7_EVALUATOR_PROGRESS_REQUIRED')
+    inventory=expected['capacityInventories'][cell['profile']+':'+str(cell['replicas'])]
+    for phase in ('idle','load','recovery'):
+        ref=references[phase];compressed=evidence.bytes(ref)
+        need(ref['path'].endswith('.json.gz'),'M7_EVALUATOR_PROGRESS_ENCODING')
+        with gzip.GzipFile(fileobj=io.BytesIO(compressed)) as stream:raw=stream.read(LIMIT+1)
+        need(len(raw)<=LIMIT,'M7_EVALUATOR_PROGRESS_DECODE_BOUND')
+        evidence.progress_decoded=getattr(evidence,'progress_decoded',0)+len(raw)
+        need(evidence.progress_decoded<=64*1024*1024,'M7_EVALUATOR_PROGRESS_DECODE_BOUND')
+        document=decode(raw)
+        need(document.get('attribution')=={'pair':cell['pair'],'imageId':cell['imageId'],'instrument':cell['instrument'],'profileSelection':cell['profileSelection']['sha256'],'tenants':cell['tenants'],'replicas':cell['replicas'],'profile':cell['profile'],'hostIdentity':cell['hostIdentity']},'M7_EVALUATOR_PROGRESS_IDENTITY')
+        try:
+            result=recovery_contract().verify(document,cell['tenants'],inventory['windows']['load']['evaluator']) if phase=='recovery' else module.verify(document,cell['tenants'],inventory['windows'][phase]['evaluator'],phase)
+        except RuntimeError as error:raise ValueError(str(error)) from error
+        need(recorded[phase]=={**result,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':ref['sha256']},'M7_EVALUATOR_PROGRESS_ASSESSMENT')
+
+
+def cell_measurement(cell, expected, profile, host, evidence):
     for field, value in expected['identity'].items():
         need(cell.get(field) == value, 'M7_CAPACITY_IDENTITY')
     need(cell.get('hostIdentity') == host and isinstance(host, str) and DIGEST.fullmatch(host), 'M7_CAPACITY_HOST')
@@ -282,6 +324,7 @@ def cell_measurement(cell, expected, profile, host):
         need(isinstance(row, dict) and integer(row.get('count'), 1) and all(
             type(row.get(key)) in (int, float) and math.isfinite(row[key]) and row[key] >= 0
             for key in ('p50', 'p95', 'p99')), 'M7_CAPACITY_NOT_MEASURED')
+    progress_measurement(cell,expected,evidence)
     for phase, window in windows.items():
         groups = inventory['windows'][phase]
         need(isinstance(groups, dict) and set(BASE_COMPONENTS) <= set(groups) and set(groups) <= set(BASE_COMPONENTS) | {'vault-agent', 'other'} and all(
@@ -329,7 +372,7 @@ def check_ladder(expected, receipt, evidence, pilot=False):
         need(document.get(field) == value, 'M7_CAPACITY_IDENTITY')
     need(document.get('profileSelection')==expected.get('profileSelection') and expected.get('profileSelection') is not None,'M7_PROFILE_SELECTION_MISMATCH')
     for cell in document['cells']:
-        cell_measurement(cell, expected, 'remote-pilot' if pilot else 'capacity', document['hostIdentity'])
+        cell_measurement(cell, expected, 'remote-pilot' if pilot else 'capacity', document['hostIdentity'],evidence)
         need(cell['verdict'] == 'PASS', 'M7_CAPACITY_TARGET_NOT_PASSING')
 
 
@@ -355,7 +398,7 @@ def check_milestone(expected, receipt, evidence, api_scaling=False):
     cells = {}
     for reference in references:
         cell = evidence.json(reference)
-        cell_measurement(cell, expected, specification['profile'], specification['hostIdentity'])
+        cell_measurement(cell, expected, specification['profile'], specification['hostIdentity'],evidence)
         key = (cell['tenants'], cell['replicas'])
         need(key in required and key not in cells, 'M7_MILESTONE_CELL_SELECTION')
         cells[key] = cell

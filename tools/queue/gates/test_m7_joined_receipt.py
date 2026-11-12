@@ -1,5 +1,7 @@
 """Synthetic ephemeral record controls; never writes a production PASS receipt."""
 import copy
+import gzip
+import math
 import hashlib
 import json
 from pathlib import Path
@@ -18,7 +20,7 @@ class ReceiptTests(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.identity = {'pair': {'core': 'a' * 40, 'deploy': 'b' * 40},
                          'imageId': 'sha256:' + 'c' * 64, 'instrument': 'd' * 64}
-        self.profile={'version':1,'settings':{'schema':1,'sha256':'5'*64,'sourceCommit':'a'*40,'sourceBlobs':{'lib/settings.js':'6'*40}},'diagnostics':{'mode':'off','intervalMs':5000,'environment':{'NS_M7_DIAGNOSTICS':'0','NS_M7_DIAGNOSTICS_INTERVAL_MS':'5000'}},'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,'realtimeWorkers':1,'evaluatorWorkers':1}}
+        self.profile={'version':2,'evaluatorProgress':gate.progress_contract().POLICY,'settings':{'schema':1,'sha256':'5'*64,'sourceCommit':'a'*40,'sourceBlobs':{'lib/settings.js':'6'*40}},'diagnostics':{'mode':'off','intervalMs':5000,'environment':{'NS_M7_DIAGNOSTICS':'0','NS_M7_DIAGNOSTICS_INTERVAL_MS':'5000'}},'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,'realtimeWorkers':1,'evaluatorWorkers':1}}
         self.profile['sha256']=hashlib.sha256(json.dumps(self.profile,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         self.observation={'verdict':'PASS','observations':10,'invalid':0,'mismatch':0}
         self.attribution = {'core': 'e' * 40, 'baseline': 'f' * 40, 'instrument': '1' * 64}
@@ -75,15 +77,16 @@ class ReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex((ValueError, RuntimeError), code):
             self.check(scope)
 
-    def capacity(self):
+    def capacity(self, counts=(1000,3000,5000,10000)):
         self.expected['profileSelection']=copy.deepcopy(self.profile)
         self.receipt['claims'].append('full-ladder')
         document = {'version': 1, 'kind': 'm7-joined-capacity', **self.identity, 'hostIdentity': '2' * 64,'profileSelection':self.profile, 'cells': []}
-        for count in (1000, 3000, 5000, 10000):
+        for count in counts:
             for replicas in (1, 2, 4):
                 document['cells'].append({**self.identity, 'hostIdentity': '2' * 64, 'tenants': count, 'replicas': replicas,
                                           'profile': 'capacity', 'cadence': gate.campaign_contract().CADENCE['capacity'], 'verdict': 'PASS', 'measurements': self.measurements(replicas=replicas),
                                           'profileSelection':copy.deepcopy(self.profile),'settingsFingerprintObservation':dict(self.observation),'correctness': [True, True, True], 'oracle': {'verdict': 'GREEN', 'uncertain': 0}})
+        for cell in document['cells']:self.progress(cell)
         self.receipt['capacity'] = self.artifact('capacity.json', document)
         return document
 
@@ -106,8 +109,31 @@ class ReceiptTests(unittest.TestCase):
         return {'complete': True, 'httpShapes': {shape: {'count': 10, 'p50': 1, 'p95': 2, 'p99': 3} for shape in shapes},
                 'windows': window}
 
+    def progress(self,cell):
+        module=gate.progress_contract();count=cell['tenants'];service='eval-worker'
+        ids=['00000000-0000-4000-8000-'+str(i).zfill(12) for i in range(count)]
+        rounds=[]
+        for step in range(3):
+            owners={tenant:{'service':service,'runtimeId':'11111111-1111-4111-8111-111111111111','generation':i+1,'completedAcquisitions':1+step,'completedTimeCycles':step,'failedCompletions':0,'lastCompletedAgeMs':0,'legacyCycles':1+step,'admitted':True,'ready':True,'code':None,'alert':None} for i,tenant in enumerate(ids)}
+            rounds.append({'instances':{service:{'runtimeId':'11111111-1111-4111-8111-111111111111','ordinal':0}},'owners':owners,'allRows':{service:owners},'queries':math.ceil(count/128),'bytes':count*100,'wallSeconds':.01})
+        cell['evaluatorProgress']={};refs={}
+        for phase in ('idle','load'):
+            result=module.assess(rounds,ids,phase)
+            record=module.pack({**result,'rounds':rounds})
+            record['attribution']={'pair':cell['pair'],'imageId':cell['imageId'],'instrument':cell['instrument'],'profileSelection':cell['profileSelection']['sha256'],'tenants':count,'replicas':cell['replicas'],'profile':cell['profile'],'hostIdentity':cell['hostIdentity']}
+            raw=json.dumps(record,separators=(',',':')).encode()+b'\n';compressed=gzip.compress(raw,mtime=0,compresslevel=1)
+            refs[phase]=self.artifact('progress/'+cell['profile']+'-'+str(count)+'-'+str(cell['replicas'])+'-'+phase+'.json.gz',compressed)
+            cell['evaluatorProgress'][phase]={**result,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':refs[phase]['sha256']}
+        recovery=gate.recovery_contract();baseline=copy.deepcopy(rounds[0]);baseline['instances'][service]['runtimeId']='22222222-2222-4222-8222-222222222222'
+        result=recovery.assess(baseline,rounds[-2:],ids);result['sampling']={'cadenceMs':15000,'queries':sum(r['queries'] for r in rounds[-2:]),'bytes':count*200,'wallSeconds':.02,'elapsedSeconds':15,'failures':0}
+        record={'kind':'evaluator-recovery-v1','policy':module.POLICY,'columns':list(module.COLUMNS),'result':result,'errors':[], 'baseline':module.pack({'rounds':[baseline]})['rounds'],'rounds':module.pack({'rounds':rounds[-2:]})['rounds'],'attribution':record['attribution']}
+        raw=json.dumps(record,separators=(',',':')).encode();compressed=gzip.compress(raw,mtime=0,compresslevel=1)
+        refs['recovery']=self.artifact('progress/'+cell['profile']+'-'+str(count)+'-'+str(cell['replicas'])+'-recovery.json.gz',compressed)
+        cell['evaluatorProgress']['recovery']={**result,'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':refs['recovery']['sha256']}
+        self.expected.setdefault('evaluatorProgressArtifacts',{})[cell['profile']+':'+str(count)+':'+str(cell['replicas'])]=refs
+
     def milestone(self):
-        full = self.capacity()
+        full = self.capacity(counts=(3000,))
         self.receipt['claims'].remove('full-ladder')
         self.receipt.pop('capacity')
         self.receipt['claims'].append('capacity-milestone')
@@ -414,6 +440,7 @@ class ReceiptTests(unittest.TestCase):
             for row in full['cells']:
                 row['replicas'] = replicas
                 row['measurements'] = self.measurements('remote-pilot', replicas=replicas)
+                self.progress(row)
             self.receipt['pilot'] = self.artifact('pilot.json', full)
             self.check('pilot')
         self.expected['pilotReplicas'] = 2
@@ -515,6 +542,29 @@ class ReceiptTests(unittest.TestCase):
             require_refusal(mutant)
         require_refusal(Path(gate.__file__))
 
+    def test_progress_missing_hidden_error_wrong_identity_and_gzip_budgets_refuse(self):
+        self.milestone();cell=json.loads((self.root/'cell-1.json').read_text())
+        key=cell['profile']+':'+str(cell['tenants'])+':'+str(cell['replicas'])
+        refs=self.expected['evaluatorProgressArtifacts'][key]
+        def verify():
+            evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts'];gate.progress_measurement(cell,self.expected,evidence)
+        saved=copy.deepcopy(refs)
+        refs.pop('idle')
+        with self.assertRaisesRegex(ValueError,'ARTIFACTS'):verify()
+        refs.update(saved)
+        original=gzip.decompress((self.root/refs['load']['path']).read_bytes());record=json.loads(original)
+        for mutation,code in [('identity','IDENTITY'),('failure','HIDDEN_FAILURE'),('encoding','DECODE_BOUND')]:
+            broken=copy.deepcopy(record)
+            if mutation=='identity':broken['attribution']['pair']['core']='f'*40
+            elif mutation=='failure':broken['rounds'][-1]['rows'][0][gate.progress_contract().COLUMNS.index('failedCompletions')]=1
+            raw=b'x'*(gate.LIMIT+1) if mutation=='encoding' else json.dumps(broken).encode()
+            refs['load']=self.artifact('progress/broken.json.gz',gzip.compress(raw,mtime=0))
+            with self.assertRaisesRegex(ValueError,code):verify()
+        refs.update(saved)
+        evidence=gate.Evidence(self.root);evidence.allowed=self.expected['artifacts'];evidence.progress_decoded=64*1024*1024
+        with self.assertRaisesRegex(ValueError,'DECODE_BOUND'):gate.progress_measurement(cell,self.expected,evidence)
+        verify()
+
     def test_capacity_inventory_oracles_go_red_when_their_guards_are_removed(self):
         cells = self.milestone()
         original = copy.deepcopy(cells[0])
@@ -525,6 +575,8 @@ class ReceiptTests(unittest.TestCase):
         script.parent.mkdir(parents=True)
         contract.parent.mkdir(parents=True)
         contract.write_bytes((Path(gate.__file__).resolve().parents[2] / 'mt-bench/m7-joined/contract.py').read_bytes())
+        (contract.parent/'evaluator_progress.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_progress.py').read_bytes())
+        (contract.parent/'evaluator_recovery.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_recovery.py').read_bytes())
         source = Path(gate.__file__).read_text()
         mutations = [
             ("set(roles) == required_roles", "bool(roles)", 'M7_CAPACITY_ROLE_INVENTORY'),
@@ -563,6 +615,8 @@ class ReceiptTests(unittest.TestCase):
         contract.parent.mkdir(parents=True)
         script.write_bytes(Path(gate.__file__).read_bytes())
         contract.write_bytes((Path(gate.__file__).resolve().parents[2] / 'mt-bench/m7-joined/contract.py').read_bytes())
+        (contract.parent/'evaluator_progress.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_progress.py').read_bytes())
+        (contract.parent/'evaluator_recovery.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/evaluator_recovery.py').read_bytes())
         (contract.parent/'profile_provenance.py').write_bytes((Path(gate.__file__).resolve().parents[2]/'mt-bench/m7-joined/profile_provenance.py').read_bytes())
         before = {str(f): f.read_bytes() for f in self.root.rglob('*') if f.is_file()}
         result = subprocess.run([sys.executable, str(script), '--expected', str(expected), '--receipt', str(receipt), '--scope', 'full-ladder'], capture_output=True, text=True)

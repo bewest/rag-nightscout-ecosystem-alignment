@@ -1,0 +1,20 @@
+[
+  {
+    "mode": "acquire",
+    "exit": 0,
+    "output": "COALESCED_ACTIVE_PARENT_COMPLETED inline\n",
+    "error": ""
+  },
+  {
+    "mode": "wake",
+    "exit": 0,
+    "output": "COALESCED_ACTIVE_PARENT_COMPLETED inline\n",
+    "error": ""
+  },
+  {
+    "mode": "backstop",
+    "exit": 0,
+    "output": "COALESCED_ACTIVE_PARENT_COMPLETED inline\n",
+    "error": ""
+  }
+]

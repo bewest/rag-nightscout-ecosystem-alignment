@@ -1,0 +1,4 @@
+Error: ACTIVE_PARENT_ACQUIRE_POOL_ONE_DEADLOCK
+    at Timeout._onTimeout (<owned-review>/active-parent-acquire-5ad.cjs:28:113)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
