@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-12",
+  "verdict": "FOCUSED_PASS_NOT_FULL_ACCEPTANCE",
+  "source": {
+    "core": "8f5c5947753c34c66d19dcb9b2f27a610dd7e3d1",
+    "priorRepair": "96cc87c9f8809896f48de878a69bf7bb5a8ac69e",
+    "urlRepair": "ac8027f912fae9a4e41ed4ac0bbaea2fc7d623f4"
+  },
+  "focused": {
+    "passed": 126,
+    "files": 13,
+    "exit": 0
+  },
+  "lint": {
+    "exit": 0,
+    "errors": 0,
+    "warnings": 1,
+    "warning": "pre-existing evaluator-config statSync security rule"
+  },
+  "tiers": {
+    "exit": 0,
+    "files": 700,
+    "tiers": 8
+  },
+  "controls": {
+    "prior-cli-ownership": {
+      "exit": 3,
+      "failing": 3,
+      "onDiskSourceMutations": false,
+      "priorModuleSource": "ac8027f912fae9a4e41ed4ac0bbaea2fc7d623f4"
+    },
+    "prior-serve-precheck": {
+      "exit": 5,
+      "failing": 5,
+      "onDiskSourceMutations": false,
+      "priorModuleSource": "ac8027f912fae9a4e41ed4ac0bbaea2fc7d623f4"
+    },
+    "prior-evaluator-order": {
+      "exit": 1,
+      "failing": 1,
+      "onDiskSourceMutations": false,
+      "priorModuleSource": "ac8027f912fae9a4e41ed4ac0bbaea2fc7d623f4"
+    },
+    "retain-secondary-placement": {
+      "exit": 1,
+      "failing": 1,
+      "onDiskSourceMutations": false,
+      "priorModuleSource": null
+    },
+    "late-pool-decode": {
+      "exit": 1,
+      "failing": 1,
+      "onDiskSourceMutations": false,
+      "priorModuleSource": null
+    }
+  },
+  "ownership": {
+    "evaluatorHotReparses": 20,
+    "retainedDescriptors": 1,
+    "afterOwnerClose": 0,
+    "cliFailuresCovered": [
+      "later-role",
+      "static-mode",
+      "start"
+    ],
+    "precheckFailuresCovered": [
+      "listener",
+      "replica-write-clock",
+      "checkpoint-conflict",
+      "admin-cohort",
+      "feed-composition"
+    ],
+    "urlFieldsCovered": [
+      "username",
+      "password",
+      "database"
+    ]
+  },
+  "proofWorktreeQueueCheck": {
+    "verdict": "FAIL",
+    "cause": "declared external gate cwd paths absent in isolated proof worktree",
+    "productFailure": false
+  },
+  "scope": {
+    "actualLocalDescriptors": true,
+    "coarseTimestampInstrumented": true,
+    "SQLResourceAdaptersDoubled": true,
+    "fullCampaign": false,
+    "capacity": false,
+    "nativeDatabase": false,
+    "prcheck": false
+  },
+  "sourceFiles": {
+    "lib/cli/commands/multitenant.js": "7fbf47317871808aeea9bf8e1e8514e53f5ada2e39966500aca1a94255e6aee2",
+    "lib/server/serve/index.js": "dfcfc356a4fa978aa0dc3f194f92ab2a1364cfaa099016559594255dc3f8ca4b",
+    "lib/server/serve/evaluator-config.js": "92b03b37cbe25275ca5c80452be507006fa0ad050a1319452e7fc04cfd7cbebf",
+    "lib/server/serve/operation-cohort-config.js": "71d23cd32119946667eb299c33de29ee7e2489b2db4799e4e54cea9b016e532d",
+    "tests/fixtures/realtime-cache-repair-control.js": "15b307f31bf9f284525815984c1392596462446451b5a3cf95178c1f3d6f5395",
+    "tests/realtime-publication-cache.test.js": "fc61c69b31d57e6eb97bf6258689baa4cc0f5b5280f90ac2809a6d443a979ed1"
+  },
+  "artifacts": {
+    "url-before.log.gz": {
+      "sha256": "113c9763e89fd1ee42cad00b7d7825249a81be37d18f2356ec2ddec15b70e08c",
+      "bytes": 370,
+      "decodedSha256": "d0967e5ae2c2d8797a864297c9bc004fc8ebca15538fa1f8e79bc37ff891a554",
+      "decodedBytes": 699
+    },
+    "focused-final.log.gz": {
+      "sha256": "9a67a417b6dc6b10be5d379a5a45e50a28d638f3ba0370949b650ea54d17e7f4",
+      "bytes": 5737,
+      "decodedSha256": "62961a456ff9ed4920e70e99c167a278f19932d8bc40ce7a7d4a5fbc3300c3b2",
+      "decodedBytes": 18618
+    },
+    "lint.log.gz": {
+      "sha256": "b6476836d72a26abbfd15f6e5e45d02efb7f29e071889b2f798b5f0c227655cd",
+      "bytes": 251,
+      "decodedSha256": "5c9d4275d2378d814f9fb6806472c7babf863289f3283355bc16182d41e2f28d",
+      "decodedBytes": 313
+    },
+    "tiers.log.gz": {
+      "sha256": "824cb055d1604ed71906c4caf8a5ccc4b62e41f5fd2bb3d447c13161094d5bff",
+      "bytes": 50,
+      "decodedSha256": "84f8adf282671fb7e92ff2966e3b7998c1d74463ea389024125144a14aa291dd",
+      "decodedBytes": 30
+    },
+    "proof-worktree-queue-check.log.gz": {
+      "sha256": "c168d0b5d5c9f375c28e50fa3ec3dd8fb827eb0ed58142cd7a4679ac9936520e",
+      "bytes": 558,
+      "decodedSha256": "6180b3c2546eddd44419af58ad9a90ef73930a2ce732de225cffd76505a15513",
+      "decodedBytes": 1717
+    },
+    "prior-cli-ownership.log.gz": {
+      "sha256": "5ffd56592eb48c4e881d06045b984ca7f38b9aa5d381fd4424766b4293cc0122",
+      "bytes": 733,
+      "decodedSha256": "4a1f2ff5a09c3d518d520b5d1c7385f2db981bc350279ff2119112c76ee34a01",
+      "decodedBytes": 2467
+    },
+    "prior-serve-precheck.log.gz": {
+      "sha256": "75c08b49ae9d3c932600afc5989c70113509ab8b8ad06f5ee22c4b832a41ed1b",
+      "bytes": 743,
+      "decodedSha256": "2562ec012017e1fad452090a3fec1acabf3a2ef05b64098cab2493c5585c587a",
+      "decodedBytes": 3167
+    },
+    "prior-evaluator-order.log.gz": {
+      "sha256": "33d5b6f411d90973985639c0ba77db621b324c8853e7be08078bd3bf10ad5012",
+      "bytes": 724,
+      "decodedSha256": "576757299e9bf7e8b4f15ef727acd7bd95d9d587fb81f543b8a2e65a45e005b4",
+      "decodedBytes": 1813
+    },
+    "retain-secondary-placement.log.gz": {
+      "sha256": "25056f3fead11604f71fd3a43457573a20e7936185e8465d95813fb8b73d0aa5",
+      "bytes": 667,
+      "decodedSha256": "4f8cc7d672af80d01c75df275cc1080d0572cbdd2845ddd767a3f683e6884c81",
+      "decodedBytes": 1727
+    },
+    "late-pool-decode.log.gz": {
+      "sha256": "b646143023fe7ec4d21f21bb05d43d8132c622e11caeb86d5a1210363be7a0b4",
+      "bytes": 699,
+      "decodedSha256": "4d9ba6d87b173b1954b12c57f286cdaacec2b40623dd6309cd2a8fa6aa19df05",
+      "decodedBytes": 1774
+    }
+  }
+}
