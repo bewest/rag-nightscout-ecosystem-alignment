@@ -1,0 +1,38 @@
+{
+  "mode": "cached-inplace",
+  "iteration": 2,
+  "initial": 1,
+  "before": {
+    "dev": "64769",
+    "ino": "532858",
+    "size": "7",
+    "mtimeNs": "1794477817692393981",
+    "ctimeNs": "1794477817692393981",
+    "mode": "33152"
+  },
+  "after": {
+    "dev": "64769",
+    "ino": "532858",
+    "size": "7",
+    "mtimeNs": "1794477817692393981",
+    "ctimeNs": "1794477817692393981",
+    "mode": "33152"
+  },
+  "beforeKey": "64769:532858:7:1794477817692393981:1794477817692393981:33152:1048576",
+  "afterKey": "64769:532858:7:1794477817692393981:1794477817692393981:33152:1048576",
+  "beforeBytes": "{\"n\":1}",
+  "afterBytes": "{\"n\":2}",
+  "returned": 1,
+  "parses": 1,
+  "unchangedFullReads": 0,
+  "sameMetadata": true,
+  "stale": true,
+  "beforeClock": {
+    "wallMs": 1794477817693,
+    "monotonicNs": "81484595022"
+  },
+  "afterClock": {
+    "wallMs": 1794477817693,
+    "monotonicNs": "81484658136"
+  }
+}
