@@ -27254,6 +27254,30 @@ items:
       - reports/tenancy/realtime-restart-disconnect-2026-11-11/README.md
     notes: >
       2026-11-11: decided; start after the quiet capacity window.
+  - id: MT-AUTHZ-COST
+    title: "api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request"
+    parcel: tenancy
+    repo: cgm-remote-monitor
+    branch: ''
+    base: ''
+    state: not-started
+    blast_radius: >
+      Multitenant api request and socket-authorization path (decisions.md#authorize-cost-first); authorization decisions
+      must be unchanged.
+    review: maintainer; security review (credential caching and revocation)
+    operator_visible: ''
+    semver: n/a
+    semver_reason: unreleased preview
+    register: []
+    gates:
+      - no-gate: >
+          Planned: profile on a quiet machine; equal allow and deny decisions on the authorization corpora; a revoked
+          credential is refused within the invalidation bound (break-it control); then the 3,000-tenant runs.
+    blocks_on: []
+    evidence:
+      - reports/tenancy/api-cost-vs-n-2026-11-11/README.md
+    notes: >
+      2026-11-12: decided. Starts once the capacity record is committed.
   - id: MT-EVAL-COST
     title: "Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order"
     parcel: tenancy
