@@ -27342,5 +27342,9 @@ items:
       - reports/tenancy/capacity-2026-11-11/README.md
     notes: >
       2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the
-      stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Design note sent to the coordinator;
-      backstop shape, reader placement, identity and transport await answers before implementation.
+      stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Maintainer answers recovered in the
+      2026-11-11 continuation: decisions.md#d6-paged-backstop selects paging now (watermark only if later
+      outage measurements warrant it); decisions.md#d6-sql-reader-transport selects SQL polling for the reader;
+      decisions.md#d6-activity-control-path requires no evaluator/realtime data work while paused or suspended,
+      with an independent stop/resume control path. Implementation, outage latency and bounded-cost evidence
+      remain UNMEASURED. Reader placement and identity still need their design/least-privilege review.

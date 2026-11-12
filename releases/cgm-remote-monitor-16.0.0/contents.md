@@ -2260,3 +2260,9 @@ The 2026-11-11 capacity campaign ([record](../../reports/tenancy/capacity-2026-1
 | capacity fixes (already done) | `MT-CAPACITY-FIXES` | `workspace/capacity-fixes-20261111` `5c60aec6`; deploy `deploy/capacity-fixes-20261111` `d1c7aca` | [tenant-registry](decisions.md#tenant-registry) |
 
 Second wave, after the api replicas and realtime lanes: `MT-REALTIME-SHARDING`. Its unadopted design points (shard count and hash, alarm replay, takeover) come to the maintainer first. Then `MT-SCALE-UNBOUND` measures the batch. nightscout-deploy follows every lane in one binding branch. Not pushed: #8898 is at `0392acf9` locally (push commands handed over 2026-11-11).
+
+### Update — D6 maintainer answers recovered (2026-11-11)
+
+| Scope | Recorded result | Remaining boundary |
+|---|---|---|
+| `MT-D6-SLOT-READER` decisions | Recorded [paged outage backstop](decisions.md#d6-paged-backstop), [SQL-polling reader transport](decisions.md#d6-sql-reader-transport), and [pause/suspend control-path requirement](decisions.md#d6-activity-control-path) from the maintainer's recovered Claude answers. The queue notes link to these decisions. | Design only; no runtime change or acceptance. Implement the reader and consumer wake/recovery path, bound and alert on degraded paging, preserve tenant isolation and existing pause/suspend upload semantics, and measure idle-tenant activity transitions, reader outage/recovery and per-call cost with negative controls. Reader placement and identity remain design/review work. Local handoff: `externals/work/HANDOFF-d6-decisions-2026-11-11.md`. |
