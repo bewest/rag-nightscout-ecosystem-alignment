@@ -10,6 +10,9 @@ def generate(root, target):
     old = "const roles = ['api', 'realtime', 'evaluator', 'tenant-admin'];"
     require(source.count(old) == 1, "M7_PROBE_ROLE_ANCHOR_CHANGED")
     source = source.replace(old, "const roles = JSON.parse(process.env.M7_RESTART_ROLES); if (!Array.isArray(roles) || !roles.length) throw new Error('M7_RESTART_ROLES_REQUIRED');")
+    restart = "const restartDone = new Promise(resolve => execFile('docker', [...composeArgs, 'restart', ...roles], () => resolve(Date.now() - r0)));"
+    require(source.count(restart)==1, "M7_PROBE_RESTART_ANCHOR_CHANGED")
+    source = source.replace(restart, "const restartDone = require('./restart.cjs').restart({composeArgs,roles,at:r0}).then(value=>{restart.containerStarts=value.starts;return value.commandMs;});")
     start = source.index("    const gap = (async () => {")
     end = source.index("    // Edge after the role restart:", start)
     source = source[:start] + r'''    const gap = (async () => {
@@ -44,4 +47,4 @@ def generate(root, target):
     target.write_text(source)
     return {"baseline": str(baseline.relative_to(root)), "baselineSha256": hashlib.sha256(baseline.read_bytes()).hexdigest(),
             "adaptedSha256": hashlib.sha256(target.read_bytes()).hexdigest(),
-            "changes": ["actual explicit replica restart roster", "replace lifecycle lease proxy with sparse runtime acquisition observation", "separate hot/cold tenant write-to-frame distributions"]}
+            "changes": ["actual explicit replica restart roster", "replace lifecycle lease proxy with sparse runtime acquisition observation", "separate hot/cold tenant write-to-frame distributions", "reject failed or unobserved container restart"]}

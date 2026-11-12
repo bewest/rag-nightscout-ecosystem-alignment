@@ -1,0 +1,35 @@
+{
+  "instrumentCommit": "86129dfb37cebc1d61be6a45c967e11b99359bc1",
+  "instrumentSha256": "9dbb6af7056c0f4de2f7212f1acb509f7414dc4b6fbc5d11b67761b7aed6bf63",
+  "provisionalPair": {
+    "core": "fae4a925abf4acf025e4ee3e3c53f028d2e7b3db",
+    "deploy": "9b28fe53ab844f120db4511790608f6415351ced"
+  },
+  "apiServices": [
+    "api",
+    "api-2"
+  ],
+  "noImageBuild": true,
+  "noApplicationTraffic": true,
+  "noTenantProvisioning": true,
+  "tenantCountArgument": 1000,
+  "probe": {
+    "baseline": "tools/mt-bench/capacity/probe.js",
+    "baselineSha256": "c1cc9cd4b0a9c6fcec887e10269d001edce7f371627779eb0dbc3ff7aaa28b97",
+    "adaptedSha256": "475aa89de1bbcde7ff342cbae635d184b6c3bc629ea95d5b8413cfc0c44574ad",
+    "changes": [
+      "actual explicit replica restart roster",
+      "replace lifecycle lease proxy with sparse runtime acquisition observation",
+      "separate hot/cold tenant write-to-frame distributions"
+    ]
+  },
+  "workload": {
+    "baseline": "tools/mt-bench/capacity/k6/workload.js",
+    "baselineSha256": "0336f9c76e0d60ef8acda42dc2863ba20d8581f41400345bb32880e295a6d0c5",
+    "adaptedSha256": "624a23a656105a319894ac30f00685b31bbc2b8c49b1bc393a07607dbb99e926",
+    "changes": [
+      "current nominal arrival timestamps with deterministic uniqueness",
+      "explicit read 4xx counter blocks functional advancement"
+    ]
+  }
+}

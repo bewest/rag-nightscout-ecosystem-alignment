@@ -5,6 +5,9 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
+from unittest.mock import patch
+from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import adapter
 from contract import *
@@ -18,7 +21,7 @@ B='22222222-2222-4222-8222-222222222222'
 
 class Contract(unittest.TestCase):
     def setUp(self):
-        self.tenants=[{'id':A,'host':'a.example.test','token':'synthetic-test-only'}, {'id':B,'host':'b.example.test','token':'synthetic-test-only'}]
+        self.tenants=[{'id':A,'host':'a.example.test','token':uuid.uuid4().hex}, {'id':B,'host':'b.example.test','token':uuid.uuid4().hex}]
         self.metrics={'writes_ok':{'count':4}, f'writes_ok{{tenant:{A}}}':{'count':2},f'writes_ok{{tenant:{B}}}':{'values':{'count':2}},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':2}}
         self.stored={A:{'entries':1,'devicestatus':1},B:{'entries':1,'devicestatus':1}}
     def test_independent_accepted_and_domain_oracle_break_restore(self):
@@ -49,8 +52,8 @@ class Contract(unittest.TestCase):
         serving_mounts({'services':{'api':{'volumes':[{'target':'/run/ns-config'}]}}})
         with self.assertRaisesRegex(RuntimeError,'SOURCE_MOUNT_REFUSED'):serving_mounts({'services':{'api':{'volumes':[{'target':'/opt/app/lib'}]}}})
     def test_campaign_requires_all_counts_and_replica_cells_with_same_pair(self):
-        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'instrument':'c'*64,'verdict':'PASS','imageId':'sha256:'+'e'*64,'measurements':{'complete':True}}
-        document={'version':1,'kind':'m7-joined-capacity','pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'cells':[{**row,'tenants':n,'replicas':a} for a in REPLICAS for n in COUNTS]}
+        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'verdict':'PASS','imageId':'sha256:'+'e'*64,'measurements':{'complete':True}}
+        document={'version':1,'kind':'m7-joined-capacity','pair':pair,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'hostIdentity':'d'*64,'cells':[{**row,'tenants':n,'replicas':a} for a in REPLICAS for n in COUNTS]}
         self.assertTrue(campaign_check(document));broken=copy.deepcopy(document);broken['cells'].pop()
         with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):campaign_check(broken)
         broken=copy.deepcopy(document);broken['cells'][0]['pair']={**pair,'core':'d'*40}
@@ -61,6 +64,7 @@ class Contract(unittest.TestCase):
             self.assertNotIn('tenant_lifecycle_operations',source)
             self.assertIn('runtimeAcquisitionObservation',source);self.assertIn('M7_RESTART_ROLES',source)
             self.assertIn('hotTenantWriteToFrameMs',source);self.assertIn('M7_ESTABLISHED_SOCKETS_INCOMPLETE',source)
+            self.assertIn("require('./restart.cjs').restart",source)
             self.assertEqual(record['adaptedSha256'],digest(file))
             subprocess.run(['node','--check',str(file)],check=True,capture_output=True)
     def test_current_deterministic_workload_and_functional_refusal_counter(self):
@@ -69,7 +73,7 @@ class Contract(unittest.TestCase):
             tenants=Path(scratch)/'tenants.json';tenants.write_text(json.dumps(self.tenants))
             calls=json.loads(subprocess.check_output(['node',str(adapter.HERE/'workload-shapes.cjs'),str(file),str(tenants)],env=adapter.runtime_env({'M7_FIXTURE_REFUSE_READS':'1'})))
             self.assertEqual(len([r for r in calls if r.get('counter')=='responses_refused']),8)
-            dates=[r['body'][0]['date'] for r in calls if r.get('method')=='POST' and isinstance(r.get('body'),list) and r['url'].endswith('token=synthetic-test-only') and '/entries?' in r['url']]
+            dates=[r['body'][0]['date'] for r in calls if r.get('method')=='POST' and isinstance(r.get('body'),list) and '/entries?' in r['url']]
             self.assertEqual(dates,[1800000000000,1800000150000])
     def test_replica_ladder_never_overrides_functional_block_and_requires_ceiling_evidence(self):
         with tempfile.TemporaryDirectory(prefix='m7-ladder-test-') as scratch:
@@ -101,6 +105,38 @@ class Contract(unittest.TestCase):
             self.assertEqual(value['windows']['load']['roles']['api']['dockerMemoryBytesMax'],1024**2)
             (root/'idle/docker-stats.tsv').write_text('t\tcontainer\tcpu_pct\tmem\n')
             self.assertFalse(measurements(root,{'project':'owned','tenants':2})['complete'])
+    def test_shipping_deployment_orders_commission_api_prime_publish_before_remaining_roles(self):
+        config={'services':{name:{'command':['node','entrypoint.js',role]} for name,role in [('api','api'),('api-2','api'),('realtime','realtime'),('evaluator','evaluator'),('tenant-admin','tenant-admin')]}}
+        plan=adapter.deployment_plan(config)
+        self.assertEqual([row[0] for row in plan],['infrastructure','bootstrap','admin-feed','provision','commission','apis','prime','publish-primer','remaining-roles'])
+        self.assertNotIn('realtime',next(r[2] for r in plan if r[0]=='apis'))
+        self.assertIn('commission-restore.js',' '.join(next(r[2] for r in plan if r[0]=='commission')))
+        self.assertEqual(next(r[1] for r in plan if r[0]=='publish-primer'),'local')
+    def test_remote_pilot_is_distinct_and_does_not_skip_750(self):
+        pair={'core':'a'*40,'deploy':'b'*40};row={'pair':pair,'hostIdentity':'d'*64,'instrument':'c'*64,'imageId':'sha256:'+'e'*64,'verdict':'PASS','measurements':{'complete':True},'profile':'remote-pilot','replicas':1}
+        doc={'kind':'m7-joined-remote-pilot','pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'imageId':row['imageId'],'cells':[{**row,'tenants':n} for n in PILOT_COUNTS]}
+        self.assertTrue(pilot_check(doc));doc['cells'].pop(1)
+        with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):pilot_check(doc)
+        self.assertEqual(CADENCE['remote-pilot']['accel'],1);self.assertEqual(CADENCE['remote-pilot']['loadSeconds'],300)
+    def test_pilot_orchestrator_routes_explicit_counts_and_profile_without_duplicate_args(self):
+        with tempfile.TemporaryDirectory(prefix='m7-orchestrator-test-') as scratch:
+            root=Path(scratch);seen=[];pair={'core':'a'*40,'deploy':'b'*40};master={'pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'cells':[]}
+            args=SimpleNamespace(mode='pilot',replicas=None,ceiling_receipt=None,k6_image='not-run')
+            def prepare(options):
+                seen.append((options.tenants,options.replicas,options.profile));folder=Path(options.directory);folder.mkdir();adapter.write(folder/'owner.json',{})
+            def run(folder,manifest,image):adapter.write(folder/'summary.json',{'pair':pair,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'instrument':'c'*64})
+            with patch.object(adapter,'prepare',prepare),patch.object(adapter,'load',lambda folder:(Path(folder),{})),patch.object(adapter,'deploy'),patch.object(adapter,'run',run),patch.object(adapter,'down'):
+                campaign.ladder(args,1,root,master)
+            self.assertEqual(seen,[(500,1,'remote-pilot'),(750,1,'remote-pilot'),(1000,1,'remote-pilot')])
+    def test_owned_host_job_cannot_kill_a_reused_identity(self):
+        with tempfile.TemporaryDirectory(prefix='m7-job-test-') as scratch:
+            process=subprocess.Popen(['sleep','30'],start_new_session=True);file=Path(scratch)/'job.json'
+            try:
+                adapter.job_record(file,process,'ours',True);value=adapter.document(file);bad={**value,'startTicks':'wrong'};adapter.write(file,bad)
+                with self.assertRaisesRegex(RuntimeError,'IDENTITY_CHANGED'):adapter.stop_job(file,'ours')
+                self.assertIsNone(process.poll());adapter.write(file,value);adapter.stop_job(file,'ours');self.assertIsNotNone(process.wait(timeout=2));adapter.stop_job(file,'ours')
+            finally:
+                if process.poll() is None:process.terminate();process.wait(timeout=2)
     def test_role_roster_is_derived_from_actual_role_commands(self):
         self.assertEqual(adapter.service_roster({'services':{'api':{'command':['node','entrypoint.js','api']},'api-4':{'command':['node','entrypoint.js','api']},'rt-special':{'command':['node','entrypoint.js','realtime']},'feed-reader':{'command':['node','entrypoint.js','feed-reader']}}}),['api','api-4','rt-special'])
 
