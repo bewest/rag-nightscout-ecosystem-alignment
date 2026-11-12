@@ -379,7 +379,7 @@ out, because the absence of the check is how a future change becomes wrong silen
 | **BF-236** | **Metadata-only configuration caches can retain stale hot-file authority and bypass a lowered byte bound.** Same-size in-place writes can retain the complete stat key; redundant outer caches also omit the current limit | unreleased M7 preview: realtime parsed-file cache and realtime/evaluator outer caches; reproduced on frozen `d5e2e874659155c952b5b5deb862f12f982ac02e` runtime | **medium** — static/lab configuration edits can remain stale; an operator's current file limit can be bypassed. Registry settings remain a separate database-backed path | **fixed** on local `codex/m7-join-20261111`, source `9f7e6bca2d39cb8d37fd9ac5918a9785eba0116e`: bounded read-through for hot files; controlled atomic placement uses one retained inode handle with explicit ownership/cleanup. Focused controls and registry cost checks pass; final joined acceptance pending. Queue `MT-CAPACITY-FIXES` |
 | **BF-237** | **Lifecycle status can refuse while an actual storage constructor has not yet observed its database identity.** The live resource is registered before initialization, so synchronous datastore inspection sees a null identity; a restore can stop after suspension | unreleased multitenant preview, reproduced on core `d8d6b547bb17fc91e440bcab48f323a81a6cd66c` with actual shipping roles and a held PostgreSQL constructor | **medium** — intermittent maintenance refusal and a tenant left suspended; no release exposure claimed | **fixed** on local `codex/m7-join-20261111`, source `43b6b99d196e48eed2a228cdda9999b535eac7e9` plus `5487e4b9cde3adffcd8b8150d4db3056703899d9`: bounded admission cuts and one exact-actor re-observation preserve the independent SQL census. Real fresh-role restore remains a separate acceptance gate. Queue `MT-ENDPOINT-TRANSPORT` |
 | **BF-238** | **Independent evaluator jobs inherit a closed operation-window context.** A due callback scheduled inside a completed clinical job carries its expired asynchronous parent into fresh admission | unreleased M7 evaluator preview; reproduced on core `d50502bb6126bda2bb0af384569e1d95de114f2f` with actual PostgreSQL and shipping roles | **high** — background evaluation can stop after its initial cycle, preventing subsequent alarm computation; no release exposure claimed | **fixed** on local core `195c932293f3abc648da8fbe4356bf7360acd002`: bounded owned/borrowed scheduling preserves fresh independent admission and active-parent reuse, refuses late callers, and credits resolved owned work. Focused/native controls pass; separate BF-239 clinical idempotency and final acceptance remain open. Queue `MT-EVALUATOR-PARTITION` |
-| **BF-239** | **Transient unavailable clinical models erase the durable alarm-repeat deadline.** Identical recovery is treated as a due repeat, creating another accepted normal effect before the configured heartbeat | unreleased multitenant evaluator/outbox producer; reproduced on core `195c932293f3abc648da8fbe4356bf7360acd002`, deployment `f0f91f43784bb708385bcd4074cdfbd490fc096d` | **high** — duplicate normal alarm effects can be handed off within seconds; no released-site exposure or device receipt claim | **open** — actual accepted duplicate origins match a repeat without a retained clock; independent reducer and native warm-gap discriminators reproduce it. Narrow clock-preservation repair under evaluation; no new ownership fence or write-path index. Queue `MT-EVALUATOR-PARTITION` |
+| **BF-239** | **Transient unavailable clinical models erase the durable alarm-repeat deadline.** Identical recovery is treated as a due repeat, creating another accepted normal effect before the configured heartbeat | unreleased multitenant evaluator/outbox producer; reproduced on core `195c932293f3abc648da8fbe4356bf7360acd002`, deployment `f0f91f43784bb708385bcd4074cdfbd490fc096d` | **high** — duplicate normal alarm effects can be handed off within seconds; no released-site exposure or device receipt claim | **fixed** on local core `cd4629159809fb3cffbc6f57626f98f3ffdbdda7`: preserve the known repeat deadline during temporary model unavailability. Original/red and repaired native controls plus independent safety review pass. Fresh paired clinical and comprehensive acceptance remain open; no new ownership fence or write-path index. Queue `MT-EVALUATOR-PARTITION` |
 | **BF-240** | **Private evaluator inspection rejects a valid empty registry.** The configured-tenant DTO minimum is one although dynamic registry boot accepts zero tenants | unreleased evaluator private module; reproduced schema/UDS boundary, with no native empty-role claim | **low** — inspection cannot report valid empty boot state | **fixed** on local core `195c932293f3abc648da8fbe4356bf7360acd002`: module v2 accepts configured count zero while preserving selector/member/byte bounds. Empty-summary UDS control passes. Queue `MT-EVALUATOR-PARTITION` |
 
 ### BF-18 · the read bound is abandoned on `.limit(0)`
@@ -7702,7 +7702,7 @@ drive work, borrowed/no-window cycles earn no strict completion credit, and fore
 rows remain observable. BF-239 is a separate reproduced clinical gate failure;
 comprehensive acceptance and capacity remain pending.
 
-### BF-239 · unavailable models discard the alarm-repeat deadline — open
+### BF-239 · unavailable models discard the alarm-repeat deadline — fixed on a preview branch
 
 **Mechanism (reproduced).** The durable producer retains prior output and alarm
 state during clinical-model unavailability but removes its repeat deadline.
@@ -7718,18 +7718,21 @@ control clears. No device receipt is inferred from accepted routing handoff.
 [Independent actual reducer scenarios](../../../reports/tenancy/producer-repeat-cause-2026-11-12/independent-reducer-195c/README.md)
 reproduce the unavailable-to-identical transition and isolate retention of the
 known clock, with ACK/clear, normal empty output, configuration reset and genuine
-due-repeat controls. The source owner also reproduces the warm gap with actual
-PostgreSQL/window/outbox before proposing the repair; its immutable native record
-will retain its own attribution. No per-tenant ownership fence or new write-path
-index is presumed necessary.
+due-repeat controls. The [actual PostgreSQL/window/outbox warm-gap discriminator](../../../reports/tenancy/evaluator-effect-idempotency-2026-11-12/native-cause-and-repair/README.md)
+reproduces the early identical effect before repair and passes on local core
+`cd4629159809fb3cffbc6f57626f98f3ffdbdda7`. It retains a genuine repeat at its
+original deadline. The [independent repair review](../../../reports/tenancy/producer-repeat-cause-2026-11-12/independent-repair-cd462/README.md)
+preserves unavailable-effect refusal, ACK/clear, configuration and due-repeat
+behavior. No per-tenant ownership fence or write-path index was added.
 
-Status: open, unreleased preview. The failed source/image/state are retained.
-[Remote comprehensive campaign C](../../../reports/tenancy/m7-core-acceptance-2026-11-12/cancelled-before-tests-c/README.md)
-was cancelled before tests and cleaned up. The source owner must preserve known
-repeat deadlines through temporary unavailability without admitting stale normal
-effects, suppressing real due repeats, fabricating normality or changing ACK,
-clear, configuration and late-effect behavior. Corrected clinical oracles must
-allow the intentional changed payload while refusing duplicate accepted effects.
+Status: fixed on a local preview branch, not merged or released. The failed
+source/image/state remain retained. [Remote comprehensive campaign C](../../../reports/tenancy/m7-core-acceptance-2026-11-12/cancelled-before-tests-c/README.md)
+was cancelled before tests and cleaned up. Coordinator independently runs both
+registered native causal suites together on cd462: five passing, zero pending,
+zero failing, with owned fixture cleanup. Fresh paired clinical effect-idempotency
+and comprehensive acceptance remain unmeasured; focused repair qualification is
+not a replacement for those gates. The corrected clinical oracle permits the
+intentional changed payload while refusing early identical accepted effects.
 
 ### BF-240 · empty-registry evaluator inspection is schema-refused — fixed on a preview branch
 

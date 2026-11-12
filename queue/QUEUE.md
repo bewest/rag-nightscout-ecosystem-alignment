@@ -11559,12 +11559,14 @@ alarm-readiness items, and the seam branch refresh.
 - `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/repair/README.md`
 - `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-listener-195c-f0f91/README.md`
 - `reports/tenancy/evaluator-effect-idempotency-2026-11-12/original/README.md`
+- `reports/tenancy/evaluator-effect-idempotency-2026-11-12/native-cause-and-repair/README.md`
+- `reports/tenancy/producer-repeat-cause-2026-11-12/independent-repair-cd462/README.md`
 - `reports/tenancy/producer-repeat-cause-2026-11-12/independent-reducer-195c/README.md`
 - `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/original/README.md`
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** 2026-11-12: BF-238 scheduling and BF-240 empty inspection are fixed in local core195c9322; bounded actual-listener completed-work qualification passes. Actual paired evaluator2-to-3 clinical acceptance fails on BF-239 early duplicate accepted normal effects; repeat-null origins and independent reducer/native warm-gap reproduction isolate lost repeat state. A narrow source repair is under evaluation; final acceptance/capacity are UNMEASURED. Remote CoreC was cancelled before all test tiers/corpus and independently cleaned up. The private configured/observed/ progress API is implemented v2, callable while eligibility is refused and bounded by explicit selectors; inspection must not drive work. Decision evaluator-static-partition uses member-level metadata, not a per-tenant lease; required durable effect idempotency must pass before promotion. Realtime and other actors retain their independent ownership/maintenance contracts; this ring is not imposed on every component.
+**Notes.** 2026-11-12: BF-238 scheduling and BF-240 empty inspection are fixed in local core195c9322; bounded actual-listener completed-work qualification passes. Actual paired evaluator2-to-3 clinical acceptance fails on BF-239 early duplicate accepted normal effects; repeat-null origins and independent reducer/native warm-gap reproduction isolate lost repeat state. BF-239 is fixed locally on cd4629159; original/red and repaired native controls plus independent safety review pass. Fresh repaired paired clinical and final acceptance/capacity remain UNMEASURED; initial repaired client setup timed out before uploads or membership changes, with typed read-only socket diagnosis in progress. Remote CoreC was cancelled before all test tiers/corpus and independently cleaned up. The private configured/observed/ progress API is implemented v2, callable while eligibility is refused and bounded by explicit selectors; inspection must not drive work. Decision evaluator-static-partition uses member-level metadata, not a per-tenant lease; required durable effect idempotency must pass before promotion. Realtime and other actors retain their independent ownership/maintenance contracts; this ring is not imposed on every component.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 
