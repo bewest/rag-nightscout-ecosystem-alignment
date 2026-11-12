@@ -143,6 +143,64 @@ credential-renewal system or mandatory gateway is implied by these diagrams.
 | Backing resources | Follow the [component ownership map](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis): scoped reads and component-owned state can use storage; cross-component commands use admitted APIs. UI/nginx receive no blanket database/Vault authority. |
 | Workload ownership | Size replicas for measured load/availability, and define ownership separately. API replicas do not require evaluator partition leases. The selected evaluator partition work has its own membership/conflict criteria. |
 
+### Scale envelopes and fleet planning
+
+*Post-baseline planning clarification, 2026-11-12; evidence below is UNMEASURED.
+Cell/fleet arrangement is **PROPOSED**, requiring explicit maintainer adoption.
+This adds no gate or prerequisite to current acceptance or the pilot.*
+
+10,000 tenants is an arbitrary experimental point and current preview bound,
+not an overall product goal. Planning must cover efficient groups of 10–100
+tenants, operators serving hundreds or thousands, and a credible path to
+100,000+ tenants **in total across a fleet**. Record tenants, human users,
+concurrent sockets, active evaluation tenants and active alarm/delivery demand
+separately; none is a multiplier implied by another. A cohort is the selected
+workload/participant scope. A proposed cell is a bounded deployment/datastore
+and recovery unit; fleet totals must not be presented as one cell's or one
+PostgreSQL instance's capacity.
+
+Reuse the same API, evaluator, realtime, PostgreSQL and change-feed components
+across qualified profiles. Experimental rigs isolate variables; they are not
+production recipes. Fleet routing, placement, cross-database tenant moves and
+control-plane recovery are additional responsibilities: adding replicas does
+not implement them. The existing [deployment/fault-domain guide](deployment-and-rig-testing.md#deployment-choices-and-fault-domains)
+keeps per-tenant cells distinct from shared-cohort and multi-host choices.
+
+| Envelope | Evidence needed, with exact source/profile and population | Later owner, decision trigger and smallest discriminating experiment |
+|---|---|---|
+| Small group: idle and steady fixed cost | Whole-stack idle/steady vCPU, RAM, storage/IOPS and dependency cost at 10–100 tenants, with identical functional/freshness/recovery checks. Include edge, UI, control, feed, PostgreSQL, Vault/Agent and selected identity/monitoring dependencies. | M7 measurement owner with deployment owner: after the frozen baseline, compare two explicitly selected profiles at one small population and the same workload; change one axis. A reproduced fixed-cost difference can motivate a packaging/profile proposal, not automatic adoption. |
+| Operator density: hundreds/thousands | Whole-stack cost per tenant-month at stated utilization, including retained data, backups, dependency charges and reserved N−1 recovery headroom. Measure correctness, data/alarm freshness and recovery ceilings under steady/hot load and loss of one selected participant or failure domain; name the actual fault scope. | Deployment/recovery owner with M7 measurement owner: run one matched-density baseline and one candidate, then one supported controlled failure/recovery. A measured bottleneck or recovery ceiling triggers review of the affected component/placement design; fewer nodes alone proves no cost advantage. |
+| Fleet: 100,000+ total path | Bound coordination/roster work and database growth per proposed unit and across units: routing, provisioning, retention, migration, backup/restore, feed/WAL and maintenance remain accounted for. Preserve tenant isolation, current authority, clinical outcomes and freshness/recovery ceilings across placement changes. | Architecture/control-plane and storage owners: first inventory boundaries, then a two-unit synthetic routing/move/recovery discriminator with independent stored-data and ownership oracles. Only an explicit reviewed adoption of placement, cross-database move and control recovery contracts can select a cell/fleet arrangement; this experiment is not fleet-capacity proof. |
+
+Design should preserve topology-independent behavior before stress testing:
+current tenant authority/revocation; committed write outcomes and uncertainty;
+owned work/checkpoint continuity; lifecycle fencing and response drain; timer
+semantics and public client contracts. Proposed compatibility seams are versioned
+internal contracts/capabilities **or explicit coordinated-upgrade refusal**, not
+a blanket mixed-version promise. Keep role instance/incarnation distinct from a
+service address, durable tenant identity distinct from a worker, and hints
+distinct from durable truth. Transport adapters share a behavioral contract;
+these seams do not require a universal framework or a new broker.
+
+For each later design brief, state the invariant and concrete code/call boundary,
+smallest necessary implementation, compatibility/migration/failure behavior,
+owner, one focused discriminating control and the evidence that would justify
+infrastructure changes. Classify it as required correctness/compatibility,
+measured optimization, bounded prototype or deferred hypothesis. This is a
+**proposed tracking rubric**, preserving adopted decisions rather than choosing
+a fleet topology or adding current acceptance requirements.
+
+Comparative baselines and savings remain **ASSUMPTION** until reproduced with
+whole-stack resource/cost accounting, workload, retention, prices and availability
+scope. Before proposing any higher preview limit, inventory every all-roster
+O(N) path, pool/connection and file-descriptor budget, queue/backpressure bound,
+WAL/slot retention, database/index growth and complete maintenance participant
+set. Identify bounded work per request/tick and explicit degraded recovery;
+extra worker count does not remove these constraints. The maintainer adopts
+later architecture/profile choices from those measurements with the named
+owners. These envelopes neither raise current limits nor infer PostgreSQL HA,
+automatic realtime failover or a production capacity claim.
+
 ## Work needed to reach the target
 
 The [work plan](selectable-endpoints-and-api-scaling-plan.md#remaining-work-and-acceptance)
