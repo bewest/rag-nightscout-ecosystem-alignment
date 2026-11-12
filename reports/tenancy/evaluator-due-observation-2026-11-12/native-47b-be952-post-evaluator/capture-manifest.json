@@ -1,0 +1,127 @@
+{
+  "native-observation.json": {
+    "rawSha256": "11294efcb3f03e8b6d594c8466c2aea6423aacea3822842fad00eb7005657324",
+    "publishedSha256": "11294efcb3f03e8b6d594c8466c2aea6423aacea3822842fad00eb7005657324",
+    "normalization": "none"
+  },
+  "native-observation.json.gz": {
+    "rawSha256": "cd6ab0ebc270d1d952e8cd871d2ff44d6c1cecab5c54dd3f3ee565018436308a",
+    "publishedSha256": "cd6ab0ebc270d1d952e8cd871d2ff44d6c1cecab5c54dd3f3ee565018436308a",
+    "normalization": "none"
+  },
+  "classification.json": {
+    "rawSha256": "c194c081a923d49a9b3749b378c741a4466ac2862c8b89ce4e299df53da1c583",
+    "publishedSha256": "c194c081a923d49a9b3749b378c741a4466ac2862c8b89ce4e299df53da1c583",
+    "normalization": "none"
+  },
+  "capture-driver.py": {
+    "rawSha256": "0b34be3cb43bf1968ee84f12482b898589e02c9211005b43cc88defc242128f6",
+    "publishedSha256": "ccb6f2280528860d36f9b9381f0fbf43a12f382e895cd627601e89663a4b764a",
+    "normalization": "workspace/scratch prefixes only"
+  },
+  "classification-driver.py": {
+    "rawSha256": "3084e2e34a132fa1f66c21089ed3a07f205bfa58d83d9eed3ae0ceaff73ebcc1",
+    "publishedSha256": "3cd6b952c7f1e8e465621ac7843e5212b2bc5d78071ab63291c8ae3ad7f64da4",
+    "normalization": "workspace/scratch prefixes only"
+  },
+  "instrument-manifest.json": {
+    "rawSha256": "ac9e6be40547bac492e9187b69cbe554a7501a53a999806474bf902a9b432191",
+    "publishedSha256": "ac9e6be40547bac492e9187b69cbe554a7501a53a999806474bf902a9b432191",
+    "normalization": "none"
+  },
+  "observation.stdout.txt": {
+    "rawSha256": "bb09f025343615ec3ae7b6f51e77ae177581e6c9ae24dafd2bd3010bf5b59ec0",
+    "publishedSha256": "bb09f025343615ec3ae7b6f51e77ae177581e6c9ae24dafd2bd3010bf5b59ec0",
+    "normalization": "none"
+  },
+  "1-evaluator.command.json": {
+    "rawSha256": "81845d3acf943c0d05563dae4693d0feee59fee2ab5ea643fc679da8e4a7c194",
+    "publishedSha256": "81845d3acf943c0d05563dae4693d0feee59fee2ab5ea643fc679da8e4a7c194",
+    "normalization": "none"
+  },
+  "2-evaluator-3.command.json": {
+    "rawSha256": "312da3b5156273da1e17442c874367d39203d3f848559e1d0fe2b208f41a34e4",
+    "publishedSha256": "312da3b5156273da1e17442c874367d39203d3f848559e1d0fe2b208f41a34e4",
+    "normalization": "none"
+  },
+  "0-evaluator-2.command.json": {
+    "rawSha256": "a61a45e4027b7d0466d7db7798a79e106824140eb9857b4031d735b02eaa89e0",
+    "publishedSha256": "a61a45e4027b7d0466d7db7798a79e106824140eb9857b4031d735b02eaa89e0",
+    "normalization": "none"
+  },
+  "2-evaluator.command.json": {
+    "rawSha256": "915c7294d5f1fa33a1f22cb4d00f58536766733f52498dd8ef13bc934e58266a",
+    "publishedSha256": "915c7294d5f1fa33a1f22cb4d00f58536766733f52498dd8ef13bc934e58266a",
+    "normalization": "none"
+  },
+  "1-evaluator-2.command.json": {
+    "rawSha256": "c912ed9c314a781dce1988fc3c7a6a6e3083f4648851c71bfeb088449eddda22",
+    "publishedSha256": "c912ed9c314a781dce1988fc3c7a6a6e3083f4648851c71bfeb088449eddda22",
+    "normalization": "none"
+  },
+  "2-evaluator-2.command.json": {
+    "rawSha256": "68c00ef872ab6d8cdcc647f279a1b30da9632b60d2827f4e22ffa15346650b4a",
+    "publishedSha256": "68c00ef872ab6d8cdcc647f279a1b30da9632b60d2827f4e22ffa15346650b4a",
+    "normalization": "none"
+  },
+  "1-evaluator-3.command.json": {
+    "rawSha256": "3dc76a3cc3a998f3393f98211e36e0ff6e0486adc733f2856c034bc080fd753f",
+    "publishedSha256": "3dc76a3cc3a998f3393f98211e36e0ff6e0486adc733f2856c034bc080fd753f",
+    "normalization": "none"
+  },
+  "0-evaluator-3.command.json": {
+    "rawSha256": "8b87bcf6cdf8ad0d4990055c63dcf5447cb95697767b161c35811977576a8797",
+    "publishedSha256": "8b87bcf6cdf8ad0d4990055c63dcf5447cb95697767b161c35811977576a8797",
+    "normalization": "none"
+  },
+  "0-evaluator.command.json": {
+    "rawSha256": "ae3484453ce96e627f2a9cbdfc198ed8e2686f4cdb3535837e7cfcf425b18795",
+    "publishedSha256": "ae3484453ce96e627f2a9cbdfc198ed8e2686f4cdb3535837e7cfcf425b18795",
+    "normalization": "none"
+  },
+  "2-evaluator.jsonl": {
+    "rawSha256": "41bd991114c0a2be7be1cc7f7f8917f4d42c7e19c0c85b27da7047653b21137b",
+    "publishedSha256": "41bd991114c0a2be7be1cc7f7f8917f4d42c7e19c0c85b27da7047653b21137b",
+    "normalization": "none"
+  },
+  "0-evaluator-3.jsonl": {
+    "rawSha256": "df852dbd970b284f06ddaf998994186c713c1d7675fefa21ff49db1fe08ae9f3",
+    "publishedSha256": "df852dbd970b284f06ddaf998994186c713c1d7675fefa21ff49db1fe08ae9f3",
+    "normalization": "none"
+  },
+  "2-evaluator-2.jsonl": {
+    "rawSha256": "822225200148cc2b0bd9d0c0007224a44ee78638c8935854b0c057b7750515f0",
+    "publishedSha256": "822225200148cc2b0bd9d0c0007224a44ee78638c8935854b0c057b7750515f0",
+    "normalization": "none"
+  },
+  "1-evaluator-3.jsonl": {
+    "rawSha256": "6c655a8a889ce91e533299f495e34e721791d891fb8ab96dedcae05e0a90b957",
+    "publishedSha256": "6c655a8a889ce91e533299f495e34e721791d891fb8ab96dedcae05e0a90b957",
+    "normalization": "none"
+  },
+  "2-evaluator-3.jsonl": {
+    "rawSha256": "589077e1abd0b26c001b4d59509094a37fbde9b1be0b32e6d60d866c97ee5ff2",
+    "publishedSha256": "589077e1abd0b26c001b4d59509094a37fbde9b1be0b32e6d60d866c97ee5ff2",
+    "normalization": "none"
+  },
+  "1-evaluator-2.jsonl": {
+    "rawSha256": "d2b57448982bd93ccb9c2bf35306fe8b4e09a25a98aaa14c0b638f2993bc7958",
+    "publishedSha256": "d2b57448982bd93ccb9c2bf35306fe8b4e09a25a98aaa14c0b638f2993bc7958",
+    "normalization": "none"
+  },
+  "1-evaluator.jsonl": {
+    "rawSha256": "8e3aca3134ed4f6ebcd1fce9f5fcfc915eedc6c835d9ab7ff60bca37a0880981",
+    "publishedSha256": "8e3aca3134ed4f6ebcd1fce9f5fcfc915eedc6c835d9ab7ff60bca37a0880981",
+    "normalization": "none"
+  },
+  "0-evaluator-2.jsonl": {
+    "rawSha256": "2ceffb2d40c447dc63f552bfe4fa4c5ed9baa83800e615a6ba1dde26655e2f6a",
+    "publishedSha256": "2ceffb2d40c447dc63f552bfe4fa4c5ed9baa83800e615a6ba1dde26655e2f6a",
+    "normalization": "none"
+  },
+  "0-evaluator.jsonl": {
+    "rawSha256": "83c7235d4ce8de40148d78fe48da8e654a1ef33a09b104541d39fd4bb01921ef",
+    "publishedSha256": "83c7235d4ce8de40148d78fe48da8e654a1ef33a09b104541d39fd4bb01921ef",
+    "normalization": "none"
+  }
+}
