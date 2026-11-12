@@ -26787,26 +26787,26 @@ items:
     register: []
     gates:
       - no-gate: >
-          UNMEASURED until run. Gate: recorded-evidence check that every shape has the
-          same workload descriptor hash and every comparison cell is filled; control:
-          mismatched workload hash fails.
+          Retired by decisions.md#m7-capacity-gate: maintainer removed the single-site
+          contrast requirement. Closed by decision, not by an unrun measurement.
     blocks_on:
       - MT-BENCH-BASELINE
     evidence:
-      - docs/30-design/tenancy/production-critical-path.md
+      - releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate
     notes: >
-      The contrast is the argument for the deployment model; keep it numeric and
-      synthetic. Never import a prior provider's tenant counts or incident figures.
+      2026-11-10: retired by the M7 capacity decision. Measure marginal resource
+      cost and confirm at the claimed tenant count; no equal-load deployment-shape
+      contrast is required. Historical description retained above, not an open gate.
 
   - id: MT-REALTIME-SHARDING
     title: "M7: realtime tenant sharding, controlled ownership moves and recovery"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/realtime-sharding
+    branch: codex/m7-join-20261111
     base: codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1
-    state: not-started
+    state: in-progress
     blast_radius: >
-      Proposed fixed-roster tenant-sharded realtime: stable logical assignment
+      Implemented fixed-roster tenant-sharded realtime: stable logical assignment
       independent of worker/evaluator counts, consumer and alarm routing using
       one admitted placement generation, owner/incarnation admission, checkpoint
       continuity, cohort tenant-subset coverage, controlled moves and inspection.
@@ -26815,7 +26815,7 @@ items:
       but requires resource/failure coupling acceptance, not identical pool counts.
     review: maintainer; architecture, compatibility, isolation and operations review
     operator_visible: >
-      Planned optional realtime worker placement across tenant groups. A worker
+      Optional realtime worker placement across tenant groups. A worker
       move disconnects affected sessions, which must reconnect and resynchronize.
       Current-state recovery is distinct from alarm-event replay; a successful
       handoff is not confirmation that a device received the notification.
@@ -26826,7 +26826,8 @@ items:
     register: []
     gates:
       - no-gate: >
-          UNMEASURED until implemented. Native one-worker compatibility and two
+          Focused core implementation measured; coherent joined acceptance and
+          horizontal capacity remain incomplete. Native one-worker compatibility and two
           real-owner coverage: stable shard mapping, edge/alarm route agreement,
           polling and namespace affinity, wrong-owner refusal, durable checkpoint
           continuity and complete per-tenant maintenance census with old/draining
@@ -26843,24 +26844,19 @@ items:
     blocks_on:
       - MT-ENDPOINT-TRANSPORT
     evidence:
+      - reports/tenancy/realtime-sharding-2026-11-12/README.md
+      - reports/tenancy/m7-realtime-binding-2026-11-12/initial/README.md
       - docs/30-design/tenancy/realtime-sharding-plan.md
       - docs/30-design/tenancy/runtime-topology.md
       - docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md
     notes: >
-      2026-11-10 planning proposal; no application branch or implementation created.
-      Prototype against the incorporated dc795bd1 foundation while shared private
-      listener/operational composition joins. Fixed logical shards and explicit
-      mapping revisions avoid remapping every tenant merely because process count
-      changes. A tenant remains bounded by one owner; larger single-tenant fanout
-      is a separate measured extension. First scope uses controlled fixed-roster
-      moves and confirmed termination/effective fencing, not a lease-only promise
-      of exclusive output. Current cohort tenant-set equality, frozen boot tenant
-      lists and process-wide consumer identity need explicit migration; do not
-      weaken census or reset durable state to make a prototype pass. Direct
-      application calls retain existing authority; no mandatory broker, gateway,
-      service-authentication redesign or discovery product. Design remains a
-      proposal; the shard count/hash, stronger alarm replay guarantee and automated
-      partition takeover are not adopted by creating this work item.
+      2026-11-12: original core leaf 079a3b4c9a6ece9610b32025a0826f756fbb23f0
+      joined. Stable logical mapping, owner-incarnation admission, separate backend
+      and routed generations, checkpoint continuity and controlled old-owner-stop
+      moves are implemented. Focused native evidence is linked; final coherent
+      source-paired binding and full/corpus acceptance remain coordinator gates.
+      A tenant is bounded by one owner; automatic uncertain-owner failover, durable
+      missed-viewer alarm replay and connection-sharded hot tenants remain separate.
 
   - id: MT-SCALE-UNBOUND
     title: "M7: prove each component scales horizontally or vertically as intended, with no hidden binding"
@@ -27221,9 +27217,9 @@ items:
     title: "Running evaluator and realtime pick up newly provisioned tenants without a restart"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: ''
-    base: ''
-    state: blocked
+    branch: codex/m7-join-20261111
+    base: workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003
+    state: in-progress
     blast_radius: >
       Multitenant evaluator and realtime runtimes (clinical path): adding a tenant to the runtime, consumers, startup cells,
       pool slice and socket admission while running (decisions.md#tenant-live-add).
@@ -27234,12 +27230,19 @@ items:
     register: []
     gates:
       - no-gate: >
-          To be defined: time from provisioning to a new tenant's first alarm; no alarm gap for existing tenants; break-it controls.
+          Focused native new-tenant alarm/frame and existing-tenant continuity,
+          with frozen-roster red control, recorded below. Joined full/corpus and
+          deployment acceptance remain incomplete; no capacity latency guarantee.
     blocks_on:
       - MT-TENANT-REGISTRY
-    evidence: []
+    evidence:
+      - reports/tenancy/live-add-and-config-feed-2026-11-12/README.md
     notes: >
-      2026-11-11: decided; starts after the registry's step (a) lands.
+      2026-11-12: original leaf d20354797e368b03af171f4417ead60a6282d098 joined.
+      Dynamic staged admission, bounded bursts, failure retry and paused/suspended
+      deferred admission/resume are implemented. Native synthetic clinical/runtime
+      output proof and frozen-roster control are linked; final joined acceptance
+      remains with the coordinator.
   - id: MT-REALTIME-SOCKET-CAP
     title: "Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits"
     parcel: tenancy
@@ -27267,10 +27270,10 @@ items:
       2026-11-11: decided; start after the quiet capacity window. 2026-11-12: in progress on workspace/realtime-cap-20261112
       (worktree externals/work/crm-realtime-cap-20261112); also carries realtime's stat-keyed config cache.
   - id: MT-AUTHZ-COST
-    title: "api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request"
+    title: "API authorization cost: permission snapshot, batched audit, bounded lifetime sessions and signature-proof reuse"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: workspace/authz-cost-20261112
+    branch: codex/m7-join-20261111
     base: workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003
     state: in-progress
     blast_radius: >
@@ -27283,15 +27286,23 @@ items:
     register: []
     gates:
       - no-gate: >
-          Planned: profile on a quiet machine; equal allow and deny decisions on the authorization corpora; a revoked
-          credential is refused within the invalidation bound (break-it control); then the 3,000-tenant runs.
+          Focused capability controls are recorded below. Joined full acceptance
+          remains incomplete after the first unit-tier failure; corpus and source-paired
+          capacity measurements must pass before closing this cost capability.
     blocks_on: []
     evidence:
       - reports/tenancy/m7-join-2026-11-11/README.md
       - reports/tenancy/api-cost-vs-n-2026-11-11/README.md
+      - reports/tenancy/access-signature-proof-2026-11-12/report.md
+      - reports/tenancy/operation-lifetime-2026-11-12/report.md
+      - reports/tenancy/m7-core-acceptance-2026-11-12/first-unit-campaign/README.md
     notes: >
-      2026-11-12: decided. Starts once the capacity record is committed. 2026-11-12: started on
-      workspace/authz-cost-20261112 (worktree externals/work/crm-authz-cost-20261112); step 1 is the profile.
+      2026-11-12: joined permission snapshot/audit, actual API authority, bounded
+      lifetime sessions and positive Ed25519 proof reuse. Fresh key, claims and DB
+      authority checks remain mandatory; legacy DATA retains Vault verification.
+      Broader decision caching/cross-socket sharing deferred pending measured residual
+      cost and a compatible freshness/issuance contract (authorize-cost-first).
+      Research continues; no joined capacity gain or whole milestone closure claimed.
   - id: MT-EVAL-COST
     title: "Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order"
     parcel: tenancy
