@@ -1,0 +1,58 @@
+# multitenant: running 1 suites with NS_EVALUATOR_JOB_DOCKER_TEST
+
+
+  native trusted evaluator jobs with one physical lifetime client
+2026-11-12T12:28:21.851Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:21.913Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:22.883Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:22.944Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:23.002Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+    1) commits revision intents and accepted handoffs, repeats, and makes time-only progress without writes
+[SLOW TEST] "native trusted evaluator jobs with one physical lifetime client commits revision intents and accepted handoffs, repeats, and makes time-only progress without writes" took 2054ms (threshold: 2000ms)
+2026-11-12T12:28:23.968Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.024Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.078Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.140Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.198Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.252Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.314Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.376Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.456Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+2026-11-12T12:28:24.508Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+    ✔ refuses fresh suspended jobs and paused delivery, then resumes through fresh admission (707ms)
+NATIVE_JOB_CLEANUP {"containerRemoved":true,"anonymousVolumesRemoved":true,"image":"postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"}
+
+
+[SLOW TEST SUMMARY] 1 slow test(s) detected:
+  1. native trusted evaluator jobs with one physical lifetime client commits revision intents and accepted handoffs, repeats, and makes time-only progress without writes (2054ms)
+
+[TIMING STATS] Total: 2 tests, Avg: 1381ms, Slow: 1
+
+  1 passing (6s)
+  1 failing
+
+  1) native trusted evaluator jobs with one physical lifetime client
+       commits revision intents and accepted handoffs, repeats, and makes time-only progress without writes:
+     AssertionError [ERR_ASSERTION]: NATIVE_SCHEDULER_PROGRESS_TIMEOUT
+      at until (tests/evaluator-job-context.integration.test.js:14:93)
+      at async Context.<anonymous> (tests/evaluator-job-context.integration.test.js:83:3)
+
+
+
+# multitenant: mocha exited 1 (1 passing, 0 pending, 1 failing)
+# multitenant: run record written to /tmp/evaluator-job-immutable-corpus.json

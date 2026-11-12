@@ -1,0 +1,26 @@
+[
+  {
+    "source": "d505",
+    "mode": "inline",
+    "exit": 0,
+    "symptom": "COALESCED_ACTIVE_PARENT_COMPLETED inline"
+  },
+  {
+    "source": "d505",
+    "mode": "independent",
+    "exit": 1,
+    "symptom": "Error: COALESCED_ACTIVE_PARENT_POOL_ONE_DEADLOCK"
+  },
+  {
+    "source": "5ad",
+    "mode": "inline",
+    "exit": 1,
+    "symptom": "Error: COALESCED_ACTIVE_PARENT_POOL_ONE_DEADLOCK"
+  },
+  {
+    "source": "5ad",
+    "mode": "independent",
+    "exit": 1,
+    "symptom": "Error: COALESCED_ACTIVE_PARENT_POOL_ONE_DEADLOCK"
+  }
+]

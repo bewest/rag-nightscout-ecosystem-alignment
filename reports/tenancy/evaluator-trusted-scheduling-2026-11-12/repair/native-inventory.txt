@@ -1,0 +1,5 @@
+tests/evaluator-job-context.integration.test.js
+  flags: NS_EVALUATOR_JOB_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: trusted evaluator scheduling, one physical lifetime client, durable outbox accepted handoff/repeat, nested admission, pause/suspend and late callback controls; owns pinned PostgreSQL and cleanup
+# 1 opt-in suites (85 in the inventory); 1 start their own containers
