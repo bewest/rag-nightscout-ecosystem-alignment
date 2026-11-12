@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "m7-joined-profile-capabilities",
   "settingsFingerprint": {
     "schema": 1,
@@ -67,5 +67,44 @@
     "deadlineClaim": false,
     "workloadCohortChanged": false,
     "dueState": "captured-only-not-opportunity-assessed"
+  },
+  "evaluatorIdleSafety": {
+    "version": 1,
+    "kind": "evaluator-idle-safety",
+    "moduleVersion": 2,
+    "strictWorkPolicy": {
+      "version": 2,
+      "moduleVersion": 2,
+      "selectorRows": 128,
+      "maxTenants": 10000,
+      "maxInstances": 4,
+      "roundsPerPhase": 3,
+      "maxQueriesPerPhase": 1024,
+      "maxBytesPerPhase": 67108864,
+      "responseMaxBytes": 1048576,
+      "rpcTimeoutMs": 5000,
+      "roundDeadlineMs": 15000,
+      "idleWitness": "successful-time-only-completion",
+      "loadWitness": "successful-work-progression",
+      "recoveryCadenceMs": 15000,
+      "recoveryTimeoutMs": 900000,
+      "recoveryMaxRounds": 60,
+      "readinessMaxQueries": 25600,
+      "readinessMaxBytes": 268435456,
+      "readinessMaxRounds": 80,
+      "deadlineClaim": false,
+      "workloadCohortChanged": false,
+      "dueState": "captured-only-not-opportunity-assessed"
+    },
+    "meaning": "NO_EVALUATOR_TIME_DEMAND or observed successful time work",
+    "quietMeaning": "TIME_NOT_EXERCISED",
+    "clockGuard": "common-bracketed-realtime-minus-monotonic-offset",
+    "jobEncoding": "six-fixed-clinical-flags-bitmask-v1",
+    "newClinicalDemand": "UNMEASURED",
+    "explicitNullDue": "NO_TIMER_DECLARED_WITH_COMPLETE_JOB_OBSERVATION",
+    "missingDue": "UNMEASURED",
+    "nativeTimeWitnessRequired": true,
+    "deadlineClaim": false,
+    "continuousQuiescenceClaim": false
   }
 }

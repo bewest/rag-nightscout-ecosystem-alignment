@@ -134,14 +134,15 @@ def assess(rounds,ids,phase,*,policy=POLICY):
     return {'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
 
 class Observer:
-    def __init__(self,services,ids,fetch,seconds,phase,write):
+    def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY):
         self.services,self.ids,self.fetch,self.seconds,self.phase,self.write=services,ids,fetch,seconds,phase,write
+        self.assessor,self.policy=assessor,policy
         self.rounds=[];self.failure=None;self.stop=threading.Event()
     def observe(self):
         try:self.rounds.append(round_view(self.services,self.ids,self.fetch))
         except Exception as error:self.failure=error
     def failed(self,error,extra=None):
-        self.write({'version':POLICY['version'],'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'policy':POLICY,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})})
+        self.write({'version':self.policy['version'],'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'policy':self.policy,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})})
     def __enter__(self):
         self.observe()
         if self.failure:
@@ -164,7 +165,7 @@ class Observer:
         self.observe()
         try:
             if self.failure:raise self.failure
-            result=assess(self.rounds,self.ids,self.phase)
+            result=self.assessor(self.rounds,self.ids,self.phase)
         except Exception as error:
             self.failed(error);raise
         self.write({**result,'rounds':self.rounds});self.result=result

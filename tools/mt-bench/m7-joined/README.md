@@ -168,7 +168,8 @@ controlled-replacement binding helper; raw restart is refused until that seam ex
 
 ## Successful evaluator completion observer
 
-Profile-selection version2 pins the `evaluatorProgress` policy in capabilities.json.
+Profile-selection version3 pins the unchanged strict `evaluatorProgress` policy and
+the separate `evaluatorIdleSafety` policy in capabilities.json version4.
 The source must expose evaluator-inspection module v2 before preparation. Selectors
 contain at most128 unique synthetic UUIDs. One read-only process per exact evaluator
 instance pages ALL configured synthetic IDs, including foreign rows; no hash-based
@@ -176,11 +177,19 @@ query prefilter hides duplicate evaluation. Inspection invokes no clinical work.
 
 The existing enabled-idle phase starts before either k6 or the socket/write probe:
 its body only sleeps for the unchanged120s pilot/600s capacity interval. It is the
-no-clinical-write time witness. All tenants still receive the original load phase;
+no-clinical-write idle observation. All tenants still receive the original load phase;
 there is no additional cold cohort, plugin change, HTTP request, or deadline SLO.
-Idle requires successful time-only completion for every owner; load requires
-successful work progression. Legacy `cycles` and evaluation age cannot satisfy
-this check. Missing opportunity is UNMEASURED; error, ownership, runtime or lifecycle
+The historical strict idle checker still requires successful time-only completion
+for every owner. Current baseline idle instead uses a separate idle-safety result:
+actual observed due opportunities require later successful time progression; a
+healthy already-acquired owner with stable authority, no error or clinical job,
+and no captured due within the complete observation may report
+TIME_NOT_EXERCISED/zero completions. Explicit current null due with complete
+clinical-job metadata is NO_TIMER_DECLARED; historical/missing state is UNKNOWN.
+A later future due never erases an earlier observed opportunity. Any acquisition
+delta during idle is new demand and refuses. Load still requires successful work
+progression. Legacy `cycles` and evaluation age cannot satisfy
+this check. Missing opportunity cannot manufacture a work witness. Error, ownership, runtime or lifecycle
 generation changes refuse. Input/output revisions may advance normally. Every ID
 must have exactly one admitted ready owner; foreign counters must remain unchanged
 from their explicitly retained phase baseline. Hidden recovered errors refuse.
@@ -229,3 +238,30 @@ be decoded/verified as historical records. Missing old due fields stay UNKNOWN
 (absent), distinct from an observed null/no timer. Current cell receipts require
 v2 artifacts and cannot downgrade to an old unknown-due shape. The actual historical
 195c PASS and repaired cd462 UNMEASURED captures are tested read-only and unchanged.
+
+
+### Baseline idle-safety boundary
+
+`evaluator-idle-safety-v1` captures all IDs/all evaluators, actual helper UTC
+observations and wall-clock timestamps bracketed by monotonic timestamps around
+each existing exec. A common wall-minus-monotonic offset interval must cover all
+read boundaries; clock jumps, overlap, missing stamps or ambiguity are UNMEASURED.
+This is sampled observation, not continuous quiescence or a timer deadline SLO.
+No additional request, phase duration, clinical write, plugin change or work trigger
+is introduced. Notification polling and read-only signature/backstop confirmations
+are allowed and never count as successful clinical time work.
+
+The private DTO exposes six existing clinical states: running (through complete
+window resolution), booting, owned acquire/time and borrowed acquire/time tickets.
+The new compact artifact encodes these in that order as a validated integer
+bitmask0..63; bool, missing, extra or malformed state refuses. Named source DTO
+booleans remain exact. Full owner/foreign rows and original byte/query/gzip budgets
+are retained. Old strict phase/recovery v1/v2 artifacts keep their original checker
+semantics; current idle receipts cannot downgrade to them.
+
+An idle-safety PASS always declares `timeWitness:false`, including when actual time
+progress is observed. Capacity support separately requires a coordinator-pinned
+exact-source native successful-TIME witness, recomputed with the unchanged strict
+v2 checker. Quiet baseline capacity never establishes active-alarm capacity. Load
+and changed-runtime recovery remain strict. A future due or explicit null cannot
+excuse an earlier observed opportunity without later completed time work.
