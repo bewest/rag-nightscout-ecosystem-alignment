@@ -1,0 +1,13 @@
+{
+  "focused-fixed.txt": "493df2a429cae217c7c95d63b02d8fea5bc180cd2a0e5f694b7a926d90878718",
+  "instrument-native.test.js": "41eb55cbd8cb5add19b997655c960c86cf20489afdc3ae09c72ed8499c276b71",
+  "native-fixed.json": "44fd33b21a8824bc938bcadbd6d2f8262d8ede7b4b24dde36ead03f118c79ba2",
+  "native-fixed.txt": "7312496e17b7f0f6c299462c4a67e5463f88adeb8d3db54fa8a3b174d620001c",
+  "native-original.json": "1ab5766ff305315d65cab80217c399f1dac7c5806cd9360ca0b84e14dde50ab8",
+  "native-original.txt": "93005996cc30a8c6caa4248c5c9ec244e240ea305a3ca083338f3e7973042425",
+  "oracle-actual-bad-rows-control.cjs": "d9de18c0470532d12d45e4dadcb3569f1e1b31ac3138dbaa18f2e83644ec7b78",
+  "oracle-actual-bad-rows-control.txt": "ca6fbb9d2faf28c6960b7eb272b9cadbc7a776a8b219b29f6412aea4fa4cbcba",
+  "oracle-focused.txt": "a18b4fe3827af29dcf4f847c18310badb0d2bfea8e710b0e74505448f202fd11",
+  "producer-controls-original.txt": "b322d2df72d5ed462e33d1ea92afebd22c194843bf75eff1479b2b36e2d02bd4",
+  "source.json": "8a80b0449fb54ac5fe7d0c7768f88578b013c371be0afdc7e26108ee7e96dd9c"
+}

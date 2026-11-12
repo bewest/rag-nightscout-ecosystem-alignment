@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: allows one intentional B payload transition and classifies cancelled superseded rows
+ok 1 - allows one intentional B payload transition and classifies cancelled superseded rows
+  ---
+  duration_ms: 1.385675
+  type: 'test'
+  ...
+# Subtest: rejects an accepted identical early A effect even with changed B input
+ok 2 - rejects an accepted identical early A effect even with changed B input
+  ---
+  duration_ms: 0.894799
+  type: 'test'
+  ...
+# Subtest: rejects a second accepted identical B401 effect
+ok 3 - rejects a second accepted identical B401 effect
+  ---
+  duration_ms: 0.309339
+  type: 'test'
+  ...
+# Subtest: rejects extra pending identical effects before they can be handed off
+ok 4 - rejects extra pending identical effects before they can be handed off
+  ---
+  duration_ms: 0.71592
+  type: 'test'
+  ...
+# Subtest: rejects fabricated clear, duplicate socket fanout, and a proof crossing the real repeat deadline
+ok 5 - rejects fabricated clear, duplicate socket fanout, and a proof crossing the real repeat deadline
+  ---
+  duration_ms: 0.416704
+  type: 'test'
+  ...
+# Subtest: refuses absent typed digest metadata before classifying an effect
+ok 6 - refuses absent typed digest metadata before classifying an effect
+  ---
+  duration_ms: 0.16014
+  type: 'test'
+  ...
+# Subtest: shipping instruments compose every explicitly selected API/realtime/evaluator overlay
+ok 7 - shipping instruments compose every explicitly selected API/realtime/evaluator overlay
+  ---
+  duration_ms: 4.023975
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses a missing selected participant overlay
+ok 8 - shipping composition refuses a missing selected participant overlay
+  ---
+  duration_ms: 1.797314
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses unselected or unknown overlay compose.realtime.yaml
+ok 9 - shipping composition refuses unselected or unknown overlay compose.realtime.yaml
+  ---
+  duration_ms: 1.520655
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses unselected or unknown overlay compose.unknown.yaml
+ok 10 - shipping composition refuses unselected or unknown overlay compose.unknown.yaml
+  ---
+  duration_ms: 0.692951
+  type: 'test'
+  ...
+# Subtest: shipping composition preserves unsharded evaluator-only selection and refuses another state
+ok 11 - shipping composition preserves unsharded evaluator-only selection and refuses another state
+  ---
+  duration_ms: 0.841887
+  type: 'test'
+  ...
+# Subtest: actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress
+ok 12 - actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress # SKIP
+  ---
+  duration_ms: 0.583336
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 61.589805
