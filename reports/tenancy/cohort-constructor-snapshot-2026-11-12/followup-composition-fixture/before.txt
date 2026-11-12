@@ -1,0 +1,78 @@
+
+
+  Composed component-private listener over uds
+    ✔ serves two contracts from one explicit route table through their named clients
+    ✔ refuses a request naming a foreign or unregistered service before dispatch
+    ✔ refuses a duplicate method/path or duplicate service registration before binding
+
+  Composed component-private listener over http
+    ✔ serves two contracts from one explicit route table through their named clients
+    ✔ refuses a request naming a foreign or unregistered service before dispatch
+    ✔ refuses a duplicate method/path or duplicate service registration before binding
+
+  Composition registration rules
+    ✔ refuses duplicate routes within one service and partial or foreign lifetime policies
+    ✔ refuses unsupported per-operation methods, media types and bounds at registration
+    ✔ control: duplicate-route refusal goes red when the collision check is removed
+    ✔ control: co-resident foreign-service refusal goes red when the route owner fence is removed
+
+  Per-operation media, byte and deadline bounds
+    ✔ applies the operation byte bound to requests and responses at both ends
+    ✔ applies the operation deadline independently of a longer listener deadline (383ms)
+    ✔ requires the operation media type on requests and responses
+    ✔ client refuses a response whose media type differs from the operation type
+    ✔ control: byte bound test goes red when operation bounds are replaced by the listener bound
+
+  Per-module lifetime on a composed listener
+    1) keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over uds
+    2) keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over http
+    3) drains a held A application response before the window closes, while lifecycle status stays callable
+    4) control: a blanket listener-wide window mutant fails the lifecycle invalidation assertion
+
+
+  15 passing (11s)
+  4 failing
+
+  1) Per-module lifetime on a composed listener
+       keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over uds:
+     Error: SOCKET_IPC_UNAVAILABLE
+      at unavailable (lib/server/internal-api/transport.js:39:47)
+      at fail (lib/server/internal-api/transport.js:328:49)
+      at IncomingMessage.<anonymous> (lib/server/internal-api/transport.js:344:21)
+      at IncomingMessage.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1698:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+
+  2) Per-module lifetime on a composed listener
+       keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over http:
+     Error: SOCKET_IPC_UNAVAILABLE
+      at unavailable (lib/server/internal-api/transport.js:39:47)
+      at fail (lib/server/internal-api/transport.js:328:49)
+      at IncomingMessage.<anonymous> (lib/server/internal-api/transport.js:344:21)
+      at IncomingMessage.emit (node:events:531:35)
+      at endReadableNT (node:internal/streams/readable:1698:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+
+  3) Per-module lifetime on a composed listener
+       drains a held A application response before the window closes, while lifecycle status stays callable:
+     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-cohort-constructor-20261112/tests/internal-api-composition.test.js)
+      at listOnTimeout (node:internal/timers:585:17)
+      at process.processTimers (node:internal/timers:521:7)
+
+  4) Per-module lifetime on a composed listener
+       control: a blanket listener-wide window mutant fails the lifecycle invalidation assertion:
+     AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'ERR_ASSERTION'
+
+      at Object.<anonymous> (tests/internal-api-composition.test.js:348:14)
+      at expectedException (node:assert:576:17)
+      at expectsError (node:assert:701:21)
+      at Function.rejects (node:assert:767:3)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/internal-api-composition.test.js:347:5)
+
+
+

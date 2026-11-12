@@ -1,0 +1,20 @@
+{
+  "id": "4af87d2be5f8",
+  "startedAt": "2026-11-12T11:04:05.629Z",
+  "suites": [
+    "tests/postgres-cohort-snapshot.integration.test.js"
+  ],
+  "created": [],
+  "removed": [],
+  "env": {},
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 3,
+    "pending": 0,
+    "failing": 0
+  },
+  "finishedAt": "2026-11-12T11:04:08.738Z",
+  "remaining": [],
+  "status": 0
+}
