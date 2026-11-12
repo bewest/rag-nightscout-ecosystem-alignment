@@ -11795,6 +11795,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
+| register | `BF-234`, `BF-235` |
 
 **Blast radius.** Multitenant only. Replaces the static tenant list in role configs (decisions.md#tenant-registry, decisions.md#provisioning-split).
 
@@ -11809,6 +11810,7 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `reports/tenancy/tenant-registry-2026-11-11/README.md`
+- `reports/tenancy/registry-connector-2026-11-12/README.md`
 
 **Notes.** 2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it. Step (a) at f5c4c0c3 (8 commits): registry, cached resolver, provisioning library, admin /v1/tenants and `nightscout admin provision`, api/tenant-admin/admin/evaluator in registry mode, isolation tests, docs. Before the join: resolve loader conflicts with MT-CAPACITY-FIXES; gaps before default listed in the record.
 

@@ -27202,7 +27202,7 @@ items:
     operator_visible: ''
     semver: n/a
     semver_reason: unreleased preview
-    register: []
+    register: [BF-234, BF-235]
     gates:
       - no-gate: >
           Design and acceptance to be defined; isolation (the definer function reveals only host-to-tenant mapping) and
@@ -27210,6 +27210,7 @@ items:
     blocks_on: []
     evidence:
       - reports/tenancy/tenant-registry-2026-11-11/README.md
+      - reports/tenancy/registry-connector-2026-11-12/README.md
     notes: >
       2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it.
       Step (a) at f5c4c0c3 (8 commits): registry, cached resolver, provisioning library, admin /v1/tenants and
