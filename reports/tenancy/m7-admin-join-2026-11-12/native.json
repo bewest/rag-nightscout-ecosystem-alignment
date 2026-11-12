@@ -1,0 +1,41 @@
+{
+  "id": "19a389b742c3",
+  "startedAt": "2026-11-12T05:41:54.746Z",
+  "suites": [
+    "tests/connector-sources.integration.test.js",
+    "tests/management-sessions.integration.test.js"
+  ],
+  "created": [
+    {
+      "kind": "postgres",
+      "id": "f51314ced618d9b9bb4af331d519dd25932163f6bc8dae68e726c82e20f4f68f",
+      "volumes": [
+        "89d37ac55454f6b5b1689e20f936669c29cee48c3630ebc494f5fbf8acd66a54"
+      ],
+      "image": "postgres:16"
+    }
+  ],
+  "removed": [
+    {
+      "kind": "postgres",
+      "id": "f51314ced618d9b9bb4af331d519dd25932163f6bc8dae68e726c82e20f4f68f",
+      "volumes": [
+        "89d37ac55454f6b5b1689e20f936669c29cee48c3630ebc494f5fbf8acd66a54"
+      ],
+      "verifiedAbsent": true
+    }
+  ],
+  "env": {
+    "NS_TEST_POSTGRES_ADMIN_URI": "disposable"
+  },
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 21,
+    "pending": 0,
+    "failing": 0
+  },
+  "finishedAt": "2026-11-12T05:42:06.287Z",
+  "remaining": [],
+  "status": 0
+}
