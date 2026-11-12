@@ -1,0 +1,10 @@
+'use strict';
+const path = require('node:path'), vm = require('node:vm'), Module = require('node:module'), crypto = require('node:crypto');
+const filename = path.join(process.cwd(), 'lib/server/serve/evaluator-config.js');
+const sourceCommit = 'd5e2e874659155c952b5b5deb862f12f982ac02e';
+const result = require('node:child_process').spawnSync('git', ['show', sourceCommit + ':lib/server/serve/evaluator-config.js'], { encoding: 'utf8' });
+if (result.status !== 0) throw new Error('CONTROL_SOURCE_UNAVAILABLE');
+const source = result.stdout, output = { exports: {} }; require(filename);
+vm.runInThisContext('(function(require,module,exports){' + source + '\n})', { filename })(Module.createRequire(filename), output, output.exports);
+require.cache[filename].exports = output.exports;
+console.log(JSON.stringify({ control: 'exact-D5-evaluator-cache', sourceCommit, sourceSha256: crypto.createHash('sha256').update(source).digest('hex'), sourceMutatedOnDisk: false }));

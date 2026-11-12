@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-12",
+  "verdict": "FOCUSED_PASS_NOT_FULL_ACCEPTANCE",
+  "source": {
+    "core": "9f7e6bca2d39cb8d37fd9ac5918a9785eba0116e",
+    "before": "8f5c5947753c34c66d19dcb9b2f27a610dd7e3d1",
+    "originalD5": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+    "originalEvaluatorModuleSha256": "5653f8ef07137f7e097505b65405f25b35f6ded924a7eedfc6867ff84c7b1d05"
+  },
+  "attribution": "preexisting in D5, newly reproduced here; not introduced by retained-descriptor repair",
+  "before": {
+    "exit": 2,
+    "failures": 2,
+    "sameStat": "v1 returned instead of v2",
+    "currentBound": "missing expected rejection"
+  },
+  "exactD5Control": {
+    "exit": 2,
+    "failures": 2,
+    "onDiskSourceMutations": false
+  },
+  "after": {
+    "exit": 0,
+    "focusedFiles": 13,
+    "passed": 129
+  },
+  "legacyUnchanged": {
+    "calls": 50,
+    "boundedReads": 50,
+    "JSONParses": 1,
+    "rosterKeyEnumerations": 0,
+    "retainedFDs": 0
+  },
+  "registryComposition": {
+    "currentCalls": 200,
+    "legacyFileReads": 0,
+    "rosterKeyEnumerations": 0,
+    "authoritativeSettingsReads": 200,
+    "databaseAndReadinessAdapters": "explicit doubles",
+    "clinicalStartup": "not run"
+  },
+  "lint": {
+    "exit": 0,
+    "outputBytes": 0
+  },
+  "tiers": {
+    "exit": 0,
+    "files": 700,
+    "tiers": 8
+  },
+  "sourceFiles": {
+    "lib/server/serve/evaluator-config.js": "ea7e217bf87f9fad3b056a38b45231f6322fc26b7199aa776919a463f2e30530",
+    "lib/server/serve/evaluator-preview.js": "e9778695fbfe159aaf624598a0962275e21e063ecb02fc497e801c110b3bca37",
+    "lib/server/realtime/README.md": "2d3dc6f4437bc7821fa4803cf65919ffde173c2ecd8cc2039b0d56419d5af9f5",
+    "tests/realtime-publication-cache.test.js": "a7108d82e252f112d17f68d5bd297d1b7747485977341c0427b4eb4d5ee29757"
+  },
+  "artifacts": {
+    "exact-D5-control.cjs": {
+      "sha256": "db31b65619ac654b9d42c5116f9cfc24fa415ec4455a101eb66bb1c3c33c283e",
+      "bytes": 967
+    },
+    "before.log.gz": {
+      "sha256": "6818bf04d981ee50a574ab1b14e6d21f9b567007c06bfcec039482929ce48ee3",
+      "bytes": 374,
+      "decodedSha256": "2383d488f80201c38538010b5991628360cc1e1840d1fcadace75c16cad42162",
+      "decodedBytes": 1021
+    },
+    "exact-D5-control.log.gz": {
+      "sha256": "cc63837a8eb857cd9b89525ca6151262acf7547ee99ae15fd24de03366ed45de",
+      "bytes": 520,
+      "decodedSha256": "44d42d2349bdaaea4252ce9e5ebfa5461eb2d38405977da4b02df01406fba5e5",
+      "decodedBytes": 1227
+    },
+    "prior-module-control.log.gz": {
+      "sha256": "85c74677eb9e458c57c3d2e57bf2a7a43ccd99dc002e59c068ff490bf5f9186e",
+      "bytes": 522,
+      "decodedSha256": "4bf7294c7dbe7c8da1c789926cd96e2f3d2f9c97e0d340d69c78a7600620e5be",
+      "decodedBytes": 1223
+    },
+    "after-focused.log.gz": {
+      "sha256": "f1fece6abcb507e487581a5ef84ab057628201df9f0d1ea4e4124e820bdb1362",
+      "bytes": 5825,
+      "decodedSha256": "ff0c1ebce788ab965167892fbc53ea279169de9b00815fbd8b9abc84d67f8975",
+      "decodedBytes": 18979
+    },
+    "lint.log.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "bytes": 20,
+      "decodedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decodedBytes": 0
+    },
+    "tiers.log.gz": {
+      "sha256": "824cb055d1604ed71906c4caf8a5ccc4b62e41f5fd2bb3d447c13161094d5bff",
+      "bytes": 50,
+      "decodedSha256": "84f8adf282671fb7e92ff2966e3b7998c1d74463ea389024125144a14aa291dd",
+      "decodedBytes": 30
+    }
+  },
+  "fullCampaign": false,
+  "capacity": false,
+  "nativeDatabase": false,
+  "oldKernelRepairRerun": false,
+  "prcheck": false
+}
