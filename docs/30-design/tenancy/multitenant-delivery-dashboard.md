@@ -103,7 +103,7 @@ flowchart LR
   MT-CONNECTOR-SYNC["MT-CONNECTOR-SYNC<br/>done"]
   MT-CONSUMER-STALE-RESELECT["MT-CONSUMER-STALE-RESELECT<br/>in-flight-upstream"]
   MT-ENDPOINT-TRANSPORT["MT-ENDPOINT-TRANSPORT<br/>in-progress"]
-  MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>ready-to-push"]
+  MT-EVALUATOR-PARTITION["MT-EVALUATOR-PARTITION<br/>in-progress"]
   MT-EXPORT-EXPIRY["MT-EXPORT-EXPIRY<br/>in-flight-upstream"]
   MT-INTERNAL-LISTENER["MT-INTERNAL-LISTENER<br/>in-flight-upstream"]
   MT-KEY-RETENTION["MT-KEY-RETENTION<br/>in-flight-upstream"]
@@ -211,7 +211,7 @@ External prerequisites are shown one level deep; the full queue owns their furth
 | <a id="mt-bench-contrast"></a>**MT-BENCH-CONTRAST**: closed | M7 / measurement | MT-BENCH-BASELINE (in-progress) | Same workload against N single-tenant Mongo processes and the per-site process model; resource per tenant, latency, startup/restore time, operator steps per tenant, side by side. |
 | <a id="mt-scale-unbound"></a>**MT-SCALE-UNBOUND**: not-started | M7 / architecture proof | MT-BENCH-BASELINE (in-progress), MT-API-FIXED-ROSTER (in-progress), MT-REALTIME-SHARDING (in-progress) | API 1->2->4 replicas, realtime vertical then horizontal, evaluator vertical, PG vertical and pool bounds; binding inventory with file:line; horizontal realtime consumes endpoint transport and realtime sharding correctness, API scale consumes fixed roster; vertical baselines remain independent. |
 | <a id="mt-realtime-sharding"></a>**MT-REALTIME-SHARDING**: in-progress | M7 / realtime placement and recovery | MT-ENDPOINT-TRANSPORT (in-progress) | Evaluate stable logical tenant shards with explicit edge/alarm mapping, owner incarnations, checkpoint continuity, subset-aware maintenance and controlled moves/rollback. Preserve separate evaluator/delivery responsibilities with optional measured co-location; no lease-only HA or implied alarm replay. |
-| <a id="mt-evaluator-partition"></a>**MT-EVALUATOR-PARTITION**: ready-to-push | M7 / evaluator scaling | MT-BENCH-BASELINE (in-progress) | Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control. |
+| <a id="mt-evaluator-partition"></a>**MT-EVALUATOR-PARTITION**: in-progress | M7 / evaluator scaling | MT-BENCH-BASELINE (in-progress) | Flag with member count and ordinal env vars; pool-membership heartbeat table (ordinal, expected members, slice, lease); evaluate only while live rows agree; scale-event control 2->3 mid-cycle and duplicate-ordinal control. |
 | <a id="mt-m6b-join"></a>**MT-M6B-JOIN**: in-flight-upstream | M6b / b70ad83f on #8898, CI green | MT-M6A-JOIN (in-flight-upstream) | Carried forward by the batch join, accepted and pushed to #8898 at 16a1fc2d. |
 | <a id="mt-oidc-single-provision"></a>**MT-OIDC-SINGLE-PROVISION**: in-flight-upstream | Single-site OIDC / joined at b70ad83f | MT-M6A-JOIN (in-flight-upstream) | Authoritative identity list decided 2026-11-10. Real provider interoperability and concurrent starts remain UNMEASURED. |
 | <a id="mt-owner-last-guard"></a>**MT-OWNER-LAST-GUARD**: in-flight-upstream | M6b / fixed on lane 65657a62 (BF-229); joined at 16a1fc2d (#8898) | MT-M6B-JOIN (in-flight-upstream) | Joined and accepted at 16a1fc2d; no lane action remains recorded. |

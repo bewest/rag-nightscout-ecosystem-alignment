@@ -26911,7 +26911,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/evaluator-partition-20261110
     base: workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364
-    state: ready-to-push
+    state: in-progress
     blast_radius: >
       Evaluator role only. Two environment variables (member count, this worker's
       ordinal) behind a feature flag select the tenant slice by hash; flag off keeps
@@ -26935,7 +26935,7 @@ items:
       a refused computation, never two conflicting results.
     semver: minor
     semver_reason: opt-in flag; default behaviour unchanged
-    register: []
+    register: [BF-238]
     gates:
       - no-gate: >
           UNMEASURED until implemented. Gate: scale-event control under the baseline
@@ -26952,9 +26952,15 @@ items:
     blocks_on:
       - MT-BENCH-BASELINE
     evidence:
+      - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/original/README.md
       - releases/cgm-remote-monitor-16.0.0/decisions.md
       - docs/30-design/tenancy/runtime-topology.md
     notes: >
+      2026-11-12: partition and private inspection source are joined locally; the fixed-roster
+      deployment binding is under actual-role qualification. BF-238 independently reproduces
+      expired-parent scheduling refusal; its trusted scheduling repair and bounded successful-completion
+      inspection are open. The native 2-to-3 clinical handoff has not run. Earlier planned-only
+      operational API wording below records the original boundary, not current implementation status.
       Decision evaluator-static-partition (2026-11-09, revised the same day): pool
       membership table, not a per-tenant lease; the maintainer judged the per-tenant
       fence unnecessary overhead given idempotent outputs. Open design choices inside

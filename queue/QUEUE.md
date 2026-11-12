@@ -42,9 +42,9 @@ A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It r
 | state | n | ids |
 |---|---|---|
 | `not-started` | 77 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
-| `in-progress` | 26 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
+| `in-progress` | 27 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 10 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
+| `ready-to-push` | 9 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
 | `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 21 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
@@ -8473,7 +8473,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `closed` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `in-progress` | `codex/m7-join-20261111` | minor | 0 run + 1 no-gate |
 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
-| `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table | `ready-to-push` | `codex/evaluator-partition-20261110` | minor | 0 run + 1 no-gate |
+| `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table | `in-progress` | `codex/evaluator-partition-20261110` | minor | 0 run + 1 no-gate |
 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-POOL-PRIMITIVE` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice) for evaluator and vcpool | `ready-to-push` | `codex/pool-primitive-20261110` | n/a | 0 run + 1 no-gate |
@@ -11530,13 +11530,14 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/evaluator-partition-20261110` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
 | worktree | `-` |
 | semver | `minor` |
 | review | maintainer; architecture and clinical-path review |
+| register | `BF-238` |
 | blocks on | `MT-BENCH-BASELINE` |
 
 **Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A pool-membership table in PostgreSQL holds one heartbeat row per member (ordinal, expected members, ring slice, lease expiry). A member evaluates its slice only while every live row agrees on the member count and no two live rows share an ordinal; otherwise it stops its own cycle and alerts. No per-tenant lock; duplicate evaluation is bounded to one heartbeat interval after a membership change and the evaluator's outputs are idempotent by contract. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index. A read-only private operational module must expose configured mode/count/ordinal/rule/slice separately from observed membership, heartbeat freshness/conflicts, eligibility and actual workload progress. Standalone reports all configured tenants without fabricating a membership lease. The endpoint-composition lane owns shared listener plumbing; this lane owns evaluator payload/schema and observed-state semantics.
@@ -11551,10 +11552,11 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/original/README.md`
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** Decision evaluator-static-partition (2026-11-09, revised the same day): pool membership table, not a per-tenant lease; the maintainer judged the per-tenant fence unnecessary overhead given idempotent outputs. Open design choices inside the item: whether a member with a stale peer row may take over that slice after the lease expires; modulo vs consistent hashing. MT-SCALE-UNBOUND measures the overlap window for any duplicate external effect. The operational API is planned, not provided by current lifecycle status/in-process health. See the runtime-topology ownership inventory: notification attempts, future connector actors, realtime checkpoint/fanout and maintenance claims need their own ownership semantics; the evaluator ring is not imposed on every component.
+**Notes.** 2026-11-12: partition and private inspection source are joined locally; the fixed-roster deployment binding is under actual-role qualification. BF-238 independently reproduces expired-parent scheduling refusal; its trusted scheduling repair and bounded successful-completion inspection are open. The native 2-to-3 clinical handoff has not run. Earlier planned-only operational API wording below records the original boundary, not current implementation status. Decision evaluator-static-partition (2026-11-09, revised the same day): pool membership table, not a per-tenant lease; the maintainer judged the per-tenant fence unnecessary overhead given idempotent outputs. Open design choices inside the item: whether a member with a stale peer row may take over that slice after the lease expires; modulo vs consistent hashing. MT-SCALE- UNBOUND measures the overlap window for any duplicate external effect. The operational API is planned, not provided by current lifecycle status/in- process health. See the runtime-topology ownership inventory: notification attempts, future connector actors, realtime checkpoint/fanout and maintenance claims need their own ownership semantics; the evaluator ring is not imposed on every component.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 

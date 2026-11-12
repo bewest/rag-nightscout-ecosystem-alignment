@@ -1,0 +1,36 @@
+
+
+  ..!!
+[TIMING STATS] Total: 4 tests, Avg: 20ms, Slow: 0
+
+
+  2 passing (82ms)
+  2 failing
+
+  1) evaluator preview trusted configuration
+       rereads operator config per cycle, refuses infrastructure drift and disables removed tenants:
+
+      AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+
+'c8ee26a3fea46304ca7383c1eb398845bb1b80850689c627efdb8272649c475c'
+      + expected - actual
+
+
+      at Context.<anonymous> (tests/evaluator-preview-runtime.test.js:47:14)
+
+  2) evaluator preview trusted configuration
+       reads bounded hot-file bytes per call while reusing parsing until a same-size edit:
+
+      AssertionError [ERR_ASSERTION]: EV_CONFIG_BOUNDED_READ_EACH_CALL
+
+0 !== 21
+
+      + expected - actual
+
+      -0
+      +21
+      
+      at Context.<anonymous> (tests/evaluator-preview-runtime.test.js:65:14)
+
+
+

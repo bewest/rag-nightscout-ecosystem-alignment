@@ -1,0 +1,10 @@
+
+
+  .................2026-11-12T11:35:05.758Z	EMITTING ALARM:
+  {"level":"Warning","title":"Stale data, check rig?","message":"Last received: 21 mins ago\nBG Now: 120 mg/dl","group":"Time Ago","plugin":"timeago","debug":{"value":21,"label":"mins ago","shortLabel":"m"}}
+...................................
+[TIMING STATS] Total: 52 tests, Avg: 7ms, Slow: 0
+
+
+  52 passing (366ms)
+

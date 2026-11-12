@@ -41,7 +41,6 @@ repository.
 | [`MT-CONNECTOR-REVERSE`](mt-connector-reverse-codex-connector-reverse-20261110.md) | &mdash; | `ready-to-push` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant |
 | [`MT-CONSUMER-STALE-RESELECT`](mt-consumer-stale-reselect-codex-consumer-refusal-20261110.md) | &mdash; | `in-flight-upstream` | Alarm consumer survives evaluator timer publications during selection (BF-231) |
 | [`MT-EVAL-COST`](mt-eval-cost-codex-eval-cost-20261111.md) | &mdash; | `ready-to-push` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order |
-| [`MT-EVALUATOR-PARTITION`](mt-evaluator-partition-codex-evaluator-partition-20261110.md) | &mdash; | `ready-to-push` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table |
 | [`MT-EXPORT-EXPIRY`](mt-export-expiry-codex-export-expiry-20261110.md) | &mdash; | `in-flight-upstream` | Key destruction removes the export artifact file in the same audited step |
 | [`MT-INTERNAL-LISTENER`](mt-internal-listener-codex-internal-listener-20261110.md) | &mdash; | `in-flight-upstream` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline |
 | [`MT-KEY-RETENTION`](mt-key-retention-codex-key-retention-20261110.md) | &mdash; | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal |

@@ -1,0 +1,9 @@
+# Second frozen-core campaign: failed unit tier
+
+Reproduced on core `d50502bb6126bda2bb0af384569e1d95de114f2f`, deployment metadata `962fbdbe8617ed8abe63cad7039fde70f91fcbce`, alignment `d47000b94bb3aeb9c0d35fc75ff517028c36c1f0`. Instrument `a1960505f78f618eb721f5959387f1e94528c13d` and worker SHA are pinned in the [extracted receipt](receipt.json), with original artifact digests. This is a failed campaign.
+
+Unit exited 1: **3543 passing, 1 pending, 1 failing**. The [original failure](unit-failure.txt) is `EV_CONFIG_PARSED_ONCE_WHILE_UNCHANGED`: expected 1, observed 21 in `tests/evaluator-preview-runtime.test.js`. Dependencies, bundle, tier inventory, browser provisioning and pinned fixtures passed. Later seven tiers and enabled corpus were **NOT RUN**. Node v24.22.1/npm 11.19.1 ran on Linux 6.8.0-147-generic; no deadline was reached. Owned Mongo cleanup passed with no fixture container or volume residuals.
+
+The test counted file opens while labeling them parses. The adopted hot-file contract deliberately reads bounded bytes on each call and parses only changed bytes. [The test-only repair and two meaningful controls](../../m7-unit-repairs-2026-11-12/evaluator-read-parse-counter/README.md) measure these separately. Its focused green result does not turn this campaign green.
+
+Separately, an [actual-role evaluator probe found inherited expired scheduling context](../../evaluator-trusted-scheduling-2026-11-12/original/README.md). The next coherent source freeze waits for that repair and a bounded successful-completion oracle. No paid-host repair or automatic rerun was authorized. Original captures remain under local `externals/work/perf-cloud-core-20261112/core-acceptance-20261112-b/decoded/core-acceptance`; private environments and connection details are excluded here. The remote owner recorded complete cloud teardown.

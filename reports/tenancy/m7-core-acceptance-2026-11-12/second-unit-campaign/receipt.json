@@ -1,0 +1,288 @@
+{
+  "scope": "FROZEN_CORE_FUNCTIONAL_ACCEPTANCE_EXECUTION",
+  "sourceAcceptance": "COORDINATOR_REVIEW_REQUIRED",
+  "status": "failed",
+  "source": {
+    "coreCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+    "deployCommit": "962fbdbe8617ed8abe63cad7039fde70f91fcbce",
+    "alignmentCommit": "d47000b94bb3aeb9c0d35fc75ff517028c36c1f0"
+  },
+  "completedTests": [],
+  "errors": [
+    {
+      "phase": "execution",
+      "kind": "Refused",
+      "message": "COMMAND_FAILED_unit"
+    }
+  ],
+  "ownMongoCleanupVerified": true,
+  "fixtureResiduals": [],
+  "fixtureVolumeResiduals": [],
+  "commands": [
+    {
+      "id": "source-head",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "source-clean",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "docker-version",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "compose-version",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "initial-containers",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "node-version",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "npm-version",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "dependencies",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "bundle",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "inventory",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "browser-system-dependencies",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "browser-download",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "pull-mongo",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "image-mongo",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "pull-mongo8",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "image-mongo8",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "pull-postgres",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "image-postgres",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "pull-vault",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "image-vault",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "pull-source-fixture-0",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "image-source-fixture-0",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "pull-source-fixture-1",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "image-source-fixture-1",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-tag-0",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-pin-id-0",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-alias-id-0",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-tag-1",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-pin-id-1",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-alias-id-1",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-tag-2",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-pin-id-2",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-alias-id-2",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-tag-3",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-pin-id-3",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "fixture-alias-id-3",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-create",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-inspect",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-ready-0",
+      "status": "failed",
+      "returnCode": 1
+    },
+    {
+      "id": "mongo-ready-1",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "unit",
+      "status": "failed",
+      "returnCode": 1
+    },
+    {
+      "id": "pre-cleanup-containers",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-before-remove",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-final-log",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-remove",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-verify-absent",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "mongo-volume-verify",
+      "status": "passed",
+      "returnCode": 0
+    },
+    {
+      "id": "final-fixture-volumes",
+      "status": "passed",
+      "returnCode": 0
+    }
+  ],
+  "finishedAt": 1794482734.5009997,
+  "provenance": {
+    "commit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "ciEnvironmentSha256": "97ebaee8ecab5deb14c434c34e2cb05b3235b5e7a55224b82d5e3e7e4f4a0fff",
+    "nodeVersion": "v24.22.1",
+    "npmVersion": "11.19.1",
+    "nodeBinarySha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+    "instrumentCommit": "a1960505f78f618eb721f5959387f1e94528c13d",
+    "workerSha256": "07b4e4e4c36e3c0bc265efc66552be9d645cae579e67c9987a517069e4936e0d"
+  },
+  "unit": {
+    "passing": 3543,
+    "pending": 1,
+    "failing": 1,
+    "laterTiers": "NOT_RUN",
+    "enabledCorpus": "NOT_RUN"
+  },
+  "originalArtifacts": {
+    "result.json": "cf35b8dc8f17eb7461db8d27cd76c623329ab2a973ea93df03eccea015c7fcc9",
+    "commands.json": "62e223724217545dded69476edaf9a153c3adf442719051d8a85c379e7012ea3",
+    "provenance/source.json": "a281e72b0a98405b8a0fc94e3a4bacb702b11facec977f6468df3b0de126c87c",
+    "logs/unit.stdout.log": "f9e7ca3459576fb7867404fb8c93e4f2f86e498e5291e011027e89a991e7214b",
+    "logs/unit.stderr.log": "db2bce0ca0f862aa372ae1f4bbf7dfcedbd721be4115f946cb60c9a663b29060"
+  }
+}
