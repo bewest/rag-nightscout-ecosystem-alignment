@@ -1,0 +1,56 @@
+{
+  "actualClassification": {
+    "verdict": "UNMEASURED",
+    "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED"
+  },
+  "restoredClassification": "UNMEASURED",
+  "corruptionControls": [
+    {
+      "control": "hidden-failure",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE"
+    },
+    {
+      "control": "foreign-work",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_FOREIGN"
+    },
+    {
+      "control": "runtime-reset",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_RESET"
+    },
+    {
+      "control": "missing-foreign",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_COVERAGE"
+    },
+    {
+      "control": "invalid-due",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_DUE_CONTRACT"
+    }
+  ],
+  "currentNativeGateRefusal": "M7_EVALUATOR_PROGRESS_PROOF",
+  "attemptedNativeExpectationNOTacceptedWitness": {
+    "nativeEvaluatorTimeWitness": {
+      "artifact": {
+        "path": "observation.private.json",
+        "sha256": "142a2c21f0d68512ca6ffd918eb399dfbee38eef1782b9e837288c13763419d2"
+      },
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d"
+      },
+      "tenants": 2,
+      "services": [
+        "evaluator",
+        "evaluator-2",
+        "evaluator-3"
+      ],
+      "proofPointer": "/proof"
+    }
+  }
+}

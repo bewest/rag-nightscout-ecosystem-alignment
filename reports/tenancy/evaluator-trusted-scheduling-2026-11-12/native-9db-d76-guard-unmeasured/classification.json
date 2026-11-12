@@ -1,0 +1,198 @@
+{
+  "kind": "captured-only-strictTIME-unmeasured-classification",
+  "verdict": "UNMEASURED",
+  "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED",
+  "rawSha256": "142a2c21f0d68512ca6ffd918eb399dfbee38eef1782b9e837288c13763419d2",
+  "queries": 9,
+  "responseBytes": 19947,
+  "collectorWallSeconds": 1.0085149235092103,
+  "elapsedSeconds": 21.03973369905725,
+  "owners": {
+    "22222222-2222-4222-8222-222222222222": [
+      {
+        "round": 0,
+        "tenant": "22222222-2222-4222-8222-222222222222",
+        "service": "evaluator",
+        "generation": 10,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 562,
+        "failedCompletions": 0,
+        "lastCompletedAgeMs": 612224,
+        "legacyCycles": 563,
+        "admitted": true,
+        "ready": true,
+        "code": null,
+        "alert": null,
+        "dueAt": null,
+        "dueReason": null
+      },
+      {
+        "round": 1,
+        "tenant": "22222222-2222-4222-8222-222222222222",
+        "service": "evaluator",
+        "generation": 10,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 562,
+        "failedCompletions": 0,
+        "lastCompletedAgeMs": 622571,
+        "legacyCycles": 563,
+        "admitted": true,
+        "ready": true,
+        "code": null,
+        "alert": null,
+        "dueAt": null,
+        "dueReason": null
+      },
+      {
+        "round": 2,
+        "tenant": "22222222-2222-4222-8222-222222222222",
+        "service": "evaluator",
+        "generation": 10,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 562,
+        "failedCompletions": 0,
+        "lastCompletedAgeMs": 632905,
+        "legacyCycles": 563,
+        "admitted": true,
+        "ready": true,
+        "code": null,
+        "alert": null,
+        "dueAt": null,
+        "dueReason": null
+      }
+    ],
+    "11111111-1111-4111-8111-111111111111": [
+      {
+        "round": 0,
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "service": "evaluator-2",
+        "generation": 10,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 560,
+        "failedCompletions": 0,
+        "lastCompletedAgeMs": 615350,
+        "legacyCycles": 561,
+        "admitted": true,
+        "ready": true,
+        "code": null,
+        "alert": null,
+        "dueAt": null,
+        "dueReason": null
+      },
+      {
+        "round": 1,
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "service": "evaluator-2",
+        "generation": 10,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 560,
+        "failedCompletions": 0,
+        "lastCompletedAgeMs": 625695,
+        "legacyCycles": 561,
+        "admitted": true,
+        "ready": true,
+        "code": null,
+        "alert": null,
+        "dueAt": null,
+        "dueReason": null
+      },
+      {
+        "round": 2,
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "service": "evaluator-2",
+        "generation": 10,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 560,
+        "failedCompletions": 0,
+        "lastCompletedAgeMs": 636026,
+        "legacyCycles": 561,
+        "admitted": true,
+        "ready": true,
+        "code": null,
+        "alert": null,
+        "dueAt": null,
+        "dueReason": null
+      }
+    ]
+  },
+  "clinicalJobsFromOriginalRawWire": [
+    {
+      "capture": "0-evaluator-2.private.jsonl",
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      }
+    },
+    {
+      "capture": "0-evaluator.private.jsonl",
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      }
+    },
+    {
+      "capture": "1-evaluator-2.private.jsonl",
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      }
+    },
+    {
+      "capture": "1-evaluator.private.jsonl",
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      }
+    },
+    {
+      "capture": "2-evaluator-2.private.jsonl",
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      }
+    },
+    {
+      "capture": "2-evaluator.private.jsonl",
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      }
+    }
+  ],
+  "observedTimeDelta": 0,
+  "observedAcquisitionDelta": 0,
+  "observedFailureDelta": 0,
+  "observedDueState": "Both owners explicitly dueAt:null/dueReason:null in all3samples; no declared timer observed at samples, not continuous no-demand proof.",
+  "limits": "Strict currentTIME remains UNMEASURED; no quietPASS, capacity, scheduler-stall, clinical-output or future/past due diagnosis. No additional live queries/retry/extensions/writes.",
+  "release": "Export not released; root notified actual supervisor1 and strictUM for disposition."
+}
