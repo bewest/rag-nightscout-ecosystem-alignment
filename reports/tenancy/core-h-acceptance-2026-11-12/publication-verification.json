@@ -1,0 +1,27 @@
+{
+  "recordType": "PUBLICATION_VERIFICATION_NOT_A_CAMPAIGN",
+  "jsonParsing": "PASS",
+  "hashes": "PASS",
+  "localLinks": "PASS",
+  "boundedPrivacyScan": "PASS",
+  "privateOriginalCaptureHashes": "PASS",
+  "whitespace": "PASS",
+  "metadataNegatives": {
+    "wrongPin": "REFUSED",
+    "missingSuccessfulStage": "REFUSED",
+    "failedCorpus": "REFUSED",
+    "unverifiedOwnedCleanup": "REFUSED"
+  },
+  "queueCheck": {
+    "attempts": 1,
+    "status": "FAIL",
+    "exitCode": 2,
+    "stoppedAt": "queue-validate",
+    "laterSteps": "SKIPPED",
+    "missingExistingExternalCwdReferences": 16,
+    "reason": "Existing queue refers to absent peer worktrees in this isolated evidence checkout; no peer/queue repair performed.",
+    "output": "queue-check-output.txt",
+    "originalOutputSha256": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f"
+  },
+  "appTestsCloudBuildsInstalls": "NOT_RUN"
+}

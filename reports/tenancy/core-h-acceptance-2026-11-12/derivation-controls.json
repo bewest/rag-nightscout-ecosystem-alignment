@@ -1,0 +1,32 @@
+{
+  "recordType": "NEW_BOUNDED_SELECTED_FIELD_DERIVATIVE",
+  "originalPrivateAssessmentSha256": "ba0bcf4000773db9e1fd8cd7ceb798e8d7488a79eef22b1688c19003482937d2",
+  "transformation": "Selected nonidentifying fields only; original raw private capture hashes remain bound. This is not another experiment.",
+  "originalPrivateControlsSha256": "abff66f9dd9bb59b928888b00f328e88c9335873f0ea80c12a7c6fcdd4879041",
+  "controls": {
+    "originalCapturedTuple": "PASS",
+    "negativeControls": [
+      {
+        "case": "wrong-pin",
+        "result": "REFUSED",
+        "reason": "PIN_MISMATCH"
+      },
+      {
+        "case": "missing-stage",
+        "result": "REFUSED",
+        "reason": "MISSING_SUCCESSFUL_STAGE"
+      },
+      {
+        "case": "failed-corpus",
+        "result": "REFUSED",
+        "reason": "CORPUS_NOT_PASSING"
+      },
+      {
+        "case": "unverified-cleanup",
+        "result": "REFUSED",
+        "reason": "OWNED_CLEANUP_NOT_VERIFIED"
+      }
+    ],
+    "scope": "In-memory metadata counterexamples only, no product tests or runtime actions"
+  }
+}

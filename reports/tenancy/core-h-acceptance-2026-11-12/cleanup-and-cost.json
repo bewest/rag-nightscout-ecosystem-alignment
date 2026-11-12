@@ -1,0 +1,53 @@
+{
+  "recordType": "NEW_BOUNDED_SELECTED_FIELD_DERIVATIVE",
+  "originalPrivateAssessmentSha256": "ba0bcf4000773db9e1fd8cd7ceb798e8d7488a79eef22b1688c19003482937d2",
+  "transformation": "Selected nonidentifying fields only; original raw private capture hashes remain bound. This is not another experiment.",
+  "cleanup": {
+    "workerOwnedMongoCleanupVerified": true,
+    "fixtureResiduals": [],
+    "fixtureVolumeResiduals": [],
+    "corpusOwnedCreatedCount": 2,
+    "corpusOwnedRemoved": [
+      {
+        "kind": "vault",
+        "verifiedAbsent": true,
+        "anonymousVolumeCount": 2
+      },
+      {
+        "kind": "postgres",
+        "verifiedAbsent": true,
+        "anonymousVolumeCount": 1
+      }
+    ],
+    "corpusRemaining": [],
+    "controller": {
+      "cancelled": false,
+      "cleanup": "verified",
+      "outcome": "completed",
+      "finishedAt": "2026-11-12T20:50:13.022Z"
+    },
+    "watchdog": {
+      "cleanup": "verified",
+      "finishedAt": "2026-11-12T20:50:20.518Z"
+    },
+    "independentProviderInventory": {
+      "verifiedAt": "2026-11-12T20:50:45.357104+00:00",
+      "remainingDroplets": 0,
+      "remainingFirewalls": 0,
+      "remainingRunTags": 0
+    },
+    "ephemeralKeyFilesPresent": {
+      "private": false,
+      "public": false
+    }
+  },
+  "cost": {
+    "scope": "compute estimate, not invoice; controllerstart throughwatchdog includingpreprovision; minimumUSD0.01",
+    "seconds": 1684.6889998912811,
+    "estimatedComputeUSD": 0.2339845833182335
+  },
+  "decodedArchiveInventory": {
+    "files": 240,
+    "bytes": 13004475
+  }
+}
