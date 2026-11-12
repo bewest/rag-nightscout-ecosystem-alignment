@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+ok 1 - bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+  ---
+  duration_ms: 637.152866
+  type: 'test'
+  ...
+# Subtest: wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+ok 2 - wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+  ---
+  duration_ms: 1002.368916
+  type: 'test'
+  ...
+# Subtest: HTTP ACK without a current frame cannot produce diagnostic PASS
+ok 3 - HTTP ACK without a current frame cannot produce diagnostic PASS
+  ---
+  duration_ms: 1003.698785
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/TENANT_WARMING
+ok 4 - late second-tenant status refusal retains sanitized status and code 503/TENANT_WARMING
+  ---
+  duration_ms: 7.319482
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+ok 5 - late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+  ---
+  duration_ms: 5.634649
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+ok 6 - late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+  ---
+  duration_ms: 6.001322
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/null
+ok 7 - late second-tenant status refusal retains sanitized status and code 503/null
+  ---
+  duration_ms: 4.783046
+  type: 'test'
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+ok 8 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+  ---
+  duration_ms: 280.796968
+  type: 'test'
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+ok 9 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+  ---
+  duration_ms: 281.279781
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3238.47048
