@@ -1,0 +1,42 @@
+{"event":"owned-listener","pid":1760411,"host":"127.0.0.1","port":39387}
+{"event":"owned-listener","pid":1760411,"host":"127.0.0.1","port":41319}
+{"event":"owned-pg-schema","name":"hh_access_0431b0980ce92b45","oid":18256}
+{"event":"owned-pg-schema","name":"hh_authority_0431b0980ce92b45","oid":18342}
+{"event":"owned-pg-schema","name":"hh_human_0431b0980ce92b45","oid":18440}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"event":"owned-listener","pid":1760411,"host":"127.0.0.1","port":44893}
+{"event":"owned-listener","pid":1760411,"host":"127.0.0.1","port":43961}
+{"event":"owned-listener","pid":1760411,"host":"127.0.0.1","port":42527}
+{"event":"owned-listener","pid":1760411,"host":"127.0.0.1","port":33575}
+{"event":"owned-listener","pid":1760411,"host":"127.0.0.1","port":34797}
+{"event":"owned-extension-custody","stage":"owner-compatibility","resources":{"schemas":[{"name":"oc_889ee3b7ed76182a_legacy","oid":18506},{"name":"oc_889ee3b7ed76182a_settings","oid":18539},{"name":"oc_889ee3b7ed76182a_policy","oid":18610},{"name":"oc_889ee3b7ed76182a_configure","oid":18632},{"name":"oc_889ee3b7ed76182a_secrets","oid":18654}],"consumer":{"classification":"native-PG-HTTP-consumer-clinical-issued-DATA-and-pinned-oref0","configuration":"consumerJourney: connectionEnv, namespaces(all six clinical domains,clock,checkpoint), client(root,commit,tools,caEnv,maxMs)","identity":"one additional distinct NOSUPERUSER/NOBYPASSRLS clinical identity; maxPool=4","pools":{"clinical":4,"authority":4,"legacy":4,"secrets":4,"migrationTransient":1},"listenerCount":4,"client":{"name":"oref0-ns-get","commit":"d219baf9559d62a8bb0bd42014192a2d7c0839ef","scripts":{"bin/ns-get.sh":"b13d716d3d9e27249fa3864fdf747ed0eeb6aeaf8396bb6e05d40d2a3ec2fffb","bin/oref0-bash-common-functions.sh":"bae949d5fc80cf52966349137172be0c15f8fe038cd019d10e19864ebfb9e828"},"tools":["bash","curl","jq","dirname","basename","cat"],"processes":"one owned bash pipeline at a time: bash/curl/jq plus short-lived dirname/basename/cat","maxCases":3},"source":["lib/server/serve/preview-domains.js","lib/server/tenant-app/index.js","lib/server/tenant-app/data-access.js","lib/tenant-authorization/postgres.js","lib/secrets/component.js","lib/secrets/postgres.js","lib/secrets/legacy-postgres.js","lib/server/serve/evaluator-runtime.js","lib/data/tenant-projection-evaluator.js","lib/storage/postgres-durable-replay.js","lib/server/serve/evaluator-config.js","lib/storage/postgres-projection-read.js","lib/server/serve/postgres-domains.js","lib/storage/postgres-tenant-stats.js","lib/server/serve/evaluator-readiness.js"],"catalogues":["lib/server/serve/postgres-domains.js:get(each domain)","migrations/candidates/postgres-write-clock-v1.json","migrations/candidates/postgres-consumer-checkpoint-v1.json"],"nativeExecution":"run by tests/native/oidc-matrix/run.sh (disposable harness)","schemas":[{"name":"cj_889ee3b7ed76182a_entries","oid":18696},{"name":"cj_889ee3b7ed76182a_treatments","oid":18770},{"name":"cj_889ee3b7ed76182a_devicestatus","oid":18805},{"name":"cj_889ee3b7ed76182a_profile","oid":18838},{"name":"cj_889ee3b7ed76182a_food","oid":18866},{"name":"cj_889ee3b7ed76182a_activity","oid":18908},{"name":"cj_889ee3b7ed76182a_clock","oid":18936},{"name":"cj_889ee3b7ed76182a_checkpoint","oid":18955}]}}}
+{"cleanup":"closed","listeners":7}
+{"kind":"actual-https-synthetic-provider","stage":"owner-compatibility","persistence":"postgres","accessSigning":"configured-transit","assertions":22,"owner":{"families":{"classification":"native-PG-legacy-compatibility","defaultOffMulti":true,"legacyApiSecret":true,"legacySubject":true,"legacyEightHourExchange":true,"anonymousReadClamp":true,"planeSeparation":true}},"verdict":"pass"}
+{"event":"matrix-stage-complete","stage":"owner-compatibility","persistence":"postgres","signing":"configured-transit","native":true,"completed":true,"families":{"defaultOffMulti":true,"legacyApiSecret":true,"legacySubject":true,"legacyEightHourExchange":true,"anonymousReadClamp":true,"planeSeparation":true}}

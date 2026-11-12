@@ -1,0 +1,36 @@
+2026-11-12T13:17:04Z project=oidcmatrix-20261112t131704z-1749108 state=/tmp/oidc-matrix-08utVVfc
+2026-11-12T13:17:04Z + openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes -days 2 -subj /CN=oidc-matrix synthetic CA -keyout /tmp/oidc-matrix-08utVVfc/tls/ca.key -out /tmp/oidc-matrix-08utVVfc/tls/ca.crt
+2026-11-12T13:17:04Z + openssl req -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes -subj /CN=vault -keyout /tmp/oidc-matrix-08utVVfc/tls/vault-server.key -out /tmp/oidc-matrix-08utVVfc/tls/vault-server.csr
+2026-11-12T13:17:04Z + openssl x509 -req -in /tmp/oidc-matrix-08utVVfc/tls/vault-server.csr -CA /tmp/oidc-matrix-08utVVfc/tls/ca.crt -CAkey /tmp/oidc-matrix-08utVVfc/tls/ca.key -CAcreateserial -out /tmp/oidc-matrix-08utVVfc/tls/vault-server.crt -days 2 -extfile /tmp/oidc-matrix-08utVVfc/tls/san.ext
+2026-11-12T13:17:04Z + openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes -days 2 -subj /CN=oidc-matrix fixture -addext subjectAltName=IP:127.0.0.1,DNS:localhost -keyout /tmp/oidc-matrix-08utVVfc/tls/fixture.key -out /tmp/oidc-matrix-08utVVfc/tls/fixture.crt
+2026-11-12T13:17:04Z + docker compose -p oidcmatrix-20261112t131704z-1749108 -f $OWNED_CORE/tests/native/oidc-matrix/compose.yaml up -d --wait --wait-timeout 180
+2026-11-12T13:17:06Z mapped ports postgres=38027 mongo=38026 vault=38028
+2026-11-12T13:17:06Z + node $OWNED_CORE/tests/native/oidc-matrix/run.cjs --out $PRIVATE_CAPTURE/matrix --state /tmp/oidc-matrix-08utVVfc --project oidcmatrix-20261112t131704z-1749108 --pg-port 38027 --mongo-port 38026 --vault-port 38028
+2026-11-12T13:17:06.958Z source 195c932293f3abc648da8fbe4356bf7360acd002 (HEAD) porcelain=0 (all under tests/native/oidc-matrix/)
+2026-11-12T13:17:07.548Z services {"postgres":"postgres (PostgreSQL) 16.15","mongo":"db version v7.0.43","vault":"Vault v2.2.1 (0e7c41b936218bd2401ab0f891c93bec10e2e8e4), built 2026-10-22T16:27:49Z"}
+2026-11-12T13:17:07.879Z vault provisioned: transit mount, 4 ed25519 signer keys, 4 aes256-gcm96 owner keys, 3 scoped tokens
+2026-11-12T13:17:07.947Z postgres roles [{"rolname":"om_app","rolsuper":false,"rolbypassrls":false},{"rolname":"om_clinical","rolsuper":false,"rolbypassrls":false},{"rolname":"om_legacy","rolsuper":false,"rolbypassrls":false},{"rolname":"om_owner","rolsuper":false,"rolbypassrls":false},{"rolname":"om_reader","rolsuper":false,"rolbypassrls":false},{"rolname":"om_secrets","rolsuper":false,"rolbypassrls":false},{"rolname":"om_settings","rolsuper":false,"rolbypassrls":false}]
+2026-11-12T13:17:08.041Z vault baseline mounts ["agent-registry/","cubbyhole/","identity/","sys/","transit/"]
+2026-11-12T13:17:08.137Z attempt 01-vault-single stage=vault-single nonce=73d54197f7e6e432 sourceRoot=$OWNED_CORE deadlineMs=125000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs vault-single /tmp/oidc-matrix-08utVVfc/config-01-vault-single.json /tmp/oidc-matrix-08utVVfc/result-01-vault-single.json
+2026-11-12T13:17:08.403Z attempt 01-vault-single PASS in 236ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:08.420Z attempt 02-vault-multi stage=vault-multi nonce=1338a433997bc7c7 sourceRoot=$OWNED_CORE deadlineMs=125000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs vault-multi /tmp/oidc-matrix-08utVVfc/config-02-vault-multi.json /tmp/oidc-matrix-08utVVfc/result-02-vault-multi.json
+2026-11-12T13:17:08.660Z attempt 02-vault-multi PASS in 218ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:08.674Z attempt 03-mongo-sessions stage=mongo-sessions nonce=9314a9b053f8fe79 sourceRoot=$OWNED_CORE deadlineMs=125000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs mongo-sessions /tmp/oidc-matrix-08utVVfc/config-03-mongo-sessions.json /tmp/oidc-matrix-08utVVfc/result-03-mongo-sessions.json
+2026-11-12T13:17:09.193Z attempt 03-mongo-sessions PASS in 496ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:09.207Z attempt 04-pg-sessions stage=pg-sessions nonce=f7ed9fed9ee9aec5 sourceRoot=$OWNED_CORE deadlineMs=125000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs pg-sessions /tmp/oidc-matrix-08utVVfc/config-04-pg-sessions.json /tmp/oidc-matrix-08utVVfc/result-04-pg-sessions.json
+2026-11-12T13:17:09.738Z attempt 04-pg-sessions PASS in 514ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:09.750Z attempt 05-mongo-http stage=mongo-http nonce=b1bb34f488e37963 sourceRoot=$OWNED_CORE deadlineMs=155000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs mongo-http /tmp/oidc-matrix-08utVVfc/config-05-mongo-http.json /tmp/oidc-matrix-08utVVfc/result-05-mongo-http.json
+2026-11-12T13:17:11.850Z attempt 05-mongo-http PASS in 2082ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:11.864Z attempt 06-owner-consumer stage=owner-consumer nonce=09c818b9316d35d1 sourceRoot=$OWNED_CORE deadlineMs=155000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs owner-consumer /tmp/oidc-matrix-08utVVfc/config-06-owner-consumer.json /tmp/oidc-matrix-08utVVfc/result-06-owner-consumer.json
+2026-11-12T13:17:14.536Z attempt 06-owner-consumer PASS in 2654ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:14.550Z attempt 07-owner-authority stage=owner-authority nonce=2979283a815f58a6 sourceRoot=$OWNED_CORE deadlineMs=155000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs owner-authority /tmp/oidc-matrix-08utVVfc/config-07-owner-authority.json /tmp/oidc-matrix-08utVVfc/result-07-owner-authority.json
+2026-11-12T13:17:18.253Z attempt 07-owner-authority PASS in 3690ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:18.265Z attempt 08-owner-browser stage=owner-browser nonce=2d5c55c2ce44a903 sourceRoot=$OWNED_CORE deadlineMs=155000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs owner-browser /tmp/oidc-matrix-08utVVfc/config-08-owner-browser.json /tmp/oidc-matrix-08utVVfc/result-08-owner-browser.json
+2026-11-12T13:17:22.813Z attempt 08-owner-browser PASS in 4527ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:22.826Z attempt 09-owner-compatibility stage=owner-compatibility nonce=889ee3b7ed76182a sourceRoot=$OWNED_CORE deadlineMs=155000 + node $OWNED_CORE/tests/native/oidc-matrix/stage.cjs owner-compatibility /tmp/oidc-matrix-08utVVfc/config-09-owner-compatibility.json /tmp/oidc-matrix-08utVVfc/result-09-owner-compatibility.json
+2026-11-12T13:17:25.110Z attempt 09-owner-compatibility PASS in 2267ms leftovers={"pgSchemas":[],"pgBackends":0,"mongoCollections":[],"vaultMounts":[]}
+2026-11-12T13:17:25.114Z wrote $PRIVATE_CAPTURE/matrix/summary.json
+2026-11-12T13:17:25Z + docker compose -p oidcmatrix-20261112t131704z-1749108 -f $OWNED_CORE/tests/native/oidc-matrix/compose.yaml logs --no-color --timestamps
+2026-11-12T13:17:25Z + docker compose -p oidcmatrix-20261112t131704z-1749108 -f $OWNED_CORE/tests/native/oidc-matrix/compose.yaml down -v --remove-orphans
+2026-11-12T13:17:26Z containers remaining for project oidcmatrix-20261112t131704z-1749108: 0
+2026-11-12T13:17:26Z exit 0

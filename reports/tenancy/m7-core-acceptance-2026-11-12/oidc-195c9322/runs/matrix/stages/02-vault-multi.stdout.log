@@ -1,0 +1,2 @@
+{"event":"owned-consumer-child","consumer":"vault-consumer","pid":1752385,"tenant":"11111111-1111-4111-8111-111111111111","mode":"multi","issued":2,"verified":2,"kids":["vault-human-data","vault-human-management"]}
+{"event":"matrix-stage-complete","stage":"vault-multi","persistence":"vault","signing":"configured-transit","native":true,"completed":true,"families":{"vaultMulti":true}}
