@@ -26978,6 +26978,9 @@ items:
       - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-listener-195c-f0f91/README.md
       - reports/tenancy/evaluator-effect-idempotency-2026-11-12/original/README.md
       - reports/tenancy/evaluator-effect-idempotency-2026-11-12/native-cause-and-repair/README.md
+      - reports/tenancy/evaluator-effect-idempotency-2026-11-12/fresh-paired-qualification/README.md
+      - reports/tenancy/evaluator-effect-idempotency-2026-11-12/completion-observer-repair/README.md
+      - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-listener-cd462-0f8749-unmeasured/README.md
       - reports/tenancy/producer-repeat-cause-2026-11-12/independent-repair-cd462/README.md
       - reports/tenancy/producer-repeat-cause-2026-11-12/independent-reducer-195c/README.md
       - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/original/README.md
@@ -26990,9 +26993,14 @@ items:
       accepted normal effects; repeat-null origins and independent reducer/native warm-gap
       reproduction isolate lost repeat state. BF-239 is fixed locally on cd4629159;
       original/red and repaired native controls plus independent safety review pass.
-      Fresh repaired paired clinical and final acceptance/capacity remain UNMEASURED;
-      initial repaired client setup timed out before uploads or membership changes,
-      with typed read-only socket diagnosis in progress. Remote CoreC was cancelled before all
+      Fresh subsequent cd462/0f8749 paired stock/restore, strict clinical 2-to-3 and
+      controlled realtime move PASS with separately attributed host instrument e91.
+      Earlier initial-timeout and in-flight-sample failures stay preserved. The
+      once-only completed-work capture is UNMEASURED: A completes 19 time cycles, B zero,
+      stable identities/ownership, no failures or foreign work. B actual due is not
+      exported by private DTO; narrow existing-runtime due metadata export precedes
+      classification/refreeze, with no cadence/threshold change or blind extension.
+      Comprehensive acceptance/capacity remain UNMEASURED. Remote CoreC was cancelled before all
       test tiers/corpus and independently cleaned up. The private configured/observed/
       progress API is implemented v2, callable while eligibility is refused and bounded
       by explicit selectors; inspection must not drive work. Decision evaluator-static-partition
