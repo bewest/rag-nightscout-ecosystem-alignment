@@ -1,0 +1,81 @@
+{
+  "recordType": "PRIMARY_CAPTURE_WHITELIST_PROJECTION",
+  "sourcePins": {
+    "coreCommit": "df71c8e815d65d3abcdf6109664ea841bba17733",
+    "deployCommit": "8c27567186f7ede8b6c49674d9751f9e79e8d330",
+    "alignmentCommit": "f5d29a53bf41baf4dc03c3abfaa9a57929e6337c",
+    "instrumentCommit": "f9a39f7dbca1efb9787afd61c15443e545717ef2"
+  },
+  "capturedSourceProvenance": {
+    "commit": "df71c8e815d65d3abcdf6109664ea841bba17733",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "ciEnvironmentSha256": "97ebaee8ecab5deb14c434c34e2cb05b3235b5e7a55224b82d5e3e7e4f4a0fff",
+    "nodeVersion": "v24.22.1",
+    "npmVersion": "11.19.1",
+    "nodeBinarySha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+    "instrumentCommit": "f9a39f7dbca1efb9787afd61c15443e545717ef2",
+    "workerSha256": "4689aaabcdd2f6f00287bc5879d35eb672c8585dee42fa889f2b11874c84e788"
+  },
+  "transportBundleManifestSha256": "a963f46ac5795438ae32d09f2d1492bea7b6d506c2522b1dc983abb300e0a5e4",
+  "failureSource": {
+    "path": "tests/realtime-publication-cache.test.js",
+    "commit": "df71c8e815d65d3abcdf6109664ea841bba17733",
+    "sha256": "a7108d82e252f112d17f68d5bd297d1b7747485977341c0427b4eb4d5ee29757"
+  },
+  "rawPrivateArtifacts": {
+    "spec": {
+      "sha256": "ea20de102e270718c2736e0767787f9a620db04b842ca4eaccc386ab1cd31b9c",
+      "bytes": 1828
+    },
+    "remoteSpec": {
+      "sha256": "edb58383181c4cad08219e63b590b35f63b0a2355ca638b01668a9b487f00f48",
+      "bytes": 1718
+    },
+    "run": {
+      "sha256": "293a3bc17fcc4fae1f1c38031d3abd8be37cac7411bfa8ddec4a9b6846c7a5c9",
+      "bytes": 574
+    },
+    "workerResult": {
+      "sha256": "6635717054bfabe25d7ee0ebd7cb81d15f67a9085447302dea0884058928b89c",
+      "bytes": 24049
+    },
+    "workerCommands": {
+      "sha256": "417f962e70bdeae8d50861f63cc1006c8368c8d99b0410079c6e70795570508d",
+      "bytes": 21729
+    },
+    "unitStdout": {
+      "sha256": "ed17be336766024677258ebecbd71d1c984382f58a4024fc570c708d3ab37ba4",
+      "bytes": 664261
+    },
+    "unitStderr": {
+      "sha256": "f397bf3e5e02282f159d01cd4ec93f836d2fcc61045829a76887782b97a0199e",
+      "bytes": 19583
+    },
+    "sourceProvenance": {
+      "sha256": "dc8d01aee7343fa5e6bb8ca9878dcad618d90db1566fdaf947f2c32e28cbecb6",
+      "bytes": 534
+    },
+    "executionPlan": {
+      "sha256": "2402fa8d91954b7a33453fe652f4d50d0e54e998e83e8c9d37a89ad8150096d4",
+      "bytes": 6121
+    },
+    "controllerResult": {
+      "sha256": "c3abcab30532ed504097aab25630ef15b800c84ab6abc41875499aa8908b1457",
+      "bytes": 1741
+    },
+    "watchdogResult": {
+      "sha256": "1fd7419e689b7d8f02dea795590792388c75437595754bb7e342a536fadb4dbb",
+      "bytes": 234
+    },
+    "independentCleanup": {
+      "sha256": "2bbfff120d5980a342ad7dc1470471c52f081fe5301172cd27e1bf12d456f0a6",
+      "bytes": 841
+    },
+    "archive": {
+      "sha256": "c8b67db690c943d9edadc5a759268a127f7e91136acf7f12c0fcae3eedcfc604",
+      "bytes": 538694
+    }
+  },
+  "method": "Exact I capture fields and original artifact byte hashes; counts/command/failure derived directly from I primary records, not stitched from H. No raw private file content is published.",
+  "scopeLimits": "Unknown runtime cause; root owns diagnosis and coherent repaired-candidate acceptance. No lowering of the200 current-read guarantee or freshness waiver follows."
+}

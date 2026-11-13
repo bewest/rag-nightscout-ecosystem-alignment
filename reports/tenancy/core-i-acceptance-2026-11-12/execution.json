@@ -1,0 +1,87 @@
+{
+  "recordType": "PRIMARY_CAPTURE_WHITELIST_PROJECTION",
+  "outcome": "FAILED",
+  "fullAcceptance": "NOT_ACHIEVED",
+  "capacity": "NOT_ASSESSED",
+  "sourcePins": {
+    "coreCommit": "df71c8e815d65d3abcdf6109664ea841bba17733",
+    "deployCommit": "8c27567186f7ede8b6c49674d9751f9e79e8d330",
+    "alignmentCommit": "f5d29a53bf41baf4dc03c3abfaa9a57929e6337c",
+    "instrumentCommit": "f9a39f7dbca1efb9787afd61c15443e545717ef2"
+  },
+  "unit": {
+    "id": "unit",
+    "argv": [
+      "node",
+      "scripts/test-tiers.js",
+      "run",
+      "unit"
+    ],
+    "status": "failed",
+    "returnCode": 1,
+    "limitSeconds": 1800,
+    "startedAtEpochSeconds": 1794528465.4874878,
+    "finishedAtEpochSeconds": 1794528538.299517,
+    "terminalMochaCounts": {
+      "passing": 3583,
+      "pending": 1,
+      "failing": 1
+    },
+    "pending": [
+      {
+        "originalLine": 2758,
+        "name": "is moment's own parse on every date string of VIEWS_CORPUS_DIR (read in place)"
+      }
+    ],
+    "failure": {
+      "criterion": "EVALUATOR_REGISTRY_CURRENT",
+      "suite": "bounded read-through and pinned atomic publication cache",
+      "test": "actual registry boot seam uses per-tenant settings with zero legacy file/roster reads",
+      "source": "tests/realtime-publication-cache.test.js:211:43",
+      "assertionCounter": "settingsReads",
+      "actual": 0,
+      "expected": 200,
+      "runtimeCause": "UNCLASSIFIED"
+    }
+  },
+  "worker": {
+    "status": "failed",
+    "sourceAcceptance": "COORDINATOR_REVIEW_REQUIRED",
+    "completedTests": [],
+    "errors": [
+      {
+        "phase": "execution",
+        "kind": "Refused",
+        "message": "COMMAND_FAILED_unit"
+      }
+    ]
+  },
+  "laterStages": {
+    "dom": "NOT_RUN",
+    "dependency": "NOT_RUN",
+    "core": "NOT_RUN",
+    "harness": "NOT_RUN",
+    "integration": "NOT_RUN",
+    "stress": "NOT_RUN",
+    "browser": "NOT_RUN",
+    "enabled-corpus": "NOT_RUN"
+  },
+  "corpusArtifactPresent": false,
+  "configuredBounds": {
+    "profile": "core-acceptance-v1",
+    "appSize": "c-16",
+    "appNodes": 1,
+    "generatorNodes": 0,
+    "maxMinutes": 180,
+    "maxEstimatedUSD": 1.5
+  },
+  "computeCost": "UNMEASURED; no compute-estimate.json retained",
+  "originalPrimarySha256": {
+    "unitStdout": "ed17be336766024677258ebecbd71d1c984382f58a4024fc570c708d3ab37ba4",
+    "unitStderr": "f397bf3e5e02282f159d01cd4ec93f836d2fcc61045829a76887782b97a0199e",
+    "workerResult": "6635717054bfabe25d7ee0ebd7cb81d15f67a9085447302dea0884058928b89c",
+    "workerCommands": "417f962e70bdeae8d50861f63cc1006c8368c8d99b0410079c6e70795570508d",
+    "executionPlan": "2402fa8d91954b7a33453fe652f4d50d0e54e998e83e8c9d37a89ad8150096d4"
+  },
+  "projectionScope": "Structured selected fields only; no raw log, environment, identifiers or later-campaign result copied."
+}

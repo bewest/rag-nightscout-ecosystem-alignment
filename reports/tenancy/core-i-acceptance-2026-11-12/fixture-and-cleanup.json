@@ -1,0 +1,93 @@
+{
+  "recordType": "PRIMARY_CAPTURE_WHITELIST_PROJECTION",
+  "mongo": {
+    "startupAndBeforeUnitCommands": [
+      {
+        "id": "mongo-health-ready",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "mongo-limits-ready",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "mongo-health-before-unit",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "mongo-limits-before-unit",
+        "status": "passed",
+        "returnCode": 0
+      }
+    ],
+    "beforeUnit": {
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod",
+        "procPath": "/proc/1/limits"
+      }
+    },
+    "ownMongoCleanupVerified": true,
+    "fixtureResiduals": [],
+    "fixtureVolumeResiduals": [],
+    "positiveRemovalCommands": [
+      {
+        "id": "mongo-remove",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "mongo-verify-absent",
+        "status": "passed",
+        "returnCode": 0
+      },
+      {
+        "id": "mongo-volume-verify",
+        "status": "passed",
+        "returnCode": 0
+      }
+    ]
+  },
+  "controller": {
+    "cleanup": "verified",
+    "outcome": "failed",
+    "finishedAt": "2026-11-13T00:09:47.398Z"
+  },
+  "watchdog": {
+    "cleanup": "verified",
+    "finishedAt": "2026-11-13T00:09:54.249Z"
+  },
+  "independentVerification": {
+    "checkedAt": "2026-11-13T00:10:22.525Z",
+    "controllerCleanup": "verified",
+    "watchdogCleanup": "verified",
+    "remainingCounts": {
+      "droplets": 0,
+      "firewalls": 0,
+      "tags": 0
+    },
+    "temporaryKeyDeletionCount": 2,
+    "temporaryKeyStates": [
+      "removed-exact-original",
+      "removed-exact-original"
+    ],
+    "cleanup": "verified"
+  },
+  "originalPrimarySha256": {
+    "mongoHealth": "699b8711ec4b1a3236992c578b251a29f086908c7c2a2175f85e3de07f658071",
+    "workerResult": "6635717054bfabe25d7ee0ebd7cb81d15f67a9085447302dea0884058928b89c",
+    "controllerResult": "c3abcab30532ed504097aab25630ef15b800c84ab6abc41875499aa8908b1457",
+    "watchdogResult": "1fd7419e689b7d8f02dea795590792388c75437595754bb7e342a536fadb4dbb",
+    "independentVerification": "2bbfff120d5980a342ad7dc1470471c52f081fe5301172cd27e1bf12d456f0a6"
+  }
+}
