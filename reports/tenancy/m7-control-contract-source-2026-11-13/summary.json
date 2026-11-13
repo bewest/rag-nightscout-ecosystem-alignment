@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "recordDate": "2026-11-13",
+  "scope": "BOUNDED_CORE_SOURCE_AND_COLLECTOR_MODEL_REVIEW",
+  "state": "fixed on local branches; no application dev merge or release",
+  "coherentCore": "6454f137beff0f09356056f66e10a2a1f3d06053",
+  "boundaries": {
+    "physicalAdmission": {
+      "source": "6454f137beff0f09356056f66e10a2a1f3d06053",
+      "rootIndependentPassing": 38,
+      "rootOriginalAndRestored": [
+        {
+          "case": "original-ab95",
+          "returnCode": 3
+        },
+        {
+          "case": "restored-645",
+          "returnCode": 0
+        }
+      ],
+      "physicalPlanVersion": 2,
+      "expectedIdentity": "exact workerDatabase database plus canonical decimal STRING databaseOid",
+      "readDeadlineMs": 1000,
+      "deadlineMeaning": "client read bound only; not proof of server statement retirement",
+      "legacy": "valid plan1 connect path unchanged",
+      "native": "UNMEASURED"
+    },
+    "realtimeCore": {
+      "source": "81a58c19c4f54991f5555bf2cf1908374e5434b5",
+      "parent": "2dcbc81fcdcd618ad5298aedeb3787fed7f07f26",
+      "parentFocused": 147,
+      "finalStrictCohort": 5,
+      "independentGuardMutations": 11,
+      "oldAndRestoredPinCleanup": "original strict test fails; corrected awaited release and held-zero assertion pass",
+      "errorBoundary": [
+        {
+          "mode": "warm-failure",
+          "originalErrorPreserved": true,
+          "newMapRetained": true,
+          "rollbackAttempts": 1,
+          "noRetry": true,
+          "oldLockHeldDuringCallback": true
+        },
+        {
+          "mode": "commit-unknown",
+          "originalErrorPreserved": true,
+          "newMapRetained": true,
+          "rollbackAttempts": 1,
+          "noRetry": true,
+          "oldLockHeldDuringCallback": true
+        }
+      ],
+      "versions": {
+        "placementMap": 2,
+        "ownerKey": 2,
+        "lifecycleWire": 4,
+        "shardedPlacementPayload": 3,
+        "alarmWire": 3,
+        "realtimeInspectionWire": 2
+      },
+      "bindingAndNative": "OPEN"
+    },
+    "collector": {
+      "source": "84e3fe171d2ecfa310b749d4a67cbf966dd2d788",
+      "scope": "SOURCE_MODEL_ONLY_CONDITIONAL",
+      "focused": {
+        "tests": 36,
+        "exitCode": 0
+      },
+      "primitiveOracle": {
+        "originalExit": 1,
+        "repairedExit": 0,
+        "cases": 5
+      },
+      "fingerprint": "f755715ecbbe54a28a41f9ba55ea86c1a8bb855eed1c13e15c3c723b6764acd9",
+      "instrumentInputs": 8,
+      "helperHistories": 6,
+      "fixtureSha256": "b0912a4d13ec5718b1f34b3f84edbaffb00fc4d08f774b1bc84f44cf331c990e",
+      "helperEnvelopeMeaning": "actual archived common helper ledger and occupancy; enclosing version2 envelopes are constructed model input, not actual CLI output",
+      "legacyMeaning": "valid v1 and f098-v2 observe intake outputs byte-equivalent; not whole new capture receipt identity",
+      "producerParity": "REQUIRED_BEFORE_SELECTION"
+    }
+  },
+  "privateReviewSha256": {
+    "corePrimitiveReview": "27e7ef681b4c110adef60e32735dbc62e0d9c60d2abe41413ad7b6788d74596f",
+    "realtimeCoreReview": "e0c6d58bd8c22538c6578c5c446c39bc30c9f23537c50952a72f9ea725baec4c",
+    "collectorReview": "c63bae67b81a621bd18275e0e5894469966674fe26c27c14c1ff6fabcc61365d"
+  },
+  "limits": [
+    "Original L2 remains FAILED; no new comprehensive campaign",
+    "D6 original corpus failure cause remains UNMEASURED",
+    "Common physical receiver and selected host dispatch remain under separate review",
+    "No serving source/image/profile or instrument runtime selection",
+    "No actual PostgreSQL, clinical, capacity or production acceptance",
+    "No new paid resources, push, application dev merge or release"
+  ],
+  "localCustody": "externals/work/HANDOFF-m7-coherent-join-2026-11-13.md"
+}
