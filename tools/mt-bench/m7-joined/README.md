@@ -372,3 +372,32 @@ wrong phase/source and unknown or malformed observations refuse. This validates
 available observations only: it creates no missing round or completed-work
 credit. The two previously declared work-error findings remain soft even with
 FAIL; timing-code FAIL and all structural/source/owner/clock failures stay hard.
+
+Discovery probe counts use the separately versioned `probe-accounting.json`
+ledger (v2). Each attempt is persisted before HTTP; each tenant retains accepted
+(200), uncertain (status 0 or 5xx), definitely refused, and pending counts.
+Admission closes before awaiting all writers. A complete proof requires that
+closure and zero pending attempts; interruption/open admission remains
+UNMEASURED. No pending write is silently converted to zero. The frozen helper is
+copied and hash-checked with the generated probe, and bounds the roster to 10,000
+and attempts to 100,000. Partial ledger snapshots add host file I/O per probe
+attempt/completion; they add no HTTP or SQL requests.
+
+Discovery checks `accepted <= stored <= accepted + uncertain` independently for
+each tenant's probe actor, alongside the existing workload/domain and tenant
+scope checks. Another tenant's uncertainty grants no allowance. A definite
+refusal grants none. Legacy ACK-only metadata cannot establish an upper bound:
+missing acknowledged rows still refuse, while missing uncertainty remains
+probe-specific UNMEASURED. Original historical failures are unchanged.
+
+`stored-counts.json`, `oracle-findings.json` and bounded failure diagnostics are
+retained before a known violation throws. The existing resource reducer reads
+already captured files even on that refusal; it adds no queries. Wrong roster,
+run identity, negative/mismatched attempt totals or ACK disagreement refuse
+before the count SQL. Strict acceptance retains its original exact probe oracle.
+Focused controls: `PYTHONPATH=tools/mt-bench/m7-joined python3 -m unittest
+ test_probe_counts test_discovery test_discovery_classification` (one line).
+The loopback control starts one finite local HTTP server with in-memory
+synthetic persistence, exercises actual generated request/callback code for
+committed 503 and delayed-response timeout, and closes all its sockets. It proves
+accounting behavior, not PostgreSQL or application correctness.
