@@ -34,7 +34,7 @@ class TaggedIntake(unittest.TestCase):
             self.assertEqual(T.observe(**fixture())['nativeAcceptance'],'UNMEASURED')
 
     def test_previous_deployment_plan_cannot_be_relabelled_as_current(self):
-        v=fixture();old={'coreCommit':T.CORE,'deployCommit':'3d13c63bc404397d6daee501c152288b12d5931d'}
+        v=fixture();old={'coreCommit':'074eab44ee75b9175c951b6a8add3df3e9554af7','deployCommit':'af328d87e2f1a242a6af7d1315760c6bffdd7d85'}
         v['expected']['source']=old;v['plan']['source']=old
         v['plan']['sha256']=T.sha({k:x for k,x in v['plan'].items()if k!='sha256'})
         v['expected']['planSha256']=v['plan']['sha256'];v['ledger']['planSha256']=v['plan']['sha256']

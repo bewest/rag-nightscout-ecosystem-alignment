@@ -6,10 +6,10 @@ its use requires the coordinator's separate authorization. No implicit retries.
 import argparse,hashlib,json,os,re,sys,time
 from pathlib import Path
 import owned_process as O,preflight as P
-CORE='074eab44ee75b9175c951b6a8add3df3e9554af7';DEPLOY='af328d87e2f1a242a6af7d1315760c6bffdd7d85'
-IMAGE='sha256:01a5b566543d7c0b0391720321cd516a95b5efd3ada0f7c2364d18dbb069b2d1'
-QUALIFICATION='cc69fafc0e86aa0bebd87051927e47fbf220010657b196f422a0297b32a1cae2'
-COLLECTOR='0c5fee275fbcef8c59ba8689e22b9147b0929d73eaddf3a9543d2551aa382966'
+CORE='d0036890d0623ae79f14bfa71e7226c0fa122a29';DEPLOY='d831c372b39ac19aff4271ecc5e2b1639d176448'
+IMAGE='sha256:936618b1fd4f79fde1297a9d24dd25e45d4967b14b194c1e8e7b69c9680d4a24'
+QUALIFICATION='983fb79d4f3b97c336d7cd2e0194bff669bc41a3975503e7e0839755c0f880ba'
+COLLECTOR='6e46554daa97e00687227344e2d96ade4ac4bd9e373329ef8d5c6151d05c8c4c'
 ROLES=['admin','api','api-2'];PG_IMAGE='sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542'
 VAULT='hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2'
 def need(value,code):

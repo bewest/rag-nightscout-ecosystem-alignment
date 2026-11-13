@@ -10,8 +10,8 @@ from pathlib import Path
 import re
 
 KIND = 'm7-tagged-admission-observation-v1'
-CORE = '074eab44ee75b9175c951b6a8add3df3e9554af7'
-DEPLOY = 'af328d87e2f1a242a6af7d1315760c6bffdd7d85'
+CORE = 'd0036890d0623ae79f14bfa71e7226c0fa122a29'
+DEPLOY = 'd831c372b39ac19aff4271ecc5e2b1639d176448'
 
 
 def need(value, code):
