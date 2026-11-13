@@ -21,7 +21,7 @@ class Bookends(unittest.TestCase):
             finally:a.write(out/'sampler.json',{'completed':True})
         @contextlib.contextmanager
         def observe(*args):
-            try:yield types.SimpleNamespace(result={'verdict':'PASS'})
+            try:yield types.SimpleNamespace(result={'verdict':'PASS'},complete_after_cost_window=lambda:None)
             finally:
                 a.write(out/'evaluator-progress.json',raw)
                 if phase_error:raise phase_error

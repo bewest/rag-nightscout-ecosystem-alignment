@@ -435,7 +435,8 @@ def deploy(d, m):
 
 
 def phase_snapshot(d, out, name):
-    rows = resources(document(d / "owner.json"), False)
+    snapshot_owner=document(d/"owner.json")
+    rows = resources(snapshot_owner, False)
     result = {}
     for row in rows:
         role = row["Config"]["Labels"].get("com.docker.compose.service", row["Name"])
@@ -446,9 +447,35 @@ def phase_snapshot(d, out, name):
         except RuntimeError:
             result[role] = {"id": row["Id"], "unavailable": True}
     write(out / (name + "-cgroups.json"), {"at": time.time(), "roles": result})
-    sql = "SELECT r.rolname,sum(s.calls),sum(s.total_exec_time) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid GROUP BY 1 ORDER BY 1;"
-    (out / (name + "-pg-role.tsv")).write_text(psql(d, sql))
-    (out / (name + "-pg-statements.tsv")).write_text(psql(d, "SELECT r.rolname,s.calls,s.total_exec_time,left(regexp_replace(s.query,'\\s+',' ','g'),500) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY total_exec_time DESC LIMIT 50;"))
+    timings={'version':1,'collectorOwner':snapshot_owner.get('owner'),'hostIdentity':snapshot_owner.get('hostIdentity'),'clockDomain':'collector-host-monotonic-v1','scope':'existing SQL snapshot request bounds; not exact query instants or database-role CPU','reads':{}}
+    sql="SELECT r.rolname,sum(s.calls),sum(s.total_exec_time) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid GROUP BY 1 ORDER BY 1;"
+    statements="SELECT r.rolname,s.calls,s.total_exec_time,left(regexp_replace(s.query,'\\s+',' ','g'),500) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY total_exec_time DESC LIMIT 50;"
+    for kind,query in [('pg-role',sql),('pg-statements',statements)]:
+        row={'wallStartedAtNs':time.time_ns(),'monotonicStartedAtNs':time.monotonic_ns()};timings['reads'][kind]=row
+        try:
+            (out/(name+'-'+kind+'.tsv')).write_text(psql(d,query));row['status']='PASS'
+        except BaseException:
+            row['status']='FAILED';raise
+        finally:
+            row.update(wallFinishedAtNs=time.time_ns(),monotonicFinishedAtNs=time.monotonic_ns())
+            # Timing publication never conceals the original SQL failure.
+            try:write(out/(name+'-sql-snapshot-timing.json'),timings)
+            except Exception:
+                if row['status']=='PASS':raise
+
+
+def sql_counter_rate_bounds(before,after,delta,kind='pg-role'):
+    require(type(delta)is int and delta>=0,'M7_SQL_COUNTER_RESET')
+    try:
+        require(before['version']==after['version']==1 and before['clockDomain']==after['clockDomain']=='collector-host-monotonic-v1','M7_SQL_SNAPSHOT_TIMING_REQUIRED')
+        require(isinstance(before['collectorOwner'],str) and re.fullmatch('[a-f0-9]{32}',before['collectorOwner']) and before['collectorOwner']==after['collectorOwner'] and isinstance(before['hostIdentity'],str) and re.fullmatch('[a-f0-9]{64}',before['hostIdentity']) and before['hostIdentity']==after['hostIdentity'],'M7_SQL_SNAPSHOT_TIMING_REQUIRED')
+        a,b=before['reads'][kind],after['reads'][kind]
+        require(a['status']==b['status']=='PASS','M7_SQL_SNAPSHOT_TIMING_REQUIRED')
+        points=[a['monotonicStartedAtNs'],a['monotonicFinishedAtNs'],b['monotonicStartedAtNs'],b['monotonicFinishedAtNs']]
+        require(all(type(v)is int and v>=0 for v in points) and points[0]<=points[1]<points[2]<=points[3],'M7_SQL_SNAPSHOT_TIMING_REQUIRED')
+    except (KeyError,TypeError):raise RuntimeError('M7_SQL_SNAPSHOT_TIMING_REQUIRED')
+    low=(points[2]-points[1])/1e9;high=(points[3]-points[0])/1e9
+    return {'kind':'bounded-counter-rate','elapsedLowerSeconds':low,'elapsedUpperSeconds':high,'minimumPerSecond':delta/high,'maximumPerSecond':delta/low,'scope':'request-bracket bounds, not exact QPS or database-role CPU'}
 
 
 def job_record(file,process,owner,group=False):
@@ -515,9 +542,14 @@ def enabled_idle(d,m,out,seconds):
             # metadata; publication failure must not replace the phase failure.
             try:write(out/'after-snapshot-failure.json',detail)
             except Exception:detail['publicationFailed']=True
-            if phase_failure is None:raise
+            if phase_failure is None:
+                if hasattr(progress,'failed'):
+                    try:progress.failed(evaluator_progress.Refused('M7_IDLE_AFTER_SNAPSHOT_REFUSED'),{'afterSnapshotFailure':detail})
+                    except Exception:detail['observerPublicationFailed']=True
+                raise
             try:phase_failure.afterSnapshotFailure=detail
             except Exception:pass
+    progress.complete_after_cost_window()
     return progress
 
 
@@ -576,10 +608,10 @@ def progress_services(d):
     return services
 
 
-def progress_fetch(d,service,ids,queries,budget):
+def progress_fetch(d,service,ids,queries,budget,timeout=20):
     prefix="const M7_PROGRESS_IDS="+json.dumps(ids)+";const M7_PROGRESS_QUERY_BUDGET="+str(queries)+";const M7_PROGRESS_BYTE_BUDGET="+str(budget)+";\n"
     code=prefix+(HERE/"evaluator-progress.cjs").read_text()
-    try:return compose(d,"exec","-T",service,"node","-",input=code.encode(),timeout=20)
+    try:return compose(d,"exec","-T",service,"node","-",input=code.encode(),timeout=timeout)
     except Exception:raise evaluator_progress.Refused("M7_EVALUATOR_PROGRESS_UNAVAILABLE")
 
 
@@ -592,17 +624,19 @@ def write_progress(out,value,m):
     packed={**(evaluator_idle.pack(value) if value.get("policy")==evaluator_idle.POLICY else evaluator_progress.pack(value)),"attribution":{"pair":m["pair"],"imageId":m["imageId"],"instrument":m["instrument"]["sha256"],"profileSelection":m["profileSelection"]["sha256"],"tenants":m["tenants"],"replicas":m["replicas"],"profile":m["profile"],"hostIdentity":m["hostIdentity"]}};raw=json.dumps(packed,separators=(',',':')).encode()+b'\n'
     file=out/'evaluator-progress.json';file.write_bytes(raw);file.chmod(0o600)
     compressed=out/'evaluator-progress.json.gz';compressed.write_bytes(gzip.compress(raw,mtime=0));compressed.chmod(0o600)
-    write(out/'evaluator-progress-publication.json',{'wallSeconds':time.monotonic()-before,'processCpuSeconds':time.process_time()-cpu,'rawBytes':len(raw),'gzipBytes':compressed.stat().st_size,'scope':'serialization, gzip and primary-file writes; sidecar publication excluded'})
+    tail_publication=value.get('tailRound') is not None or value.get('tailAttempted') is True
+    write(out/('evaluator-tail-publication.json'if tail_publication else'evaluator-progress-publication.json'),{'wallSeconds':time.monotonic()-before,'processCpuSeconds':time.process_time()-cpu,'rawBytes':len(raw),'gzipBytes':compressed.stat().st_size,'scope':'post-window tail publication; excluded from original metric window'if tail_publication else'original-window serialization, gzip and primary-file writes; sidecar publication excluded'})
 
 
 def progress_summary(out):
-    value=document(out/'evaluator-progress.json');result={k:v for k,v in value.items() if k not in ('kind','columns','rounds','attribution')}
+    value=document(out/'evaluator-progress.json');result={k:v for k,v in value.items() if k not in ('kind','columns','rounds','attribution','tailRound')}
     return {**result,'rawSha256':digest(out/'evaluator-progress.json'),'gzipSha256':digest(out/'evaluator-progress.json.gz')}
 
 
 def observe_progress(d,m,out,phase):
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
-    return (evaluator_idle.Observer if phase=='idle' else evaluator_progress.Observer)(progress_services(d),ids,lambda *args:progress_fetch(d,*args),m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
+    args=(progress_services(d),ids,lambda *args:progress_fetch(d,*args),m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
+    return evaluator_idle.Observer(*args,tail_fetch=lambda *args:progress_fetch(d,*args)) if phase=='idle' else evaluator_progress.Observer(*args)
 
 
 def readiness(d, m):
@@ -729,7 +763,7 @@ def run_cell(d, m, k6_image):
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
                "profileSelection":m["profileSelection"],"settingsFingerprint":m["settingsFingerprint"],"settingsFingerprintObservation":fingerprint_result,
-               "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("idle","load")},"recovery":document(out/"evaluator-recovery.private.json.publication.json")},
+               "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("idle","load")},"idleTail":document(d/"idle/evaluator-tail-publication.json") if (d/"idle/evaluator-tail-publication.json").is_file() else None,"recovery":document(out/"evaluator-recovery.private.json.publication.json")},
                "evaluatorProgress":{**{phase:progress_summary(d/phase) for phase in ("idle","load")},"recovery":{**{k:v for k,v in result_probe["restart"]["runtimeAcquisitionObservation"].items() if k not in ("baselineObservation","evidence")},**result_probe["restart"]["runtimeAcquisitionObservation"]["evidence"]}},
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
     from reduce import measurements

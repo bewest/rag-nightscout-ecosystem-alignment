@@ -55,3 +55,12 @@ passes do not qualify real networking, imports, resource use or cloud teardown.
 Enabled idle uses the base adapter's failure-bookend helper. It attempts the
 existing AFTER snapshots when assessment refuses and preserves the original
 failure. The sampler-disabled and enabled windows remain 60 and 120 seconds.
+
+The app-side helper inherits current idle assessor module4/artifactv2, the one
+bounded selected-owner completion tail AFTER successful original cost bookends,
+and SQL request-bracket metadata through `adapter.enabled_idle` and
+`adapter.phase_snapshot`. The base instrument pins this shared implementation;
+the external descriptor and cell observer profile name the exact idle policy.
+Tail cost is separate from the original60/120-second windows. No generator-side
+poll, new SQL query, global tail-quiescence claim or application-clock change is
+introduced. Missing or unresolved completion remains refused.

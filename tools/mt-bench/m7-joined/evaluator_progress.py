@@ -180,6 +180,9 @@ class Observer:
         if self.failure:
             self.failed(self.failure);raise self.failure
         self.observe()
+        self.finish()
+
+    def finish(self):
         try:
             if self.failure:raise self.failure
             result=self.assessor(self.rounds,self.ids,self.phase)
