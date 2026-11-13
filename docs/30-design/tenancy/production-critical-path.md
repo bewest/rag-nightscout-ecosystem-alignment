@@ -18,10 +18,11 @@ to testing an independently ready capability.
 ## Immediate M7 priority
 
 The [event-driven reset](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
-puts a small local pgstream adapter proof first. Establish the
-[complete clinical-to-client flow and recovery](evaluator-realtime-communication.md#event-driven-target-and-first-proof)
-before further polling tuning, capacity runs or broad acceptance. Then measure a
-small matched sample before planning production capacity. No new paid resources
+has a bounded local proof. The next boundary is
+[actual-role integration and its completion criteria](evaluator-realtime-communication.md#actual-role-integration-objective-and-completion-criteria):
+notifier health, schema routing, OS-process recovery and ownership/restore fences
+with one capability owner. Focused criteria precede one frozen-candidate acceptance
+campaign, then a small matched sample before planning production capacity. No new paid resources
 or retry of the cancelled 500-tenant run is authorized by this sequence.
 
 ## The proposed first production boundary

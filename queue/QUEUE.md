@@ -12036,12 +12036,13 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `docs/30-design/tenancy/evaluator-realtime-communication.md`
 - `reports/tenancy/pgstream-flow-2026-11-13/README.md`
 - `reports/tenancy/d6-native-discriminators-2026-11-11/README.md`
 - `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/capacity-2026-11-11/README.md`
 
-**Notes.** 2026-11-13: event-driven reset (release decisions event-driven-reset). One capability owner and one successor M7 coordinator; old polling tuning and paid retry are stopped. Maintained upstream CDC is evaluated before more custom transport. Proposed model: evaluator owns raw changes and durable due state; realtime consumes durable output/alarm and viewer/auth lifecycle, initially co-located as useful. Existing acquired-input checkpoints do not prove clinical completion. Prototype and delivery guarantees retain their exact measured scope; this item remains in-progress, not production accepted. The pgstream-flow report records final v1.6.0 local positives and deliberate red controls on frozen aba583199e9ab8a4bb907adc46dc9262a3dcedf5. Notifier liveness, schema/control routing, actual process recovery, overlapping- owner/restore fencing, authority lifecycle and WAL-cap recovery remain open. Capability owner stopped after cleanup; successor coordinator owns the next integration boundary.
+**Notes.** 2026-11-13: event-driven reset (release decisions event-driven-reset). One capability owner and one successor M7 coordinator; old polling tuning and paid retry are stopped. Maintained upstream CDC is evaluated before more custom transport. Proposed model: evaluator owns raw changes and durable due state; realtime consumes durable output/alarm and viewer/auth lifecycle, initially co-located as useful. Existing acquired-input checkpoints do not prove clinical completion. Prototype and delivery guarantees retain their exact measured scope; this item remains in-progress, not production accepted. The pgstream-flow report records final v1.6.0 local positives and deliberate red controls on frozen aba583199e9ab8a4bb907adc46dc9262a3dcedf5. Notifier liveness, schema/control routing, actual process recovery, overlapping- owner/restore fencing, authority lifecycle and WAL-cap recovery remain open. Same capability lane owns actual evaluator/realtime integration under the communication guide criteria: durable receipt/completion, notifier health, schema/control routing, OS-process restart and stale-owner fencing, with matching deploy wiring. Internal clinical/config/output payloads are allowed within the trusted worker boundary; no sanitized-marker infrastructure is required solely for internal isolation. Fresh execution uses the same lane handoff and one owner; coordinator owns the final joined freeze.
 
 ---
 

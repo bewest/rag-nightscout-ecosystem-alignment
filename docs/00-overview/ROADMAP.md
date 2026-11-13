@@ -171,8 +171,9 @@ the M6a and M6b joined candidates have acceptance records on draft #8898
 [M6b](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)), with
 no milestone promoted. Deployment trust (M6c) remains open. The immediate M7 priority is the
 [event-driven reset](../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset):
-prove the small local pgstream clinical-to-client flow and recovery before more
-polling tuning, capacity runs or broad acceptance. The generated table retains
+integrate the proved local pgstream flow into actual evaluator/realtime roles,
+closing [health, schema routing, process recovery and ownership fences](../30-design/tenancy/evaluator-realtime-communication.md#actual-role-integration-objective-and-completion-criteria)
+before capacity work. The generated table retains
 queue dependencies; it does not authorize restarting parked campaigns. Multi-host
 failover has no acceptance.
 Use the [deployment models and fault domains](../30-design/tenancy/deployment-and-rig-testing.md)

@@ -81,6 +81,125 @@ executed source, positive and red controls, explicit cache-loss recovery and
 remaining notifier-liveness, schema-routing and ownership/recovery gaps. It does
 not enable a shipping role or establish production delivery guarantees.
 
+## Actual-role integration: objective and completion criteria
+
+*Execution plan, 2026-11-13; read-derived from core prototype
+`aba583199e9ab8a4bb907adc46dc9262a3dcedf5` and deployment reference
+`84accb33c3daccebfdf886300c3ba6c638e003c6`. Criteria below are **UNMEASURED**
+for actual-role integration. The local proof retains its narrower scope.*
+
+**Objective:** the actual multitenant evaluator and realtime roles process
+committed changes and due clinical work, recover after process loss, and refuse
+stale-owner effects. The existing pgstream capability has one implementation
+owner for core, its fixtures/controls and matching deployment wiring. The sole M7
+coordinator owns dependency reconciliation, the joined candidate and acceptance.
+
+### Internal trust and state ownership
+
+Evaluator and realtime are trusted internal roles that work across tenants.
+Internal CDC payloads may contain clinical, configuration and completed-output
+rows. A blanket non-clinical-only feed is not an isolation requirement. Reuse
+existing rows and versions; add a marker only where it makes coalescing or
+recovery simpler. Do not add tables or rereads solely to hide data from these
+trusted workers. Current tenant identity, authority, ownership and restore state
+still govern computation, persistence and externally visible effects. Trusted
+metadata work may batch across tenants; this plan adds no per-event catalogue
+screen or public request-admission path to internal scheduling.
+
+One receiver in the evaluator role durably coalesces **observed** versions before
+returning HTTP success. Evaluation drains observed-versus-completed differences
+separately, so clinical computation does not hold the serial CDC delivery open.
+The existing evaluator checkpoint consumer is the proposed home for observed and
+completed versions, completed result/frame, content revision, next due instant
+and ownership/restore generation. Keep acquisition separate from clinical
+completion. Add only the schema necessary to make this recovery state durable.
+
+Completion commits the result, processed versions and next due together under a
+current ownership/restore fence. A newer version remains pending when an older
+cycle finishes. Reuse current transactional write clocks, settings/activity
+versions, notification producer identities and recovery contracts. Clinical dates
+and CDC arrival order never stand in for commit versions.
+
+```mermaid
+flowchart LR
+  PG[(Existing committed rows and versions)] --> PS[Pinned pgstream]
+  PS --> RX[One evaluator receiver]
+  RX --> P[(Durable observed vs completed work)]
+  P --> E[Evaluator and due work]
+  E --> O[(Completed result / frame / next due)]
+  O --> PS
+  RX --> H[Output/control hint]
+  H --> RT[Realtime: watched tenants]
+  O --> RT
+  RT --> C[Currently authorized clients]
+```
+
+Input, output, heartbeat and schema/control routes are explicit. Output and
+receiver acknowledgement writes must not feed an input-evaluation loop. A
+validated output payload may accelerate delivery. Durable output revision remains
+truth; reconnect and bounded reconciliation for watched tenants recover a missed
+private/local hint. This hint may use an existing private interface; successful
+RPC is not the sole delivery/recovery path. Realtime does not build a second raw
+clinical projection. Preserve the adopted connection-driven lifecycle and update
+its move-readiness contract in the same source cut where that behavior changes.
+
+### What must pass
+
+| Criterion | Required behavior | Focused failing control |
+|---|---|---|
+| Actual role flow and durable acknowledgement | Launch the actual role entrypoints/configuration. A committed input/settings change produces a completed clinical result and frame, then updates an already-connected client. ACK follows durable observed work; clinical output, completed versions and due state commit coherently. Newer or reordered work cannot roll completion backward. | ACK before observed commit; drop output hint; hold an older cycle while a newer write/settings version commits. Require recovery from durable state and correct tenant/client result, rather than counting callback entry. |
+| Notifier health and recovery | Detect a live-but-stopped notifier, hung delivery, database/receiver outage and backlog using end-to-end heartbeat receipt plus pending/checkpoint progress. A fresh heartbeat cannot hide stuck clinical work. A targeted wrapper owns the pinned pgstream process and bounded restart/terminal refusal; its `/health` alone is insufficient. | Stop notifier while process stays alive; wedge webhook or partition its network. Health must change and recovery complete, or a named refusal occur, within deadlines declared before the run. Healthy idle with fixed heartbeat work must stay healthy. |
+| Schema/control routing | Classify DML, heartbeat, schema and lifecycle events. Relevant DDL invalidates affected admission and invokes revalidation; irrelevant supported DDL does not create clinical work. Unknown/malformed relevant events cannot be silently acknowledged as completed. | Deliver the observed `pgstream.ddl` action `M`, unrelated DDL and an unknown event. Confirm defined routing/refusal, unchanged tenant completion and no data/output feedback loop. |
+| Actual worker restart and stream coverage | Kill the evaluator OS process after durable receipt, during evaluation and after output commit; restart from persisted pending/completed/due state. An overdue/future clinical timer fires without a new input write. Establish stream coverage before the bootstrap reconciliation boundary, including writes during startup. Recover lost/invalidated slots through explicit rebootstrap, not silent recreation. | Kill at each durable boundary; write while boot/recovery enumerates tenants; invalidate the owned slot. Omit pending/due recovery to prove red. Test the process, not only cache clearing. |
+| Ownership and restore fencing | An old process cannot commit output or emit socket/alarm effects after its ownership/backend/assignment or restore generation is superseded. Fence at the effect boundary, not only during a later health probe. Preserve existing stable notification identities, suppression and retry semantics. | Hold an old cycle/send, replace its owner or ownership backend, then resume it; change restore generation before publication/dispatch. The old effect is refused, the current owner finishes, and another tenant continues. This is not an exactly-once provider-delivery claim. |
+| Deployment and compatibility | DBA init is separate; normal pgstream runs nonsuperuser/nonowner with enumerated streaming/metadata grants. Qualify precreated subscriptions with least necessary grants; keep receiver/subscription endpoints private. Bind the pinned artifact, plugin, restart policy, migrations and existing authority/lifecycle contracts. Single-tenant behavior remains compatible. | Remove a required grant, use the wrong datastore/slot identity, expose a subscription endpoint in a probe, and exercise pause/suspend/revocation with idle sockets. Preserve focused regression/control failures for changed contracts. |
+
+Use existing health/probe/recovery settings where they fit. Declare heartbeat,
+stall detection, step timeout and recovery bounds in the pinned configuration
+before executing controls; report observed times against those bounds. Do not
+extend a timeout after a failure merely to relabel it green. `REPLICATION` is an
+explicit WAL-decoding trust capability; SQL table ACLs do not prove it is confined
+to those tables. Start with DBA-precreated subscriptions and enumerate actual
+runtime grants. If a narrow operating role cannot work, report the exact failure
+and evaluate the adopted Debezium fallback; do not silently run as owner.
+
+Healthy steady state uses fixed worker/feed health, actual changes, watched
+clients and indexed pending/due work. Bounded startup/rebootstrap reconciliation
+and the adopted slow settings safety net retain their explicit scope. Do not
+restore a hot roster sweep or add an arbitrary per-read catalogue check to pass a
+control. Measure adapter and pgstream SQL separately; a short quiet callback
+counter is not a database idle-cost result. WAL retention configuration is not a
+proof of overflow/invalidation recovery.
+
+### Ordered delivery and one acceptance boundary
+
+1. Reconcile the minimum restore/recovery dependencies, and qualify runtime
+   grants plus the targeted feed wrapper. Keep the prototype source/captures
+   immutable; implement in an owned continuation worktree.
+2. Integrate durable receiver/completion/due state into evaluator and replace
+   realtime raw acquisition with completed-output consumption. Carry settings,
+   activity, authorization and connection-driven behavior together.
+3. Close schema routing, OS-process recovery/bootstrap and stale-owner/restore
+   controls on the joined core/deployment pair. Record concrete failures and
+   fix them in the same capability lane.
+4. Once the focused criteria pass, the coordinator freezes one coherent pair for
+   applicable full/browser/enabled-corpus acceptance and final prcheck. Repair
+   diagnosed failures before repeating final acceptance. No leaf commit triggers
+   a new comprehensive campaign.
+
+Claude's final restore-resume repair and datastore-recovery semantics are
+prerequisite assessments, not automatic ancestry acceptance. Reconcile stronger
+existing guards; apply needed cleanup/lint/CI repairs. Old reader advancement,
+tenant-version polling and authorization-cache experiments stay parked. Packaging
+retirement is assessed separately and does not delay CDC correctness unless its
+contract is actually required. The local capability handoff names exact heads,
+source anchors, owners and preserved drafts.
+
+Only after actual-role integration closes should a small matched measurement
+precede a capacity plan. No paid host, old capacity retry, topology matrix,
+generic control framework, application-dev merge, push or release is part of this
+implementation batch.
+
 ## Inspected implementation reference
 
 The sections below describe the pinned implementation in the opening provenance
