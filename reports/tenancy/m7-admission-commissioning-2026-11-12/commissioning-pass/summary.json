@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "recordDate": "2026-11-12",
+  "recordTimezone": "America/Los_Angeles",
+  "scope": "COMMISSIONING_ONLY",
+  "verdict": "PASS_COMMISSIONING_ONLY",
+  "source": {
+    "coreCommit": "d0036890d0623ae79f14bfa71e7226c0fa122a29",
+    "deployCommit": "d831c372b39ac19aff4271ecc5e2b1639d176448",
+    "imageId": "sha256:936618b1fd4f79fde1297a9d24dd25e45d4967b14b194c1e8e7b69c9680d4a24",
+    "instrumentCommit": "dcfe760c604e81c2341f9a3c0eeb47d883af6762",
+    "planSha256": "b8bd434d8fb9365d0621ced2eb74c95b5a6ff70de1ee5080238124c42444c03c",
+    "collectorFingerprint": "6e46554daa97e00687227344e2d96ade4ac4bd9e373329ef8d5c6151d05c8c4c"
+  },
+  "actual": {
+    "outerExit": 0,
+    "commissioning": "PASS",
+    "nativeAcceptance": "UNMEASURED",
+    "hostCommands": 82,
+    "hostOutputBytes": 745122,
+    "uncertainHostEffect": false,
+    "healthRoles": [
+      "admin",
+      "api",
+      "api-2"
+    ],
+    "apiNormalRestartCompleted": true,
+    "normalRetirementAcknowledgements": 4,
+    "planViewByteEquality": true,
+    "tenantOrClinicalProvisioning": false,
+    "countCliInvoked": false,
+    "outerExitProvenance": "Owner retrospective transcription of actual tool completion; not inferred from PASS or an independent OS measurement"
+  },
+  "observations": [
+    {
+      "phase": "started",
+      "heldGenerations": 3,
+      "declaredMaximumHeld": 117,
+      "authenticatedTaggedClients": 20,
+      "unmanagedClients": 0,
+      "serverMaximum": 314,
+      "reservedSuperuser": 3,
+      "reservedOther": 0,
+      "preauthentication": "UNKNOWN: census cannot observe it",
+      "creditAuthority": "Controller ledger and exact ACK; census never refunds"
+    },
+    {
+      "phase": "restarted",
+      "heldGenerations": 3,
+      "declaredMaximumHeld": 117,
+      "authenticatedTaggedClients": 19,
+      "unmanagedClients": 0,
+      "serverMaximum": 314,
+      "reservedSuperuser": 3,
+      "reservedOther": 0,
+      "preauthentication": "UNKNOWN: census cannot observe it",
+      "creditAuthority": "Controller ledger and exact ACK; census never refunds"
+    },
+    {
+      "phase": "retired",
+      "heldGenerations": 0,
+      "declaredMaximumHeld": 0,
+      "authenticatedTaggedClients": 0,
+      "unmanagedClients": 0,
+      "serverMaximum": 314,
+      "reservedSuperuser": 3,
+      "reservedOther": 0,
+      "preauthentication": "UNKNOWN: census cannot observe it",
+      "creditAuthority": "Controller ledger and exact ACK; census never refunds"
+    }
+  ],
+  "cleanup": {
+    "errors": [],
+    "independentWholeProjectCensus": true,
+    "retainedStoppedExitZeroServices": [
+      "admin",
+      "api",
+      "api-2",
+      "postgres",
+      "vault"
+    ],
+    "replacedApiConfirmedAbsent": true,
+    "creditInferredFromCleanup": false
+  },
+  "profile": {
+    "declaredSlots": 11,
+    "declaredTenantSlots": 16,
+    "sourceDerivedPostgresMaximum": 314,
+    "scope": "Functional configured ceilings, not observed peak or production sizing"
+  },
+  "closed": [
+    "Selected entrypoint/bootstrap/private plan mounts",
+    "Admin/API/API2 actual health with unchanged claim bytes",
+    "Normal API stop/restart under shipped controller",
+    "Four exact clean ACK retirements and charged census captures"
+  ],
+  "unmeasured": [
+    "Full eleven-role clinical runtime and seven-participant lifecycle cohort",
+    "Cold/storm historical peak active/pending proof; old ACK zero-current queues is insufficient",
+    "Whole-cohort restart and partial restart with independent healthy-B clinical progress",
+    "Genuine acquisition/TIME/isolation and selected independent stored-count CLI",
+    "Full repaired-core source/browser/enabled-corpus acceptance and final prcheck",
+    "Capacity/production/automatic-failover/replay acceptance"
+  ],
+  "evidence": [
+    {
+      "kind": "original-result",
+      "file": "result.private.json",
+      "sha256": "8f1198cae15e905b20d4118b508200f204b688b2fb6d892b7aead594397c1375"
+    },
+    {
+      "kind": "plan",
+      "file": "plan.private.json",
+      "sha256": "b8bd434d8fb9365d0621ced2eb74c95b5a6ff70de1ee5080238124c42444c03c"
+    },
+    {
+      "kind": "original-cleanup",
+      "file": "finally-stopped.private.json",
+      "sha256": "6d672f20865c8653667d8efe4417efbab336991a4de4057ed740d1527d6b2d3f"
+    },
+    {
+      "kind": "independent-stopped-census",
+      "file": "stopped-after-dcfe.private.json",
+      "sha256": "f69ddb50d8e4f37a224b836ad237f027ef87db92dceb6d1bafefd6f87ce40015"
+    },
+    {
+      "kind": "plan-view-witness",
+      "file": "bound-plan-view.private.json",
+      "sha256": "ac0bb0a7fc4290faa7030a2672a66eac5501cf1cbcc296313d92f74005045dc0"
+    },
+    {
+      "kind": "root-focused-runner",
+      "file": "m7-commissioning-root-focused-dcfe-20261112.log",
+      "sha256": "8ab65a9e1187a656e71229ef6e50570f94b51205cd44db1b65303ca8839a9d60"
+    },
+    {
+      "kind": "started-capture",
+      "file": "result.private.json",
+      "sha256": "1281b2d905174e5356ecf66e214dfe0610941fc5bda441f5fb829d40fb2c3d21"
+    },
+    {
+      "kind": "restarted-capture",
+      "file": "result.private.json",
+      "sha256": "786ecdeb13dcaea043663b085433031971bb6323df717b8a73700629e1137523"
+    },
+    {
+      "kind": "retired-capture",
+      "file": "result.private.json",
+      "sha256": "015e025837226d29b1d349d30f5f3333f4f4799bae3290093e74530c1f171950"
+    },
+    {
+      "kind": "normal-retirement-ack",
+      "file": "admin-021a4a7556b7f55a84a01a628bad86e7-ack.private.json",
+      "sha256": "89b2f5ddd8785471b62197c5f2ce5e17ac873d3f0684c704b1bdafe6f9a88af8"
+    },
+    {
+      "kind": "normal-retirement-ack",
+      "file": "api-1ce03a2369e786194368166de8792c9e-ack.private.json",
+      "sha256": "527d0eb966170cdb662a906cafca922a8d64f5b44de866dbc67b2e1d217b9268"
+    },
+    {
+      "kind": "normal-retirement-ack",
+      "file": "api-2-4fb3fb9c235742e05ee5708bd1197ac0-ack.private.json",
+      "sha256": "bfc764697ec933739b39619b1c8ddb60db92e9d306ffbbbdab030c776a6c1a2e"
+    },
+    {
+      "kind": "normal-retirement-ack",
+      "file": "api-65a6847218966218d0c58f5d877e3eee-ack.private.json",
+      "sha256": "efaf9a7eedcaa12fcedec6164bcb8451fc8156c561345783283b81e5b1782bc0"
+    },
+    {
+      "kind": "owner-direct-process-completion-transcription",
+      "file": "dcfe-process-witness.private.json",
+      "sha256": "cf6b6ac1241b2bdf0b88079f8456d5ffea5561da3729aab01b7b8aed1f9a60d1"
+    }
+  ]
+}

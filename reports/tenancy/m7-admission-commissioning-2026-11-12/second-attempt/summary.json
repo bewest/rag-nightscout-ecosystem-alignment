@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "recordDate": "2026-11-12",
+  "recordTimezone": "America/Los_Angeles",
+  "scope": "SECOND_COMMISSIONING_FAILURE_BEFORE_FULL_RUNTIME_ACCEPTANCE",
+  "verdict": "COMMISSIONING_FAIL",
+  "source": {
+    "coreCommit": "074eab44ee75b9175c951b6a8add3df3e9554af7",
+    "deployCommit": "af328d87e2f1a242a6af7d1315760c6bffdd7d85",
+    "imageId": "sha256:01a5b566543d7c0b0391720321cd516a95b5efd3ada0f7c2364d18dbb069b2d1",
+    "instrumentCommit": "1640ff05c9b67b4faa14d8b11d104adf89623a92",
+    "planSha256": "2ea33e51d0113e05b692242d4a290dd4353ba07e4046d405fa758a6093b1dbd2"
+  },
+  "measured": {
+    "bootstrapDirectExit": 0,
+    "planViewSameBytes": true,
+    "controllerBound": true,
+    "adminStarted": true,
+    "apiBodyExit": 1,
+    "api2Started": false,
+    "taggedCaptureOrRestartReached": false,
+    "commissioning": "FAIL",
+    "error": "HEALTH_PROCESS_CHANGED",
+    "hostCommands": 86,
+    "hostOutputBytes": 1055221,
+    "uncertainHostEffect": false,
+    "postgresPreauthenticationTimeoutOccurrences": 1,
+    "underlyingApiTypedCause": "UNPROVEN"
+  },
+  "cleanup": {
+    "originalErrors": [],
+    "independentWholeProjectCensus": true,
+    "exactServicesStoppedAndRetained": [
+      "admin",
+      "api",
+      "postgres",
+      "vault"
+    ],
+    "generationStates": {
+      "api": [
+        "ISSUED"
+      ],
+      "admin": [
+        "RETIRED"
+      ]
+    },
+    "apiCreditsRefunded": false,
+    "originalRunAndStatePreserved": true
+  },
+  "separateSourceDriverFinding": {
+    "originalCore": "074eab44ee75b9175c951b6a8add3df3e9554af7",
+    "fixedCoreBranch": "d0036890d0623ae79f14bfa71e7226c0fa122a29",
+    "reproduced": "Actual pg-pool makes password non-enumerable; selected option spreads lose it for separate-field API operation-pool construction. Actual SCRAM continuation refuses the resulting non-string password; URL and unselected controls continue.",
+    "repair": "Descriptor/prototype-preserving copies across four option transforms; admitted overrides retained.",
+    "sourceDriverControls": "PASS: original credential loss and repaired four-way SCRAM continuation independently reproduced without connects or network.",
+    "runtimeCauseAttribution": "UNPROVEN: original sanitized API boot error did not expose its typed cause.",
+    "newRuntimeAcceptance": "UNMEASURED"
+  },
+  "limits": [
+    "No API2, tagged capture, controlled restart or complete commissioning proof",
+    "No tenant/clinical provisioning or independent stored-count CLI proof",
+    "Core074 K remains its original source campaign; repaired core requires a new coherent source campaign",
+    "No capacity, clinical or production acceptance"
+  ],
+  "evidence": [
+    {
+      "kind": "original-result",
+      "file": "result.private.json",
+      "sha256": "276951e00dba26f7fcec0087d0a226fc0bef9011c94dbb29acfc5d99d76ebe54"
+    },
+    {
+      "kind": "bootstrap-receipt",
+      "file": "018-result.json",
+      "sha256": "f856899a40ef9da931d0de45ca057a80fb5207a4cdf75ae9544702d405ff23fd"
+    },
+    {
+      "kind": "plan-view-witness",
+      "file": "bound-plan-view.private.json",
+      "sha256": "f16746ac5688b9ce8ff87eae2106635036cf95f858b22206139d645cae8f787b"
+    },
+    {
+      "kind": "original-cleanup",
+      "file": "finally-stopped.private.json",
+      "sha256": "b78483b73177c0f3a6a84c8d57af1b7e8635a0fac9aeaef1524350e7173271a8"
+    },
+    {
+      "kind": "independent-stopped-census",
+      "file": "stopped-after-1640.private.json",
+      "sha256": "ef2a1394af460e02cb0d913c80ad4b7ddf139f8226ad7415d65c42c7e16f0021"
+    },
+    {
+      "kind": "retained-ledger",
+      "file": "ledger.json",
+      "sha256": "a58853f6d4d8c6a3effa95100672df3ef38b653da396d2daca24865647d1427f"
+    },
+    {
+      "kind": "postgres-stderr",
+      "file": "stderr.log",
+      "sha256": "cc78031de6ecaa4c0783d53d26cf53a120e6d3a54dec2e1cf5b29e1cd939479a"
+    },
+    {
+      "kind": "api-stderr",
+      "file": "stderr.log",
+      "sha256": "9cd52fc4253dbf229474de972c5a61c6b37702f8f2704b2bfd2572dc22e62c15"
+    },
+    {
+      "kind": "root-runner-checks",
+      "file": "m7-commissioning-root-focused-1640-20261112.log",
+      "sha256": "cd3225ac0e81c09ea51923153617652b55da2b2da429ead79b617cc3c342127b"
+    },
+    {
+      "kind": "source-driver-original",
+      "file": "m7-api-admission-root-original-20261112.json",
+      "sha256": "41c3fc003a6ddf64d277b71104d84b4f41dcae8de8743216f6939f05e2b4def1"
+    },
+    {
+      "kind": "source-driver-repaired",
+      "file": "result.json",
+      "sha256": "2b550714116bd3af82fa8d97fc3beb0b9875aea9a85ca7d5e34d0a7fe7dcc316"
+    }
+  ]
+}
