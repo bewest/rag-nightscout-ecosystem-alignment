@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "kind": "CORE_J_PRIMARY_WHITELIST_EVIDENCE_MANIFEST",
+  "recordDate": "2026-11-12",
+  "files": {
+    "README.md": "77f2009e6ade5380614276afda3f969d7b1b32f999adf33c9ffaff929414fa94",
+    "corpus.json": "693e71485276fc834bd08bccfc495af9bc58258d68455951a03ec8f52859751f",
+    "execution.json": "b0ca32d5dacd5593caf29fedc996d76c2bf93f83af6846457123e272a1fd5334",
+    "fixture-and-cleanup.json": "6c26f8645df632defaa378d9ccfa2f964e6948eb23904408ca319183cd534a74",
+    "projection-controls.json": "c29616425b78652819f9c6d1ede82e9185cadbc408e12b82df0d00356eea34fd",
+    "provenance.json": "75dc2ab0a2fea76e093f7b94f8abca8c141fe85ebdc56e7a08fedd287f52073d",
+    "publication-verification.json": "91eb8d8b041984eb58c60c7fc7dbc77e1b04d7e9d7ce78b00c0d6193f82aff3d",
+    "queue-check-output.txt": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f"
+  }
+}

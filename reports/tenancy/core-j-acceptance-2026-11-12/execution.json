@@ -1,0 +1,221 @@
+{
+  "recordType": "PRIMARY_CAPTURE_WHITELIST_PROJECTION",
+  "status": "FULL_SOURCE_EXECUTION_PASS",
+  "capturedWorkerStatus": "passed",
+  "capturedSourceAcceptance": "COORDINATOR_REVIEW_REQUIRED",
+  "source": {
+    "coreCommit": "debcc2c7a44fb812b342d0e524ff0611045094d1",
+    "deployCommit": "2e9afbb6906441e096e9e86e892cc44073d5b0ae",
+    "alignmentCommit": "c62ecb446cb34649f0e80e0e41ecac0088024bc2",
+    "instrumentCommit": "f9a39f7dbca1efb9787afd61c15443e545717ef2"
+  },
+  "completedTests": [
+    "unit",
+    "dom",
+    "dependency",
+    "core",
+    "harness",
+    "integration",
+    "stress",
+    "browser",
+    "enabled-corpus"
+  ],
+  "errors": [],
+  "stages": [
+    {
+      "id": "unit",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "unit"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794529816.955804,
+      "finishedAt": 1794529889.2922676,
+      "passing": 3585,
+      "pending": 1,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [
+        "is moment's own parse on every date string of VIEWS_CORPUS_DIR (read in place)"
+      ],
+      "stderrExecutionDiagnostics": []
+    },
+    {
+      "id": "dom",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "dom"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794529889.6321034,
+      "finishedAt": 1794529900.5831902,
+      "passing": 205,
+      "pending": 0,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [],
+      "stderrExecutionDiagnostics": []
+    },
+    {
+      "id": "dependency",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "dependency"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794529900.9091933,
+      "finishedAt": 1794529917.7278326,
+      "passing": 368,
+      "pending": 2,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [
+        "resolves ajv 6 at or above 6.14.0 for har-validator",
+        "resolves ajv 6 at or above 6.14.0 for style-loader/node_modules/schema-utils"
+      ],
+      "stderrExecutionDiagnostics": []
+    },
+    {
+      "id": "core",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "core"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794529918.0240178,
+      "finishedAt": 1794529919.9953225,
+      "passing": 319,
+      "pending": 0,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [],
+      "stderrExecutionDiagnostics": []
+    },
+    {
+      "id": "harness",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "harness"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794529920.4507577,
+      "finishedAt": 1794529929.6455338,
+      "passing": 99,
+      "pending": 0,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [],
+      "stderrExecutionDiagnostics": [
+        "TEST_EXECUTION: no intended test files (support tests do not count)"
+      ]
+    },
+    {
+      "id": "integration",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "integration"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794529929.97592,
+      "finishedAt": 1794530075.9805756,
+      "passing": 3643,
+      "pending": 836,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": {
+        "capturedCount": 836,
+        "publication": "Names retained in hash-bound private stdout; not expanded in this bounded leaf."
+      },
+      "stderrExecutionDiagnostics": []
+    },
+    {
+      "id": "stress",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "stress"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794530076.3061812,
+      "finishedAt": 1794530078.22675,
+      "passing": 18,
+      "pending": 0,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [],
+      "stderrExecutionDiagnostics": []
+    },
+    {
+      "id": "browser",
+      "argv": [
+        "node",
+        "scripts/test-tiers.js",
+        "run",
+        "browser"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 1800,
+      "startedAt": 1794530078.555462,
+      "finishedAt": 1794530389.05386,
+      "passing": 686,
+      "pending": 0,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [],
+      "stderrExecutionDiagnostics": []
+    },
+    {
+      "id": "enabled-corpus",
+      "argv": [
+        "node",
+        "scripts/test-multitenant.js",
+        "--record",
+        "<owned-results>/corpus.json"
+      ],
+      "status": "passed",
+      "returnCode": 0,
+      "limitSeconds": 3600,
+      "startedAt": 1794530389.387271,
+      "finishedAt": 1794531096.1202912,
+      "passing": 839,
+      "pending": 1,
+      "failing": 0,
+      "countsBasis": "Captured terminal Mocha summary; absent pending/failing summary is zero only with successful command and passing summary.",
+      "pendingNames": [
+        "reports end-to-end successful request latency and throughput"
+      ],
+      "stderrExecutionDiagnostics": []
+    }
+  ],
+  "coordinatorReceipt": "NOT_PART_OF_THIS_LEAF",
+  "capacityAcceptance": "NOT_MEASURED",
+  "releaseAcceptance": "NOT_MEASURED"
+}
