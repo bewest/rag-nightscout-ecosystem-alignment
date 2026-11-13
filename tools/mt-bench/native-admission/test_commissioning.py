@@ -49,6 +49,14 @@ class Controls(unittest.TestCase):
             h.command=command;h.inspect=inspect
             with self.assertRaisesRegex(RuntimeError,'CLEANUP_UNCONFIRMED'):h.cleanup_owned()
             final=json.loads((Path(d)/'finally-stopped.private.json').read_text());self.assertEqual(len(final['knownAbsent']),1);self.assertEqual(final['knownAbsent'][0]['cid'],removed);self.assertEqual(final['rows'][0]['Id'],owned);self.assertTrue(any(x['stage']=='inspect'for x in final['errors']));self.assertFalse(any(x[:2]==['docker','stop']for x in calls))
+    def test_bind_requires_exact_qualified_image_before_worker_start(self):
+        with tempfile.TemporaryDirectory()as d:
+            state=Path(d);(state/'connection-budget').mkdir();file=state/'connection-budget/custody.json'
+            h=C.Host.__new__(C.Host);h.p={'state':d,'project':'synthetic-owned','base':'/synthetic/source','imageId':C.IMAGE,'source':{'coreCommit':C.CORE,'deployCommit':C.DEPLOY},'controllerCli':'/synthetic/controller.js'};calls=[];h.command=lambda args,*a,**k:(calls.append(args)or '{"state":"BOUND"}')
+            expected={'project':h.p['project'],'workingDirectory':h.p['base'],'imageId':C.IMAGE,'source':h.p['source']};C.save(file,{'expected':expected});self.assertEqual(h.controller('bind')['state'],'BOUND')
+            file.unlink();wrong={**expected,'imageId':'sha256:'+'e'*64};C.save(file,{'expected':wrong})
+            with self.assertRaisesRegex(RuntimeError,'BOUND_CUSTODY_MISMATCH'):h.controller('bind')
+            self.assertTrue(all(args[-1]=='bind'for args in calls),'no worker may start before bound image agrees')
     def test_actual_prepared_plan_recording_has_required_protocol_and_no_acceptance(self):
         self.assertIsNotNone(ROOT,'M7_NATIVE_TEST_PREPARED required: actual source/image-qualified private preparation')
         plan=C.prepare(ROOT)

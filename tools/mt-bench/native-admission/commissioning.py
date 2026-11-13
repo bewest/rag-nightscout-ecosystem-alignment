@@ -64,7 +64,10 @@ class Host:
             if status=='healthy'and time.monotonic()<=deadline:return r
             need(status in ('starting','unhealthy')and time.monotonic()<deadline,'HEALTH_NOT_READY');time.sleep(2)
     def controller(self,op,slot=None,seconds=60):
-        value=json.loads(self.command(['node',self.p['controllerCli'],self.p['state'],op,*([slot]if slot else[])],seconds));need(value.get('state')=={'bind':'BOUND','start':'STARTED','stop':'QUIESCED_RETIRED'}[op]and(op=='bind'or value.get('processInstanceId')==slot),'CONTROLLER_RESULT');return value
+        value=json.loads(self.command(['node',self.p['controllerCli'],self.p['state'],op,*([slot]if slot else[])],seconds));need(value.get('state')=={'bind':'BOUND','start':'STARTED','stop':'QUIESCED_RETIRED'}[op]and(op=='bind'or value.get('processInstanceId')==slot),'CONTROLLER_RESULT')
+        if op=='bind':
+            custody=read(Path(self.p['state'])/'connection-budget/custody.json');need(custody.get('expected')=={'project':self.p['project'],'workingDirectory':self.p['base'],'imageId':self.p['imageId'],'source':self.p['source']},'BOUND_CUSTODY_MISMATCH')
+        return value
     def capture(self,label):
         plan=read(Path(self.p['state'])/'connection-budget/plan.json');book=read(Path(self.p['state'])/'connection-budget/ledger.json');need(all(sid in ROLES or not any(r['state']!='RETIRED'for r in rows)for sid,rows in book['slots'].items())and sum(r['state']!='RETIRED'for rows in book['slots'].values()for r in rows)<=3,'COMMISSION_UNPLANNED_GENERATION');need(plan['source']==self.p['source'],'BOUND_PLAN_SOURCE');spec={'kind':'m7-tagged-admission-observation-v1','controllerCli':self.p['controllerCli'],'controllerCliSha256':self.p['controllerCliSha256'],'collectorSha256':self.p['collectorSha256'],'state':self.p['state'],'expected':{'kind':'m7-tagged-admission-observation-v1','source':self.p['source'],'imageId':self.p['imageId'],'project':self.p['project'],'workingDirectory':self.p['base'],'planSha256':plan['sha256']}};file=self.out/(label+'-capture-spec.private.json');save(file,spec);self.command(['python3',self.p['collector'],str(file),str(self.out/(label+'-capture'))],125)
     def ack(self,slot):
