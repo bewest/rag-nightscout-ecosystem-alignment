@@ -1,0 +1,675 @@
+{
+  "recordType": "PRIMARY_SAVED_CAPTURE_WHITELIST_PROJECTION",
+  "originalPrivateAssessmentSha256": "a93feedb7198fb25b37730903c17559f7e7f841ef36960ecaf7772f13feca968",
+  "transformation": "Nonidentifying structured projections and raw artifact hash anchors only; no raw logs/SQL/host/provider identities/keypaths.",
+  "windows": {
+    "idle-disabled": {
+      "cgroupBracketSeconds": 61.94414496421814,
+      "cpuTimingScope": "Global cgroup snapshot timestamps bracket sequential per-service reads; cores are approximate, not per-service timestamp precision.",
+      "sql": {
+        "callsDelta": 188574,
+        "executionMsDelta": 190407.99320199998,
+        "captureInterval": "UNMEASURED_NO_SQL_SNAPSHOT_TIMESTAMPS",
+        "measuredQueriesPerSecond": "UNMEASURED",
+        "measuredExecutionMsPerSecond": "UNMEASURED",
+        "byRole": [
+          {
+            "role": "nsdemo_display_reader",
+            "callsDelta": 130479,
+            "executionMsDelta": 148006.82042799998
+          },
+          {
+            "role": "nsdemo_feed_reader",
+            "callsDelta": 4047,
+            "executionMsDelta": 25723.86108900001
+          },
+          {
+            "role": "nsdemo_activity_reader",
+            "callsDelta": 31442,
+            "executionMsDelta": 5205.899651999991
+          },
+          {
+            "role": "nsdemo_lifetime_evaluator",
+            "callsDelta": 3288,
+            "executionMsDelta": 3194.5536640000005
+          },
+          {
+            "role": "nsdemo_outbox",
+            "callsDelta": 7775,
+            "executionMsDelta": 3088.536925999998
+          },
+          {
+            "role": "nsdemo_realtime",
+            "callsDelta": 8071,
+            "executionMsDelta": 2573.0551340000025
+          },
+          {
+            "role": "nsdemo_suppression",
+            "callsDelta": 2458,
+            "executionMsDelta": 1863.7580959999993
+          },
+          {
+            "role": "nsdemo_lifetime_realtime",
+            "callsDelta": 624,
+            "executionMsDelta": 626.9227750000001
+          },
+          {
+            "role": "nsdemo_evaluator",
+            "callsDelta": 109,
+            "executionMsDelta": 82.79903599999999
+          },
+          {
+            "role": "nsdemo_owner_reader",
+            "callsDelta": 93,
+            "executionMsDelta": 12.730087999999999
+          },
+          {
+            "role": "nsdemo_ui_registry",
+            "callsDelta": 93,
+            "executionMsDelta": 10.093067000000001
+          },
+          {
+            "role": "postgres",
+            "callsDelta": 2,
+            "executionMsDelta": 9.72846
+          },
+          {
+            "role": "nsdemo_api",
+            "callsDelta": 93,
+            "executionMsDelta": 9.234786999999999
+          }
+        ]
+      },
+      "services": {
+        "nginx": {
+          "cpuUsecDelta": 29373,
+          "approximateCpuCores": 0.00047418525216495007,
+          "memoryCurrentMiBAfter": 116.421875,
+          "anonMiBAfter": 113.03125,
+          "processRssSumMiBAfter": 152.77734375
+        },
+        "evaluator": {
+          "cpuUsecDelta": 80087780,
+          "approximateCpuCores": 1.2929031476060002,
+          "memoryCurrentMiBAfter": 376.08203125,
+          "anonMiBAfter": 358.91796875,
+          "processRssSumMiBAfter": 419.85546875
+        },
+        "tenant-admin": {
+          "cpuUsecDelta": 5301193,
+          "approximateCpuCores": 0.08558021106050005,
+          "memoryCurrentMiBAfter": 38.6484375,
+          "anonMiBAfter": 35.0546875,
+          "processRssSumMiBAfter": 93.6484375
+        },
+        "realtime": {
+          "cpuUsecDelta": 19415665,
+          "approximateCpuCores": 0.31343825976152234,
+          "memoryCurrentMiBAfter": 275.5390625,
+          "anonMiBAfter": 263.48828125,
+          "processRssSumMiBAfter": 324.37109375
+        },
+        "ui": {
+          "cpuUsecDelta": 7175977,
+          "approximateCpuCores": 0.11584592868535327,
+          "memoryCurrentMiBAfter": 25.6484375,
+          "anonMiBAfter": 23.01171875,
+          "processRssSumMiBAfter": 79.04296875
+        },
+        "api": {
+          "cpuUsecDelta": 5271346,
+          "approximateCpuCores": 0.08509837375340282,
+          "memoryCurrentMiBAfter": 534.72265625,
+          "anonMiBAfter": 513.359375,
+          "processRssSumMiBAfter": 575.62109375
+        },
+        "feed-reader": {
+          "cpuUsecDelta": 1307119,
+          "approximateCpuCores": 0.02110157466464431,
+          "memoryCurrentMiBAfter": 33.38671875,
+          "anonMiBAfter": 30.625,
+          "processRssSumMiBAfter": 87.4453125
+        },
+        "admin": {
+          "cpuUsecDelta": 7537443,
+          "approximateCpuCores": 0.1216812824578333,
+          "memoryCurrentMiBAfter": 167.49609375,
+          "anonMiBAfter": 158.41015625,
+          "processRssSumMiBAfter": 273.171875
+        },
+        "vault": {
+          "cpuUsecDelta": 5338595,
+          "approximateCpuCores": 0.08618401308281556,
+          "memoryCurrentMiBAfter": 101.3515625,
+          "anonMiBAfter": 64.0859375,
+          "processRssSumMiBAfter": 196.65625
+        },
+        "postgres": {
+          "cpuUsecDelta": 487480827,
+          "approximateCpuCores": 7.869683684900194,
+          "memoryCurrentMiBAfter": 275.609375,
+          "anonMiBAfter": 125.3671875,
+          "processRssSumMiBAfter": 1000.85546875
+        }
+      },
+      "topStoredStatementsAfter": [
+        {
+          "role": "nsdemo_display_reader",
+          "callsAtAfterSnapshot": 2929,
+          "executionMsAtAfterSnapshot": 120681.18996899993,
+          "stored500CharNormalizedSnippetSha256": "1ad3f6b3d24e7340a5b0a105da71c86ae97c5cb63c0b903ec2fb430632b813c1"
+        },
+        {
+          "role": "nsdemo_feed_reader",
+          "callsAtAfterSnapshot": 442,
+          "executionMsAtAfterSnapshot": 24243.00750000001,
+          "stored500CharNormalizedSnippetSha256": "8a8fb1f5b8d142f45c151e5c392a5a51293e6fd81a2cd991ea6e7aac32f4d3e3"
+        },
+        {
+          "role": "nsdemo_display_reader",
+          "callsAtAfterSnapshot": 12369,
+          "executionMsAtAfterSnapshot": 21615.145677000073,
+          "stored500CharNormalizedSnippetSha256": "deeae31633c14ffd22f88c1ac81fdb7b6ff8d01a97765ea52d730529883d17b0"
+        },
+        {
+          "role": "nsdemo_activity_reader",
+          "callsAtAfterSnapshot": 2414,
+          "executionMsAtAfterSnapshot": 4850.185591999992,
+          "stored500CharNormalizedSnippetSha256": "deeae31633c14ffd22f88c1ac81fdb7b6ff8d01a97765ea52d730529883d17b0"
+        },
+        {
+          "role": "nsdemo_display_reader",
+          "callsAtAfterSnapshot": 1252,
+          "executionMsAtAfterSnapshot": 2628.30478,
+          "stored500CharNormalizedSnippetSha256": "8df07640e554409a9b526f9d5c4598f84b4c26adbcf36cc973ce0cfe80e77899"
+        }
+      ],
+      "statementScope": "Only top50 snapshots, query snippets normalized/truncated500characters; hashes are snippet fingerprints, not complete query IDs. No absent-row delta inferred."
+    },
+    "idle": {
+      "cgroupBracketSeconds": 123.96928429603577,
+      "cpuTimingScope": "Global cgroup snapshot timestamps bracket sequential per-service reads; cores are approximate, not per-service timestamp precision.",
+      "sql": {
+        "callsDelta": 359968,
+        "executionMsDelta": 367063.61591900006,
+        "captureInterval": "UNMEASURED_NO_SQL_SNAPSHOT_TIMESTAMPS",
+        "measuredQueriesPerSecond": "UNMEASURED",
+        "measuredExecutionMsPerSecond": "UNMEASURED",
+        "byRole": [
+          {
+            "role": "nsdemo_display_reader",
+            "callsDelta": 261126,
+            "executionMsDelta": 285655.814254
+          },
+          {
+            "role": "nsdemo_feed_reader",
+            "callsDelta": 7796,
+            "executionMsDelta": 54759.35408600003
+          },
+          {
+            "role": "nsdemo_activity_reader",
+            "callsDelta": 63977,
+            "executionMsDelta": 9942.639871000005
+          },
+          {
+            "role": "nsdemo_lifetime_evaluator",
+            "callsDelta": 6199,
+            "executionMsDelta": 5859.242975000002
+          },
+          {
+            "role": "nsdemo_outbox",
+            "callsDelta": 14381,
+            "executionMsDelta": 5780.864308
+          },
+          {
+            "role": "nsdemo_suppression",
+            "callsDelta": 4538,
+            "executionMsDelta": 3439.2861709999993
+          },
+          {
+            "role": "nsdemo_realtime",
+            "callsDelta": 1113,
+            "executionMsDelta": 1325.309133
+          },
+          {
+            "role": "nsdemo_evaluator",
+            "callsDelta": 222,
+            "executionMsDelta": 180.56082199999997
+          },
+          {
+            "role": "postgres",
+            "callsDelta": 58,
+            "executionMsDelta": 60.733709000000005
+          },
+          {
+            "role": "nsdemo_ui_registry",
+            "callsDelta": 186,
+            "executionMsDelta": 20.513823999999996
+          },
+          {
+            "role": "nsdemo_api",
+            "callsDelta": 186,
+            "executionMsDelta": 19.675720999999996
+          },
+          {
+            "role": "nsdemo_owner_reader",
+            "callsDelta": 186,
+            "executionMsDelta": 19.621045
+          }
+        ]
+      },
+      "services": {
+        "nginx": {
+          "cpuUsecDelta": 32095,
+          "approximateCpuCores": 0.00025889477528448,
+          "memoryCurrentMiBAfter": 116.359375,
+          "anonMiBAfter": 113.02734375,
+          "processRssSumMiBAfter": 152.77734375
+        },
+        "evaluator": {
+          "cpuUsecDelta": 155598382,
+          "approximateCpuCores": 1.255136567768147,
+          "memoryCurrentMiBAfter": 360.91015625,
+          "anonMiBAfter": 343.4921875,
+          "processRssSumMiBAfter": 404.41015625
+        },
+        "tenant-admin": {
+          "cpuUsecDelta": 10459518,
+          "approximateCpuCores": 0.08437185113550316,
+          "memoryCurrentMiBAfter": 38.96875,
+          "anonMiBAfter": 35.37109375,
+          "processRssSumMiBAfter": 93.96875
+        },
+        "realtime": {
+          "cpuUsecDelta": 37535364,
+          "approximateCpuCores": 0.3027795490886793,
+          "memoryCurrentMiBAfter": 199.34765625,
+          "anonMiBAfter": 189.59765625,
+          "processRssSumMiBAfter": 250.5078125
+        },
+        "ui": {
+          "cpuUsecDelta": 13994186,
+          "approximateCpuCores": 0.11288430097395907,
+          "memoryCurrentMiBAfter": 26.09375,
+          "anonMiBAfter": 23.5,
+          "processRssSumMiBAfter": 79.52734375
+        },
+        "api": {
+          "cpuUsecDelta": 10429430,
+          "approximateCpuCores": 0.08412914585434537,
+          "memoryCurrentMiBAfter": 532.859375,
+          "anonMiBAfter": 511.58203125,
+          "processRssSumMiBAfter": 573.84765625
+        },
+        "feed-reader": {
+          "cpuUsecDelta": 2315873,
+          "approximateCpuCores": 0.018681022586770357,
+          "memoryCurrentMiBAfter": 36.921875,
+          "anonMiBAfter": 34.0703125,
+          "processRssSumMiBAfter": 90.89453125
+        },
+        "admin": {
+          "cpuUsecDelta": 14611419,
+          "approximateCpuCores": 0.11786321977231289,
+          "memoryCurrentMiBAfter": 151.35546875,
+          "anonMiBAfter": 143.4375,
+          "processRssSumMiBAfter": 205.75
+        },
+        "vault": {
+          "cpuUsecDelta": 10494387,
+          "approximateCpuCores": 0.08465312242135437,
+          "memoryCurrentMiBAfter": 98.6015625,
+          "anonMiBAfter": 61.1796875,
+          "processRssSumMiBAfter": 193.875
+        },
+        "postgres": {
+          "cpuUsecDelta": 937192079,
+          "approximateCpuCores": 7.559873272818185,
+          "memoryCurrentMiBAfter": 269.53515625,
+          "anonMiBAfter": 119.51171875,
+          "processRssSumMiBAfter": 992.25390625
+        }
+      },
+      "topStoredStatementsAfter": [
+        {
+          "role": "nsdemo_display_reader",
+          "callsAtAfterSnapshot": 5614,
+          "executionMsAtAfterSnapshot": 229681.87250800038,
+          "stored500CharNormalizedSnippetSha256": "1ad3f6b3d24e7340a5b0a105da71c86ae97c5cb63c0b903ec2fb430632b813c1"
+        },
+        {
+          "role": "nsdemo_feed_reader",
+          "callsAtAfterSnapshot": 841,
+          "executionMsAtAfterSnapshot": 51558.33658200002,
+          "stored500CharNormalizedSnippetSha256": "8a8fb1f5b8d142f45c151e5c392a5a51293e6fd81a2cd991ea6e7aac32f4d3e3"
+        },
+        {
+          "role": "nsdemo_display_reader",
+          "callsAtAfterSnapshot": 24837,
+          "executionMsAtAfterSnapshot": 42325.57229499969,
+          "stored500CharNormalizedSnippetSha256": "deeae31633c14ffd22f88c1ac81fdb7b6ff8d01a97765ea52d730529883d17b0"
+        },
+        {
+          "role": "nsdemo_activity_reader",
+          "callsAtAfterSnapshot": 4597,
+          "executionMsAtAfterSnapshot": 9122.929781000003,
+          "stored500CharNormalizedSnippetSha256": "deeae31633c14ffd22f88c1ac81fdb7b6ff8d01a97765ea52d730529883d17b0"
+        },
+        {
+          "role": "nsdemo_display_reader",
+          "callsAtAfterSnapshot": 2537,
+          "executionMsAtAfterSnapshot": 5314.355129000013,
+          "stored500CharNormalizedSnippetSha256": "53866730798f5302dfb82ffd8cc321503b48d8b5d9203a1328126e4efc834977"
+        }
+      ],
+      "statementScope": "Only top50 snapshots, query snippets normalized/truncated500characters; hashes are snippet fingerprints, not complete query IDs. No absent-row delta inferred."
+    }
+  },
+  "enabledSampler": {
+    "ticks": 28,
+    "spanSeconds": 117.68026423454285,
+    "services": {
+      "nginx": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.0,
+        "cpuCoresSampleMax": 0.0,
+        "dockerMemoryMiBMean": 115.9,
+        "dockerMemoryMiBMax": 115.9
+      },
+      "evaluator": {
+        "samples": 28,
+        "cpuCoresSampleMean": 1.2349178571428572,
+        "cpuCoresSampleMax": 1.4786000000000001,
+        "dockerMemoryMiBMean": 398.30357142857144,
+        "dockerMemoryMiBMax": 429.5
+      },
+      "tenant-admin": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.06250714285714286,
+        "cpuCoresSampleMax": 0.1856,
+        "dockerMemoryMiBMean": 38.93464285714286,
+        "dockerMemoryMiBMax": 48.11
+      },
+      "realtime": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.2984392857142857,
+        "cpuCoresSampleMax": 0.48619999999999997,
+        "dockerMemoryMiBMean": 209.79857142857142,
+        "dockerMemoryMiBMax": 293.3
+      },
+      "ui": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.11042857142857143,
+        "cpuCoresSampleMax": 0.2706,
+        "dockerMemoryMiBMean": 26.153214285714284,
+        "dockerMemoryMiBMax": 41.65
+      },
+      "api": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.06206071428571429,
+        "cpuCoresSampleMax": 0.1967,
+        "dockerMemoryMiBMean": 532.7678571428571,
+        "dockerMemoryMiBMax": 535.1
+      },
+      "feed-reader": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.017767857142857144,
+        "cpuCoresSampleMax": 0.0194,
+        "dockerMemoryMiBMean": 36.2125,
+        "dockerMemoryMiBMax": 36.54
+      },
+      "admin": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.13531785714285713,
+        "cpuCoresSampleMax": 0.2788,
+        "dockerMemoryMiBMean": 152.25,
+        "dockerMemoryMiBMax": 169.1
+      },
+      "vault": {
+        "samples": 28,
+        "cpuCoresSampleMean": 0.16930357142857141,
+        "cpuCoresSampleMax": 0.1893,
+        "dockerMemoryMiBMean": 73.64750000000001,
+        "dockerMemoryMiBMax": 75.21
+      },
+      "postgres": {
+        "samples": 28,
+        "cpuCoresSampleMean": 7.704689285714286,
+        "cpuCoresSampleMax": 8.56,
+        "dockerMemoryMiBMean": 182.41428571428574,
+        "dockerMemoryMiBMax": 196.0
+      }
+    }
+  },
+  "overhead": {
+    "sampler": {
+      "cadenceSeconds": 2,
+      "wallSeconds": 122.03219693400001,
+      "source": "compose-baseline/probes/sample.sh",
+      "controllerCpuSeconds": 0.1297559999999999,
+      "overhead": "included in host/PG cgroup figures; compare sampler-disabled idle control"
+    },
+    "progressCollector": {
+      "queries": 12,
+      "responseBytes": 922796,
+      "wallSeconds": 2.9361871059999203
+    },
+    "publication": {
+      "wallSeconds": 0.01910581800007094,
+      "processCpuSeconds": 0.019088001000000077,
+      "rawBytes": 188856,
+      "gzipBytes": 27461,
+      "scope": "serialization, gzip and primary-file writes; sidecar publication excluded"
+    },
+    "limits": "Controller CPU excludes Docker/psql child and database cost. Different windows include different clinical TIME activity; sampled means and bookends are not a causal overhead estimate."
+  },
+  "CDisabledComparison": {
+    "scope": "Only raw sampler-disabled paired bookends compared; different hosts/instruments, no speedup inference",
+    "C": {
+      "hardware": {
+        "cores": 16,
+        "cpuModel": "Intel(R) Xeon(R) Platinum 8168 CPU @ 2.70GHz",
+        "kernel": "6.8.0-147-generic",
+        "memTotalKiB": "32863280"
+      },
+      "disabled": {
+        "cgroupBracketSeconds": 62.01543736457825,
+        "cpuTimingScope": "Global cgroup snapshot timestamps bracket sequential per-service reads; cores are approximate, not per-service timestamp precision.",
+        "sql": {
+          "callsDelta": 186050,
+          "executionMsDelta": 186691.859708,
+          "captureInterval": "UNMEASURED_NO_SQL_SNAPSHOT_TIMESTAMPS",
+          "measuredQueriesPerSecond": "UNMEASURED",
+          "measuredExecutionMsPerSecond": "UNMEASURED",
+          "byRole": [
+            {
+              "role": "nsdemo_display_reader",
+              "callsDelta": 127271,
+              "executionMsDelta": 145172.587136
+            },
+            {
+              "role": "nsdemo_feed_reader",
+              "callsDelta": 4182,
+              "executionMsDelta": 24237.74853000001
+            },
+            {
+              "role": "nsdemo_activity_reader",
+              "callsDelta": 30937,
+              "executionMsDelta": 5281.275075000005
+            },
+            {
+              "role": "nsdemo_lifetime_evaluator",
+              "callsDelta": 3120,
+              "executionMsDelta": 3132.475381999998
+            },
+            {
+              "role": "nsdemo_outbox",
+              "callsDelta": 7415,
+              "executionMsDelta": 3094.5327999999977
+            },
+            {
+              "role": "nsdemo_realtime",
+              "callsDelta": 9629,
+              "executionMsDelta": 3052.4084709999984
+            },
+            {
+              "role": "nsdemo_suppression",
+              "callsDelta": 2350,
+              "executionMsDelta": 1859.6718629999991
+            },
+            {
+              "role": "nsdemo_lifetime_realtime",
+              "callsDelta": 756,
+              "executionMsDelta": 735.383834
+            },
+            {
+              "role": "nsdemo_evaluator",
+              "callsDelta": 109,
+              "executionMsDelta": 83.05702899999999
+            },
+            {
+              "role": "nsdemo_ui_registry",
+              "callsDelta": 93,
+              "executionMsDelta": 14.457550000000003
+            },
+            {
+              "role": "nsdemo_api",
+              "callsDelta": 93,
+              "executionMsDelta": 9.830054999999998
+            },
+            {
+              "role": "postgres",
+              "callsDelta": 2,
+              "executionMsDelta": 9.323478
+            },
+            {
+              "role": "nsdemo_owner_reader",
+              "callsDelta": 93,
+              "executionMsDelta": 9.108504999999997
+            }
+          ]
+        },
+        "services": {
+          "evaluator": {
+            "cpuUsecDelta": 79414840,
+            "approximateCpuCores": 1.280565668401782,
+            "memoryCurrentMiBAfter": 397.375,
+            "anonMiBAfter": 379.8046875,
+            "processRssSumMiBAfter": 440.73828125
+          },
+          "nginx": {
+            "cpuUsecDelta": 33402,
+            "approximateCpuCores": 0.0005386078276548354,
+            "memoryCurrentMiBAfter": 116.48046875,
+            "anonMiBAfter": 113.03125,
+            "processRssSumMiBAfter": 152.4765625
+          },
+          "realtime": {
+            "cpuUsecDelta": 20174625,
+            "approximateCpuCores": 0.32531617702535576,
+            "memoryCurrentMiBAfter": 274.3984375,
+            "anonMiBAfter": 262.39453125,
+            "processRssSumMiBAfter": 323.17578125
+          },
+          "ui": {
+            "cpuUsecDelta": 7353552,
+            "approximateCpuCores": 0.1185761531724708,
+            "memoryCurrentMiBAfter": 25.6328125,
+            "anonMiBAfter": 23.078125,
+            "processRssSumMiBAfter": 79.05078125
+          },
+          "tenant-admin": {
+            "cpuUsecDelta": 5304605,
+            "approximateCpuCores": 0.08553684736294168,
+            "memoryCurrentMiBAfter": 38.59765625,
+            "anonMiBAfter": 34.94140625,
+            "processRssSumMiBAfter": 93.515625
+          },
+          "api": {
+            "cpuUsecDelta": 5307217,
+            "approximateCpuCores": 0.08557896590811366,
+            "memoryCurrentMiBAfter": 535.4921875,
+            "anonMiBAfter": 514.08203125,
+            "processRssSumMiBAfter": 573.0625
+          },
+          "feed-reader": {
+            "cpuUsecDelta": 1414986,
+            "approximateCpuCores": 0.02281667372079531,
+            "memoryCurrentMiBAfter": 35.5390625,
+            "anonMiBAfter": 32.703125,
+            "processRssSumMiBAfter": 89.4765625
+          },
+          "admin": {
+            "cpuUsecDelta": 7490683,
+            "approximateCpuCores": 0.12078739291901698,
+            "memoryCurrentMiBAfter": 146.2109375,
+            "anonMiBAfter": 138.21875,
+            "processRssSumMiBAfter": 200.67578125
+          },
+          "vault": {
+            "cpuUsecDelta": 5381915,
+            "approximateCpuCores": 0.08678347244994232,
+            "memoryCurrentMiBAfter": 101.984375,
+            "anonMiBAfter": 64.60546875,
+            "processRssSumMiBAfter": 197.171875
+          },
+          "postgres": {
+            "cpuUsecDelta": 486405699,
+            "approximateCpuCores": 7.8433003082845865,
+            "memoryCurrentMiBAfter": 254.51171875,
+            "anonMiBAfter": 121.140625,
+            "processRssSumMiBAfter": 995.83984375
+          }
+        },
+        "topStoredStatementsAfter": [
+          {
+            "role": "nsdemo_display_reader",
+            "callsAtAfterSnapshot": 2863,
+            "executionMsAtAfterSnapshot": 118010.4882879999,
+            "stored500CharNormalizedSnippetSha256": "1ad3f6b3d24e7340a5b0a105da71c86ae97c5cb63c0b903ec2fb430632b813c1"
+          },
+          {
+            "role": "nsdemo_feed_reader",
+            "callsAtAfterSnapshot": 459,
+            "executionMsAtAfterSnapshot": 22665.630012000012,
+            "stored500CharNormalizedSnippetSha256": "8a8fb1f5b8d142f45c151e5c392a5a51293e6fd81a2cd991ea6e7aac32f4d3e3"
+          },
+          {
+            "role": "nsdemo_display_reader",
+            "callsAtAfterSnapshot": 12023,
+            "executionMsAtAfterSnapshot": 21441.61074700008,
+            "stored500CharNormalizedSnippetSha256": "deeae31633c14ffd22f88c1ac81fdb7b6ff8d01a97765ea52d730529883d17b0"
+          },
+          {
+            "role": "nsdemo_activity_reader",
+            "callsAtAfterSnapshot": 2388,
+            "executionMsAtAfterSnapshot": 4946.489401000004,
+            "stored500CharNormalizedSnippetSha256": "deeae31633c14ffd22f88c1ac81fdb7b6ff8d01a97765ea52d730529883d17b0"
+          },
+          {
+            "role": "nsdemo_display_reader",
+            "callsAtAfterSnapshot": 1254,
+            "executionMsAtAfterSnapshot": 2727.680879000003,
+            "stored500CharNormalizedSnippetSha256": "8df07640e554409a9b526f9d5c4598f84b4c26adbcf36cc973ce0cfe80e77899"
+          }
+        ],
+        "statementScope": "Only top50 snapshots, query snippets normalized/truncated500characters; hashes are snippet fingerprints, not complete query IDs. No absent-row delta inferred."
+      }
+    },
+    "DHardware": {
+      "cores": 16,
+      "cpuModel": "Intel(R) Xeon(R) Platinum 8168 CPU @ 2.70GHz",
+      "kernel": "6.8.0-147-generic",
+      "memTotalKiB": "32863276"
+    },
+    "hostIdentityDiffers": true,
+    "limits": "C enabled after-snapshots were absent; no complete C-vs-D enabled comparison. SQL deltas have no SQL intervals; earlier rates derived from cgroup times are not treated as measured SQL QPS."
+  },
+  "limits": [
+    "SQL snapshots have no own capture timestamps; no measured SQL QPS or execution-time/second.",
+    "SQL execution milliseconds are not CPU or request latency; p50/p95/p99 are UNMEASURED.",
+    "Memory.current/Docker usage are cgroup measurements, not JS heap; RSS sums double-count shared mappings.",
+    "Final running job has no later completion observation. No completed/hung/missed runtime classification.",
+    "No historic speedup/capacity claim; parent owns source diagnosis, future publication and activeJ."
+  ]
+}
