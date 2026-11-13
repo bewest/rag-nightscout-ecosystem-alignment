@@ -319,7 +319,7 @@ def progress_measurement(cell,expected,evidence):
         evidence.progress_decoded=getattr(evidence,'progress_decoded',0)+len(raw)
         need(evidence.progress_decoded<=64*1024*1024,'M7_EVALUATOR_PROGRESS_DECODE_BOUND')
         document=decode(raw)
-        need(document.get('kind')==('evaluator-idle-safety-v1' if phase=='idle' else 'evaluator-recovery-v2' if phase=='recovery' else 'evaluator-progress-phase-v2') and document.get('policy')==(idle_contract().POLICY if phase=='idle' else module.POLICY),'M7_EVALUATOR_PROGRESS_VERSION')
+        need(document.get('kind')==(idle_contract().ARTIFACT_KIND if phase=='idle' else 'evaluator-recovery-v2' if phase=='recovery' else 'evaluator-progress-phase-v2') and document.get('policy')==(idle_contract().POLICY if phase=='idle' else module.POLICY),'M7_EVALUATOR_PROGRESS_VERSION')
         need(document.get('attribution')=={'pair':cell['pair'],'imageId':cell['imageId'],'instrument':cell['instrument'],'profileSelection':cell['profileSelection']['sha256'],'tenants':cell['tenants'],'replicas':cell['replicas'],'profile':cell['profile'],'hostIdentity':cell['hostIdentity']},'M7_EVALUATOR_PROGRESS_IDENTITY')
         try:
             result=recovery_contract().verify(document,cell['tenants'],inventory['windows']['load']['evaluator']) if phase=='recovery' else (idle_contract() if phase=='idle' else module).verify(document,cell['tenants'],inventory['windows'][phase]['evaluator'],phase)

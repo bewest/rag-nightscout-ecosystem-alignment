@@ -69,9 +69,15 @@
     "dueState": "captured-only-not-opportunity-assessed"
   },
   "evaluatorIdleSafety": {
-    "version": 1,
+    "version": 2,
     "kind": "evaluator-idle-safety",
-    "moduleVersion": 3,
+    "moduleVersion": 4,
+    "completionTail": {
+      "maxOwners": 128,
+      "maxRounds": 1,
+      "deadlineMs": 5000,
+      "scope": "point completion after original cost bookends; no global tail quiescence"
+    },
     "strictWorkPolicy": {
       "version": 2,
       "moduleVersion": 2,

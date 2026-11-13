@@ -62,6 +62,7 @@ def export_traffic(cell, spec):
     (out / 'workload.js').write_bytes((d / 'k6/workload.js').read_bytes())
     need({f.name for f in out.iterdir() if f.is_file()} == set(TRAFFIC_FILES), 'EXTERNAL_TRAFFIC_EXPORT_ALLOWLIST')
     descriptor = {'version': 1, 'profile': b['profile'], 'binding': b, 'generator': m['generator'],
+                  'evaluatorIdleSafety':a.evaluator_idle.POLICY,'evaluatorIdleArtifact':a.evaluator_idle.ARTIFACT_KIND,'sqlSnapshotTiming':'existing-query-request-brackets-v1',
                   'settingsFingerprint': m['settingsFingerprint']['sha256'], 'trafficRunId': 'm7-' + m['owner'][:12], 'probe': generated,
                   'files': {f.name: a.digest(f) for f in out.iterdir() if f.is_file()}}
     write(out / 'traffic.json', descriptor)
@@ -144,10 +145,11 @@ def summarize(d, m, b, idle_result, load_result, recovered, health_result, resta
               'externalInstrument': source_identity(HERE), 'profileSelection': m['profileSelection'],
               'settingsFingerprintObservation': fingerprint, 'tenants': m['tenants'], 'verdict': 'PASS',
               'capacityAcceptance': 'NOT_GRANTED', 'topologyQualification': 'REQUIRES_REVIEWED_LIVE_SMOKE',
-              'observerProfile': {'perWriteSqlLatencyPolling': 'NOT_RUN', 'strictServerProgress': 'UNCHANGED', 'loadQueryCostComparison': 'placement and observer changes; not placement-only'},
+              'observerProfile': {'evaluatorIdleSafety':a.evaluator_idle.POLICY,'evaluatorIdleArtifact':a.evaluator_idle.ARTIFACT_KIND,'sqlSnapshotTiming':'existing-query-request-brackets-v1','idleTailScope':'point completion outside original metric window; no global tail quiescence', 'perWriteSqlLatencyPolling': 'NOT_RUN', 'strictServerProgress': 'UNCHANGED', 'loadQueryCostComparison': 'placement and observer changes; not placement-only'},
               'metricsAvailability': {'writeToFrameMs': 'generator-monotonic-clock', 'writeToEvaluationMs': 'UNMEASURED',
                                       'restartCommandMs': 'app-clock', 'crossHostClockSubtraction': False},
               'probe': probe, 'oracle': oracle, 'measurements': measurement, 'generatorMetrics': generator,
+              'idleTailPublication':a.document(d/'idle/evaluator-tail-publication.json')if(d/'idle/evaluator-tail-publication.json').is_file()else None,
               'evaluatorProgress': {'idle': idle_result, 'load': load_result, 'recovery': recovered},
               'restart': {'command': restart_result, 'health': health_result}}
     write(d / 'summary.json', result)

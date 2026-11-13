@@ -242,20 +242,36 @@ v2 artifacts and cannot downgrade to an old unknown-due shape. The actual histor
 
 ### Baseline idle-safety boundary
 
-`evaluator-idle-safety-v1` captures all IDs/all evaluators, actual helper UTC
-observations and wall-clock timestamps bracketed by monotonic timestamps around
-each existing exec. A common wall-minus-monotonic offset interval must cover all
-read boundaries; clock jumps, overlap, missing stamps or ambiguity are UNMEASURED.
-This is sampled observation, not continuous quiescence or a timer deadline SLO.
-No additional request, phase duration, clinical write, plugin change or work trigger
-is introduced. Notification polling and read-only signature/backstop confirmations
-are allowed and never count as successful clinical time work.
+Current idle assessor module4 produces `evaluator-idle-safety-v2`. It retains
+three complete ID/instance snapshots and common wall-minus-monotonic clock
+brackets. Missing state, clock jumps and ambiguous observations remain refused.
+Strict work/source inspection remain module2; old idle artifacts retain their
+original module's outcome and cannot serve as current receipts.
 
-Both idle-safety classifications require every sampled owner clinical flag to
-be false. Any running/booting/queued clinical job is UNMEASURED/BUSY even when
-time completions are present; complete raw counters remain retained, and this is
-not a stall/error claim. Strict native TIME/load/recovery may observe active jobs.
-This idle-baseline rule is not a universal active-work capacity policy.
+First and midpoint observations still require every clinical job flag clear.
+Only an original FINAL exact running-bit owner with a prior declared TIME
+opportunity may create a completion obligation. The final legacy-body increase
+must exceed the measured TIME increase by exactly one; all original readiness,
+identity, generation, acquisition, failure, foreign-row and clock guards remain.
+A running flag or null due is never completion evidence.
+
+After successful original AFTER cost snapshots, the adapter may make ONE point
+inspection round over at most128 obligated IDs on every fixed evaluator instance.
+All RPCs share one monotonic5-second deadline and the existing phase query/byte
+budgets; there is no retry. The selected owner must gain exactly one completed
+TIME, retain its final legacy-body/acquisition counts and owner/runtime/generation,
+show no failure, and have all jobs clear. Selected nonowners remain unchanged and
+idle. Missing, still-running, reset, extra-body/acquisition or final-only demand
+stays refused. No earlier busy observation is excused.
+
+The artifact retains the original three global rounds plus a separate point-tail
+round and cost/clock metadata. Original measured TIME counts and resource windows
+never include the tail completion. The new classification
+`TIME_COMPLETED_AFTER_WINDOW` is not throughput or a native work witness. Unselected
+tenants are covered only by the original global snapshots; no global tail or
+continuous quiescence claim follows. AFTER-snapshot or tail failure preserves
+partial evidence and cannot yield PASS. The external app helper uses this same
+adapter boundary and policy.
 
 The private DTO exposes six existing clinical states: running (through complete
 window resolution), booting, owned acquire/time and borrowed acquire/time tickets.
@@ -297,3 +313,16 @@ If AFTER also refuses, a bounded fixed diagnostic records actual partial-file
 availability and the original phase exception is preserved. Missing bookends
 are never fabricated, and an AFTER failure without a phase failure still fails
 the run. No sampling window, query set, workload or retry policy is expanded.
+
+### SQL snapshot request bounds
+
+The existing role totals and statement-list queries are unchanged. Each existing
+psql invocation now records adjacent host wall/monotonic start and finish values
+in `before-sql-snapshot-timing.json` / `after-sql-snapshot-timing.json`, including
+fixed status on failure. No extra query or polling is added. These are request
+brackets, not exact SQL execution instants. `sql_counter_rate_bounds` requires
+successful, nonoverlapping same-domain monotonic bounds and a nonnegative counter
+delta; it returns a range from the shortest/longest possible elapsed interval.
+Missing old timings remain unmeasured. Nominal120seconds or nearby cgroup times
+cannot substitute for SQL timestamps. SQL execution time remains distinct from
+database-role CPU; wall stamps support correlation, not a cross-host clock claim.
