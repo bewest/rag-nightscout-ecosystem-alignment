@@ -1,0 +1,174 @@
+{
+  "date": "2026-11-13",
+  "status": "FIXED_ON_LOCAL_BRANCHES_SOURCE_COMPONENTS_ONLY",
+  "qualification": "REPRODUCED_SOURCE_RECORDING_AND_SCOPED_PRIOR_NATIVE_COMPONENTS",
+  "coreCommit": "c57459d2ba7271b72e74fbffb48dc7045dd4488b",
+  "deploymentCommit": "8a88d65ca3d3ebf03b839a3e9d012b2c25abcc71",
+  "components": {
+    "registryOutage": "6e16bf5834c084828e583559ff5dec34aa85186a",
+    "registryFixtures": "3805a8890a66107850563c5e830b916d76dc1726",
+    "lineageAndScanner": "1dee12df651d8550d2659e5d04b4c2bd8cc34e84",
+    "settingsSnapshot": "0f4e290f68155930f219258244c99549cb4fca16",
+    "localTimeoutOptions": "0a2561d45173cd535628a64aabb42e3492aeecc2",
+    "realtimeActionInterface": "5d5ea2dfa42747e01534c7bfd5d50651b97e2636",
+    "hostRestoreSource": "f63939ccc2af0dfd6f33f982787c5fbda5117c27"
+  },
+  "joinedFocused": {
+    "files": 20,
+    "checks": 109,
+    "allExit": 0
+  },
+  "settingsFocused": 127,
+  "urlFocused": 34,
+  "urlSettingsGuards": 4,
+  "tierInventory": {
+    "files": 724,
+    "tiers": 8,
+    "status": "PASS"
+  },
+  "evidenceManifestSha256": "70e7fb4b5a991255c8f3fa040445d3d90f0d91733a01c4e954dd38d8b04a6689",
+  "evidence": {
+    "registry-outage-review.json": {
+      "sha256": "f42b8fa86fe73dcd04bea9db2e6a84c53a3a460b917725184e7bf0ed1d2b622c",
+      "bytes": 3990
+    },
+    "registry-fixture-review.json": {
+      "sha256": "b7479a90bab880a50fd7bb369f198c2a483a1c35b73aa40dc18ddd96b003939c",
+      "bytes": 1829
+    },
+    "lineage-scanner-review.json": {
+      "sha256": "f961e2ede87a15a01881fb868a5751eeebbdf29b32cedcbef6406854f98d480c",
+      "bytes": 3934
+    },
+    "rt-interface-review.json": {
+      "sha256": "21bba60ee80300a22c2698066995cee8cd8254bdac46f88dabba1221a9f72b15",
+      "bytes": 4023
+    },
+    "host-repair-review.json": {
+      "sha256": "cfbbb5f9289bd43565bbdcfccece4c94735236a38d9357424e04a26e2532d72f",
+      "bytes": 40457
+    },
+    "host-root-review.json": {
+      "sha256": "3f67053a867d466e6e9c52cf424d90440ed60e31506a05f6eb81d343fe139e6b",
+      "bytes": 1285
+    },
+    "joined-host-rt-checks.json": {
+      "sha256": "b7b7ee0524fc627673ec06cb82ef4210deb78d7113be4dbe2eb3954789881d43",
+      "bytes": 3147
+    },
+    "settings-replay.stdout": {
+      "sha256": "36bc5f7ee5d25ed8db43c77d11fb9ad781b1c70682b6b0b456611e7f5af87817",
+      "bytes": 14175
+    },
+    "settings-boundary.stdout": {
+      "sha256": "a5b84fd8d67fbb673d3d316c360d0a30ef9939b12b6ea8fdd03bb1d1d4b603b5",
+      "bytes": 221
+    },
+    "settings-latch-red.stdout": {
+      "sha256": "149e326534e32f1000bbef5b20c45841da352240418073a6a8acb67ef9162272",
+      "bytes": 598
+    },
+    "settings-latch-restored.stdout": {
+      "sha256": "b45ce09553c6dcc21c61ea182c517359e300752916859a18516bc574b08f65f4",
+      "bytes": 186
+    },
+    "url-replay.stdout": {
+      "sha256": "265e468ddb95cb028293ae0ef46b701e8c6bc742179c48a6d9a7daf1fb1e157e",
+      "bytes": 3439
+    },
+    "url-settings-guards.stdout": {
+      "sha256": "7d923fbd9aebd9c5c1b2681576be1540bab3e6b2dfa53bc806061812bd89bf2a",
+      "bytes": 493
+    },
+    "joined-control-recovery-bootstrap.test.js.log": {
+      "sha256": "5536c7545d3befc43af1a2841587cc5e0f66c22694156224b5476ed636e9a893",
+      "bytes": 629
+    },
+    "joined-connection-budget-bootstrap.test.js.log": {
+      "sha256": "f01713b06a3eff40e37b4908e34f817dba312b22817c8e3908101f67ff3670db",
+      "bytes": 365
+    },
+    "joined-control-recovery-host.test.js.log": {
+      "sha256": "d8aa9a8d716a67c0d2c62af6f234ed3455ca45be574515c9aec8cbe0897415fd",
+      "bytes": 1097
+    },
+    "joined-realtime-recovery-worker-view.test.js.log": {
+      "sha256": "b3a894cd1bc2a05d86314510547e01159d15503967f9c2b9792e3db2f3d9f175",
+      "bytes": 373
+    },
+    "joined-realtime-recovery-config.test.js.log": {
+      "sha256": "797e1645f5608e490a823aafafcd4c84577d69701a0b64ccd9b8b15eaececd8b",
+      "bytes": 370
+    },
+    "joined-lifecycle-operator-capture.test.js.log": {
+      "sha256": "0c6dd0a4689c3b33c7275cb6e8daf97ba00a54f9b1dc89b59141041e7cc80949",
+      "bytes": 454
+    },
+    "joined-lifecycle-capture-bound.test.js.log": {
+      "sha256": "82fe0ebb42c3874f2a52bbedbc6a6b8ad3e51a1976c1ccb8705cceb0bbefeb6f",
+      "bytes": 633
+    },
+    "joined-realtime-recovery-action.test.js.log": {
+      "sha256": "b2dc5ec7a404e810278989acc3a9c9637b17ef829a1c8dd3bf406bb0fd4b159d",
+      "bytes": 568
+    },
+    "joined-realtime-recovery-journal.test.js.log": {
+      "sha256": "9c83d446ff65d59a43448407f04927f6d11a4bfc4ec496d56d44f386626d5054",
+      "bytes": 1194
+    },
+    "joined-connection-budget-selection.test.js.log": {
+      "sha256": "4ee3756ef62a2c4426b8883d421b5ce3c3e21e5fddbd7886e0d6254e7d740ba0",
+      "bytes": 697
+    },
+    "joined-lifecycle-capture-preflight.test.js.log": {
+      "sha256": "47031b5645af7fe01d91d15d93b3bf8f58f6d86823c4b64c033bee17456f5a0d",
+      "bytes": 485
+    },
+    "joined-worker-database.test.js.log": {
+      "sha256": "7d88e199904c031865559f4a7df12cad7cb65fb4abda7399db7426136514ee8d",
+      "bytes": 543
+    },
+    "joined-lifecycle-operator-snapshot.test.js.log": {
+      "sha256": "d9a997ea36f0f3c9833f8c2dc2ef06ddfaaab80963a635ebff2874d78809a46d",
+      "bytes": 539
+    },
+    "joined-realtime-recovery-proof.test.js.log": {
+      "sha256": "417774da8838de67273fe1c9dfb6905ea6e0204b880f4dba278c9a16de74e996",
+      "bytes": 241
+    },
+    "joined-realtime-recovery-roster.test.js.log": {
+      "sha256": "124aab1c63ad39536c3da99dad8d2b76c2566d77cc9eb0cf4006af098fb2e591",
+      "bytes": 813
+    },
+    "joined-realtime-recovery-protocol.test.js.log": {
+      "sha256": "76b5154dd1fc127829ae0aed55f247b4c6fa7b3909504461d3cd8f9f382d5ad8",
+      "bytes": 636
+    },
+    "joined-connection-budget-fresh-controller.test.js.log": {
+      "sha256": "993c90230c5673fcb5dc4209d7abe343dea52ed86319af708ec2d6b5c38b097d",
+      "bytes": 1539
+    },
+    "joined-lifecycle-operator-source.test.js.log": {
+      "sha256": "7ed024cea11ee3cd722f427a01d0146797bc3fb81a8169fc5012b0d95b7e1d66",
+      "bytes": 2587
+    },
+    "joined-lifecycle-operator-artifact.test.js.log": {
+      "sha256": "b48b96e9a03015542cf1c945091bbb1ca7c478c5dfed45ecda5ce0a0dd1547f2",
+      "bytes": 558
+    },
+    "joined-realtime-recovery-result.test.js.log": {
+      "sha256": "0d5c1c423e5efe7b214c50003ce57bd8da9dfee8e8df812c862838f97e1f962b",
+      "bytes": 1123
+    }
+  },
+  "limits": [
+    "Not whole-source/full/browser/enabled-corpus acceptance",
+    "No selected source/image/runtime repin",
+    "No native host/commissioner privilege/RLS/physical-credit/clinical acceptance",
+    "Realtime planner/entry/private warming/dispatcher remain open",
+    "All five legacy helpers and remaining static compatibility coverage remain",
+    "Original L2 FAILED and original review failures retained",
+    "Settings throughput improvement UNMEASURED",
+    "Ensure source implementation and factory-reset scope are separate work"
+  ]
+}
