@@ -1,7 +1,8 @@
 # Admission commissioning
 
 This first executable episode qualifies wiring and normal retirement only. It
-uses core074 and deployment3d13 with the independently audited32b image. It does
+uses core074 and reviewed deploymentaf328 with its exact qualified image. The
+image and qualification hashes are fixed in `commissioning.py`. It does
 not claim the full clinical admission episode or native acceptance.
 
 `profile.cjs` admits the exact source/overlay before evaluating the actual expanded
@@ -48,7 +49,8 @@ controller, and starts admin/API/API2 through the shipped controller. Actual
 health children run with already-existing worker claims; claim file bytes must
 remain unchanged. Three charged tagged captures bracket start, a clean API
 stop/restart and retirement. Matching private ACK/source/nonce/full tags and
-ledger retirement are checked. No tenant or clinical DATA is provisioned.
+ledger retirement are checked. A private plan-view equality witness is retained after bootstrap and before
+bind; a changed copy refuses. No tenant or clinical DATA is provisioned.
 The full11-role profile remains declared even though this first episode starts
 only three workers. Unstarted roles are not silently removed from the budget.
 
@@ -84,8 +86,9 @@ health and clean retirement on the new image. Full clinical work is separate:
 honest cold/storm, whole-cohort restart, partial restart with independently healthy
 B, successful acquisition/TIME and isolation still require joined traffic/IPC
 observers. HTTP readbacks are not an independent SQL stored-count oracle.
-The later fixed count-only controller API is separately owned and must join its
-new source/image/instrument/profile declaration before that campaign. Its private
+The fixed count-only controller API is included in the joined source, but is
+not invoked by this commissioning episode. Its later clinical use needs a
+separate reviewed workload and complete same-marker roster. Its private
 selector is `{version:1,kind:"native-synthetic-stored-counts",runId,tenants}` with
 `m7-native-` plus16..32hex marker; selected and foreign aggregate counts must be
 checked without extra uncharged SQL, control-reserve borrowing or payload output.

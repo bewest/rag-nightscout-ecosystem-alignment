@@ -73,12 +73,35 @@ class Controls(unittest.TestCase):
             file.unlink();wrong={**expected,'imageId':'sha256:'+'e'*64};C.save(file,{'expected':wrong})
             with self.assertRaisesRegex(RuntimeError,'BOUND_CUSTODY_MISMATCH'):h.controller('bind')
             self.assertTrue(all(args[-1]=='bind'for args in calls),'no worker may start before bound image agrees')
+    def test_bound_plan_view_requires_exact_canonical_copy(self):
+        with tempfile.TemporaryDirectory()as d:
+            directory=Path(d)/'connection-budget';view=directory/'plan-view';view.mkdir(parents=True,mode=0o700)
+            canonical=directory/'plan.json';copy=view/'plan.json';value={'source':{'coreCommit':C.CORE,'deployCommit':C.DEPLOY},'sha256':'synthetic'};C.save(canonical,value);C.save(copy,value)
+            h=C.Host.__new__(C.Host);h.p={'state':d,'source':value['source']};h.out=Path(d);h.plan_view();self.assertTrue(C.read(h.out/'bound-plan-view.private.json')['sameBytes'])
+            copy.unlink();C.save(copy,{**value,'changed':True})
+            with self.assertRaisesRegex(RuntimeError,'BOUND_PLAN_VIEW_CHANGED'):h.plan_view()
+    def test_actual_preparation_refuses_previous_source_or_wrong_qualified_image(self):
+        self.assertIsNotNone(ROOT,'M7_NATIVE_TEST_PREPARED required')
+        original=C.read
+        def previous_source(file):
+            value=original(file)
+            if str(file).endswith('/source-input.private.json'):value['source']['deployCommit']='3d13c63bc404397d6daee501c152288b12d5931d'
+            return value
+        with patch.object(C,'read',side_effect=previous_source):
+            with self.assertRaisesRegex(RuntimeError,'SOURCE_PIN'):C.prepare(ROOT)
+        def wrong_image(file):
+            value=original(file)
+            if str(file).endswith('/image-build/qualification.json'):value['imageId']='sha256:'+'e'*64
+            return value
+        with patch.object(C,'read',side_effect=wrong_image):
+            with self.assertRaisesRegex(RuntimeError,'BUILD_QUALIFICATION'):C.prepare(ROOT)
+        self.assertEqual(C.prepare(ROOT)['source']['deployCommit'],C.DEPLOY)
     def test_actual_prepared_plan_recording_has_required_protocol_and_no_acceptance(self):
         self.assertIsNotNone(ROOT,'M7_NATIVE_TEST_PREPARED required: actual source/image-qualified private preparation')
         plan=C.prepare(ROOT)
         with tempfile.TemporaryDirectory()as d:
             out=Path(d)/'recording';result=C.execute(plan,out,RecordingHost);self.assertEqual(result['dryRun'],'PASS');self.assertEqual(result['commissioning'],'NOT_RUN');self.assertEqual(result['nativeAcceptance'],'UNMEASURED')
-            events=json.loads((out/'recording-events.private.json').read_text())['events'];bootstrap=next(i for i,e in enumerate(events)if e[0]=='compose'and'bootstrap'in e[1]);bind=events.index(['controller','bind',None]);start=events.index(['controller','start','admin']);self.assertLess(bootstrap,bind);self.assertLess(bind,start)
+            events=json.loads((out/'recording-events.private.json').read_text())['events'];bootstrap=next(i for i,e in enumerate(events)if e[0]=='compose'and'bootstrap'in e[1]);bind=events.index(['controller','bind',None]);start=events.index(['controller','start','admin']);view=events.index(['plan-view','RECORDING_ONLY']);self.assertLess(bootstrap,view);self.assertLess(view,bind);self.assertLess(bind,start)
             stop=events.index(['controller','stop','api']);ack=events.index(['ack','api']);restart=events.index(['controller','start','api'],stop+1);self.assertLess(stop,ack);self.assertLess(ack,restart);self.assertEqual([e for e in events if e[0]=='capture'],[['capture','started'],['capture','restarted'],['capture','retired']])
             self.assertFalse(any(e[0]=='compose'and e[1][0]=='up'and any(x in C.ROLES for x in e[1])for e in events))
 if __name__=='__main__':unittest.main()

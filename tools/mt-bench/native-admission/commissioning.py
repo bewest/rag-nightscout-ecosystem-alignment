@@ -6,10 +6,10 @@ its use requires the coordinator's separate authorization. No implicit retries.
 import argparse,hashlib,json,os,re,sys,time
 from pathlib import Path
 import owned_process as O,preflight as P
-CORE='074eab44ee75b9175c951b6a8add3df3e9554af7';DEPLOY='3d13c63bc404397d6daee501c152288b12d5931d'
-IMAGE='sha256:32b7f3eabc915d7eaa939cd06a2d1277a162ec86cff04b1b6c65ad33c15a3a4f'
-QUALIFICATION='7f1a2716ae5b88678c76bbcc000c90e1d553ade65b38cc1cd6542e7b10e6675e'
-COLLECTOR='356c7dfdaadc885ab5b42f887748e18017d0e8f69fc23017b1b16773bd151e66'
+CORE='074eab44ee75b9175c951b6a8add3df3e9554af7';DEPLOY='af328d87e2f1a242a6af7d1315760c6bffdd7d85'
+IMAGE='sha256:01a5b566543d7c0b0391720321cd516a95b5efd3ada0f7c2364d18dbb069b2d1'
+QUALIFICATION='cc69fafc0e86aa0bebd87051927e47fbf220010657b196f422a0297b32a1cae2'
+COLLECTOR='0c5fee275fbcef8c59ba8689e22b9147b0929d73eaddf3a9543d2551aa382966'
 ROLES=['admin','api','api-2'];PG_IMAGE='sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542'
 VAULT='hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2'
 def need(value,code):
@@ -71,6 +71,10 @@ class Host:
         if op=='bind':
             custody=read(Path(self.p['state'])/'connection-budget/custody.json');need(custody.get('expected')=={'project':self.p['project'],'workingDirectory':self.p['base'],'imageId':self.p['imageId'],'source':self.p['source']},'BOUND_CUSTODY_MISMATCH')
         return value
+    def plan_view(self):
+        directory=Path(self.p['state'])/'connection-budget';canonical=directory/'plan.json';view=directory/'plan-view/plan.json'
+        need(read(canonical)==read(view),'BOUND_PLAN_VIEW_CHANGED')
+        save(self.out/'bound-plan-view.private.json',{'source':self.p['source'],'canonicalSha256':sha(canonical),'viewSha256':sha(view),'sameBytes':sha(canonical)==sha(view),'scope':'PRIVATE_PLAN_COPY_NOT_NATIVE_ACCEPTANCE'})
     def capture(self,label):
         plan=read(Path(self.p['state'])/'connection-budget/plan.json');book=read(Path(self.p['state'])/'connection-budget/ledger.json');need(all(sid in ROLES or not any(r['state']!='RETIRED'for r in rows)for sid,rows in book['slots'].items())and sum(r['state']!='RETIRED'for rows in book['slots'].values()for r in rows)<=3,'COMMISSION_UNPLANNED_GENERATION');need(plan['source']==self.p['source'],'BOUND_PLAN_SOURCE');spec={'kind':'m7-tagged-admission-observation-v1','controllerCli':self.p['controllerCli'],'controllerCliSha256':self.p['controllerCliSha256'],'collectorSha256':self.p['collectorSha256'],'state':self.p['state'],'expected':{'kind':'m7-tagged-admission-observation-v1','source':self.p['source'],'imageId':self.p['imageId'],'project':self.p['project'],'workingDirectory':self.p['base'],'planSha256':plan['sha256']}};file=self.out/(label+'-capture-spec.private.json');save(file,spec);self.command(['python3',self.p['collector'],str(file),str(self.out/(label+'-capture'))],125)
     def ack(self,slot):
@@ -132,7 +136,7 @@ def execute(plan,output,host_type=Host):
             rows=json.loads(h.command(['docker','image','inspect',ref]));need(len(rows)==1 and rows[0]['Os']=='linux'and rows[0]['Architecture']=='amd64','IMAGE_PLATFORM');h.images[service]=rows[0]['Id']
         need(h.images['app']==plan['imageId'],'APP_IMAGE');need(time.monotonic_ns()-pre['observedMonotonicNs']<5000000000,'PREFLIGHT_EXPIRED')
         h.allocation_attempted=True
-        h.compose('up','--no-deps','--no-build','--pull','never','-d','postgres','vault');h.healthy('postgres');h.healthy('vault');h.compose('--profile','ops','run','--rm','--no-deps','bootstrap',seconds=240);h.controller('bind')
+        h.compose('up','--no-deps','--no-build','--pull','never','-d','postgres','vault');h.healthy('postgres');h.healthy('vault');h.compose('--profile','ops','run','--rm','--no-deps','bootstrap',seconds=240);h.plan_view();h.controller('bind')
         for slot in ROLES:h.controller('start',slot);h.explicit_health(slot)
         h.capture('started');h.controller('stop','api');h.ack('api');h.controller('start','api');h.explicit_health('api');h.capture('restarted')
         for slot in reversed(ROLES):h.controller('stop',slot);h.ack(slot)
