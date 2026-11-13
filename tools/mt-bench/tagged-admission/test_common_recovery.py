@@ -42,6 +42,21 @@ class CommonRecovery(unittest.TestCase):
     def test_duplicate_worker_arrays_do_not_evade_identity(self):
         v=fixture();r=v['ledger']['slots']['api'][0];r['incarnation']=[r['incarnation']];v['ledger']['slots']['api'].append(copy.deepcopy(r))
         with self.assertRaises(ValueError):T.observe(**v)
+    def test_plan2_resource_and_credit_primitives_refuse_before_arithmetic(self):
+        for value in (-4,True,0,1.0,'4',[],1000001):
+            v=fixture();v['plan']['slots'][0]['declaredMaximum']=value
+            with self.subTest(value=value),self.assertRaises(ValueError):
+                seal(v);T.observe(**v)
+        for field,values in [('serverMaximum',[True,20.0,'20',0,1000001]),('otherReserved',[False,0.0,'0',-1]),('systemIdentifier',[['123'],123,'bad']),('postmasterStartedAt',[['epoch'],'',False])]:
+            for value in values:
+                v=fixture();v['census']['resource'][field]=value
+                with self.subTest(field=field,value=value),self.assertRaises(ValueError):T.observe(**v)
+        for target in ('plan','census'):
+            v=fixture();v['plan']['resource']['pgResourceId']=['synthetic-pg'];v['census']['resource']['pgResourceId']=['synthetic-pg'];seal(v)
+            with self.assertRaises(ValueError):T.observe(**v)
+        v=fixture();v['plan']['resource']['reserved']['other']=False;seal(v)
+        with self.assertRaises(ValueError):T.observe(**v)
+
     def test_global_capacity_and_active_one(self):
         v=fixture();v['ledger']['controlLeases'][0]['state']='BOUND';v['ledger']['controlLeases'][0]['stopped']=None
         with self.assertRaisesRegex(ValueError,'COMMON_CAPACITY'):T.observe(**v)

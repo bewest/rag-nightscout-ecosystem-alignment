@@ -69,6 +69,18 @@ def common_custody(original, expected, service):
          and all(type(original[k]) is str and original[k] == expected[k] for k in ('imageId','project','workingDirectory'))
          and exact(original['source'], ('coreCommit','deployCommit')) and all(hexid(v,40) for v in original['source'].values()) and original['source'] == expected['source'], 'COMMON_CONTAINER_CUSTODY')
 
+def common_resource(value, observed=False):
+    need(type(value) is dict and type(value.get('pgResourceId')) is str
+         and re.fullmatch(r'[a-z][a-z0-9-]{0,62}',value['pgResourceId'])
+         and type(value.get('systemIdentifier')) is str and re.fullmatch(r'[0-9]{1,24}',value['systemIdentifier'])
+         and type(value.get('postmasterStartedAt')) is str and 0 < len(value['postmasterStartedAt']) <= 64
+         and integer(value.get('serverMaximum'),1,1000000), 'COMMON_RESOURCE_PRIMITIVES')
+    reserved = {'superuser':value.get('superuserReserved'),'other':value.get('otherReserved')} if observed else value.get('reserved')
+    need(exact(reserved,('superuser','other')) and all(integer(x,0,1000000) for x in reserved.values())
+         and sum(reserved.values()) < value['serverMaximum'], 'COMMON_RESOURCE_RESERVATIONS')
+    if observed:need(integer(value.get('unmanagedClients'),0,1000000), 'COMMON_RESOURCE_UNMANAGED')
+
+
 def common_leases(plan, ledger, expected=None):
     """Declared CBD contract. No dispatch, retirement or inferred cleanup."""
     need(type(plan.get('version')) is int and plan['version'] == 2
@@ -81,6 +93,7 @@ def common_leases(plan, ledger, expected=None):
          and all(type(v) is str and v for v in ledger['resourceEpoch']), 'COMMON_PLAN_IDENTITY')
     if expected is not None:
         need(plan['source'] == expected['source'] and plan['sha256'] == expected['planSha256'], 'COMMON_EXPECTED_IDENTITY')
+    common_resource(plan['resource'])
     recovery = plan.get('controlRecovery')
     need(exact(recovery, ('version','classes')) and type(recovery['version']) is int and recovery['version'] == 1
          and exact(recovery['classes'], CLASSES), 'COMMON_CLASSES')
@@ -111,7 +124,8 @@ def common_leases(plan, ledger, expected=None):
     for slot in slots:
         rows = ledger['slots'][slot['processInstanceId']]
         need(type(rows) is list, 'COMMON_WORKER_ROWS');total += len(rows)
-        need(total <= 4096 and integer(slot.get('maximumOutstandingGenerations'),1,4096), 'COMMON_WORKER_BOUND')
+        need(total <= 4096 and integer(slot.get('maximumOutstandingGenerations'),1,16)
+             and integer(slot.get('declaredMaximum'),1,plan['resource']['serverMaximum']), 'COMMON_WORKER_BOUND')
         caps = slot.get('capabilities');need(type(caps) is dict and len(caps) > 0 and all(type(k) is str for k in caps), 'COMMON_CAPABILITIES')
         for row in rows:
             need(exact(row, ('incarnation','nonce','tags','container','state','retired')) and row['state'] in ('ISSUED','RETIRED')
@@ -281,6 +295,7 @@ def observe(expected, plan, ledger, processes, census, controlProcesses=None):
     need(ledger.get('planSha256') == plan['sha256'] and ledger.get('resourceEpoch') == epoch
          and [census['resource'].get('systemIdentifier'), census['resource'].get('postmasterStartedAt')] == epoch, 'EPOCH')
     resource = census['resource']
+    if plan['version'] == 2:common_resource(resource,observed=True)
     need(resource.get('pgResourceId') == plan['resource']['pgResourceId']
          and resource.get('serverMaximum') == plan['resource']['serverMaximum']
          and resource.get('superuserReserved') == plan['resource']['reserved']['superuser']

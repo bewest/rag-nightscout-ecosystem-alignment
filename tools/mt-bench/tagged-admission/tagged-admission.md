@@ -167,7 +167,7 @@ model input, not output from an actual controller CLI. For the CBD archive,
 control-recovery.js SHA256 is
 `82eabd74efbadd2da0ed81fc1212b7447a46e0f6b10f34838cc48475b86f5143`;
 fixture JSON SHA256 is
-`1a30bd217a05387ab2d70a2070abec825799d5c2490ca8638b4af3dd7750887c`.
+`b0912a4d13ec5718b1f34b3f84edbaffb00fc4d08f774b1bc84f44cf331c990e`.
 The archive's actual controller still refuses host plan2 and emits legacy
 version1 envelopes. Producer parity with the next repaired immutable common
 checkpoint remains required before final selection. The historical CORE/DEPLOY
@@ -176,3 +176,14 @@ Legacy v1 and f098 v2 observations keep their existing output bytes.
 
 Focused checks: `python3 -m unittest discover -s tools/mt-bench/tagged-admission -p 'test_*.py'`.
 No native, resource, SQL, capacity or clinical acceptance follows from them.
+
+Independent review found that Python numeric equality permitted malformed plan2
+metadata (negative/bool declared worker maximum, bool/float census settings, and
+an array resource ID). Plan2 now validates source-bounded integer capacities,
+positive worker maxima, canonical string resource identity and exact census
+primitive types before credit arithmetic or comparisons. Legacy validation/output
+stays separate. The model system identifier is now the canonical synthetic
+numeric string `123`; the same archived CBD helper regenerated its fixture.
+The unchanged independent five-case malformed-primitive oracle is red on the
+original collector3 checkpoint and green after this repair. These model findings
+do not change the pending actual common producer/runtime boundary.

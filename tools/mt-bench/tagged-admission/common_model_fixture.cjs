@@ -6,7 +6,7 @@ const B=require(path.join(root,'connection-budget')),C=require(path.join(root,'c
 const source={coreCommit:'d0036890d0623ae79f14bfa71e7226c0fa122a29',deployCommit:'d831c372b39ac19aff4271ecc5e2b1639d176448'};
 const principal={role:'synthetic_operator',roleOid:'31',database:'synthetic',databaseOid:'16384'};
 const plan={version:2,kind:'controlled-connection-budget-plan',source,workerDatabase:{database:'synthetic',databaseOid:'16384'},lifecycleOperator:{version:2},
- resource:{systemIdentifier:'synthetic',postmasterStartedAt:'synthetic-epoch',pgResourceId:'synthetic-pg',serverMaximum:20,reserved:{superuser:3,other:0},allowances:{controlRecovery:2,observers:2}},
+ resource:{systemIdentifier:'123',postmasterStartedAt:'synthetic-epoch',pgResourceId:'synthetic-pg',serverMaximum:20,reserved:{superuser:3,other:0},allowances:{controlRecovery:2,observers:2}},
  slots:[{processInstanceId:'api',declaredMaximum:4,maximumOutstandingGenerations:2,capabilities:{'synthetic-capability':{kind:'pool',poolMax:4,maxInstances:1}}}],
  controlRecovery:{version:1,classes:Object.fromEntries(C.CLASSES.map(c=>[c,{principal:{...principal,...(c==='restore-commissioner'?{role:'synthetic_ddl',roleOid:'32'}:{})}}]))}};
 plan.sha256=B.hash(plan);
@@ -21,7 +21,7 @@ function fixture(name){const ledger=C.ledger(plan);ledger.slots.api.push(structu
  else if(name==='setup-terminal'){add('restore-commissioner','UNKNOWN',true);}
  else add(name,'ISSUED');
  C.validate(plan,ledger);
- const tags=C.known(plan,ledger).map(applicationName=>({applicationName,count:0}));const resource={systemIdentifier:'synthetic',postmasterStartedAt:'synthetic-epoch',pgResourceId:'synthetic-pg',serverMaximum:20,superuserReserved:3,otherReserved:0,unmanagedClients:0};
+ const tags=C.known(plan,ledger).map(applicationName=>({applicationName,count:0}));const resource={systemIdentifier:'123',postmasterStartedAt:'synthetic-epoch',pgResourceId:'synthetic-pg',serverMaximum:20,superuserReserved:3,otherReserved:0,unmanagedClients:0};
  const controlProcesses=ledger.controlLeases.filter(r=>r.state!=='CLOSED').map(r=>({processInstanceId:r.class,incarnation:r.incarnation,container:r.container?{...r.container,running:false,operatorIncarnation:r.incarnation}:null,inspection:r.container?'STOPPED':'UNBOUND',...(r.container?{inspectedCid:r.container.cid}:{})}));
  return {expected,plan,ledger,processes:[{processInstanceId:'api',incarnation:worker.incarnation,container:{...original,running:true},inspection:'RUNNING',inspectedCid:original.cid}],controlProcesses,census:{resource,tags,occupancy:C.occupancy(plan,ledger,tags)}};}
 let n=1;const saved=crypto.randomBytes;crypto.randomBytes=size=>Buffer.alloc(size,n++);try{process.stdout.write(JSON.stringify(Object.fromEntries([...C.CLASSES,'pair','two-unknown','setup-terminal'].map(name=>[name,fixture(name)]))));}finally{crypto.randomBytes=saved;}
