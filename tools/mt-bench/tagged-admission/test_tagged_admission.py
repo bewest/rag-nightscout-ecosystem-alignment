@@ -33,6 +33,12 @@ class TaggedIntake(unittest.TestCase):
             with self.subTest(mutate=mutate),self.assertRaises(ValueError):T.observe(**value)
             self.assertEqual(T.observe(**fixture())['nativeAcceptance'],'UNMEASURED')
 
+    def test_previous_deployment_plan_cannot_be_relabelled_as_current(self):
+        v=fixture();old={'coreCommit':T.CORE,'deployCommit':'3d13c63bc404397d6daee501c152288b12d5931d'}
+        v['expected']['source']=old;v['plan']['source']=old
+        v['plan']['sha256']=T.sha({k:x for k,x in v['plan'].items()if k!='sha256'})
+        v['expected']['planSha256']=v['plan']['sha256'];v['ledger']['planSha256']=v['plan']['sha256']
+        with self.assertRaisesRegex(ValueError,'SOURCE'):T.observe(**v)
     def test_real_health_mapping_requires_exact_incarnation(self):
         v=fixture();p=v['processes'][0];row=v['ledger']['slots']['api'][0];name=row['tags'][0]
         p['health']={'source':v['expected']['source'],'nonce':row['nonce'],'planSha256':v['plan']['sha256'],'processInstanceId':'api','incarnation':p['incarnation'],'tags':[name],'applicationNames':{name:{'capability':'synthetic-capability','originalApplicationName':'synthetic-original'}}}

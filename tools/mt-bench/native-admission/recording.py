@@ -24,6 +24,7 @@ class RecordingHost:
         if operation=='start':assert self.rows.get(slot)!='ISSUED';self.rows[slot]='ISSUED'
         if operation=='stop':assert self.rows[slot]=='ISSUED';self.rows[slot]='RETIRED'
         return {'kind':'RECORDING_ONLY'}
+    def plan_view(self):self.events.append(['plan-view','RECORDING_ONLY'])
     def capture(self,label):self.events.append(['capture',label])
     def ack(self,slot):assert self.rows[slot]=='RETIRED';self.events.append(['ack',slot])
     def explicit_health(self,slot):assert self.rows[slot]=='ISSUED';self.events.append(['health-existing-claim',slot])
