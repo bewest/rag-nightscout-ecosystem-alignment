@@ -1,0 +1,214 @@
+{
+  "status": "FOCUSED_SOURCE_AND_METADATA_NATIVE_PASS_REVIEW_ACCEPTED_FOR_COMMISSIONING",
+  "core": "4b13bf8bbfe578416441d7322837ec5aabeba1ea",
+  "deployment": "84accb33c3daccebfdf886300c3ba6c638e003c6",
+  "baseCore": "e1f130ecf500eacaee8626af3d83a16a23a23731",
+  "baseDeployment": "abe3e82df1f149b1213455c37b9e6177acf31adf",
+  "sourceSha256": {
+    "lib/change-feed/consumer.js": "16914105f9b00f3b9114253df762ac2f798efcdc79f00aae56740115c9bf55be",
+    "lib/server/realtime/change-detector.js": "98874d8e3fa04191ac405e72080e6be98c0ef28a113f8d3d8784bff57584ec99",
+    "lib/server/realtime/config.js": "3870c5c6ce9536c897443edb18e8840bca041ffcf1fdf39039c7b56789fe1447",
+    "lib/server/realtime/protocol.js": "46627627459eaa3537e5c8110a1ec9166cfdb4d18c82696d5ef4904f21e4cf8f",
+    "lib/server/realtime/runtime.js": "4d53cac418fb617e1164c644a6b5f2c5ae7598cf2c5ec9337284521089cf7096",
+    "lib/server/serve/evaluator-config.js": "b6cc52291eb002c2993f625412134da55a18095cf42d66f32b2b0b6749178f7f",
+    "lib/server/serve/evaluator-preview.js": "3c12f211c201f241b94465d83630901626fd1d9d7f10902eca5d39a181037061",
+    "lib/server/serve/evaluator-readiness.js": "e0bb6e934026ddba1ec8a9db1b2b97d52d997de2471641fca9cc63b584cdc843",
+    "lib/server/serve/evaluator-runtime.js": "ec19f16e46e1207bee8301cb2d1ce12621f499637bdfeddec509a38aa99ea2b3",
+    "lib/server/serve/plan-contract/schema/evaluator.schema.json": "4330035bcd6cc925053eb198ed4636fc8ab1372bae830d96ca948e048651e889",
+    "lib/server/serve/plan-contract/schema/realtime.schema.json": "25fc34a57f473ae3b477895d90e445ce7e1bac80b1884f6cd4546ca1883eeec5",
+    "lib/server/serve/preview-realtime.js": "3746cf83b1e5dbb4a75fc75b334fbf9873bb4977f264a8e39c33eae474c53e40",
+    "lib/storage/tenant-policy-contract.js": "0b65d74d78a2aad4600a9b8d7eea49f4e8be8e0aae0bb0b8d4c5487b79ebe760",
+    "lib/tenant-lifecycle/logical-restore.js": "2242e15263478a25335b474da289c370b9f392ad11c9812bff8fe6ec092e2ce1",
+    "lib/tenant-registry/ensure-dependencies.js": "7d902cebacd8d0d2e11d55f5b13b625567ef67556502fb521f299f730bdb304c",
+    "lib/tenant-registry/ensure-readiness.js": "c4846a46850c8d7599b6a64fb98eb7871a78cabea9b10a1805c41677bb8bacb5",
+    "lib/trusted-worker/README.md": "a62e208a47017802a532f2110ac06e4566a280d58f15c30d5949d678a9bb6c30",
+    "lib/trusted-worker/lifecycle.js": "480b656bf5212e14d1efc3aa50a2632df491083581e273f23a58fb97c6da03a9",
+    "lib/trusted-worker/postgres.js": "0adb73c692d8c4cb5eabd3cadeb18330ad3de298ea71718b02393749950dca4b",
+    "tests/fixtures/multitenant-plan.js": "336cda809d4d1b09dc23f77737ede9e9845571aa26e96c4201c0545e8b8cd339",
+    "tests/tenant-logical-restore.test.js": "acb0e8fef4fca30b0d4a40650ced4c3b27643fd3ec35a41a832e6a77ffc1f731",
+    "tests/tiers.json": "f3d8566e143c8aa09184cc759d85f88235eb4e4d5fb9c7c0e0614eac4f79c470",
+    "tests/trusted-worker.test.js": "3f403afc31931e0d08a35f47d21d811d5a1c3f57661aff62a6a730ebf972af7d",
+    "tools/trusted-worker/controls.py": "450cbc450e2edbba8e667aac90cb32749b3d5de1b17c31b03d0d99c8e5bcc0f2",
+    "tools/trusted-worker/native.cjs": "8df856fa211d9cb22c025cb6fcd4f9f26701fcd62b40b47d6125b81053ac2853"
+  },
+  "retainedEvidence": "data/capacity/trusted-worker-20261113/4b13bf8bbfe578416441d7322837ec5aabeba1ea",
+  "retainedManifestSha256": "4621d481f9636c2bb4cce931f104dd65431e6fa1841d2e9ff6f8c029f92d7bed",
+  "affected": {
+    "passing": 492,
+    "pending": 0,
+    "failing": 0
+  },
+  "newFocused": {
+    "passing": 15,
+    "failing": 0
+  },
+  "sourceControls": {
+    "controls": [
+      {
+        "control": "settings-cache",
+        "exit": 1,
+        "symptom": "TRUSTED_UNCHANGED_ZERO_SQL"
+      },
+      {
+        "control": "operational-scope",
+        "exit": 1,
+        "symptom": "TRUSTED_OPERATIONAL_OUTSIDE_TENANT"
+      },
+      {
+        "control": "recovery-generation",
+        "exit": 3,
+        "symptom": "Missing expected rejection"
+      },
+      {
+        "control": "runtime-settings",
+        "exit": 1,
+        "symptom": "TRUSTED_RUNTIME_UNCHANGED_SETTINGS"
+      },
+      {
+        "control": "checkpoint-compare",
+        "exit": 2,
+        "symptom": "TRUSTED_WRITE_DURING_EVALUATION_RETAINED"
+      },
+      {
+        "control": "verify-generation",
+        "exit": 1,
+        "symptom": "Missing expected rejection"
+      },
+      {
+        "control": "settings-version-race",
+        "exit": 1,
+        "symptom": "Missing expected rejection"
+      },
+      {
+        "control": "publication-epoch",
+        "exit": 1,
+        "symptom": "TRUSTED_INFLIGHT_REVISION_NOT_PUBLISHED"
+      },
+      {
+        "control": "realtime-recovery-generation",
+        "exit": 1,
+        "symptom": "TRUSTED_RT_RECOVERY_REACQUIRES"
+      },
+      {
+        "control": "protocol-fanout-epoch",
+        "exit": 1,
+        "symptom": "TRUSTED_PROTOCOL_NO_STALE_EMISSION"
+      },
+      {
+        "control": "feed-dirty-arrival",
+        "exit": 1,
+        "symptom": "TRUSTED_FEED_DIRTY_GENERATION_NOT_LOST"
+      }
+    ],
+    "restoredExit": 0
+  },
+  "tierFiles": 729,
+  "lintErrors": 0,
+  "deploymentRegistryTests": {
+    "passing": 12,
+    "pending": 0,
+    "failing": 0,
+    "coreAtTime": "092b947042f59958e1fcb68eb3a5fb699894ddf1"
+  },
+  "native": {
+    "status": "PASS",
+    "scope": "metadata-only native module and grant boundary, not full deployment or capacity",
+    "version": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "assertions": [
+      "cross-tenant worker visibility",
+      "unchanged zero settings SQL",
+      "settings version refresh",
+      "worker negative grants",
+      "public tenant isolation"
+    ],
+    "timings": [
+      {
+        "n": 10,
+        "repeat": 0,
+        "proceduralClockOnlyMs": 3.5884460000000047,
+        "setBasedFourTableMetadataMs": 2.483914999999996
+      },
+      {
+        "n": 10,
+        "repeat": 1,
+        "proceduralClockOnlyMs": 2.3378370000000075,
+        "setBasedFourTableMetadataMs": 2.4744190000000117
+      },
+      {
+        "n": 1000,
+        "repeat": 0,
+        "proceduralClockOnlyMs": 11.624717000000032,
+        "setBasedFourTableMetadataMs": 5.707384999999988
+      },
+      {
+        "n": 1000,
+        "repeat": 1,
+        "proceduralClockOnlyMs": 9.72792400000003,
+        "setBasedFourTableMetadataMs": 5.402440000000013
+      },
+      {
+        "n": 10000,
+        "repeat": 0,
+        "proceduralClockOnlyMs": 73.50272000000001,
+        "setBasedFourTableMetadataMs": 22.405850000000044
+      },
+      {
+        "n": 10000,
+        "repeat": 1,
+        "proceduralClockOnlyMs": 71.53529799999995,
+        "setBasedFourTableMetadataMs": 20.740098000000046
+      }
+    ],
+    "controls": [
+      {
+        "name": "missing-worker-policy",
+        "symptom": "ERR_ASSERTION"
+      },
+      {
+        "name": "public-policy-widened",
+        "symptom": "ERR_ASSERTION"
+      },
+      {
+        "name": "worker-write-grant",
+        "symptom": "TRUSTED_WORKER_UNAVAILABLE"
+      }
+    ],
+    "operationalChecks": 3
+  },
+  "nativeLimitations": [
+    "Representative metadata schemas, not full deployment catalogues",
+    "Actual shipping reader and registered PostgreSQL connection",
+    "10,000 rows seeded throughout; n means selected roster",
+    "Query wall time includes round trips and protocol; not PostgreSQL CPU",
+    "Procedural arm reads clock only; set-based arm reads four-table metadata",
+    "No full clinical/runtime/restore/capacity acceptance",
+    "Original successful first native capture file overwritten; excluded, tool transcript only"
+  ],
+  "cleanup": {
+    "finalNativeContainerRemoved": true,
+    "finalNativeContainerAbsent": true,
+    "remainingPaidResources": 0
+  },
+  "unmeasured": [
+    "full native logical-history restore",
+    "joined commissioning",
+    "actual runtime idle scaling",
+    "clinical deadlines",
+    "public socket authorization improvement",
+    "full/browser/enabled-corpus/final-prcheck"
+  ],
+  "nativeExecutedCore": "bbbb6e79fe38d4ba116725a487cf00a910eee568",
+  "runtimeReview": "ACCEPTED_FOR_RUNTIME_COMMISSIONING_AND_MEASUREMENT",
+  "independentReview": {
+    "core": "4b13bf8bbfe578416441d7322837ec5aabeba1ea",
+    "deployment": "84accb33c3daccebfdf886300c3ba6c638e003c6",
+    "verdict": "ACCEPT_FOR_RUNTIME_COMMISSIONING_AND_MEASUREMENT",
+    "receiptSha256": "e89b8c890c1da037f67eb458b804551e2e0f1aa7e693b0269aecb379d0c04b29",
+    "retainedEvidence": "data/capacity/trusted-worker-20261113/review-4b13",
+    "limits": [
+      "No actual joined runtime acceptance",
+      "No full native operator restore/ensure acceptance",
+      "No CPU/capacity claim"
+    ]
+  }
+}
