@@ -1,5 +1,6 @@
 """Focused host/model controls. An actual private prepared root is explicit input."""
 import copy,json,os,sys,tempfile,time,unittest
+from unittest.mock import patch
 from pathlib import Path
 import commissioning as C,owned_process as O,preflight as P
 from recording import RecordingHost
@@ -49,6 +50,21 @@ class Controls(unittest.TestCase):
             h.command=command;h.inspect=inspect
             with self.assertRaisesRegex(RuntimeError,'CLEANUP_UNCONFIRMED'):h.cleanup_owned()
             final=json.loads((Path(d)/'finally-stopped.private.json').read_text());self.assertEqual(len(final['knownAbsent']),1);self.assertEqual(final['knownAbsent'][0]['cid'],removed);self.assertEqual(final['rows'][0]['Id'],owned);self.assertTrue(any(x['stage']=='inspect'for x in final['errors']));self.assertFalse(any(x[:2]==['docker','stop']for x in calls))
+    def test_timeout_nonzero_and_receipt_failure_keep_uncertainty_sticky(self):
+        with tempfile.TemporaryDirectory()as d:
+            h=C.Host.__new__(C.Host);h.out=Path(d);h.p={'maximumCommands':384,'cleanupReserveCommands':64,'cleanupReserveSeconds':90,'maximumOutputBytes':33554432,'cleanupReserveOutputBytes':8388608};h.n=0;h.bytes=0;h.cleanup=False;h.deadline=time.monotonic()+900;h.environment={};h.uncertain=False
+            stdout=Path(d)/'stdout';stdout.write_text('')
+            timed={'failure':'COMMAND_TIMEOUT','returnCode':-9,'bytes':0,'stdout':str(stdout)}
+            with patch.object(C.O,'run',return_value=timed),patch.object(C,'save',side_effect=OSError('EIO')):
+                with self.assertRaises(OSError):h.command(['recording-only-effect'])
+            self.assertTrue(h.uncertain,'timeout cannot be cleared by receipt failure')
+            h.uncertain=False
+            bad={**timed,'failure':None,'returnCode':1}
+            with patch.object(C.O,'run',return_value=bad):h.command(['recording-only-effect'],allow_failure=True)
+            self.assertTrue(h.uncertain,'nonzero effect cannot claim known daemon completion')
+            good={**timed,'failure':None,'returnCode':0}
+            with patch.object(C.O,'run',return_value=good):h.command(['recording-only-read'])
+            self.assertTrue(h.uncertain,'later success cannot erase earlier uncertainty')
     def test_bind_requires_exact_qualified_image_before_worker_start(self):
         with tempfile.TemporaryDirectory()as d:
             state=Path(d);(state/'connection-budget').mkdir();file=state/'connection-budget/custody.json'

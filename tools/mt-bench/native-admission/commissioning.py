@@ -45,8 +45,11 @@ class Host:
         self.p=plan;self.out=Path(output);self.out.mkdir(mode=0o700);self.n=0;self.bytes=0;self.deadline=time.monotonic()+plan['maximumSeconds'];self.cleanup=False;self.uncertain=False;self.allocation_attempted=False;self.owned={};self.images={'postgres':PG_IMAGE};self.environment={k:os.environ[k]for k in ['PATH','HOME','USER','LANG']if k in os.environ};self.environment.update(plan['selectedEnvironment']);self.environment['NS_DEMO_IMAGE']=plan['imageId'];self.environment['NODE_PATH']='/tmp/ns-api-final-acceptance-20261112/deps/node_modules'
     def command(self,args,seconds=30,allow_failure=False):
         need(self.n<(self.p['maximumCommands']if self.cleanup else self.p['maximumCommands']-self.p['cleanupReserveCommands']),'COMMAND_COUNT');self.n+=1;remaining=self.deadline-time.monotonic()-(0 if self.cleanup else self.p['cleanupReserveSeconds']);need(remaining>5,'EPISODE_DEADLINE');budget=self.p['maximumOutputBytes']-self.bytes-(0 if self.cleanup else self.p['cleanupReserveOutputBytes']);need(budget>=4096,'EPISODE_OUTPUT_BOUND')
-        r=O.run(args,self.environment,self.out/('%03d'%self.n),min(seconds,remaining-4),min(2097152,budget));self.bytes+=r['bytes'];save(self.out/('%03d-result.json'%self.n),r)
-        if r['failure']:self.uncertain=True
+        prior_uncertainty=self.uncertain;self.uncertain=True # sticky while execution/receipt is unresolved
+        r=O.run(args,self.environment,self.out/('%03d'%self.n),min(seconds,remaining-4),min(2097152,budget));self.bytes+=r['bytes']
+        failed=r['failure']is not None or r['returnCode']!=0
+        save(self.out/('%03d-result.json'%self.n),r)
+        self.uncertain=prior_uncertainty or failed
         if not allow_failure:need(r['failure']is None and r['returnCode']==0,'COMMAND_FAILED')
         return Path(r['stdout']).read_text()if r['returnCode']==0 and not r['failure']else None
     def compose(self,*args,**kwargs):
