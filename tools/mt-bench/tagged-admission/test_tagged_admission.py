@@ -11,10 +11,26 @@ def fixture():
     expected={'kind':T.KIND,'source':source,'imageId':'sha256:'+'1'*64,'project':'synthetic-project','workingDirectory':'/tmp/synthetic','planSha256':plan['sha256']}
     container={'cid':'2'*64,'startedAt':'synthetic-birth','project':expected['project'],'workingDirectory':expected['workingDirectory'],'service':'api','imageId':expected['imageId'],'source':source,'running':True}
     incarnation='a'*32;tag=T.tag(incarnation,'synthetic-capability')
-    ledger={'planSha256':plan['sha256'],'resourceEpoch':['synthetic','synthetic-epoch'],'slots':{'api':[{'state':'ISSUED','incarnation':incarnation,'nonce':'b'*32,'tags':[tag],'container':{k:v for k,v in container.items() if k!='running'}}]}}
+    ledger={'version':1,'planSha256':plan['sha256'],'resourceEpoch':['synthetic','synthetic-epoch'],'slots':{'api':[{'state':'ISSUED','incarnation':incarnation,'nonce':'b'*32,'tags':[tag],'container':{k:v for k,v in container.items() if k!='running'}}]}}
     processes=[{'processInstanceId':'api','incarnation':incarnation,'container':copy.deepcopy(container),'inspection':'RUNNING','inspectedCid':container['cid']}]
     census={'resource':{'systemIdentifier':'synthetic','postmasterStartedAt':'synthetic-epoch','pgResourceId':'synthetic-pg','serverMaximum':20,'superuserReserved':3,'otherReserved':0,'unmanagedClients':0},'tags':[{'applicationName':tag,'count':0}]}
     return dict(expected=expected,plan=plan,ledger=ledger,processes=processes,census=census)
+
+
+def operator_fixture(state='UNKNOWN', bound=True):
+    v=fixture();p=v['plan'];p['resource']['allowances']={'controlRecovery':1,'observers':2}
+    tenant='11111111-1111-4111-8111-111111111111'
+    p['lifecycleOperator']={'version':1,'tenants':[tenant],'principal':{'role':'synthetic_operator','roleOid':'31','database':'synthetic','databaseOid':'16384'},'files':{'env.json':'e'*64,'config.json':'f'*64},'placement':False}
+    p['sha256']=T.sha({k:x for k,x in p.items()if k!='sha256'});v['expected']['planSha256']=p['sha256'];v['ledger'].update(version=2,planSha256=p['sha256'])
+    intent={'version':1,'command':'inspect','tenant':tenant};inc='c'*32
+    container={k:v for k,v in v['processes'][0]['container'].items()if k!='running'};container.update(service=T.CONTROL,cid='d'*64,startedAt='operator-birth')
+    row={'state':state,'credits':1,'incarnation':inc,'nonce':'d'*32,'tags':[T.tag(inc,T.CONTROL)],'intent':intent,'intentSha256':T.sha(intent),'planSha256':p['sha256'],'source':p['source'],'container':container if bound and state!='ISSUED'else None}
+    if state in('UNKNOWN','CLOSED'):row['outcome']='OUTCOME_UNCERTAIN'if state=='UNKNOWN'else'COMPLETED'
+    v['ledger']['controlLeases']=[row]
+    v['controlProcesses']=[]if state=='CLOSED'else[{'processInstanceId':T.CONTROL,'incarnation':inc,'container':{**container,'running':False,'operatorIncarnation':inc}if row['container']else None,'inspectedCid':container['cid'],'inspection':'STOPPED'if row['container']else'UNBOUND'}]
+    if state!='CLOSED':v['census']['tags'].append({'applicationName':row['tags'][0],'count':0})
+    v['census']['occupancy']={'workers':0,'control':0}
+    return v
 
 
 class TaggedIntake(unittest.TestCase):
@@ -65,6 +81,50 @@ class TaggedIntake(unittest.TestCase):
         for mutate in [lambda x:x['census']['tags'][0].update(count=True),lambda x:x['census']['tags'].append(x['census']['tags'][0]),lambda x:x['ledger']['slots']['api'][0].update(state='BOGUS')]:
             v=fixture();mutate(v)
             with self.assertRaises(ValueError):T.observe(**v)
+
+
+class OperatorIntake(unittest.TestCase):
+    def test_unsupported_or_missing_legacy_ledger_version_refuses(self):
+        for version in (None,0,3,False,'1'):
+            v=fixture()
+            if version is None:v['ledger'].pop('version')
+            else:v['ledger']['version']=version
+            with self.subTest(version=version),self.assertRaisesRegex(ValueError,'LEDGER_VERSION'):T.observe(**v)
+    def test_explicit_v2_worker_and_control_attribution_zero_never_refunds(self):
+        for state in ('ISSUED','BOUND','UNKNOWN'):
+            v=operator_fixture(state);before=copy.deepcopy(v);r=T.observe(**v)
+            self.assertEqual(v,before);self.assertEqual(r['ledgerVersion'],2);self.assertEqual(r['heldCredits'],{'workers':4,'control':1});self.assertEqual(r['occupancy'],{'workers':0,'control':0});self.assertEqual(r['controls'][0]['leaseState'],state);self.assertEqual(r['census'][-1]['attribution']['actor'],'control');self.assertEqual(r['census'][0]['attribution']['actor'],'worker');self.assertEqual(r['lifecycleAuthority'],'NONE');self.assertEqual(r['nativeAcceptance'],'UNMEASURED')
+    def test_empty_and_closed_history_are_explicit(self):
+        for empty in (False,True):
+            v=operator_fixture('CLOSED')
+            if empty:v['ledger']['controlLeases']=[]
+            r=T.observe(**v);self.assertEqual(r['ledgerVersion'],2);self.assertEqual(r['controls'],[]);self.assertEqual(r['heldCredits']['control'],0);self.assertEqual(r['controlHistory'],{'total':0 if empty else 1,'closed':0 if empty else 1})
+    def test_missing_malformed_or_unadmitted_control_refuses(self):
+        changes=[lambda v:v['census'].pop('occupancy'),lambda v:v['ledger'].update(version=3),lambda v:v['ledger'].pop('version'),lambda v:v['ledger'].pop('controlLeases'),lambda v:v.pop('controlProcesses'),lambda v:v['ledger']['controlLeases'][0].update(credits=0),lambda v:v['ledger']['controlLeases'][0].update(source={}),lambda v:v['ledger']['controlLeases'][0].update(planSha256='0'*64),lambda v:v['ledger']['controlLeases'][0].update(nonce='bad'),lambda v:v['ledger']['controlLeases'][0].update(nonce='b'*32),lambda v:v['ledger']['controlLeases'][0].update(incarnation='a'*32),lambda v:v['ledger']['controlLeases'][0].update(tags=[]),lambda v:v['ledger']['controlLeases'][0]['intent'].update(command='query'),lambda v:v['ledger']['controlLeases'][0]['intent'].update(sql='synthetic'),lambda v:v['ledger']['controlLeases'][0].update(intentSha256='0'*64),lambda v:v['ledger']['controlLeases'].append(copy.deepcopy(v['ledger']['controlLeases'][0])),lambda v:v['ledger']['controlLeases'][0].update(state='CLOSED'),lambda v:v['controlProcesses'][0]['container'].update(operatorIncarnation='0'*32),lambda v:v['controlProcesses'][0]['container'].update(startedAt='other-birth'),lambda v:v['ledger']['controlLeases'][0]['container'].update(project='foreign'),lambda v:v['census']['tags'][-1].update(count=True),lambda v:v['census']['tags'][-1].update(applicationName='nscb:foreign'),lambda v:v['census'].update(occupancy={'workers':False,'control':0})]
+        for mutate in changes:
+            v=operator_fixture();mutate(v)
+            with self.subTest(mutate=mutate),self.assertRaises(ValueError):T.observe(**v)
+    def test_version_plan_binding_and_closed_tag_refuse(self):
+        for mode in ('disabled','v1','closed-tag','missing-plan','config-version'):
+            v=operator_fixture('CLOSED'if mode=='closed-tag'else'UNKNOWN')
+            if mode in ('disabled','missing-plan'):v['plan'].pop('lifecycleOperator')
+            if mode=='v1':v['ledger']['version']=1
+            if mode=='config-version':v['plan']['lifecycleOperator']['version']=2
+            if mode=='closed-tag':v['census']['tags'].append({'applicationName':v['ledger']['controlLeases'][0]['tags'][0],'count':0})
+            v['plan']['sha256']=T.sha({k:x for k,x in v['plan'].items()if k!='sha256'});v['expected']['planSha256']=v['plan']['sha256'];v['ledger']['planSha256']=v['plan']['sha256']
+            with self.subTest(mode=mode),self.assertRaises(ValueError):T.observe(**v)
+    def test_unknown_missing_control_process_still_holds_credit(self):
+        for mode in ('UNKNOWN','MISSING','UNBOUND'):
+            v=operator_fixture(bound=mode!='UNBOUND');p=v['controlProcesses'][0];p.update(container=None,inspection=mode)
+            r=T.observe(**v);self.assertEqual(r['heldCredits']['control'],1);self.assertEqual(r['controls'][0]['inspection'],mode)
+    def test_second_distinct_unclosed_control_lease_is_refused(self):
+        v=operator_fixture();row=copy.deepcopy(v['ledger']['controlLeases'][0]);row.update(incarnation='e'*32,nonce='f'*32,tags=[T.tag('e'*32,T.CONTROL)]);v['ledger']['controlLeases'].append(row)
+        with self.assertRaisesRegex(ValueError,'CONTROL_HELD_BOUND'):T.control_leases(v['plan'],v['ledger'])
+    def test_observed_occupancy_is_separate_from_credits(self):
+        v=operator_fixture();v['census']['tags'][0]['count']=2;v['census']['tags'][-1]['count']=2;v['census']['occupancy']={'workers':2,'control':2}
+        r=T.observe(**v);self.assertEqual(r['occupancy'],{'workers':2,'control':2});self.assertEqual(r['heldCredits']['control'],1);self.assertFalse(r['occupancyWithinHeldCredits']['control']);self.assertEqual(r['controls'][0]['leaseState'],'UNKNOWN')
+        v['census']['occupancy']['control']=0
+        with self.assertRaisesRegex(ValueError,'OCCUPANCY_MISMATCH'):T.observe(**v)
 
 
 if __name__=='__main__':unittest.main()
