@@ -5,7 +5,7 @@ import subprocess
 import time
 from contract import require, SHA, OWNER
 
-INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
+INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
 
 def safe_code(error):
     text=str(error)
@@ -67,8 +67,15 @@ class Record:
         try:
             result=fn();self.value['strictChecks'][stage]={'verdict':'PASS'};self.save();return result
         except Exception as error:
-            self.failure(stage,error,not incomplete(error))
-            if not incomplete(error):raise
+            allowed=incomplete(error);partial=None
+            if str(error)=='M7_EVALUATOR_PROGRESS_ROUNDS' and getattr(error,'verdict',None)=='UNMEASURED':
+                try:partial=partial_progress(self.a,self.d,self.m,stage);allowed=True
+                except Exception as invalid:
+                    self.failure(stage,invalid,True);raise invalid from error
+            self.failure(stage,error,not allowed)
+            if partial is not None:
+                self.value['strictChecks'][stage]['partialObservation']=partial;self.save()
+            if not allowed:raise
     def process(self,stage,fn):
         start=time.time()
         try:
@@ -226,3 +233,38 @@ def stop_k6(a,m,record):
 
 
 def hard_recovery(value):return value.get('verdict')=='FAIL' and value.get('code') not in SOFT_WORK_FAILURES
+
+
+def partial_progress(a,d,m,stage):
+    """Only genuine, bounded 1/2-round current-source captures may continue."""
+    import evaluator_idle as idle
+    import evaluator_progress as progress
+    need=progress.need
+    need(stage in ('idle','load'),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
+    file=d/stage/'evaluator-progress.json'
+    need(file.is_file() and not file.is_symlink() and file.stat().st_size<=16777216,'M7_DISCOVERY_PARTIAL_PROGRESS_ARTIFACT')
+    value=a.document(file);module=idle if stage=='idle' else progress
+    kind=idle.ARTIFACT_KIND if stage=='idle' else 'evaluator-progress-phase-v2'
+    need(value.get('kind')==kind and value.get('columns')==list(module.COLUMNS) and value.get('policy')==module.POLICY and value.get('phase')==stage and value.get('verdict')=='UNMEASURED' and value.get('code')=='M7_EVALUATOR_PROGRESS_ROUNDS' and value.get('attribution')==a.progress_attribution(m),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
+    need(isinstance(value.get('rounds'),list) and 1<=len(value['rounds'])<=2,'M7_DISCOVERY_PARTIAL_PROGRESS_ROUNDS')
+    services=a.progress_services(d);need(1<=len(services)<=progress.POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
+    decoded,ids=(idle._decode(value,m['tenants'],services) if stage=='idle' else progress.decode_rounds(value,m['tenants'],services))
+    expected=[row['id'] for row in a.document(d/'tenants.private.json')];progress.validate_ids(expected)
+    need(ids==set(expected),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
+    need(sum(r['queries'] for r in decoded)<=progress.POLICY['maxQueriesPerPhase'] and sum(r['bytes'] for r in decoded)<=progress.POLICY['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
+    if stage=='idle':idle.clock_windows(decoded)
+    # Check ALL available rounds, not only the first timing refusal. No absent
+    # round, unselected interval or clock witness is manufactured.
+    previous=decoded[0];failed_work=0
+    for current in decoded:
+        need(current['instances']==previous['instances'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+        for service,rows in previous['allRows'].items():
+            for tenant,before in rows.items():
+                after=current['allRows'][service][tenant]
+                need((before['admitted'],before['generation'])==(after['admitted'],after['generation']) and all(after[k]>=before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+                if not before['admitted']:
+                    need(not after['ready'] and all(after[k]==before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
+                    if stage=='idle':need(not any(idle.jobs(after['jobs']).values()),'M7_EVALUATOR_IDLE_FOREIGN_PENDING','FAIL')
+                else:failed_work+=after['failedCompletions']
+        previous=current
+    return {'rounds':len(decoded),'scope':'available snapshots only; missing phase observation remains UNMEASURED','workFailurePresent':failed_work>0,'loadClockProof':'not supplied by load source schema' if stage=='load' else 'captured idle brackets validated'}

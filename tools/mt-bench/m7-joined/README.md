@@ -361,3 +361,14 @@ Recording controls: `python3 -m unittest discover -s tools/mt-bench/m7-joined -p
 `discovery-transport-control.py --repo <transport> --commit <full commit>` tests
 the actual Record producer against an immutable transport validator without
 executing commands, applications or networks.
+
+
+Discovery classification is explicit. Missing final-tail opportunity is retained
+as UNMEASURED and does not suppress load. A missing midpoint may continue only
+with a current-source, correctly attributed, fixed-phase 1/2-round artifact;
+its available owner/foreign/reset/selector/budget invariants still apply (and
+idle clock brackets, when present in that source schema). Zero/extra rounds,
+wrong phase/source and unknown or malformed observations refuse. This validates
+available observations only: it creates no missing round or completed-work
+credit. The two previously declared work-error findings remain soft even with
+FAIL; timing-code FAIL and all structural/source/owner/clock failures stay hard.
