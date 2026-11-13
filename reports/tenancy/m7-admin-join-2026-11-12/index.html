@@ -16,7 +16,7 @@
         <link rel="prev" href="../m6b-join-2026-11-10/b70ad83f-acceptance/index.html">
       
       
-        <link rel="next" href="../m7-baseline-2026-11-12/index.html">
+        <link rel="next" href="../m7-admission-commissioning-2026-11-12/index.html">
       
       
         
@@ -2250,6 +2250,10 @@
       
         
           
+        
+      
+        
+      
         
       
         
@@ -6901,6 +6905,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8023,6 +8087,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -10664,7 +10786,7 @@ connector tables and management issuance metadata.</p>
 <p>The complete selected suites run through the source-owned corpus launcher:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>node<span class="w"> </span>scripts/test-multitenant.js<span class="w"> </span>--only<span class="w"> </span>management-sessions<span class="w"> </span>--only<span class="w"> </span>connector-sources<span class="w"> </span>--record<span class="w"> </span>/tmp/m7-admin-joined-native.json
 </code></pre></div>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-admin-join-2026-11-12/native.log">Native log</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-admin-join-2026-11-12/native.json">run record</a>: 21 passing, zero pending,
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-admin-join-2026-11-12/native.log">Native log</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-admin-join-2026-11-12/native.json">run record</a>: 21 passing, zero pending,
 zero failing. The launcher verifies every container and volume it created is
 absent. It provisions PostgreSQL through the local <code>postgres:16</code> tag; this
 capture does not pin the execution-time image digest. Fixture-owned Vault uses
@@ -10677,7 +10799,7 @@ backend census. The <a href="../management-sessions-2026-11-12/report.html">issu
 and <a href="../registry-connector-2026-11-12/index.html">connector leaf record</a> retain their
 original controls and narrower source anchors. This is not whole-corpus, full
 role deployment, browser, capacity or final prcheck acceptance.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-admin-join-2026-11-12/focused.log">Focused merge checks</a> pass 41 cases for management units,
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-admin-join-2026-11-12/focused.log">Focused merge checks</a> pass 41 cases for management units,
 deployment operations and connector units. The command also named a nonexistent
 <code>tests/admin-role-ownership.test.js</code>; Mocha warns and runs no such file. No
 coverage is claimed for that nonexistent pattern. The focused run was on the
@@ -10693,9 +10815,9 @@ allocator in the base catalogue. Partial setup is not reused.</p>
 insertion-inventory helper, the base checkpoint for its independent instance,
 and explicitly selected notification extensions. Every resulting table set
 must exactly match its selected reviewed source catalogue. Actual lifecycle
-construction and inventory checks: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-admin-join-2026-11-12/inventory-restored.log">six passing</a>.
+construction and inventory checks: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-admin-join-2026-11-12/inventory-restored.log">six passing</a>.
 Removing the source-table equality guard in disposable scratch produces
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-admin-join-2026-11-12/inventory-guard-red.log">Missing expected exception</a> for a deliberately omitted
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-admin-join-2026-11-12/inventory-guard-red.log">Missing expected exception</a> for a deliberately omitted
 issuance table. Restored source passes. The test links that expectation to the
 actual source guard; it does not establish repaired native bootstrap acceptance.</p>
 

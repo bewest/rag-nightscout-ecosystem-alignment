@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6887,6 +6891,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -7938,7 +8002,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_102" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_103" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -7960,14 +8024,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7_18_102" id="__nav_7_18_102_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_7_18_103" id="__nav_7_18_103_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_102_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_102">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_103_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_103">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -8065,7 +8129,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_102_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_103_3" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -8088,8 +8152,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_102_3_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_102_3">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_103_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_103_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -8158,6 +8222,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -10774,7 +10896,7 @@
 <p><em>Living document, last changed 2026-11-12 at <code>23a415207</code>.</em></p>
 <p>Exact source <code>e62e7c865b60f89e37495a50e0d55247c594e001</code>, following original validator/evidence <code>8749ef63e467bbc40a603a22e3f991bff1ae26a9</code>. Coordinator review corrected a topology assumption: the default Compose capacity profile runs a Vault server; Vault Agent is an opt-in overlay. Earlier evidence remains immutable.</p>
 <p>Base capacity inventory now requires logical <code>vault</code> server, with a separate optional <code>vault-agent</code> group. They cannot share the same service label. The broad scaling component set still requires actual Vault Agent proof. Its source-specific contract pins Agent service names, requires those roles to be present in each observed configuration, and requires sample/metric selectors underneath those observed role dictionaries, disjoint from the pinned server names. Server observations cannot be relabelled Agent observations. No overlay is activated by this checker.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-receipt-validator-2026-11-12/vault-topology/focused-exact.txt">Exact focused capture</a>: <strong>44 tests pass</strong>. Synthetic temporary-record controls show server-only capacity passes its honest milestone scope, does not satisfy broad scaling, and refuses both relabelled server-as-Agent and missing actual Agent observations. Existing source/identity, inventory, numeric metric and read-only controls remain green. There is no actual capacity/Agent measurement or production PASS receipt in this record.</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-receipt-validator-2026-11-12/vault-topology/focused-exact.txt">Exact focused capture</a>: <strong>44 tests pass</strong>. Synthetic temporary-record controls show server-only capacity passes its honest milestone scope, does not satisfy broad scaling, and refuses both relabelled server-as-Agent and missing actual Agent observations. Existing source/identity, inventory, numeric metric and read-only controls remain green. There is no actual capacity/Agent measurement or production PASS receipt in this record.</p>
 <p>No producer, queue, release, decision, deployment transport or core source changed. Root owns integration and future source-paired proof selection. The incoming profile lane will record default versus selected-overlay topology explicitly, without activating Agent or inventing its metrics.</p>
 
 

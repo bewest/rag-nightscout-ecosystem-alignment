@@ -6209,6 +6209,14 @@
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-admission-commissioning-2026-11-12/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-admission-commissioning-2026-11-12/first-attempt/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-baseline-2026-11-12/index.html</loc>
          <lastmod>2026-11-13</lastmod>
     </url>
@@ -6390,6 +6398,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-startup-connections-2026-11-12/guard-9db-d76/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-stored-count-oracle-2026-11-12/index.html</loc>
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>
@@ -7186,6 +7198,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/mongo-views-poc/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/native-admission/index.html</loc>
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>

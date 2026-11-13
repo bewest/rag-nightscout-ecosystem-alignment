@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6970,6 +6974,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8092,6 +8156,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -10903,12 +11025,12 @@ commit, <code>deploy/multitenant</code> replaced by the deploy commit's <code>bi
 <code>.overlay.json</code> written by hand because <code>SOURCE.md</code> names 0392acf9), <code>prepare.js</code> + <code>build.js</code>;
 both labels (<code>org.opencontainers.image.revision</code>, <code>org.nightscout.deploy.revision</code>) checked by
 <code>build.js --check-image</code> and by <code>cap.sh</code> at every deploy. Image 1 was built by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
 <p>Host: 16 threads, 62 GiB, shared with peer sessions' containers (listed per run in
 <code>host-deploy.txt</code> counts). PostgreSQL <code>max_connections</code> 100, <code>superuser_reserved_connections</code> 3
 (measured from the running stack).</p>
 <h2 id="harness">Harness<a class="headerlink" href="#harness" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/b5ae59800c34f6eee32c2723946fa82a1a155932/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
 then per run: deploy, idle, real cadence + sockets + probe writes, full four-role restart, oracle,
 summary, teardown), <code>cap.sh</code> (the steps), <code>probe.js</code> (sockets, probe writes, restart measurements),
 <code>startup.js</code>, <code>summarize.js</code> (one <code>summary.json</code> per run), <code>aggregate.js</code> (tables), <code>k6/workload.js</code>.

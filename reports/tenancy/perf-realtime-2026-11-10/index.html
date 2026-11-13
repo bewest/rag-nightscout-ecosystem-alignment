@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6887,6 +6891,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8041,6 +8105,64 @@
           
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
         
       
     
@@ -8918,7 +9040,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_118" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_120" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -8941,8 +9063,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_118_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_118">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_120_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_120">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -11066,14 +11188,14 @@ timeout, <code>operation-cohort-config.js:49</code>). On a loaded PostgreSQL one
 pg-pool rejects with <code>timeout exceeded when trying to connect</code> at <code>operation-window.js:103</code>, the
 startup <code>Promise.allSettled</code> treats any rejection as fatal (<code>runtime.js:43-45</code> and <code>tenant-startup.js</code>
 warm, both at <code>cb1b751d</code>), and <code>preview-realtime.js</code> turns it into <code>PreviewConfigError</code> → exit 78. Shown with a diagnostic
-copy of <code>preview-realtime.js</code> that prints the swallowed error (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-restart-diagnostic.txt"><code>runs/base-n50-restart-diagnostic.txt</code></a>).
+copy of <code>preview-realtime.js</code> that prints the swallowed error (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-restart-diagnostic.txt"><code>runs/base-n50-restart-diagnostic.txt</code></a>).
 It is not caused by the previous process: a fresh <code>up</code> of the stopped container failed the same way.
 The perf-db lane reproduced the same mechanism independently with unbounded warm at 200
 (<a href="../perf-db-2026-11-10/index.html">perf-db record</a>).</p>
 <p><strong>Not fixed here, measured in both heads:</strong> graceful shutdown with sockets attached overruns the
 10 s bound (<code>still open 10000 ms after SIGTERM: PipeWrap, PipeWrap, Timeout, …</code>, then the watchdog
-exits 1; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-realtime-lifecycle.txt"><code>runs/base-n50-realtime-lifecycle.txt</code></a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/perf-realtime-2026-11-10/runs/after-n50-realtime-lifecycle.txt"><code>runs/after-n50-realtime-lifecycle.txt</code></a>). Without sockets the
+exits 1; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-realtime-lifecycle.txt"><code>runs/base-n50-realtime-lifecycle.txt</code></a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/perf-realtime-2026-11-10/runs/after-n50-realtime-lifecycle.txt"><code>runs/after-n50-realtime-lifecycle.txt</code></a>). Without sockets the
 base restarted in 5 s with no overrun. The mechanism was not examined.</p>
 <h2 id="anchors">Anchors<a class="headerlink" href="#anchors" title="Permanent link">&para;</a></h2>
 <table>
@@ -11106,7 +11228,7 @@ base restarted in 5 s with no overrun. The mechanism was not examined.</p>
 </tr>
 <tr>
 <td>harness</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/tools/mt-bench/realtime-perf"><code>tools/mt-bench/realtime-perf/</code></a> (<code>run.sh</code>, <code>measure.js</code>); projects <code>ns-prt-&lt;label&gt;-n&lt;N&gt;</code></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/b5ae59800c34f6eee32c2723946fa82a1a155932/tools/mt-bench/realtime-perf"><code>tools/mt-bench/realtime-perf/</code></a> (<code>run.sh</code>, <code>measure.js</code>); projects <code>ns-prt-&lt;label&gt;-n&lt;N&gt;</code></td>
 </tr>
 <tr>
 <td>alignment <code>main</code> when written</td>
@@ -11537,7 +11659,7 @@ browser stays dark until reloaded. Unchanged by this lane, as required.</p>
 </tr>
 <tr>
 <td>1,000 tenants idle with a few sockets</td>
-<td><strong>UNMEASURED</strong>: the api exits 78 at boot before realtime starts (operation-window pool connect timeout at <code>operation-window.js:103</code>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/perf-realtime-2026-11-10/runs/after-n1000-api-diagnostic.txt"><code>runs/after-n1000-api-diagnostic.txt</code></a>). Bounding the api warm to 2 did not change it (tried in a commit since removed from the branch); the remaining all-tenant step was not found. perf-db reports 1,000 tenants starting with its serve-then-warm api change.</td>
+<td><strong>UNMEASURED</strong>: the api exits 78 at boot before realtime starts (operation-window pool connect timeout at <code>operation-window.js:103</code>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/perf-realtime-2026-11-10/runs/after-n1000-api-diagnostic.txt"><code>runs/after-n1000-api-diagnostic.txt</code></a>). Bounding the api warm to 2 did not change it (tried in a commit since removed from the branch); the remaining all-tenant step was not found. perf-db reports 1,000 tenants starting with its serve-then-warm api change.</td>
 <td>reproduced symptom</td>
 </tr>
 </tbody>

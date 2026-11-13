@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6901,6 +6905,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8023,6 +8087,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -10737,9 +10859,9 @@
 </tr>
 </tbody>
 </table>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/provenance.json">Provenance</a> binds exact source and primary artifact hashes. Archive SHA256: <code>9f1e9929da47ea332dd741d8e67b0fde33b27efd1515e4a72172e1665ccc434e</code>. The profile declares 60-second sampler-disabled idle, 120-second sampled idle and a later 300-second load; those configuration durations are not SQL capture timestamps.</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/provenance.json">Provenance</a> binds exact source and primary artifact hashes. Archive SHA256: <code>9f1e9929da47ea332dd741d8e67b0fde33b27efd1515e4a72172e1665ccc434e</code>. The profile declares 60-second sampler-disabled idle, 120-second sampled idle and a later 300-second load; those configuration durations are not SQL capture timestamps.</p>
 <h2 id="actual-idle-discriminator">Actual idle discriminator<a class="headerlink" href="#actual-idle-discriminator" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/idle-result.json">Idle evidence</a> preserves the three 500-owner rounds:</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/idle-result.json">Idle evidence</a> preserves the three 500-owner rounds:</p>
 <table>
 <thead>
 <tr>
@@ -10778,7 +10900,7 @@
 </table>
 <p>The final nonzero mask is 1: <code>running</code> is true and the other five sampled clinical job flags are false. That owner's completed TIME counter is still 0 and its declared due is null. There is <strong>no later completion observation</strong>. Null due during an observed running job cannot establish no demand or successful completion. Seven completed TIME cycles for other owners do not settle this job. Runtime cause and any source/instrument change remain with the source owner.</p>
 <h2 id="captured-resource-bookends">Captured resource bookends<a class="headerlink" href="#captured-resource-bookends" title="Permanent link">&para;</a></h2>
-<p>Unlike C's failed idle capture, D retains <strong>both BEFORE and AFTER</strong> cgroup, PG-role and PG-statement snapshots even though the idle assessor refused. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/resource-bookends.json">Resource evidence</a> retains per-service CPU/memory/RSS, all captured SQL-role counter deltas, sampler observations and bounded statement-snippet fingerprints.</p>
+<p>Unlike C's failed idle capture, D retains <strong>both BEFORE and AFTER</strong> cgroup, PG-role and PG-statement snapshots even though the idle assessor refused. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/resource-bookends.json">Resource evidence</a> retains per-service CPU/memory/RSS, all captured SQL-role counter deltas, sampler observations and bounded statement-snippet fingerprints.</p>
 <table>
 <thead>
 <tr>
@@ -10815,10 +10937,10 @@
 <h2 id="limited-c-comparison">Limited C comparison<a class="headerlink" href="#limited-c-comparison" title="Permanent link">&para;</a></h2>
 <p>Only like-for-like <strong>sampler-disabled raw bookends</strong> are compared. C and D report the same 16-core Intel Xeon Platinum 8168 model and kernel <code>6.8.0-147-generic</code>, but are distinct hosts; reported MemTotal differs by 4 KiB. Approximate PG cores are 7.84330 in C and 7.86968 in D. These are single-run observations, not a historical speedup result. C lacks enabled after-snapshots, so no full enabled C/D comparison is manufactured. Both runs' SQL deltas lack SQL capture intervals.</p>
 <h2 id="cleanup-verification-and-handoff">Cleanup, verification and handoff<a class="headerlink" href="#cleanup-verification-and-handoff" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/cleanup.json">Cleanup projection</a> records verified controller/watchdog cleanup. Independent audit at <code>2026-11-13T00:27:37.405Z</code> reported <strong>0 droplets, 0 firewalls and 0 tags</strong>, with <strong>two exact-original temporary key removals</strong>. Key paths and provider/host identities are omitted. UTC audit time follows the repository's November 12 work date.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/projection-controls.json">Four metadata negatives</a> refuse wrong source, invented final completion, a measured SQL-rate claim from unstamped snapshots and capacity-PASS laundering. These are offline projection controls, not app tests. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/manifest.json">The manifest</a> binds the leaf; original failed D captures remain unchanged.</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/cleanup.json">Cleanup projection</a> records verified controller/watchdog cleanup. Independent audit at <code>2026-11-13T00:27:37.405Z</code> reported <strong>0 droplets, 0 firewalls and 0 tags</strong>, with <strong>two exact-original temporary key removals</strong>. Key paths and provider/host identities are omitted. UTC audit time follows the repository's November 12 work date.</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/projection-controls.json">Four metadata negatives</a> refuse wrong source, invented final completion, a measured SQL-rate claim from unstamped snapshots and capacity-PASS laundering. These are offline projection controls, not app tests. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/manifest.json">The manifest</a> binds the leaf; original failed D captures remain unchanged.</p>
 <p>No raw logs, SQL, environment, clinical data, network addresses, provider IDs or key paths are copied. The root owner owns programme rollup, classification, source implementation and future publication/measurement. No active acceptance-run files or runtimes were accessed.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/publication-verification.json">Publication verification</a>: JSON/hash/local-link/privacy/whitespace and original-anchor checks passed. One static <code>make queue-check</code> attempt failed at queue validation on 16 existing absent peer-worktree cwd references; later steps were skipped. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-d-2026-11-12/queue-check-output.txt">Exact output</a> is retained. No peer or queue file was changed.</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/publication-verification.json">Publication verification</a>: JSON/hash/local-link/privacy/whitespace and original-anchor checks passed. One static <code>make queue-check</code> attempt failed at queue validation on 16 existing absent peer-worktree cwd references; later steps were skipped. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-d-2026-11-12/queue-check-output.txt">Exact output</a> is retained. No peer or queue file was changed.</p>
 
 
 

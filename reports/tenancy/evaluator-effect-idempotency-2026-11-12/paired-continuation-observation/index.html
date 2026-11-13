@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -7268,6 +7272,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8390,6 +8454,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -11055,12 +11177,12 @@ strict <code>accepted</code> was required. Initial setup passed: A alarm ACK 150
 165 ms, B initial frame/read-write authorize ACK 222 ms, each one connection.
 The sequence reached real uploads, evaluator membership three and the exact
 post-transition B input frame before failure. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/captures/clinical-continuation.log">unaltered output</a> records that failure.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/captures/clinical-continuation.log">unaltered output</a> records that failure.</p>
 <p>The source fixture takes one durable snapshot after an unconditional 1500-ms
 sleep following B's new frame. It does not conditionally await changed-effect
 acceptance and corresponding fanout. This is a read-derived observational race
 candidate, not a repaired product defect or retroactive acceptance result.</p>
-<p>A later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/captures/typed-rows.json">read-only typed row snapshot</a> at
+<p>A later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/captures/typed-rows.json">read-only typed row snapshot</a> at
 1794493978911 contains exactly three normal rows, all accepted on attempt one:
 A initial, B initial, and one distinct changed B effect. No extra identical
 effects/origins, control clears or cancelled rows were present in that snapshot.
@@ -11072,7 +11194,7 @@ the failed fixture. The later snapshot therefore cannot prove the failed
 snapshot's acceptance or final fanout. The strict oracle correctly refused an
 in-flight row; no predicate has been weakened.</p>
 <h2 id="resource-context-and-next-boundary">Resource context and next boundary<a class="headerlink" href="#resource-context-and-next-boundary" title="Permanent link">&para;</a></h2>
-<p>A bounded <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/captures/resource-context.json">resource snapshot</a> records only this
+<p>A bounded <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/captures/resource-context.json">resource snapshot</a> records only this
 lane's four owned retained projects: 54 running containers, sampled aggregate
 CPU 578.06 percent, 16 logical host CPUs and load averages 10.35 / 8.66 / 8.00.
 Per-container memory use is included; no process arguments/environment or
@@ -11084,7 +11206,7 @@ an in-flight-to-accepted control and immediate duplicate/terminal refusal
 controls. A future full qualification requires fresh owned state; the existing
 failed state remains evidence. No runtime source, admission or notification
 protocol change is implied. Coordinator approval and focused controls precede
-any further run. Capture hashes are in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/sha256.json">sha256.json</a>.</p>
+any further run. Capture hashes are in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/evaluator-effect-idempotency-2026-11-12/paired-continuation-observation/sha256.json">sha256.json</a>.</p>
 
 
 

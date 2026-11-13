@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6887,6 +6891,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -7100,7 +7164,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_88" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_89" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -7123,8 +7187,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_88_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_88">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_89_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_89">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -8023,6 +8087,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -10718,8 +10840,8 @@ healthy. Binding repair <code>4696a21</code> preserves the strict issuer check.<
 <h2 id="cohort-and-launcher-consistency">Cohort and launcher consistency<a class="headerlink" href="#cohort-and-launcher-consistency" title="Permanent link">&para;</a></h2>
 <p>The launcher excludes its actual operation-control namespace from protected DATA
 resources; cohort boot also needs that exact exclusion when activity uses the
-same namespace. Pre-repair actual API startup fails, and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-deploy-composition-2026-11-12/cohort-before.txt">the source regression
-fails</a>. Core repair <code>c1c501b6</code> passes <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-deploy-composition-2026-11-12/cohort-restored.txt">31 existing cohort/roster
+same namespace. Pre-repair actual API startup fails, and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-deploy-composition-2026-11-12/cohort-before.txt">the source regression
+fails</a>. Core repair <code>c1c501b6</code> passes <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-deploy-composition-2026-11-12/cohort-restored.txt">31 existing cohort/roster
 checks</a>, including a foreign namespace refusal. This is an
 exact control-namespace alignment, not an arbitrary namespace allow-list.</p>
 <h2 id="priming-and-private-custody">Priming and private custody<a class="headerlink" href="#priming-and-private-custody" title="Permanent link">&para;</a></h2>
@@ -10727,7 +10849,7 @@ exact control-namespace alignment, not an arbitrary namespace allow-list.</p>
 warm completes. The old priming client treats that 503 as terminal. Client repair
 <code>ef048e5316410bb668a2a0091785ff9470de865e</code> retries only an idempotent roles GET
 with that exact transient code and a deadline. It does not replay mutations or
-retry unknown unavailability/authority refusals. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-deploy-composition-2026-11-12/primer-http.txt">Three actual HTTP checks</a>
+retry unknown unavailability/authority refusals. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-deploy-composition-2026-11-12/primer-http.txt">Three actual HTTP checks</a>
 cover warm recovery, immediate refusal and a bounded deadline.</p>
 <p>That exact client helper was separately mounted into a diagnostic client against
 the intervened core/deploy pair above: priming completes for both tenants.
@@ -10737,7 +10859,7 @@ management tokens, owner subject IDs and integer expiry values for both tenants;
 the private operator handoff matches the priming output. No token values are
 published. This client/source/grant tuple is not final clean-image acceptance.</p>
 <h2 id="edge-resource-budget">Edge resource budget<a class="headerlink" href="#edge-resource-budget" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-deploy-composition-2026-11-12/edge.json">Actual nginx capture</a> against committed deploy <code>ef048e53</code> passes all
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-deploy-composition-2026-11-12/edge.json">Actual nginx capture</a> against committed deploy <code>ef048e53</code> passes all
 six admission properties and verifies all owned-resource cleanup. The template
 renderer now uses an explicit per-worker connection budget (synthetic default
 16,384; configurable 128..32,768) and 65,536 descriptor limits. Slots include

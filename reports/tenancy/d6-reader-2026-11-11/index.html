@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6901,6 +6905,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8023,6 +8087,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -10731,17 +10853,17 @@ core <code>docs/d6-change-feed.md</code>; deployment helper: <code>lib/change-fe
 <tbody>
 <tr>
 <td>Native source and real CLI</td>
-<td><code>NS_D6_FEED_TEST=1 MULTITENANT_STATIC_TENANTS=lab node node_modules/mocha/bin/mocha.js --timeout 30000 tests/change-feed.integration.test.js --reporter spec</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-native-419af9b1.log">output</a></td>
+<td><code>NS_D6_FEED_TEST=1 MULTITENANT_STATIC_TENANTS=lab node node_modules/mocha/bin/mocha.js --timeout 30000 tests/change-feed.integration.test.js --reporter spec</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-native-419af9b1.log">output</a></td>
 <td><strong>8 passing</strong>, 0 failing on exact clean <code>419af9b1</code>. One owned PG16.15 container on random loopback port, removed afterward. Covers EXECUTE-only/RLS behavior, notify/ACK loss, reader outage, listener reconnect, actual backend termination during notification COMMIT, activity without data writes, B progress, pin tampering, oversized transaction refusal and real CLI boot/SIGTERM.</td>
 </tr>
 <tr>
 <td>Focused runtime/composition</td>
-<td><code>node node_modules/mocha/bin/mocha.js --timeout 10000 tests/change-feed.test.js tests/realtime-publish-on-change.test.js tests/evaluator-preview-runtime.test.js tests/evaluator-runtime-content.test.js tests/realtime-config-cache.test.js tests/socket-admission-cache.test.js tests/evaluator-consumers.test.js tests/evaluator-consumer-open-order.test.js tests/registry-config.test.js tests/registry-realtime.test.js tests/serve-roles.test.js tests/serve-listeners.test.js tests/serve-internal-listener.test.js tests/tenant-operations.test.js --reporter dot</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-focused-419af9b1.log">output</a></td>
+<td><code>node node_modules/mocha/bin/mocha.js --timeout 10000 tests/change-feed.test.js tests/realtime-publish-on-change.test.js tests/evaluator-preview-runtime.test.js tests/evaluator-runtime-content.test.js tests/realtime-config-cache.test.js tests/socket-admission-cache.test.js tests/evaluator-consumers.test.js tests/evaluator-consumer-open-order.test.js tests/registry-config.test.js tests/registry-realtime.test.js tests/serve-roles.test.js tests/serve-listeners.test.js tests/serve-internal-listener.test.js tests/tenant-operations.test.js --reporter dot</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-focused-419af9b1.log">output</a></td>
 <td><strong>164 passing</strong>, 0 failing on exact clean <code>419af9b1</code>. Synthetic projection/config/runtime fixtures; not whole clinical corpus or a real-role restore campaign.</td>
 </tr>
 <tr>
 <td>Changed-source lint</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-final-lint.log">output</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-final-lint.log">output</a></td>
 <td>0 errors; two existing non-literal stat warnings in config readers.</td>
 </tr>
 <tr>
@@ -10756,13 +10878,13 @@ core <code>docs/d6-change-feed.md</code>; deployment helper: <code>lib/change-fe
 </tr>
 <tr>
 <td>Enabled multitenant inventory</td>
-<td><code>node scripts/test-multitenant.js --list</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-inventory-419af9b1.log">output</a></td>
+<td><code>node scripts/test-multitenant.js --list</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-inventory-419af9b1.log">output</a></td>
 <td>73 opt-in suites, 73 inventory entries. D6 plus missing joined API-roster and registry-human entries have their actual flags and resource ownership. This lists/selects; it does not execute the full corpus.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="meaningful-redrestored-controls">Meaningful red/restored controls<a class="headerlink" href="#meaningful-redrestored-controls" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-controls.json">Machine-readable verdicts</a> and individual logs preserve four
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-controls.json">Machine-readable verdicts</a> and individual logs preserve four
 actual source mutations in the lane's own worktree, each restored byte-for-byte:</p>
 <table>
 <thead>
@@ -10774,19 +10896,19 @@ actual source mutations in the lane's own worktree, each restored byte-for-byte:
 <tbody>
 <tr>
 <td>Advance before notification</td>
-<td><code>D6_NO_ACK_BEFORE_NOTIFY</code>: confirmed slot position moved despite a refused notification. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-control-ack-before-notify.log">Output</a>.</td>
+<td><code>D6_NO_ACK_BEFORE_NOTIFY</code>: confirmed slot position moved despite a refused notification. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-control-ack-before-notify.log">Output</a>.</td>
 </tr>
 <tr>
 <td>Disable recovery pages</td>
-<td><code>D6_READER_OUTAGE_BACKSTOP</code>: persisted B update stayed absent from observed current state with reader stopped. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-control-backstop-disabled.log">Output</a>.</td>
+<td><code>D6_READER_OUTAGE_BACKSTOP</code>: persisted B update stayed absent from observed current state with reader stopped. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-control-backstop-disabled.log">Output</a>.</td>
 </tr>
 <tr>
 <td>Suppress activity hints</td>
-<td><code>D6_ACTIVITY_HINT_NOT_A_DATA_WRITE</code>: pause transition emitted no activity hint despite unchanged data clock. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-control-activity-hints-disabled.log">Output</a>.</td>
+<td><code>D6_ACTIVITY_HINT_NOT_A_DATA_WRITE</code>: pause transition emitted no activity hint despite unchanged data clock. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-control-activity-hints-disabled.log">Output</a>.</td>
 </tr>
 <tr>
 <td>Detect every tenant after one hint</td>
-<td><code>D6_TARGETED_HINT_ONLY</code>: detection received A and B instead of A. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/d6-reader-2026-11-11/d6-control-full-roster-on-hint.log">Output</a>.</td>
+<td><code>D6_TARGETED_HINT_ONLY</code>: detection received A and B instead of A. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/d6-reader-2026-11-11/d6-control-full-roster-on-hint.log">Output</a>.</td>
 </tr>
 </tbody>
 </table>

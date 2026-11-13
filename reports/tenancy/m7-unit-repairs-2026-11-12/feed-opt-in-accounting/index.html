@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6887,6 +6891,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8041,6 +8105,64 @@
           
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
         
       
     
@@ -8130,7 +8252,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_105" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_107" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -8152,14 +8274,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7_18_105" id="__nav_7_18_105_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_7_18_107" id="__nav_7_18_107_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_105_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_105">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_107_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_107">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -8373,7 +8495,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_105_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_107_5" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -8396,8 +8518,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_105_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_105_5">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_107_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_107_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -11063,10 +11185,10 @@
 <h1 id="explicit-native-feed-opt-in-accounting--2026-11-12">Explicit native-feed opt-in accounting — 2026-11-12<a class="headerlink" href="#explicit-native-feed-opt-in-accounting--2026-11-12" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-12 at <code>502b46b05</code>.</em></p>
 <p>Reproduced on original core <code>ff5156b984424f1ef34bcef22d5bfa0071354cfa</code>: the disabled D6 lab registers nine pending tests through raw describe.skip, which omits the adopted explicit opt-in reason. The execution reporter therefore refuses the default integration tier. Core F's passing assertions do not override its command exit1.</p>
-<p>Local test-only repair <code>761e8f19373c4fbbd6fc888b51b35c9b2eb677a1</code> uses the existing optInSuite helper with its actual enabling requirement. The reporter, enabling flag and every native body remain unchanged. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/default-original-red.txt">Original disabled-file run</a>: zero passing/nine pending plus TEST_EXECUTION refusal, exit1. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/default-fixed.txt">Repaired disabled-file run</a>: zero passing/nine explicitly labelled pending, exit0. This is correct deferred-case accounting, <strong>not native execution or coverage</strong>. The complete enabled corpus must execute the lab.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/execution-guards.txt">Three existing execution-accounting checks</a> PASS, retaining serial/parallel refusal of enabled-but-skipped, failed and empty labs, ordinary pending-only files and support-only coverage. The focused commands use the owned historical exact-lock dependency install and Node22.23.4; no Docker/database/browser ran. Commands: Mocha --no-config --no-package --fail-zero --reporter ./scripts/execution-reporter.js tests/change-feed.integration.test.js with NS_D6_FEED_TEST empty; Mocha --grep 'Executed test-file accounting' tests/test-select.test.js.</p>
-<p>Deployment <code>31565abe437ea84214aa0068f75de1246c06e45e</code> changes only SOURCE metadata. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/source-identity.txt">Source identity</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/package-checks.txt">two explicit-core package checks</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/tier-inventory.txt">tier inventory</a> pass. Inventory remains 706 files/eight tiers and 86 enabled suites/47 with own containers. Official development history was refreshed and already contained.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/runtime-input-comparison.json">Actual Git comparison</a> verifies all sixteen core Docker source inputs, their modes, and the entire deployment binding tree are unchanged. It is read-derived equivalence, not a new execution or image identity. The <a href="../../m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/index.html">qualified ff/cf5 image</a> keeps its old attribution for unchanged stock/settings/client/realtime criteria. The new primary label requires a fresh source build and actual strict TIME capture; clinical setup may provide its genuine due work. Repeating unchanged stock/RT/quiet campaigns is unnecessary. New comprehensive acceptance remains open; no production or capacity claim.</p>
+<p>Local test-only repair <code>761e8f19373c4fbbd6fc888b51b35c9b2eb677a1</code> uses the existing optInSuite helper with its actual enabling requirement. The reporter, enabling flag and every native body remain unchanged. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/default-original-red.txt">Original disabled-file run</a>: zero passing/nine pending plus TEST_EXECUTION refusal, exit1. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/default-fixed.txt">Repaired disabled-file run</a>: zero passing/nine explicitly labelled pending, exit0. This is correct deferred-case accounting, <strong>not native execution or coverage</strong>. The complete enabled corpus must execute the lab.</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/execution-guards.txt">Three existing execution-accounting checks</a> PASS, retaining serial/parallel refusal of enabled-but-skipped, failed and empty labs, ordinary pending-only files and support-only coverage. The focused commands use the owned historical exact-lock dependency install and Node22.23.4; no Docker/database/browser ran. Commands: Mocha --no-config --no-package --fail-zero --reporter ./scripts/execution-reporter.js tests/change-feed.integration.test.js with NS_D6_FEED_TEST empty; Mocha --grep 'Executed test-file accounting' tests/test-select.test.js.</p>
+<p>Deployment <code>31565abe437ea84214aa0068f75de1246c06e45e</code> changes only SOURCE metadata. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/source-identity.txt">Source identity</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/package-checks.txt">two explicit-core package checks</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/tier-inventory.txt">tier inventory</a> pass. Inventory remains 706 files/eight tiers and 86 enabled suites/47 with own containers. Official development history was refreshed and already contained.</p>
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/feed-opt-in-accounting/runtime-input-comparison.json">Actual Git comparison</a> verifies all sixteen core Docker source inputs, their modes, and the entire deployment binding tree are unchanged. It is read-derived equivalence, not a new execution or image identity. The <a href="../../m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/index.html">qualified ff/cf5 image</a> keeps its old attribution for unchanged stock/settings/client/realtime criteria. The new primary label requires a fresh source build and actual strict TIME capture; clinical setup may provide its genuine due work. Repeating unchanged stock/RT/quiet campaigns is unnecessary. New comprehensive acceptance remains open; no production or capacity claim.</p>
 
 
 

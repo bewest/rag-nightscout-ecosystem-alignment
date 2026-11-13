@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6887,6 +6891,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8009,6 +8073,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -9394,7 +9516,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_126" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_128" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -9417,8 +9539,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_126_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_126">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_128_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_128">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -10780,9 +10902,9 @@ The registry fixture used Vault
 Each run created uniquely owned disposable containers, synthetic roles/schemas and
 credentials held in child environment only; fixtures and runner removed their own
 resources. No shared database was used. Native listeners bound loopback only.</p>
-<p>The archived <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/instruments/native-run.cjs">native runner</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/instruments/registry-controls.py">registry controls</a> and
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/instruments/connector-controls.py">connector controls</a> are the actual local
+<p>The archived <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/instruments/native-run.cjs">native runner</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/instruments/registry-controls.py">registry controls</a> and
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/instruments/connector-controls.py">connector controls</a> are the actual local
 instruments. Test implementations belong to the quoted application commits.
 Raw logs normalize the machine checkout prefix to <code>&lt;core&gt;</code>; assertion messages,
 relative source locations and results are preserved. Synthetic schema names are
@@ -10797,11 +10919,11 @@ settings and checkpoint families in the provisioning transaction. It refuses
 existing root secret. Legitimate later changes and audit retention are permitted.</p>
 <p><strong>Controlled reproduction:</strong> disabling only the new completeness decision made all
 four native <code>PV_EXISTING_COMPLETE_*</code> plants return <code>existing</code> rather than refuse:
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-incomplete.log">0 pass,4 semantic failures</a>. This is a repair
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-incomplete.log">0 pass,4 semantic failures</a>. This is a repair
 ablation on the completed source, not a claim that a pristine original checkout
 was separately measured. Restored source passes in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-completion-native-restored.log">49 native check capture</a>, and again
-in the final <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-native.log">58 native check capture</a>.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-completion-native-restored.log">49 native check capture</a>, and again
+in the final <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-native.log">58 native check capture</a>.</p>
 <p>An initial activity plant hit a dependent audit foreign key before exercising the
 assertion; the fixture was corrected to remove that synthetic dependent audit
 first. The setup error was not counted as a semantic failure. The four-case
@@ -10809,7 +10931,7 @@ ablation above is the corrected capture.</p>
 <h3 id="registry-realtime-must-apply-committed-d15-settings">Registry realtime must apply committed D15 settings<a class="headerlink" href="#registry-realtime-must-apply-committed-d15-settings" title="Permanent link">&para;</a></h3>
 <p><strong>Reproduced:</strong> valid stored mmol units, plugin selection and complete threshold
 settings reached API HTTP status while the registry realtime entry remained on
-mg/dl defaults. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-realtime-settings-before.log">pre-repair discriminator</a>
+mg/dl defaults. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-realtime-settings-before.log">pre-repair discriminator</a>
 failed with <code>'mg/dl' !== 'mmol'</code>. The repair uses a separate readonly D15 presentation
 reader for realtime entries and staged live admission; missing state refuses.</p>
 <p>The native discriminator reads actual PostgreSQL settings, uses actual HTTP API
@@ -10818,8 +10940,8 @@ status serialization, and compares the actual realtime protocol's
 updates changing effective identity, and missing-state refusal. Projection rows and
 socket authority are synthetic; this is not a complete clinical-stream or live
 Socket.IO compatibility campaign. The isolated exact-leaf archive
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-rt-leaf-native.log">passes</a>. A deliberate constant-settings mutation
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-constant-rt-settings.log">reproduces the units mismatch</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-rt-leaf-native.log">passes</a>. A deliberate constant-settings mutation
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-constant-rt-settings.log">reproduces the units mismatch</a>,
 and the restored final native bundle passes.</p>
 <h3 id="human-keys-resolved-origins-and-bounded-provider-discovery">Human keys, resolved origins and bounded provider discovery<a class="headerlink" href="#human-keys-resolved-origins-and-bounded-provider-discovery" title="Permanent link">&para;</a></h3>
 <p>The registry capability uses separate human-data and human-management Vault key
@@ -10827,7 +10949,7 @@ purposes, current registry key revisions and current durable session authority.
 Origins come from registered host resolution; no internal or unknown forwarded
 alias becomes an OIDC origin. Native checks use actual Vault signing, PostgreSQL
 sessions and key revocation, not an external IdP.</p>
-<p>The restored <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-completion-focused-restored.log">88 focused checks</a>
+<p>The restored <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-completion-focused-restored.log">88 focused checks</a>
 and 49 native checks cover the selected capability. Authored controls were semantic
 red then restored:</p>
 <table>
@@ -10840,19 +10962,19 @@ red then restored:</p>
 <tbody>
 <tr>
 <td>Skip registered-origin admission</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-alias-origin.log">Missing expected rejection</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-alias-origin.log">Missing expected rejection</a></td>
 </tr>
 <tr>
 <td>Ignore changed human key entry revision</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-human-key-refresh.log">Old token accepted; missing rejection</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-human-key-refresh.log">Old token accepted; missing rejection</a></td>
 </tr>
 <tr>
 <td>Cache OIDC provider by tenant alone</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-origin-binding.log">Second valid alias403 instead of200</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-origin-binding.log">Second valid alias403 instead of200</a></td>
 </tr>
 <tr>
 <td>Remove settled provider cache bound</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-origin-cache-bound.log">3 retained entries instead of2</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/registry-control-origin-cache-bound.log">3 retained entries instead of2</a></td>
 </tr>
 </tbody>
 </table>
@@ -10887,45 +11009,45 @@ is not a full real-role restore acceptance.</p>
 <tbody>
 <tr>
 <td>Reuse connector before rereading references</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-credential-reread.log">Decrypt call count fails</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-credential-reread.log">Decrypt call count fails</a></td>
 </tr>
 <tr>
 <td>Skip actual HTTP request admission</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-request-admission.log">Missing expected rejection</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-request-admission.log">Missing expected rejection</a></td>
 </tr>
 <tr>
 <td>Ignore changed source generation before request</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-source-generation.log">Missing expected rejection</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-source-generation.log">Missing expected rejection</a></td>
 </tr>
 <tr>
 <td>Bypass generation CAS</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-generation-cas.log">Stale update accepted</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-generation-cas.log">Stale update accepted</a></td>
 </tr>
 <tr>
 <td>Ignore failed maintenance lock acquisition</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-maintenance-lock.log">Write accepted; missing rejection</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-maintenance-lock.log">Write accepted; missing rejection</a></td>
 </tr>
 <tr>
 <td>Enumerate on unchanged revision</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-normal-revision-cost.log">Enumeration count3 instead of2</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-normal-revision-cost.log">Enumeration count3 instead of2</a></td>
 </tr>
 <tr>
 <td>Return constant realtime presentation</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-constant-rt-settings.log">mg/dl instead of mmol</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-control-constant-rt-settings.log">mg/dl instead of mmol</a></td>
 </tr>
 </tbody>
 </table>
 <p>Intrinsic native controls also disable history FORCE RLS, replace the exact alias
 function body, attempt foreign-tenant access and broaden clock privileges, then
 restore each condition. The final restored source passes
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-native.log">58 native</a> and
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-focused.log">130 focused</a> checks. The private
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-native.log">58 native</a> and
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-focused.log">130 focused</a> checks. The private
 connector-inspection strict schema deliberately becomes version2 for source identity,
 generation and configuration-refusal status; peer upgrade must be coordinated.
 Other private versions and browser/uploader data protocols are unchanged here.</p>
 <h2 id="final-guards-and-limits">Final guards and limits<a class="headerlink" href="#final-guards-and-limits" title="Permanent link">&para;</a></h2>
 <p>Reproduced final inventory:678 test files/8tiers. Changed-source lint:
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-lint.log">0 errors,3 warnings</a>, two regex warnings
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/registry-connector-2026-11-12/logs/connector-registry-final-lint.log">0 errors,3 warnings</a>, two regex warnings
 and one synthetic-fixture chmod warning. No-trigger-NOTIFY guard:13 trigger bodies,
 2 trigger functions,0 notifying functions. The existing write-boundary guard checks
 9 clinical adapter entry points and canonical socket delegation; it is not a claim

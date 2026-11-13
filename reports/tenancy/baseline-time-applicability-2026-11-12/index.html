@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6901,6 +6905,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8023,6 +8087,64 @@
     
   
     m7-startup-connections-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
   
 
     
@@ -10690,7 +10812,7 @@
 <h1 id="normal-baseline-time-applicability--2026-11-12">Normal-baseline TIME applicability — 2026-11-12<a class="headerlink" href="#normal-baseline-time-applicability--2026-11-12" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-12 at <code>da3340d0f</code>.</em></p>
 <p>This immutable leaf records a <strong>reproduced pure actual-source projection/due discriminator</strong> and a <strong>read-derived phase applicability assessment</strong>. It records the historical measurement basis, not a new policy or campaign authorization. No capacity result follows from it.</p>
-<p>The selected commits are core <code>47b43b6246ce7f94f1f1f0d01830495a78b28add</code>, deployment <code>be95214a6cae427e1898b0ca6ce39825163ee291</code>, and alignment <code>4ddea55301c3d1f95faf25e15a80051bbb122e8b</code>. Explicit Git objects were used when peer HEADs had moved; core was clean at the selected commit before and after. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/source-binding.json">Source binding</a> preserves source and private-original hashes.</p>
+<p>The selected commits are core <code>47b43b6246ce7f94f1f1f0d01830495a78b28add</code>, deployment <code>be95214a6cae427e1898b0ca6ce39825163ee291</code>, and alignment <code>4ddea55301c3d1f95faf25e15a80051bbb122e8b</code>. Explicit Git objects were used when peer HEADs had moved; core was clean at the selected commit before and after. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/source-binding.json">Source binding</a> preserves source and private-original hashes.</p>
 <h2 id="reproduced-measurement">Reproduced measurement<a class="headerlink" href="#reproduced-measurement" title="Permanent link">&para;</a></h2>
 <p>The actual core <code>tenant-projection-evaluator</code> materialises its bounded memory projection and runs the actual plugins and <code>nextDue</code>. Settings use actual <code>catalogue.DEFAULTS → catalogue.project → environment</code>, checked against the blank registry-settings enabled-plugin list. Inputs reproduce the deployment primer's fresh normal synthetic SGV values 123/177, one second old, with no additional clinical records.</p>
 <table>
@@ -10723,24 +10845,24 @@
 </tr>
 </tbody>
 </table>
-<p>The twelve <code>evaluateTime</code> calls were invoked explicitly at selected synthetic instants. They <strong>do not prove natural runtime TIME scheduling or completion</strong>. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/full-projection.json">full catalogue-default capture</a> retains every result, not just a counter summary. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/execution.json">Execution</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/streams.json">streams</a>, and the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/instrument-path-redacted.cjs">path-redacted instrument</a> retain command/exit, source warnings and the code used. The Basal warnings about a missing treatment profile are expected for this primer and remain in the streams. An initial harness setup attempt refused tenant binding in single mode; the harness adopted the existing pure tests' explicit multitenant mode without changing source.</p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/controls.json">controls</a> distinguish an input contrast from the meaningful red guard control. Disabling only <code>errorcodes</code> membership in a scratch copy of the actual ten-minute rule makes the original 599000 ms assertion fail, exit 1; the absent due is coerced to 0 in subtraction, producing <code>-1794484800000</code> instead of 599000. Restoring the original actual module returns exit 0. Private instrument/stream hashes are retained; no peer source was modified. This control exercises the due assertion, not a full scheduler or clinical-equivalence claim.</p>
+<p>The twelve <code>evaluateTime</code> calls were invoked explicitly at selected synthetic instants. They <strong>do not prove natural runtime TIME scheduling or completion</strong>. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/full-projection.json">full catalogue-default capture</a> retains every result, not just a counter summary. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/execution.json">Execution</a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/streams.json">streams</a>, and the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/instrument-path-redacted.cjs">path-redacted instrument</a> retain command/exit, source warnings and the code used. The Basal warnings about a missing treatment profile are expected for this primer and remain in the streams. An initial harness setup attempt refused tenant binding in single mode; the harness adopted the existing pure tests' explicit multitenant mode without changing source.</p>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/controls.json">controls</a> distinguish an input contrast from the meaningful red guard control. Disabling only <code>errorcodes</code> membership in a scratch copy of the actual ten-minute rule makes the original 599000 ms assertion fail, exit 1; the absent due is coerced to 0 in subtraction, producing <code>-1794484800000</code> instead of 599000. Restoring the original actual module returns exit 0. Private instrument/stream hashes are retained; no peer source was modified. This control exercises the due assertion, not a full scheduler or clinical-equivalence claim.</p>
 <h2 id="dependency-and-toolchain-attribution">Dependency and toolchain attribution<a class="headerlink" href="#dependency-and-toolchain-attribution" title="Permanent link">&para;</a></h2>
-<p>The source owner explicitly authorized a historical lane-owned exact-lock dependency fixture. It was not a fresh 47b installation. The fixture lock and selected core lock both hash <code>6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e</code>; historical d505 and 47b <code>package.json</code> both hash <code>6bd42fb8f7c0d475209ef7d050a6ebaed7f2b461e12cb254124feabf0fd42a5f</code>. The fixture has no root <code>package.json</code>; historical package equality was independently measured from Git objects, not inferred from a directory name. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/dependencies.json">Dependency provenance</a> names the historical evidence commit and the explicit absence.</p>
+<p>The source owner explicitly authorized a historical lane-owned exact-lock dependency fixture. It was not a fresh 47b installation. The fixture lock and selected core lock both hash <code>6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e</code>; historical d505 and 47b <code>package.json</code> both hash <code>6bd42fb8f7c0d475209ef7d050a6ebaed7f2b461e12cb254124feabf0fd42a5f</code>. The fixture has no root <code>package.json</code>; historical package equality was independently measured from Git objects, not inferred from a directory name. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/dependencies.json">Dependency provenance</a> names the historical evidence commit and the explicit absence.</p>
 <p>The provenance home is alignment <code>2b197cfc32113612f812442547ae8555e87aaf7d</code>, <code>reports/tenancy/m7-core-acceptance-2026-11-12/oidc-d50502bb/instrument.json</code>, with earlier install records under <code>reports/tenancy/m7-clinical-equivalence-2026-11-12/</code>. No install ran for this discriminator.</p>
 <p>A scratch Git archive of the exact core bypasses the peer's existing dependency symlink. Resolution rejects every non-builtin realpath outside that source overlay or the specifically authorized dependency tree. All 382 resolution paths are retained with logical path prefixes. No dependency tree or full source archive is published.</p>
-<p>The actual pure host used Node <code>v22.23.4</code> and kernel <code>6.18.7-76061807-generic</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/toolchain.json">toolchain provenance</a> records the binary SHA256. Remote Node24/kernel portability remains <strong>UNMEASURED</strong>.</p>
+<p>The actual pure host used Node <code>v22.23.4</code> and kernel <code>6.18.7-76061807-generic</code>; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/toolchain.json">toolchain provenance</a> records the binary SHA256. Remote Node24/kernel portability remains <strong>UNMEASURED</strong>.</p>
 <h2 id="read-derived-phase-applicability">Read-derived phase applicability<a class="headerlink" href="#read-derived-phase-applicability" title="Permanent link">&para;</a></h2>
-<p>The selected <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/tools/mt-bench/m7-joined/adapter.py">adapter</a> primes data before starting evaluator/remaining roles, requires acquisition readiness, then runs 60 seconds sampler-disabled idle, 120 seconds sampled idle, existing probe/socket prime, 300 seconds sampled load, then restart/recovery. These are source-contract timings, not observed deployment durations.</p>
+<p>The selected <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/tools/mt-bench/m7-joined/adapter.py">adapter</a> primes data before starting evaluator/remaining roles, requires acquisition readiness, then runs 60 seconds sampler-disabled idle, 120 seconds sampled idle, existing probe/socket prime, 300 seconds sampled load, then restart/recovery. These are source-contract timings, not observed deployment durations.</p>
 <p>For a one-second-old reading at the controlled acquisition instant, the ten-minute due is still 539 seconds away when the sampled idle starts after the preceding 60 seconds. It remains 419 seconds away after both idle phases. Actual sequential primer/setup/readiness delays change each owner's starting data age; this experiment does not claim identical ages in an actual deployment. With unchanged normal input, only a roughly 8-to-10-minute initial SGV-age band can put the boundary inside a 120-second idle. Already-expired inputs may have no future due at all.</p>
 <p>The core runtime schedules the component's actual future due; a slow heartbeat applies only when the component reports a slow reason. The measured normal input has none. Existing k6/probe writes refresh readings; a five-minute load does not guarantee every owner's ten-minute TIME boundary. The load observer accepts acquisition or TIME progression; recovery requires fresh acquisition in a changed runtime and may finish promptly. Its 900-second ceiling is not a required 900-second wait or a TIME witness.</p>
-<p>The selected <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/tools/mt-bench/m7-joined/evaluator_progress.py">progress assessor</a> requires a positive completed-TIME delta for every owner during idle, while due state is captured-only and not opportunity-assessed. Failure occurs at idle exit, before later probe/load phases. Therefore those later phases cannot rescue this particular idle gate. The finding is a missing applicability/witness capability, not reproduced evaluator malfunction. Future due cannot be presented as completed TIME or no-work PASS. An urgent alarm-message proof has different applicability and cannot establish the normal baseline's opportunity.</p>
+<p>The selected <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/tools/mt-bench/m7-joined/evaluator_progress.py">progress assessor</a> requires a positive completed-TIME delta for every owner during idle, while due state is captured-only and not opportunity-assessed. Failure occurs at idle exit, before later probe/load phases. Therefore those later phases cannot rescue this particular idle gate. The finding is a missing applicability/witness capability, not reproduced evaluator malfunction. Future due cannot be presented as completed TIME or no-work PASS. An urgent alarm-message proof has different applicability and cannot establish the normal baseline's opportunity.</p>
 <p>At measurement time the single recommendation was a separate source-owned normal-baseline TIME witness bracketing each owner's actual due and requiring naturally completed TIME under stable ownership/input, without changing the existing seed/settings/cadence or strict completion guarantee. This leaf does not implement or claim any later decision/capability.</p>
 <h2 id="reproduction-boundary-and-publication">Reproduction boundary and publication<a class="headerlink" href="#reproduction-boundary-and-publication" title="Permanent link">&para;</a></h2>
 <p>To reproduce the pure experiment, materialise the explicit core Git object into an owned scratch source, obtain an independently authorized exact-lock dependency installation, and replace the logical <code>&lt;CORE_SOURCE&gt;</code> and <code>&lt;DEPENDENCY_NODE_MODULES&gt;</code> path literals in the published instrument. Run <code>node</code> with only <code>PATH</code>, <code>LANG</code>, <code>TZ</code> and the explicit <code>NODE_PATH</code> selected as recorded. Do not run it against a peer checkout's dependency symlink. The path-redacted instrument is a derivative, not an additional executed capture.</p>
-<p>All public captures are <strong>new labelled derivatives</strong> bound by SHA256 to unchanged private originals. Only local pathname prefixes were replaced; actual result values remain intact. The bounded control summary preserves exact symptoms and original hashes. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/manifest.json">The manifest</a> binds every leaf artifact. No credentials, personal host paths, environment files, dependency tree or full source archive are included.</p>
+<p>All public captures are <strong>new labelled derivatives</strong> bound by SHA256 to unchanged private originals. Only local pathname prefixes were replaced; actual result values remain intact. The bounded control summary preserves exact symptoms and original hashes. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/manifest.json">The manifest</a> binds every leaf artifact. No credentials, personal host paths, environment files, dependency tree or full source archive are included.</p>
 <p>No application server, network, Docker, database, product build, npm installation or cloud action ran. There is no natural-TIME, SQL correctness, remote Node24, capacity, clinical-equivalence, full-acceptance or deployment claim here. The programme batch owner owns any later integration or decision record.</p>
-<p>Publication checks: bounded JSON parsing, manifest hashes, leaf links, privacy scan and whitespace checks passed. One <code>make queue-check</code> attempt stopped at queue validation because 16 existing gate cwd references point to absent peer worktrees in this isolated checkout; later steps were not reached. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/baseline-time-applicability-2026-11-12/publication-verification.json">Exact publication check scope and missing-path diagnostics</a> are retained. No queue or peer files were repaired, and no application gate ran.</p>
+<p>Publication checks: bounded JSON parsing, manifest hashes, leaf links, privacy scan and whitespace checks passed. One <code>make queue-check</code> attempt stopped at queue validation because 16 existing gate cwd references point to absent peer worktrees in this isolated checkout; later steps were not reached. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/baseline-time-applicability-2026-11-12/publication-verification.json">Exact publication check scope and missing-path diagnostics</a> are retained. No queue or peer files were repaired, and no application gate ran.</p>
 
 
 

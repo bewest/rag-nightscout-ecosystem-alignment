@@ -2522,6 +2522,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -6887,6 +6891,66 @@
       
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-admission-commissioning-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-admission-commissioning-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
         
       
         
@@ -8041,6 +8105,64 @@
           
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-stored-count-oracle-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-stored-count-oracle-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
         
       
     
@@ -8130,7 +8252,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_105" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_107" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -8152,14 +8274,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7_18_105" id="__nav_7_18_105_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_7_18_107" id="__nav_7_18_107_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_105_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_105">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_107_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_107">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -8489,7 +8611,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_105_7" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_107_7" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -8512,8 +8634,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_105_7_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_105_7">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_7_18_107_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_107_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -11116,7 +11238,7 @@
 <p><em>Living document, last changed 2026-11-12 at <code>9560ff9e4</code>.</em></p>
 <p>Reproduced on frozen core <code>d5e2e874659155c952b5b5deb862f12f982ac02e</code>; test-only repair <code>7ce803582f5f6c4d7506ec5321121e67e00dff09</code> changes only <code>tests/internal-api-composition.test.js</code>. No product transport, schema, interface or rejection policy changes.</p>
 <h2 id="failure-classification">Failure classification<a class="headerlink" href="#failure-classification" title="Permanent link">&para;</a></h2>
-<p>The first comprehensive UNIT run failed three composition cases: UDS and HTTP positive route-owner probes expected 200 but received 503; the owner-fence ablation reported <code>Missing expected rejection</code>. The same <strong>16 passing / 3 failing</strong> reproduce in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/isolated-D5-red.txt">isolated D5</a>, without shared-database or earlier-test state. This is a stale fixture, not evidence of a live routing breach.</p>
+<p>The first comprehensive UNIT run failed three composition cases: UDS and HTTP positive route-owner probes expected 200 but received 503; the owner-fence ablation reported <code>Missing expected rejection</code>. The same <strong>16 passing / 3 failing</strong> reproduce in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/isolated-D5-red.txt">isolated D5</a>, without shared-database or earlier-test state. This is a stale fixture, not evidence of a live routing breach.</p>
 <p><code>lifecycle-participant.json</code> selects wire version 2; the transport independently checks route ownership and that wire version. The raw fixture defaulted to header version 1. Named clients already selected version 2 and passed. The old raw positive control therefore correctly refused, and removing the service-owner fence alone still left the version fence refusing: the ablation could not expose the intended owner defect.</p>
 <p>Raw cohort-route probes now explicitly use the owning lifecycle contract's current wire version, independently of the deliberately foreign service ID. Foreign/unregistered service and method checks remain required before dispatch. An explicit version-1 probe must still refuse. The fixture retains a legacy version-1 status <strong>payload</strong>, which the current response schema deliberately supports; wire version and payload version are separate.</p>
 <h2 id="focused-results-and-controls">Focused results and controls<a class="headerlink" href="#focused-results-and-controls" title="Permanent link">&para;</a></h2>
@@ -11129,36 +11251,36 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/fixture-repaired.txt">Repaired composition suite</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/fixture-repaired.txt">Repaired composition suite</a></td>
 <td>19 passing</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/restored-affected.txt">Restored exact affected suites</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/restored-affected.txt">Restored exact affected suites</a></td>
 <td>66 passing: composition, transport, shutdown, contracts, listener configuration and stale socket</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/exact-committed.txt">Exact committed source</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/exact-committed.txt">Exact committed source</a></td>
 <td>19 passing; clean product worktree</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/owner-ablation-red.txt">Owner-fence-only source ablation</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/owner-ablation-red.txt">Owner-fence-only source ablation</a></td>
 <td>RED, 2 failures: foreign co-resident service returned 200 instead of 503</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/version-ablation-red.txt">Wire-version-only source ablation</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/version-ablation-red.txt">Wire-version-only source ablation</a></td>
 <td>RED, 2 failures: old lifecycle wire version returned 200 instead of 503</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/controls.json">Restoration assertions</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/controls.json">Restoration assertions</a></td>
 <td>Original transport restored byte-for-byte; SHA-256 unchanged</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/lint.txt">Changed-test lint</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/lint.txt">Changed-test lint</a></td>
 <td>Zero errors; two existing fixture filesystem warnings</td>
 </tr>
 </tbody>
 </table>
-<p>The ablations modify only the lane's own transport file and restore original bytes in <code>finally</code>. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/controls.py">Portable control instrument</a> takes an owned worktree path; never pass another session's worktree. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/artifacts.json">Attribution</a> pins both executed bytes and the published copy, whose only change is replacing the execution-local root with a positional argument. Captures strip ANSI, normalize workspace prefixes and trim line-end whitespace; original local logs remain preserved.</p>
+<p>The ablations modify only the lane's own transport file and restore original bytes in <code>finally</code>. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/controls.py">Portable control instrument</a> takes an owned worktree path; never pass another session's worktree. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/artifacts.json">Attribution</a> pins both executed bytes and the published copy, whose only change is replacing the execution-local root with a positional argument. Captures strip ANSI, normalize workspace prefixes and trim line-end whitespace; original local logs remain preserved.</p>
 <h2 id="environment-and-commands">Environment and commands<a class="headerlink" href="#environment-and-commands" title="Permanent link">&para;</a></h2>
 <p>Node v22.23.4. Dependencies are the lane-owned clinical acceptance installation from the byte-identical frozen package lock, SHA-256 recorded in <code>artifacts.json</code>; no peer dependencies were modified. The component tests use actual private UDS/loopback HTTP and the recording operation-window protocol fixture. They need no MongoDB or PostgreSQL connection, and establish no native database/process/clinical acceptance.</p>
 <p>Each Mocha invocation used a cleared environment with PATH and a temporary HOME, plus <code>NODE_ENV=test</code>, <code>CI=true</code>, <code>TZ=UTC</code>, then the checked-in CI environment loader. No ambient <code>NS_*</code>, <code>NODE_OPTIONS</code> or <code>NODE_PATH</code> was inherited:</p>
@@ -11170,7 +11292,7 @@
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>tests/internal-api-listener-config.test.js<span class="w"> </span>tests/internal-api-stale-socket.test.js<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span>--reporter<span class="w"> </span>dot
 </code></pre></div>
-<p>An <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/initial-affected-selection.txt">initial adjacent-suite selection</a> guessed two nonexistent filenames. Mocha warned and ran 49 existing tests; that output is retained and is not claimed as coverage of the absent files. The exact inventory was inspected before the corrected six-file command above. No expectation was weakened to make either original failure or an ablation pass.</p>
+<p>An <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m7-unit-repairs-2026-11-12/internal-api-composition/initial-affected-selection.txt">initial adjacent-suite selection</a> guessed two nonexistent filenames. Mocha warned and ran 49 existing tests; that output is retained and is not claimed as coverage of the absent files. The exact inventory was inspected before the corrected six-file command above. No expectation was weakened to make either original failure or an ablation pass.</p>
 <h2 id="integration-boundary">Integration boundary<a class="headerlink" href="#integration-boundary" title="Permanent link">&para;</a></h2>
 <p>The coordinator owns joining this repair with the other failed-UNIT repairs and refreezing before one comprehensive repeat. The D5 campaign is failed, not ready; later tiers and enabled corpus were not run by that campaign. This lane ran no full/browser/capacity campaign, cloud action, push or PR. Product whitespace check passed. Local report links and instrument syntax are checked; programme queue gates remain with the coordinator's populated workspace.</p>
 
