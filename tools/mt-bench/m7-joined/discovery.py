@@ -98,6 +98,10 @@ def run_discovery(a,d,m,k6_image):
         from reduce import measurements
         try:record.value['measurements']=measurements(d,m)
         except Exception as error:record.value['measurements']={'complete':False,'code':safe_code(error)}
+        # Independent owned counts and resource reduction remain observable
+        # before classifying the already recorded fingerprint finding.
+        record.save()
+        require(record.value.get('settingsFingerprintObservation',{}).get('verdict')!='FAIL','M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
         if record.value.get('settingsFingerprintObservation',{}).get('verdict')=='PASS' and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and record.value['probe'].get('restart') is not None and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
         record.save();check_discovery(record.value);return record.value
     except Exception as error:
@@ -158,7 +162,6 @@ def discovery_load(a,d,m,k6_id,record):
     if (out/'k6-summary.json').is_file():
         metrics=a.document(out/'k6-summary.json')['metrics'];record.value['metrics']={key:metrics[key] for key in ('http_reqs','http_req_failed','dropped_iterations','writes_ok','writes_refused','writes_uncertain','responses_refused') if key in metrics}
         fingerprint=a.profile_provenance.fingerprint_check(metrics);record.value['settingsFingerprintObservation']=fingerprint;record.save()
-        require(fingerprint['verdict']!='FAIL','M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
         result,known=count_observation(a,d,out,runid,metrics)
         record.value['oracle']=result if known else None
         record.value['oracleFindings']=result;record.save()
