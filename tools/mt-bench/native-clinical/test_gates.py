@@ -44,7 +44,9 @@ class Gates(unittest.TestCase):
         with self.assertRaisesRegex(G.Refused,'NO_INSTRUMENT'):G.cold_ack(ack,limits)
         fields=('peakActive','peakQueued','accepted','started','completed','failed','duplicates','deferred','overloaded','schedulerRefused','cancelled','closeCancelled','closedRefused','invalidRefused')
         observed={'version':1,**dict.fromkeys(fields,0)};observed.update(peakActive=1,peakQueued=3,accepted=16,started=16,completed=16);ack['cold']['observed']=observed
-        self.assertEqual(G.cold_ack(ack,limits)['result'],'PASS');observed['peakActive']=2
+        self.assertEqual(G.cold_ack(ack,limits)['result'],'PASS');observed['peakActive']=0
+        with self.assertRaisesRegex(G.Refused,'COLD_BOUND'):G.cold_ack(ack,limits)
+        observed['peakActive']=2
         with self.assertRaisesRegex(G.Refused,'COLD_BOUND'):G.cold_ack(ack,limits)
     def test_isolation_requires_explicit_refusal_and_positive_own_frame(self):
         v={'tenantA':IDS[0],'tenantB':IDS[1],'crossAuthorizationRefused':True,'socketConnectedBeforeRefusal':True,'socketExplicitRefusal':True,'foreignFrames':0,'positiveOwnFrame':True}
@@ -62,6 +64,13 @@ class Gates(unittest.TestCase):
         with self.assertRaisesRegex(G.Refused,'CACHED_BG_NOW_UNAVAILABLE'):G.cached_clinical(view,IDS)
         cache[0]['bgNow']['meanFinite']=True;rows[0]['evaluation']['ageMs']=60001
         with self.assertRaisesRegex(G.Refused,'EVALUATION_CONFIRMATION_AGE_OR_ALERT'):G.cached_clinical(view,IDS)
+    def test_feed_delivery_requires_same_runtime_and_positive_downstream_work(self):
+        health={'live':True,'connected':True,'degraded':False,'refusal':None,'recoveryRemaining':0,'heartbeatAgeMs':5,**dict.fromkeys(('pages','checks','hints','refused','reconnects','sweeps','rotated'),0)}
+        before={service:{'runtimeId':service+'-runtime','configured':{'ordinal':index},'diagnostics':{'changeFeed':{'status':'observed','health':copy.deepcopy(health)}}}for index,service in enumerate(('ev1','ev2'))}
+        after=copy.deepcopy(before)
+        for row in after.values():row['diagnostics']['changeFeed']['health'].update(checks=2,hints=1)
+        self.assertEqual(G.feed_delivery(before,after,5000)['result'],'PASS');after['ev1']['runtimeId']='replacement'
+        with self.assertRaisesRegex(G.Refused,'FEED_RUNTIME_CHANGED'):G.feed_delivery(before,after,5000)
     def test_runtime_source_guard_precedes_any_host_construction(self):
         from unittest.mock import patch
         import runtime

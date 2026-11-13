@@ -8,6 +8,8 @@ CASES=[
  ('cached-nonfinite','gates.py',"bg.get('meanFinite')is True","True"),
  ('cold-peak','gates.py',"observed['peakActive']<=limits['activeLimit']","True"),
  ('final-source-guard','runtime.py',"need(D.SOURCE_JOIN=='REVIEWED_FINAL_SOURCE'and plan.get('runtimeReady')is True,'FINAL_SOURCE_JOIN_REQUIRED_BEFORE_EFFECTS')","need(True,'FINAL_SOURCE_JOIN_REQUIRED_BEFORE_EFFECTS')"),
+ ('cold-zero-active','gates.py',"1<=observed['peakActive']","0<=observed['peakActive']"),
+ ('feed-runtime','gates.py',"before[service]['runtimeId']==after[service].get('runtimeId')","True"),
  ('producer-cancel','producer_process.py',"                if cancel_event is not None and cancel_event.is_set():failure='COMMAND_CANCELLED';break\n",''),
 ]
 def main(output):

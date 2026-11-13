@@ -110,7 +110,7 @@ monotonic clock and joins the actual synthetic date to a subsequent stock frame.
 
 Cold evidence consumes the reviewed additive `cold.observed` v1 ACK schema:
 peakActive includes delaying+running; peakQueued samples stable post-pump waiting.
-Final zeros without these peaks are NO-INSTRUMENT. ACKs must match incarnation,
+Final zeros without these peaks are NO-INSTRUMENT. Completed work requires a positive active peak, and the selected storm must actually exercise API2 queueing; a missed queue window refuses rather than passing an unexercised criterion. ACKs must match incarnation,
 nonce, plan, tags and source before their statistics are considered.
 
 ## Finite resource accounting
@@ -127,7 +127,7 @@ host deadline, and 4 MiB stdout/stderr reserved before construction. It admits a
 most 8,192 explicit HTTP requests and 16 concurrent sockets. The HTTP-wide
 observer, including source primer and stock handshakes, permits at most 16,384
 requests/256 MiB response bytes. Private accounting writes have a separate
-256 MiB cumulative bound. Receipt pages contain at most 64 records; no page may
+256 MiB cumulative bound. Stock Engine.IO packets have an independent 256 MiB cumulative input ceiling and one MiB packet/payload ceiling; source-day frames allow at most 512 SGVs. Receipt pages contain at most 64 records; no page may
 exceed 64 KiB. Source primer's existing finite warming policy is preserved.
 These are instrument bounds; none is a product SLO or a production profile.
 
@@ -146,6 +146,8 @@ python3 -B tools/mt-bench/native-clinical/clinical.py dry-run \
   NEW_MODEL_DIR/clinical-plan.private.json NEW_RECORDING_DIR
 python3 -B tools/mt-bench/native-clinical/test_gates.py
 node tools/mt-bench/native-clinical/test_client.cjs
+node tools/mt-bench/native-clinical/test_stock_client.cjs
+python3 -B tools/mt-bench/native-clinical/test_runtime.py
 ```
 
 `control_metadata.cjs PRIVATE_PREPARED_ROOT NEW_OUTPUT` uses actual source private
@@ -157,3 +159,5 @@ Remaining launch gates are the final coherent source/operator qualification,
 exact deployment/profile/collector/image join and audit, independent driver/model
 review, new nonce/IPAM/ports/custody plan review, then a bounded authorized actual
 episode. Current model outputs always retain native acceptance UNMEASURED.
+
+Independent emergency cleanup uses `python3 tools/mt-bench/native-clinical/cleanup.py ORIGINAL_ROOT_CLEANUP_SPEC NEW_PRIVATE_OUTPUT`. It validates the original source/image/project/base and full eleven-slot roster, stops only exact inspected identities, preserves uncertainty, and never grants credit retirement. The original result remains unchanged.

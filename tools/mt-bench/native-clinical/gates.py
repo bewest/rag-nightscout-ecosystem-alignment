@@ -64,7 +64,7 @@ def cold_ack(ack,limits):
     need(isinstance(observed,dict)and set(observed)==fields and observed.get('version')==1,'COLD_HIGH_WATER_NO_INSTRUMENT')
     need(all(type(x)is int and 0<=x<=9007199254740991 for x in observed.values()),'COLD_COUNTER_CONTRACT')
     need(cold.get('activeLimit')==limits['activeLimit']and cold.get('pendingLimit')==limits['pendingLimit']and cold.get('closed')is True and all(cold.get(k)==0 for k in ('queued','delaying','running')),'COLD_DRAIN')
-    need(observed['peakActive']<=limits['activeLimit']and observed['peakQueued']<=limits['pendingLimit'],'COLD_BOUND')
+    need(1<=observed['peakActive']<=limits['activeLimit']and observed['peakQueued']<=limits['pendingLimit'],'COLD_BOUND')
     need(observed['accepted']>0 and observed['started']==observed['completed']+observed['failed']and observed['accepted']==sum(observed[k]for k in ('completed','failed','schedulerRefused','cancelled','closeCancelled')),'COLD_ACCOUNTING')
     need(observed['failed']==observed['schedulerRefused']==observed['cancelled']==observed['closeCancelled']==0,'COLD_FAILED_OR_CANCELLED_WORK')
     return {'criterion':'cold-high-water','result':'PASS','observed':observed,'scope':'lifetime delaying+running peak and stable post-pump queued peak, not timestamped live occupancy'}
@@ -112,6 +112,7 @@ def feed_delivery(before,after,heartbeat_bound):
     import math
     need(type(heartbeat_bound)is int and heartbeat_bound>0,'FEED_CONFIG_UNKNOWN');need(set(before)==set(after)and len(before)==2,'FEED_INSTANCE_ROSTER');result={}
     for service in before:
+        need(isinstance(before[service].get('runtimeId'),str)and before[service]['runtimeId']==after[service].get('runtimeId')and type(before[service].get('configured',{}).get('ordinal'))is int and before[service]['configured']['ordinal']==after[service].get('configured',{}).get('ordinal'),'FEED_RUNTIME_CHANGED')
         a=before[service].get('diagnostics',{}).get('changeFeed',{});b=after[service].get('diagnostics',{}).get('changeFeed',{})
         need(a.get('status')==b.get('status')=='observed','FEED_UNOBSERVED');a=a['health'];b=b['health']
         need(all(b.get(k)is v for k,v in {'live':True,'connected':True,'degraded':False}.items())and b.get('refusal')is None and b.get('recoveryRemaining')==0,'FEED_UNHEALTHY')

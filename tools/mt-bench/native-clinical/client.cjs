@@ -19,9 +19,18 @@ function validate(spec){
  need(spec.maximumRequests===8192&&spec.maximumSockets===16&&spec.maximumHttpBytes===268435456&&spec.maximumWallMs===1200000,'CLIENT_BOUNDS');
 }
 function create(spec,{prime,io,persist,now=Date.now,mono=monotonic,delay=ms=>new Promise(r=>setTimeout(r,ms))}){
- validate(spec);const start=now(),ledgers={},receiptPages=new Map(),sockets=new Map();let requests=0,recordedResponses=0,bytes=0,closed=false;
+ validate(spec);const start=now(),ledgers={},receiptPages=new Map(),sockets=new Map();let requests=0,recordedResponses=0,bytes=0,socketBytes=0,socketBudgetRefused=false,closed=false;
  for(const field of ['entries','devicestatus','treatments','probe'])ledgers[field]=accounting.create({ids:spec.ids,runId:spec.runId,persist:value=>persist('ledger-'+field+'.json',value)});
- const check=()=>need(!closed&&now()-start<spec.maximumWallMs,'CLIENT_CLOSED_OR_DEADLINE');
+ const check=()=>need(!closed&&now()-start<spec.maximumWallMs&&!socketBudgetRefused,'CLIENT_CLOSED_OR_DEADLINE');
+ // Observe stock Engine.IO packets without replacing its parser/protocol.
+ // The websocket implementation also receives a fixed one-MiB maxPayload.
+ function stockSocket(url,options){
+  check();const socket=io(url,options),engine=socket.io?.engine;
+  need(engine&&typeof engine.on==='function','CLIENT_STOCK_ENGINE_UNOBSERVED');
+  engine.on('packet',packet=>{const data=packet?.data;const size=data===undefined?0:Buffer.isBuffer(data)?data.length:Buffer.byteLength(typeof data==='string'?data:JSON.stringify(data));socketBytes+=size;
+   if(size>1048576||socketBytes>268435456){socketBudgetRefused=true;socket.emit('connect_error',Error('CLIENT_SOCKET_BYTE_BUDGET'));socket.close();}
+  });return socket;
+ }
  const credential=id=>{need(spec.ids.includes(id),'CLIENT_TENANT');const row=spec.credentials.find(x=>x.id===id);need(row&&typeof row.host==='string'&&typeof row.dataToken==='string'&&typeof row.rootHash==='string','CLIENT_CREDENTIAL');return row;};
  async function request(id,service,route,options={}){
   check();need(++requests<=spec.maximumRequests,'CLIENT_REQUEST_BUDGET');const sequence=requests;need(['api','api-2'].includes(service),'CLIENT_API_TARGET');const c=credential(id),begin=mono();let result;
@@ -55,7 +64,7 @@ function create(spec,{prime,io,persist,now=Date.now,mono=monotonic,delay=ms=>new
   // Fixed four-at-a-time stock sockets, no hand-written Engine.IO protocol.
   const u=new URL(spec.endpoints['socket-edge'].origin);
   for(let offset=0;offset<spec.ids.length;offset+=4)socketResults.push(...await Promise.all(spec.ids.slice(offset,offset+4).map(async id=>{
-   const c=credential(id),agent=new(require('node:http').Agent)({lookup:(host,options,done)=>options?.all?done(null,[{address:u.hostname,family:4}]):done(null,u.hostname,4)}),socket=io('http://'+c.host+':'+u.port,{agent,forceNew:true,transports:['websocket'],upgrade:false,reconnection:false,timeout:1000});let frames=0,errors=0;
+   const c=credential(id),agent=new(require('node:http').Agent)({lookup:(host,options,done)=>options?.all?done(null,[{address:u.hostname,family:4}]):done(null,u.hostname,4)}),socket=stockSocket('http://'+c.host+':'+u.port,{agent,forceNew:true,transports:['websocket'],upgrade:false,reconnection:false,maxPayload:1048576,perMessageDeflate:false,timeout:1000});let frames=0,errors=0;
    socket.on('connect',()=>socket.emit('authorize',{secret:c.rootHash}));socket.on('dataUpdate',()=>frames++);socket.on('connect_error',()=>errors++);
    try{const deadline=now()+1500;while(now()<deadline&&!frames&&!errors)await delay(25);return{tenant:id,frames,errors};}finally{socket.close();agent.destroy();}
   })));
@@ -65,18 +74,18 @@ function create(spec,{prime,io,persist,now=Date.now,mono=monotonic,delay=ms=>new
  async function connect(id,transport='websocket'){
   check();need(sockets.size<spec.maximumSockets&&!sockets.has(id)&&['websocket','polling'].includes(transport),'CLIENT_SOCKET_BUDGET');const c=credential(id),u=new URL(spec.endpoints['socket-edge'].origin);
   const agent=new(require('node:http').Agent)({keepAlive:true,lookup:(hostname,options,done)=>options?.all?done(null,[{address:u.hostname,family:4}]):done(null,u.hostname,4)});
-  const socket=io('http://'+c.host+':'+u.port,{agent,forceNew:true,transports:[transport],upgrade:false,reconnection:false,timeout:5000});const state={id,transport,agent,socket,connections:0,frames:[],totalFrames:0,foreignFrames:0,errors:0};sockets.set(id,state);
+  const socket=stockSocket('http://'+c.host+':'+u.port,{agent,forceNew:true,transports:[transport],upgrade:false,reconnection:false,maxPayload:1048576,perMessageDeflate:false,timeout:5000});const state={id,transport,agent,socket,connections:0,frames:[],totalFrames:0,foreignFrames:0,errors:0};sockets.set(id,state);
   socket.on('connect',()=>{state.connections++;socket.emit('authorize',{secret:c.rootHash});});
   socket.on('connect_error',()=>state.errors++);
-  socket.on('dataUpdate',frame=>{if(!Array.isArray(frame?.sgvs)||frame.sgvs.length>128||++state.totalFrames>8192){state.errors++;socket.close();return;}const points=frame.sgvs.map(x=>({mgdl:x.mgdl,mills:x.mills}));if(points.some(x=>x.mgdl>=210&&x.mgdl<226&&x.mgdl!==210+spec.ids.indexOf(id)))state.foreignFrames++;state.frames.push({sequence:state.totalFrames,receivedMonotonicNs:mono(),sgvs:points,hash:crypto.createHash('sha256').update(JSON.stringify(frame)).digest('hex')});if(state.frames.length>128)state.frames.shift();});
+  socket.on('dataUpdate',frame=>{if(!Array.isArray(frame?.sgvs)||frame.sgvs.length>512||++state.totalFrames>8192){state.errors++;socket.close();return;}const points=frame.sgvs.map(x=>({mgdl:x.mgdl,mills:x.mills}));if(points.some(x=>x.mgdl>=210&&x.mgdl<226&&x.mgdl!==210+spec.ids.indexOf(id)))state.foreignFrames++;state.frames.push({sequence:state.totalFrames,receivedMonotonicNs:mono(),sgvs:points,hash:crypto.createHash('sha256').update(JSON.stringify(frame)).digest('hex')});if(state.frames.length>128)state.frames.shift();});
   const deadline=now()+15000;while(now()<deadline&&(!socket.connected||!state.frames.length)&&state.errors===0)await delay(50);
   need(socket.connected&&state.connections===1&&state.frames.length>0,'CLIENT_SOCKET_NOT_OBSERVED');return socketState(id);
  }
  function socketState(id){const s=sockets.get(id);need(s,'CLIENT_SOCKET_MISSING');return {socketId:s.socket.id,connected:s.socket.connected,connections:s.connections,transport:s.transport,frames:s.totalFrames,errors:s.errors};}
  async function healthyB(id){
   const s=sockets.get(id);need(s&&s.socket.connected,'CLIENT_SOCKET_MISSING');const socketId=s.socket.id,from=s.totalFrames,read=await request(id,'api-2','/api/v3/entries'),writeResult=await write(id,'entries');
-  const deadline=now()+15000;while(now()<deadline&&!s.frames.filter(f=>f.sequence>from).some(f=>f.sgvs.some(x=>x.mgdl===writeResult.sgv&&x.mills>=writeResult.date)))await delay(50);
-  const ownFrameAfterWrite=s.frames.filter(f=>f.sequence>from).some(f=>f.sgvs.some(x=>x.mgdl===writeResult.sgv&&x.mills>=writeResult.date));
+  const deadline=now()+15000;while(now()<deadline&&!s.frames.filter(f=>f.sequence>from).some(f=>f.sgvs.some(x=>x.mgdl===writeResult.sgv&&x.mills===writeResult.date)))await delay(50);
+  const ownFrameAfterWrite=s.frames.filter(f=>f.sequence>from).some(f=>f.sgvs.some(x=>x.mgdl===writeResult.sgv&&x.mills===writeResult.date));
   need(s.socket.id===socketId&&s.connections===1&&s.errors===0,'CLIENT_HEALTHY_B_RECONNECT');
   return {...socketState(id),readStatus:read.status,writeStatus:writeResult.status,ownFrameAfterWrite,foreignFrames:s.foreignFrames,requestToFrameClock:'producer-local-monotonic; exact DATA date matched in subsequent stock frame'};
  }
@@ -85,7 +94,7 @@ function create(spec,{prime,io,persist,now=Date.now,mono=monotonic,delay=ms=>new
   need(positive&&positive.socket.connected&&positive.totalFrames>0,'CLIENT_ISOLATION_POSITIVE_MISSING');
   const cross=await request(a,'api-2','/api/v3/entries',{headers:{host:cb.host,'api-secret':ca.dataToken}});
   const u=new URL(spec.endpoints['socket-edge'].origin),agent=new(require('node:http').Agent)({lookup:(host,options,done)=>options?.all?done(null,[{address:u.hostname,family:4}]):done(null,u.hostname,4)});
-  const socket=io('http://'+cb.host+':'+u.port,{agent,forceNew:true,transports:['websocket'],upgrade:false,reconnection:false,timeout:5000});
+  const socket=stockSocket('http://'+cb.host+':'+u.port,{agent,forceNew:true,transports:['websocket'],upgrade:false,reconnection:false,maxPayload:1048576,perMessageDeflate:false,timeout:5000});
   let connected=false,explicitDisconnect=false,foreignFrames=0;
   socket.on('connect',()=>{connected=true;socket.emit('authorize',{secret:ca.rootHash});});
   socket.on('dataUpdate',()=>foreignFrames++);socket.on('disconnect',reason=>{explicitDisconnect=reason==='io server disconnect';});
@@ -97,7 +106,7 @@ function create(spec,{prime,io,persist,now=Date.now,mono=monotonic,delay=ms=>new
   return {tenantA:a,tenantB:b,crossStatus:cross.status,crossAuthorizationRefused:[401,403,421].includes(cross.status),socketConnectedBeforeRefusal:connected,socketExplicitRefusal:explicitDisconnect,foreignFrames,positiveOwnFrame:own.ownFrameAfterWrite,scope:'bounded actual cross-credential DATA and stock root-socket refusal with authorized positive progression'};
  }
 
- function close(){need(!closed,'CLIENT_ALREADY_CLOSED');closed=true;let failure;for(const ledger of Object.values(ledgers))try{ledger.close();}catch(error){failure=failure||error;}for(const s of sockets.values()){s.socket.close();s.agent.destroy();}if(failure)throw failure;return{admissionsClosed:true,requests,responseBytes:bytes,httpEvidence:{requestsBegun:requests,responsesRecorded:recordedResponses,pages:Math.ceil(requests/64),complete:recordedResponses===requests},ledgers:Object.fromEntries(Object.entries(ledgers).map(([k,v])=>[k,v.snapshot()]))};}
+ function close(){need(!closed,'CLIENT_ALREADY_CLOSED');closed=true;let failure;for(const ledger of Object.values(ledgers))try{ledger.close();}catch(error){failure=failure||error;}for(const s of sockets.values()){s.socket.close();s.agent.destroy();}if(failure)throw failure;return{admissionsClosed:true,requests,responseBytes:bytes,socketBytes,socketBudgetRefused,httpEvidence:{requestsBegun:requests,responsesRecorded:recordedResponses,pages:Math.ceil(requests/64),complete:recordedResponses===requests},ledgers:Object.fromEntries(Object.entries(ledgers).map(([k,v])=>[k,v.snapshot()]))};}
  function rebind(endpoints){check();validate({...spec,endpoints});spec.endpoints=endpoints;return{endpointsBound:true};}
  return {request,write,history,clinical,firstTouchStorm,connect,socketState,healthyB,isolation,close,rebind};
 }
