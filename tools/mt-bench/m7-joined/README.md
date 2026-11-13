@@ -401,3 +401,10 @@ The loopback control starts one finite local HTTP server with in-memory
 synthetic persistence, exercises actual generated request/callback code for
 committed 503 and delayed-response timeout, and closes all its sockets. It proves
 accounting behavior, not PostgreSQL or application correctness.
+
+Discovery reads counter `count` fields explicitly (flat or nested `values`).
+Absent fields remain UNMEASURED, including a present empty object; they never
+become zero. Present malformed, boolean, negative, fractional or nonfinite
+counts refuse before the existing count query. Finite integral numeric counts
+within JavaScript's safe integer range are preserved. The acceptance metric
+helper is unchanged.

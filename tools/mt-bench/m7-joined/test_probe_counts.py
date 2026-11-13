@@ -56,6 +56,29 @@ class ProbeCounts(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):self.observe(folder,out,metrics,ledger,{'foreign':{'probe':1}})
         with self.assertRaisesRegex(RuntimeError,'WRONG_DATA'):self.observe(folder,out,metrics,ledger,{'a':{'entries':1},'c':{'probe':1}})
         value,known=self.observe(folder,out,{},ledger,{'c':{'probe':1}});self.assertFalse(known);self.assertGreater(value['missingFieldCount'],0)
+    def test_missing_actual_count_field_is_unmeasured_never_fabricated_zero(self):
+        for key in ('writes_ok','writes_ok{tenant:a}','writes_uncertain{tenant:a}','writes_ok{kind:entries}'):
+            for row in ({},{'values':{}},{'rate':0},{'values':{'rate':0}}):
+                folder,out,metrics,ledger=self.setup();metrics[key]=row
+                value,known=self.observe(folder,out,metrics,ledger,{'c':{'probe':1}})
+                self.assertFalse(known);self.assertEqual(value['verdict'],'UNMEASURED');self.assertIn(key,value['missingFields'])
+                if key=='writes_ok{tenant:a}':self.assertIsNone(next(r for r in value['rows'] if r['tenant']=='a')['accepted'])
+    def test_invalid_actual_counter_refuses_before_query_nested_or_flat(self):
+        for key in ('writes_ok','writes_ok{tenant:a}','writes_uncertain{tenant:a}','writes_ok{kind:entries}'):
+            for value in (True,False,1.5,float('inf'),float('-inf'),float('nan'),-1,'0',None,9007199254740992):
+                for nested in (False,True):
+                    folder,out,metrics,ledger=self.setup();metrics[key]={'values':{'count':value}} if nested else {'count':value};a.write(out/'probe-accounting.json',ledger)
+                    with patch.object(a,'stored') as query:
+                        with self.assertRaisesRegex(RuntimeError,'COUNTER_INVALID'):d.count_observation(a,folder,out,'synthetic-loopback',metrics)
+                        query.assert_not_called();self.assertEqual(a.document(out/'oracle-findings.json')['verdict'],'RED')
+        for row in (None,1,{'values':None},{'values':[]},{'values':'invalid'}):
+            folder,out,metrics,ledger=self.setup();metrics['writes_ok']=row;a.write(out/'probe-accounting.json',ledger)
+            with patch.object(a,'stored') as query:
+                with self.assertRaisesRegex(RuntimeError,'COUNTER_INVALID'):d.count_observation(a,folder,out,'synthetic-loopback',metrics)
+                query.assert_not_called()
+    def test_valid_nested_and_integral_numeric_counter_preserved(self):
+        folder,out,metrics,ledger=self.setup();metrics={key:{'values':{'count':float(row['count'])}} for key,row in metrics.items()}
+        value,known=self.observe(folder,out,metrics,ledger,{'c':{'probe':1}});self.assertTrue(known);self.assertEqual(value['verdict'],'GREEN')
     def test_real_loopback_actual_generated_request_callback(self):
         folder,out,metrics,_=self.setup();file=folder/'probe.js';generate(a.ROOT,file)
         proc=subprocess.run(['node',str(a.HERE/'probe-accounting-control.cjs'),str(file)],capture_output=True,text=True,timeout=5)

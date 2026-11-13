@@ -1,9 +1,22 @@
 """Discovery-only count proof; strict acceptance keeps its original oracle."""
+import math
 from contract import require
 
 FIELDS={'attempts','accepted','uncertain','refused','pending'}
 
 def integer(value):return type(value) is int and 0<=value<=100000
+
+def counter(metrics,key):
+    """A missing count is unknown; only finite nonnegative integer counters exist."""
+    if key not in metrics:return None
+    row=metrics[key]
+    require(isinstance(row,dict),'M7_DISCOVERY_COUNTER_INVALID')
+    if 'values' in row:
+        row=row['values'];require(isinstance(row,dict),'M7_DISCOVERY_COUNTER_INVALID')
+    if 'count' not in row:return None
+    value=row['count']
+    require(type(value) in (int,float) and 0<=value<=9007199254740991 and math.isfinite(value) and int(value)==value,'M7_DISCOVERY_COUNTER_INVALID')
+    return int(value)
 
 def probe_metadata(a,out,runid,expected):
     """Missing historic uncertainty is unknown, not zero or a positive violation."""
@@ -41,9 +54,13 @@ def observe(a,d,out,runid,metrics):
         error=RuntimeError(code);error.verdict='FAIL';error.oracleFindings=findings;raise error
     try:
         ledger,legacy=probe_metadata(a,out,runid,expected)
+        require(isinstance(metrics,dict),'M7_DISCOVERY_COUNTER_INVALID')
+        required=['writes_ok']+['writes_ok{kind:'+kind+'}' for kind in ('entries','devicestatus','treatments')]+[name+'{tenant:'+tenant+'}' for tenant in sorted(expected) for name in ('writes_ok','writes_uncertain')]
+        counts={key:counter(metrics,key) for key in required}
+        # Validate malformed present counters before opening the SQL client.
         values=a.stored(d,runid);a.write(out/'stored-counts.json',values)
         require(isinstance(values,dict) and set(values)<=expected,'M7_ORACLE_TENANT_SCOPE')
-        missing=[];uncertain_total=0;all_uncertain=True;domains={k:0 for k in ('entries','devicestatus','treatments')};rows=[]
+        missing=[key for key,value in counts.items() if value is None];uncertain_total=0;all_uncertain=True;domains={k:0 for k in ('entries','devicestatus','treatments')};rows=[]
         complete=ledger is not None and ledger['admissionsClosed'] and all(r['pending']==0 for r in ledger['byTenant'].values())
         findings['probeCountProof']='KNOWN' if complete else 'UNMEASURED'
         findings['probeAccounting']={'version':2 if ledger else None,'admissionsClosed':ledger['admissionsClosed'] if ledger else None,'attempts':ledger['attempts'] if ledger else None,'pending':sum(r['pending'] for r in ledger['byTenant'].values()) if ledger else None}
@@ -54,8 +71,8 @@ def observe(a,d,out,runid,metrics):
             value=values.get(tenant,{})
             require(isinstance(value,dict) and set(value)<=set(domains)|{'probe'} and all(type(n) is int and n>=0 for n in value.values()),'M7_ORACLE_COUNTS_INVALID')
             ok='writes_ok{tenant:'+tenant+'}';uncertain='writes_uncertain{tenant:'+tenant+'}'
-            absent=[key for key in (ok,uncertain) if key not in metrics];missing+=absent
-            accepted=a.metric(metrics,ok) if ok in metrics else None;ambiguous=a.metric(metrics,uncertain) if uncertain in metrics else None
+            absent=[key for key in (ok,uncertain) if counts[key] is None]
+            accepted=counts[ok];ambiguous=counts[uncertain]
             if ambiguous is not None:uncertain_total+=ambiguous
             else:all_uncertain=False
             stored=sum(value.get(kind,0) for kind in domains)
@@ -68,11 +85,10 @@ def observe(a,d,out,runid,metrics):
             for kind in domains:domains[kind]+=value.get(kind,0)
         for kind,count in domains.items():
             key='writes_ok{kind:'+kind+'}'
-            if key not in metrics:missing.append(key)
-            elif all_uncertain and not a.metric(metrics,key)<=count<=a.metric(metrics,key)+uncertain_total:violation('domain-count-bound:'+kind)
+            if counts[key] is not None and all_uncertain and not counts[key]<=count<=counts[key]+uncertain_total:violation('domain-count-bound:'+kind)
         # A present aggregate must equal all available tenant ACKs. Missing data
         # does not authorize fabricating zeros, even when the stored count is0.
-        if not missing and 'writes_ok' in metrics and sum(r['accepted'] for r in rows)!=a.metric(metrics,'writes_ok'):violation('client-total-mismatch')
+        if not missing and sum(r['accepted'] for r in rows)!=counts['writes_ok']:violation('client-total-mismatch')
         findings.update(rows=rows,domains=domains,uncertain=uncertain_total,missingFieldCount=len(missing),missingFields=missing[:64])
         if findings['failureCount']:fail('M7_DISCOVERY_WRONG_DATA')
         if not missing and complete:findings.update(verdict='GREEN',code='M7_DISCOVERY_COUNTS_KNOWN')
