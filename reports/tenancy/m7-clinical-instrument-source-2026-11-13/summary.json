@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "selected-clinical-instrument-source-model-record",
+  "date": "2026-11-13",
+  "measurement": "reproduced",
+  "verdict": "APPROVED_BOUNDED_SOURCE_MODEL_ONLY",
+  "anchors": {
+    "recordBase": "2f289e4849891a8776dcc5a15c0f0af0e4ed33bd",
+    "instrument": "2a5f68cf2062d9e6c5c6d0804f3e3ebacfb55c3c",
+    "originalBlocked": "10421bcbdec3624e312b063ec84e6346fae2ef9b",
+    "intermediateBlocked": "0390341166706d3214e22eed215c9d97765a6e57"
+  },
+  "model": {
+    "sha256": "94380b47c22aa23aa4e83e20ef5c51931017cb54d7feb14ee1565ed1b4f58b16",
+    "instrumentFiles": 19,
+    "instrumentManifestSha256": "99f317541e52576b01e833c173c767d43931e73b986f883e574d261add4abf00",
+    "instrumentManifestEncoding": "sorted compact JSON filename-to-SHA256 map",
+    "allInstrumentHashesMatchGit": true,
+    "processSlots": 11,
+    "lifecycleParticipants": 7,
+    "runtimeReady": false,
+    "sourceJoin": "REQUIRED_BEFORE_RUNTIME",
+    "fixtureSource": {
+      "coreCommit": "d0036890d0623ae79f14bfa71e7226c0fa122a29",
+      "deployCommit": "d831c372b39ac19aff4271ecc5e2b1639d176448"
+    },
+    "fixtureIsRuntimeQualification": false
+  },
+  "independentChecks": {
+    "actualExecutorFinally": 9,
+    "gates": 13,
+    "recordingNodeClients": 2,
+    "measurement": "reproduced",
+    "outcome": "PASS",
+    "reviewSummarySha256": "08460f7a3a499d429b8bf5200f441b104ab186bac384d46396ab36ec013f9a2e"
+  },
+  "controls": [
+    {
+      "family": "executor-stock",
+      "measurement": "reproduced",
+      "processRuns": 16,
+      "expectedFailureRuns": 7,
+      "allOutcomesMatched": true,
+      "summarySha256": "63a1365bb7130ec951be85915794a078090a4a8e91690eed2fc85bfc197cf9a2"
+    },
+    {
+      "family": "gate-accounting",
+      "measurement": "reproduced",
+      "processRuns": 20,
+      "expectedFailureRuns": 9,
+      "allOutcomesMatched": true,
+      "summarySha256": "22c82d39ff318792bce6eae90225144eabf97b987f7cefa6267abc3dbe17ddfb"
+    }
+  ],
+  "processWitnesses": [
+    {
+      "operation": "dry-run",
+      "measurement": "reproduced",
+      "returnCode": 0,
+      "summarySha256": "9a6bc95b2a8249fd451bb2fcc922841690af348ae05e0e2079e8a73a6b24bef2",
+      "scope": "protocol model only",
+      "outputDirectoryCreated": true
+    },
+    {
+      "operation": "run",
+      "measurement": "reproduced",
+      "returnCode": 1,
+      "summarySha256": "b2865d52b198198ad546500c0a2225aaf199797885870dee5e130140251a8cb3",
+      "scope": "pre-effect source-join refusal",
+      "outputDirectoryCreated": false
+    }
+  ],
+  "reproducedFailures": [
+    {
+      "source": "originalBlocked",
+      "mechanisms": [
+        "cleanup used undefined symbols before cleanup effects",
+        "exclusive receipt creation collided across repeated phases",
+        "full-day frame rejected by an undersized instrument limit",
+        "later unrelated same-value point satisfied a nonexact write-date match",
+        "zero active high water accepted completed cold work"
+      ]
+    },
+    {
+      "source": "intermediateBlocked",
+      "mechanisms": [
+        "terminal supervisor thread accepted without positive process-group drain evidence",
+        "packet-bound callback emitted a reserved stock Socket.IO event",
+        "late packet-bound refusal was not enforced by final close and accounting"
+      ]
+    }
+  ],
+  "qualification": {
+    "runtime": "NOT_RUN",
+    "nativeAcceptance": "UNMEASURED",
+    "selectedClinicalAcceptance": "UNMEASURED",
+    "finalOperatorSourceImageProfileJoin": "UNMEASURED",
+    "capacity": "UNMEASURED",
+    "newResourcesLaunched": false
+  },
+  "nextBoundary": "Coordinator freezes compatible source, operator, deployment, image, profile, collector and instrument; separately reviews and authorizes bounded native clinical qualification."
+}
