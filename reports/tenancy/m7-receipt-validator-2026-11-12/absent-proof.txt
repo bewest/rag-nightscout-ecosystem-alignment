@@ -1,0 +1,2 @@
+REFUSED M7_JSON_FILE
+exit=1

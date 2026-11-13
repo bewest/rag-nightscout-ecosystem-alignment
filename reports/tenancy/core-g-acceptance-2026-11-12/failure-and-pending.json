@@ -1,0 +1,85 @@
+{
+  "kind": "bounded-captured-log-derivative",
+  "logSha256": "ea85eadd88b53fe8a169320fc78a88e1e447ae9751f841e876a4822b87601d54",
+  "excerpt": [
+    {
+      "line": 5851,
+      "text": "  838 passing (11m)"
+    },
+    {
+      "line": 5852,
+      "text": "  1 pending"
+    },
+    {
+      "line": 5853,
+      "text": "  1 failing"
+    },
+    {
+      "line": 5855,
+      "text": "  1) admin provisioning REST and CLI (actual PostgreSQL and Vault)"
+    },
+    {
+      "line": 5856,
+      "text": "       AP_CLI_ONE_AND_REFUSALS: one tenant from flags; a refused tenant exits 1; a bad seed exits 64; an unreachable listener exits 69:"
+    },
+    {
+      "line": 5858,
+      "text": "      AssertionError [ERR_ASSERTION]: a group- or world-readable secrets file is refused"
+    },
+    {
+      "line": 5860,
+      "text": "0 !== 64"
+    },
+    {
+      "line": 5862,
+      "text": "      + expected - actual"
+    },
+    {
+      "line": 5864,
+      "text": "      -0"
+    },
+    {
+      "line": 5865,
+      "text": "      +64"
+    },
+    {
+      "line": 5867,
+      "text": "      at Context.<anonymous> (tests/admin-provisioning.integration.test.js:138:12)"
+    },
+    {
+      "line": 5868,
+      "text": "      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)"
+    }
+  ],
+  "case": "AP_CLI_ONE_AND_REFUSALS",
+  "source": "tests/admin-provisioning.integration.test.js:138:12",
+  "capturedAssertion": {
+    "message": "a group- or world-readable secrets file is refused",
+    "comparedActual": 0,
+    "comparedExpected": 64
+  },
+  "childProcessExitLedger": "NOT_SEPARATELY_RECORDED",
+  "originalFileMode": "UNMEASURED",
+  "mechanismGrade": "READ_DERIVED",
+  "mechanism": "Exact source creates loose.jsonl using fs.writeFileSync mode0o644 without explicit chmod, while the selected harness sets umask0o077. The fixture may therefore not have established the intended readable-file precondition. OriginalG contains no actual target-file mode capture; this is not conclusive harness-only attribution or proof of a runtime permission vulnerability.",
+  "enabledPending": {
+    "name": "reports end-to-end successful request latency and throughput",
+    "source": "tests/tenant-commit-clock-http.integration.test.js:293",
+    "reason": "Explicit opt-in benchmark NS_TENANT_COMMIT_CLOCK_BENCHMARK=1 not enabled; ordinary functional cases of that file are separately present",
+    "capturedLine": {
+      "line": 4368,
+      "name": "reports end-to-end successful request latency and throughput",
+      "nearbyHeading": "explicit tenant clock HTTP workload (no performance threshold) [pending opt-in: NS_TENANT_COMMIT_CLOCK_BENCHMARK=1]"
+    }
+  },
+  "ordinaryPendingCounts": {
+    "unit": 1,
+    "dom": 0,
+    "dependency": 2,
+    "core": 0,
+    "harness": 0,
+    "integration": 836,
+    "stress": 0,
+    "browser": 0
+  }
+}

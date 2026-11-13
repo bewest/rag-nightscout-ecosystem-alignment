@@ -1,0 +1,17 @@
+
+
+  bounded evaluator inspection v2
+    1) carries selected v2 bodies over the actual private UDS client and refuses the prior module version
+
+
+  0 passing (30ms)
+  1 failing
+
+  1) bounded evaluator inspection v2
+       carries selected v2 bodies over the actual private UDS client and refuses the prior module version:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection: SCHEMA_REFUSES_INVALID_REASON
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Context.<anonymous> (tests/evaluator-inspection.test.js:48:117)
+
+
+

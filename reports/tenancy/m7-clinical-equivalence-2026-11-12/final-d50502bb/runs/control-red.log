@@ -1,0 +1,4 @@
+DIFFERENT cycles base=288 candidate=288 differing=286 alarmTransitions base=17 candidate=17
+  first difference at line 3
+  base      1794265220000 A edfa5a53c97b4df06f8274320e5c7cf1 treatmentnotify|0||Site Change
+  candidate 1794265220000 A 5afb95291e52c8b54cad1e11cd6c74cb treatmentnotify|0||Site Change

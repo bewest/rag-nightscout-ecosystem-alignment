@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: shipping instruments compose every explicitly selected API/realtime/evaluator overlay
+ok 1 - shipping instruments compose every explicitly selected API/realtime/evaluator overlay
+  ---
+  duration_ms: 2.850248
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses a missing selected participant overlay
+ok 2 - shipping composition refuses a missing selected participant overlay
+  ---
+  duration_ms: 1.378852
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses unselected or unknown overlay compose.realtime.yaml
+ok 3 - shipping composition refuses unselected or unknown overlay compose.realtime.yaml
+  ---
+  duration_ms: 1.366701
+  type: 'test'
+  ...
+# Subtest: shipping composition refuses unselected or unknown overlay compose.unknown.yaml
+ok 4 - shipping composition refuses unselected or unknown overlay compose.unknown.yaml
+  ---
+  duration_ms: 0.647509
+  type: 'test'
+  ...
+# Subtest: shipping composition preserves unsharded evaluator-only selection and refuses another state
+ok 5 - shipping composition preserves unsharded evaluator-only selection and refuses another state
+  ---
+  duration_ms: 0.798619
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15.436987

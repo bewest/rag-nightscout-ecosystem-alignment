@@ -1,0 +1,45 @@
+
+
+  Composed component-private listener over uds
+    1) refuses a request naming a foreign or unregistered service before dispatch
+
+  Composed component-private listener over http
+    2) refuses a request naming a foreign or unregistered service before dispatch
+
+
+[TIMING STATS] Total: 2 tests, Avg: 17ms, Slow: 0
+
+  0 passing (35ms)
+  2 failing
+
+  1) Composed component-private listener over uds
+       refuses a request naming a foreign or unregistered service before dispatch:
+
+      AssertionError [ERR_ASSERTION]: old lifecycle wire version
+
+200 !== 503
+
+      + expected - actual
+
+      -200
+      +503
+
+      at refused (tests/internal-api-composition.test.js:61:10)
+      at Context.<anonymous> (tests/internal-api-composition.test.js:110:7)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  2) Composed component-private listener over http
+       refuses a request naming a foreign or unregistered service before dispatch:
+
+      AssertionError [ERR_ASSERTION]: old lifecycle wire version
+
+200 !== 503
+
+      + expected - actual
+
+      -200
+      +503
+
+      at refused (tests/internal-api-composition.test.js:61:10)
+      at Context.<anonymous> (tests/internal-api-composition.test.js:110:7)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)

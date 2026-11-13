@@ -1,0 +1,329 @@
+{
+ "base": {
+  "summary": {
+   "cycles": 46801,
+   "acquisitions": {
+    "n": 198,
+    "cpuMsMean": 6.44,
+    "cpuMsP50": 5.16,
+    "cpuMsP95": 15.81,
+    "wallMsP50": 4.12,
+    "wallMsP95": 8.44
+   },
+   "timeOnly": {
+    "n": 46603,
+    "cpuMsMean": 1.41,
+    "cpuMsP50": 1.05,
+    "cpuMsP95": 4.83,
+    "wallMsP50": 1.04,
+    "wallMsP95": 2.23
+   },
+   "alarmTransitions": 17,
+   "contentTransitions": 19
+  },
+  "transitions": [
+   {
+    "at": "2026-11-09T23:00:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Site Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Insulin Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T00:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Pump Battery Change"
+    ]
+   },
+   {
+    "at": "2026-11-10T00:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:00:20.000Z",
+    "set": [
+     "simplealarms|2||Urgent LOW"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:20:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Correction Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T02:00:20.000Z",
+    "set": [
+     "simplealarms|2||Urgent HIGH"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:20:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T04:10:10.000Z",
+    "set": [
+     "treatmentnotify|0||Meal Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:20:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:00:20.000Z",
+    "set": [
+     "treatmentnotify|0||Calibration"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:10:00.000Z",
+    "set": []
+   }
+  ]
+ },
+ "due-1000": {
+  "summary": {
+   "cycles": 6093,
+   "acquisitions": {
+    "n": 198,
+    "cpuMsMean": 5.8,
+    "cpuMsP50": 5.09,
+    "cpuMsP95": 12.71,
+    "wallMsP50": 4.36,
+    "wallMsP95": 8.25
+   },
+   "timeOnly": {
+    "n": 5895,
+    "cpuMsMean": 1.27,
+    "cpuMsP50": 0.88,
+    "cpuMsP95": 4.35,
+    "wallMsP50": 0.87,
+    "wallMsP95": 1.93
+   },
+   "alarmTransitions": 17,
+   "contentTransitions": 19
+  },
+  "transitions": [
+   {
+    "at": "2026-11-09T23:00:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Site Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Insulin Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T00:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Pump Battery Change"
+    ]
+   },
+   {
+    "at": "2026-11-10T00:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:00:20.000Z",
+    "set": [
+     "simplealarms|2||Urgent LOW"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:20:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Correction Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T02:00:20.000Z",
+    "set": [
+     "simplealarms|2||Urgent HIGH"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:20:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T04:10:10.000Z",
+    "set": [
+     "treatmentnotify|0||Meal Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:20:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:00:20.000Z",
+    "set": [
+     "treatmentnotify|0||Calibration"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:10:00.000Z",
+    "set": []
+   }
+  ]
+ },
+ "due-60000": {
+  "summary": {
+   "cycles": 288,
+   "acquisitions": {
+    "n": 198,
+    "cpuMsMean": 5.12,
+    "cpuMsP50": 4,
+    "cpuMsP95": 12.1,
+    "wallMsP50": 3.77,
+    "wallMsP95": 8.03
+   },
+   "timeOnly": {
+    "n": 90,
+    "cpuMsMean": 1.31,
+    "cpuMsP50": 0.91,
+    "cpuMsP95": 5.07,
+    "wallMsP50": 0.9,
+    "wallMsP95": 2.29
+   },
+   "alarmTransitions": 17,
+   "contentTransitions": 19
+  },
+  "transitions": [
+   {
+    "at": "2026-11-09T23:00:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Site Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-09T23:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Insulin Change"
+    ]
+   },
+   {
+    "at": "2026-11-09T23:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T00:00:10.000Z",
+    "set": [
+     "treatmentnotify|0||Pump Battery Change"
+    ]
+   },
+   {
+    "at": "2026-11-10T00:10:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:00:20.000Z",
+    "set": [
+     "simplealarms|2||Urgent LOW"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:20:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T01:30:10.000Z",
+    "set": [
+     "treatmentnotify|0||Correction Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T01:40:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T02:00:20.000Z",
+    "set": [
+     "simplealarms|2||Urgent HIGH"
+    ]
+   },
+   {
+    "at": "2026-11-10T02:20:20.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T04:10:10.000Z",
+    "set": [
+     "treatmentnotify|0||Meal Bolus"
+    ]
+   },
+   {
+    "at": "2026-11-10T04:20:00.000Z",
+    "set": []
+   },
+   {
+    "at": "2026-11-10T05:00:20.000Z",
+    "set": [
+     "treatmentnotify|0||Calibration"
+    ]
+   },
+   {
+    "at": "2026-11-10T05:10:00.000Z",
+    "set": []
+   }
+  ]
+ }
+}

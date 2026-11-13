@@ -1,0 +1,41 @@
+{
+  "scratch": "/tmp/m7-profile-controls-20261112-gfhuctu_",
+  "controls": [
+    {
+      "control": "fingerprint-ablation-red",
+      "returnCode": 1,
+      "expected": "RED",
+      "log": "/tmp/m7-profile-fingerprint-ablation-red-20261112.log"
+    },
+    {
+      "control": "fingerprint-restored-green",
+      "returnCode": 0,
+      "expected": "GREEN",
+      "log": "/tmp/m7-profile-fingerprint-restored-green-20261112.log"
+    },
+    {
+      "control": "diagnostics-ablation-red",
+      "returnCode": 1,
+      "expected": "RED",
+      "log": "/tmp/m7-profile-diagnostics-ablation-red-20261112.log"
+    },
+    {
+      "control": "diagnostics-restored-green",
+      "returnCode": 0,
+      "expected": "GREEN",
+      "log": "/tmp/m7-profile-diagnostics-restored-green-20261112.log"
+    },
+    {
+      "control": "reducer-original-red",
+      "returnCode": 1,
+      "expected": "RED",
+      "log": "/tmp/m7-profile-reducer-original-red-20261112.log"
+    },
+    {
+      "control": "reducer-restored-green",
+      "returnCode": 0,
+      "expected": "GREEN",
+      "log": "/tmp/m7-profile-reducer-restored-green-20261112.log"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "kind": "source-fixture-native-postgres-result",
+  "anchors": {
+    "core": "debcc2c7a44fb812b342d0e524ff0611045094d1",
+    "deploy": "2e9afbb6906441e096e9e86e892cc44073d5b0ae",
+    "suppliedImage": "sha256:e0cadd35872c43fa63602d6c8945952383df462aef69d72a5465378b0e20cd77",
+    "suppliedBindingPrefix": "56183"
+  },
+  "sourceScope": "actual evaluator role boot with transparent reader capture; native PG, no HTTP/image/full cohort",
+  "hostNode": "v22.23.4",
+  "postgresVersion": "16.15",
+  "postgresImage": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1",
+  "status": "REPRODUCED",
+  "results": [
+    {
+      "phase": "actual-role-boot",
+      "status": "reproduced",
+      "capturedBootOwnedReader": true
+    },
+    {
+      "phase": "fresh-owner-policy-A-B",
+      "status": "reproduced",
+      "ambientTenantMismatchRefused": true
+    },
+    {
+      "phase": "RLS-refusal-restoration",
+      "status": "reproduced"
+    },
+    {
+      "phase": "SELECT-refusal-restoration",
+      "status": "reproduced"
+    },
+    {
+      "phase": "write-grant-refusal-restoration",
+      "status": "reproduced"
+    },
+    {
+      "phase": "catalogue-refusal-restoration",
+      "status": "reproduced"
+    },
+    {
+      "phase": "direct-check-bound-FIFO-context",
+      "status": "reproduced",
+      "observed": {
+        "peakDirect": 4,
+        "peakTotal": 6,
+        "live": 4
+      },
+      "blockedDirectClients": 4
+    },
+    {
+      "phase": "exact-owned-backend-termination-recovery",
+      "status": "reproduced",
+      "terminated": true,
+      "readRefused": true,
+      "freshRecovery": true
+    },
+    {
+      "phase": "queued-and-active-shutdown",
+      "status": "reproduced",
+      "queuedCancelled": 2,
+      "admittedDrained": 4
+    },
+    {
+      "phase": "owned-cleanup",
+      "status": "reproduced"
+    }
+  ],
+  "failures": [],
+  "nativeProcess": {
+    "phase": "native",
+    "exit": 0,
+    "start": 1794530168.906412,
+    "end": 1794530171.7293591
+  },
+  "supervisorStatus": "PASS",
+  "supervisorExit": 0,
+  "cleanup": {
+    "fixtureOwnedObjectsCleaned": true,
+    "settingsBackendsDrained": true,
+    "ownedContainerStoppedRetained": true,
+    "foreignServiceAction": false
+  },
+  "unmeasured": [
+    "running image",
+    "HTTP",
+    "full clinical/TIME acceptance",
+    "capacity/performance",
+    "real cleanup-end failure (unit mock only)"
+  ],
+  "earlierBootstrap": {
+    "status": "FAILED",
+    "nativeExecution": "NOT_RUN",
+    "failure": "RuntimeError: PostgreSQL readiness deadline",
+    "ownedContainerStoppedRetained": true
+  }
+}

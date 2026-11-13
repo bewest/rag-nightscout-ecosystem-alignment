@@ -1,0 +1,31 @@
+# multitenant: running 1 suites with NS_EVALUATOR_EFFECT_DOCKER_TEST
+
+
+  native evaluator unavailable-model effect idempotency
+2026-11-12T13:46:07.264Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:46:07.510Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+NATIVE_EFFECT_CAUSE {"label":"no-gap","clock":1794484804438,"repeatAt":1794484860000,"hasOutput":true,"requests":[{"request":"de104542-9157-4961-b6bb-26094f4b9bd9","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+    ✔ retains one accepted logical effect when identical fresh-owner recovery has no unavailable-model observation (371ms)
+2026-11-12T13:46:07.860Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+NATIVE_EFFECT_CAUSE {"label":"unavailable-model","clock":1794484801000,"repeatAt":1794484860000,"hasOutput":true,"requests":[{"request":"117b7b4a-b9fd-470e-b07a-c3d4c989fc95","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+NATIVE_EFFECT_CAUSE {"label":"identical-recovery-before-deadline","clock":1794484804438,"repeatAt":1794484860000,"hasOutput":true,"requests":[{"request":"117b7b4a-b9fd-470e-b07a-c3d4c989fc95","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+NATIVE_EFFECT_ORIGIN_MATCH {"missingClockOrigin":"368d5668f562422a08844602839e909c8d8641facd902e1a57e1c311fe3755c9","matched":0,"lifetimeClients":2}
+    ✔ refuses an early repeat after real producer observes a held fresh-owner model unavailable (311ms)
+2026-11-12T13:46:08.307Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:46:08.516Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 400 → mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":400,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+NATIVE_EFFECT_CAUSE {"label":"genuine-due-recovery","clock":1794484860000,"repeatAt":1794484920000,"hasOutput":true,"requests":[{"request":"a2eb0868-d366-4a5c-8d9c-e89f0ea3809a","state":"accepted","origin":"68d620c50b990a3dd72becbb0a767b77636eaf8a7e3851b2f4793998a1d0a3aa","created":1794484800000,"accepted":1794484800000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false},{"request":"4e569f80-9507-41d4-9277-e1da1fc5f993","state":"accepted","origin":"f46f5682e1d2b721650dd678269452fc184f8a379c235452fc5b0ac9beaf760e","created":1794484860000,"accepted":1794484860000,"effectDigest":"211806f00b75da99298c9323e60e5545e2f3024777cf6b1d10c1c5af7d3d17a2","clear":false}]}
+    ✔ still accepts exactly one genuine due repeat after the unavailable-model gap (447ms)
+NATIVE_EFFECT_CLEANUP {"containerRemoved":true,"anonymousVolumesRemoved":true,"image":"postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"}
+
+
+[TIMING STATS] Total: 3 tests, Avg: 461ms, Slow: 0
+
+  3 passing (5s)
+
+# multitenant: 3 passing, 0 pending, 0 failing
+# multitenant: run record written to /tmp/evaluator-effect-native-fixed-corpus.json

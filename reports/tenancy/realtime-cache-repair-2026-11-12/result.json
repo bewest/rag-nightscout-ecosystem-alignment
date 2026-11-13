@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-12",
+  "verdict": "FOCUSED_PASS_NOT_FULL_ACCEPTANCE",
+  "source": {
+    "core": "96cc87c9f8809896f48de878a69bf7bb5a8ac69e",
+    "base": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+    "probe": "c32c853f9da8a04cc32badac222cdf9f30bc00a6",
+    "alignmentCapture": "eb048442ad5e67866be94db10f0e0fdacab3c2b9"
+  },
+  "host": {
+    "node": "v22.23.4",
+    "nodeExecutableSha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+    "kernel": "6.18.7-76061807-generic",
+    "architecture": "x86_64"
+  },
+  "environment": {
+    "NODE_ENV": "test",
+    "CI": "true",
+    "TZ": "UTC",
+    "TEST_ENV_FILE": "private minimal file containing only NODE_ENV/CI/TZ",
+    "ambientNS": false,
+    "NODE_OPTIONS": false,
+    "NODE_PATH": false
+  },
+  "focused": {
+    "exit": 0,
+    "passed": 53,
+    "files": 8,
+    "privateLog": "focused.log.gz"
+  },
+  "lint": {
+    "exit": 0,
+    "outputBytes": 0
+  },
+  "tierMap": {
+    "exit": 0,
+    "files": 700,
+    "tiers": 8
+  },
+  "controls": {
+    "metadata-default": {
+      "exit": 2,
+      "failures": 2,
+      "moduleSourceVerified": true,
+      "sourceMutatedOnDisk": false
+    },
+    "ignore-inode": {
+      "exit": 2,
+      "failures": 2,
+      "moduleSourceVerified": true,
+      "sourceMutatedOnDisk": false
+    },
+    "freeze": {
+      "exit": 15,
+      "failures": 15,
+      "moduleSourceVerified": true,
+      "sourceMutatedOnDisk": false
+    },
+    "outer-cache": {
+      "exit": 3,
+      "failures": 3,
+      "moduleSourceVerified": true,
+      "sourceMutatedOnDisk": false
+    },
+    "omit-reader-close": {
+      "exit": 5,
+      "failures": 5,
+      "moduleSourceVerified": true,
+      "sourceMutatedOnDisk": false
+    }
+  },
+  "vacuousControl": {
+    "name": "omit-shutdown-close",
+    "exit": 0,
+    "classification": "control injection bypassed by actual test source wrapper; no protection claim",
+    "replacement": "omit-reader-close"
+  },
+  "scope": {
+    "filesystem": "actual local filesystem; coarse timestamps instrumented while device/inode/size/mode stay actual",
+    "publisher": "actual filesystem fsync/rename with SQL admission doubled",
+    "registry": "actual registryMode and settings projection with SQL/resource adapters doubled",
+    "kernelRetest": false,
+    "capacity": false,
+    "fullSuite": false,
+    "browser": false,
+    "nativeDatabase": false,
+    "prcheck": false
+  },
+  "sourceFiles": {
+    "lib/server/realtime/contract.js": "fe7aec2ac8ed5223c9c6c091fbe489bd95218706344bfaa7fcb1d0718b8ae733",
+    "lib/server/realtime/config.js": "141c1c09c6c66c1c876dcbd2033fd968f8d6e5728852994488f3f3f4dfe1fe27",
+    "lib/server/serve/config-file.js": "a76182ce6b61637858b58926392a37dbdc57b8791c533f06aa8bb504325181fd",
+    "lib/realtime-placement/index.js": "501ce120f34413e872d43420ccdf75a38915817636f93a978e3e3f549ebdfd43",
+    "lib/server/serve/index.js": "f1d76e4aeca0eb9dcd1289e933e11c72aa513d1e420ac301650bf2b185a3ff64",
+    "lib/server/serve/preview-realtime.js": "980c02a0bfc7552ac9b42c7bd442f410c4e1551e62c7f97aef01f4283a07d60b",
+    "lib/server/serve/evaluator-consumers.js": "226c0f1b33cb8ee47e51bd989f1e9e6285bb48765c1c011cafbe31c5a732872f",
+    "lib/server/serve/operation-cohort.js": "b5e572a83d628e51fd418527ec9a57692df66dd62b5f3cf32387897523b2b6c2",
+    "lib/server/serve/operation-cohort-config.js": "aabc9afdd5ba96f34a19704add3ec47c42d58ea52f01f0e9e5d267d52884e2c4",
+    "tests/realtime-config-cache.test.js": "3d07fde0763589736eaeb0710fc92caee0b1c01c4394a6758d73a373542ae49b",
+    "tests/socket-admission-cache.test.js": "d8e06c1a8aaf795e9c745d9e4407717a6a1bd8032a052ff4fdb5e7bf138d4115",
+    "tests/realtime-publication-cache.test.js": "e333b92db42ec37f2e07948fd267adc3f0ac5ed60a73f89e85b70be6ce310542",
+    "tests/fixtures/realtime-cache-repair-control.js": "f955502d10612cb0ad068e81bfffa6beb3704a87d040e17790ca2e572a86dc4e",
+    "tests/tiers.json": "c0309fc5c7b3619c70ab4cbc7fb21f9e90aa1ed8918fbc8df5f1ddf45c6b7da9",
+    "package.json": "6bd42fb8f7c0d475209ef7d050a6ebaed7f2b461e12cb254124feabf0fd42a5f",
+    "package-lock.json": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e"
+  },
+  "artifacts": {
+    "focused.log.gz": {
+      "sha256": "ab42aaa3a1b77821cd0cea35eb9179e2663549179645e781aa58fb34d924d87b",
+      "bytes": 2869,
+      "decodedSha256": "17c3c6762cea14a61b2b2f780337ea56aaa6d78cbaa9ded6adb4235e3eefd7b3",
+      "decodedBytes": 7894
+    },
+    "lint.log.gz": {
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "bytes": 20,
+      "decodedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "decodedBytes": 0
+    },
+    "tiers.log.gz": {
+      "sha256": "824cb055d1604ed71906c4caf8a5ccc4b62e41f5fd2bb3d447c13161094d5bff",
+      "bytes": 50,
+      "decodedSha256": "84f8adf282671fb7e92ff2966e3b7998c1d74463ea389024125144a14aa291dd",
+      "decodedBytes": 30
+    },
+    "control-metadata-default.log.gz": {
+      "sha256": "2c365ad40ac65cd520a0ec1614caf141fc3c79632dba07c5bb72edbba5244131",
+      "bytes": 1346,
+      "decodedSha256": "2cff8d70ff46cdff492792a64b4c8e372b8c353d26dcb05facddd19b8b4fdb85",
+      "decodedBytes": 3500
+    },
+    "control-ignore-inode.log.gz": {
+      "sha256": "60934ee3435778cd234348eaa718f1cb2242fda8f0cefaf080a572c56d19e9ec",
+      "bytes": 1340,
+      "decodedSha256": "5614959ffff11d9e78b6d9c8594e18210bb2278dabe292c654d87c79ef6aa4e0",
+      "decodedBytes": 3609
+    },
+    "control-freeze.log.gz": {
+      "sha256": "4f0d3eef0d6002711fee9d3dc9281d19a87fe88bee354e0c4e1768a19a25fa8d",
+      "bytes": 1728,
+      "decodedSha256": "15c6216a788b3fc168efe2e91ae31fe70204d03579aeb2e595f4ff95f2a2d23a",
+      "decodedBytes": 8517
+    },
+    "control-outer-cache.log.gz": {
+      "sha256": "cdf4315777299a89f370e98bdbc37e112f41866262d6f6120e1c1c9ca0af7232",
+      "bytes": 1409,
+      "decodedSha256": "0063a07d290af140ba33fedc3fcda0eaa905af1f19472e78c2c6b60b7d0e7b56",
+      "decodedBytes": 3788
+    },
+    "control-omit-reader-close.log.gz": {
+      "sha256": "2ff5720625fee797063a0d33c0959edfa27bfbe14022c513a6a18c9fd96f9b2c",
+      "bytes": 1398,
+      "decodedSha256": "728647c9eda4320e0ae1ae586964cfe7943738082fbf4311c024bee5e0db672d",
+      "decodedBytes": 4687
+    },
+    "vacuous-omit-shutdown-close.log.gz": {
+      "sha256": "5ae1abaca6590ca4f1a69bc731518af72d4ecb062f0b28605a8d65f76cb2348f",
+      "bytes": 1040,
+      "decodedSha256": "16420eb181fbf0e467b25be4bb69e3aebb10cf3b064c4a347c177b573521b9de",
+      "decodedBytes": 2451
+    }
+  }
+}

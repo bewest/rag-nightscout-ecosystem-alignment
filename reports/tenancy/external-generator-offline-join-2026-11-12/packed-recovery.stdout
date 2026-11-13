@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: controller delay and old connected frames cannot count as stock recovery
+ok 1 - controller delay and old connected frames cannot count as stock recovery
+  ---
+  duration_ms: 0.778388
+  type: 'test'
+  ...
+# Subtest: only actual disconnect, reconnect and its later frame plus restart acknowledgement count
+ok 2 - only actual disconnect, reconnect and its later frame plus restart acknowledgement count
+  ---
+  duration_ms: 0.138454
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6.587279

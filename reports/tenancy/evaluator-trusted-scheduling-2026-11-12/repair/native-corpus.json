@@ -1,0 +1,20 @@
+{
+  "id": "ba3c15b35e66",
+  "startedAt": "2026-11-12T12:50:10.224Z",
+  "suites": [
+    "tests/evaluator-job-context.integration.test.js"
+  ],
+  "created": [],
+  "removed": [],
+  "env": {},
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 2,
+    "pending": 0,
+    "failing": 0
+  },
+  "finishedAt": "2026-11-12T12:50:16.774Z",
+  "remaining": [],
+  "status": 0
+}

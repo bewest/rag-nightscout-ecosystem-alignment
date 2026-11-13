@@ -1,0 +1,61 @@
+TAP version 13
+# Subtest: registry role documents have no static roster or per-tenant key lists and pass product parsers
+ok 1 - registry role documents have no static roster or per-tenant key lists and pass product parsers
+  ---
+  duration_ms: 176.929431
+  type: 'test'
+  ...
+# Subtest: control: restoring a static list into registry authority is refused, restoration passes
+ok 2 - control: restoring a static list into registry authority is refused, restoration passes
+  ---
+  duration_ms: 5.096692
+  type: 'test'
+  ...
+# Subtest: provisioning identity and read-only settings/activity capabilities are distinct from serving
+ok 3 - provisioning identity and read-only settings/activity capabilities are distinct from serving
+  ---
+  duration_ms: 6.333788
+  type: 'test'
+  ...
+# Subtest: control: adding the operation control schema to protected data refuses launcher resource matching
+ok 4 - control: adding the operation control schema to protected data refuses launcher resource matching
+  ---
+  duration_ms: 2.760783
+  type: 'test'
+  ...
+# Subtest: restore inventory admits the independent evaluator checkpoint and all current product metadata families
+ok 5 - restore inventory admits the independent evaluator checkpoint and all current product metadata families
+  ---
+  duration_ms: 12.463033
+  type: 'test'
+  ...
+# Subtest: control: a source table absent from the admitted restore inventory refuses instead of being omitted
+not ok 6 - control: a source table absent from the admitted restore inventory refuses instead of being omitted
+  ---
+  duration_ms: 2.48204
+  type: 'test'
+  location: '/tmp/ns-m7-deploy-focus-20261112/deploy/multitenant/registry-plan.test.js:72:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing expected exception.'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (/tmp/ns-m7-deploy-focus-20261112/deploy/multitenant/registry-plan.test.js:75:16)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 5
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 212.235367

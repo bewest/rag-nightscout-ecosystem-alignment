@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: exact owned API roster uses a minimal readonly private client and cleans its credential file
+ok 1 - exact owned API roster uses a minimal readonly private client and cleans its credential file
+  ---
+  duration_ms: 5.155686
+  type: 'test'
+  ...
+# Subtest: foreign instance refuses before helper creation and credential materialization
+ok 2 - foreign instance refuses before helper creation and credential materialization
+  ---
+  duration_ms: 1.845141
+  type: 'test'
+  ...
+# Subtest: typed precondition failure retained without private stdout or credential disclosure
+ok 3 - typed precondition failure retained without private stdout or credential disclosure
+  ---
+  duration_ms: 1.302798
+  type: 'test'
+  ...
+# Subtest: missing exact API/tenant evidence cannot pass on an aggregate passed flag
+ok 4 - missing exact API/tenant evidence cannot pass on an aggregate passed flag
+  ---
+  duration_ms: 2.004152
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target containerId drift during readiness and retains partial evidence
+ok 5 - actual host barrier refuses target containerId drift during readiness and retains partial evidence
+  ---
+  duration_ms: 1.233952
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target startedAt drift during readiness and retains partial evidence
+ok 6 - actual host barrier refuses target startedAt drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.918022
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target image drift during readiness and retains partial evidence
+ok 7 - actual host barrier refuses target image drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.907575
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target project drift during readiness and retains partial evidence
+ok 8 - actual host barrier refuses target project drift during readiness and retains partial evidence
+  ---
+  duration_ms: 0.97668
+  type: 'test'
+  ...
+# Subtest: actual host barrier refuses target lost drift during readiness and retains partial evidence
+ok 9 - actual host barrier refuses target lost drift during readiness and retains partial evidence
+  ---
+  duration_ms: 1.24661
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25.712884

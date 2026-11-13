@@ -1,0 +1,5 @@
+tests/postgres-cohort-snapshot.integration.test.js
+  flags: NS_COHORT_SNAPSHOT_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: bounded constructor admission cuts, continuous independent constructor stream, timeout and native role/datastore refusal; own pinned PostgreSQL and cleanup
+# 1 opt-in suites (84 in the inventory); 1 start their own containers

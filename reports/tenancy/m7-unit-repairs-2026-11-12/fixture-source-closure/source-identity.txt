@@ -1,0 +1,3 @@
+ok   committed tree matches SOURCE.md (3ba19b609af18184082cbd8aa5f978c9cfde016c)
+ok   core 9db0ce94f072c8f34aab889f0181afa4269a6758:deploy/multitenant is the recorded upstream tree (fdc9f8dd2644b8789c86abeb030fbc0ad7304780)
+ok   core fixture files plus the recorded delta equal the same files here (5: config.js demo.js health.js restore.js ui.js )

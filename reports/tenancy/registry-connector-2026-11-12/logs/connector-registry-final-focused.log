@@ -1,0 +1,15 @@
+
+
+  .............................Tenant warm drained: ready 1 failed 0 deferred 0 after 3 ms
+.Tenant warm drained: ready 1 failed 0 deferred 0 after 2 ms
+Tenant warm drained: ready 1 failed 0 deferred 0 after 1 ms
+..........................
+  ....................CEREMONY_LOCK_ORDER_SOURCE {"scope":"actual component/SQL adapter with controlled lock model, not PostgreSQL","trace":[{"id":"execute","event":"acquired","key":"policy"},{"id":"cancel","event":"waiting","key":"policy","owner":"execute"},{"id":"execute","event":"acquired","key":"request"},{"id":"execute","event":"acquired","key":"ceremony"},{"id":"execute","event":"acquired","key":"activity"},{"id":"cancel","event":"acquired","key":"request"},{"id":"cancel","event":"acquired","key":"ceremony"}],"outcomes":["SOURCE_EXEC_INTERRUPT","LIFECYCLE_EXECUTION_STARTED"]}
+.LIFECYCLE_INHERITANCE_SOURCE {"scope":"actual-component recording model, not PostgreSQL","accepted":false,"omittedExtra":null,"deletes":0,"remainingParentA":4}
+.LIFECYCLE_PHYSICAL_INVENTORY_SOURCE {"scope":"recording-client protocol, not PostgreSQL","deletes":0,"knownA":12,"hiddenA":1}
+...LIFECYCLE_UNKNOWN_LEDGER_SOURCE_OBSERVATION {"scope":"actual-component recording-client protocol, not PostgreSQL","deleteStatements":0,"remainingTenantRows":12}
+...............................
+  ..................
+
+  130 passing (2s)
+

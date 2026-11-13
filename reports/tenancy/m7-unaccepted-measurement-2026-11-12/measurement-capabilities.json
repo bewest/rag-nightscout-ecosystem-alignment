@@ -1,0 +1,27 @@
+{
+  "acceptedClaims": false,
+  "aggregateKind": "m7-joined-unaccepted-measurement",
+  "capacityAcceptance": "NOT_GRANTED",
+  "cellKind": "m7-joined-unaccepted-measurement-cell",
+  "diagnostics": "off",
+  "diagnosticsIntervalMs": 5000,
+  "functionalAcceptance": "UNACCEPTED",
+  "functionalAcceptanceAtAuthorization": "PENDING",
+  "kind": "m7-unaccepted-measurement-admission",
+  "limits": {
+    "apiReplicas": 1,
+    "evaluatorReplicas": 1,
+    "maximumRunMinutes": 180,
+    "realtimeReplicas": 1,
+    "tenantCounts": [
+      500,
+      750,
+      1000
+    ]
+  },
+  "measurementMode": "unaccepted",
+  "profile": "remote-pilot",
+  "receiptKind": "joined-measurement-authorization",
+  "receiptStatus": "AUTHORIZED_UNACCEPTED_MEASUREMENT",
+  "version": 1
+}

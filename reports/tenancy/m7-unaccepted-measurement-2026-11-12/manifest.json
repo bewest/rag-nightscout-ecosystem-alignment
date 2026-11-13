@@ -1,0 +1,14 @@
+{
+  "README.md": "6ff1038324cebe286c069d17b84c9ae65a925d2c13ae3a568311a3a5cf24f8c2",
+  "gate-control-red.txt": "74f5c3cfd623d39804dfade0575c0dc43da911ab6c1d61cbff7e41887317d38f",
+  "image-control-red.txt": "46735e8e252267661e3f6a4897d2bb0419574be45fea5c198ddd1b626ad5f569",
+  "instrument.json": "9183e38d1546c6042f892844b995d41917fc9e103be81e42743261cfb359867e",
+  "measurement-capabilities.json": "be92204b489bfc0f68032b631f79e0325f076e9975e4d90b0ac8c07b94df4c61",
+  "original-contract.txt": "27cca36156e3a63ad0a0001f4b96b56040b9c2dcbe9cece569b1cf3995e00dc8",
+  "receipt-initial-refusal.txt": "dca0b8face850e3661f00c3a3f034c8039750e1555bd240035a3d9883163bbd0",
+  "receipt-restored.txt": "f0aa8a492ea0c09254cf6de4f089d6a8c7744d62826898f71b420d7dabfab5b5",
+  "receipt-targeted-repair.txt": "31362b3fba0b5ad5fa246a0489bd61d0bf3fe8e9d2095ee1161485061ff1aa51",
+  "restored-focused.txt": "76c01e7ba1708ec77ec6989a2c682ba20eb3ed68bc2cab3fa4a24b011fc32a96",
+  "result.json": "73fac973ec46fced7775864a4faba2bfc6646acef029b2bae1d99ee3e35278dd",
+  "unaccepted-focused.txt": "7fdd0de30be9deec805531c85c16188cea10c2e56a950aa06ec795755a9876b2"
+}

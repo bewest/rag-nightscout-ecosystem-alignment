@@ -1,0 +1,26 @@
+{
+  "id": "48e825e6953969b68ee3e390611aa9f2184e32d910f7d0182d0bedf5748730a9",
+  "name": "/ns-api-final-clinical-c60e95ce4847",
+  "ownerLabel": "c60e95ce484743549067d49fff12dc17",
+  "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+  "mounts": [],
+  "tmpfs": {
+    "/var/lib/postgresql/data": ""
+  },
+  "networks": [
+    "bridge"
+  ],
+  "privateStateFiles": [
+    {
+      "name": "pg.env",
+      "exists": true,
+      "mode": "0o600"
+    },
+    {
+      "name": "environment.private.json",
+      "exists": true,
+      "mode": "0o600"
+    }
+  ],
+  "cleanup": "BLOCKED_BY_AUTO_REVIEW; unchanged resources retained"
+}

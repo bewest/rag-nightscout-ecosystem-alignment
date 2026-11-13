@@ -1,0 +1,20 @@
+...............................M7_SETTINGS_REFUSED
+E......
+======================================================================
+ERROR: test_actual_source_defaults_real_status_and_generated_k6_plugin_control (test_profile.Profile.test_actual_source_defaults_real_status_and_generated_k6_plugin_control)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/test_profile.py", line 73, in test_actual_source_defaults_real_status_and_generated_k6_plugin_control
+    expected=json.loads(subprocess.check_output(command,text=True))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['node', '<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/fingerprint.cjs', '<owned-review>/core-53a8', '53a8ad725049e6bdacdd903ea8bd759c64781c8d', '/tmp/m7-status-profile-r1t8pk2i/primer.json', '1']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 38 tests in 0.761s
+
+FAILED (errors=1)

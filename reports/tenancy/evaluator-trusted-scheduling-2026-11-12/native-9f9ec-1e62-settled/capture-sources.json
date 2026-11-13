@@ -1,0 +1,132 @@
+{
+  "observation.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/strict-time/observation.private.json",
+    "sha256": "10b32354f6cee9d0bcf1b07efa218d288f59220f25111e3cc580040157a68331",
+    "projection": false
+  },
+  "process-result.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/process-result.private.json",
+    "sha256": "7f2a69a852503aafb9a6842e297aa5e292bdcbd9030ec0b32e8fade1d160a656",
+    "projection": false
+  },
+  "activation-processes.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/activation-processes.private.json",
+    "sha256": "1082abae50230c9fa8a6bb716377e006f891042b9e5ac1da549d407e24e4f8c2",
+    "projection": false
+  },
+  "settlement.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/startup-settlement.json",
+    "sha256": "a0f7f771c6fa2dcb2d811a9660328935432d64615c01dca47cc2d136361f85e5",
+    "projection": false
+  },
+  "api-readiness.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/api-readiness.log",
+    "sha256": "9a7af24d485f5d0bdd0e5ee66d731cb806417f91d1bbeee46dae15b3e2abda73",
+    "projection": false
+  },
+  "api-readiness-process.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/api-readiness-process.json",
+    "sha256": "d6c26123f4db062d549a78323fa19c2548c2c20a03f048e559d2e99fa1362409",
+    "projection": false
+  },
+  "evaluator-readiness.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/evaluator-readiness.json",
+    "sha256": "60644093836eb3d5a2f693a8cc8a67c4ff617537266a2d795ac35c00aae913c7",
+    "projection": false
+  },
+  "episode.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/episode/episode.json",
+    "sha256": "883da6bffdcef5cff910cd926d7d56745cd54f39845bb1b3d63d552e29d7b11e",
+    "projection": false
+  },
+  "episode-process.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/episode/process.json",
+    "sha256": "e16c9fd8f5d4a29bd4a1700eed31617bc285fdad77d7eb7650d0cc15c5956e25",
+    "projection": false
+  },
+  "instrument-manifest.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/instrument-manifest.json",
+    "sha256": "e7e1a6048b2f8a17d2ad208bd3aa447178dad430969f3eb0ac9841d2b0ba9636",
+    "projection": false
+  },
+  "recording-order-control.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/recording-order-control.json",
+    "sha256": "c1ada22dfe3fe3523746db6d834796955d15e83351afcf7aa3d673acff887b97",
+    "projection": false
+  },
+  "capture.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/capture.py",
+    "sha256": "2c7e0a3c9ad559fee827684c98838a9bb5c45618b0fb628cd9102221c9d36988",
+    "projection": false
+  },
+  "run-once.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/run-once.py",
+    "sha256": "5db259d1bacddeac468ffa2ea1b0eb486d53dc43c05380a4537e79db9009a334",
+    "projection": false
+  },
+  "sequence.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/sequence.py",
+    "sha256": "aef0363098b1f2a752b24ffc118ee1fcfb67d58b5678b48b890540feac2f31ba",
+    "projection": false
+  },
+  "activate.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/activate.py",
+    "sha256": "5bb23636ccccead0d7baedd0ed0f6e1c389d5fde0d47eaf9e078421c71197b2e",
+    "projection": false
+  },
+  "episode_order.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/episode_order.py",
+    "sha256": "d9ff64d167fc3d19dbb909fccc5fe0d53ce50549d23da3fd3105d7c464331abe",
+    "projection": false
+  },
+  "settlement.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/settlement.py",
+    "sha256": "15f2020b257abf84e2aaada0dd207f9faa6c3a95acb5e7eca52b6dd1157bc498",
+    "projection": false
+  },
+  "ready.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/ready.py",
+    "sha256": "99487cda1b05b0d57115174091df33e52b6559f748cfa7ecffad15c9e6700a1f",
+    "projection": false
+  },
+  "barrier_process.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/barrier_process.py",
+    "sha256": "144f0980542937aa84607beccc3d38283722c0e240106c762722900b04ad4004",
+    "projection": false
+  },
+  "owned_process.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/owned_process.py",
+    "sha256": "a4ef37a3033b953ebe04f4a91da3069ec2b4d85740763e32489032e6dcc17517",
+    "projection": false
+  },
+  "episode.cjs": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/episode/episode.cjs",
+    "sha256": "b46fe213fba5fa46d45a1d14367c02c73ef6aa44a0851537171e3683f2345759",
+    "projection": false
+  },
+  "episode-supervisor.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/episode/run.py",
+    "sha256": "90881f4df5bef631884ce5f4094dd36c798f5eab87db8c84f2170b3e4fda16c8",
+    "projection": false
+  },
+  "select-spec.py": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/select-spec.py",
+    "sha256": "85ace7e55009bea0a17755d858d5c326fec090f6da54ebbd3ed046d56169aa0a",
+    "projection": false
+  },
+  "capture.stdout.txt": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/strict-time.stdout.log",
+    "sha256": "ef46b6fc61cb452532a8343e05173c4b11d838fb29d47f95ec4090e7df2ef61a",
+    "projection": false
+  },
+  "restart-phases.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/restart-processes.private.json",
+    "sha256": "3453bed58ab6a3202dade81d5c39a7a761434bd0fde79cd0e3b1a146e025cb86",
+    "projection": true
+  },
+  "sequence-phases.json": {
+    "original": "/tmp/ns-guard-final-collector-settled-20261112/sequence-processes.private.json",
+    "sha256": "05dc2be9884df994b3ea34e1cf9303072749d22656fea68e838591f871f2e51f",
+    "projection": true
+  }
+}

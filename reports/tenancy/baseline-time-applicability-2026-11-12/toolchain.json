@@ -1,0 +1,29 @@
+{
+  "recordType": "NEW_PATH_REDACTED_DERIVATIVE",
+  "originalPrivateCaptureSha256": "0c887860bc7ceafab061fcdeb1dd5f2db5d6af564059922842ece95378860f1a",
+  "transformation": "Replace local path prefixes with logical roles only; measured values unchanged. Not a new execution.",
+  "data": {
+    "actualNodeBinary": "<NODE_BINARY>",
+    "actualNodeVersion": "v22.23.4",
+    "actualNodeBinarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+    "actualKernel": "6.18.7-76061807-generic",
+    "command": [
+      "node",
+      "<PRIVATE_EVIDENCE>/full-projection-confirmation.cjs"
+    ],
+    "environmentKeys": [
+      "PATH",
+      "LANG",
+      "TZ",
+      "NODE_PATH"
+    ],
+    "NODE_PATH": "<DEPENDENCY_NODE_MODULES>",
+    "scope": "Pure host discriminator only. No claim of identical remote Node24/kernel behavior; remote portability remains UNMEASURED.",
+    "resolutionGuard": "Every resolved non-builtin realpath must be under explicit47b scratch Git archive overlay or authorized historical dependency realpath; otherwise throw before module load.",
+    "selectedSourceOverlay": "<CORE_SOURCE>",
+    "authorizedDependencyRoot": "<DEPENDENCY_NODE_MODULES>",
+    "resolutionPathCount": 382,
+    "rootPackageMetadata": "Fixture root package.json absent; actual historical Git d505 package/lock independently equal47b. No fresh install inferred.",
+    "newArtifactReason": "Supplement to immutable captured assessment; prior artifacts were not edited."
+  }
+}

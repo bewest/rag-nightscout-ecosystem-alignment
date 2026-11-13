@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+ok 1 - bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+  ---
+  duration_ms: 744.509472
+  type: 'test'
+  ...
+# Subtest: wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+ok 2 - wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+  ---
+  duration_ms: 1002.840062
+  type: 'test'
+  ...
+# Subtest: HTTP ACK without a current frame cannot produce diagnostic PASS
+ok 3 - HTTP ACK without a current frame cannot produce diagnostic PASS
+  ---
+  duration_ms: 1002.827136
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/TENANT_WARMING
+ok 4 - late second-tenant status refusal retains sanitized status and code 503/TENANT_WARMING
+  ---
+  duration_ms: 8.100912
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+ok 5 - late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+  ---
+  duration_ms: 5.643935
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+ok 6 - late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+  ---
+  duration_ms: 4.963886
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/null
+ok 7 - late second-tenant status refusal retains sanitized status and code 503/null
+  ---
+  duration_ms: 4.504385
+  type: 'test'
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+not ok 8 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+  ---
+  duration_ms: 1507.986186
+  type: 'test'
+  location: '<instrument-root>/tools/mt-bench/m7-joined/diagnostic.test.cjs:61:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    CLI_LINGERED_AFTER_REFUSAL M7_DIAGNOSTIC_HTTP_REFUSED
+    
+    + actual - expected
+    
+    + true
+    - undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<instrument-root>/tools/mt-bench/m7-joined/diagnostic.test.cjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+not ok 9 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+  ---
+  duration_ms: 1505.850645
+  type: 'test'
+  location: '<instrument-root>/tools/mt-bench/m7-joined/diagnostic.test.cjs:61:31'
+  failureType: 'testCodeFailure'
+  error: |-
+    CLI_LINGERED_AFTER_REFUSAL M7_DIAGNOSTIC_HTTP_REFUSED
+    
+    + actual - expected
+    
+    + true
+    - undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<instrument-root>/tools/mt-bench/m7-joined/diagnostic.test.cjs:67:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 7
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5792.980223

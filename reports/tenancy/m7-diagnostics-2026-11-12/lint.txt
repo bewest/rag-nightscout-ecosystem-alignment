@@ -1,0 +1,9 @@
+
+<product>/lib/server/realtime/private-api.js
+  72:7  warning  Potential timing attack, right side: true  security/detect-possible-timing-attacks
+
+<product>/lib/server/tenant-app/data-access.js
+  80:11  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+  80:55  warning  Unsafe Regular Expression  security/detect-unsafe-regex
+
+✖ 3 problems (0 errors, 3 warnings)

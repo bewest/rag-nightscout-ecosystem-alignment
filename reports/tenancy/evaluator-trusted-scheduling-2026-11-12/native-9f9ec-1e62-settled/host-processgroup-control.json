@@ -1,0 +1,48 @@
+{
+  "kind": "pure-host-owned-process-group-control",
+  "noDockerNetworkApp": true,
+  "results": [
+    {
+      "pid": 1159770,
+      "processGroup": 1159770,
+      "startedAtMs": 1794522263693,
+      "timedOut": false,
+      "returnCode": 7,
+      "finishedAtMs": 1794522263725,
+      "case": "normal-seven"
+    },
+    {
+      "pid": 1159771,
+      "processGroup": 1159771,
+      "startedAtMs": 1794522263726,
+      "timedOut": true,
+      "ownedGroupNoLiveMembers": true,
+      "returnCode": -15,
+      "finishedAtMs": 1794522264268,
+      "case": "timeout-tree",
+      "ownedProcessesAfter": [
+        {
+          "role": "parent.pid",
+          "pid": 1159771,
+          "state": "absent",
+          "alive": false
+        },
+        {
+          "role": "grandchild.pid",
+          "pid": 1159772,
+          "state": "absent",
+          "alive": false
+        }
+      ]
+    },
+    {
+      "pid": 1159782,
+      "processGroup": 1159782,
+      "startedAtMs": 1794522264268,
+      "timedOut": false,
+      "returnCode": 0,
+      "finishedAtMs": 1794522264300,
+      "case": "restored-normal-zero"
+    }
+  ]
+}

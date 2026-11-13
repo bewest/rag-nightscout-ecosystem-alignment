@@ -1,0 +1,38 @@
+{
+  "kind": "m7-joined-fresh-image-diagnostic",
+  "profile": "fresh-image-diagnostic",
+  "pair": {
+    "core": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+    "deploy": "bc7b8c56b19d7a87fea668e0adb8b939e580de1e"
+  },
+  "instrument": "7eeca6ca443aaffa6639e773e9edbe438137b7a7769f99cfd38fca699bbbfa1f",
+  "imageId": "sha256:b347e39439b15349223790668d55038ac0c50565d5831e43c590cbb2d8605288",
+  "tenants": 2,
+  "replicas": 2,
+  "verdict": "PASS",
+  "checks": {
+    "stockPrimed": true,
+    "dataHttp": true,
+    "currentFrames": true,
+    "restartObserved": true,
+    "stockRecovered": true,
+    "httpAfterRecovery": true
+  },
+  "acceptedWrites": 2,
+  "dataHttpRequests": 8,
+  "httpAccountingVersion": 2,
+  "criterionHttpRequests": 8,
+  "physicalHttpRequests": 8,
+  "warmProbeHttpRequests": 0,
+  "trailRecords": 8,
+  "trailBytes": 2066,
+  "oracle": "GREEN",
+  "oracleControl": {
+    "baseline": "GREEN",
+    "broken": "RED",
+    "restored": "GREEN"
+  },
+  "fullAcceptance": "NOT_RUN",
+  "capacity": "NO-MEASUREMENT",
+  "trafficDeadlineSeconds": 180
+}

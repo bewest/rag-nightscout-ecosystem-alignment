@@ -1,0 +1,1 @@
+{"at":1700000000000,"warnClock":0.14285714285714285,"dueAt":1700000008572.4285,"dueReason":"pump-clock-warn","inspection":"preserved-exactly","scope":"pure actual nextDue + actual DTO; no UDS/PG/live stack"}

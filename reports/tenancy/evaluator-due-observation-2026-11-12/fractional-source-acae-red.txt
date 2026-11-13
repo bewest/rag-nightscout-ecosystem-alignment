@@ -1,0 +1,19 @@
+
+
+  bounded evaluator inspection v2
+    1) preserves fractional due returned by accepted source pump settings without rounding
+
+
+  0 passing (6ms)
+  1 failing
+
+  1) bounded evaluator inspection v2
+       preserves fractional due returned by accepted source pump settings without rounding:
+     Error: Evaluator due inspection refused
+      at <alignment>/externals/work/crm-evaluator-inspection-due-20261112/lib/server/serve/evaluator-inspection.js:26:57
+      at Array.map (<anonymous>)
+      at Object.inspect (lib/server/serve/evaluator-inspection.js:20:74)
+      at async Context.<anonymous> (tests/evaluator-inspection.test.js:41:50)
+
+
+

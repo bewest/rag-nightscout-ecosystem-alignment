@@ -1,0 +1,24 @@
+[
+  {
+    "program": "npm-cli.js",
+    "phase": "generator-npm-ci",
+    "startedAt": 1794470013.1585298,
+    "elapsedSeconds": 5.6758809089660645,
+    "returncode": 0,
+    "timeoutSeconds": 1200,
+    "failureType": null,
+    "stdout": "0001-npm-cli.stdout",
+    "stderr": "0001-npm-cli.stderr"
+  },
+  {
+    "program": "node",
+    "phase": "generator-client-preflight",
+    "startedAt": 1794470018.834586,
+    "elapsedSeconds": 0.06423234939575195,
+    "returncode": 0,
+    "timeoutSeconds": 120,
+    "failureType": null,
+    "stdout": "0002-node.stdout",
+    "stderr": "0002-node.stderr"
+  }
+]

@@ -1,0 +1,1 @@
+{"instrument":"oidc-matrix-stage","stage":"owner-browser","verdict":"failed","error":"ERR_ASSERTION","message":"owner transport status oracle\n\n200 !== 403\n","failures":[{"name":"AssertionError","code":"ERR_ASSERTION","message":"owner transport status oracle\n\n200 !== 403\n"}]}

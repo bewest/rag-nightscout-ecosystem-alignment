@@ -30,7 +30,6 @@ repository.
 | [`BFQ-95`](bfq-95.md) | &mdash; | `needs-decision` | BF-95 - an uploader clock running ahead delays the stale-data alarm |
 | [`DEPENDABOT-CONFIG`](dependabot-config.md) | &mdash; | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts count fixes that are on dev |
 | [`DEPLOY-TREE-HOME`](deploy-tree-home-docs-operator-readme-20261110.md) | &mdash; | `ready-to-push` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README |
-| [`DEPLOY-VAULT-AGENT`](deploy-vault-agent-main.md) | &mdash; | `ready-to-push` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) |
 | [`LOOP-UPSTREAM-CARB-EDIT`](loop-upstream-carb-edit.md) | &mdash; | `in-flight-upstream` | Loop 3.14.9 drops a carb edit when the record's _id is no longer in its 24 h cache (raised with the Loop maintainers) |
 | [`MOD-UNITS-CANONICAL`](mod-units-canonical.md) | &mdash; | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), and the conversion constant |
 | [`MOD-WRITE-VALIDATION-READ`](mod-write-validation-read.md) | &mdash; | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-side flag, R1/R2) |
@@ -41,7 +40,6 @@ repository.
 | [`MT-CONNECTOR-REVERSE`](mt-connector-reverse-codex-connector-reverse-20261110.md) | &mdash; | `ready-to-push` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant |
 | [`MT-CONSUMER-STALE-RESELECT`](mt-consumer-stale-reselect-codex-consumer-refusal-20261110.md) | &mdash; | `in-flight-upstream` | Alarm consumer survives evaluator timer publications during selection (BF-231) |
 | [`MT-EVAL-COST`](mt-eval-cost-codex-eval-cost-20261111.md) | &mdash; | `ready-to-push` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order |
-| [`MT-EVALUATOR-PARTITION`](mt-evaluator-partition-codex-evaluator-partition-20261110.md) | &mdash; | `ready-to-push` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table |
 | [`MT-EXPORT-EXPIRY`](mt-export-expiry-codex-export-expiry-20261110.md) | &mdash; | `in-flight-upstream` | Key destruction removes the export artifact file in the same audited step |
 | [`MT-INTERNAL-LISTENER`](mt-internal-listener-codex-internal-listener-20261110.md) | &mdash; | `in-flight-upstream` | Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline |
 | [`MT-KEY-RETENTION`](mt-key-retention-codex-key-retention-20261110.md) | &mdash; | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal |

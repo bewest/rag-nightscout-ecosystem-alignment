@@ -1,0 +1,14 @@
+
+
+  !
+
+  0 passing (6ms)
+  1 failing
+
+  1) registry-backed human access and origin clients
+       RH_REFRESH: a new registry entry invalidates cached public keys; key cache remains bounded and removed tenants refuse:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async Context.<anonymous> (tests/registry-human-session.test.js:54:5)
+
+
+

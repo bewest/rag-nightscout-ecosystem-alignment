@@ -1,0 +1,23 @@
+{
+  "core": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+  "publicSanitization": "owned absolute core path prefix only; source harness already redacts synthetic credentials",
+  "rawPrivateCaptureSha256": {
+    "summary.json": "ebf4ed000b414220ef56478376cd0140ad218ce766bc1e00a964b26bf6978f02",
+    "controls.json": "04d1cd3fc3ff185d0bc520f42d7359ca17447f5da320123b207100e63218a4c6",
+    "matrix.txt": "365f64c6487652dc17bc05c4cbe2996c68c1d8bdd63dda49a8a5095b2824a67c",
+    "controls.txt": "99eb85bce7dad99e90d46d3b30a9176609502e6f412a36c71936da4bdc65d38c",
+    "production-bundle.txt": "0b542d38cf918846fe97d2ab51609efe7649150ed57a06e39080c357fd7f7638",
+    "joined-focused.txt": "c90559b473e95d73daa3bff1af2ca92a8362ec5c46082c93549c9507eddbbbab",
+    "tiers.txt": "dff5bfb6c30376d6444c526d9a89945fbd25e396bdaf0bfd1ba0aae668e3417b"
+  },
+  "files": {
+    "controls.json": "b26c733045fbbaeaef82c7c21459d51eafae38acfe5a35e4f4c6b7120491c59d",
+    "controls.txt": "d3f0ec292f27c3e10609919e13b1ef3575b69bd35e13e00048271ef6ac5d3c17",
+    "joined-focused.txt": "c90559b473e95d73daa3bff1af2ca92a8362ec5c46082c93549c9507eddbbbab",
+    "matrix.txt": "bc8c99979167dbf717567aaba6f49f52bb3df396bb1d89b0869ad476e9cc490a",
+    "production-bundle.txt": "0b542d38cf918846fe97d2ab51609efe7649150ed57a06e39080c357fd7f7638",
+    "resources.json": "75e7df500e40510f20f8ea92b93b0db241d7e0638b3f6df996eccf969a576930",
+    "summary.json": "38ba5fbde34e779967ebcae01c135feceb2c4d5d6be49fca3d71064e23ca91e9",
+    "tiers.txt": "dff5bfb6c30376d6444c526d9a89945fbd25e396bdaf0bfd1ba0aae668e3417b"
+  }
+}

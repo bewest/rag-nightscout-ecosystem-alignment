@@ -1,0 +1,84 @@
+TAP version 13
+# Subtest: caught after-start failure retains typed checkpoint and private detail without changing uncertain refusal
+not ok 1 - caught after-start failure retains typed checkpoint and private detail without changing uncertain refusal
+  ---
+  duration_ms: 122.10768
+  type: 'test'
+  location: '/tmp/replacement-checkpoint-control-9c-klua3uio/replacement-observation.test.js:6:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(r.summary.events.some(e=>e.kind==='checkpoint-error'&&e.stage==='after-start'&&e.code==='SYNTHETIC_AFTER_START'&&e.detailStage==='exact-alarm-count'))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/tmp/replacement-checkpoint-control-9c-klua3uio/replacement-observation.test.js:6:359)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: readiness failure is distinct from a completed host callback
+ok 2 - readiness failure is distinct from a completed host callback
+  ---
+  duration_ms: 112.098567
+  type: 'test'
+  ...
+# Subtest: holder commit failure keeps its typed inner boundary
+not ok 3 - holder commit failure keeps its typed inner boundary
+  ---
+  duration_ms: 90.228142
+  type: 'test'
+  location: '/tmp/replacement-checkpoint-control-9c-klua3uio/replacement-observation.test.js:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(r.summary.events.some(e=>e.kind==='checkpoint-error'&&e.detailStage==='holder-commit'&&e.code==='FIXTURE_HOLDER_COMMIT_FAILED'))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/tmp/replacement-checkpoint-control-9c-klua3uio/replacement-observation.test.js:8:314)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: zero exit with lost completion remains uncertainty, not successful readiness
+ok 4 - zero exit with lost completion remains uncertainty, not successful readiness
+  ---
+  duration_ms: 71.909812
+  type: 'test'
+  ...
+# Subtest: signal and real completion have distinct typed outcomes
+ok 5 - signal and real completion have distinct typed outcomes
+  ---
+  duration_ms: 233.410303
+  type: 'test'
+  ...
+# Subtest: private stream and public event histories are explicitly bounded
+ok 6 - private stream and public event histories are explicitly bounded
+  ---
+  duration_ms: 2435.793689
+  type: 'test'
+  ...
+# Subtest: raw diagnostics refuse a nonprivate host directory without leaking a stream into shared placement
+ok 7 - raw diagnostics refuse a nonprivate host directory without leaking a stream into shared placement
+  ---
+  duration_ms: 1.196716
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 5
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3080.81313

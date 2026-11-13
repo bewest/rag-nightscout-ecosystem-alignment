@@ -1,0 +1,17 @@
+{
+  "kind": "direct-final-prcheck-process-record",
+  "coreBefore": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+  "coreAfter": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+  "officialBefore": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "officialAfter": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+  "scriptSHA256": "98b2bb58f4ea26d7f3aeb6dffac869437fba518fb844721fdda860e05387a705",
+  "startedAtMs": 1794517258158,
+  "finishedAtMs": 1794517260970,
+  "returnCode": 0,
+  "trackedStatusAfter": "",
+  "logSHA256": "bac3aa25652a5066b1a2dfb79242b049e62be07f52811ceb4d247187178d3fbc",
+  "sourceUnchanged": true,
+  "officialContained": true,
+  "originalRecordSHA256": "5c987d65de670b8f9538872312b9747d4b2b3bf53dd02249071917b4d2af3de4",
+  "normalization": "omit only execution-local argv paths; original full record is pinned by expected.json and retained privately"
+}

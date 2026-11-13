@@ -1,0 +1,13 @@
+tests/realtime-placement-owner.integration.test.js
+  flags: (admin URI only)
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: actual held realtime worker owner exclusion, backend loss and independent worker
+tests/realtime-placement-publication.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: controlled placement publication and actual maintenance-pin exclusion; fixture-owned Vault
+tests/realtime-sharding-native.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: actual API/realtime roles, assigned live-add, polling/WebSocket/API3 move, alarm routing, deferred warm and observed cohort census; fixture-owned Vault
+# 3 opt-in suites (82 in the inventory); 2 start their own containers

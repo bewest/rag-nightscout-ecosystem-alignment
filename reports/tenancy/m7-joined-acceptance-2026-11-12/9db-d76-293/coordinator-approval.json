@@ -1,0 +1,73 @@
+{
+  "kind": "coordinator-recorded-acceptance-approval",
+  "scope": "acceptance",
+  "claims": [
+    "acceptance"
+  ],
+  "expectedSHA256": "5b763082da670dac63827e49bf27e8734bb6558ce9aaacb17c4be1fc1b8b94ff",
+  "receiptSHA256": "8ea82712ded0eeef9ffede2af3a5ecaec0dbda30c64b69f69b5eb3dfada0c7a7",
+  "gateSHA256": "316a3747e86dd519c8ce302055873903e564862a590cd8e38c4d5bea3b6e7b86",
+  "requiredCriteria": 29,
+  "semanticControlTriplets": 4,
+  "independentArtifactPinsVerified": 81,
+  "nativeRecomputed": {
+    "version": 2,
+    "phase": "idle",
+    "verdict": "PASS",
+    "policy": {
+      "version": 2,
+      "moduleVersion": 2,
+      "selectorRows": 128,
+      "maxTenants": 10000,
+      "maxInstances": 4,
+      "roundsPerPhase": 3,
+      "maxQueriesPerPhase": 1024,
+      "maxBytesPerPhase": 67108864,
+      "responseMaxBytes": 1048576,
+      "rpcTimeoutMs": 5000,
+      "roundDeadlineMs": 15000,
+      "idleWitness": "successful-time-only-completion",
+      "loadWitness": "successful-work-progression",
+      "recoveryCadenceMs": 15000,
+      "recoveryTimeoutMs": 900000,
+      "recoveryMaxRounds": 60,
+      "readinessMaxQueries": 25600,
+      "readinessMaxBytes": 268435456,
+      "readinessMaxRounds": 80,
+      "deadlineClaim": false,
+      "workloadCohortChanged": false,
+      "dueState": "captured-only-not-opportunity-assessed"
+    },
+    "tenants": 2,
+    "instances": {
+      "evaluator": {
+        "runtimeId": "9f0f83b4-4618-4b92-b54a-a198c1e3ee6a",
+        "ordinal": 0
+      },
+      "evaluator-2": {
+        "runtimeId": "10fe328f-da6c-4338-a8e0-d1f7a89d7659",
+        "ordinal": 1
+      },
+      "evaluator-3": {
+        "runtimeId": "a0717c6b-b449-4fc4-88d8-0fdcfea4d675",
+        "ordinal": 2
+      }
+    },
+    "completedWorkDelta": 38,
+    "completedTimeDelta": 38,
+    "tenantsWithTimeProgress": 2,
+    "minimumCompletedWorkDelta": 19,
+    "failedCompletionDelta": 0,
+    "queries": 9,
+    "responseBytes": 20130,
+    "collectorWallSeconds": 1.2070422088727355,
+    "scope": "bookend/midpoint successful work; no strict deadline or true cold load cohort claim"
+  },
+  "approval": "APPROVED_RECORDED_ACCEPTANCE_ONLY",
+  "limits": [
+    "no capacity or production M7 promotion",
+    "no Android, real-IdP, HA or unmeasured legacy mixed-validity claim",
+    "old proofs retain original executed source/environment"
+  ],
+  "approvedAtMs": 1794518186217
+}

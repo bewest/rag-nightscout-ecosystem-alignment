@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: allows one intentional B payload transition and classifies cancelled superseded rows
+ok 1 - allows one intentional B payload transition and classifies cancelled superseded rows
+  ---
+  duration_ms: 1.780705
+  type: 'test'
+  ...
+# Subtest: rejects an accepted identical early A effect even with changed B input
+ok 2 - rejects an accepted identical early A effect even with changed B input
+  ---
+  duration_ms: 1.085089
+  type: 'test'
+  ...
+# Subtest: rejects a second accepted identical B401 effect
+ok 3 - rejects a second accepted identical B401 effect
+  ---
+  duration_ms: 0.344412
+  type: 'test'
+  ...
+# Subtest: rejects extra pending identical effects before they can be handed off
+ok 4 - rejects extra pending identical effects before they can be handed off
+  ---
+  duration_ms: 0.997775
+  type: 'test'
+  ...
+# Subtest: rejects fabricated clear, duplicate socket fanout, and a proof crossing the real repeat deadline
+ok 5 - rejects fabricated clear, duplicate socket fanout, and a proof crossing the real repeat deadline
+  ---
+  duration_ms: 0.681791
+  type: 'test'
+  ...
+# Subtest: refuses absent typed digest metadata before classifying an effect
+ok 6 - refuses absent typed digest metadata before classifying an effect
+  ---
+  duration_ms: 0.303021
+  type: 'test'
+  ...
+# Subtest: keeps original successful ACK/frame predicates without making authorize ACK a new requirement
+ok 7 - keeps original successful ACK/frame predicates without making authorize ACK a new requirement
+  ---
+  duration_ms: 1.330053
+  type: 'test'
+  ...
+# Subtest: separately records connect_error and failed subscribe without leaking credentials
+ok 8 - separately records connect_error and failed subscribe without leaking credentials
+  ---
+  duration_ms: 0.502522
+  type: 'test'
+  ...
+# Subtest: distinguishes rejected authorize ACK from successful authorization with missing first frame
+ok 9 - distinguishes rejected authorize ACK from successful authorization with missing first frame
+  ---
+  duration_ms: 0.200254
+  type: 'test'
+  ...
+# Subtest: bounds diagnostic history and records disconnect/reconnect metadata only
+ok 10 - bounds diagnostic history and records disconnect/reconnect metadata only
+  ---
+  duration_ms: 0.30097
+  type: 'test'
+  ...
+# Subtest: bounds exported ACK tails while preserving raw predicates and total counts
+ok 11 - bounds exported ACK tails while preserving raw predicates and total counts
+  ---
+  duration_ms: 1.401422
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 68.170002

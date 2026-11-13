@@ -1,0 +1,37 @@
+gate: doc-links (DOC-LINKS)
+  ok   scope resolves to 2668 tracked files across 14 roots
+  ok   .: 29 references
+  ok   docs: 15 references
+  ok   docs/00-overview: 753 references
+  ok   docs/30-design: 2320 references
+  ok   docs/40-migration: 10 references
+  ok   docs/60-research/modernization: 46 references
+  ok   docs/60-research/programme: 80 references
+  ok   docs/60-research/remedial: 140 references
+  ok   docs/60-research/tenancy: 155 references
+  ok   docs/archive/tenancy: 295 references
+  ok   docs/guides: 7 references
+  ok   docs/reports/nightscout-release-planning-2026-09: 23 references
+  ok   queue: 1802 references
+  ok   releases: 598 references
+  ok   reports: 869 references
+  ok   tools/queue: 102 references
+  ok   7244 references checked in 491 files
+  ok   158 root-path references name a subtree this repository does not have (cgm-remote-monitor's own docs/); counted, not enforced
+  BAD  docs/30-design/tenancy/README.md -> claimed-public-names-and-deploy-companion-2026-11-09.md  (md-link)
+  BAD  queue/QUEUE.md -> docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md  (root-path)
+  BAD  queue/work-queue.yaml -> docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md  (root-path)
+  BAD  releases/cgm-remote-monitor-16.0.0/decisions.md -> ../../docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md  (md-link)
+  BAD  reports/reviewer-packets/deploy-vault-agent-main.md -> ../../docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md  (md-link)
+  BAD  reports/reviewer-packets/deploy-vault-agent-main.md -> docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md  (root-path)
+  BAD  reports/tenancy/registry-connector-2026-11-12/README.md -> docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md  (root-path)
+  ok   4 references name a PLANNED output or deliverable, listed with a reason
+  ok   planned: docs/60-research/tenancy/tenant-config-surface-2026-09-15.md - T30-RESEARCH's deliverable; its gate is `test -f`, so the item is not-started BY MEASUREMENT. NOTE for whoever takes T30-RESEARCH: a 122 KB docs/30-design/tenancy/tenant-owner-config-surface-2026-09-15.md exists and may already BE this deliverable under another name. Not assumed here - deciding that is the item's work, not this gate's.
+  ok   planned: reports/schema-census/impact-smoke.json - the declared --out of `make schema-impact-smoke` (Makefile L761-763).
+  ok   5 references are HISTORICAL QUOTATIONS, exempt per file+target with a reason
+  ok   quoted: docs/30-design/nightscout-backfix-register.md - the header quotes the pre-move path.join segments that broke four gates
+  ok   quoted: docs/60-research/tenant-config-surface-2026-09-15.md - the PLANNED and QUOTED entries name the pre-move spelling to explain the exemption
+  ok   quoted: docs/60-research/tenant-config-surface-2026-09-15.md - E3 quotes the gate command as it ran during the audit. The document carries a dated "Path note, 2026-09-16" giving the current spelling. Rewriting the quotation would alter the record of what was measured.
+  ok   excluded (frozen record): tools/qc/cgm-ingestion-evidence/harnesses/ - one-shot edit scripts and a manifest snapshot; they record what WAS done
+  34 checked, 7 failing
+make: *** [Makefile:984: docs-links] Error 1

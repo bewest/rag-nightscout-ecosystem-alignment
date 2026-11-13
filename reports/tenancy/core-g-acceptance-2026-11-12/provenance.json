@@ -1,0 +1,75 @@
+{
+  "kind": "public-derivative-provenance",
+  "sourcePins": {
+    "coreCommit": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+    "deployCommit": "31565abe437ea84214aa0068f75de1246c06e45e",
+    "alignmentCommit": "502b46b05bc9a581d2c371f18f7e0e71852f0578",
+    "instrumentCommit": "7209cb29020543a82412cd69d2751ca939cf4318"
+  },
+  "capturedSource": {
+    "commit": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "ciEnvironmentSha256": "97ebaee8ecab5deb14c434c34e2cb05b3235b5e7a55224b82d5e3e7e4f4a0fff",
+    "nodeVersion": "v24.22.1",
+    "npmVersion": "11.19.1",
+    "nodeBinarySha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+    "instrumentCommit": "7209cb29020543a82412cd69d2751ca939cf4318",
+    "workerSha256": "4689aaabcdd2f6f00287bc5879d35eb672c8585dee42fa889f2b11874c84e788"
+  },
+  "capturedKernel": "6.8.0-147-generic",
+  "rawPrivateOriginalsSha256": {
+    "spec.json": "0c397b2fccebe16291b611409fdb0caf8511aa8ff204c3c544e3e4dd11343197",
+    "run.json": "f84e9e0a17cce0750a2eeefe14ae61ea497b52cd60bfccfcffc180392d458475",
+    "result.json": "0deb3cd1cec51f86a92dea97adb79cbd1b80355fbdb0463fde8e5ca48bf9f0ae",
+    "watchdog-result.json": "1b21647453becf0dd9877a8bcdeb30a61e00fcde1788ee3cc148a9087da967e5",
+    "final-cloud-inventory.json": "d92af5cbd1f90239030543bf762fbd442af7d00aefa3980b7c3bfe3458cc2ba8",
+    "compute-estimate.json": "7cd526466b04228c88bef7e8d10cbda563c1e1c9136eaea69db691e6296654c8",
+    "evidence/remote-evidence.tar.gz": "ae43e3e2cf0c0b3ae40e28dd97271f9bfb616bb1828d09ef5cf00a2c8ef15f6e",
+    "decoded/work/core-acceptance/result.json": "dd392ed380f363ebcb7ba8a5685f63cf9eb15892bbd4c3172859ddf20e067303",
+    "decoded/work/core-acceptance/corpus.json": "a92b2538182724e4503d2287d7bd22c8008143788af3cbb19eaf2fee1d079d2e",
+    "decoded/work/core-acceptance/commands.json": "63848f9c2fce0fe1d3cccef0e2fac5f0b8725e41623eb0386d6e8f8d0a3d6a52",
+    "decoded/work/core-acceptance/provenance/source.json": "3de96c4575e05ab71658a6433dcb7c2750356888133807c03eb1c238b79a0825",
+    "decoded/input/acceptance-plan.json": "cfdf631eed93846a2474f07db2505cd555f705d4683b1b147aa12a0ed91b6029",
+    "decoded/work/host.txt": "7dece299e9598d1cd2481c01f18e33a24e8b8aa28cd701d243dd7c7d98415b54",
+    "decoded/work/core-acceptance/logs/dom.stdout.log": "ca3ff38e78c89558bae0017d1ce04490da489ad5989374ae8bc254de04e8fd2f",
+    "decoded/work/core-acceptance/logs/stress.stderr.log": "ff614964cdeed815d1905a5d7d7c4a72a5d00be338963be91f0fbf227a89444c",
+    "decoded/work/core-acceptance/logs/integration.stdout.log": "fa6470de03031682dd8ca63e04913e02360aee216f5f1f4af49259a5004f1be1",
+    "decoded/work/core-acceptance/logs/browser.stderr.log": "e3cbdb4a2b5dedc0129ec699bb734ca4abd7db25cf77aedba27c28db5082969f",
+    "decoded/work/core-acceptance/logs/core.stdout.log": "08a63a781c4a0eab20f9da5766f85159cc91079a526f6ecb6b7d659ef30b0dc1",
+    "decoded/work/core-acceptance/logs/harness.stderr.log": "92af9e95c9adb2bec05af1a7546e84f5b572626bf3a45b6caa5fd8fdc26d2a86",
+    "decoded/work/core-acceptance/logs/dependency.stdout.log": "4ac6de6dbd83bd48fde63e8158c035c199bdcd07fb336122201556453d02d28e",
+    "decoded/work/core-acceptance/logs/browser.stdout.log": "c60be38b8d53d071e501350c3bac1ec9335f2e5f6fd4677661fa3a1f3bcbc5aa",
+    "decoded/work/core-acceptance/logs/stress.stdout.log": "5caf3ea9991276862317f666fde88d39e2f31e0f1644717633f99ea3f085fc0b",
+    "decoded/work/core-acceptance/logs/core.stderr.log": "d45fa3524d8402a91a5b089be3829204e9fd5d8941fc27f178757574b8039604",
+    "decoded/work/core-acceptance/logs/dependency.stderr.log": "1165811c0b23731e2613caee06283ba6c120b1d942b316dce9bdefe2a03efbe4",
+    "decoded/work/core-acceptance/logs/unit.stdout.log": "651687662dc22c83e957cf6a01c97c5ec0f33397ed2220cce68c2956cac2994d",
+    "decoded/work/core-acceptance/logs/integration.stderr.log": "8eb26b511943c4f3adcfa7573bfc309748ff49cc8dca11d2968c463adf42e410",
+    "decoded/work/core-acceptance/logs/dom.stderr.log": "fc3bd30b1165dafda9f5bcff5251c08f436c564b1bbede0082b424614a684286",
+    "decoded/work/core-acceptance/logs/harness.stdout.log": "c77499f75152ab87a2abb31c7cd0a36b06aecc2e1eb05131a2ee8519ace0cc91",
+    "decoded/work/core-acceptance/logs/enabled-corpus.stdout.log": "ea85eadd88b53fe8a169320fc78a88e1e447ae9751f841e876a4822b87601d54",
+    "decoded/work/core-acceptance/logs/enabled-corpus.stderr.log": "54b709d1539333200fd4edd1e589c1d411d2fa071de8dc185a39afa54fd7e266",
+    "decoded/work/core-acceptance/logs/unit.stderr.log": "3bb57264806993148c2562cf72f4682fadf0f0ac34d9e9a4577f5cd36819170a"
+  },
+  "readDerivedSourceSha256": {
+    "tests/admin-provisioning.integration.test.js": "76c674fb12390d42ae17ff9b1497c6cc3294f406ca2464fa5cd3a5e2d4dfd6c3",
+    "tests/tenant-commit-clock-http.integration.test.js": "5881a84fc082f1907aa62b121dea90076e33c5266cb8bfd94ce4ae62e887743d",
+    "scripts/test-multitenant.js": "ece879b9c642f9384b042f7fe4270a69a5102b86b56120fcaf7056b9340c1e98",
+    "scripts/execution-reporter.js": "b36ca8d8552bc5dc163d12f874b299507e41738f0dd38c87fcbec27f6cd2c8b7"
+  },
+  "verifiedCommittedWorker": {
+    "path": "tools/perf-cloud/core-acceptance.py",
+    "sha256": "4689aaabcdd2f6f00287bc5879d35eb672c8585dee42fa889f2b11874c84e788",
+    "umaskLines": [
+      277
+    ],
+    "scope": "Committed bytes match captured worker hash; not an original target-file mode observation."
+  },
+  "parentAssessmentSha256": {
+    "README.md": "c577ac5002973de650325de61aa3a1af5c2667a906540b067d26fc1b0f9d4c33",
+    "assessment.json": "d72301160895acc47566f8d2a3f404b9a2c3400fa54d8d4240fdd955331f2d55",
+    "derive-assessment.py": "b9cfc304633e731192866e6ffab9aeab5dd6a4665ffaaf6f796ab936763b2ccb",
+    "pending-catalogue.json": "14ab845767f8674c9689238f9fdc02a8a2ba3d5d07a73214fc13dd7c6989afab"
+  },
+  "publicationScope": "Public derivatives only; raw private spec/environment/logs/container/provider inventory are not published.",
+  "reviewerActions": "Read and hash saved artifacts only; no cloud, Docker, runtime, tests or repair."
+}

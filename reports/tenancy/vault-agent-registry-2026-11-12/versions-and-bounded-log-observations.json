@@ -1,0 +1,11 @@
+{
+  "node": "v24.22.1",
+  "vault": "Vault v2.2.1 (0e7c41b936218bd2401ab0f891c93bec10e2e8e4), built 2026-10-22T16:27:49Z",
+  "agentLogBytes": 23093,
+  "agentLogTailLines": 1000,
+  "agentLogTruncationPossible": true,
+  "renewalEvents": 113,
+  "authenticationEvents": 24,
+  "secretReadFailureObserved": false,
+  "agentAndServerDifferentContainers": true
+}

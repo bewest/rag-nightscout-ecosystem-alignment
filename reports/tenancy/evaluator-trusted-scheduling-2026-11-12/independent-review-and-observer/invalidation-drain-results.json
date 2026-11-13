@@ -1,0 +1,20 @@
+[
+  {
+    "source": "d505",
+    "exit": 1,
+    "output": "",
+    "error": "AssertionError [ERR_ASSERTION]: ADAPTER_NOT_REACHED\n    at <owned-review>/invalidation-drain.cjs:10:3"
+  },
+  {
+    "source": "5ad",
+    "exit": 1,
+    "output": "",
+    "error": "AssertionError [ERR_ASSERTION]: ADAPTER_NOT_REACHED\n    at <owned-review>/invalidation-drain.cjs:10:3"
+  },
+  {
+    "source": "6e52",
+    "exit": 1,
+    "output": "",
+    "error": "AssertionError [ERR_ASSERTION]: ADAPTER_NOT_REACHED\n    at <owned-review>/invalidation-drain.cjs:10:3"
+  }
+]

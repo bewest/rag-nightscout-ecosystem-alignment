@@ -1,0 +1,133 @@
+{
+  "version": 4,
+  "kind": "m7-joined-profile-capabilities",
+  "settingsFingerprint": {
+    "schema": 1,
+    "source": "pinned-core-defaults-and-actual-blank-registry-primer",
+    "observation": "existing-k6-r_status",
+    "missing": "UNMEASURED",
+    "invalidOrMismatch": "functional-FAIL",
+    "extraHttp": false
+  },
+  "diagnostics": {
+    "default": "off",
+    "choices": [
+      "off",
+      "on"
+    ],
+    "intervalDefaultMs": 5000,
+    "intervalMinMs": 1000,
+    "intervalMaxMs": 60000,
+    "environmentWhitelist": [
+      "NS_M7_DIAGNOSTICS",
+      "NS_M7_DIAGNOSTICS_INTERVAL_MS"
+    ]
+  },
+  "profileComparison": {
+    "field": "profileSelection",
+    "hashField": "profileSelection.sha256",
+    "sameAcrossPilotAndApiScaling": true
+  },
+  "topology": {
+    "binding": "registry-default",
+    "secretsBackend": "vault-server",
+    "vaultAgentOverlay": false
+  },
+  "privateRoleLogs": {
+    "secondsPerRole": 5,
+    "perRoleBytes": 65536,
+    "globalBytes": 524288,
+    "truncationExplicit": true
+  },
+  "loadGeneratorMetrics": {
+    "separateFromServingRoles": true,
+    "missingRss": "UNMEASURED"
+  },
+  "capacity": "UNMEASURED; capability is not a campaign receipt",
+  "evaluatorProgress": {
+    "version": 2,
+    "moduleVersion": 2,
+    "selectorRows": 128,
+    "maxTenants": 10000,
+    "maxInstances": 4,
+    "roundsPerPhase": 3,
+    "maxQueriesPerPhase": 1024,
+    "maxBytesPerPhase": 67108864,
+    "responseMaxBytes": 1048576,
+    "rpcTimeoutMs": 5000,
+    "roundDeadlineMs": 15000,
+    "idleWitness": "successful-time-only-completion",
+    "loadWitness": "successful-work-progression",
+    "recoveryCadenceMs": 15000,
+    "recoveryTimeoutMs": 900000,
+    "recoveryMaxRounds": 60,
+    "readinessMaxQueries": 25600,
+    "readinessMaxBytes": 268435456,
+    "readinessMaxRounds": 80,
+    "deadlineClaim": false,
+    "workloadCohortChanged": false,
+    "dueState": "captured-only-not-opportunity-assessed"
+  },
+  "evaluatorIdleSafety": {
+    "version": 2,
+    "kind": "evaluator-idle-safety",
+    "moduleVersion": 4,
+    "completionTail": {
+      "maxOwners": 128,
+      "maxRounds": 1,
+      "deadlineMs": 5000,
+      "scope": "point completion after original cost bookends; no global tail quiescence"
+    },
+    "strictWorkPolicy": {
+      "version": 2,
+      "moduleVersion": 2,
+      "selectorRows": 128,
+      "maxTenants": 10000,
+      "maxInstances": 4,
+      "roundsPerPhase": 3,
+      "maxQueriesPerPhase": 1024,
+      "maxBytesPerPhase": 67108864,
+      "responseMaxBytes": 1048576,
+      "rpcTimeoutMs": 5000,
+      "roundDeadlineMs": 15000,
+      "idleWitness": "successful-time-only-completion",
+      "loadWitness": "successful-work-progression",
+      "recoveryCadenceMs": 15000,
+      "recoveryTimeoutMs": 900000,
+      "recoveryMaxRounds": 60,
+      "readinessMaxQueries": 25600,
+      "readinessMaxBytes": 268435456,
+      "readinessMaxRounds": 80,
+      "deadlineClaim": false,
+      "workloadCohortChanged": false,
+      "dueState": "captured-only-not-opportunity-assessed"
+    },
+    "meaning": "NO_EVALUATOR_TIME_DEMAND or observed successful time work",
+    "quietMeaning": "TIME_NOT_EXERCISED",
+    "clockGuard": "common-bracketed-realtime-minus-monotonic-offset",
+    "jobEncoding": "six-fixed-clinical-flags-bitmask-v1",
+    "newClinicalDemand": "UNMEASURED",
+    "explicitNullDue": "NO_TIMER_DECLARED_WITH_COMPLETE_JOB_OBSERVATION",
+    "missingDue": "UNMEASURED",
+    "nativeTimeWitnessRequired": true,
+    "deadlineClaim": false,
+    "continuousQuiescenceClaim": false
+  },
+  "runPurpose": {
+    "default": "acceptance",
+    "choices": [
+      "acceptance",
+      "discovery"
+    ],
+    "discoverySummaryKind": "m7-joined-discovery-cell",
+    "capacityAcceptance": "NOT_GRANTED",
+    "check": "check-discovery",
+    "discoveryAggregateKind": "m7-joined-discovery",
+    "statuses": [
+      "MEASURED",
+      "PARTIAL"
+    ],
+    "strictFindingsPreserved": true,
+    "missingPrimeDoesNotSuppressHttpLoad": true
+  }
+}

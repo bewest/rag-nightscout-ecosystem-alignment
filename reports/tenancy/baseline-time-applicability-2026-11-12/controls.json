@@ -1,0 +1,38 @@
+{
+  "recordType": "NEW_BOUNDED_DERIVED_CONTROL_SUMMARY",
+  "originalPrivateSummarySha256": "593e044b7b60c2eaa540bb5bb4727c5a56081324d5c93bc71f4b126d393f9928",
+  "baselineInputContrast": "Removing errorcodes from the input enabled-plugin list removes the 10-minute due; this alone is an input contrast, not a red guard ablation.",
+  "guardAblation": {
+    "method": "scratch copy of actual evaluator-due.js with only errorcodes membership removed from the existing 10min rule; original required assertion unchanged",
+    "broken": {
+      "exitCode": 1,
+      "symptom": "ERR_ASSERTION: due.dueAt-at actual -1794484800000 (null coerced to0) versus expected599000",
+      "stderrSha256": "3a3f07d615b934d3a48a65e4ea327deb8992a9db7cc7287690a423b65d1482d3"
+    },
+    "restored": {
+      "exitCode": 0,
+      "actual": "dueInMs599000; reason sgv-recent-10; slow[]",
+      "stdoutSha256": "594e9e9e7fa4c87cf059b512b6fe55db2e1e52ffaf28cfa2cc215b310cfbbeb8"
+    },
+    "peerSourceUntouched": true
+  },
+  "privateInstrumentSha256": {
+    "partial-next-due.cjs": "91a1e6f24fbdf5e86c256b7b16689cdf419d338c0c05dc75e02745b596df51e5",
+    "control-broken.cjs": "2de0e9341e7947cc412b18171431f4695d5a081d371148a810147cef878e43b0",
+    "control-restored.cjs": "0d423605ab294da5ef65334a7daeb7ac310a6be9063d9e7de1e1670bda1a75b6",
+    "evaluator-due-errorcodes-disabled.cjs": "5f7e07a7f770c199e177d119c35f6cea4ce5202fdbb38b0432453f415040dcbc"
+  },
+  "controlledSourceEdit": {
+    "scope": "scratch actual47b evaluator-due.js copy only; peer source untouched",
+    "originalMembership": [
+      "simplealarms",
+      "errorcodes",
+      "ar2"
+    ],
+    "brokenMembership": [
+      "simplealarms",
+      "ar2"
+    ]
+  },
+  "scope": "Dependency-free due assertion control; the full clinical projection was separately measured. This does not establish a naturally completed runtime TIME cycle."
+}

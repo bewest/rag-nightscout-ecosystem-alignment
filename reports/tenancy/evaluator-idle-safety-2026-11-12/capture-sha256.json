@@ -1,0 +1,16 @@
+{
+  "native-downgrade-0d72-red.txt": "24be820985e63539d83ead4eca512b036ff2b5910b20cb2ee99f4a31facb2799",
+  "strict-progress-actual-source.txt": "d90b767ae377584bcb726bf4c8e31149841cbbc80696174c7fcccc505141c625",
+  "README.md": "79b224c83ee319fb34128287927554c7af4e3a6be0a41d65954c4ffb42b262cf",
+  "profile-actual-source.txt": "20c25cfe7c6c5f26559ad7f380c27ab6e6e01b3bc44768830e04600a73153434",
+  "native-downgrade-repaired.txt": "e84af6fb3183f2e6c929d3188feaa38c20151c825192a5117c1911fec8992ee5",
+  "source-getter-original-red.txt": "2c43b274cd89d88c2c717c81af5d06cb4340a880327df8f55c875b87e17d8848",
+  "instrument-manifest.json": "08fcd71ae18d3230500b847935a8ff3d62ea613c9cb1a27a55a63a4d3e4e0918",
+  "pending-positive-d602-red.txt": "c383607c602359ec7b38e6f1e55ec1ce1f6012442ee19db6806251f99630b902",
+  "receipts-d602.txt": "c71c6203209f61bf0fa1335a5bab84a1d37a1cf66b846b7135a7043385bdd943",
+  "receipts-final-targeted.txt": "7fde201a3887ddf653b939013db14e552dd78bbbcb0780138a03ab07450422a7",
+  "source-getter-restored.txt": "bfaa26aec517e59a9711d36dce0fd4bc1b51436a8d3727719d0b02c7dd7a40bf",
+  "idle-controls.txt": "a86a150651d34bd22d6f7ab8b6ef734452b614e943f335c3fb44eb4b33c2d5c9",
+  "producer-contract.txt": "efae3b96c399aeaa46774a2a3a376b4255e51687d1fad0bc42bae56d78850116",
+  "source-focused.txt": "42d9371ac17085c71b14440bfd693ef08173676560a7d7748564e52644bd25ea"
+}

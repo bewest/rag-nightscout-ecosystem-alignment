@@ -1,0 +1,26 @@
+{
+  "nonce": "80ea96aa80004dd8b6aa0a4213587302",
+  "startedAtMs": 1794514528880,
+  "containers": [
+    {
+      "id": "580ad16a16d7f8eef2af33c1dc6550a835dd94eb085d34fcf94dba9a15538215",
+      "kind": "postgres",
+      "image": "sha256:066167ff39c2a612402ce99b734ea1cff92a9d1f2ac52f697a5f0384f0d88d6b",
+      "removeReturnCode": 0,
+      "absentAfterCleanup": true
+    },
+    {
+      "id": "e8d47355435acf79c8fdc12e9a6455e0db760e91f3c4c133a12dcee915047433",
+      "kind": "vault",
+      "image": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "removeReturnCode": 0,
+      "absentAfterCleanup": true
+    }
+  ],
+  "metadataQueryReturnCode": 0,
+  "labTeardown": {
+    "remainingSchemas": 0,
+    "remainingRoles": 0
+  },
+  "finishedAtMs": 1794514529662
+}

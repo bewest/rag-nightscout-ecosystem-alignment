@@ -1,0 +1,34 @@
+{
+  "nonce": "96e7db38-a978-43ee-ad6b-57b65e1e4151",
+  "recordedAtMs": 1794494849569,
+  "core": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+  "runtimeDeploy": "0f8749bc954812b9d384528da733680930e3b236",
+  "hostInstrument": "e91a1c8b00b77d1592f54b3b57ee6aecd68e3211",
+  "imageId": "sha256:454d58b4d30a7a34f9d02005aab44dd7868cd3db6eb27e0f30fcbd623f91feab",
+  "imageTag": "ns-evaluator-binding:cd462-0f87-repair",
+  "imageLabels": {
+    "org.opencontainers.image.revision": "cd4629159809fb3cffbc6f57626f98f3ffdbdda7",
+    "org.nightscout.deploy.revision": "0f8749bc954812b9d384528da733680930e3b236"
+  },
+  "project": "ns-evaluator-binding-proof-20261112-observe",
+  "state": "/tmp/ns-evaluator-binding-proof-20261112-observe",
+  "coreWorktree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-observepair-20261112",
+  "port": 18380,
+  "selection": {
+    "apis": 2,
+    "realtimeWorkers": 2,
+    "logicalShards": 2,
+    "evaluatorParticipants": 3,
+    "initialDesiredEvaluatorMembers": 2,
+    "vault": "server",
+    "diagnostics": 0
+  },
+  "initialHost": {
+    "logicalCpus": 16,
+    "load": [
+      0.49755859375,
+      1.4873046875,
+      4.24560546875
+    ]
+  }
+}

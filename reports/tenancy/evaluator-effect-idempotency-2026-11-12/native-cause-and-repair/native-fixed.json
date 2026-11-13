@@ -1,0 +1,20 @@
+{
+  "id": "f0602840fbdf",
+  "startedAt": "2026-11-12T13:46:04.170Z",
+  "suites": [
+    "tests/evaluator-effect-idempotency.integration.test.js"
+  ],
+  "created": [],
+  "removed": [],
+  "env": {},
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 3,
+    "pending": 0,
+    "failing": 0
+  },
+  "finishedAt": "2026-11-12T13:46:09.083Z",
+  "remaining": [],
+  "status": 0
+}

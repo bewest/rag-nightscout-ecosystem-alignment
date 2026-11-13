@@ -1,0 +1,12 @@
+Warning: Cannot find any files matching pattern "tests/lifecycle-participant.test.js"
+Warning: Cannot find any files matching pattern "tests/internal-api-schemas.test.js"
+
+
+  .......................................Tenant warm drained: ready 1 failed 0 deferred 0 after 3 ms
+.Tenant warm drained: ready 1 failed 0 deferred 0 after 2 ms
+Tenant warm drained: ready 1 failed 0 deferred 0 after 1 ms
+.........
+[TIMING STATS] Total: 49 tests, Avg: 33ms, Slow: 0
+
+
+  49 passing (2s)

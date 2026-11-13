@@ -1,0 +1,44 @@
+[
+  {
+    "source": "d505",
+    "mode": "acquire",
+    "exit": 0,
+    "output": "COALESCED_ACTIVE_PARENT_COMPLETED inline\n",
+    "error": ""
+  },
+  {
+    "source": "d505",
+    "mode": "wake",
+    "exit": 0,
+    "output": "COALESCED_ACTIVE_PARENT_COMPLETED inline\n",
+    "error": ""
+  },
+  {
+    "source": "d505",
+    "mode": "backstop",
+    "exit": 0,
+    "output": "COALESCED_ACTIVE_PARENT_COMPLETED inline\n",
+    "error": ""
+  },
+  {
+    "source": "6e52",
+    "mode": "acquire",
+    "exit": 0,
+    "output": "COALESCED_ACTIVE_PARENT_COMPLETED inline\n",
+    "error": ""
+  },
+  {
+    "source": "6e52",
+    "mode": "wake",
+    "exit": 1,
+    "output": "",
+    "error": "Error: EVALUATOR_JOB_PARENT_BUSY\n    at parentBusy (<owned-review>/core-6e52/lib/server/serve/evaluator-runtime.js:172:42)\n    at Object.wake (<owned-review>/core-6e52/lib/server/serve/evaluator-runtime.js:475:58)\n    at <owned-review>/parent-6e52-wake.cjs:33:55\n    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n    at execute (<owned-review>/core-6e52/lib/tenant-lifecycle/operation-window.js:224:36)\n"
+  },
+  {
+    "source": "6e52",
+    "mode": "backstop",
+    "exit": 1,
+    "output": "",
+    "error": "Error: EVALUATOR_JOB_PARENT_BUSY\n    at parentBusy (<owned-review>/core-6e52/lib/server/serve/evaluator-runtime.js:172:42)\n    at Object.backstop (<owned-review>/core-6e52/lib/server/serve/evaluator-runtime.js:481:97)\n    at <owned-review>/parent-6e52-backstop.cjs:33:55\n    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n    at execute (<owned-review>/core-6e52/lib/tenant-lifecycle/operation-window.js:224:36)\n"
+  }
+]

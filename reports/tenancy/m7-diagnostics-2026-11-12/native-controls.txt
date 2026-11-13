@@ -1,0 +1,54 @@
+
+
+  M7 diagnostics actual CLI enabled
+    1) observes real held-pool waiting, acquisition wait and pg_sleep separately from checkedout
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-5ea5f83600249ae6","volumes":["0fe666a98257ccd12fc1d63db8f649c6b948b03579faa37228cca35cb7e891cb","4bc75551e6e9eed1ad3ad1140e1cfed20b7c353bf4953b325efcd11cbfe83ee0"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-5ea5f83600249ae6","volumes":["2bcb0e992d6d3480eba9edd9581195ac26ad6eb59ee0511a7b05025c7ff69e04"]}
+
+
+  0 passing (5s)
+  1 failing
+
+  1) M7 diagnostics actual CLI enabled
+       observes real held-pool waiting, acquisition wait and pg_sleep separately from checkedout:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+      + expected - actual
+
+      -0
+      +1
+
+      at Context.<anonymous> (tests/m7-diagnostics.integration.test.js:27:48)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+
+M7_DIAGNOSTICS_CONTROL physical-checkedout-zero oracle went red: 0 !== 1
+
+
+  M7 diagnostics actual CLI default off
+    ✔ preserves stored results/errors and restore drain while separating held responses from SQL (1541ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-d17ae695be849823","volumes":["2b18100516aa55c131c83910a9f8db59e21b3497742bc048eb8788a2e5e05b07","f99188566258a54fdab3093230c1b9436588216bcae894cd17a30ccf774af2d9"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-d17ae695be849823","volumes":["e56eec4447958e1ca4add9cbf4599b4634a8a61f291d1603154579f7e35c3fe3"]}
+
+  M7 diagnostics actual CLI enabled
+    1) preserves stored results/errors and restore drain while separating held responses from SQL
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-b3111bcbd3ce4e65","volumes":["afcbaa2c854df4040552451a146f72e0ca0e68201ce53da495bcc32c2489efe5","1bffe6666413ea3de50daabfc528ee7da65ae261cfa1169b0d5384591a49f2d5"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-b3111bcbd3ce4e65","volumes":["3f95cff8f875a6c73f60f25837c0b5429297818c143e227e2b3607240471922a"]}
+
+
+  1 passing (33s)
+  1 failing
+
+  1) M7 diagnostics actual CLI enabled
+       preserves stored results/errors and restore drain while separating held responses from SQL:
+     Error: held response diagnostic snapshot did not become ready
+      at Object.until (tests/fixtures/multitenant-preview-replicas.js:84:13)
+      at async Context.<anonymous> (tests/m7-diagnostics.integration.test.js:52:9)
+
+
+
+M7_DIAGNOSTICS_CONTROL held-outer-body-omitted oracle went red: held response diagnostic snapshot did not become ready

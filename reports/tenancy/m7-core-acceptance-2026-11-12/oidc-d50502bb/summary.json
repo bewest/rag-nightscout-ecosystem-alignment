@@ -1,0 +1,726 @@
+{
+  "version": 1,
+  "harness": "tests/native/oidc-matrix/",
+  "startedAt": "2026-11-12T11:12:28.881Z",
+  "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+  "sourceBranch": "codex/m7-final-native-clinical-20261112",
+  "sourceRoot": "<owned-core>",
+  "porcelain": [],
+  "oref0Commit": "d219baf9559d62a8bb0bd42014192a2d7c0839ef",
+  "node": "v22.23.4",
+  "browser": "Google Chrome 154.0.8037.57",
+  "composeProject": "oidcmatrix-20261112t111226z-3277184",
+  "images": {
+    "postgres": {
+      "container": "653f722d8aacaf33bb5121fda698a2ae1693989c16c05fafa80beff4aa312f02",
+      "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "repoDigests": [
+        "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"
+      ],
+      "version": "postgres (PostgreSQL) 16.15",
+      "serverVersion": "16.15"
+    },
+    "mongo": {
+      "container": "32d182cbf207d8c30190971d90e032d10fb283a5d11f33150cb1dfe29cd234e3",
+      "imageId": "sha256:ac1502203bffd13c241ca25a7bae60cbd968fd0011247f6727524634b3f2f6e3",
+      "repoDigests": [
+        "mongo@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b"
+      ],
+      "version": "db version v7.0.43",
+      "serverVersion": "7.0.43"
+    },
+    "vault": {
+      "container": "77e7e24f8432b0faf5b6391cc6a4c38c82f1b996f78eb7795e045cafbc488568",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "repoDigests": [
+        "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2"
+      ],
+      "version": "Vault v2.2.1 (0e7c41b936218bd2401ab0f891c93bec10e2e8e4), built 2026-10-22T16:27:49Z",
+      "serverVersion": "2.2.1"
+    }
+  },
+  "ports": {
+    "postgres": 38008,
+    "mongo": 38010,
+    "vault": 38009
+  },
+  "postgresRoles": [
+    {
+      "rolname": "om_app",
+      "rolsuper": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "om_clinical",
+      "rolsuper": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "om_legacy",
+      "rolsuper": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "om_owner",
+      "rolsuper": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "om_reader",
+      "rolsuper": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "om_secrets",
+      "rolsuper": false,
+      "rolbypassrls": false
+    },
+    {
+      "rolname": "om_settings",
+      "rolsuper": false,
+      "rolbypassrls": false
+    }
+  ],
+  "tools": {
+    "bash": "bc5945feb8bd26203ebfafea5ce1878bb2e32cb8fb50ab7ae395cfb1e1aaaef1",
+    "curl": "1ccbd3dae948374ba8eef1ebda26c64b783ede50b463196e53666e0880bdac60",
+    "jq": "59cfd58d7e470b103aede0e7589cfea929e45ee27f5471f08aa9676ac7bfc566",
+    "dirname": "0c6767fd8f78935fef72524709bf57e147498a077eaf47ad29eacf8f8e8d4413",
+    "basename": "fc455c57afe3afb1772c097c6be408725ece261be9182840a490bbe1545992c8",
+    "cat": "0d5c6788b9e87eb2f6672ae7dd1fb1fc9e4d13b930d988f28e4c040ff5b79c19"
+  },
+  "tenants": [
+    "11111111-1111-4111-8111-111111111111",
+    "22222222-2222-4222-8222-222222222222"
+  ],
+  "stages": [
+    {
+      "attempt": "01-vault-single",
+      "id": "vault-single",
+      "verdict": "PASS",
+      "durationMs": 207,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "vaultSingle": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "checks": [
+          {
+            "name": "administrator creates distinct nonexportable Ed25519 keys and provisions exact raw public bytes",
+            "pass": true
+          },
+          {
+            "name": "production config and bound Vault signer issue locally verified asymmetric access for both purposes",
+            "pass": true
+          },
+          {
+            "name": "explicit bounded consumer callback completed before owned Vault teardown",
+            "pass": true
+          },
+          {
+            "name": "sign-only token refuses key reads, exports, writes, deletion, listing and every other selected endpoint",
+            "pass": true
+          },
+          {
+            "name": "existing legacy Transit HMAC API remains separate and verifies with its own scoped token",
+            "pass": true
+          },
+          {
+            "name": "revoked signing token refuses new issuance while existing trusted-public-key verification continues",
+            "pass": true
+          }
+        ],
+        "cleanup": [
+          "owned token revoked and accessor absent",
+          "owned token revoked and accessor absent",
+          "owned policy deleted and absent",
+          "owned policy deleted and absent",
+          "owned mount disabled and absent",
+          "owned public configuration removed and absent"
+        ],
+        "verdict": "pass",
+        "mode": "single",
+        "tenant": "single",
+        "resources": {
+          "mount": "human-native-050ceada48c51fc4",
+          "policies": [
+            "human-sign-050ceada48c51fc4",
+            "human-hmac-050ceada48c51fc4"
+          ]
+        }
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/01-vault-single.stdout.log",
+        "stages/01-vault-single.stderr.log"
+      ]
+    },
+    {
+      "attempt": "02-vault-multi",
+      "id": "vault-multi",
+      "verdict": "PASS",
+      "durationMs": 206,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "vaultMulti": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "checks": [
+          {
+            "name": "administrator creates distinct nonexportable Ed25519 keys and provisions exact raw public bytes",
+            "pass": true
+          },
+          {
+            "name": "production config and bound Vault signer issue locally verified asymmetric access for both purposes",
+            "pass": true
+          },
+          {
+            "name": "explicit bounded consumer callback completed before owned Vault teardown",
+            "pass": true
+          },
+          {
+            "name": "sign-only token refuses key reads, exports, writes, deletion, listing and every other selected endpoint",
+            "pass": true
+          },
+          {
+            "name": "existing legacy Transit HMAC API remains separate and verifies with its own scoped token",
+            "pass": true
+          },
+          {
+            "name": "revoked signing token refuses new issuance while existing trusted-public-key verification continues",
+            "pass": true
+          }
+        ],
+        "cleanup": [
+          "owned token revoked and accessor absent",
+          "owned token revoked and accessor absent",
+          "owned policy deleted and absent",
+          "owned policy deleted and absent",
+          "owned mount disabled and absent",
+          "owned public configuration removed and absent"
+        ],
+        "verdict": "pass",
+        "mode": "multi",
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "resources": {
+          "mount": "human-native-0c49452e1b0dbd16",
+          "policies": [
+            "human-sign-0c49452e1b0dbd16",
+            "human-hmac-0c49452e1b0dbd16"
+          ]
+        }
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/02-vault-multi.stdout.log",
+        "stages/02-vault-multi.stderr.log"
+      ]
+    },
+    {
+      "attempt": "03-mongo-sessions",
+      "id": "mongo-sessions",
+      "verdict": "PASS",
+      "durationMs": 440,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "mongoNativeSessions": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "checks": [
+          {
+            "name": "actual Mongo explicit local mapping and current grants",
+            "pass": true
+          },
+          {
+            "name": "actual Mongo same-second signed concurrent renewal is idempotent",
+            "pass": true
+          },
+          {
+            "name": "current grant removal and explicit management entitlement are effective next operation",
+            "pass": true
+          },
+          {
+            "name": "durable local logout refuses copied access through another worker and preserves other session",
+            "pass": true
+          },
+          {
+            "name": "access expiry refuses at exact boundary while provider-backed renewal retains idle clock",
+            "pass": true
+          },
+          {
+            "name": "renewal and polling never move idle and exact idle boundary refuses",
+            "pass": true
+          },
+          {
+            "name": "qualified management activity never refreshes absolute or sensitive authentication clocks",
+            "pass": true
+          },
+          {
+            "name": "absolute deadline refuses despite repeated valid activity",
+            "pass": true
+          },
+          {
+            "name": "actual Mongo session fence prevents committed logout being overwritten by renewal",
+            "pass": true
+          },
+          {
+            "name": "actual Mongo grant CAS rereads an authority change racing protected access",
+            "pass": true
+          },
+          {
+            "name": "actual Mongo global key retirement refuses access and renewal while known logout remains available",
+            "pass": true
+          },
+          {
+            "name": "data sessions remain free of management idle and absolute policy",
+            "pass": true
+          },
+          {
+            "name": "provider session logout persists replay identity and refuses copied data access",
+            "pass": true
+          }
+        ],
+        "cleanup": "closed",
+        "persistence": "mongo"
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/03-mongo-sessions.stdout.log",
+        "stages/03-mongo-sessions.stderr.log"
+      ]
+    },
+    {
+      "attempt": "04-pg-sessions",
+      "id": "pg-sessions",
+      "verdict": "PASS",
+      "durationMs": 462,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "postgresNativeSessions": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "checks": [
+          {
+            "name": "actual PG current mapping and role grants",
+            "pass": true
+          },
+          {
+            "name": "actual PG same-second signed renewal is idempotent under the session-row fence",
+            "pass": true
+          },
+          {
+            "name": "foreign tenant replay refuses signed binding and actual RLS token lookup",
+            "pass": true
+          },
+          {
+            "name": "committed role removal is visible to second worker next operation",
+            "pass": true
+          },
+          {
+            "name": "explicit owner membership removal refuses management",
+            "pass": true
+          },
+          {
+            "name": "actual PG current key retirement refuses access and renewal while known logout remains available",
+            "pass": true
+          },
+          {
+            "name": "logout through worker A refuses copied access through worker B",
+            "pass": true
+          },
+          {
+            "name": "pending renewal waits on durable session fence then refuses committed revocation",
+            "pass": true
+          },
+          {
+            "name": "access and idle deadlines remain independent and renewal never extends idle",
+            "pass": true
+          },
+          {
+            "name": "provider logout and replay commit durable event and matching revocation",
+            "pass": true
+          }
+        ],
+        "cleanup": "closed",
+        "persistence": "postgres"
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/04-pg-sessions.stdout.log",
+        "stages/04-pg-sessions.stderr.log"
+      ]
+    },
+    {
+      "attempt": "05-mongo-http",
+      "id": "mongo-http",
+      "verdict": "PASS",
+      "durationMs": 2089,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "mongoSignedHttps": true,
+        "singleBrowserLifecycle": true,
+        "defaultOffSingle": true,
+        "singleLegacyCompatibility": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "verdict": "pass",
+        "kind": "actual-https-synthetic-provider",
+        "stage": "mongo-http",
+        "persistence": "mongo",
+        "accessSigning": "configured-transit",
+        "assertions": 47,
+        "browser": "actual-chromium-cookie-and-bearer-https",
+        "owner": {
+          "classification": "native-Mongo-single-production-legacy-HTTP-default-off",
+          "families": {
+            "defaultOffSingle": true,
+            "singleLegacyCompatibility": true
+          },
+          "observations": {
+            "rawRoot": true,
+            "subjectRaw": true,
+            "subjectEightHourExchange": true,
+            "subjectJWT": true,
+            "separateHumanPurposes": true,
+            "anonymousShippingReadable": true,
+            "removedSubjectHeaderAndJWTRefused": true,
+            "removedRawQueryUsesAnonymousDefault": true,
+            "nativeClinicalUnchanged": true,
+            "actualRuntimeSingleOff": true
+          }
+        }
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/05-mongo-http.stdout.log",
+        "stages/05-mongo-http.stderr.log"
+      ]
+    },
+    {
+      "attempt": "06-owner-consumer",
+      "id": "owner-consumer",
+      "verdict": "PASS",
+      "durationMs": 2448,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "ownerCreateRoleIssueRevoke": true,
+        "settingsVersionHistoryRollback": true,
+        "httpPresentation": true,
+        "evaluatorCycle": true,
+        "clinicalImmutability": true,
+        "tenantBImmutability": true,
+        "dataCredentialReplay": true,
+        "pinnedClientReplay": true,
+        "dataRevocation": true,
+        "foreignTenantRefusal": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "verdict": "pass",
+        "kind": "actual-https-synthetic-provider",
+        "stage": "owner-consumer",
+        "persistence": "postgres",
+        "accessSigning": "configured-transit",
+        "assertions": 22,
+        "owner": {
+          "classification": "native-PG-HTTP-consumer-clinical-issued-DATA-and-pinned-oref0",
+          "families": {
+            "ownerCreateRoleIssueRevoke": true,
+            "settingsVersionHistoryRollback": true,
+            "httpPresentation": true,
+            "evaluatorCycle": true,
+            "clinicalImmutability": true,
+            "tenantBImmutability": true,
+            "dataCredentialReplay": true,
+            "pinnedClientReplay": true,
+            "dataRevocation": true,
+            "foreignTenantRefusal": true
+          },
+          "presentationHTTP": true,
+          "evaluatorCycle": true,
+          "clinicalImmutability": true,
+          "foreignClinicalImmutability": true,
+          "dataCredentialReplay": true,
+          "pinnedClientReplay": true,
+          "dataAuthorityRevocation": true,
+          "dataCredentialRevocation": true,
+          "foreignCredentialRefusal": true
+        }
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/06-owner-consumer.stdout.log",
+        "stages/06-owner-consumer.stderr.log"
+      ]
+    },
+    {
+      "attempt": "07-owner-authority",
+      "id": "owner-authority",
+      "verdict": "PASS",
+      "durationMs": 2349,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "shiroGrammar": true,
+        "projectContainment": true,
+        "operatorContainment": true,
+        "delegationContainment": true,
+        "actorRevocation": true,
+        "policyWaiter": true,
+        "actorWaiter": true,
+        "roleWaiter": true,
+        "heldThroughCommit": true,
+        "auditRefusal": true,
+        "commitRefusal": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "verdict": "pass",
+        "kind": "actual-https-synthetic-provider",
+        "stage": "owner-authority",
+        "persistence": "postgres",
+        "accessSigning": "configured-transit",
+        "assertions": 45,
+        "owner": {
+          "classification": "native-PG-authority-fencing-under-human-HTTPS",
+          "grammarContainment": true,
+          "projectOperatorDelegation": true,
+          "currentActor": true,
+          "priorNarrowingWaiters": true,
+          "heldThroughCommit": true,
+          "auditFailureAtomic": true,
+          "commitFailureNoCredential": true,
+          "foreignTenantUnchanged": true,
+          "cases": [
+            "shipping-grammar",
+            "project-containment",
+            "operator-containment",
+            "delegation-containment",
+            "current-actor",
+            "prior-policy-waiter",
+            "prior-delegation-waiter",
+            "prior-actor-waiter",
+            "prior-role-waiter",
+            "held-policy-through-commit",
+            "held-delegation-through-commit",
+            "held-actor-through-commit",
+            "held-role-through-commit",
+            "owner-audit-refusal",
+            "secret-audit-refusal",
+            "commit-refusal-no-credential"
+          ],
+          "families": {
+            "shiroGrammar": true,
+            "projectContainment": true,
+            "operatorContainment": true,
+            "delegationContainment": true,
+            "actorRevocation": true,
+            "policyWaiter": true,
+            "actorWaiter": true,
+            "roleWaiter": true,
+            "heldThroughCommit": true,
+            "auditRefusal": true,
+            "commitRefusal": true
+          }
+        }
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/07-owner-authority.stdout.log",
+        "stages/07-owner-authority.stderr.log"
+      ]
+    },
+    {
+      "attempt": "08-owner-browser",
+      "id": "owner-browser",
+      "verdict": "PASS",
+      "durationMs": 4048,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "ownerCookieMutations": true,
+        "ownerBearerParity": true,
+        "ownerCsrfOrigin": true,
+        "ownerSensitiveFreshness": true,
+        "ownerCurrentAuthority": true,
+        "ownerSessionLogout": true,
+        "ownerBrowserMutations": true,
+        "ownerBrowserTabsBackReload": true,
+        "ownerBrowserBearerParity": true,
+        "ownerBrowserLogout": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "verdict": "pass",
+        "kind": "actual-https-synthetic-provider",
+        "stage": "owner-browser",
+        "persistence": "postgres",
+        "accessSigning": "configured-transit",
+        "assertions": 49,
+        "browser": "actual-chromium-cookie-and-bearer-https",
+        "owner": {
+          "families": {
+            "classification": "native-PG-Transit-owner-cookie-bearer-https",
+            "ownerCookieMutations": true,
+            "ownerBearerParity": true,
+            "ownerCsrfOrigin": true,
+            "ownerSensitiveFreshness": true,
+            "ownerCurrentAuthority": true,
+            "ownerSessionLogout": true
+          }
+        },
+        "ownerBrowser": {
+          "families": {
+            "classification": "native-PG-Transit-owner-browser",
+            "ownerBrowserMutations": true,
+            "ownerBrowserTabsBackReload": true,
+            "ownerBrowserBearerParity": true,
+            "ownerBrowserLogout": true
+          }
+        }
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/08-owner-browser.stdout.log",
+        "stages/08-owner-browser.stderr.log"
+      ]
+    },
+    {
+      "attempt": "09-owner-compatibility",
+      "id": "owner-compatibility",
+      "verdict": "PASS",
+      "durationMs": 2058,
+      "exit": {
+        "code": 0,
+        "signal": null,
+        "killed": false
+      },
+      "families": {
+        "defaultOffMulti": true,
+        "legacyApiSecret": true,
+        "legacySubject": true,
+        "legacyEightHourExchange": true,
+        "anonymousReadClamp": true,
+        "planeSeparation": true
+      },
+      "error": null,
+      "message": null,
+      "detail": {
+        "verdict": "pass",
+        "kind": "actual-https-synthetic-provider",
+        "stage": "owner-compatibility",
+        "persistence": "postgres",
+        "accessSigning": "configured-transit",
+        "assertions": 22,
+        "owner": {
+          "families": {
+            "classification": "native-PG-legacy-compatibility",
+            "defaultOffMulti": true,
+            "legacyApiSecret": true,
+            "legacySubject": true,
+            "legacyEightHourExchange": true,
+            "anonymousReadClamp": true,
+            "planeSeparation": true
+          }
+        }
+      },
+      "leftovers": {
+        "pgSchemas": [],
+        "pgBackends": 0,
+        "mongoCollections": [],
+        "vaultMounts": []
+      },
+      "logs": [
+        "stages/09-owner-compatibility.stdout.log",
+        "stages/09-owner-compatibility.stderr.log"
+      ]
+    }
+  ],
+  "controls": [],
+  "complete": true,
+  "finishedAt": "2026-11-12T11:12:44.473Z",
+  "durationMs": 15592
+}

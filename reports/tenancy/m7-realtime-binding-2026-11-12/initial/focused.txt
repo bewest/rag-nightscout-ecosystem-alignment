@@ -1,0 +1,292 @@
+TAP version 13
+# Subtest: all generated service configs pass actual product parsers and exact namespace manifests
+ok 1 - all generated service configs pass actual product parsers and exact namespace manifests
+  ---
+  duration_ms: 240.021647
+  type: 'test'
+  ...
+# Subtest: control: absent notification namespace refuses actual API cohort match, restoration passes
+ok 2 - control: absent notification namespace refuses actual API cohort match, restoration passes
+  ---
+  duration_ms: 8.616433
+  type: 'test'
+  ...
+# Subtest: runtime bundles retain isolated credential capabilities
+ok 3 - runtime bundles retain isolated credential capabilities
+  ---
+  duration_ms: 0.684546
+  type: 'test'
+  ...
+# Subtest: bootstrap requires explicit intent, dedicated database and HTTPS Vault
+ok 4 - bootstrap requires explicit intent, dedicated database and HTTPS Vault
+  ---
+  duration_ms: 0.391563
+  type: 'test'
+  ...
+# Subtest: private output refuses overwrite and never inherits readable permissions
+ok 5 - private output refuses overwrite and never inherits readable permissions
+  ---
+  duration_ms: 0.447452
+  type: 'test'
+  ...
+# Subtest: failure report keeps the stable code and adds redacted detail and location
+ok 6 - failure report keeps the stable code and adds redacted detail and location
+  ---
+  duration_ms: 0.950553
+  type: 'test'
+  ...
+# Subtest: generated role documents are compact; custody files stay indented
+ok 7 - generated role documents are compact; custody files stay indented
+  ---
+  duration_ms: 0.433818
+  type: 'test'
+  ...
+# Subtest: config cap option is off by default and bounded when set
+ok 8 - config cap option is off by default and bounded when set
+  ---
+  duration_ms: 0.304712
+  type: 'test'
+  ...
+# Subtest: bootstrap validation runs the ui parser: a ui config over the tenant ceiling refuses at bootstrap
+ok 9 - bootstrap validation runs the ui parser: a ui config over the tenant ceiling refuses at bootstrap
+  ---
+  duration_ms: 11.404806
+  type: 'test'
+  ...
+# Subtest: realtime emits no removed process-wide socket cap
+ok 10 - realtime emits no removed process-wide socket cap
+  ---
+  duration_ms: 0.959557
+  type: 'test'
+  ...
+# Subtest: edge budgets new handshakes separately from existing sessions and preserves trusted Host handling
+ok 11 - edge budgets new handshakes separately from existing sessions and preserves trusted Host handling
+  ---
+  duration_ms: 1.202857
+  type: 'test'
+  ...
+# Subtest: edge rejects malformed/disabled budgets and unknown templates before creating a serving config
+ok 12 - edge rejects malformed/disabled budgets and unknown templates before creating a serving config
+  ---
+  duration_ms: 0.704184
+  type: 'test'
+  ...
+# Subtest: worker connection capacity is explicit and bounded separately from per-IP admission
+ok 13 - worker connection capacity is explicit and bounded separately from per-IP admission
+  ---
+  duration_ms: 0.306328
+  type: 'test'
+  ...
+# Subtest: route publication waits for actual eligible target readiness and preserves unrelated failed-shard independence
+ok 14 - route publication waits for actual eligible target readiness and preserves unrelated failed-shard independence
+  ---
+  duration_ms: 52.868451
+  type: 'test'
+  ...
+# Subtest: cold tenant GET retries only explicit warming until the actual role list is ready
+ok 15 - cold tenant GET retries only explicit warming until the actual role list is ready
+  ---
+  duration_ms: 21.515283
+  type: 'test'
+  ...
+# Subtest: unknown unavailability and authority refusals stop without a retry
+ok 16 - unknown unavailability and authority refusals stop without a retry
+  ---
+  duration_ms: 5.190139
+  type: 'test'
+  ...
+# Subtest: persistent warming reaches its deadline without a later role-list request
+ok 17 - persistent warming reaches its deadline without a later role-list request
+  ---
+  duration_ms: 4.303646
+  type: 'test'
+  ...
+# Subtest: two API/two realtime documents pass actual product parsers with exact placement and idle-worker coverage
+ok 18 - two API/two realtime documents pass actual product parsers with exact placement and idle-worker coverage
+  ---
+  duration_ms: 236.904805
+  type: 'test'
+  ...
+# Subtest: sharding is opt-in with an explicit logical shard count independent of worker count
+ok 19 - sharding is opt-in with an explicit logical shard count independent of worker count
+  ---
+  duration_ms: 2.300317
+  type: 'test'
+  ...
+# Subtest: all fixed participants include idle workers and use exact private instances
+ok 20 - all fixed participants include idle workers and use exact private instances
+  ---
+  duration_ms: 0.580676
+  type: 'test'
+  ...
+# Subtest: Compose wiring covers every API instance and routes public sockets through the registry edge
+ok 21 - Compose wiring covers every API instance and routes public sockets through the registry edge
+  ---
+  duration_ms: 1.164704
+  type: 'test'
+  ...
+# Subtest: registry role documents have no static roster or per-tenant key lists and pass product parsers
+ok 22 - registry role documents have no static roster or per-tenant key lists and pass product parsers
+  ---
+  duration_ms: 218.688504
+  type: 'test'
+  ...
+# Subtest: control: restoring a static list into registry authority is refused, restoration passes
+ok 23 - control: restoring a static list into registry authority is refused, restoration passes
+  ---
+  duration_ms: 6.086444
+  type: 'test'
+  ...
+# Subtest: provisioning identity and read-only settings/activity capabilities are distinct from serving
+ok 24 - provisioning identity and read-only settings/activity capabilities are distinct from serving
+  ---
+  duration_ms: 7.255526
+  type: 'test'
+  ...
+# Subtest: control: adding the operation control schema to protected data refuses launcher resource matching
+ok 25 - control: adding the operation control schema to protected data refuses launcher resource matching
+  ---
+  duration_ms: 2.684322
+  type: 'test'
+  ...
+# Subtest: restore inventory admits the independent evaluator checkpoint and all current product metadata families
+ok 26 - restore inventory admits the independent evaluator checkpoint and all current product metadata families
+  ---
+  duration_ms: 12.988926
+  type: 'test'
+  ...
+# Subtest: control: a source table absent from the admitted restore inventory refuses instead of being omitted
+ok 27 - control: a source table absent from the admitted restore inventory refuses instead of being omitted
+  ---
+  duration_ms: 3.92907
+  type: 'test'
+  ...
+# Subtest: bounded lifetime-session selection is explicit and cannot exceed the selected physical pool
+ok 28 - bounded lifetime-session selection is explicit and cannot exceed the selected physical pool
+  ---
+  duration_ms: 0.253269
+  type: 'test'
+  ...
+# Subtest: replacement retains logical partition and durable routing identity while rotating the exact stopped boot
+ok 29 - replacement retains logical partition and durable routing identity while rotating the exact stopped boot
+  ---
+  duration_ms: 3.19802
+  type: 'test'
+  ...
+# Subtest: operator CLI requires exact owned project/state/roster and bounds the move deadline
+ok 30 - operator CLI requires exact owned project/state/roster and bounds the move deadline
+  ---
+  duration_ms: 0.56216
+  type: 'test'
+  ...
+# Subtest: private boot identity replacement rejects symlinks and broad files and persists complete JSON atomically
+ok 31 - private boot identity replacement rejects symlinks and broad files and persists complete JSON atomically
+  ---
+  duration_ms: 7.470543
+  type: 'test'
+  ...
+# Subtest: equal API replicas pass real product parsers with exact instance roster and separate service routing
+ok 32 - equal API replicas pass real product parsers with exact instance roster and separate service routing
+  ---
+  duration_ms: 213.728385
+  type: 'test'
+  ...
+# Subtest: control: a service-aliased maintenance instance refuses; restored exact instance passes
+ok 33 - control: a service-aliased maintenance instance refuses; restored exact instance passes
+  ---
+  duration_ms: 10.165813
+  type: 'test'
+  ...
+# Subtest: replica count is bounded synthetic deployment input and default placement stays singular
+ok 34 - replica count is bounded synthetic deployment input and default placement stays singular
+  ---
+  duration_ms: 0.325359
+  type: 'test'
+  ...
+# Subtest: operator config refuses a public target, shared lock and missing explicit drain bound
+ok 35 - operator config refuses a public target, shared lock and missing explicit drain bound
+  ---
+  duration_ms: 2.812571
+  type: 'test'
+  ...
+# Subtest: operator CLI requires an explicit tenant, private directory and exact restore digest
+ok 36 - operator CLI requires an explicit tenant, private directory and exact restore digest
+  ---
+  duration_ms: 0.37523
+  type: 'test'
+  ...
+# Subtest: HTTP failures with sensitive bodies are refused without returning their payload
+ok 37 - HTTP failures with sensitive bodies are refused without returning their payload
+  ---
+  duration_ms: 1.119802
+  type: 'test'
+  ...
+# Subtest: demo ordinary protocol passes; missing A restoration, deletion, B progress or B fidelity fail
+ok 38 - demo ordinary protocol passes; missing A restoration, deletion, B progress or B fidelity fail
+  ---
+  duration_ms: 7.072832
+  type: 'test'
+  ...
+# Subtest: missing cohort refuses before the first demo mutation
+ok 39 - missing cohort refuses before the first demo mutation
+  ---
+  duration_ms: 0.27593
+  type: 'test'
+  ...
+# Subtest: canonical tenant routing follows current map; selectors and unknown hosts never reach a backend
+ok 40 - canonical tenant routing follows current map; selectors and unknown hosts never reach a backend
+  ---
+  duration_ms: 30.160754
+  type: 'test'
+  ...
+# Subtest: upgrade streams both heads and socket bytes and closes the owned transport
+ok 41 - upgrade streams both heads and socket bytes and closes the owned transport
+  ---
+  duration_ms: 3.060988
+  type: 'test'
+  ...
+# Subtest: unavailable destination refuses within a bounded header deadline
+ok 42 - unavailable destination refuses within a bounded header deadline
+  ---
+  duration_ms: 23.498774
+  type: 'test'
+  ...
+# Subtest: stock long polling remains connected while its next response waits beyond five seconds
+ok 43 - stock long polling remains connected while its next response waits beyond five seconds
+  ---
+  duration_ms: 6267.336666
+  type: 'test'
+  ...
+# Subtest: registry UI accepts exact v2 config and rejects source paths, static rosters and unbounded inputs
+ok 44 - registry UI accepts exact v2 config and rejects source paths, static rosters and unbounded inputs
+  ---
+  duration_ms: 1.790807
+  type: 'test'
+  ...
+# Subtest: read-only privilege guard refuses clinical/column access, privileged roles and extra definer capability
+ok 45 - read-only privilege guard refuses clinical/column access, privileged roles and extra definer capability
+  ---
+  duration_ms: 2.121822
+  type: 'test'
+  ...
+# Subtest: actual resolver admits a new alias on revision, refuses removed/private/conflicting hosts and bounds both caches
+ok 46 - actual resolver admits a new alias on revision, refuses removed/private/conflicting hosts and bounds both caches
+  ---
+  duration_ms: 57.868962
+  type: 'test'
+  ...
+# Subtest: in-flight unknown hosts have a fixed refusal budget and owned connection closes once
+ok 47 - in-flight unknown hosts have a fixed refusal budget and owned connection closes once
+  ---
+  duration_ms: 0.380464
+  type: 'test'
+  ...
+1..47
+# tests 47
+# suites 0
+# pass 47
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6409.924396

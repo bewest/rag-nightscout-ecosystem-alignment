@@ -1,0 +1,23 @@
+{
+  "adjacent-context-fixtures-restored.txt": "549c3a8c0dc43e002f0770536cf692ee437cec304c65561ff04c0a73e199e8da",
+  "adjacent-missing-context-fixtures-red.txt": "0515d4e68330798cb544878ba48c59e8d96efc6d04fdc06d2571c56ee0655e6f",
+  "coherent-affected.txt": "82d128b97dde5b309c6e99eb0ceec797d05d90af93a1860024bb754c6248fcc2",
+  "coherent-files.json": "76aa8116342fcadce1f93814713141b0ff7630ee00f074d68831e407eb4cab5e",
+  "coherent-public-capture.json": "f86d69c5f3a1c5f26df880d5cf7601c57d9e876eb33cd4fe83458145e1c63028",
+  "consumer-prior-error-path-red.txt": "ef63ecd6a7ef3f676d67cc9aaed1df63f493be0937bd1cd3a30dc73a69741018",
+  "empty-summary-prior-schema-red.txt": "52eff05badc55a5a3053efc37da366b894efd56472cad23ef475b5208e0f58d5",
+  "focused-composition.txt": "ec9fbf21dc53cd2e0efef1e6e7c15fd4884d873e6dfeac3f60effefec5e3eda3",
+  "native-50ms-fixture-failure.json": "a93c195f0aa38273d7e979a49dc4436c2bd23ce21fd5e27fad17025121d7c51d",
+  "native-50ms-fixture-failure.txt": "357d25f706677619098722d2fdbf541be7c173ce7ca66bceda277f351dfaf0b2",
+  "native-corpus.json": "afe844845b473fbdb28eda206470d8e6a26931237d350b3128fccc8536d7aa0d",
+  "native-corpus.txt": "1fd94643c50f2d9d5fb5afa23344790a33313b83ac8ce27ec384131849340909",
+  "native-heartbeat-discriminator.txt": "1f98af20efabda1749ac03f7076935a557b3fcc5c2e158fef63d0965858948d6",
+  "native-inventory.txt": "7a9dc845edebe5cd0b43e38e04b07dd6bf69be71106d9b9aeb95199907d5069c",
+  "neutrality-mutant.txt": "3ac167a3083cfba34f3c6a6717dea911457486e79669e1c7b1a0c932d724b14c",
+  "peer-coalesced-matrix.json": "f36917832aa8eeb1416441764cd1f47a380f6cce3f13ab94fc926eb8a8d7c057",
+  "peer-parent-matrix.json": "7746bcd8bb88721111894854c4bbe217ee9727699a6403840e58a561ca8adc1d",
+  "peer-selected-map.txt": "87f4fecd0a9352e4bc521d37686ad58f1993f98519105cef6e30b85649e5a85a",
+  "small-controls-restored.txt": "1b5ecb0b451f7b8ed99dbb8695cc1eb4896c0d41d1fb685edfa6d530e9e39cd1",
+  "source-and-guard.json": "8c74fc9c3468c4d01485d5a6e2e34e2647f1eda84e941135e96f54db307c9a85",
+  "tier-inventory.txt": "c5a562f59371772e01191dbcbfab2b177fcf9538cae26116507adfd00250f5a5"
+}

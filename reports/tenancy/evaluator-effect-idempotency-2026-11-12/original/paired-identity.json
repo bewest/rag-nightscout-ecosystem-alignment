@@ -1,0 +1,22 @@
+{
+  "core": "195c932293f3abc648da8fbe4356bf7360acd002",
+  "deploy": "f0f91f43784bb708385bcd4074cdfbd490fc096d",
+  "project": "ns-evaluator-binding-proof-20261112-final",
+  "state": "/tmp/ns-evaluator-binding-proof-20261112-final",
+  "port": 18378,
+  "imageTag": "ns-evaluator-binding:195c-f0f9-final",
+  "selection": {
+    "apis": 2,
+    "realtimeWorkers": 2,
+    "logicalShards": 2,
+    "evaluatorParticipants": 3,
+    "initialDesiredEvaluatorMembers": 2,
+    "vault": "server",
+    "diagnostics": 0
+  },
+  "imageId": "sha256:63dfab59edb2355aa26814dfae01d88c7b4e6af7f22ad32c781cd1a8edfa22a0",
+  "imageLabels": {
+    "org.opencontainers.image.revision": "195c932293f3abc648da8fbe4356bf7360acd002",
+    "org.nightscout.deploy.revision": "f0f91f43784bb708385bcd4074cdfbd490fc096d"
+  }
+}

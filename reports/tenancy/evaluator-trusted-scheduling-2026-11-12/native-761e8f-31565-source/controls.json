@@ -1,0 +1,71 @@
+{
+  "restored": "PASS",
+  "negativeControls": [
+    {
+      "control": "stalled-owner",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED"
+    },
+    {
+      "control": "hidden-failure",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE"
+    },
+    {
+      "control": "foreign-work",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_FOREIGN"
+    },
+    {
+      "control": "missing-foreign",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_COVERAGE"
+    },
+    {
+      "control": "runtime-reset",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_RESET"
+    },
+    {
+      "control": "generation-reset",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_RESET"
+    },
+    {
+      "control": "invalid-due",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_DUE_CONTRACT"
+    },
+    {
+      "control": "wrong-image",
+      "verdict": "REFUSED",
+      "code": "M7_NATIVE_EVALUATOR_TIME_IDENTITY"
+    },
+    {
+      "control": "historical-downgrade",
+      "verdict": "REFUSED",
+      "code": "M7_NATIVE_EVALUATOR_TIME_VERSION"
+    }
+  ],
+  "nativeExpectation": {
+    "nativeEvaluatorTimeWitness": {
+      "artifact": {
+        "path": "observation.private.json",
+        "sha256": "10398cd98e94799bd71d3b405b883bfc426b3f387de0b1c80fe0b57ecc8a89d0"
+      },
+      "attribution": {
+        "core": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+        "deploy": "31565abe437ea84214aa0068f75de1246c06e45e",
+        "imageId": "sha256:2ad267c7fc382597085c369eb838e8e360ec9c17770d7581c2ad4af240a5241d",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "tenants": 2,
+      "services": [
+        "evaluator",
+        "evaluator-2",
+        "evaluator-3"
+      ],
+      "proofPointer": "/proof"
+    }
+  }
+}

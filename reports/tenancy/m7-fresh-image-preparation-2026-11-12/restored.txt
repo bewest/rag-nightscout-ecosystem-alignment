@@ -1,0 +1,28 @@
+
+
+  multitenant pool configuration
+    ✔ reads and rejects pool limits before application dependencies are installed
+    ✔ keeps the previous built-in values when nothing is set
+    ✔ reads each role from its own names
+    ✔ refuses NS_POOL_API_MAX="0"
+    ✔ refuses NS_POOL_API_MAX="-1"
+    ✔ refuses NS_POOL_API_MAX="1.5"
+    ✔ refuses NS_POOL_API_MAX="x"
+    ✔ refuses NS_POOL_API_MAX=" 4"
+    ✔ refuses NS_POOL_API_MAX="04"
+    ✔ refuses NS_POOL_API_MAX="1001"
+    ✔ refuses NS_POOL_API_MAX="1e3"
+    ✔ refuses an out-of-range timeout and startup concurrency
+    ✔ sizes the operation lifetime pool from the environment
+
+  bounded tenant startup warm
+    ✔ initializes every tenant with at most the configured number at once (141ms)
+    ✔ control: concurrency at the tenant count reproduces the unbounded warm
+    ✔ still reports the first failure after every tenant settles
+    ✔ preserves item order and allSettled shape
+
+
+[TIMING STATS] Total: 17 tests, Avg: 10ms, Slow: 0
+
+  17 passing (179ms)
+

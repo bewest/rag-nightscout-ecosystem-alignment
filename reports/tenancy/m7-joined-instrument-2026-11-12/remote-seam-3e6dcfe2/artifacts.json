@@ -1,0 +1,8 @@
+{
+  "focused.log": "f2d760bbd127bd0febef7016e724f10ef00cf40abacb4007642808811768ffd3",
+  "smoke.log": "71bad436a5ebc583d2e8737235d21b3c1ed2d3a8549b9ee573d8bbf0f9462283",
+  "smoke.json": "3b078990e442c799f911126e36213c264dfa96d929abf4166c3e2a9a64a41ef4",
+  "oracle-control.json": "fd1af94585a7e0b0578c14a26d43af9117f45cbf87a285cd5986cb1c93bb5673",
+  "restart-control.json": "2b6e93656d4666a8243a648ee2e30f7657b6406ca1b015078b6dc8f9f85591fd",
+  "pilot-staging.json": "04d24eab8d4b2ab096342a6bb469b707c76c4964bb56ea817e989ba043e405eb"
+}

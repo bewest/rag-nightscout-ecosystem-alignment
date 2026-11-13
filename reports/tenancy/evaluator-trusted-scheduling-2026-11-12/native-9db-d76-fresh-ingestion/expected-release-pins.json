@@ -1,0 +1,14 @@
+{
+  "source": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+  "binding": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+  "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+  "nonce": "77e7ad81-37b7-4ff2-8cb4-531327b4dbf1",
+  "coreOverlay": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-guardpair-20261112",
+  "project": "ns-evaluator-binding-proof-20261112-guard",
+  "port": 18385,
+  "instrumentCommit": "df18100cf13780cec904a792b2bb1ab8867bfb54",
+  "instrumentSha256": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d",
+  "phase": "RT_EXPLICIT_FRESH_INGESTION_RELEASED",
+  "ownedPairSha256": "5f0e77d80bddf604bf58ac8c305a2ed7fb0ecc38a0bdd029976cabe905ea092a",
+  "experiment": "separate fresh synthetic clinical-ingestion TIME opportunity; original UM unchanged"
+}

@@ -1,0 +1,17 @@
+{
+  "wrapped-cell-restored.txt": {
+    "rawSHA256": "6f5995013eb8e01bfa655eff9f75dcaf326b4e16ad1681a3b8436cfa613b5722",
+    "publishedSHA256": "6f5995013eb8e01bfa655eff9f75dcaf326b4e16ad1681a3b8436cfa613b5722",
+    "normalization": "replace only the owned absolute source-worktree prefix with <reviewed-source>"
+  },
+  "wrapped-cell-ablated.txt": {
+    "rawSHA256": "ca2280bf568fd471fed0ea3c022fa85fc3de43eacfbb0ad071c9793f09c843fc",
+    "publishedSHA256": "801046f20b949e6eb55c25320a5d1a88171cac93228539e4dfa006fa85ba6134",
+    "normalization": "replace only the owned absolute source-worktree prefix with <reviewed-source>"
+  },
+  "wrapped-cell-restored-after.txt": {
+    "rawSHA256": "bab81b5ca4e95630e0776c7594ed6a975dacb15eb3a93db6d78dae719c09c1bb",
+    "publishedSHA256": "bab81b5ca4e95630e0776c7594ed6a975dacb15eb3a93db6d78dae719c09c1bb",
+    "normalization": "replace only the owned absolute source-worktree prefix with <reviewed-source>"
+  }
+}

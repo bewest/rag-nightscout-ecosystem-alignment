@@ -1,0 +1,543 @@
+{
+  "sequenceScope": "post-EVALUATOR-handoff / BEFORE controlled RT movement or B161 write",
+  "verdict": "PASS",
+  "source": "47b43b6246ce7f94f1f1f0d01830495a78b28add",
+  "binding": "be95214a6cae427e1898b0ca6ce39825163ee291",
+  "imageId": "sha256:6138dbf5cec8dc7c4897e3c1d969868a37bb7fb3eb0af46feca7595fdbb3f361",
+  "instrumentCommit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+  "instrumentSha256": "157d7038c3b5a196e95c766b5777e6686bd1d59a37e3e5772ede4eea2daf6970",
+  "nonce": "6ca2cfd8-d54d-4f11-b03a-e5f40aa1f1ab",
+  "elapsedSeconds": 21.346148286946118,
+  "calls": 9,
+  "successfulCalls": 9,
+  "responseBytes": 18076,
+  "collectorParallelWallSeconds": 1.3136995257809758,
+  "sumPerInstanceExecWallSeconds": 3.81781214941293,
+  "perTenant": [
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-2",
+      "runtimeId": "1d3ef65c-a350-4d38-a963-b0ec7173169c",
+      "generation": 11,
+      "baseline": {
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 91,
+        "failedCompletions": 0,
+        "legacyCycles": 92,
+        "dueAt": 1794498528252,
+        "dueReason": "slow:alarm-message"
+      },
+      "end": {
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 111,
+        "failedCompletions": 0,
+        "legacyCycles": 112,
+        "dueAt": 1794498549672,
+        "dueReason": "slow:alarm-message"
+      },
+      "completedAcquisitionDelta": 0,
+      "completedTimeDelta": 20,
+      "failedDelta": 0
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator",
+      "runtimeId": "f2a4c019-3256-427f-9618-f67940db8228",
+      "generation": 15,
+      "baseline": {
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 91,
+        "failedCompletions": 0,
+        "legacyCycles": 92,
+        "dueAt": 1794498528252,
+        "dueReason": "slow:alarm-message"
+      },
+      "end": {
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 111,
+        "failedCompletions": 0,
+        "legacyCycles": 112,
+        "dueAt": 1794498549677,
+        "dueReason": "slow:alarm-message"
+      },
+      "completedAcquisitionDelta": 0,
+      "completedTimeDelta": 20,
+      "failedDelta": 0
+    }
+  ],
+  "sampledRows": [
+    {
+      "round": 0,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator",
+      "generation": 14,
+      "completedAcquisitions": 5,
+      "completedTimeCycles": 2,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 98671,
+      "legacyCycles": 7,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498527734,
+      "readEndedAtMs": 1794498528120,
+      "helperObservedAtMs": [
+        1794498528106
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 0,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator",
+      "generation": 15,
+      "completedAcquisitions": 1,
+      "completedTimeCycles": 91,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 842,
+      "legacyCycles": 92,
+      "admitted": true,
+      "ready": true,
+      "code": null,
+      "alert": null,
+      "dueAt": 1794498528252,
+      "dueReason": "slow:alarm-message",
+      "readStartedAtMs": 1794498527734,
+      "readEndedAtMs": 1794498528120,
+      "helperObservedAtMs": [
+        1794498528106
+      ],
+      "dueClassification": "future-through-read-end",
+      "dueMinusReadEndMs": 132
+    },
+    {
+      "round": 0,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-2",
+      "generation": 11,
+      "completedAcquisitions": 1,
+      "completedTimeCycles": 91,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 847,
+      "legacyCycles": 92,
+      "admitted": true,
+      "ready": true,
+      "code": null,
+      "alert": null,
+      "dueAt": 1794498528252,
+      "dueReason": "slow:alarm-message",
+      "readStartedAtMs": 1794498527734,
+      "readEndedAtMs": 1794498528123,
+      "helperObservedAtMs": [
+        1794498528110
+      ],
+      "dueClassification": "future-through-read-end",
+      "dueMinusReadEndMs": 129
+    },
+    {
+      "round": 0,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator-2",
+      "generation": 10,
+      "completedAcquisitions": 6,
+      "completedTimeCycles": 2,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 98645,
+      "legacyCycles": 8,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498527734,
+      "readEndedAtMs": 1794498528123,
+      "helperObservedAtMs": [
+        1794498528110
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 0,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-3",
+      "generation": 7,
+      "completedAcquisitions": 0,
+      "completedTimeCycles": 0,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": null,
+      "legacyCycles": 0,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498527734,
+      "readEndedAtMs": 1794498528143,
+      "helperObservedAtMs": [
+        1794498528130
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 0,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator-3",
+      "generation": 6,
+      "completedAcquisitions": 0,
+      "completedTimeCycles": 0,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": null,
+      "legacyCycles": 0,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498527734,
+      "readEndedAtMs": 1794498528143,
+      "helperObservedAtMs": [
+        1794498528130
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 1,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator",
+      "generation": 14,
+      "completedAcquisitions": 5,
+      "completedTimeCycles": 2,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 109092,
+      "legacyCycles": 7,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498538144,
+      "readEndedAtMs": 1794498538540,
+      "helperObservedAtMs": [
+        1794498538526
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 1,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator",
+      "generation": 15,
+      "completedAcquisitions": 1,
+      "completedTimeCycles": 101,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 614,
+      "legacyCycles": 102,
+      "admitted": true,
+      "ready": true,
+      "code": null,
+      "alert": null,
+      "dueAt": 1794498538903,
+      "dueReason": "slow:alarm-message",
+      "readStartedAtMs": 1794498538144,
+      "readEndedAtMs": 1794498538540,
+      "helperObservedAtMs": [
+        1794498538526
+      ],
+      "dueClassification": "future-through-read-end",
+      "dueMinusReadEndMs": 363
+    },
+    {
+      "round": 1,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-2",
+      "generation": 11,
+      "completedAcquisitions": 1,
+      "completedTimeCycles": 101,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 625,
+      "legacyCycles": 102,
+      "admitted": true,
+      "ready": true,
+      "code": null,
+      "alert": null,
+      "dueAt": 1794498538887,
+      "dueReason": "slow:alarm-message",
+      "readStartedAtMs": 1794498538144,
+      "readEndedAtMs": 1794498538540,
+      "helperObservedAtMs": [
+        1794498538523
+      ],
+      "dueClassification": "future-through-read-end",
+      "dueMinusReadEndMs": 347
+    },
+    {
+      "round": 1,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator-2",
+      "generation": 10,
+      "completedAcquisitions": 6,
+      "completedTimeCycles": 2,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 109059,
+      "legacyCycles": 8,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498538144,
+      "readEndedAtMs": 1794498538540,
+      "helperObservedAtMs": [
+        1794498538523
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 1,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-3",
+      "generation": 7,
+      "completedAcquisitions": 0,
+      "completedTimeCycles": 0,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": null,
+      "legacyCycles": 0,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498538144,
+      "readEndedAtMs": 1794498538540,
+      "helperObservedAtMs": [
+        1794498538528
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 1,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator-3",
+      "generation": 6,
+      "completedAcquisitions": 0,
+      "completedTimeCycles": 0,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": null,
+      "legacyCycles": 0,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498538144,
+      "readEndedAtMs": 1794498538540,
+      "helperObservedAtMs": [
+        1794498538528
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 2,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator",
+      "generation": 14,
+      "completedAcquisitions": 5,
+      "completedTimeCycles": 2,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 119527,
+      "legacyCycles": 7,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498548541,
+      "readEndedAtMs": 1794498548976,
+      "helperObservedAtMs": [
+        1794498548961
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 2,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator",
+      "generation": 15,
+      "completedAcquisitions": 1,
+      "completedTimeCycles": 111,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 273,
+      "legacyCycles": 112,
+      "admitted": true,
+      "ready": true,
+      "code": null,
+      "alert": null,
+      "dueAt": 1794498549677,
+      "dueReason": "slow:alarm-message",
+      "readStartedAtMs": 1794498548541,
+      "readEndedAtMs": 1794498548976,
+      "helperObservedAtMs": [
+        1794498548961
+      ],
+      "dueClassification": "future-through-read-end",
+      "dueMinusReadEndMs": 701
+    },
+    {
+      "round": 2,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-2",
+      "generation": 11,
+      "completedAcquisitions": 1,
+      "completedTimeCycles": 111,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 349,
+      "legacyCycles": 112,
+      "admitted": true,
+      "ready": true,
+      "code": null,
+      "alert": null,
+      "dueAt": 1794498549672,
+      "dueReason": "slow:alarm-message",
+      "readStartedAtMs": 1794498548542,
+      "readEndedAtMs": 1794498549047,
+      "helperObservedAtMs": [
+        1794498549033
+      ],
+      "dueClassification": "future-through-read-end",
+      "dueMinusReadEndMs": 625
+    },
+    {
+      "round": 2,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator-2",
+      "generation": 10,
+      "completedAcquisitions": 6,
+      "completedTimeCycles": 2,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": 119569,
+      "legacyCycles": 8,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498548542,
+      "readEndedAtMs": 1794498549047,
+      "helperObservedAtMs": [
+        1794498549033
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 2,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "service": "evaluator-3",
+      "generation": 7,
+      "completedAcquisitions": 0,
+      "completedTimeCycles": 0,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": null,
+      "legacyCycles": 0,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498548542,
+      "readEndedAtMs": 1794498549047,
+      "helperObservedAtMs": [
+        1794498549033
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    },
+    {
+      "round": 2,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "service": "evaluator-3",
+      "generation": 6,
+      "completedAcquisitions": 0,
+      "completedTimeCycles": 0,
+      "failedCompletions": 0,
+      "lastCompletedAgeMs": null,
+      "legacyCycles": 0,
+      "admitted": false,
+      "ready": false,
+      "code": "EVALUATOR_POOL_NOT_IN_SLICE",
+      "alert": null,
+      "dueAt": null,
+      "dueReason": null,
+      "readStartedAtMs": 1794498548542,
+      "readEndedAtMs": 1794498549047,
+      "helperObservedAtMs": [
+        1794498549033
+      ],
+      "dueClassification": "observed-null",
+      "dueMinusReadEndMs": null
+    }
+  ],
+  "controls": [
+    {
+      "control": "frozen-success",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_NOT_OBSERVED"
+    },
+    {
+      "control": "hidden-failure",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE"
+    },
+    {
+      "control": "foreign-work",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_FOREIGN"
+    },
+    {
+      "control": "runtime-reset",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_RESET"
+    },
+    {
+      "control": "missing-foreign-row",
+      "verdict": "FAIL",
+      "code": "M7_EVALUATOR_PROGRESS_COVERAGE"
+    },
+    {
+      "control": "boolean-due",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_DUE_CONTRACT"
+    },
+    {
+      "control": "missing-due-column",
+      "verdict": "UNMEASURED",
+      "code": "M7_EVALUATOR_PROGRESS_PROOF"
+    }
+  ],
+  "restored": "PASS",
+  "rawSha256": "11294efcb3f03e8b6d594c8466c2aea6423aacea3822842fad00eb7005657324",
+  "gzipSha256": "cd6ab0ebc270d1d952e8cd871d2ff44d6c1cecab5c54dd3f3ee565018436308a",
+  "limits": "read-time bracket classifications only; no strict missed-deadline/cold-cohort/capacity/recovery or post-RT-move claim"
+}

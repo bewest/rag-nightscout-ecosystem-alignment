@@ -1,0 +1,16 @@
+{
+  "source": "16c78776a27fb183a1953d2d59b9c499283b7ab2",
+  "files": {
+    "tools/queue/gates/m7_joined_receipt.py": "561f14ed093fc7e58edc3eeb18eb6f7d481a2d4395ca8c661eef983b43be6951",
+    "tools/queue/gates/test_m7_joined_receipt.py": "511e96c44e4890cede41a12853897611b6b744a3d814cc4efc434c3a50868e2a",
+    "tools/queue/gates/m7_joined_receipt.md": "1dd725867bad8d8c1c2a2e542f323d0ee62dbddfabc63241c9fe64495d8e9e05"
+  },
+  "producerInstrument": "0c25bf549af0c7b352e9f3f944e49c91b3fe81f736a8bcf98e34622285dc076f",
+  "reviewedWorker": {
+    "repository": "nightscout-deploy",
+    "commit": "3d8ca353f973433021ae2086cd643d03da5fb3a4",
+    "path": "tools/perf-cloud/core-acceptance.py",
+    "blob": "d39a96a7412e246e77b7619565965e665fce0e81",
+    "classification": "read-derived core-only execution boundary"
+  }
+}

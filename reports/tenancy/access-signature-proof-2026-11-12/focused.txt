@@ -1,0 +1,16 @@
+
+
+  ...............[32mWS: [0mConnection from client ID:  synthetic-socket  IP:  127.0.0.1
+[32mWS: [0mloadRetro:  Not permitted
+.[32mSTORAGE SOCKET: [0mConnection from client ID:  synthetic-socket  IP:  127.0.0.1
+.[32mALARM SOCKET: [0mConnection from client ID:  synthetic-socket  IP:  127.0.0.1
+[32mALARM SOCKET: [0memitted alarm to subscribed clients
+[32mALARM SOCKET: [0memitted alarm to subscribed clients
+.................Failed-authentication throttling is keyed on the client address as resolved through TRUST_PROXY=false.
+.Failed-authentication throttling is keyed on the client address as resolved through TRUST_PROXY=false.
+.................[32mALARM SOCKET: [0memitted alarm to subscribed clients
+.[32mALARM SOCKET: [0memitted urgent_alarm to subscribed clients
+...
+  ..........................
+
+  82 passing (343ms)

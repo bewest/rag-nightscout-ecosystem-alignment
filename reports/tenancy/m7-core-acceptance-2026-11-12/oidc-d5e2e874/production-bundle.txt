@@ -1,0 +1,47 @@
+
+> nightscout@16.0.0 bundle
+> webpack --mode production --config webpack/webpack.config.js && npm run-script post-generate-keys
+
+assets by status 1.62 KiB [cached] 1 asset
+assets by status 65.7 KiB [compared for emit]
+  asset js/bundle.admin.js 31.3 KiB [emitted] [compared for emit] [minimized] (name: admin) 1 related asset
+  asset js/bundle.profile.js 19 KiB [emitted] [compared for emit] [minimized] (name: profile) 1 related asset
+  asset js/bundle.food.js 15.4 KiB [emitted] [compared for emit] [minimized] (name: food) 1 related asset
+asset js/bundle.app.js 1.07 MiB [emitted] [minimized] [big] (name: app) 2 related assets
+asset js/bundle.reports.js 230 KiB [emitted] [minimized] (name: reports) 2 related assets
+asset js/bundle.clock.js 152 KiB [emitted] [minimized] (name: clock) 2 related assets
+orphan modules 917 KiB [orphan] 581 modules
+runtime modules 5.74 KiB 13 modules
+built modules 2.84 MiB (javascript) 1.62 KiB (asset) 42 bytes (asset-url) [built]
+  modules by path ../../../../../../../tmp/ns-m7-owned-dependencies-20261112/node_modules/ 1.44 MiB 196 modules
+  modules by path ./ 1.4 MiB (javascript) 1.62 KiB (asset) 42 bytes (asset-url)
+    modules by path ./lib/ 1.34 MiB 133 modules
+    modules by path ./bundle/*.js 58.4 KiB
+      ./bundle/bundle.source.js + 11 modules 56.5 KiB [built] [code generated]
+      ./bundle/bundle.clocks.source.js 199 bytes [built] [code generated]
+      ./bundle/bundle.food.source.js 182 bytes [built] [code generated]
+      ./bundle/bundle.profile.source.js 197 bytes [built] [code generated]
+      + 2 modules
+    ./static/images/logo2.png 1.62 KiB (asset) 42 bytes (asset-url) [built] [code generated]
+  crypto (ignored) 15 bytes [built] [code generated]
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  js/bundle.app.js (1.07 MiB)
+    Largest modules: ../../../../../../../tmp/ns-m7-owned-dependencies-20261112/node_modules/jquery/dist/jquery.js (311 KiB), ./lib/d3.mjs + 191 modules (277 KiB), ../../../../../../../tmp/ns-m7-owned-dependencies-20261112/node_modules/moment/moment.js (148 KiB)
+
+WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  app (1.07 MiB)
+      js/bundle.app.js
+
+WARNING in webpack performance recommendations: 
+You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
+For more info visit https://webpack.js.org/guides/code-splitting/
+
+webpack 5.110.3 compiled with 3 warnings in 13664 ms
+
+> nightscout@16.0.0 post-generate-keys
+> node bin/generateRandomString.js >node_modules/.cache/_ns_cache/randomString
+

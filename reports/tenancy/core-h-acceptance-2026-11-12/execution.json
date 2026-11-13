@@ -1,0 +1,260 @@
+{
+  "recordType": "NEW_BOUNDED_SELECTED_FIELD_DERIVATIVE",
+  "originalPrivateAssessmentSha256": "ba0bcf4000773db9e1fd8cd7ceb798e8d7488a79eef22b1688c19003482937d2",
+  "transformation": "Selected nonidentifying fields only; original raw private capture hashes remain bound. This is not another experiment.",
+  "functionalExecution": "PASS",
+  "coordinatorDisposition": "AWAITING_FINAL_PRCHECK_AND_ACCEPTANCE_RECEIPT",
+  "workerSourceAcceptance": "COORDINATOR_REVIEW_REQUIRED",
+  "release": "NOT_ASSESSED",
+  "production": "NOT_ASSESSED",
+  "baselinePilotCapacity": "NOT_ASSESSED",
+  "workerStatus": "passed",
+  "workerErrors": [],
+  "completedTests": [
+    "unit",
+    "dom",
+    "dependency",
+    "core",
+    "harness",
+    "integration",
+    "stress",
+    "browser",
+    "enabled-corpus"
+  ],
+  "selectedSpec": {
+    "version": 1,
+    "profile": "core-acceptance-v1",
+    "topology": "colocated",
+    "appNodes": 1,
+    "generatorNodes": 0,
+    "appSize": "c-16",
+    "maxMinutes": 180,
+    "maxEstimatedUSD": 1.5
+  },
+  "stages": {
+    "unit": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 3563,
+        "pending": 1,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 8124,
+            "text": "3563 passing (1m)",
+            "value": 3563
+          }
+        ],
+        "pending": [
+          {
+            "line": 8125,
+            "text": "1 pending",
+            "value": 1
+          }
+        ],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    },
+    "dom": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 205,
+        "pending": 0,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 1107,
+            "text": "205 passing (11s)",
+            "value": 205
+          }
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    },
+    "dependency": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 368,
+        "pending": 2,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 501,
+            "text": "368 passing (16s)",
+            "value": 368
+          }
+        ],
+        "pending": [
+          {
+            "line": 502,
+            "text": "2 pending",
+            "value": 2
+          }
+        ],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    },
+    "core": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 319,
+        "pending": 0,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 437,
+            "text": "319 passing (1s)",
+            "value": 319
+          }
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    },
+    "harness": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 99,
+        "pending": 0,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 171,
+            "text": "99 passing (9s)",
+            "value": 99
+          }
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "executionDiagnostics": [
+        "TEST_EXECUTION: no intended test files (support tests do not count)"
+      ],
+      "executionDiagnosticInterpretation": "Expected nested reporter negative control in tests/test-select.test.js253-262; captured passing case and rc0"
+    },
+    "integration": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 3643,
+        "pending": 836,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 27753,
+            "text": "3643 passing (3m)",
+            "value": 3643
+          }
+        ],
+        "pending": [
+          {
+            "line": 27754,
+            "text": "836 pending",
+            "value": 836
+          }
+        ],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    },
+    "stress": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 18,
+        "pending": 0,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 382,
+            "text": "18 passing (2s)",
+            "value": 18
+          }
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    },
+    "browser": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 686,
+        "pending": 0,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 964,
+            "text": "686 passing (5m)",
+            "value": 686
+          }
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    },
+    "enabled-corpus": {
+      "status": "PASSED",
+      "commandReturnCode": 0,
+      "mochaCounts": {
+        "passing": 839,
+        "pending": 1,
+        "failing": 0
+      },
+      "summaryLines": {
+        "passing": [
+          {
+            "line": 5851,
+            "text": "839 passing (12m)",
+            "value": 839
+          }
+        ],
+        "pending": [
+          {
+            "line": 5852,
+            "text": "1 pending",
+            "value": 1
+          }
+        ],
+        "failing": []
+      },
+      "executionDiagnostics": [],
+      "executionDiagnosticInterpretation": "No execution diagnostics"
+    }
+  }
+}

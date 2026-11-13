@@ -1,0 +1,113 @@
+{"event":"owned-listener","pid":1793451,"host":"127.0.0.1","port":41211}
+{"event":"owned-listener","pid":1793451,"host":"127.0.0.1","port":45203}
+{"event":"owned-pg-schema","name":"hh_access_bba9cb6b748b85ad","oid":17276}
+{"event":"owned-pg-schema","name":"hh_authority_bba9cb6b748b85ad","oid":17362}
+{"event":"owned-pg-schema","name":"hh_human_bba9cb6b748b85ad","oid":17460}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"event":"owned-listener","pid":1793451,"host":"127.0.0.1","port":41875}
+{"event":"owned-listener","pid":1793451,"host":"127.0.0.1","port":46697}
+{"event":"owned-listener","pid":1793451,"host":"127.0.0.1","port":33263}
+{"event":"owned-listener","pid":1793451,"host":"127.0.0.1","port":46831}
+{"event":"owned-extension-custody","stage":"owner-consumer","resources":{"schemas":[{"name":"oc_ad212c2a8080f43c_legacy","oid":17526},{"name":"oc_ad212c2a8080f43c_settings","oid":17559},{"name":"oc_ad212c2a8080f43c_policy","oid":17630},{"name":"oc_ad212c2a8080f43c_configure","oid":17652},{"name":"oc_ad212c2a8080f43c_secrets","oid":17674}],"consumer":{"classification":"native-PG-HTTP-consumer-clinical-issued-DATA-and-pinned-oref0","configuration":"consumerJourney: connectionEnv, namespaces(all six clinical domains,clock,checkpoint), client(root,commit,tools,caEnv,maxMs)","identity":"one additional distinct NOSUPERUSER/NOBYPASSRLS clinical identity; maxPool=4","pools":{"clinical":4,"authority":4,"legacy":4,"secrets":4,"migrationTransient":1},"listenerCount":4,"client":{"name":"oref0-ns-get","commit":"d219baf9559d62a8bb0bd42014192a2d7c0839ef","scripts":{"bin/ns-get.sh":"b13d716d3d9e27249fa3864fdf747ed0eeb6aeaf8396bb6e05d40d2a3ec2fffb","bin/oref0-bash-common-functions.sh":"bae949d5fc80cf52966349137172be0c15f8fe038cd019d10e19864ebfb9e828"},"tools":["bash","curl","jq","dirname","basename","cat"],"processes":"one owned bash pipeline at a time: bash/curl/jq plus short-lived dirname/basename/cat","maxCases":3},"source":["lib/server/serve/preview-domains.js","lib/server/tenant-app/index.js","lib/server/tenant-app/data-access.js","lib/tenant-authorization/postgres.js","lib/secrets/component.js","lib/secrets/postgres.js","lib/secrets/legacy-postgres.js","lib/server/serve/evaluator-runtime.js","lib/data/tenant-projection-evaluator.js","lib/storage/postgres-durable-replay.js","lib/server/serve/evaluator-config.js","lib/storage/postgres-projection-read.js","lib/server/serve/postgres-domains.js","lib/storage/postgres-tenant-stats.js","lib/server/serve/evaluator-readiness.js"],"catalogues":["lib/server/serve/postgres-domains.js:get(each domain)","migrations/candidates/postgres-write-clock-v1.json","migrations/candidates/postgres-consumer-checkpoint-v1.json"],"nativeExecution":"run by tests/native/oidc-matrix/run.sh (disposable harness)","schemas":[{"name":"cj_ad212c2a8080f43c_entries","oid":17716},{"name":"cj_ad212c2a8080f43c_treatments","oid":17790},{"name":"cj_ad212c2a8080f43c_devicestatus","oid":17825},{"name":"cj_ad212c2a8080f43c_profile","oid":17858},{"name":"cj_ad212c2a8080f43c_food","oid":17886},{"name":"cj_ad212c2a8080f43c_activity","oid":17928},{"name":"cj_ad212c2a8080f43c_clock","oid":17956},{"name":"cj_ad212c2a8080f43c_checkpoint","oid":17975}]}}}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+2026-11-12T13:18:29.727Z	EMITTING ALARM:
+  {"level":"Warning","title":"Warning HIGH","message":"BG Now: 10.5 mmol/L","group":"default","plugin":"simplealarms","debug":{"lastSGV":10.5,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":60}}}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+2026-11-12T13:18:29.828Z	EMITTING ALARM:
+  {"level":"Warning","title":"Warning HIGH","message":"BG Now: 10.5 mmol/L","group":"default","plugin":"simplealarms","debug":{"lastSGV":10.5,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":60}}}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: simplealarms
+{"event":"owned-child","pid":1794594,"kind":"client","label":"oref0-ns-get"}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"event":"owned-child","pid":1794606,"kind":"client","label":"oref0-ns-get"}
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+{"cleanup":"closed","listeners":6}

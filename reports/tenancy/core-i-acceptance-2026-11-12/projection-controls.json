@@ -1,0 +1,32 @@
+{
+  "recordType": "BOUNDED_OFFLINE_PROJECTION_CONTROLS",
+  "originalIProjection": "CONSISTENT_FAILED_EVIDENCE",
+  "negativeControls": [
+    {
+      "case": "wrong-source",
+      "result": "REFUSED",
+      "reason": "SOURCE_MISMATCH"
+    },
+    {
+      "case": "launder-failure",
+      "result": "REFUSED",
+      "reason": "FAILURE_LAUNDERING"
+    },
+    {
+      "case": "lower-current-read-expectation",
+      "result": "REFUSED",
+      "reason": "LOWERED_CURRENT_READ_GUARANTEE"
+    },
+    {
+      "case": "invent-corpus",
+      "result": "REFUSED",
+      "reason": "FABRICATED_LATER_COVERAGE"
+    },
+    {
+      "case": "drop-owned-cleanup",
+      "result": "REFUSED",
+      "reason": "CLEANUP_NOT_VERIFIED"
+    }
+  ],
+  "scope": "In-memory metadata changes only; no product/runtime/source tests or campaign rerun"
+}

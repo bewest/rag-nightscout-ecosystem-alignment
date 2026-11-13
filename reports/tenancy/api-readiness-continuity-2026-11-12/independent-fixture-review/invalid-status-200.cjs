@@ -1,0 +1,5 @@
+const {EventEmitter}=require('node:events'),assert=require('node:assert/strict');
+const base=__dirname+'/binding/bindings/compose/multitenant/fixtures/';const {read}=require(base+'api-readiness-private.cjs'),{precondition}=require(base+'api-readiness-observation.cjs');
+(async()=>{const target={service:'api',tenantOrdinal:0,host:'synthetic.example',credential:'synthetic-only'};
+const result=await precondition({targets:[target],read:t=>read(t,{timeoutMs:1000,request:(_options,callback)=>{const req=new EventEmitter();req.destroy=()=>req.emit('error',new Error('synthetic'));req.end=()=>queueMicrotask(()=>{const res=new EventEmitter();res.statusCode=200;callback(res);res.emit('data',Buffer.from('{"error":"TENANT_WARMING"}'));res.emit('end');req.emit('close');});return req;}})});
+console.log(JSON.stringify({probe:'VALID_JSON_INVALID_STATUS_BODY',passed:result.passed}));assert.equal(result.passed,false,'INVALID_STATUS_200_FALSE_PASS');})().catch(e=>{console.error(e.message);process.exitCode=1;});

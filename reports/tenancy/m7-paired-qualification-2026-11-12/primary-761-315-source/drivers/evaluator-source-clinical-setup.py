@@ -1,0 +1,11 @@
+from pathlib import Path
+import os,json
+from evaluator_source_phase import run
+core=Path('/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-sourcepair-20261112');state=Path('/tmp/ns-evaluator-binding-proof-20261112-source');fixture=core/'deploy/multitenant/fixtures';opts={'core':str(core),'state':str(state),'project':state.name};env={k:v for k,v in os.environ.items()if not k.startswith(('NS_','BENCH_','MULTITENANT_'))}
+script="const m=require(process.argv[1]),fs=require('node:fs'),o=JSON.parse(process.argv[2]);o.tenants=JSON.parse(fs.readFileSync(o.state+'/primer/tenants.json')).tenants;m.prepare(o).then(r=>{fs.writeFileSync(o.state+'/artifacts/api-readiness.json',JSON.stringify(r),{mode:0o600});console.log(JSON.stringify({passed:r.passed,tuples:r.matrix.length}));}).catch(e=>{if(e.apiReadiness)fs.writeFileSync(o.state+'/artifacts/api-readiness.json',JSON.stringify(e.apiReadiness),{mode:0o600});console.error(JSON.stringify({code:e.code||'API_READINESS_REFUSED'}));process.exitCode=1;});"
+run('api-readiness',['node','-e',script,str(fixture/'api-readiness-host.cjs'),json.dumps(opts)],env=env)
+setup="const m=require(process.argv[1]);const o=JSON.parse(process.argv[2]);const r=m.setup(o);console.log(JSON.stringify({outcome:'synthetic-authority-ready',tenants:r.actors.length,boundary:'fixture metadata only'}));"
+run('configuration.setup',['node','-e',setup,str(fixture/'evaluator-settings-setup.cjs'),json.dumps(opts)],env=env)
+run('configuration.enable',['docker','run','--rm','--network',state.name+'_backend','--read-only','--tmpfs','/tmp:rw,nosuid,nodev,noexec,size=16m','--cap-drop','ALL','--security-opt','no-new-privileges','-v',str(fixture/'evaluator-settings-control.cjs')+':/opt/evaluator-settings-control.cjs:ro','-v',str(state/'bootstrap/evaluator-settings-control.json')+':/run/ns-settings-control.json:ro','ns-evaluator-binding:761-315-final','node','/opt/evaluator-settings-control.cjs','enable'],env=env)
+clinical={**env,'NS_UI_TEST_CORE':str(core),'NS_EVALUATOR_BINDING_STATE':str(state),'NS_EVALUATOR_BINDING_PROJECT':state.name,'NS_EVALUATOR_BINDING_PORT':'18384'}
+run('clinical',['node',str(core/'deploy/multitenant/shipping-evaluator.integration.test.js')],env=clinical)

@@ -1,0 +1,78 @@
+
+
+  !!!!
+
+  0 passing (2s)
+  4 failing
+
+  1) tenant provisioning (actual PostgreSQL and Vault)
+       PV_EXISTING_COMPLETE_REGISTRY: an incomplete existing tenant is refused without recreating or changing it:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'existing'
+- 'refused'
+
+      + expected - actual
+
+      -existing
+      +refused
+      
+      at Context.<anonymous> (tests/tenant-registry-provision.integration.test.js:146:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  2) tenant provisioning (actual PostgreSQL and Vault)
+       PV_EXISTING_COMPLETE_CONTROL: an incomplete existing tenant is refused without recreating or changing it:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'existing'
+- 'refused'
+
+      + expected - actual
+
+      -existing
+      +refused
+      
+      at Context.<anonymous> (tests/tenant-registry-provision.integration.test.js:146:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  3) tenant provisioning (actual PostgreSQL and Vault)
+       PV_EXISTING_COMPLETE_SETTINGS: an incomplete existing tenant is refused without recreating or changing it:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'existing'
+- 'refused'
+
+      + expected - actual
+
+      -existing
+      +refused
+      
+      at Context.<anonymous> (tests/tenant-registry-provision.integration.test.js:146:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  4) tenant provisioning (actual PostgreSQL and Vault)
+       PV_EXISTING_COMPLETE_CHECKPOINT: an incomplete existing tenant is refused without recreating or changing it:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ 'existing'
+- 'refused'
+
+      + expected - actual
+
+      -existing
+      +refused
+      
+      at Context.<anonymous> (tests/tenant-registry-provision.integration.test.js:146:14)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+
+

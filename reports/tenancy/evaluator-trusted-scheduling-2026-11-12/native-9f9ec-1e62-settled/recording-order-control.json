@@ -1,0 +1,36 @@
+[
+  {
+    "barrierFails": false,
+    "events": [
+      {
+        "stage": "settlement",
+        "seconds": 12
+      },
+      {
+        "stage": "barrier"
+      },
+      {
+        "stage": "http-ingestion"
+      },
+      {
+        "stage": "strict-time"
+      }
+    ]
+  },
+  {
+    "barrierFails": true,
+    "events": [
+      {
+        "stage": "settlement",
+        "seconds": 12
+      },
+      {
+        "stage": "barrier"
+      }
+    ]
+  },
+  {
+    "mutant": "barrier-before-settlement",
+    "red": "ORDER_INVARIANT_FAILED"
+  }
+]

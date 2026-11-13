@@ -1,0 +1,26 @@
+
+
+  tenant operations: deployment backup, restore, upgrade and rollback
+    plan
+      1) preserves management issuance request rows and their appended ledger through deployment restore
+
+
+[TIMING STATS] Total: 1 tests, Avg: 5ms, Slow: 0
+
+  0 passing (7ms)
+  1 failing
+
+  1) tenant operations: deployment backup, restore, upgrade and rollback
+       plan
+         preserves management issuance request rows and their appended ledger through deployment restore:
+     Error: OPERATIONS_RELATION_UNADMITTED: access.management_session_requests
+      at refuse (lib/tenant-operations/common.js:27:17)
+      at fail (lib/tenant-operations/common.js:92:75)
+      at Object.assertRelationInventory (lib/storage/postgres-relation-inventory.js:18:40)
+      at async WORKSPACE/externals/work/crm-m7-join-20261111/lib/tenant-operations/backup.js:63:7
+      at async Object.transaction (lib/tenant-operations/common.js:270:20)
+      at async Object.backup (lib/tenant-operations/backup.js:54:20)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:330:24)
+
+
+

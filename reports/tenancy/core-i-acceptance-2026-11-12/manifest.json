@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "kind": "immutable-core-i-primary-failure-leaf",
+  "recordDate": "2026-11-12",
+  "files": {
+    "README.md": "4b9a847fce6def560b7a4f715ce5f7ee98e51d7c06eef2d5e8ffe7f564f2d4d6",
+    "execution.json": "89f09cfa6c099c0be3eab59d85bb6af59ac4a96681bef04d994f93a05872b6e0",
+    "fixture-and-cleanup.json": "f87801e550e7380408d5416661b03587d00e1cebb4a73efa5b3045c512a7fd77",
+    "projection-controls.json": "80ffd22a2699b981928774c81b9d17b3c4af07546bcea041a464b821a95fd0e0",
+    "provenance.json": "25f6d1d99f49dad6caf43be0312c7eba3ac45ef0066455df2b375eebd519350d",
+    "publication-verification.json": "40c5a10675d3dc57582de91a9e8f7a3e7b91d58ba7659c1e9f09757febf80373",
+    "queue-check-output.txt": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f"
+  }
+}

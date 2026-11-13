@@ -1,0 +1,93 @@
+{
+  "version": 2,
+  "requests": [
+    {
+      "request": 1,
+      "classification": "criterion",
+      "stage": "data-exchange",
+      "tenantIndex": 0,
+      "method": "GET",
+      "routeClass": "exchange",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    },
+    {
+      "request": 2,
+      "classification": "criterion",
+      "stage": "initial-status",
+      "tenantIndex": 0,
+      "method": "GET",
+      "routeClass": "status",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    },
+    {
+      "request": 3,
+      "classification": "criterion",
+      "stage": "data-exchange",
+      "tenantIndex": 1,
+      "method": "GET",
+      "routeClass": "exchange",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    },
+    {
+      "request": 4,
+      "classification": "criterion",
+      "stage": "initial-status",
+      "tenantIndex": 1,
+      "method": "GET",
+      "routeClass": "status",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    },
+    {
+      "request": 5,
+      "classification": "criterion",
+      "stage": "data-write",
+      "tenantIndex": 0,
+      "method": "POST",
+      "routeClass": "entries-write",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    },
+    {
+      "request": 6,
+      "classification": "criterion",
+      "stage": "data-write",
+      "tenantIndex": 1,
+      "method": "POST",
+      "routeClass": "entries-write",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    },
+    {
+      "request": 7,
+      "classification": "criterion",
+      "stage": "recovery-status",
+      "tenantIndex": 0,
+      "method": "GET",
+      "routeClass": "status",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    },
+    {
+      "request": 8,
+      "classification": "criterion",
+      "stage": "recovery-status",
+      "tenantIndex": 1,
+      "method": "GET",
+      "routeClass": "status",
+      "status": 200,
+      "errorCode": null,
+      "failureCode": null
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+
+
+  ....................2026-11-12T06:07:44.692Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T06:07:44.693Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+.2026-11-12T06:07:44.706Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+2026-11-12T06:07:44.706Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 2","group":"default","plugin":"synthetic"}
+...................................
+  ................synthetic: Static tenant lists in use (MULTITENANT_STATIC_TENANTS=lab, lab and test only): api
+........................................
+  ......
+
+  118 passing (679ms)

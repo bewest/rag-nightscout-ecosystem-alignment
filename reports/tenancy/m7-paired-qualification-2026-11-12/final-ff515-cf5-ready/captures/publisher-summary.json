@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "operation": "24e54de07777fb91738460de42f5d22d",
+  "identity": {
+    "source": {
+      "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+      "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1"
+    },
+    "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+    "worker": "realtime-2",
+    "beforeGeneration": 1,
+    "candidateGeneration": 2,
+    "oldIdentity": {
+      "id": "937ca8a4255aee3a0f322b40ea05aa92ccd5dc66d52820cddd0dcdd4383e8589",
+      "startedAt": "2026-11-12T18:36:01.730949828Z",
+      "pid": 2918230
+    }
+  },
+  "events": [
+    {
+      "kind": "prepared",
+      "atMs": 1
+    },
+    {
+      "stage": "prepared",
+      "kind": "journal",
+      "atMs": 12
+    },
+    {
+      "stage": "confirm",
+      "kind": "host-action-start",
+      "atMs": 783
+    },
+    {
+      "stage": "confirm",
+      "durationMs": 22,
+      "kind": "host-action-complete",
+      "atMs": 804
+    },
+    {
+      "stage": "stop",
+      "kind": "host-action-start",
+      "atMs": 823
+    },
+    {
+      "stage": "stop-intent",
+      "kind": "journal",
+      "atMs": 850
+    },
+    {
+      "stage": "before-stop",
+      "kind": "checkpoint-start",
+      "atMs": 860
+    },
+    {
+      "stage": "before-stop",
+      "durationMs": 11,
+      "kind": "checkpoint-complete",
+      "atMs": 871
+    },
+    {
+      "stage": "stopped",
+      "kind": "journal",
+      "atMs": 1068
+    },
+    {
+      "stage": "after-stop",
+      "kind": "checkpoint-start",
+      "atMs": 1075
+    },
+    {
+      "stage": "after-stop",
+      "durationMs": 76,
+      "kind": "checkpoint-complete",
+      "atMs": 1150
+    },
+    {
+      "stage": "stop",
+      "durationMs": 332,
+      "kind": "host-action-complete",
+      "atMs": 1155
+    },
+    {
+      "stage": "confirm",
+      "kind": "host-action-start",
+      "atMs": 1169
+    },
+    {
+      "stage": "confirm",
+      "durationMs": 19,
+      "kind": "host-action-complete",
+      "atMs": 1188
+    },
+    {
+      "stage": "activate",
+      "kind": "host-action-start",
+      "atMs": 1210
+    },
+    {
+      "stage": "after-assignment",
+      "kind": "checkpoint-start",
+      "atMs": 1229
+    },
+    {
+      "stage": "after-assignment",
+      "durationMs": 6,
+      "kind": "checkpoint-complete",
+      "atMs": 1235
+    },
+    {
+      "stage": "env-intent",
+      "kind": "journal",
+      "atMs": 1247
+    },
+    {
+      "stage": "env-written",
+      "kind": "journal",
+      "atMs": 1267
+    },
+    {
+      "stage": "after-env",
+      "kind": "checkpoint-start",
+      "atMs": 1273
+    },
+    {
+      "stage": "after-env",
+      "durationMs": 6,
+      "kind": "checkpoint-complete",
+      "atMs": 1278
+    },
+    {
+      "stage": "create-intent",
+      "kind": "journal",
+      "atMs": 1296
+    },
+    {
+      "stage": "after-create-effect",
+      "kind": "checkpoint-start",
+      "atMs": 1557
+    },
+    {
+      "stage": "after-create-effect",
+      "durationMs": 8,
+      "kind": "checkpoint-complete",
+      "atMs": 1564
+    },
+    {
+      "stage": "created",
+      "kind": "journal",
+      "atMs": 1768
+    },
+    {
+      "stage": "after-create",
+      "kind": "checkpoint-start",
+      "atMs": 1774
+    },
+    {
+      "stage": "after-create",
+      "durationMs": 6,
+      "kind": "checkpoint-complete",
+      "atMs": 1780
+    },
+    {
+      "stage": "start-intent",
+      "kind": "journal",
+      "atMs": 1791
+    },
+    {
+      "stage": "after-start-effect",
+      "kind": "checkpoint-start",
+      "atMs": 1957
+    },
+    {
+      "stage": "after-start-effect",
+      "durationMs": 7,
+      "kind": "checkpoint-complete",
+      "atMs": 1964
+    },
+    {
+      "stage": "started",
+      "kind": "journal",
+      "atMs": 1988
+    },
+    {
+      "stage": "after-start",
+      "kind": "checkpoint-start",
+      "atMs": 1994
+    },
+    {
+      "stage": "after-start",
+      "durationMs": 1232,
+      "kind": "checkpoint-complete",
+      "atMs": 3226
+    },
+    {
+      "stage": "activate",
+      "durationMs": 2022,
+      "kind": "host-action-complete",
+      "atMs": 3231
+    },
+    {
+      "generation": 2,
+      "kind": "child-complete",
+      "atMs": 3334
+    },
+    {
+      "kind": "child-exit",
+      "atMs": 3472
+    },
+    {
+      "stage": "complete",
+      "kind": "journal",
+      "atMs": 3491
+    },
+    {
+      "kind": "finished",
+      "atMs": 3506
+    }
+  ],
+  "eventsTotal": 38,
+  "child": {
+    "exitCode": 0,
+    "signal": null,
+    "completionSeen": true,
+    "stderrCodes": []
+  },
+  "hostFailure": null,
+  "captureError": null,
+  "errorsTotal": 0,
+  "errorsTruncated": false,
+  "privateLimits": {
+    "streamChars": 16384,
+    "errorCount": 8,
+    "errorChars": 4096
+  },
+  "streams": {
+    "stdout": {
+      "chars": 613,
+      "truncated": false
+    },
+    "stderr": {
+      "chars": 0,
+      "truncated": false
+    }
+  },
+  "current": {
+    "journalPhase": "complete",
+    "newIdentity": {
+      "id": "e5a7c42629e6e05c6158a092886ea86a1c0d7b266e7e9516122f7eed2329dae6",
+      "startedAt": "2026-11-12T18:43:48.409223907Z",
+      "pid": 3052936
+    },
+    "backendGeneration": 2,
+    "routesGeneration": 2
+  },
+  "privateCaptureSha256": "1fdfa4d8935d95d6e10f55a68e0dfa1793bc4d648a556666a06aab7db9a58c01",
+  "privateStreamSha256": {
+    "stdout": "05bf64ce6e9dd831c1badaeae0560ccc12600f4328a91dfd64fa85837f653794",
+    "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

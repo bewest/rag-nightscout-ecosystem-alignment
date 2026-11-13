@@ -1,0 +1,13 @@
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-cache-fixture-20261112/tests/evaluator-preview-runtime.test.js
+  43:7   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  46:49  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  48:26  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  49:20  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  61:7   warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  67:20  warning  Found statSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+  68:66  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  69:20  warning  Found statSync from package "node:fs" with non literal argument at index 0       security/detect-non-literal-fs-filename
+
+✖ 8 problems (0 errors, 8 warnings)
+

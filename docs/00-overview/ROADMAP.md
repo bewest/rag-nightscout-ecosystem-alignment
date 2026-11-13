@@ -191,7 +191,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 1 | `ID-RESEND-SWITCH` | A site setting plus per-client D20 quirks that opt a client into keep-first or r | `not-started` | &mdash; |
 | 1 | `ID-V1-LOOKUP` | Release 2 (minor): v1 GET and DELETE by any identifier, without the default time | `blocked` | &mdash; |
 | 1 | `ID-VALIDATE` | Release 2 (minor): validate identifier on every collection (1 to 256 URL-safe ch | `blocked` | &mdash; |
-| 1 | `MT-AUTHZ-COST` | api authorization cost: profile, cache verified credentials, one permission quer | `in-progress` | &mdash; |
+| 1 | `MT-AUTHZ-COST` | API authorization cost: permission snapshot, batched audit, bounded lifetime ses | `in-progress` | &mdash; |
 | 1 | `MT-BATCH-JOIN-1110` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | `in-flight-upstream` | &mdash; |
 | 1 | `MT-CAPACITY-FIXES` | Capacity campaign fixes: operator-set config size cap, realtime warm retry, boot | `in-progress` | &mdash; |
 | 1 | `MT-D6-SLOT-READER` | D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backsto | `in-progress` | &mdash; |
@@ -221,14 +221,14 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 2 | `ARCH-DERIVED-FRAME` | Next join: shared bounded frames and derived calculations | `in-progress` | `ARCH-SEAM-CONTRACT`, `ST-VIEWS-PROFILE` |
 | 2 | `ARCH-SEAM-COMPOSE` | First: separate domain definitions from backend and HTTP bindings | `in-progress` | `ARCH-SEAM-CONTRACT` |
 | 2 | `BFQ-66` | BF-66 - the deployment's own tokens fail its own tenant check | `blocked` | `T31-REM` |
-| 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `MT-VAULT-TOKEN-FILE` |
+| 2 | `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `in-progress` | `MT-VAULT-TOKEN-FILE` |
 | 2 | `ID-UNIQUE-INDEX` | Partial unique index on identifier, retry-as-update on duplicate key, start-up s | `in-progress` | `ID-VALIDATE` |
 | 2 | `MT-API-FIXED-ROSTER` | Independent API scaling with a fixed restore participant roster | `in-progress` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-CONNECTOR-REVERSE` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in | `ready-to-push` | `MT-POOL-PRIMITIVE` |
 | 2 | `MT-INTERNAL-LISTENER` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | `in-flight-upstream` | `MT-ENDPOINT-TRANSPORT` |
 | 2 | `MT-M6A-JOIN` | M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign | `in-flight-upstream` | `MT-OIDC-NATIVE` |
-| 2 | `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `not-started` | `MT-ENDPOINT-TRANSPORT` |
-| 2 | `MT-TENANT-LIVE-ADD` | Running evaluator and realtime pick up newly provisioned tenants without a resta | `blocked` | `MT-TENANT-REGISTRY` |
+| 2 | `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `in-progress` | `MT-ENDPOINT-TRANSPORT` |
+| 2 | `MT-TENANT-LIVE-ADD` | Running evaluator and realtime pick up newly provisioned tenants without a resta | `in-progress` | `MT-TENANT-REGISTRY` |
 | 3 | `A7A-GATE` | The alarms-on gate itself - nothing here may be marked done by inference | `blocked` | `T44`, `A7A-3`, `A7A-4`, `A7A-7` |
 | 3 | `ARCH-SEAM-CONSOLIDATE` | Next: consolidate proven common adapter mechanics | `in-progress` | `ARCH-SEAM-CONTRACT`, `ARCH-SEAM-COMPOSE` |
 | 3 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `MT-M6A-JOIN` |
@@ -245,15 +245,15 @@ handoff are measured; live provider/device delivery remains separately gated by
 | 4 | `MT-ACTIVITY-ELIGIBILITY` | Pause/suspend drive worker eligibility; evaluator stops while paused; owner may  | `in-flight-upstream` | `MT-M6B-JOIN` |
 | 4 | `MT-ADMIN-ROLE-OWNERSHIP` | M6b: compose ownership operations into the multitenant admin role with an owners | `in-flight-upstream` | `MT-M6B-JOIN` |
 | 4 | `MT-CONSUMER-STALE-RESELECT` | Alarm consumer survives evaluator timer publications during selection (BF-231) | `in-flight-upstream` | `MT-M6B-JOIN` |
-| 4 | `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership t | `ready-to-push` | `MT-BENCH-BASELINE` |
+| 4 | `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership t | `in-progress` | `MT-BENCH-BASELINE` |
 | 4 | `MT-EXPORT-EXPIRY` | Key destruction removes the export artifact file in the same audited step | `in-flight-upstream` | `MT-M6B-JOIN` |
 | 4 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-flight-upstream` | `MT-M6B-JOIN` |
-| 4 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no  | `not-started` | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING` |
 | 5 | `MT-ADMIN-LIFECYCLE-FIT` | Restore census accepts non-clinical identities; ownership refuses on non-active  | `in-flight-upstream` | `MT-ADMIN-ROLE-OWNERSHIP` |
 | 5 | `MT-PERF-DB` | Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t | `ready-to-push` | `MT-EVALUATOR-PARTITION` |
 | 5 | `MT-PERF-EVALUATOR` | Evaluator works on change: per-member change query and due-time timers replace t | `ready-to-push` | `MT-EVALUATOR-PARTITION` |
 | 5 | `MT-PERF-REALTIME` | Realtime publishes on change; event-driven authorization; queued connects under  | `ready-to-push` | `MT-EVALUATOR-PARTITION` |
 | 5 | `MT-ROOT-ADMIN-PARITY` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | `in-flight-upstream` | `MT-OWNER-LAST-GUARD` |
+| 5 | `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no  | `in-progress` | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING`, `MT-EVALUATOR-PARTITION` |
 | 6 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work | `ready-to-push` | `MT-PERF-EVALUATOR` |
 
 <!-- END GENERATED: road-tenancy -->

@@ -1,0 +1,21 @@
+test_campaign_requires_all_counts_and_replica_cells_with_same_pair (__main__.Contract.test_campaign_requires_all_counts_and_replica_cells_with_same_pair) ... ok
+test_current_deterministic_workload_and_functional_refusal_counter (__main__.Contract.test_current_deterministic_workload_and_functional_refusal_counter) ... ok
+test_empty_uncertain_and_unknown_tenant_are_never_capacity_green (__main__.Contract.test_empty_uncertain_and_unknown_tenant_are_never_capacity_green) ... ok
+test_independent_accepted_and_domain_oracle_break_restore (__main__.Contract.test_independent_accepted_and_domain_oracle_break_restore) ... ok
+test_primer_requires_new_data_token_contract_and_exact_roster (__main__.Contract.test_primer_requires_new_data_token_contract_and_exact_roster) ... ok
+test_probe_adaptation_is_explicit_syntax_checked_and_removes_lease_proxy (__main__.Contract.test_probe_adaptation_is_explicit_syntax_checked_and_removes_lease_proxy) ... ok
+test_replica_ladder_never_overrides_functional_block_and_requires_ceiling_evidence (__main__.Contract.test_replica_ladder_never_overrides_functional_block_and_requires_ceiling_evidence) ... ok
+test_resource_reducer_distinguishes_missing_samples_and_process_rss_from_heap (__main__.Contract.test_resource_reducer_distinguishes_missing_samples_and_process_rss_from_heap) ... /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-joined-instrument-20261112/tools/mt-bench/m7-joined/reduce.py:60: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/m7-reduce-test-g1hde6k4/idle/pg-activity.tsv' mode='r' encoding='UTF-8'>
+  activity = [r for r in csv.DictReader((folder / "pg-activity.tsv").open(), delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-joined-instrument-20261112/tools/mt-bench/m7-joined/reduce.py:60: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/m7-reduce-test-g1hde6k4/load/pg-activity.tsv' mode='r' encoding='UTF-8'>
+  activity = [r for r in csv.DictReader((folder / "pg-activity.tsv").open(), delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_role_roster_is_derived_from_actual_role_commands (__main__.Contract.test_role_roster_is_derived_from_actual_role_commands) ... ok
+test_source_pair_and_ownership_controls (__main__.Contract.test_source_pair_and_ownership_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.055s
+
+OK

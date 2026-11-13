@@ -1,0 +1,11 @@
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  the database system is shutting down
+Traceback (most recent call last):
+  File "<private-state>/prepare-clinical.py", line 27, in <module>
+    facts={'id':id,'imageId':inspected['Image'],'image':image,'serverVersion':subprocess.check_output(['docker','exec',id,'psql','-U','postgres','-d','clinical_final','-Atc','SHOW server_version'],text=True).strip(),'owner':owner,'boundLoopback':inspected['NetworkSettings']['Ports']['5432/tcp'][0]['HostIp']=='127.0.0.1'}
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['docker', 'exec', '48e825e6953969b68ee3e390611aa9f2184e32d910f7d0182d0bedf5748730a9', 'psql', '-U', 'postgres', '-d', 'clinical_final', '-Atc', 'SHOW server_version']' returned non-zero exit status 2.

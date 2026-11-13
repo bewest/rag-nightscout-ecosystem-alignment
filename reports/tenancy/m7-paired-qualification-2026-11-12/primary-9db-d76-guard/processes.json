@@ -1,0 +1,139 @@
+{
+  "source": {
+    "nonce": "77e7ad81-37b7-4ff2-8cb4-531327b4dbf1",
+    "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+    "alignment": "5d7fa02746f4695a222f1fc400dc59b61a8c717e",
+    "project": "ns-evaluator-binding-proof-20261112-guard"
+  },
+  "originalLedgerSha256": "b15a8cc0fd0edddef7ffabc26b00169deb4d8e639c375ca45b97c05ebc3025d6",
+  "phases": {
+    "custody": {
+      "startedAtMs": 1794514994708,
+      "finishedAtMs": 1794514996142,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-custody.log"
+    },
+    "build": {
+      "startedAtMs": 1794514996143,
+      "finishedAtMs": 1794515002602,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-build.log"
+    },
+    "startup.image-check": {
+      "startedAtMs": 1794515087624,
+      "finishedAtMs": 1794515087866,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.image-check.log"
+    },
+    "startup.infrastructure": {
+      "startedAtMs": 1794515087867,
+      "finishedAtMs": 1794515094912,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.infrastructure.log"
+    },
+    "startup.private-admin-feed": {
+      "startedAtMs": 1794515094912,
+      "finishedAtMs": 1794515098276,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.private-admin-feed.log"
+    },
+    "startup.registry-provision": {
+      "startedAtMs": 1794515098277,
+      "finishedAtMs": 1794515098855,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.registry-provision.log"
+    },
+    "startup.restore-commission": {
+      "startedAtMs": 1794515098856,
+      "finishedAtMs": 1794515099521,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.restore-commission.log"
+    },
+    "startup.pool-initial-two": {
+      "startedAtMs": 1794515099522,
+      "finishedAtMs": 1794515099986,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.pool-initial-two.log"
+    },
+    "startup.fixed-api-start": {
+      "startedAtMs": 1794515099987,
+      "finishedAtMs": 1794515103384,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.fixed-api-start.log"
+    },
+    "startup.api-lab-prime": {
+      "startedAtMs": 1794515103385,
+      "finishedAtMs": 1794515105308,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.api-lab-prime.log"
+    },
+    "startup.private-primer-publish": {
+      "startedAtMs": 1794515105309,
+      "finishedAtMs": 1794515105330,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.private-primer-publish.log"
+    },
+    "startup.remaining-fixed-roles": {
+      "startedAtMs": 1794515105330,
+      "finishedAtMs": 1794515112163,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.remaining-fixed-roles.log"
+    },
+    "startup.role-readiness": {
+      "startedAtMs": 1794515112168,
+      "finishedAtMs": 1794515112741,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-startup.role-readiness.log"
+    },
+    "api-readiness": {
+      "startedAtMs": 1794515112781,
+      "finishedAtMs": 1794515113449,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-api-readiness.log"
+    },
+    "configuration.setup": {
+      "startedAtMs": 1794515113449,
+      "finishedAtMs": 1794515113576,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-configuration.setup.log"
+    },
+    "configuration.enable": {
+      "startedAtMs": 1794515113577,
+      "finishedAtMs": 1794515114133,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-configuration.enable.log"
+    },
+    "clinical": {
+      "startedAtMs": 1794515114134,
+      "finishedAtMs": 1794515122142,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-clinical.log"
+    },
+    "export": {
+      "startedAtMs": 1794517368290,
+      "finishedAtMs": 1794517370699,
+      "state": "completed",
+      "returnCode": 0,
+      "log": "/tmp/evaluator-guard-process-export.log"
+    }
+  },
+  "scope": "Build/startup/config/clinical use original 5d7/52c provenance; export additionally requires positive TIME df181/638; neither inference nor TAP used for return codes."
+}

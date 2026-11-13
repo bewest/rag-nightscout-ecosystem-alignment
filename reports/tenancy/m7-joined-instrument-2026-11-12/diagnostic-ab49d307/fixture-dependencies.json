@@ -1,0 +1,6 @@
+{
+  "core": "d20354797e368b03af171f4417ead60a6282d098",
+  "packageLockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+  "socketIoClientVersion": "4.8.3",
+  "scope": "owned private SDK fixture, not actual fresh app image"
+}

@@ -1,0 +1,2 @@
+{"outcome":"counterfactual-pass","code":null,"cycles":4,"errors":[]}
+LATE_APPLICATION_SCOPE_REFUSED

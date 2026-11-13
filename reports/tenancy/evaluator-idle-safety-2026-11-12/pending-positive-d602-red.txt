@@ -1,0 +1,14 @@
+test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured (test_evaluator_idle.Idle.test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured) ... FAIL
+
+======================================================================
+FAIL: test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured (test_evaluator_idle.Idle.test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<owned-alignment>/tools/mt-bench/m7-joined/test_evaluator_idle.py", line 50, in test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured
+    with self.assertRaisesRegex(p.Refused,'JOB_PENDING') as caught:idle.assess(rounds,[A,B])
+AssertionError: Refused not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

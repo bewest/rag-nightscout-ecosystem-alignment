@@ -1,0 +1,25 @@
+
+
+  !
+[TIMING STATS] Total: 1 tests, Avg: 80ms, Slow: 0
+
+
+  0 passing (82ms)
+  1 failing
+
+  1) evaluator preview trusted configuration
+       reads bounded hot-file bytes per call while reusing parsing until a same-size edit:
+
+      AssertionError [ERR_ASSERTION]: EV_CONFIG_PARSED_ONCE_WHILE_UNCHANGED
+
+22 !== 1
+
+      + expected - actual
+
+      -22
+      +1
+      
+      at Context.<anonymous> (tests/evaluator-preview-runtime.test.js:66:14)
+
+
+

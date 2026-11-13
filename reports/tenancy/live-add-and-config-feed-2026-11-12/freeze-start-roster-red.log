@@ -1,0 +1,41 @@
+
+
+  live tenant admission with actual clinical and frame computation
+2026-11-12T05:24:29.222Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:29.315Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:30.319Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:31.328Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:32.326Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:33.326Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:34.327Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:35.332Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:36.337Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:37.335Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:38.342Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T05:24:39.348Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent HIGH","message":"BG Now: 240 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":240,"thresholds":{"bgHigh":200,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    1) provisions while running, retries failed warm, then computes first clinical alarm/frame without restarting the existing tenant
+
+
+  0 passing (19s)
+  1 failing
+
+  1) live tenant admission with actual clinical and frame computation
+       provisions while running, retries failed warm, then computes first clinical alarm/frame without restarting the existing tenant:
+     Error: LIVE_NATIVE_WAIT_EXPIRED
+      at wait (tests/tenant-live-add.integration.test.js:22:158)
+      at async Context.<anonymous> (tests/tenant-live-add.integration.test.js:74:5)
+
+
+

@@ -1,0 +1,9 @@
+Warning: Cannot find any files matching pattern "tests/evaluator-config.test.js"
+
+
+  ..................................................
+[TIMING STATS] Total: 50 tests, Avg: 7ms, Slow: 0
+
+
+  50 passing (368ms)
+

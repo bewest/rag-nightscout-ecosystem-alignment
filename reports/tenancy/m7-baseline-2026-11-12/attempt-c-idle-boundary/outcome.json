@@ -1,0 +1,79 @@
+{
+  "runId": "baseline-pilot-20261112-c",
+  "events": [
+    {
+      "phase": "provision",
+      "status": "started",
+      "at": "2026-11-12T22:52:33.224Z"
+    },
+    {
+      "phase": "provision",
+      "status": "completed",
+      "at": "2026-11-12T22:53:15.220Z"
+    },
+    {
+      "phase": "deploy",
+      "status": "started",
+      "at": "2026-11-12T22:53:15.220Z"
+    },
+    {
+      "phase": "deploy",
+      "status": "completed",
+      "at": "2026-11-12T22:55:37.195Z"
+    },
+    {
+      "phase": "campaign",
+      "status": "started",
+      "at": "2026-11-12T22:55:37.195Z"
+    },
+    {
+      "phase": "campaign",
+      "status": "failed",
+      "message": "COMMAND_FAILED",
+      "at": "2026-11-12T23:07:06.236Z"
+    },
+    {
+      "phase": "collect",
+      "status": "started",
+      "at": "2026-11-12T23:07:06.236Z"
+    },
+    {
+      "phase": "collect",
+      "status": "completed",
+      "at": "2026-11-12T23:07:08.237Z"
+    },
+    {
+      "phase": "destroy",
+      "status": "started",
+      "at": "2026-11-12T23:07:08.237Z",
+      "message": "attempt 1"
+    },
+    {
+      "phase": "destroy",
+      "status": "verified",
+      "at": "2026-11-12T23:07:35.614Z"
+    }
+  ],
+  "errors": [
+    {
+      "phase": "campaign",
+      "message": "COMMAND_FAILED"
+    }
+  ],
+  "cancelled": false,
+  "cleanup": "verified",
+  "outcome": "failed",
+  "finishedAt": "2026-11-12T23:07:35.614Z",
+  "measurement": "WORKLOAD_EVIDENCE_REQUIRES_ORACLE_REVIEW",
+  "watchdog": {
+    "runId": "baseline-pilot-20261112-c",
+    "cleanup": "verified",
+    "errors": [],
+    "events": [
+      "destroy-started",
+      "destroy-verified"
+    ],
+    "collection": "controller-finalized",
+    "finishedAt": "2026-11-12T23:07:43.027Z"
+  }
+}

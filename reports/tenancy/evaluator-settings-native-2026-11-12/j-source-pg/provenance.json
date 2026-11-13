@@ -1,0 +1,50 @@
+{
+  "originalHarnessCommit": "88854e7b0b1576a8e15920fe107084e0260bd503",
+  "coordinatorIntegrationAtCapture": "eb12177694135ee5fc3eeb3611ee9b61fb79998d",
+  "sourceFixturePins": {
+    "core": "debcc2c7a44fb812b342d0e524ff0611045094d1",
+    "deploy": "2e9afbb6906441e096e9e86e892cc44073d5b0ae",
+    "suppliedImage": "sha256:e0cadd35872c43fa63602d6c8945952383df462aef69d72a5465378b0e20cd77",
+    "suppliedBindingPrefix": "56183"
+  },
+  "sourceFiles": {
+    "support.cjs": "b53db4e93493357ce6fe2bb0936bf5621300d3f18b13f41ea09b8b9902192219",
+    "run.cjs": "2531fef71401adc6065b9c4714be03568a9d51feddca9e3818d24018e5efe5dc",
+    "README.md": "767468ff0ab47a98d04a7edbc7882205309d54cfc12f6b1ff1efb8c65eefd64c",
+    "offline.test.cjs": "6b922f16882d371299b916d4667f40f79a56905e9c5bcf27db37730718508a0e"
+  },
+  "privateArtifactHashes": {
+    "plan.json": "7b8c8569d34b6fa5bccbb9673203195a1d1da3c876d1fb5c83ebd65a1dd58759",
+    "run-owned.py": "dbc65afd6ef69088da96bbbe89aa9bb8b593f2994a296c0fe47b7e8e42f9bffd",
+    "artifacts/settings-native-result.json": "c206a04e711f5053b0b93106ab959bd7f17cef049f4119b99e9887998412b9de",
+    "artifacts/supervisor.json": "da5441d8a78c4a093a361093ec7bf327382f93fb39ce670dc9b1fef5610447f8",
+    "artifacts/native.stdout": "73ab3474d368ebf2c69abc42a9282a8d8417984e6e340821f903ff10d2203add",
+    "artifacts/native.stderr": "92391a74630e1ed2c0595fcb129c629ad384c36b753f8a25bb156ac96127a72f",
+    "artifacts/inspect-created.stdout": "65a0aafd1743efdf465b07b081e300c479609afa344ecfd41928b88eba41d42b",
+    "artifacts/retained-inspect.stdout": "c4cd700f02054f60caa298d68088445a76b98a563c683fa00afe5158c8747a82",
+    "artifacts/postgres-log.stdout": "fa4be69046ed4821806b74290aaa26427639cd3d878befaabab0b3add39822d2",
+    "artifacts/postgres-log.stderr": "85b45f844f01236bc747b8c627fc04b8a356c08f923fa734f53f3f19a1eaf246"
+  },
+  "priorBootstrapPrivateArtifactHashes": {
+    "supervisor.json": "5869aad7cb5c12eb31a993f7b3204b8dcf746c91d801972242a3cb530738b9ba",
+    "postgres-log.stderr": "c88109f75abdbbe4c161b5624a9bc7321659597a0a72e2f4a45b8272b66b20fc"
+  },
+  "offlineRoot": {
+    "tests": 9,
+    "passing": 9,
+    "skipped": 0,
+    "stdoutSha256": "7eceec57926d58017f97ce29dc9dd83300517a983dc6033f46fb94d5fc89890c",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "ownership": "Fresh disposable native test database; unique source-fixture schemas/roles; exact container image and nonce checked before stop; private state retained",
+  "transport": "PostgreSQL listens only on a new loopback port; SCRAM authentication; no published or external-interface listener; source-fixture scope only",
+  "socketPlan": "NOT_RUN: frozen migration parser does not decode encoded Unix socket hostname; no source guard bypass",
+  "privateDataExcluded": [
+    "connection URI",
+    "password",
+    "container identity",
+    "role and schema nonce",
+    "backend PID and birth",
+    "raw Docker inspect and PostgreSQL logs"
+  ]
+}

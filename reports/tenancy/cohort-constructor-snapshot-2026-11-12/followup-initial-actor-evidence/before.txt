@@ -1,0 +1,18 @@
+
+
+  Separate-process fixed cohort source protocol
+    1) retains an initially admitted SQL actor that closes while a later actor triggers re-observation
+
+
+  0 passing (12ms)
+  1 failing
+
+  1) Separate-process fixed cohort source protocol
+       retains an initially admitted SQL actor that closes while a later actor triggers re-observation:
+     Error: RESTORE_COHORT_UNKNOWN_BACKEND
+      at fail (lib/server/serve/operation-cohort.js:13:36)
+      at Object.assertComplete (lib/server/serve/operation-cohort.js:165:11)
+      at async Context.<anonymous> (tests/operation-cohort-peers.test.js:98:21)
+
+
+

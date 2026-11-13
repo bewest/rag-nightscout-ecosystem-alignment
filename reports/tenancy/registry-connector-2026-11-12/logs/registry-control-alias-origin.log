@@ -1,0 +1,14 @@
+
+
+  !
+
+  0 passing (7ms)
+  1 failing
+
+  1) tenant registry resolver
+       RR_ORIGIN: derives HTTPS only from a registered alias of the resolved tenant:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async Context.<anonymous> (tests/tenant-registry-resolver.test.js:54:7)
+
+
+

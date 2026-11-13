@@ -1,0 +1,5 @@
+{"kind":"cli-exit","file":"secrets-json.jsonl","mode":384,"code":0,"signal":null}
+{"kind":"cli-exit","file":"secrets-json.jsonl","mode":384,"code":0,"signal":null}
+{"kind":"loose-write","mode":384,"umask":63}
+{"kind":"loose-chmod","mode":420,"umask":63}
+{"kind":"cli-exit","file":"loose.jsonl","mode":420,"code":64,"signal":null}

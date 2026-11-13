@@ -1,0 +1,32 @@
+{
+  "summary.json": {
+    "rawSha256": "4187d948f445fd7280dcd41d33ea2f505fe853af6cdaa2a71fde026751c58bed",
+    "publishedSha256": "0c9d0f08341ab73c1948dde7b85570a853aedf701bd9d26b288e20aef2748834",
+    "normalization": "replace owned source/workspace path prefixes only"
+  },
+  "controls.json": {
+    "rawSha256": "9abd54277dfc01a09cd83a015123f63864360c05b11102f16bc21af12c89a1e9",
+    "publishedSha256": "cb133de109f8419a561d6afc867f0689190cf25506da81fdfc719f277eda18e2",
+    "normalization": "replace owned source/workspace path prefixes only"
+  },
+  "matrix.txt": {
+    "rawSha256": "bb9e410b4bda250cf1b16590f5d2abb52269cced398c061ec90b00a49e86ee42",
+    "publishedSha256": "f2754b9d7756034ae788be9c8e98ba4c35163abcd90c4721e967a25282180213",
+    "normalization": "replace owned source/workspace path prefixes only"
+  },
+  "controls.txt": {
+    "rawSha256": "660e76eb19c75c19ba9a0be4d4fa746095536d892dad952517c25c88ce6fe964",
+    "publishedSha256": "1605b255c4a21aba498af2ef49f0607c086d0406bc36a1c5b6bb15101994aecd",
+    "normalization": "replace owned source/workspace path prefixes only"
+  },
+  "production-bundle.txt": {
+    "rawSha256": "f53787b11c4713084373d3c065a5e866e02ac039b3448cb7a471cfd86171ca55",
+    "publishedSha256": "f53787b11c4713084373d3c065a5e866e02ac039b3448cb7a471cfd86171ca55",
+    "normalization": "replace owned source/workspace path prefixes only"
+  },
+  "resources.json": {
+    "rawSha256": "523aba07e9c1520343e568474a063b52c740f46537cf51fbab0d2b83c42096a4",
+    "publishedSha256": "523aba07e9c1520343e568474a063b52c740f46537cf51fbab0d2b83c42096a4",
+    "normalization": "replace owned source/workspace path prefixes only"
+  }
+}

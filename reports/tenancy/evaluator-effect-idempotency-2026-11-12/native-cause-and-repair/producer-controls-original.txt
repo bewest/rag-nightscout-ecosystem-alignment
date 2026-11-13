@@ -1,0 +1,138 @@
+
+
+  actual durable producer and outbox recreation protocol
+2026-11-12T13:45:40.844Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.849Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.859Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ retries an unchanged meaningful uncertain request with its original UUID after actual producer/component recreation; identical output from the new runtime admits no new event
+2026-11-12T13:45:40.869Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.869Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.886Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"default - Urgent was ack'd","group":"default","plugin":"<none>"}
+Alarm has already been snoozed, don't snooze it again, level: 1 , group: default
+    ✔ consumes fresh committed control ACK after restart initial acquisition refusal without inventing a clinical result
+2026-11-12T13:45:40.888Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.889Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.889Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ selects again against the newer evaluator output published during a selection instead of refusing
+2026-11-12T13:45:40.890Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.890Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.891Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ hands off a committed request when a newer evaluator output is published during its attempt
+2026-11-12T13:45:40.894Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.894Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.898Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ repeats an unacknowledged alarm on the heartbeat clock, not on identical evaluator output
+2026-11-12T13:45:40.902Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.902Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.905Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"default - Urgent was ack'd","group":"default","plugin":"<none>"}
+Urgent alarm is silenced for 58 minutes more
+Urgent alarm is silenced for 57 minutes more
+Urgent alarm is silenced for 56 minutes more
+    ✔ does not repeat an acknowledged alarm during its silence
+2026-11-12T13:45:40.911Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.911Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ does not advance durable producer revision for an unchanged output after JSONB-like object-key reordering
+2026-11-12T13:45:40.912Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.912Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.913Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ rolls producer state and request intents back together when durable COMMIT refuses
+2026-11-12T13:45:40.916Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.916Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+auto acking 2  -  default
+2026-11-12T13:45:40.919Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"Auto ack'd alarm(s)","group":"default","plugin":"<none>"}
+2026-11-12T13:45:40.921Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.922Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ atomically retires an obsolete normal request and a stale clear origin before a newer alarm can hand off
+2026-11-12T13:45:40.924Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.925Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.928Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    1) retains the original repeat deadline across unavailable model and identical recovery before due
+2026-11-12T13:45:40.932Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.932Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.935Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    2) retains the genuine due-repeat cause after unavailable model instead of inventing a missing-clock repeat
+2026-11-12T13:45:40.937Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.937Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+auto acking 2  -  default
+2026-11-12T13:45:40.939Z	EMITTING ALL CLEAR:
+  {"level":"Unknown","title":"All Clear","message":"Auto ack'd alarm(s)","group":"default","plugin":"<none>"}
+2026-11-12T13:45:40.941Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+2026-11-12T13:45:40.941Z	EMITTING ALARM:
+  {"level":"Urgent","title":"Urgent LOW","message":"BG Now: 50 mg/dl","group":"default","plugin":"simplealarms","debug":{"lastSGV":50,"thresholds":{"bgHigh":260,"bgTargetTop":180,"bgTargetBottom":80,"bgLow":55}}}
+    ✔ still retires the repeat deadline for a valid normal output and emits a new realarm after it
+
+
+  10 passing (104ms)
+  2 failing
+
+  1) actual durable producer and outbox recreation protocol
+       retains the original repeat deadline across unavailable model and identical recovery before due:
+
+      AssertionError [ERR_ASSERTION]: IDENTICAL_RECOVERY_BEFORE_DUE_RETAINS_REQUEST
+
+2 !== 1
+
+      + expected - actual
+
+      -2
+      +1
+      
+      at Context.<anonymous> (tests/notification-producer.test.js:142:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+  2) actual durable producer and outbox recreation protocol
+       retains the genuine due-repeat cause after unavailable model instead of inventing a missing-clock repeat:
+
+      AssertionError [ERR_ASSERTION]: REAL_DUE_REPEAT_KEEPS_ORIGINAL_DEADLINE_PROVENANCE
++ actual - expected
+
++ '2ba01a7a4e27d585a322f894376b725693efa1357b13bea56617ff2148a9d850'
+- 'd01966ada311849bd3318029484bd7ba8dfca25c8baec30cfcf9d87d65b4ac84'
+
+      + expected - actual
+
+      -2ba01a7a4e27d585a322f894376b725693efa1357b13bea56617ff2148a9d850
+      +d01966ada311849bd3318029484bd7ba8dfca25c8baec30cfcf9d87d65b4ac84
+      
+      at Context.<anonymous> (tests/notification-producer.test.js:153:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+

@@ -1,0 +1,48 @@
+{
+  "nonce": "0dc3af55-99df-4fd9-8b1b-8771f68be6f1",
+  "recordedAtMs": 1794508434968,
+  "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+  "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+  "alignment": "8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61",
+  "joinedInstrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+  "joinedInstrumentFiles": 37,
+  "project": "ns-evaluator-binding-proof-20261112-ready",
+  "state": "/tmp/ns-evaluator-binding-proof-20261112-ready",
+  "coreWorktree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-readypair-20261112",
+  "port": 18383,
+  "imageTag": "ns-evaluator-binding:ff515-cf5-final",
+  "selection": {
+    "apis": 2,
+    "realtimeWorkers": 2,
+    "logicalShards": 2,
+    "evaluatorParticipants": 3,
+    "initialDesiredEvaluatorMembers": 2,
+    "vault": "server",
+    "diagnostics": 0
+  },
+  "initialHost": {
+    "logicalCpus": 16,
+    "load": [
+      1.26513671875,
+      1.49462890625,
+      2.072265625
+    ]
+  },
+  "postCustodyHost": {
+    "logicalCpus": 16,
+    "load": [
+      1.26513671875,
+      1.49462890625,
+      2.072265625
+    ],
+    "dueContainersStoppedRetained": 15,
+    "idleContainersStoppedRetained": 15,
+    "networkCountBefore": 33,
+    "networkCountAfter": 31
+  },
+  "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+  "imageLabels": {
+    "org.opencontainers.image.revision": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+    "org.nightscout.deploy.revision": "cf5bda3f2d189bac5d60269df5644759c40db9e1"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "repro.log": {
+    "rawSha256": "8475a470db2be85f8fd06275ff225cad49c9f60f44ae1165f2db6db9794e301b",
+    "publishedSha256": "8475a470db2be85f8fd06275ff225cad49c9f60f44ae1165f2db6db9794e301b",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "neutral-timer-control.log": {
+    "rawSha256": "2ae2a705ea8b451dff1768689d7684ee4692f91e37b4debd50e34e8b15cf1923",
+    "publishedSha256": "2ae2a705ea8b451dff1768689d7684ee4692f91e37b4debd50e34e8b15cf1923",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "inspection-noninterference.log": {
+    "rawSha256": "629a0a5f2f01c37fbdeaf40b7194ddbc056d46eb9364a1570303e89985a70c01",
+    "publishedSha256": "629a0a5f2f01c37fbdeaf40b7194ddbc056d46eb9364a1570303e89985a70c01",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "active-parent-acquire-5ad.log": {
+    "rawSha256": "200693914666123e66ad00e1157462b5eb667ed312bd1909730af8ac13e7a993",
+    "publishedSha256": "ec42984eb6f99142df3f7a709abb5200297e84b7d711e66768855cc7708b0aaf",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "active-parent-acquire-d505.log": {
+    "rawSha256": "c1de6b6c599a10898cd4db55362dc36977fc50b112e58d53990195b8e239d441",
+    "publishedSha256": "c1de6b6c599a10898cd4db55362dc36977fc50b112e58d53990195b8e239d441",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "coalesced-results.json": {
+    "rawSha256": "f36917832aa8eeb1416441764cd1f47a380f6cce3f13ab94fc926eb8a8d7c057",
+    "publishedSha256": "f36917832aa8eeb1416441764cd1f47a380f6cce3f13ab94fc926eb8a8d7c057",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "parent-matrix-results.json": {
+    "rawSha256": "7746bcd8bb88721111894854c4bbe217ee9727699a6403840e58a561ca8adc1d",
+    "publishedSha256": "44a36beaec16d72692d3376be08e2bc0f1fa15bf2a165d8a5b8e9b8fb8d93d1a",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "parent-53a8-results.json": {
+    "rawSha256": "f3bb875505fb5e4f7ffe8f1c3e2212a273ba4ce7385ee14f728b6f31dd3b0043",
+    "publishedSha256": "f3bb875505fb5e4f7ffe8f1c3e2212a273ba4ce7385ee14f728b6f31dd3b0043",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "parent-53a8-boundaries.log": {
+    "rawSha256": "82aa433c2d93ba2a027ed9f70eb3bce545bd83b550b3355a498949bca0252f3f",
+    "publishedSha256": "82aa433c2d93ba2a027ed9f70eb3bce545bd83b550b3355a498949bca0252f3f",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "selected-map-53a8.log": {
+    "rawSha256": "67d5e2fee071e4679b6f34c38a706e8a021ca34ba4c8c5b65ef6ab8e6316b2ae",
+    "publishedSha256": "67d5e2fee071e4679b6f34c38a706e8a021ca34ba4c8c5b65ef6ab8e6316b2ae",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "invalidation-drain-results.json": {
+    "rawSha256": "63eed9755d407fe15c0028c2b976607b0c56df8edc0ecdf11f013b9ff27d6502",
+    "publishedSha256": "06970d2b1bf0ec3359f6b9652492527adfa3e6dd92fc350bc6642203d09a6ba5",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "committed-joined.log": {
+    "rawSha256": "227be09697ccf19a8b76a81e312b6871047d207d897582f43ab00809439ac7c8",
+    "publishedSha256": "227be09697ccf19a8b76a81e312b6871047d207d897582f43ab00809439ac7c8",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "committed-joined-with-status.log": {
+    "rawSha256": "19ef636c4d7be849a47e0bd175c9354703cba1812c004cc314ed73060675b2d0",
+    "publishedSha256": "495d10430066fef40ab89c28e21e687b7d64a1f40cdefd7fa8288a5a7595893c",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "committed-joined-with-status-permitted.log": {
+    "rawSha256": "08b12f57d4e693ecbec6e589d8484b3faa6b8e267321d70e7ec9a92f393f77a7",
+    "publishedSha256": "08b12f57d4e693ecbec6e589d8484b3faa6b8e267321d70e7ec9a92f393f77a7",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "committed-receipt.log": {
+    "rawSha256": "19f83b50a17d46c2b8677bd26ffb757dc9cde58e5811d36acf39ea6bde034363",
+    "publishedSha256": "19f83b50a17d46c2b8677bd26ffb757dc9cde58e5811d36acf39ea6bde034363",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "observer-instrument-manifest.json": {
+    "rawSha256": "114e3f9bd216096cf1ca7acc22eba0e1ae4de6fe96e723db8b46b037e914b6cd",
+    "publishedSha256": "114e3f9bd216096cf1ca7acc22eba0e1ae4de6fe96e723db8b46b037e914b6cd",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "parent-53a8-acquire.cjs": {
+    "rawSha256": "7e87968811cfc695aa2d99a565f4e7b6026ead5b79f7558d223d6332eb8a5f54",
+    "publishedSha256": "ffa4785c593c89a08c3ab273cfb3935958253d70ce25ebd16583ced43b4642e0",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "parent-53a8-wake.cjs": {
+    "rawSha256": "f089b83e3876b235bbb255c3c04b164b1f56772e3ca20309528286f56ca05161",
+    "publishedSha256": "a7e800c556755bfaf30c716d3ba1f754675be09fa1a765709a77cc7e4d7241da",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "parent-53a8-backstop.cjs": {
+    "rawSha256": "44acfbf3a65858befa15ee73ceeb5460816780e972dcc752960700df94596e98",
+    "publishedSha256": "64a9a2304afca6f8d3bad940dd07bd2eacd28e9fb1f787981bce00ca4406f84d",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "parent-53a8-boundaries.cjs": {
+    "rawSha256": "801afac00eacd7db952cab0fea37342e651326a198d836a3369d58fbfffc4e0d",
+    "publishedSha256": "addc3ba7fb3f6ec8975982c3c2c39b31cee8de4c43ed753e53d81d38f8e551dc",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  },
+  "selected-map-53a8.cjs": {
+    "rawSha256": "605e5372dffa3647bbe3ea0b604f40d94c4e69b87812a8fe02b7bb6fad145ce9",
+    "publishedSha256": "4e834d7740ac07c790887f5ba26b17e7d854d8abe6c7c828d788ec19e6038768",
+    "normalization": "workspace and scratch path prefixes only; archived scripts document executed instruments, use original private versions for execution"
+  }
+}

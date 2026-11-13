@@ -1,0 +1,56 @@
+{
+  "originalSha256": "55d51bde7c02e3b7caebae2a4dff8c175f483ae660a37d75d9a8ecbb8fa00a6a",
+  "phases": {
+    "startup-settlement": {
+      "startedAtMs": 1794528301862,
+      "finishedAtMs": 1794528313907,
+      "returnCode": 0,
+      "timedOut": false,
+      "pid": 1507507,
+      "processGroup": 1507507
+    },
+    "readiness": {
+      "startedAtMs": 1794528313908,
+      "finishedAtMs": 1794528314723,
+      "returnCode": 0,
+      "timedOut": false,
+      "pid": 1510043,
+      "processGroup": 1510043
+    },
+    "fresh-ingestion": {
+      "startedAtMs": 1794528314724,
+      "finishedAtMs": 1794528316090,
+      "returnCode": 0,
+      "timedOut": false,
+      "pid": 1510411,
+      "processGroup": 1510411
+    },
+    "select-current-spec": {
+      "startedAtMs": 1794528316092,
+      "finishedAtMs": 1794528316656,
+      "returnCode": 0,
+      "timedOut": false,
+      "pid": 1511143,
+      "processGroup": 1511143
+    },
+    "strict-time": {
+      "startedAtMs": 1794528316658,
+      "finishedAtMs": 1794528338120,
+      "returnCode": 0,
+      "timedOut": false,
+      "pid": 1511492,
+      "processGroup": 1511492
+    },
+    "stop-retain-final15": {
+      "startedAtMs": 1794528338142,
+      "finishedAtMs": 1794528338957,
+      "returnCode": 0,
+      "timedOut": false,
+      "pid": 1518817,
+      "processGroup": 1518817
+    }
+  },
+  "verified": null,
+  "outcome": "PASS",
+  "stoppedRetained15": true
+}

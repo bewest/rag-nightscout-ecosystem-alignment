@@ -1,0 +1,81 @@
+{
+  "source": "b8c0305585ca032f16ddc3b6978d0523745dfe84",
+  "instrumentSha256": "3e8ee68936d1d598ce78673b8fbb7d16a2780a6d470ee357edb59f3a5ec93de4",
+  "controls": {
+    "gateRemoved": {
+      "tests": 9,
+      "pass": 7,
+      "fail": 2,
+      "skipped": 0
+    },
+    "gateRestored": {
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "skipped": 0
+    },
+    "contracts": 19
+  },
+  "ablation": "remove only owned Agent.addRequest late-request shutdown gate; both spawned CLI503 and401 cases linger past1.5s despite printing original HTTP_REFUSED; restore gate returns both to exit1 within bound",
+  "real": [
+    "owned HTTP and stock Socket.IO server/client",
+    "actual spawned diagnostic CLI using180s configured budget",
+    "one socket connected and zero frames before fourth-request refusal",
+    "503/TENANT_WARMING,401/AUTHORITY_FORBIDDEN,unknown503 and untyped503 distinguished",
+    "private trail sanitization and bounded length",
+    "no retries, writes or restart on fourth refusal"
+  ],
+  "privateTrail": {
+    "maxRecords": 40,
+    "fields": [
+      "request",
+      "stage",
+      "tenantIndex",
+      "method",
+      "routeClass",
+      "status",
+      "errorCode",
+      "failureCode"
+    ],
+    "permissions": "0600",
+    "excludes": [
+      "URL",
+      "exchange credential path",
+      "query",
+      "host",
+      "tenant identifier",
+      "body",
+      "token",
+      "keys",
+      "user data"
+    ]
+  },
+  "generatorTools": {
+    "node": {
+      "sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+      "version": "v22.23.4"
+    },
+    "npm": {
+      "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7",
+      "version": "10.9.9"
+    }
+  },
+  "actualClient": {
+    "version": "4.8.3",
+    "entrySha256": "6b39eee0bb9bfe63c29d350d20176648f2e8cc30bb60783bad8841840925f8fa"
+  },
+  "generatorManifestsMatchCoreD5": true,
+  "reportedRemoteD": {
+    "core": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+    "deploy": "bc7b8c56b19d7a87fea668e0adb8b939e580de1e",
+    "instrument": "668db69bb02fc8d7a9dafb7de85c001d7160782f",
+    "cause": "UNCLASSIFIED; original HTTP status/code not captured. Warm timing is hypothesis, not cause measurement."
+  },
+  "failureTaxonomy": "safe original M7_DIAGNOSTIC code retained; process termination and exit-timeout distinguished; status/body error retained only in sanitized trail",
+  "retryPolicy": "NOT_IMPLEMENTED; no deadline/role/credential fallback change",
+  "fullProductAcceptance": "NOT_RUN",
+  "SQLOracle": "unchanged; prior proof retained, not rerun for HTTP instrumentation-only repair",
+  "capacity": "NO-MEASUREMENT",
+  "cloud": "NOT_RUN",
+  "sanitization": "public failure-log source-root paths replaced with <instrument-root>; raw logs retained privately"
+}

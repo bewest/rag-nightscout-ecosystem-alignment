@@ -1,0 +1,56 @@
+[
+  {
+    "service": "realtime",
+    "status": 200,
+    "ready": true,
+    "readiness": "serve",
+    "configured": 1,
+    "healthy": 1,
+    "deferred": 0,
+    "failed": 0,
+    "placement": {
+      "generation": 1,
+      "rule": "sha256-u32be-v1",
+      "shardCount": 2,
+      "worker": "realtime-1",
+      "incarnation": "be005306-6a19-4056-8e0e-956aded9acba",
+      "configured": true,
+      "reason": null,
+      "resource": true,
+      "ownerConnections": 1
+    },
+    "tenants": [
+      {
+        "tenant": "22222222-2222-4222-8222-222222222222",
+        "ready": true
+      }
+    ]
+  },
+  {
+    "service": "realtime-2",
+    "status": 200,
+    "ready": true,
+    "readiness": "serve",
+    "configured": 1,
+    "healthy": 1,
+    "deferred": 0,
+    "failed": 0,
+    "placement": {
+      "generation": 1,
+      "rule": "sha256-u32be-v1",
+      "shardCount": 2,
+      "worker": "realtime-2",
+      "incarnation": "71930628-9262-4940-bf92-7e4678c6e30f",
+      "configured": true,
+      "reason": null,
+      "resource": true,
+      "ownerConnections": 1
+    },
+    "tenants": [
+      {
+        "tenant": "11111111-1111-4111-8111-111111111111",
+        "ready": true
+      }
+    ]
+  }
+]

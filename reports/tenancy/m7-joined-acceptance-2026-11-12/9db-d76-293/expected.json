@@ -1,0 +1,1961 @@
+{
+  "version": 1,
+  "kind": "m7-joined-expectation",
+  "identity": {
+    "pair": {
+      "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+      "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753"
+    },
+    "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+    "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d"
+  },
+  "functionalCampaignPair": {
+    "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753"
+  },
+  "artifacts": {
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/identity.json": "2f915e3eb1886bf784da1e97bd25f4f17a24130a47fd83cf32335ab9f3908b2d",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/source-integrity.json": "704efdfa436dfb1b77a3cd0feefe4ff8cff9a8a3db33a23acd7d47d0626f9dd1",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/resource-custody.json": "57d69104b2923292367cacc56a1713861a99b8577b79942eee2f2a4c887d7546",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/image-export.json": "6718883067ab81d7d1af5b09758c9bc570b71ddb88808e14f5c34864ee43f93a",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/api-readiness.json": "304f7dda1bb5493079928610e75d63d6a43518d568ba9316734a02901b4b1b87",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/settings-continuity.json": "8e5ab397995ec9a07665fbc3b07addefc82f7f62ea37e6d94eac1fe4b6df9c1d",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/publisher-summary.json": "41e7f29b1ba2d447b40593a82f5c2e0265b98e3d23cbda4d1799088e18d4b6de",
+    "reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-ff515-cf5-ready/strict-time/observation.private.json": "d27bd7e8f0668870cd219c03d8c44c9229d94c295a01d496b7090d0ddc343ad6",
+    "reports/tenancy/m7-core-acceptance-2026-11-12/oidc-195c9322/runs/matrix/summary.json": "9c59aa2bb44966649064b017a112d328c783892f1cf1789c5ec859c4fa31b29d",
+    "reports/tenancy/m7-core-acceptance-2026-11-12/oidc-195c9322/runs/controls/controls.json": "beb43ae49260ddf2bdaa3a64257c619dbdb9f8ab882f611b93da210840e80f6f",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/runs/results.json": "1154830338a14ff3a2c80a56ffa3cbd3b735c80b171f697b81f5e20da12de9ed",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/runs/environment.json": "82d3bfbb2a911740dc86b8ee640e5e90c952baaaa00a04688ebd99ffb9657fcf",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/trace-manifest.json": "3943fc7c680406db370dfcb8114ceee5b0f045e31093848009278abeeddf8d2d",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/runs/control-summary.json": "9e5d80e96e6ad8f3d08d952c8a451c3f1eaa57223f7c3293338a8a748df57b01",
+    "planning/clinical-current-input-comparison.json": "284dc51943b93886bfc278dc98f6c6ca83604f0096471b5f09be7306982eaf26",
+    "derived/stock-restore.json": "77ba3cc141aaa3c12638aa2ced6914334022248f70cea55d3e4a950183e098f9",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/stock-restore.log": "e9ca9d0e64df9709918452b0ac5e1942338f5855e1c4e6982b5f2a2e501ed2f3",
+    "derived/clinical.json": "bd99047eabc3068cf07ff1e705cf630392c5d30e81848085f47321f5e2f81051",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/clinical.log": "8ec54e74a16ebe62e1f62d7b4453a487afd81241b8816922a818e5a97b037de6",
+    "derived/realtime-move.json": "4f0d547b7ae0707bf0e94a7efe8a47cccbd8d9a0d777f0116e25a73797ae8b4d",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/realtime-move.log": "d4e1a1f024fa8134e2a8a686777c78aeb4417dec0d83b1d9acb75558c1bf457e",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/settings-controls.log": "6bfef3cdf25fbb83fef7270edeaa5b1702a1ec94268e0085c9f822b2bd0b52d8",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/captures/fixture-invocations.json": "0a6f7e2440d78d186e74b1e96a3f90420b10d6984dcca1d6d9e4df1d7d905254",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/runs/clinical-driver.log": "c6d23003cdc30fb96e041cda125207eb5d03139e4c888d1953c86cdfd5a9bcff",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/runs/control-green.log": "09f9e7e42c3c8b3b7c6f6e5d9b3979e822291f9326793a26f07eeaf118b7ba0c",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/runs/control-red.log": "6888279fa690b384ddde4eaeea6217c97cea73f640f36ff2e0c744d7453cb581",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/instruments/run-clinical.py": "790cd4b8ae941698401a87b53c3fe959bd35afde33ff067f2c366e9bdb161ba5",
+    "reports/tenancy/m7-clinical-equivalence-2026-11-12/final-d50502bb/runs/control-source.json": "e03cef8154282ffafa5d7a4a0ac17a3507e9b82a954318f27d42dde9b068fdcb",
+    "derived/clinical-control-broken.json": "bd60732ab6e9277219f6537e71755eecec88c5600ecafd179e16896e8041c3bb",
+    "derived/clinical-control-restored.json": "ff8ca0dcfe319852e1909be7f9e712aafb28589a2de07308031a5bb529ea90f0",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/extractor.executed.py": "f6d57845f3088255a4b078fdda6de35f077adb7b28f8e3d847b55f47ab90411c",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/provenance.json": "295ce962c7abc7a382b66100bc8a5aab0e34731b0ca4c11b6f23f1316e025a5b",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/clinical.final-poll-call.txt": "df6d69fb4fbd0979a8226e5273cd3b8fb0710362b6b66a7f9b5207849a8ec879",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/clinical.final-result.txt": "92774b05dcef1171a081cb60236f4b7788f2da8933bca951c2e9a7aea6cda8b9",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/clinical.launch-call.txt": "00613d166290c4732341f4aebd7be0873f40938e2d42f65d777bd127e33f99b7",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/clinical.launch-result.txt": "dc0d762a9a398d267bcc39b7c03d06ca857416609e9ff622819dc935b431078a",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/realtimeMove.final-poll-call.txt": "01ad473ed08d64e32df102bf07dddfd3a5f3953f9516b201a866d8dc6808724d",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/realtimeMove.final-result.txt": "140ff6b92002a8f19eb8340274418231983d51118d89b6c35b46b1d05fdc9ce8",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/realtimeMove.launch-call.txt": "b4e9f1bbdcfd06e38d1b3cd0b9d58feb5a0fc124c98fba0161d90b2e350f24b8",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/realtimeMove.launch-result.txt": "34477096319a989acaacf894890c48e51f23525093c6a1c6a76cf7d380ff47e5",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/settings.final-poll-call.txt": "caf77f358527bd7bc373e40e01ba503bcba1c25e5c7f9b8bfb884461955a77b4",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/settings.final-result.txt": "abd412b1d26d87c488623e5e4539bd2d4ed796cbdcc0c317c98ed34feac85060",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/settings.launch-call.txt": "786178f897bb65e5ca89108be47c4529c41d28336f0db1cffcb7e387ef6ea06d",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/settings.launch-result.txt": "cb9e47058a82c77f3328b532290cbe1d3316ddff41a1ea71cfe1c11dda728039",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/stock.final-poll-call.txt": "786b5da484b54856c579e140ddadfc63449a8d047da5afd802d1bf28cc305663",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/stock.final-result.txt": "c9bf75a182c408b32658f02db20b9a830b98709e16b15a217220a20cb7b05bd2",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/stock.launch-call.txt": "03c8ae3209998fe92d4ffb244aafffda8309fd8a3ea8058a0445ff9d6b436218",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/raw/stock.launch-result.txt": "9b9574e371f29de171515e12ee9595e322f7944b328fb1d684415e611bca9de3",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/records.json": "3e93ac5eeacea771e7f434e023a122921a780073e887193fdda3ad8f904f95c3",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready-exit-records/sha256.json": "4d878b64fcc89d4ce2df29404dfb55a1d4da2970d2267e00811034c3a6dacfcd",
+    "derived/settings-controls.json": "826b5eb00db40b97a90fea871240976c2e32e3ad10332a9eab81d207b7119cf2",
+    "planning/review-9db.json": "2bd6908586d7de4a1b207a5128ef62695c16549f6a6f3705cf290e6b26b40db0",
+    "planning/runtime-inputs-9db-d76.json": "8faa5d7d29d6d9bb10c5a8b09a3f776c6060e16bfc967e5794011b3d0ec0b3fd",
+    "campaigns/core-h/result.json": "203c422119c36b981c0773bba382f90557a8ad540aeaa5313447be50569f6602",
+    "campaigns/core-h/corpus.json": "cf622a73aac7aa8121ae7e20fed0e0c641411d310f0e08d62cabbb26aa935959",
+    "campaigns/core-h/logs/unit.stdout.log": "0a22f319d384f5af3585558c08c3d21fb0f82432fbf0e41790229a4af9143ace",
+    "campaigns/core-h/logs/dom.stdout.log": "d8ebc083283643410b1522d7c73bbf2dfc12e799c528610c8659404ebaf0477c",
+    "campaigns/core-h/logs/dependency.stdout.log": "678609d2d6896babc26fc4192dc5890978ac6414a47a2b952ef8dee846d4891b",
+    "campaigns/core-h/logs/core.stdout.log": "08a63a781c4a0eab20f9da5766f85159cc91079a526f6ecb6b7d659ef30b0dc1",
+    "campaigns/core-h/logs/harness.stdout.log": "bbcf7bc324e8d2afcecb71677daee945142cad56fbc62056c5f4bade90e6a8cc",
+    "campaigns/core-h/logs/integration.stdout.log": "32cf07156eab5259890bfdbd7310b99459b2f29bf4f7546d77cbe8f46259135f",
+    "campaigns/core-h/logs/stress.stdout.log": "6386c1dd8cb8540885f80c4f0538f7f2666d3e0261bf5e1b203b91360fda8b94",
+    "campaigns/core-h/logs/browser.stdout.log": "b7745b38cd5b1040ff63695a8db22ff0d6b032398cba1cd110dcafffd1257ec4",
+    "campaigns/core-h/provenance/source.json": "aa1549868caa9a46fd86d221c644319ac00f2a6eeea1dace66fc56b901d29352",
+    "native/guard/phase-processes.json": "b15a8cc0fd0edddef7ffabc26b00169deb4d8e639c375ca45b97c05ebc3025d6",
+    "native/guard/api-readiness.json": "41d986b61a3fc5496f553fec380e6c89998a0bb65bce9e7511058fa9afe264bd",
+    "native/guard/clinical.log": "351e311d3335db6a8bdd769a90f95451ee8da8f06c7abf400837f08f5a689530",
+    "derived/guard-clinical-invocation.json": "5314e52531ffc52160af282294b8b859d33bce2472bab6a6acb4ac1241052dde",
+    "derived/guard-phase-source-context.json": "3f131d5193df54cf4ddb8e6449e247394398c254ace67341d896f36c2223dd70",
+    "derived/new-primary-clinical.json": "e749efc5fda600d455c829455e192aff5814a661b702178bc309e67d91052066",
+    "reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/strict-time/observation.private.json": "1e43a6c80f5924673f59d9b1881fb7c1623f4ed88aa546fed6db74aeccc934ab",
+    "reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/process-result.private.json": "89f55cb3ca56fa34244977bdf84b549b92c65334697ebd5203f95c2da5c7f2a0",
+    "native/guard/image-export.json": "b6f489c3050ebc33b57bf250cef837332f540d488337f4ec283a1281a5215119",
+    "final-prcheck/process.json": "5c987d65de670b8f9538872312b9747d4b2b3bf53dd02249071917b4d2af3de4",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/primary-9db-d76-guard/api-readiness.json": "41d986b61a3fc5496f553fec380e6c89998a0bb65bce9e7511058fa9afe264bd",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/primary-9db-d76-guard/processes.json": "8eac47705413039945103c2d6f5a2727a5aa7fea5a6f1ea278f7bd485a64561d",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/primary-9db-d76-guard/clinical.log": "351e311d3335db6a8bdd769a90f95451ee8da8f06c7abf400837f08f5a689530",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/primary-9db-d76-guard/image-export.json": "b6f489c3050ebc33b57bf250cef837332f540d488337f4ec283a1281a5215119",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/primary-9db-d76-guard/custody.json": "42512bcdca4cc9a289a5edf43fe55a3f5bf14d3a9f974b5e801f60d9fda6c5ad",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/primary-9db-d76-guard/capture-sources.json": "95dc87164db884d0264703b7778aaea599b46f360f04c461590f44d20de9b613",
+    "reports/tenancy/m7-paired-qualification-2026-11-12/primary-9db-d76-guard/sha256.json": "4b649a1e6d87cb5ccfc341625b4285aaa486cf10b0b5f05ecb8d5e47622f109d"
+  },
+  "pending": {
+    "unit": {
+      "count": 1,
+      "reason": "External VIEWS_CORPUS_DIR absent: moment own parse over external date-string corpus remains pending."
+    },
+    "dom": {
+      "count": 0,
+      "reason": ""
+    },
+    "dependency": {
+      "count": 2,
+      "reason": "har-validator/style-loader consumers absent in ff and official locks; existing b0179c applicability test."
+    },
+    "core": {
+      "count": 0,
+      "reason": ""
+    },
+    "harness": {
+      "count": 0,
+      "reason": ""
+    },
+    "integration": {
+      "count": 836,
+      "reason": "834 deferred functional +1 separately optional commit-clock performance benchmark +1 unchanged official legacy mixed-validity skipped gap; deferred functional cases require SAME-source full unfiltered86 corpus execution and ROOT applicability review."
+    },
+    "stress": {
+      "count": 0,
+      "reason": ""
+    },
+    "browser": {
+      "count": 0,
+      "reason": ""
+    },
+    "corpus": {
+      "count": 1,
+      "reason": "Only exact reports end-to-end successful request latency and throughput under NS_TENANT_COMMIT_CLOCK_BENCHMARK=1 is optional/unmeasured when flag absent; runner enables functional commit-clock cases separately. No other corpus pending waiver."
+    }
+  },
+  "corpusCommand": "enabled-corpus",
+  "corpusSuites": [
+    "tests/realtime-placement-owner.integration.test.js",
+    "tests/realtime-placement-publication.integration.test.js",
+    "tests/realtime-sharding-native.integration.test.js",
+    "tests/connector-sources.integration.test.js",
+    "tests/registry-realtime-settings.integration.test.js",
+    "tests/tenant-live-add.integration.test.js",
+    "tests/api-fixed-roster.integration.test.js",
+    "tests/registry-human-session.integration.test.js",
+    "tests/change-feed.integration.test.js",
+    "tests/tenant-insertion-upgrade.integration.test.js",
+    "tests/tenant-insertion-readiness.integration.test.js",
+    "tests/owner-configuration.integration.test.js",
+    "tests/owner-preview.integration.test.js",
+    "tests/tenant-socket-order-capability.integration.test.js",
+    "tests/tenant-socket-data-forwarding.integration.test.js",
+    "tests/postgres-connection.test.js",
+    "tests/entries-importer-postgres.integration.test.js",
+    "tests/postgres-entries-read.test.js",
+    "tests/postgres-entries-write.test.js",
+    "tests/api3.entries-crud.http.test.js",
+    "tests/tenant-rest-entries.integration.test.js",
+    "tests/tenant-rest-identifier-race.integration.test.js",
+    "tests/tenant-rest-identity-differential.integration.test.js",
+    "tests/tenant-frame-concurrency.integration.test.js",
+    "tests/tenant-durable-replay.integration.test.js",
+    "tests/tenant-projection-evaluator.integration.test.js",
+    "tests/tenant-current-state-recovery-proof.integration.test.js",
+    "tests/tenant-alarm-state.integration.test.js",
+    "tests/tenant-notifications.integration.test.js",
+    "tests/evaluator-consumers.integration.test.js",
+    "tests/tenant-activity.integration.test.js",
+    "tests/evaluator-consumer-timer-churn.integration.test.js",
+    "tests/evaluator-consumer-load.integration.test.js",
+    "tests/change-stamps.integration.test.js",
+    "tests/tenant-registry.integration.test.js",
+    "tests/tenant-registry-provision.integration.test.js",
+    "tests/admin-provisioning.integration.test.js",
+    "tests/registry-tenant-set.integration.test.js",
+    "tests/api-registry.integration.test.js",
+    "tests/postgres-tenant-scan.integration.test.js",
+    "tests/pool-membership.integration.test.js",
+    "tests/incremental-view.integration.test.js",
+    "tests/tenant-write-clock-complete.integration.test.js",
+    "tests/evaluator-wake.integration.test.js",
+    "tests/evaluator-cost.integration.test.js",
+    "tests/views-keep.integration.test.js",
+    "tests/projection-total-order.integration.test.js",
+    "tests/evaluator-consumer-wake.integration.test.js",
+    "tests/evaluator-effect-idempotency.integration.test.js",
+    "tests/evaluator-job-context.integration.test.js",
+    "tests/postgres-cohort-snapshot.integration.test.js",
+    "tests/operation-window-epoch.integration.test.js",
+    "tests/tenant-operations.integration.test.js",
+    "tests/tenant-commit-clock-port.integration.test.js",
+    "tests/tenant-commit-clock-http.integration.test.js",
+    "tests/management-sessions.integration.test.js",
+    "tests/m7-diagnostics.integration.test.js",
+    "tests/operation-lifetime-discriminator.integration.test.js",
+    "tests/api-fixed-roster-serving.integration.test.js",
+    "tests/multitenant-preview-replicas.integration.test.js",
+    "tests/tenant-rest-derived.integration.test.js",
+    "tests/tenant-rest-treatments.integration.test.js",
+    "tests/tenant-rest-context.integration.test.js",
+    "tests/tenant-rest-device-activity.integration.test.js",
+    "tests/tenant-rest-profile-food.integration.test.js",
+    "tests/tenant-rest-settings-differential.integration.test.js",
+    "tests/postgres-migrations.integration.test.js",
+    "tests/mongodb-migrations.integration.test.js",
+    "tests/postgres-secrets.integration.test.js",
+    "tests/vault-secrets.integration.test.js",
+    "tests/tenant-key-retention.integration.test.js",
+    "tests/tenant-runtime-vault.integration.test.js",
+    "tests/tenant-entries-http.integration.test.js",
+    "tests/tenant-credential-http.integration.test.js",
+    "tests/tenant-authorization-postgres.integration.test.js",
+    "tests/subject-management-http.integration.test.js",
+    "tests/subject-admin-postgres.integration.test.js",
+    "tests/tenant-ownership-postgres.integration.test.js",
+    "tests/admin-role-ownership.integration.test.js",
+    "tests/admin-lifecycle-fit.integration.test.js",
+    "tests/owner-subject-policy.integration.test.js",
+    "tests/tenant-rest-authority-review.test.js",
+    "tests/storage-port-contract.integration.test.js",
+    "tests/tenant-frame-acquisition.integration.test.js",
+    "tests/tenant-rest-client-replay.integration.test.js",
+    "tests/multitenant-preview-process.integration.test.js"
+  ],
+  "criteria": {
+    "paired-image-identity": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "/joinedInstrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+        "/joinedInstrumentFiles": 37,
+        "/imageLabels/org.opencontainers.image.revision": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/imageLabels/org.nightscout.deploy.revision": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/selection": {
+          "apis": 2,
+          "realtimeWorkers": 2,
+          "logicalShards": 2,
+          "evaluatorParticipants": 3,
+          "initialDesiredEvaluatorMembers": 2,
+          "vault": "server",
+          "diagnostics": 0
+        }
+      }
+    },
+    "source-integrity": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/result": "PASS"
+      }
+    },
+    "retained-resource-custody": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/guard/verified": true,
+        "/removeExit": 0,
+        "/retainedStoppedContainers": 15
+      }
+    },
+    "image-export": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "/archiveConfigDigestMatchesImageId": true,
+        "/sourceOnlyGitArchiveBuild": true,
+        "/privateNoRegistryPush": true,
+        "/sha256": "4358289c768ef758f9647bfd71d97b0bca62ff81879a9ca95c06d85c3dcfffa7"
+      }
+    },
+    "api-tenant-readiness": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/passed": true,
+        "/failure": null,
+        "/matrix": [
+          {
+            "service": "api",
+            "tenantOrdinal": 0,
+            "attempts": 1,
+            "warming": 0,
+            "ready": true,
+            "firstAt": 1794508624833,
+            "readyAt": 1794508625077
+          },
+          {
+            "service": "api",
+            "tenantOrdinal": 1,
+            "attempts": 1,
+            "warming": 0,
+            "ready": true,
+            "firstAt": 1794508624841,
+            "readyAt": 1794508625071
+          },
+          {
+            "service": "api-2",
+            "tenantOrdinal": 0,
+            "attempts": 1,
+            "warming": 0,
+            "ready": true,
+            "firstAt": 1794508624842,
+            "readyAt": 1794508625148
+          },
+          {
+            "service": "api-2",
+            "tenantOrdinal": 1,
+            "attempts": 1,
+            "warming": 0,
+            "ready": true,
+            "firstAt": 1794508624842,
+            "readyAt": 1794508625156
+          }
+        ],
+        "/identities": [
+          {
+            "service": "api",
+            "containerId": "ff4b9e8c70a5dbeff907f934570ae0b4cedf84898eebae933c15378dbf4b318b",
+            "startedAt": "2026-11-12T18:35:55.909472506Z",
+            "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+          },
+          {
+            "service": "api-2",
+            "containerId": "14d460290252aeee6422b3b5526634335f090b4dbab33b4248e75cc0ac4c38dd",
+            "startedAt": "2026-11-12T18:35:55.911004224Z",
+            "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+          }
+        ],
+        "/afterIdentities": [
+          {
+            "service": "api",
+            "containerId": "ff4b9e8c70a5dbeff907f934570ae0b4cedf84898eebae933c15378dbf4b318b",
+            "startedAt": "2026-11-12T18:35:55.909472506Z",
+            "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+          },
+          {
+            "service": "api-2",
+            "containerId": "14d460290252aeee6422b3b5526634335f090b4dbab33b4248e75cc0ac4c38dd",
+            "startedAt": "2026-11-12T18:35:55.911004224Z",
+            "image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+          }
+        ]
+      }
+    },
+    "b-settings-continuity": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/requestsTotal": 175,
+        "/requestsTruncated": false,
+        "/failures": [],
+        "/markers/4/code": 0,
+        "/markers/5/errorCount": 0
+      }
+    },
+    "controlled-rt-publication": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/identity/source/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/identity/source/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/identity/image": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "/child/exitCode": 0,
+        "/child/signal": null,
+        "/child/completionSeen": true,
+        "/child/stderrCodes": [],
+        "/hostFailure": null,
+        "/captureError": null,
+        "/errorsTotal": 0,
+        "/current/journalPhase": "complete",
+        "/current/backendGeneration": 2,
+        "/current/routesGeneration": 2
+      }
+    },
+    "native-successful-time": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/source": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/binding": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "/instrumentSha256": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+        "/result/verdict": "PASS",
+        "/result/completedTimeDelta": 39,
+        "/result/minimumCompletedWorkDelta": 19,
+        "/result/tenantsWithTimeProgress": 2,
+        "/result/failedCompletionDelta": 0,
+        "/result/queries": 9,
+        "/proof/kind": "evaluator-progress-phase-v2",
+        "/proof/policy": {
+          "version": 2,
+          "moduleVersion": 2,
+          "selectorRows": 128,
+          "maxTenants": 10000,
+          "maxInstances": 4,
+          "roundsPerPhase": 3,
+          "maxQueriesPerPhase": 1024,
+          "maxBytesPerPhase": 67108864,
+          "responseMaxBytes": 1048576,
+          "rpcTimeoutMs": 5000,
+          "roundDeadlineMs": 15000,
+          "idleWitness": "successful-time-only-completion",
+          "loadWitness": "successful-work-progression",
+          "recoveryCadenceMs": 15000,
+          "recoveryTimeoutMs": 900000,
+          "recoveryMaxRounds": 60,
+          "readinessMaxQueries": 25600,
+          "readinessMaxBytes": 268435456,
+          "readinessMaxRounds": 80,
+          "deadlineClaim": false,
+          "workloadCohortChanged": false,
+          "dueState": "captured-only-not-opportunity-assessed"
+        },
+        "/proof/rounds/0/rows": [
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator",
+            14,
+            5,
+            3,
+            0,
+            243319,
+            8,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator",
+            15,
+            1,
+            227,
+            0,
+            589,
+            228,
+            true,
+            true,
+            null,
+            null,
+            1794508968724,
+            "slow:alarm-message"
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-2",
+            11,
+            1,
+            227,
+            0,
+            572,
+            228,
+            true,
+            true,
+            null,
+            null,
+            1794508968727,
+            "slow:alarm-message"
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-2",
+            10,
+            6,
+            2,
+            0,
+            243415,
+            8,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-3",
+            7,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-3",
+            6,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ]
+        ],
+        "/proof/rounds/1/rows": [
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator",
+            14,
+            5,
+            3,
+            0,
+            253792,
+            8,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator",
+            15,
+            1,
+            237,
+            0,
+            244,
+            238,
+            true,
+            true,
+            null,
+            null,
+            1794508979542,
+            "slow:alarm-message"
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-2",
+            11,
+            1,
+            237,
+            0,
+            266,
+            238,
+            true,
+            true,
+            null,
+            null,
+            1794508979503,
+            "slow:alarm-message"
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-2",
+            10,
+            6,
+            2,
+            0,
+            253887,
+            8,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-3",
+            7,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-3",
+            6,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ]
+        ],
+        "/proof/rounds/2/rows": [
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator",
+            14,
+            5,
+            3,
+            0,
+            264244,
+            8,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator",
+            15,
+            1,
+            246,
+            0,
+            1063,
+            247,
+            true,
+            true,
+            null,
+            null,
+            1794508989178,
+            "slow:alarm-message"
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-2",
+            11,
+            1,
+            247,
+            0,
+            9,
+            248,
+            true,
+            true,
+            null,
+            null,
+            1794508990217,
+            "slow:alarm-message"
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-2",
+            10,
+            6,
+            2,
+            0,
+            264342,
+            8,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-3",
+            7,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-3",
+            6,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ]
+        ]
+      }
+    },
+    "native-identity-synthetic-provider-client": {
+      "attribution": {
+        "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+      },
+      "assertions": {
+        "/sourceCommit": "195c932293f3abc648da8fbe4356bf7360acd002",
+        "/complete": true,
+        "/porcelain": [],
+        "/oref0Commit": "d219baf9559d62a8bb0bd42014192a2d7c0839ef",
+        "/stages/0/id": "vault-single",
+        "/stages/0/verdict": "PASS",
+        "/stages/0/exit/code": 0,
+        "/stages/1/id": "vault-multi",
+        "/stages/1/verdict": "PASS",
+        "/stages/1/exit/code": 0,
+        "/stages/2/id": "mongo-sessions",
+        "/stages/2/verdict": "PASS",
+        "/stages/2/exit/code": 0,
+        "/stages/3/id": "pg-sessions",
+        "/stages/3/verdict": "PASS",
+        "/stages/3/exit/code": 0,
+        "/stages/4/id": "mongo-http",
+        "/stages/4/verdict": "PASS",
+        "/stages/4/exit/code": 0,
+        "/stages/5/id": "owner-consumer",
+        "/stages/5/verdict": "PASS",
+        "/stages/5/exit/code": 0,
+        "/stages/6/id": "owner-authority",
+        "/stages/6/verdict": "PASS",
+        "/stages/6/exit/code": 0,
+        "/stages/7/id": "owner-browser",
+        "/stages/7/verdict": "PASS",
+        "/stages/7/exit/code": 0,
+        "/stages/8/id": "owner-compatibility",
+        "/stages/8/verdict": "PASS",
+        "/stages/8/exit/code": 0
+      }
+    },
+    "clinical-synthetic-output-six-cases": {
+      "attribution": {
+        "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+        "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003"
+      },
+      "assertions": {
+        "/0/case": "deploy-base-1000",
+        "/0/exit": 0,
+        "/1/case": "deploy-due-1000",
+        "/1/exit": 0,
+        "/2/case": "deploy-due-60000",
+        "/2/exit": 0,
+        "/3/case": "full-base-1000",
+        "/3/exit": 0,
+        "/4/case": "full-due-1000",
+        "/4/exit": 0,
+        "/5/case": "full-due-60000",
+        "/5/exit": 0
+      }
+    },
+    "clinical-executed-source-baseline": {
+      "attribution": {
+        "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+        "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003"
+      },
+      "assertions": {
+        "/sources/candidate/sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+        "/sources/base/sourceCommit": "5c60aec669362b032a10d6dd7ac368e9c61e8003",
+        "/clinicalInstrumentSource": "275b3bb4b0b0f67d7b0552ef00a90420b6e6a73a",
+        "/scope": "synthetic component memory projection; actual PG positive control separate; no capacity claim"
+      }
+    },
+    "clinical-trace-hashes": {
+      "attribution": {
+        "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+        "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003"
+      },
+      "assertions": {
+        "/control-mutant.trace/sha256": "b0e9cb6ad96a61988128e530397fb425bc07fa16ad674aabd4388cc6c578d356",
+        "/control-restored.trace/sha256": "13086e5c70fa9b28f43b0bdef0ae203d236cda07ae6ea7d0bb0ae9ef082f5b29",
+        "/deploy-base-1000-base.trace/sha256": "14eed211f10fd4545c96f525757a75160ba024be7961e977a803ee7c9c892313",
+        "/deploy-base-1000-candidate.trace/sha256": "14eed211f10fd4545c96f525757a75160ba024be7961e977a803ee7c9c892313",
+        "/deploy-due-1000-base.trace/sha256": "42ad3814845469ed5e738a3381df4b99f0faf42a99cd9cb59e5dad12e3c0858e",
+        "/deploy-due-1000-candidate.trace/sha256": "42ad3814845469ed5e738a3381df4b99f0faf42a99cd9cb59e5dad12e3c0858e",
+        "/deploy-due-60000-base.trace/sha256": "13086e5c70fa9b28f43b0bdef0ae203d236cda07ae6ea7d0bb0ae9ef082f5b29",
+        "/deploy-due-60000-candidate.trace/sha256": "13086e5c70fa9b28f43b0bdef0ae203d236cda07ae6ea7d0bb0ae9ef082f5b29",
+        "/full-base-1000-base.trace/sha256": "907f77b43fb6c84f8ce32398753add59573aa5d9ca4cf37f010317d42e7c0d6f",
+        "/full-base-1000-candidate.trace/sha256": "907f77b43fb6c84f8ce32398753add59573aa5d9ca4cf37f010317d42e7c0d6f",
+        "/full-due-1000-base.trace/sha256": "914fe1eb0f91ff2a5d57490ce7d0237c862eb1b202cff12629e79a85ab706d2a",
+        "/full-due-1000-candidate.trace/sha256": "914fe1eb0f91ff2a5d57490ce7d0237c862eb1b202cff12629e79a85ab706d2a",
+        "/full-due-60000-base.trace/sha256": "a6148329e75e569d066d94eee41dd61ab6850768b1d519f0061f01431c880d83",
+        "/full-due-60000-candidate.trace/sha256": "a6148329e75e569d066d94eee41dd61ab6850768b1d519f0061f01431c880d83"
+      }
+    },
+    "clinical-causal-observation": {
+      "attribution": {
+        "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+        "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003"
+      },
+      "assertions": {
+        "/differingHashes": 286,
+        "/sameInstantsKindsAlarms": true,
+        "/restoredIdentical": true
+      }
+    },
+    "reviewed-old-proof-applicability": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758"
+      },
+      "assertions": {
+        "/candidate": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/clinicalExecutedCore": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+        "/identityExecutedCore": "195c932293f3abc648da8fbe4356bf7360acd002",
+        "/newExecution": false,
+        "/approval": "APPROVE_NARROW_ORIGINAL_ATTRIBUTION_REUSE",
+        "/clinicalBlobs": {
+          "lib/api3/const.json": true,
+          "lib/api3/shared/operationTools.js": true,
+          "lib/api3/shared/stringTools.js": true,
+          "lib/api3/storage/mongoCollection/find.js": true,
+          "lib/api3/storage/mongoCollection/index.js": true,
+          "lib/api3/storage/mongoCollection/modify.js": true,
+          "lib/api3/storage/mongoCollection/utils.js": true,
+          "lib/client-core/devicestatus/cob.js": true,
+          "lib/client-core/devicestatus/loop.js": true,
+          "lib/client-core/devicestatus/openaps.js": true,
+          "lib/client-core/devicestatus/pump.js": true,
+          "lib/constants.json": true,
+          "lib/data/dataloader.js": true,
+          "lib/data/ddata.js": true,
+          "lib/data/evaluator-due.js": true,
+          "lib/data/json-copy.js": true,
+          "lib/data/moment-memo.js": true,
+          "lib/data/private-acquisition.js": true,
+          "lib/data/tenant-projection-evaluator.js": true,
+          "lib/data/treatmenttocurve.js": true,
+          "lib/data/views/bounds.js": true,
+          "lib/data/views/index.js": true,
+          "lib/data/working-set.js": true,
+          "lib/direction-normalizer.js": true,
+          "lib/food/quickpick.js": true,
+          "lib/language.js": true,
+          "lib/levels.js": true,
+          "lib/notifications.js": true,
+          "lib/plugins/ar2.js": true,
+          "lib/plugins/basalprofile.js": true,
+          "lib/plugins/batteryage.js": true,
+          "lib/plugins/bgnow.js": true,
+          "lib/plugins/bolus.js": true,
+          "lib/plugins/boluscalc.js": true,
+          "lib/plugins/boluswizardpreview.js": true,
+          "lib/plugins/cannulaage.js": true,
+          "lib/plugins/careportal.js": true,
+          "lib/plugins/cob.js": true,
+          "lib/plugins/dbsize.js": true,
+          "lib/plugins/direction.js": true,
+          "lib/plugins/errorcodes.js": true,
+          "lib/plugins/index.js": true,
+          "lib/plugins/insulinage.js": true,
+          "lib/plugins/iob.js": true,
+          "lib/plugins/loop.js": true,
+          "lib/plugins/openaps.js": true,
+          "lib/plugins/override.js": true,
+          "lib/plugins/pluginbase.js": true,
+          "lib/plugins/profile.js": true,
+          "lib/plugins/pump.js": true,
+          "lib/plugins/rawbg.js": true,
+          "lib/plugins/runtimestate.js": true,
+          "lib/plugins/sensorage.js": true,
+          "lib/plugins/simplealarms.js": true,
+          "lib/plugins/speech.js": true,
+          "lib/plugins/timeago.js": true,
+          "lib/plugins/treatmentnotify.js": true,
+          "lib/plugins/upbat.js": true,
+          "lib/plugins/webhook.js": true,
+          "lib/plugins/xdripjs.js": true,
+          "lib/profilefunctions.js": true,
+          "lib/sandbox.js": true,
+          "lib/server/activity.js": true,
+          "lib/server/aggregate.js": true,
+          "lib/server/cache.js": true,
+          "lib/server/count.js": true,
+          "lib/server/devicestatus.js": true,
+          "lib/server/enclave.js": true,
+          "lib/server/entries.js": true,
+          "lib/server/env.js": true,
+          "lib/server/food.js": true,
+          "lib/server/log-privacy.js": true,
+          "lib/server/merge-patch.js": true,
+          "lib/server/object-id-forms.js": true,
+          "lib/server/profile.js": true,
+          "lib/server/query-coercion.js": true,
+          "lib/server/query-coercion.json": true,
+          "lib/server/query-operator-allowlist.js": true,
+          "lib/server/query.js": true,
+          "lib/server/soft-deleted.js": true,
+          "lib/server/srv-dates.js": true,
+          "lib/server/storage-purifier.js": true,
+          "lib/server/storage-reads.js": true,
+          "lib/server/storage-writes.js": true,
+          "lib/server/tenant-app/environment.js": true,
+          "lib/server/treatment-fallback-key.js": true,
+          "lib/server/treatments.js": true,
+          "lib/server/write-items.js": true,
+          "lib/server/write-settings.js": true,
+          "lib/server/write-validation.js": true,
+          "lib/settings.js": true,
+          "lib/storage/assert-no-query-javascript.js": true,
+          "lib/storage/filter.js": true,
+          "lib/storage/identifier-index.js": true,
+          "lib/storage/mongo-read-options.js": true,
+          "lib/storage/postgres-collection-intent.js": true,
+          "lib/storage/postgres-durable-replay.js": true,
+          "lib/storage/postgres-entries-read.js": true,
+          "lib/storage/postgres-entries-write.js": true,
+          "lib/storage/postgres-filter.js": true,
+          "lib/storage/postgres-identity.js": true,
+          "lib/storage/postgres-intent-common.js": true,
+          "lib/storage/postgres-projection-read.js": true,
+          "lib/storage/projection-memory-read.js": true,
+          "lib/storage/read-contract.js": true,
+          "lib/storage/run-with-callback.js": true,
+          "lib/storage/tenant-scope.js": true,
+          "lib/storage/validated-update.js": true,
+          "lib/storage/write-intent.js": true,
+          "lib/storage/write-limits.js": true,
+          "lib/storage/write-step.js": true,
+          "lib/times.js": true,
+          "lib/treatmentDuration.js": true,
+          "lib/treatmentTargetUnits.js": true,
+          "lib/units.js": true,
+          "lib/utils.js": true,
+          "lib/utils/callback-tasks.js": true,
+          "lib/utils/clone.js": true,
+          "lib/utils/cloneShallow.js": true,
+          "lib/utils/deepMerge.js": true,
+          "lib/utils/env-value.js": true,
+          "lib/utils/html.js": true,
+          "lib/utils/mongo-password-matches.js": true,
+          "lib/utils/pick.js": true,
+          "lib/utils/query-leaves.js": true,
+          "lib/utils/reference-cache.js": true,
+          "package.json": true,
+          "tests/lib/views-replay/clock.js": true
+        },
+        "/identityHarnessSHA256": {
+          "tests/native/oidc-matrix/authority-races-controls.cjs": true,
+          "tests/native/oidc-matrix/authority-races.cjs": true,
+          "tests/native/oidc-matrix/compose.yaml": true,
+          "tests/native/oidc-matrix/config-template.cjs": true,
+          "tests/native/oidc-matrix/consumer-journey-controls.cjs": true,
+          "tests/native/oidc-matrix/consumer-journey.cjs": true,
+          "tests/native/oidc-matrix/owner-browser-journey-controls.cjs": true,
+          "tests/native/oidc-matrix/owner-browser-journey.cjs": true,
+          "tests/native/oidc-matrix/owner-extension.cjs": true,
+          "tests/native/oidc-matrix/prepare.cjs": true,
+          "tests/native/oidc-matrix/probe-checks.json": true,
+          "tests/native/oidc-matrix/redact.cjs": true,
+          "tests/native/oidc-matrix/run.cjs": true,
+          "tests/native/oidc-matrix/run.sh": true,
+          "tests/native/oidc-matrix/single-compatibility-controls.cjs": true,
+          "tests/native/oidc-matrix/single-compatibility.cjs": true,
+          "tests/native/oidc-matrix/stage-contract.cjs": true,
+          "tests/native/oidc-matrix/stage.cjs": true,
+          "tests/native/oidc-matrix/transit-profile.cjs": true,
+          "tests/native/oidc-matrix/vault-consumer.cjs": true
+        },
+        "/identitySelectedBlobs": {
+          "tests/human-session-http-native.js": true,
+          "tests/human-session-mongo-native.js": true,
+          "tests/human-session-postgres-native.js": true,
+          "tests/human-access-vault-native.js": true,
+          "lib/server/serve/evaluator-runtime.js": false,
+          "lib/data/tenant-projection-evaluator.js": true,
+          "lib/server/enclave.js": true,
+          "lib/human-session/http.js": true,
+          "lib/server/tenant-app/data-access.js": true,
+          "package.json": true,
+          "package-lock.json": true
+        },
+        "/fixtureOnlyAdvanceFrom": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+        "/fixtureOnlyChangedPaths": [
+          "tests/admin-provisioning.integration.test.js"
+        ]
+      }
+    },
+    "paired-stock-restore-semantic": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/returnCode": 0,
+        "/recordedExitPresent": true,
+        "/outerProcessReturnCode": 0,
+        "/tap": {
+          "tests": 1,
+          "suites": 0,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "/test": "actual shipping edge preserves registered Host polling/WebSocket/API3 and real restore continuity",
+        "/marker": "COMPOSE_SHARD_PROOF stockPolling stockWebSocket API3reload registeredHost tenantIsolation idlePolling actualRestore census BContinuity",
+        "/identity/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/identity/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/identity/imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+      }
+    },
+    "paired-clinical-semantic": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/returnCode": 0,
+        "/recordedExitPresent": true,
+        "/outerProcessReturnCode": 0,
+        "/tap": {
+          "tests": 1,
+          "suites": 0,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "/test": "actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress",
+        "/marker": "EVALUATOR_SHIPPING_PROOF members2to3 clinicalRequests3 intentionalBChangedEffect alarmFanoutTyped checkpointCurrent stableConsumer BSameSocket handoffMs1119 leaseMs30000",
+        "/identity/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/identity/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/identity/imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+      }
+    },
+    "paired-realtime-move-semantic": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/returnCode": 0,
+        "/recordedExitPresent": true,
+        "/outerProcessReturnCode": 0,
+        "/tap": {
+          "tests": 1,
+          "suites": 0,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "/test": "actual shipping controlled move excludes old boot, holds target warm and keeps B through staged routing",
+        "/marker": "SHIPPING_MOVE_PROOF actualStoppedOldBoot realRowWarmBarrier coldRefusal BFrames BOldGenerationAlarm actualPinExclusion readinessCutover newOwnerAlarm stableCheckpoint idleOwnerCensus",
+        "/identity/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/identity/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/identity/imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+      }
+    },
+    "paired-settings-current-authority": {
+      "attribution": {
+        "core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/recordedOuterProcessReturnCode": 0,
+        "/separateChildReturnCode": null,
+        "/observations": [
+          {
+            "outcome": "synthetic-authority-ready",
+            "tenants": 2,
+            "boundary": "fixture metadata only"
+          },
+          {
+            "outcome": "configured",
+            "tenants": 2,
+            "wrongTenant": "refused",
+            "boundary": "source-lower-port"
+          },
+          {
+            "outcome": "refused",
+            "reason": "SETTINGS_FORBIDDEN",
+            "boundary": "source-lower-port"
+          },
+          {
+            "code": "SETTINGS_STORE_UNSAFE"
+          },
+          {
+            "outcome": "ready",
+            "boundary": "source-lower-port"
+          }
+        ],
+        "/source/core": "ff5156b984424f1ef34bcef22d5bfa0071354cfa",
+        "/source/deploy": "cf5bda3f2d189bac5d60269df5644759c40db9e1",
+        "/source/imageId": "sha256:399dea76f971451143b65c02be37c99e76d240d607d1f5b45a35fd564d7e6fd2"
+      }
+    },
+    "final-prcheck": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758"
+      },
+      "assertions": {
+        "/coreBefore": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/coreAfter": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/returnCode": 0,
+        "/sourceUnchanged": true,
+        "/trackedStatusAfter": "",
+        "/officialContained": true,
+        "/officialBefore": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+        "/officialAfter": "4a482627bfdafb1fef8dcbe0ac6c484811cae563",
+        "/scriptSHA256": "98b2bb58f4ea26d7f3aeb6dffac869437fba518fb844721fdda860e05387a705",
+        "/logSHA256": "bac3aa25652a5066b1a2dfb79242b049e62be07f52811ceb4d247187178d3fbc"
+      }
+    },
+    "reviewed-runtime-input-comparison": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758"
+      },
+      "assertions": {
+        "/kind": "read-derived-runtime-input-comparison",
+        "/coreBefore": "761e8f19373c4fbbd6fc888b51b35c9b2eb677a1",
+        "/coreAfter": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/deployBefore": "31565abe437ea84214aa0068f75de1246c06e45e",
+        "/deployAfter": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "/coreBuildInputsWithModes": {
+          "package.json": {
+            "before": "100644 blob 0ac60a074d1e07631ee3558acdba10b43531c40d\tpackage.json",
+            "after": "100644 blob 0ac60a074d1e07631ee3558acdba10b43531c40d\tpackage.json"
+          },
+          "package-lock.json": {
+            "before": "100644 blob 34013c3fcd4348762571f664b8d55e2b4edd35d0\tpackage-lock.json",
+            "after": "100644 blob 34013c3fcd4348762571f664b8d55e2b4edd35d0\tpackage-lock.json"
+          },
+          ".babelrc": {
+            "before": "100644 blob ff3059c3f099e7703b0e3bb5b9843dcbd0a37153\t.babelrc",
+            "after": "100644 blob ff3059c3f099e7703b0e3bb5b9843dcbd0a37153\t.babelrc"
+          },
+          ".browserslistrc": {
+            "before": "100644 blob 34e99e5f0fc9642cf420e3adddef3fc965f462d3\t.browserslistrc",
+            "after": "100644 blob 34e99e5f0fc9642cf420e3adddef3fc965f462d3\t.browserslistrc"
+          },
+          ".dockerignore": {
+            "before": "100644 blob 6bb7bc1e29cf10b1807c642e49efd7220009f495\t.dockerignore",
+            "after": "100644 blob 6bb7bc1e29cf10b1807c642e49efd7220009f495\t.dockerignore"
+          },
+          "bundle": {
+            "before": "040000 tree c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458\tbundle",
+            "after": "040000 tree c789d43e0a1e7ce0cd0bfa6d8cbeb0ccb1383458\tbundle"
+          },
+          "webpack": {
+            "before": "040000 tree 7aa4b78fd4ad48d466a9efa803a0f17d98f074ef\twebpack",
+            "after": "040000 tree 7aa4b78fd4ad48d466a9efa803a0f17d98f074ef\twebpack"
+          },
+          "bin": {
+            "before": "040000 tree a0afba03b03b47e1e21f68a9b5638e19995a31df\tbin",
+            "after": "040000 tree a0afba03b03b47e1e21f68a9b5638e19995a31df\tbin"
+          },
+          "lib": {
+            "before": "040000 tree c3e8b95cf3eb959ed9f013e2cd5142d5a494f840\tlib",
+            "after": "040000 tree c3e8b95cf3eb959ed9f013e2cd5142d5a494f840\tlib"
+          },
+          "static": {
+            "before": "040000 tree 645a3fba5f269611f1949f9174144ef9945835e8\tstatic",
+            "after": "040000 tree 645a3fba5f269611f1949f9174144ef9945835e8\tstatic"
+          },
+          "views": {
+            "before": "040000 tree d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8\tviews",
+            "after": "040000 tree d7cc5508ac4c7285e4b41a16d869b7db9b13dcd8\tviews"
+          },
+          "translations": {
+            "before": "040000 tree 105b1847130fe57f06ca010e9d4b709d09b6f2e9\ttranslations",
+            "after": "040000 tree 105b1847130fe57f06ca010e9d4b709d09b6f2e9\ttranslations"
+          },
+          "migrations": {
+            "before": "040000 tree aa71098f942959dd7889586bcf6ecc0141aeecfa\tmigrations",
+            "after": "040000 tree aa71098f942959dd7889586bcf6ecc0141aeecfa\tmigrations"
+          },
+          "scripts/diagnose-data.js": {
+            "before": "100644 blob 9869466b39493985907a9914a7a3ccb710584d6b\tscripts/diagnose-data.js",
+            "after": "100644 blob 9869466b39493985907a9914a7a3ccb710584d6b\tscripts/diagnose-data.js"
+          },
+          "deploy/multitenant": {
+            "before": "040000 tree fdc9f8dd2644b8789c86abeb030fbc0ad7304780\tdeploy/multitenant",
+            "after": "040000 tree fdc9f8dd2644b8789c86abeb030fbc0ad7304780\tdeploy/multitenant"
+          },
+          "server.js": {
+            "before": "100644 blob d1c3f30897b5d74635db1490a81f1b3be9910877\tserver.js",
+            "after": "100644 blob d1c3f30897b5d74635db1490a81f1b3be9910877\tserver.js"
+          }
+        },
+        "/bindingTreeBefore": "3ba19b609af18184082cbd8aa5f978c9cfde016c",
+        "/bindingTreeAfter": "3ba19b609af18184082cbd8aa5f978c9cfde016c",
+        "/coreChangedPaths": [
+          "tests/admin-provisioning.integration.test.js"
+        ],
+        "/deployChangedPaths": [
+          "bindings/compose/SOURCE.md"
+        ]
+      }
+    },
+    "new-primary-image-export-custody": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d"
+      },
+      "assertions": {
+        "/core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "/imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "/nonce": "77e7ad81-37b7-4ff2-8cb4-531327b4dbf1",
+        "/platform": "linux/amd64",
+        "/imageLabels/org.opencontainers.image.revision": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/imageLabels/org.nightscout.deploy.revision": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "/configEnvKeys": [
+          "NODE_ENV",
+          "NODE_VERSION",
+          "NS_SOURCE_COMMIT",
+          "PATH",
+          "YARN_VERSION"
+        ],
+        "/archiveConfigDigestMatchesImageId": true,
+        "/sourceOnlyGitArchiveBuild": true,
+        "/privateNoRegistryPush": true,
+        "/sha256": "4eb4e791f5c2fa0cce8ad135cf02cfa2723e869d2b465555681d657f92559461",
+        "/bytes": 284444672,
+        "/buildAlignment": "5d7fa02746f4695a222f1fc400dc59b61a8c717e",
+        "/buildInstrumentSha256": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d",
+        "/timeInstrumentCommit": "df18100cf13780cec904a792b2bb1ab8867bfb54",
+        "/timeInstrumentSha256": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d",
+        "/positiveTimeRawSha256": "1e43a6c80f5924673f59d9b1881fb7c1623f4ed88aa546fed6db74aeccc934ab",
+        "/originalUnmeasuredRawSha256": "142a2c21f0d68512ca6ffd918eb399dfbee38eef1782b9e837288c13763419d2"
+      }
+    },
+    "new-primary-successful-time": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d"
+      },
+      "assertions": {
+        "/source": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/binding": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "/imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "/instrumentCommit": "df18100cf13780cec904a792b2bb1ab8867bfb54",
+        "/instrumentSha256": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d",
+        "/nonce": "77e7ad81-37b7-4ff2-8cb4-531327b4dbf1",
+        "/result/verdict": "PASS",
+        "/result/completedTimeDelta": 38,
+        "/result/minimumCompletedWorkDelta": 19,
+        "/result/tenantsWithTimeProgress": 2,
+        "/result/failedCompletionDelta": 0,
+        "/result/queries": 9,
+        "/proof/kind": "evaluator-progress-phase-v2",
+        "/proof/policy": {
+          "version": 2,
+          "moduleVersion": 2,
+          "selectorRows": 128,
+          "maxTenants": 10000,
+          "maxInstances": 4,
+          "roundsPerPhase": 3,
+          "maxQueriesPerPhase": 1024,
+          "maxBytesPerPhase": 67108864,
+          "responseMaxBytes": 1048576,
+          "rpcTimeoutMs": 5000,
+          "roundDeadlineMs": 15000,
+          "idleWitness": "successful-time-only-completion",
+          "loadWitness": "successful-work-progression",
+          "recoveryCadenceMs": 15000,
+          "recoveryTimeoutMs": 900000,
+          "recoveryMaxRounds": 60,
+          "readinessMaxQueries": 25600,
+          "readinessMaxBytes": 268435456,
+          "readinessMaxRounds": 80,
+          "deadlineClaim": false,
+          "workloadCohortChanged": false,
+          "dueState": "captured-only-not-opportunity-assessed"
+        },
+        "/proof/rounds/0/rows": [
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator",
+            9,
+            3,
+            2,
+            0,
+            2050600,
+            5,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator",
+            10,
+            2,
+            695,
+            0,
+            86,
+            697,
+            true,
+            true,
+            null,
+            null,
+            1794517170306,
+            "slow:alarm-message"
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-2",
+            10,
+            2,
+            693,
+            0,
+            95,
+            695,
+            true,
+            true,
+            null,
+            null,
+            1794517170318,
+            "slow:alarm-message"
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-2",
+            9,
+            3,
+            2,
+            0,
+            2050617,
+            5,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-3",
+            5,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-3",
+            6,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ]
+        ],
+        "/proof/rounds/1/rows": [
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator",
+            9,
+            3,
+            2,
+            0,
+            2061020,
+            5,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator",
+            10,
+            2,
+            704,
+            0,
+            926,
+            706,
+            true,
+            true,
+            null,
+            null,
+            1794517179892,
+            "slow:alarm-message"
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-2",
+            10,
+            2,
+            702,
+            0,
+            908,
+            704,
+            true,
+            true,
+            null,
+            null,
+            1794517179890,
+            "slow:alarm-message"
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-2",
+            9,
+            3,
+            2,
+            0,
+            2060998,
+            5,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-3",
+            5,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-3",
+            6,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ]
+        ],
+        "/proof/rounds/2/rows": [
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator",
+            9,
+            3,
+            2,
+            0,
+            2071399,
+            5,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator",
+            10,
+            2,
+            714,
+            0,
+            634,
+            716,
+            true,
+            true,
+            null,
+            null,
+            1794517190563,
+            "slow:alarm-message"
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-2",
+            10,
+            2,
+            712,
+            0,
+            609,
+            714,
+            true,
+            true,
+            null,
+            null,
+            1794517190585,
+            "slow:alarm-message"
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-2",
+            9,
+            3,
+            2,
+            0,
+            2071397,
+            5,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "11111111-1111-4111-8111-111111111111",
+            "evaluator-3",
+            5,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ],
+          [
+            "22222222-2222-4222-8222-222222222222",
+            "evaluator-3",
+            6,
+            0,
+            0,
+            0,
+            null,
+            0,
+            false,
+            false,
+            "EVALUATOR_POOL_NOT_IN_SLICE",
+            null,
+            null,
+            null
+          ]
+        ]
+      }
+    },
+    "new-primary-minimal-clinical": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/returnCode": 0,
+        "/recordedExitPresent": true,
+        "/typedClassification/acceptedNormals": 3,
+        "/typedClassification/cancelled": 0,
+        "/typedClassification/acceptedClears": 0,
+        "/tap": {
+          "tests": 1,
+          "suites": 0,
+          "pass": 1,
+          "fail": 0,
+          "cancelled": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "/test": "actual evaluator two-to-three membership preserves clinical alarm effects, checkpoints and B socket progress",
+        "/marker": "EVALUATOR_SHIPPING_PROOF members2to3 clinicalRequests3 intentionalBChangedEffect alarmFanoutTyped checkpointCurrent stableConsumer BSameSocket handoffMs1136 leaseMs30000",
+        "/identity/core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/identity/deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "/identity/imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "/identity/joinedInstrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      }
+    },
+    "functional-worker-provenance": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753"
+      },
+      "assertions": {
+        "/commit": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/instrumentCommit": "7209cb29020543a82412cd69d2751ca939cf4318",
+        "/workerSha256": "4689aaabcdd2f6f00287bc5879d35eb672c8585dee42fa889f2b11874c84e788",
+        "/nodeVersion": "v24.22.1",
+        "/lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e"
+      }
+    },
+    "new-primary-readiness-four-tuples": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/passed": true,
+        "/failure": null,
+        "/identities": [
+          {
+            "service": "api",
+            "containerId": "b3330ecc0dc0b1f0357d52b94e65d2f578d1a21cf4754a1a8bdadbf6bf2fe725",
+            "startedAt": "2026-11-12T20:25:00.740857698Z",
+            "image": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e"
+          },
+          {
+            "service": "api-2",
+            "containerId": "a5690d3b5fcc7c49a8f2897355a6dd621b9294bb32003181963898ee482a5605",
+            "startedAt": "2026-11-12T20:25:00.742244327Z",
+            "image": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e"
+          }
+        ],
+        "/afterIdentities": [
+          {
+            "service": "api",
+            "containerId": "b3330ecc0dc0b1f0357d52b94e65d2f578d1a21cf4754a1a8bdadbf6bf2fe725",
+            "startedAt": "2026-11-12T20:25:00.740857698Z",
+            "image": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e"
+          },
+          {
+            "service": "api-2",
+            "containerId": "a5690d3b5fcc7c49a8f2897355a6dd621b9294bb32003181963898ee482a5605",
+            "startedAt": "2026-11-12T20:25:00.742244327Z",
+            "image": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e"
+          }
+        ],
+        "/matrix/0/service": "api",
+        "/matrix/0/tenantOrdinal": 0,
+        "/matrix/0/ready": true,
+        "/matrix/1/service": "api",
+        "/matrix/1/tenantOrdinal": 1,
+        "/matrix/1/ready": true,
+        "/matrix/2/service": "api-2",
+        "/matrix/2/tenantOrdinal": 0,
+        "/matrix/2/ready": true,
+        "/matrix/3/service": "api-2",
+        "/matrix/3/tenantOrdinal": 1,
+        "/matrix/3/ready": true,
+        "/identities/0/image": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "/identities/1/image": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e"
+      }
+    },
+    "new-primary-phase-processes": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/source/core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/source/deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "/source/alignment": "5d7fa02746f4695a222f1fc400dc59b61a8c717e",
+        "/source/nonce": "77e7ad81-37b7-4ff2-8cb4-531327b4dbf1",
+        "/phases/api-readiness/returnCode": 0,
+        "/phases/configuration.setup/returnCode": 0,
+        "/phases/configuration.enable/returnCode": 0,
+        "/phases/clinical/returnCode": 0,
+        "/originalLedgerSha256": "b15a8cc0fd0edddef7ffabc26b00169deb4d8e639c375ca45b97c05ebc3025d6"
+      }
+    },
+    "new-primary-time-process": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d"
+      },
+      "assertions": {
+        "/returnCode": 0,
+        "/rawProofSha256": "1e43a6c80f5924673f59d9b1881fb7c1623f4ed88aa546fed6db74aeccc934ab",
+        "/specSha256": "2e157ea8b86d155249c562a01cccd499e2addecd2cc268dc71eac5b778b8996c"
+      }
+    },
+    "new-primary-export-process": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d"
+      },
+      "assertions": {
+        "/source/core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "/source/deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "/phases/export/state": "completed",
+        "/phases/export/returnCode": 0
+      }
+    },
+    "new-primary-activation-custody": {
+      "attribution": {
+        "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+        "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+        "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+        "instrument": "52c76f7500312bc3ce8006f3783444b04489bdf53cd1f764417f77cf8333ba1d"
+      },
+      "assertions": {
+        "/verified": true,
+        "/containers": 15,
+        "/comparison": "all keys; order-insensitive nested arrays/multisets"
+      }
+    }
+  },
+  "controls": {
+    "oidc-single-shipping-eight-hour-exchange": {
+      "baseline": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/stages/4/id": "mongo-http",
+          "/stages/4/verdict": "PASS",
+          "/stages/4/exit/code": 0
+        }
+      },
+      "broken": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/controls/0/id": "single-shipping-eight-hour-exchange",
+          "/controls/0/expected": "actual exchange exp-iat is3600; independent oracle requires28800",
+          "/controls/0/red/verdict": "FAIL",
+          "/controls/0/red/exit/code": 1,
+          "/controls/0/red/error": "ERR_ASSERTION",
+          "/controls/0/red/message": "shipping single subject JWT lifetime is eight hours\n\n3600 !== 28800\n"
+        }
+      },
+      "restored": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/controls/0/id": "single-shipping-eight-hour-exchange",
+          "/controls/0/expected": "actual exchange exp-iat is3600; independent oracle requires28800",
+          "/controls/0/restored/verdict": "PASS",
+          "/controls/0/restored/exit/code": 0
+        }
+      }
+    },
+    "oidc-csrf": {
+      "baseline": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/stages/7/id": "owner-browser",
+          "/stages/7/verdict": "PASS",
+          "/stages/7/exit/code": 0
+        }
+      },
+      "broken": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/controls/1/id": "csrf",
+          "/controls/1/expected": "owner cookie mutation with invalid CSRF reaches200/effect instead of403/no effect",
+          "/controls/1/red/verdict": "FAIL",
+          "/controls/1/red/exit/code": 1,
+          "/controls/1/red/error": "ERR_ASSERTION",
+          "/controls/1/red/message": "owner transport status oracle\n\n200 !== 403\n"
+        }
+      },
+      "restored": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/controls/1/id": "csrf",
+          "/controls/1/expected": "owner cookie mutation with invalid CSRF reaches200/effect instead of403/no effect",
+          "/controls/1/restored/verdict": "PASS",
+          "/controls/1/restored/exit/code": 0
+        }
+      }
+    },
+    "oidc-consumer-current-data-authority-bypass": {
+      "baseline": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/stages/5/id": "owner-consumer",
+          "/stages/5/verdict": "PASS",
+          "/stages/5/exit/code": 0
+        }
+      },
+      "broken": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/controls/2/id": "consumer-current-data-authority-bypass",
+          "/controls/2/expected": "after native role permissions narrow to empty, existing valid subject DATA read incorrectly returns200; oracle requires401/403",
+          "/controls/2/red/verdict": "FAIL",
+          "/controls/2/red/exit/code": 1,
+          "/controls/2/red/error": "ERR_ASSERTION",
+          "/controls/2/red/message": "next DATA operation must read current role authority"
+        }
+      },
+      "restored": {
+        "attribution": {
+          "core": "195c932293f3abc648da8fbe4356bf7360acd002"
+        },
+        "assertions": {
+          "/controls/2/id": "consumer-current-data-authority-bypass",
+          "/controls/2/expected": "after native role permissions narrow to empty, existing valid subject DATA read incorrectly returns200; oracle requires401/403",
+          "/controls/2/restored/verdict": "PASS",
+          "/controls/2/restored/exit/code": 0
+        }
+      }
+    },
+    "clinical-causal-green-red-restored": {
+      "broken": {
+        "attribution": {
+          "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+          "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003"
+        },
+        "assertions": {
+          "/sourceMetadata/source": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+          "/label": "DIFFERENT",
+          "/differingHashes": 286,
+          "/returnCode": 1,
+          "/baseCycles": 288,
+          "/candidateCycles": 288
+        }
+      },
+      "restored": {
+        "attribution": {
+          "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+          "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003"
+        },
+        "assertions": {
+          "/sourceMetadata/source": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+          "/label": "IDENTICAL",
+          "/differingHashes": 0,
+          "/returnCode": 0,
+          "/baseCycles": 288,
+          "/candidateCycles": 288
+        }
+      },
+      "baseline": {
+        "attribution": {
+          "core": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+          "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003"
+        },
+        "assertions": {
+          "/2/case": "deploy-due-60000",
+          "/2/exit": 0
+        }
+      }
+    }
+  },
+  "nativeEvaluatorTimeWitness": {
+    "artifact": {
+      "path": "reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/strict-time/observation.private.json",
+      "sha256": "1e43a6c80f5924673f59d9b1881fb7c1623f4ed88aa546fed6db74aeccc934ab"
+    },
+    "attribution": {
+      "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+      "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+      "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+      "instrument": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d"
+    },
+    "tenants": 2,
+    "services": [
+      "evaluator",
+      "evaluator-2",
+      "evaluator-3"
+    ],
+    "proofPointer": "/proof"
+  }
+}

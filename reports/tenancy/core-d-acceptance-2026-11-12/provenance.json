@@ -1,0 +1,133 @@
+{
+  "recordType": "NEW_BOUNDED_PROVENANCE_DERIVATIVE",
+  "source": {
+    "coreCommit": "2d0ae0354a38b4a88f43bc2ae5ec60c085058f64",
+    "deployCommit": "dcc4a70bafd4edf31c5cab4bf3099883bd7e37f9",
+    "alignmentCommit": "c33acdc48208586354002573b93ce4f33d6c0c6a"
+  },
+  "harnessCommit": "f660a1171d605d6ad7517328a6ae0e8423a2e825",
+  "transportBundleManifestSha256": "84413a438d6ea29e4441a8a942896e7d1cf19dd7adb1300b1cee0bbe9c548886",
+  "runDeclaredSpecSha256": "66c7b8aa435d37dd6cc2867bb69611cdcb20466ace36f04a7c4898049b64c546",
+  "remoteToolchain": {
+    "commit": "2d0ae0354a38b4a88f43bc2ae5ec60c085058f64",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "ciEnvironmentSha256": "97ebaee8ecab5deb14c434c34e2cb05b3235b5e7a55224b82d5e3e7e4f4a0fff",
+    "nodeVersion": "v24.22.1",
+    "npmVersion": "11.19.1",
+    "nodeBinarySha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+    "instrumentCommit": "f660a1171d605d6ad7517328a6ae0e8423a2e825",
+    "workerSha256": "07b4e4e4c36e3c0bc265efc66552be9d645cae579e67c9987a517069e4936e0d"
+  },
+  "kernel": "6.8.0-147-generic",
+  "rawPrivateArtifactSha256": {
+    "spec": {
+      "sha256": "7121688487e50063d4a7a13eb46547d9af72ec1ef92b765352be0318bda583e4",
+      "bytes": 1828
+    },
+    "remote-spec": {
+      "sha256": "2888e73fa98a18717c941414097b6a7f195700b001ae8b87fc4eb472f1b9eb00",
+      "bytes": 1718
+    },
+    "run": {
+      "sha256": "b3fdb7a05ad9d4dbd8097d0db63f0c644cbd0c6964d2a7ecaf409fdb6b533574",
+      "bytes": 574
+    },
+    "controller-result": {
+      "sha256": "e5d14c7dfd453a5ed73285d5f8ab65af828ad61c337756574def44cf1cb97a43",
+      "bytes": 1741
+    },
+    "watchdog-result": {
+      "sha256": "a5d203d83e10fae315828d9a423fc0e160a848aae34fe1bcd343b2122cce295d",
+      "bytes": 234
+    },
+    "final-provider-inventory": {
+      "sha256": "1444738264e52c560aef8a9dab47dcb6d702ac522e4f435ea7b9750419956ee7",
+      "bytes": 173
+    },
+    "compute-estimate": {
+      "sha256": "1fe67be1fb9c7ad158cea0f358f1cee78dfeb3b3761c84595ea6657d538a2f36",
+      "bytes": 195
+    },
+    "pricing": {
+      "sha256": "04bca5fadf5751eefa6e2aed8da46a3d15ad7a4e0e8d660e3766c6cede239de2",
+      "bytes": 159
+    },
+    "acceptance-plan": {
+      "sha256": "91d4984f758f9f56f6c0e5995c67b9856753af760d0c79a7a4e1287d94e646a7",
+      "bytes": 6121
+    },
+    "execution-authorization": {
+      "sha256": "41723ed5a8eaea282318660ecc2fae9bd6fd396e28cb04ad40637c562fda66fe",
+      "bytes": 867
+    },
+    "worker-result": {
+      "sha256": "9273fa0d1f5fff2cc1f4f581c535ca16ecd95d8ffe0fdb92106ed93d12335a82",
+      "bytes": 22043
+    },
+    "worker-commands": {
+      "sha256": "6e3fbb46c2010037c7dacea1ffbb7ab99296a047fe86f3b65a1a15251c5bd37d",
+      "bytes": 19859
+    },
+    "source-provenance": {
+      "sha256": "44e329a19c35f8f727569a46d6caf0f4436d0b20d6f300979d9ab2941bfb6d87",
+      "bytes": 534
+    },
+    "host-provenance": {
+      "sha256": "be91cda55bcf9d2c074fd3670fc4af52378f0aae3e7b814236b199e73522c31d",
+      "bytes": 5044
+    },
+    "app-bundle-provenance": {
+      "sha256": "f8893dee9e3954eb1dbadf9d918f8a39c030fba000d1e5ea68d75f73021b07cc",
+      "bytes": 2654
+    },
+    "unit-stdout": {
+      "sha256": "9ec18ab6844782029ebf2389d046592100681bf504e5314aea57f997fb7f1403",
+      "bytes": 660668
+    },
+    "unit-stderr": {
+      "sha256": "618e14ec844a05bae46483ccee1d8f3951717898f7e07787bf3fad2ee6aa3dd4",
+      "bytes": 19282
+    },
+    "remote-evidence-archive": {
+      "sha256": "ec12cf4b612be142046696acf8567517f6c359e4d527d2672bcb08378354c4c1",
+      "bytes": 530405
+    },
+    "checkpoint-archive": {
+      "sha256": "64cf0519926dc91889976c44c7fb0f8c636a44e52aa19657af3cb123c6fb3565",
+      "bytes": 257224
+    },
+    "checkpoint-status": {
+      "sha256": "99f942749b2f08bd0f1c8ea6817ab00a239429092d2cfeab735c4671a18ed103",
+      "bytes": 72
+    },
+    "collection-manifest": {
+      "sha256": "1f5afff42a9f7b57217ceeb25edc9136a36061663e96dd2dad1b05c986d29fc9",
+      "bytes": 1892
+    }
+  },
+  "readDerivedSourceSha256": {
+    "tests/internal-api-contracts.test.js": "36a744279c3d60538320fea91f79f469cb0a139b11a6518107626665f34bb291",
+    "lib/server/internal-api/contracts/evaluator-inspection.json": "a288078ac447948e08d4b23438c92480638533bdf3accef19bcfe37f77e3397c",
+    "lib/server/internal-api/contracts/index.js": "f5aa3c56d9d95b6040f6137699e62321969e8dd1c569af0839258efa2d9b38ba",
+    "tests/moment-memo.test.js": "26bd36637534dec1d59ffbd249b85f223f9992b660e6352fece04d1ebfbe6bce",
+    "tests/tiers.json": "2384742b5f1d81606d6a39a4e03bcc74daabf4121640f0ce5a91d97fe90c6c0d",
+    "scripts/test-multitenant.js": "ece879b9c642f9384b042f7fe4270a69a5102b86b56120fcaf7056b9340c1e98"
+  },
+  "workerInstrumentVerification": {
+    "recordedRemoteWorkerSha256": "07b4e4e4c36e3c0bc265efc66552be9d645cae579e67c9987a517069e4936e0d",
+    "committedInstrumentPath": "tools/perf-cloud/core-acceptance.py",
+    "committedInstrumentSha256": "07b4e4e4c36e3c0bc265efc66552be9d645cae579e67c9987a517069e4936e0d",
+    "matches": true,
+    "workerBytesRetainedInDecodedArchive": false,
+    "meaning": "Captured remote source provenance matches exact committed harness source; no nonexistent raw worker-file capture is claimed."
+  },
+  "publicationTransform": "New bounded selected-field summaries and short log derivative; never raw private spec, environment, inspect, key, IP/VPC or host identifiers. Original private bytes unchanged.",
+  "localPreparation": {
+    "classification": "immutable local preparation input, distinct from remote/decoded raw capture",
+    "manifestSha256": "84413a438d6ea29e4441a8a942896e7d1cf19dd7adb1300b1cee0bbe9c548886",
+    "manifestBytes": 1003,
+    "workerSha256": "07b4e4e4c36e3c0bc265efc66552be9d645cae579e67c9987a517069e4936e0d",
+    "manifestMatchesSelectedSpec": true,
+    "workerMatchesRecordedRemoteAndCommittedInstrument": true
+  }
+}

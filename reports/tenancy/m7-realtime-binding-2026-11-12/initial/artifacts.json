@@ -1,0 +1,18 @@
+{
+  "source": "079a3b4c9a6ece9610b32025a0826f756fbb23f0",
+  "deploy": "072a55d15d5b228596215060f436bb4038a87397",
+  "bindingTree": "37f658275d9f7f6d4dd953f3140c34b1b07abd1b",
+  "node": "v22.23.4",
+  "nodeBinarySha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+  "stockClient": "4.8.3",
+  "socketServer": "4.8.3",
+  "scope": "configuration/parser/driver/socket fixture proofs, not actual shipping-role composition",
+  "publicSanitization": "owned binding absolute path prefix only in copied output",
+  "files": {
+    "compose-projection.json": "1548a10f92573e77ff40fbab687faa4094c559ddc39fdb06ecba243a2346322a",
+    "focused.txt": "6916844fda1b6542718118bd8a914de3840c08480d6d5eee87496dc619969630",
+    "polling-timeout-control.txt": "c773bbd45c389e9385371f48a1ec2be11b40802b6771da9684e1bc075d6a797f",
+    "product-parsers.txt": "0c351111f28653cff48b4a7eda8ca12212218b63646ee589e41df562321164cb",
+    "wrong-route-control.txt": "dc9e62a8a3e0aa0fc8c75d40b4b4a40a184120edca3351306362d53c0824bc6d"
+  }
+}

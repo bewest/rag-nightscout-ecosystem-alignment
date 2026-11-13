@@ -1,0 +1,27 @@
+
+
+  D6 native metadata feed, privilege and failure controls
+    ✔ uses EXECUTE-only reader authority, emits metadata hints and preserves RLS for tenant reads (168ms)
+    ✔ duplicates hints after lost acknowledgement without advancing before a committed notification (99ms)
+    1) recovers lost notifications, reader outage and listener reconnect using paged current truth
+
+
+  2 passing (2s)
+  1 failing
+
+  1) D6 native metadata feed, privilege and failure controls
+       recovers lost notifications, reader outage and listener reconnect using paged current truth:
+
+      AssertionError [ERR_ASSERTION]: D6_READER_OUTAGE_BACKSTOP
+
+'1' !== '3'
+
+      + expected - actual
+
+      -1
+      +3
+      
+      at Context.<anonymous> (tests/change-feed.integration.test.js:106:73)
+
+
+

@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+ok 1 - bounded diagnostic uses registered-host stock polling, current frame and unaided recovery
+  ---
+  duration_ms: 634.952609
+  type: 'test'
+  ...
+# Subtest: wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+ok 2 - wrong127URL/extraHeaders client model is rejected instead of measured as product latency
+  ---
+  duration_ms: 1003.166855
+  type: 'test'
+  ...
+# Subtest: HTTP ACK without a current frame cannot produce diagnostic PASS
+ok 3 - HTTP ACK without a current frame cannot produce diagnostic PASS
+  ---
+  duration_ms: 1003.164678
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+ok 4 - late second-tenant status refusal retains sanitized status and code 401/AUTHORITY_FORBIDDEN
+  ---
+  duration_ms: 5.836607
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+ok 5 - late second-tenant status refusal retains sanitized status and code 503/UNEXPECTED_UNAVAILABLE
+  ---
+  duration_ms: 4.71492
+  type: 'test'
+  ...
+# Subtest: late second-tenant status refusal retains sanitized status and code 503/null
+ok 6 - late second-tenant status refusal retains sanitized status and code 503/null
+  ---
+  duration_ms: 5.612564
+  type: 'test'
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+ok 7 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 503
+  ---
+  duration_ms: 279.201113
+  type: 'test'
+  ...
+# Subtest: spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+ok 8 - spawned CLI exits promptly after fourth HTTP refusal with a connected frameless stock socket 401
+  ---
+  duration_ms: 284.28652
+  type: 'test'
+  ...
+# Subtest: typed status warming becomes200 while retaining first refusal and separate accounting
+ok 9 - typed status warming becomes200 while retaining first refusal and separate accounting
+  ---
+  duration_ms: 967.932693
+  type: 'test'
+  ...
+# Subtest: global warming probe limit refuses before a further request or mutation
+ok 10 - global warming probe limit refuses before a further request or mutation
+  ---
+  duration_ms: 207.97976
+  type: 'test'
+  ...
+# Subtest: spawned CLI exhausts unchanged deadline while warming and exits cleanly
+ok 11 - spawned CLI exhausts unchanged deadline while warming and exits cleanly
+  ---
+  duration_ms: 1204.248553
+  type: 'test'
+  ...
+# Subtest: warming followed by 401 does not broaden retry policy
+ok 12 - warming followed by 401 does not broaden retry policy
+  ---
+  duration_ms: 211.696212
+  type: 'test'
+  ...
+# Subtest: warming followed by 503 does not broaden retry policy
+ok 13 - warming followed by 503 does not broaden retry policy
+  ---
+  duration_ms: 208.481802
+  type: 'test'
+  ...
+# Subtest: real SDK child CLI completes warming-to200 and stock frame/recovery criteria
+ok 14 - real SDK child CLI completes warming-to200 and stock frame/recovery criteria
+  ---
+  duration_ms: 1178.629724
+  type: 'test'
+  ...
+# Subtest: exchange warming refusal is not a status probe or credential fallback
+ok 15 - exchange warming refusal is not a status probe or credential fallback
+  ---
+  duration_ms: 4.180611
+  type: 'test'
+  ...
+# Subtest: mutation warming refusal is never retried
+ok 16 - mutation warming refusal is never retried
+  ---
+  duration_ms: 57.003999
+  type: 'test'
+  ...
+# Subtest: probe count cannot be configured beyond the production bound
+ok 17 - probe count cannot be configured beyond the production bound
+  ---
+  duration_ms: 0.216773
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7417.092976

@@ -1,0 +1,19 @@
+{
+  "kind": "bounded-readonly-postgres-log-filter",
+  "since": "2026-11-12T22:37:33.270000Z",
+  "diagnosticStartedAtMs": 1794523053270,
+  "completeStream": true,
+  "childExitCode": 0,
+  "inputBytes": 672306,
+  "maxInputBytes": 16777216,
+  "maxSeconds": 15,
+  "unknownLineCount": 4801,
+  "overflowOrLongLineCount": 0,
+  "matched": [
+    {
+      "timestamp": "2026-11-12T22:37:44.607207640Z",
+      "class": "RESERVED_CONNECTION_SLOTS"
+    }
+  ],
+  "scope": "exact stopped retained PG CID; no raw lines/SQL/addresses/data persisted"
+}

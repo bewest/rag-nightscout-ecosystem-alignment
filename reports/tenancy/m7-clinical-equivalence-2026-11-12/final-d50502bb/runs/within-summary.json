@@ -1,0 +1,24 @@
+[
+  {
+    "plugins": "deploy",
+    "crossTreeVerdicts": "IDENTICAL",
+    "crossTreeTransitions": "IDENTICAL",
+    "verdicts": [
+      "PASS ALARM_SET_EQUIVALENT slow=1000 :: 17 transitions, due at most 0 ms before base",
+      "PASS CONTENT_EQUIVALENT slow=1000 :: 19 base content transitions, 19 due",
+      "PASS ALARM_SET_EQUIVALENT slow=60000 :: 17 transitions, due at most 0 ms before base",
+      "PASS CONTENT_EQUIVALENT slow=60000 :: 19 base content transitions, 19 due"
+    ]
+  },
+  {
+    "plugins": "full",
+    "crossTreeVerdicts": "IDENTICAL",
+    "crossTreeTransitions": "IDENTICAL",
+    "verdicts": [
+      "PASS ALARM_SET_EQUIVALENT slow=1000 :: 52 transitions, due at most 999 ms before base",
+      "DIFF CONTENT_EQUIVALENT slow=1000 :: 245 base content transitions, 245 due",
+      "PASS ALARM_SET_EQUIVALENT slow=60000 :: 52 transitions, due at most 999 ms before base",
+      "DIFF CONTENT_EQUIVALENT slow=60000 :: 245 base content transitions, 156 due"
+    ]
+  }
+]

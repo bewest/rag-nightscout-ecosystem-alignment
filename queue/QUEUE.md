@@ -33,19 +33,19 @@ One queue spans every programme on purpose, so that a tenancy task colliding wit
 |---|---|
 | items | 411 |
 | runnable gates | 452 |
-| explicit `no-gate:` markers | 412 |
+| explicit `no-gate:` markers | 413 |
 
-A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 412 of the 864 gate slots in this queue are in that state.
+A `no-gate:` marker is not a gap in the bookkeeping; it is the bookkeeping. It records that no gate measures the property, and it carries the reason. 413 of the 865 gate slots in this queue are in that state.
 
 ### Claimed state (NOT a measurement -- run `make queue-status`)
 
 | state | n | ids |
 |---|---|---|
-| `not-started` | 78 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-ANDROID-LAB |
-| `in-progress` | 24 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, MT-BENCH-BASELINE, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
+| `not-started` | 76 | RT-JSDOM-REST, RT-16-LIVE-ALARMS, RT-16-TOKEN-8829, RT-BUNDLE-THEME-SPLIT, BFQ-21, BFQ-19, BFQ-22, BFQ-23, BFQ-25, BFQ-24, BFQ-26, BFQ-27, BFQ-18, BFQ-20, BFQ-CAP01, T43, T44, A7A-3, A7A-4, WC-R2-QA, WC-R2-QB, WC-R2-QC, WC-R2-QD, WC-R2-QE, WC-R2-QF, WC-R2-QH, WC-R1-QG, WC-R1-QI, ID-NATURAL-KEY, ID-RESEND-SWITCH, DISPLAY-MEAL-GROUP, DOC-SEQUENCING, DOC-PLAN, DOC-REGISTER, DOC-MEMORY, DOC-LAYOUT, DOC-TESTSCRIPTS, BFQ-MINIMED, BFQ-96, BFQ-67, BFQ-CAP02, FU-LIMIT, FU-PRBODIES, FU-HYGIENE, BFQ-149, BFQ-181, BFQ-196, BFQ-184, BFQ-187, BFQ-188, BFQ-189, BFQ-208, OID-PREVALENCE, OID-MIGRATION, OID-STORAGE-HELPER, OID-UNUSABLE-ID-OTHER-PATHS, OID-PROFILE-RESEND, TEST-FLAKE-REPOST-FIND-COUNT, OID-ENTRIES-REPLY-ID, OID-NE-OPERATOR, OID-DEVICESTATUS-MIXED-ERRORS, OID-V3-EDIT-MERGE, OID-WS-EDIT-MERGE, OID-DOCS, LAB-G7-TWO-DISPLAY, LAB-TRIO-INTENT, SPEC-REG-MODES, HUB-REG-CRM-SEAM, HUB-REG-CRM-ADMIN, SPEC-REG-MIGRATE, HUB-REG-NOCTURNE, PROPOSAL-REG-CONTROLLERS, ARCH-SQLITE-SPIKE, DEPLOY-IDP-PROFILE, DEPLOY-TRUST-PROBES, MT-ANDROID-LAB |
+| `in-progress` | 29 | MT-NEXTGEN-PLAN, BFQ-178, RT-16-RELEASE, RT-16-RIG-SOAK, ID-BATCH-RESULTS, ID-CONVENTIONS, ID-UNIQUE-INDEX, BFQ-191, OID-LAB, HUB-REG-CRM, ARCH-SEAM-CONTRACT, ARCH-SEAM-COMPOSE, ARCH-SEAM-CONSOLIDATE, ST-VIEWS-PROFILE, ARCH-DERIVED-FRAME, MT-ENDPOINT-TRANSPORT, MT-API-FIXED-ROSTER, DEPLOY-VAULT-AGENT, MT-BENCH-BASELINE, MT-REALTIME-SHARDING, MT-SCALE-UNBOUND, MT-EVALUATOR-PARTITION, DEPLOY-K8S-BINDING, MT-CAPACITY-FIXES, MT-TENANT-REGISTRY, MT-TENANT-LIVE-ADD, MT-REALTIME-SOCKET-CAP, MT-AUTHZ-COST, MT-D6-SLOT-READER |
 | `gate-not-met` | 3 | DOC-EXPOSURE, BFQ-CONNECTOR, RT-BOOTERROR |
-| `ready-to-push` | 10 | WS-LAB, DEPLOY-TREE-HOME, DEPLOY-VAULT-AGENT, MT-EVALUATOR-PARTITION, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
-| `blocked` | 12 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164, MT-TENANT-LIVE-ADD |
+| `ready-to-push` | 8 | WS-LAB, DEPLOY-TREE-HOME, MT-POOL-PRIMITIVE, MT-CONNECTOR-REVERSE, MT-PERF-DB, MT-PERF-REALTIME, MT-PERF-EVALUATOR, MT-EVAL-COST |
+| `blocked` | 11 | T31-REM, T33-REM, A7A-GATE, ID-VALIDATE, ID-V1-LOOKUP, BFQ-72, BFQ-52, BFQ-66, BFQ-154, BFQ-161, BFQ-164 |
 | `in-flight-upstream` | 21 | BFQ-212, BFQ-225, LOOP-UPSTREAM-CARB-EDIT, PLAT-ENTRY, MT-OIDC-NATIVE, MT-M6A-JOIN, MT-M6B-JOIN, MT-OIDC-SINGLE-PROVISION, MT-OWNERSHIP-OPS, MT-ADMIN-ROLE-OWNERSHIP, MT-ROOT-ADMIN-PARITY, MT-INTERNAL-LISTENER, MT-ACTIVITY-ELIGIBILITY, MT-EXPORT-EXPIRY, MT-ADMIN-LIFECYCLE-FIT, MT-CONSUMER-STALE-RESELECT, MT-TENANT-EXTENDED-SETTINGS, MT-BATCH-JOIN-1110, MT-OWNER-LAST-GUARD, MT-KEY-RETENTION, MT-VAULT-TOKEN-FILE |
 | `merged-upstream` | 84 | BFQ-177, RT-D3-SUITE, RT-REBASE, RT-TEST-TIERS, RT-CI-DIAGONAL, RT-CI-WEBKIT-REPORTS, RT-CI-FLAKES-8DBB60C2, RT-BOOT-INDEX-AWAIT, RT-CONNECT-TEARDOWN, RT-1, RT-2, RT-3, RT-5, ID-SIMPLE-MATCH, BFQ-09, WRITE-CONTRACT, ARCH-8854, WC-STEP-PATCH, ID-FIRST-MATCH, BFQ-46, BFQ-92, BFQ-93, BFQ-158, RT-CONNECT-PIN-CUTS, RT-NODE-FLOOR-TESTED, BFQ-137, BFQ-145, RT-PR-8730, BFQ-152, BFQ-156, BFQ-157, BFQ-159, BFQ-160, BFQ-163, BFQ-165, BFQ-166, BFQ-167, BFQ-169, BFQ-170, BFQ-172, BFQ-173, BFQ-174, BFQ-176, BFQ-179, BFQ-180, BFQ-182, BFQ-183, BFQ-185, BFQ-186, BFQ-190, BFQ-201, BFQ-202, BFQ-203, BFQ-204, BFQ-205, BFQ-206, BFQ-207, BFQ-209, BFQ-211, BFQ-213, BFQ-214, BFQ-217, BFQ-223, BFQ-224, BFQ-226, BFQ-219, BFQ-220, BFQ-221, BFQ-222, BFQ-192, BFQ-193, BFQ-194, BFQ-200, BFQ-195, MOD-WRITE-VALIDATION, ST-FILTER-READS, ST-WRITES, ST-COUNT-ONEPATH, PLAT-SERVE, DEV-LINT-OVERLAY-REGEX, UI-DRAWER-RESIZE, UI-STALE-SECRET-HASH, BFQ-227, RT-CI-FIXTURES-8896 |
 | `released` | 93 | P0-A, P0-B, P0-C, P0-J, P0-C-REMEDIATE, P0-D, P0-E, P0-F, P0-G, P0-H, P0-I, P0-K, P0-CONNECT-ROLE, BFQ-91, P0-PIN, P0-LOCK, P0-PUBLISH, P0-T01, RT-COUNT0, RT-MONGO-FLOOR, RT-COUNT-COMPAT, RT-TRUST-ONE-SOURCE, RT-LOOP-REMOTE-ADDRESS, RT-0, RT-4, BFQ-10, BFQ-04, BFQ-69, BFQ-40, BFQ-87, BFQ-47, BFQ-90, BFQ-94, FU-RESIDUALS, ADV-RETRO, ADV-ALARM, BF2-AUTH, BF2-BACKPORT, BF2-OPS, BFQ-103, BFQ-106, BFQ-107, BFQ-108, BFQ-97, BFQ-98, BFQ-99, BFQ-100, BFQ-101, BFQ-102, BFQ-109, BFQ-110, BFQ-111, BFQ-112, BFQ-113, BFQ-115, BFQ-116, BFQ-117, BFQ-114, RT-PR-8419, RT-PR-8530, BFQ-118, BFQ-119, BFQ-120, BFQ-121, BFQ-122, BFQ-123, BFQ-124, BFQ-125, BFQ-126, BFQ-127, BFQ-128, BFQ-136, BFQ-80, BFQ-147, RT-PR-8778, RT-PR-8788, RT-PR-8790, BFQ-151, BFQ-73, BFQ-153, BFQ-155, BFQ-CONFIG-DOCS, BFQ-162, BFQ-168, RT-PR-8815, RT-PR-8781, BFQ-134, BFQ-129, BFQ-130, BFQ-131, BFQ-133, BFQ-142, BFQ-146 |
@@ -8465,15 +8465,15 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-OWNER-LAST-GUARD` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | `in-flight-upstream` | `codex/m6b-followups-20261110` | n/a | 1 run |
 | `MT-KEY-RETENTION` | M6b: 30-day retained-key destruction and after-window refusal | `in-flight-upstream` | `codex/key-retention-20261110` | minor | 1 run |
 | `MT-VAULT-TOKEN-FILE` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | `in-flight-upstream` | `codex/vault-token-file-20261109` | minor | 1 run |
-| `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `ready-to-push` | `main` | n/a | 1 run |
+| `DEPLOY-VAULT-AGENT` | M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal) | `in-progress` | `codex/m7-join-20261112` | n/a | 1 run + 1 no-gate |
 | `DEPLOY-IDP-PROFILE` | M6c: Authentik identity-provider profile over HTTPS with synthetic people | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-TRUST-PROBES` | M6c: live spoof, conflict and outage probes against the Compose edge and Vault; trust record | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-CONNECTOR-SYNC` | M6d: nightscout-connect pulls from a tenant with a pre-issued reader credential | `done` | `main` | n/a | 1 run |
 | `MT-BENCH-BASELINE` | M7: benchmark the one-host reference and publish the numbers | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-BENCH-CONTRAST` | M7: contrast the multitenant cohort with existing deployment shapes at equal load | `closed` | `main` | n/a | 0 run + 1 no-gate |
-| `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `not-started` | `codex/realtime-sharding` | minor | 0 run + 1 no-gate |
-| `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `not-started` | `workspace/multitenant-20261102` | n/a | 0 run + 1 no-gate |
-| `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table | `ready-to-push` | `codex/evaluator-partition-20261110` | minor | 0 run + 1 no-gate |
+| `MT-REALTIME-SHARDING` | M7: realtime tenant sharding, controlled ownership moves and recovery | `in-progress` | `codex/m7-join-20261111` | minor | 0 run + 1 no-gate |
+| `MT-SCALE-UNBOUND` | M7: prove each component scales horizontally or vertically as intended, with no hidden binding | `in-progress` | `codex/m7-join-20261111` | n/a | 0 run + 1 no-gate |
+| `MT-EVALUATOR-PARTITION` | M7: evaluator partitioning by member count and ordinal, with a pool-membership table | `in-progress` | `codex/evaluator-partition-20261110` | minor | 0 run + 1 no-gate |
 | `MT-ANDROID-LAB` | M7: Android emulator acceptance for the pinned uploader and follower shapes | `not-started` | `main` | n/a | 0 run + 1 no-gate |
 | `DEPLOY-K8S-BINDING` | M7: Kubernetes binding (one Pod per cohort, private socket volume, no-overlap update) | `in-progress` | `main` | n/a | 0 run + 1 no-gate |
 | `MT-POOL-PRIMITIVE` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice) for evaluator and vcpool | `ready-to-push` | `codex/pool-primitive-20261110` | n/a | 0 run + 1 no-gate |
@@ -8483,9 +8483,9 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-PERF-EVALUATOR` | Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll | `ready-to-push` | `codex/perf-evaluator-20261110` | n/a | 0 run + 1 no-gate |
 | `MT-CAPACITY-FIXES` | Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering | `in-progress` | `workspace/capacity-fixes-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-TENANT-REGISTRY` | Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming | `in-progress` | `workspace/tenant-registry-20261111` | n/a | 0 run + 1 no-gate |
-| `MT-TENANT-LIVE-ADD` | Running evaluator and realtime pick up newly provisioned tenants without a restart | `blocked` | `-` | n/a | 0 run + 1 no-gate |
+| `MT-TENANT-LIVE-ADD` | Running evaluator and realtime pick up newly provisioned tenants without a restart | `in-progress` | `codex/m7-join-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-REALTIME-SOCKET-CAP` | Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits | `in-progress` | `workspace/realtime-cap-20261112` | n/a | 0 run + 1 no-gate |
-| `MT-AUTHZ-COST` | api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request | `in-progress` | `workspace/authz-cost-20261112` | n/a | 0 run + 1 no-gate |
+| `MT-AUTHZ-COST` | API authorization cost: permission snapshot, batched audit, bounded lifetime sessions and signature-proof reuse | `in-progress` | `codex/m7-join-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order | `ready-to-push` | `codex/eval-cost-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-D6-SLOT-READER` | D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N | `in-progress` | `workspace/d6-slot-20261112` | n/a | 0 run + 1 no-gate |
 
@@ -10671,6 +10671,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `externals/work/crm-api-replicas-20261112` |
 | semver | `minor` |
 | review | maintainer; compatibility, architecture and deployment operations review |
+| register | `BF-237` |
 
 **Blast radius.** Shared internal service transport, schemas, named clients and consuming-role UDS/HTTP endpoint configuration exist in joined dc795bd1. Remaining scope: compose explicitly registered application/lifecycle/operational modules on component-private listeners; per-operation lifetime and response-format rules; qualify a selected private network binding. Public/management APIs remain separate.
 
@@ -10688,13 +10689,15 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/cohort-constructor-snapshot-2026-11-12/README.md`
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
 - `reports/tenancy/internal-service-api-2026-11-09/README.md`
 - `reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/test-all-and-browser.txt`
 
-**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion. 2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a response whose media type only starts with application/json is now refused by the client. Finding: on shutdown close() drops in-flight connections before handlers finish, consistent with the no-retry contract; a decision for the replica/drain owner. 2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment and the shared-listener configuration shape remain. 2026-11-12: remainder (real-role replicas, drain, deployment binding) taken with MT-API-FIXED-ROSTER on workspace/api- replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6); the listener-composition history stays on codex/listener- composition-20261110.
+**Notes.** 2026-11-10 reconciliation: source implementation exists and is incorporated in the joined dc795bd1 candidate; its recorded regression/browser/corpus/OIDC acceptance retains that executed source and instrument. Documentation-only descendant 692bd507 clarifies private application versus lifecycle purpose. One contract/listener is the current implementation, not an architectural requirement to create a socket for every module. Remaining work is owned by one endpoint/composition capability lane with its helper/fixtures/controls. Confirm actual current source and task openness before implementation. An optional edge decision adapter needs a selected status/metadata/header contract; it is not a mandatory dependency of transport acceptance. No production admission, multi-host restore, capacity or milestone promotion. 2026-11-10 (reproduced): listener composition d69b873a joined into the accepted M6b candidate b70ad83f (MT-M6B-JOIN). No internal path, header or schema changed; a response whose media type only starts with application/json is now refused by the client. Current source includes graceful response drain and its early-drop semantic control; actual serving-replica maintenance acceptance remains open. 2026-11-10: listener composition ships in #8898 at b70ad83f (CI green); real-role deployment and the shared-listener configuration shape remain. 2026-11-12: remainder (real-role replicas, drain, deployment binding) taken with MT-API-FIXED-ROSTER on workspace/api- replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6); the listener-composition history stays on codex/listener- composition-20261110.
 
 ### `MT-API-FIXED-ROSTER` &mdash; Independent API scaling with a fixed restore participant roster
 
@@ -10722,13 +10725,14 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 - `docs/30-design/tenancy/deployment-bindings-and-public-names.md`
 - `docs/30-design/tenancy/sql-and-migration-architecture.md`
 - `docs/30-design/tenancy/tenant-admission-and-activity.md`
 - `reports/tenancy/operation-window-acceptance-2026-11-07/README.md`
 
-**Notes.** Fixed-roster replica implementation is not started; its branch name is proposed, not created. It consumes the incorporated dc795bd1 transport/schema foundation and remaining endpoint/composition/deployment acceptance. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Application service routing and exact per-instance lifecycle addressing stay distinct even when contracts share a component-private port. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion. 2026-11-12: started on workspace/api-replicas-20261112 (worktree externals/work/crm-api- replicas-20261112, base 5c60aec6), one lane with the MT-ENDPOINT-TRANSPORT remainder; follows decisions.md#authorize-cost-first.
+**Notes.** Fixed-roster configuration and client implementation are incorporated locally; actual serving-replica acceptance remains open. It consumes the incorporated dc795bd1 transport/schema foundation and remaining endpoint/composition/deployment acceptance. One complete API capability owner integrates with the endpoint lane and existing coordinator. Fixed-roster APIs need no evaluator producer lease. Consume platform/config inventory as a supplied roster; do not build a parallel membership service or custom evaluator scheduler. Application service routing and exact per-instance lifecycle addressing stay distinct even when contracts share a component- private port. APIs consume shared operation admission and local invalidation, not a restore orchestrator in every replica. Broader inactive-resource policy stays with TEN-RESOLVE; these endpoint/API gates preserve current maintenance semantics. Evaluator remains one active owner; partitioning/replication, realtime replication, dynamic membership/autoscaling, transaction poolers, Kubernetes proof and Jsonnet are outside this capability. No parent milestone promotion. 2026-11-12: started on workspace/api-replicas-20261112 (worktree externals/work/crm-api-replicas-20261112, base 5c60aec6), one lane with the MT-ENDPOINT-TRANSPORT remainder; follows decisions.md#authorize-cost-first.
 
 ### `MT-OIDC-NATIVE` &mdash; M6a: run the nine-stage owner/OIDC native matrix through a disposable harness
 
@@ -11286,16 +11290,16 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-progress` |
 | repo | `nightscout-deploy` |
-| branch | `main` |
+| branch | `codex/m7-join-20261112` |
 | base | `main@75f0f61` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
 | blocks on | `MT-VAULT-TOKEN-FILE` |
 
-**Blast radius.** bindings/compose: a `vault-agent` service with AppRole auto-auth, a token sink on a shared read-only volume mounted into api/realtime/evaluator/tenant-admin, a Transit policy per tenant key; bootstrap issues the AppRole, not per-tenant root tokens. Probes: renewal after TTL, seal and unseal, AppRole secret rotation.
+**Blast radius.** Opt-in registry/static Compose overlay with one AppRole and a constant-size Transit path-pattern policy per deployment. Agent owns auto-auth, sink renewal and max-TTL reauthentication; only the exact selected API roster receives the read-only serving sink. Realtime, evaluator, UI and operation helpers receive no Agent credential. Provisioning and management issuer authority remain separate. Source/state/roster custody, no-fallback refusal, rotation and outages are tested.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -11303,14 +11307,16 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
+- **NO GATE** &mdash; The registry/fixed-replica conversion passes focused and actual Agent/Vault/API criteria on its recorded source pair. Final coherent source-pin refresh, paired acceptance and component capacity remain UNMEASURED. The historical main/ed2 static gate below does not establish those new criteria.
 - `[static]` `cd /home/bewest/src/nightscout-deploy && npm test >/dev/null && test -f bindings/compose/vault-agent/compose.vault-agent.yaml && grep -q renew-self bindings/compose/vault-agent/vault-agent-bootstrap.js && tools/compose-identity-check.sh /tmp/crm-tenant-order-integration-20261107 >/dev/null`
-  - nightscout-deploy main cda38265: overlay present, Agent role grants renew-self/lookup-self (the first run showed re-auth each TTL instead of renewal without it), imported tree still byte-identical to ed2. The measured Compose smoke (renewal past a 2-minute TTL, stopped Agent fails closed with env tokens present, recovery after secret-id reissue, restore demo through the overlay) is recorded in reports/tenancy/vault-agent-2026-11-09/README.md; re-running vault-agent.sh is the measured gate.
+  - Historical M6c baseline only, nightscout-deploy main cda38265: overlay present, Agent role grants renew-self/lookup-self (the first run showed re-auth each TTL instead of renewal without it), imported tree still byte-identical to ed2. The measured Compose smoke (renewal past a 2-minute TTL, stopped Agent fails closed with env tokens present, recovery after secret-id reissue, restore demo through the overlay) is recorded in reports/tenancy/vault-agent-2026-11-09/README.md; re-running vault-agent.sh is the measured gate.
 
 **Evidence.**
 
+- `reports/tenancy/vault-agent-registry-2026-11-12/README.md`
 - `docs/30-design/tenancy/claimed-public-names-and-deploy-companion-2026-11-09.md`
 
-**Notes.** Deploy roadmap wave 3 ("Vault service login") is satisfied by this item; no service-login adapter is written in core. Decided 2026-11-09 (vault-one- approle-per-deployment): one AppRole per deployment; tenant separation at Vault is not a goal. Follow-up: replace the bootstrap's policy union with a path glob over tenant key names. UNMEASURED: re-auth after token_max_ttl, seal/unseal, tokenFile in roles that make no Vault calls at ed2.
+**Notes.** 2026-11-12: original delivery fa558353154c875312da984926a4efd83dfcbef6 is joined into local deployment eea9b6cac96d42b48237c00c226394f9bfe37cfb. Native pair d50502bb6126bda2bb0af384569e1d95de114f2f/43cd1e6a85e9b60a5b1b174a840609ce 938169f6 proves renewal, max-TTL reauthentication, no-fallback expiry/outage refusal and explicit recovery; production bytes are identical in delivery. Coordinator verifies all artifact/source digests, 44 actual API observations and 28 joined focused checks. The prior policy union is replaced, not treated as current capacity evidence. Machine secret-id is consumed, reusable and nonexpiring; serving tokens remain bounded. Final combined acceptance is open. Decision vault-one-approle-per-deployment: tenant separation at Vault is not a goal; no service-login or renewal loop is added to core.
 
 ### `DEPLOY-IDP-PROFILE` &mdash; M6c: Authentik identity-provider profile over HTTPS with synthetic people
 
@@ -11413,7 +11419,7 @@ alarm-readiness items, and the seam branch refresh.
 | review | maintainer |
 | blocks on | `MT-M6A-JOIN` |
 
-**Blast radius.** Measurement only, on the accepted Compose reference with synthetic tenants. Established load tooling (k6 or autocannon) drives pinned uploader/follower shapes (cgmsim, oref0 replay, browser polling) at tenant counts stepping 1, 10, 50, 200 with one hot tenant; reports p50/p95/p99 latency per route class, socket fanout latency, evaluator cycle time, PG pool/lock waits, CPU and RSS per role, disk growth per tenant-day, reconnect-flood recovery time. Independent stored-count oracle. No threshold is invented; the numbers are the deliverable.
+**Blast radius.** Measure the accepted Compose reference with the fixed normal synthetic remote- pilot workload at 500, 750 and 1000 tenants, API1/RT1/EV1, Vault SERVER and diagnostics OFF. Preserve the source-paired image, hot-factor, socket count, seed, cadence, idle/load windows and independent stored-count and recovery oracles. Publish latency, socket/current-state continuity, successful evaluator work, SQL rates/execution time by database role, service cgroup CPU/RSS and host/storage observations. SQL elapsed time is not database-role CPU. Broader component/count profiles are separately measured; no performance threshold is invented before the observations.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -11425,10 +11431,23 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-baseline-2026-11-12/attempt-c-idle-boundary/README.md`
+- `reports/tenancy/evaluator-idle-boundary-2026-11-12/README.md`
+- `reports/tenancy/external-generator-offline-join-2026-11-12/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9f9ec-1e62-settled/README.md`
+- `reports/tenancy/m7-startup-connections-2026-11-12/guard-9db-d76/README.md`
+- `reports/tenancy/evaluator-warming-collection-2026-11-12/README.md`
+- `reports/tenancy/m7-baseline-2026-11-12/attempt-b-startup-progress/README.md`
+- `reports/tenancy/m7-baseline-2026-11-12/attempt-a-image-store/README.md`
+- `reports/tenancy/m7-joined-acceptance-2026-11-12/9db-d76-293/README.md`
+- `reports/tenancy/core-h-acceptance-2026-11-12/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/README.md`
+- `reports/tenancy/m7-unaccepted-measurement-2026-11-12/independent-review/README.md`
+- `releases/cgm-remote-monitor-16.0.0/decisions.md#m7-parallel-unaccepted-measurement`
 - `docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md`
 - `docs/30-design/tenancy/m5-m6-decision-list.md`
 
-**Notes.** Maintainer 2026-11-09: for M7 we benchmark what the numbers are rather than declare them first; limits are set from measurement afterwards. Uses the disposable-harness pattern (containers by digest, reaper cleanup).
+**Notes.** 2026-11-12: core9db/deploymentd76/image293 remains locally accepted only at the linked functional receipt scope. Actual complete capacity and production M7 remain UNMEASURED. A refuses image-store identity before startup; B stops at readiness without raw refused rows. C passes readiness and idle phases, then the original module2 observer refuses already credited TIME at its final read boundary. The C record owns exact predicates and partial resource measurements; load/recovery/750/1000 are unrun. Captures, commands, failure states and verified cleanup stay immutable. The separately versioned module3 repair requires positive completed TIME after every earlier observed opportunity; final-only/uncompleted demand and all other safety refusals remain. Existing AFTER bookends are attempted in finally, retaining primary failure. External generation delegates that same helper without changing phase lengths. New instrument/native qualification is distinct from the older source observations, with no relabeling. The two-tenant startup census keeps immediate-post-health connection-budget admission open. A settled-startup witness is functional setup, not its fix. The next matched acquisition remains held for the repaired45-file instrument witness and scoped functional-reuse review. Core/settings-lifecycle changes remain a separate candidate pending one joined application acceptance; they do not silently change the reference image or workload. External-generator source and genuine offline bundle preparation are joined; actual remote installation and transport are unmeasured. Preserve observer- change limits and require a bounded separate smoke before capacity use. No pool/database limits, seed, workload, cadence or oracle are retuned to pass. Maintainer 2026-11-09: benchmark observations first, set limits afterwards; retain useful failed levels and controller/watchdog/independent cleanup.
 
 ### `MT-BENCH-CONTRAST` &mdash; M7: contrast the multitenant cohort with existing deployment shapes at equal load
 
@@ -11451,59 +11470,71 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED until run. Gate: recorded-evidence check that every shape has the same workload descriptor hash and every comparison cell is filled; control: mismatched workload hash fails.
+- **NO GATE** &mdash; Retired by decisions.md#m7-capacity-gate: maintainer removed the single-site contrast requirement. Closed by decision, not by an unrun measurement.
 
 **Evidence.**
 
-- `docs/30-design/tenancy/production-critical-path.md`
+- `releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate`
 
-**Notes.** The contrast is the argument for the deployment model; keep it numeric and synthetic. Never import a prior provider's tenant counts or incident figures.
+**Notes.** 2026-11-10: retired by the M7 capacity decision. Measure marginal resource cost and confirm at the claimed tenant count; no equal-load deployment-shape contrast is required. Historical description retained above, not an open gate.
 
 ### `MT-REALTIME-SHARDING` &mdash; M7: realtime tenant sharding, controlled ownership moves and recovery
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `codex/realtime-sharding` |
+| branch | `codex/m7-join-20261111` |
 | base | `codex/m6a-join-20261109@dc795bd1515f11808a8d0732f2be9925cb2ffcd1` |
 | worktree | `-` |
 | semver | `minor` |
 | review | maintainer; architecture, compatibility, isolation and operations review |
 | blocks on | `MT-ENDPOINT-TRANSPORT` |
 
-**Blast radius.** Proposed fixed-roster tenant-sharded realtime: stable logical assignment independent of worker/evaluator counts, consumer and alarm routing using one admitted placement generation, owner/incarnation admission, checkpoint continuity, cohort tenant-subset coverage, controlled moves and inspection. Preserve public polling/WebSocket/namespace, credential/write/ACK semantics. Evaluation and delivery remain logical components; co-location is allowed but requires resource/failure coupling acceptance, not identical pool counts.
+**Blast radius.** Implemented fixed-roster tenant-sharded realtime: stable logical assignment independent of worker/evaluator counts, consumer and alarm routing using one admitted placement generation, owner/incarnation admission, checkpoint continuity, cohort tenant-subset coverage, controlled moves and inspection. Preserve public polling/WebSocket/namespace, credential/write/ACK semantics. Evaluation and delivery remain logical components; co-location is allowed but requires resource/failure coupling acceptance, not identical pool counts.
 
-**What an operator sees.** Planned optional realtime worker placement across tenant groups. A worker move disconnects affected sessions, which must reconnect and resynchronize. Current-state recovery is distinct from alarm-event replay; a successful handoff is not confirmation that a device received the notification.
+**What an operator sees.** Optional realtime worker placement across tenant groups. A worker move disconnects affected sessions, which must reconnect and resynchronize. Current-state recovery is distinct from alarm-event replay; a successful handoff is not confirmation that a device received the notification.
 
 **Why `minor`.** Opt-in placement and coordinated internal routing/coverage contracts; no silent public-client protocol migration or new default deployment.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED until implemented. Native one-worker compatibility and two real-owner coverage: stable shard mapping, edge/alarm route agreement, polling and namespace affinity, wrong-owner refusal, durable checkpoint continuity and complete per-tenant maintenance census with old/draining owners. Controlled move/rollback must establish old-owner exclusion, preserve uncertain/late handoff attempt identity and B progress; unknown live partitions refuse speculative takeover. Controls: accept wrong assignment, reset checkpoint/consumer, activate on route/lease alone, omit a draining owner, or synthesize notification success. Inspect independent client/store outcomes. Idle/all-suspended assignments, selected co-location profile and hot-shard/reconnect pressure require explicit observed-state and finite resource oracles. No implicit durable viewer replay, exactly-once delivery, automatic partition failover or connection-sharded hot-tenant acceptance.
+- **NO GATE** &mdash; Focused core implementation measured; coherent joined acceptance and horizontal capacity remain incomplete. Native one-worker compatibility and two real-owner coverage: stable shard mapping, edge/alarm route agreement, polling and namespace affinity, wrong-owner refusal, durable checkpoint continuity and complete per-tenant maintenance census with old/draining owners. Controlled move/rollback must establish old-owner exclusion, preserve uncertain/late handoff attempt identity and B progress; unknown live partitions refuse speculative takeover. Controls: accept wrong assignment, reset checkpoint/consumer, activate on route/lease alone, omit a draining owner, or synthesize notification success. Inspect independent client/store outcomes. Idle/all-suspended assignments, selected co-location profile and hot-shard/reconnect pressure require explicit observed-state and finite resource oracles. No implicit durable viewer replay, exactly-once delivery, automatic partition failover or connection-sharded hot-tenant acceptance.
 
 **Evidence.**
 
+- `reports/tenancy/m7-joined-acceptance-2026-11-12/9db-d76-293/README.md`
+- `reports/tenancy/core-h-acceptance-2026-11-12/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md`
+- `reports/tenancy/core-g-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-core-acceptance-2026-11-12/core-e-f-failures/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/primary-761-315-source/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-761e8f-31565-source/README.md`
+- `reports/tenancy/realtime-sharding-2026-11-12/README.md`
+- `reports/tenancy/m7-realtime-binding-2026-11-12/initial/README.md`
 - `docs/30-design/tenancy/realtime-sharding-plan.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
-**Notes.** 2026-11-10 planning proposal; no application branch or implementation created. Prototype against the incorporated dc795bd1 foundation while shared private listener/operational composition joins. Fixed logical shards and explicit mapping revisions avoid remapping every tenant merely because process count changes. A tenant remains bounded by one owner; larger single-tenant fanout is a separate measured extension. First scope uses controlled fixed-roster moves and confirmed termination/effective fencing, not a lease-only promise of exclusive output. Current cohort tenant-set equality, frozen boot tenant lists and process-wide consumer identity need explicit migration; do not weaken census or reset durable state to make a prototype pass. Direct application calls retain existing authority; no mandatory broker, gateway, service- authentication redesign or discovery product. Design remains a proposal; the shard count/hash, stronger alarm replay guarantee and automated partition takeover are not adopted by creating this work item.
+**Notes.** 2026-11-12 final application batch: core9db/deploymentd76/image293 is locally accepted after CoreH full/default-browser/enabled-corpus execution, current readiness/clinical/TIME/export, scoped older proof reuse and final prcheck. Actual capacity and production M7 remain unmeasured; the linked receipt claims acceptance only. Earlier failed and unmeasured episodes retain their outcomes. 2026-11-12: original core leaf 079a3b4c9a6ece9610b32025a0826f756fbb23f0 joined. Stable logical mapping, owner-incarnation admission, separate backend and routed generations, checkpoint continuity and controlled old-owner-stop moves are implemented. Paired ff515/cf5 native controlled moves now pass, with stopped old-owner exclusion, warm checkpoint admission and unrelated B progress; original publisher failure remains unclassified. Full/corpus acceptance passes Core H; horizontal capacity remains a coordinator gate. A tenant is bounded by one owner; automatic uncertain-owner failover, durable missed-viewer alarm replay and connection-sharded hot tenants remain separate.
 
 ### `MT-SCALE-UNBOUND` &mdash; M7: prove each component scales horizontally or vertically as intended, with no hidden binding
 
 | | |
 |---|---|
-| state (claimed) | `not-started` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `workspace/multitenant-20261102` |
+| branch | `codex/m7-join-20261111` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer; architecture review |
-| blocks on | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING` |
+| blocks on | `MT-BENCH-BASELINE`, `MT-API-FIXED-ROSTER`, `MT-REALTIME-SHARDING`, `MT-EVALUATOR-PARTITION` |
 
-**Blast radius.** Under the baseline workload: API replicas 1 -> 2 -> 4 behind the edge (throughput must rise near-linearly until PG saturates; restore still addresses every instance), realtime vertical then horizontal with connection affinity measured, evaluator vertical (single owner by design: show cycle time scales with CPU and record where partitioning would be needed), PostgreSQL vertical and connection pool bounds, Vault Agent per host. Any shared singleton, lock, cache or file that caps a component's scaling is a finding with file:line. Consumes MT-ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER.
+**Blast radius.** Under the baseline workload: API replicas 1 -> 2 -> 4 behind the edge (throughput must rise near-linearly until PG saturates; restore still addresses every instance), realtime vertical then horizontal with connection affinity measured, evaluator vertical and opt-in fixed-roster partitioning (measure actual completed acquisition/time work and membership transitions), PostgreSQL vertical and connection pool bounds, Vault Agent per deployment. Each tenant has one selected evaluator owner; independent worker counts do not imply shared partition membership. Any shared singleton, lock, cache or file that caps a component's scaling is a finding with file:line. Consumes MT- ENDPOINT-TRANSPORT and MT-API-FIXED-ROSTER.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -11515,22 +11546,44 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-startup-connections-2026-11-12/guard-9db-d76/README.md`
+- `reports/tenancy/m7-joined-acceptance-2026-11-12/9db-d76-293/README.md`
+- `reports/tenancy/core-h-acceptance-2026-11-12/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/README.md`
+- `reports/tenancy/m7-unaccepted-measurement-2026-11-12/independent-review/README.md`
+- `releases/cgm-remote-monitor-16.0.0/decisions.md#m7-parallel-unaccepted-measurement`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md`
+- `reports/tenancy/core-g-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-core-acceptance-2026-11-12/core-e-f-failures/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/primary-761-315-source/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-761e8f-31565-source/README.md`
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/README.md`
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/native-2d0-dcc4-first-only/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/original/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/cold-precondition/README.md`
+- `reports/tenancy/core-d-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/evaluator-contract-version/README.md`
+- `reports/tenancy/m7-profile-provenance-2026-11-12/README.md`
+- `reports/tenancy/m7-receipt-validator-2026-11-12/README.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 - `docs/30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md`
 
-**Notes.** Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read-derived at dc795bd1: realtime protocol current-authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Realtime horizontal measurement consumes the sharding correctness capability; vertical baselines can run before it. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
+**Notes.** 2026-11-12 startup connection-budget/admission finding remains open at the linked two-tenant census scope. Its settled-startup follow-up cannot stand in for component-load or cold-restart admission proof. 2026-11-12 final application batch: core9db/deploymentd76/image293 is locally accepted after CoreH full/default-browser/enabled-corpus execution, current readiness/clinical/TIME/export, scoped older proof reuse and final prcheck. Actual capacity and production M7 remain unmeasured; the linked receipt claims acceptance only. Earlier failed and unmeasured episodes retain their outcomes. 2026-11-12: source correctness, profile provenance and receipt instruments are active; actual joined scaling is UNMEASURED. The default Vault-server profile cannot substitute for an explicitly selected Agent profile. Current capacity startup/frame/SQL observations do not establish continued evaluator computation; BF-238 repair and the bounded successful-completion oracle precede new capacity runs. Idle safety now separates honest quiet observation from strict native TIME support; native stock/readiness, controlled realtime movement and clinical/TIME criteria now pass at their exact linked source pairs. CoreG passes eight default tiers but its corpus fails one permission- fixture assertion. Core9db fixes only that fixture with reproduced real-CLI red/restored controls; final source acceptance now passes Core H and the reviewed receipt. E/F/G failures retain independent outcome and cleanup scopes. Exact tested-image adoption is required for remote capacity. Component profiles remain distinct from the API-only replica comparison. Post-baseline scale-envelope planning is tracked in docs/30-design/tenancy/runtime- topology.md#scale-envelopes-and-fleet-planning; it adds no gate or prerequisite to current acceptance or the pilot. Maintainer 2026-11-09: the architecture must allow scaling different components horizontally or vertically as planned, without binding. This item is the proof; findings become BF- entries or design changes, not waivers. Read-derived at dc795bd1: realtime protocol current-authority calls occur inside recipient fanout loops. Measure request amplification, latency, outage/recovery and healthy-tenant effects before changing caching or revocation semantics. Realtime horizontal measurement consumes the sharding correctness capability; vertical baselines can run before it. Listener composition and a metrics route are not themselves evidence of capacity or fault tolerance.
 
 ### `MT-EVALUATOR-PARTITION` &mdash; M7: evaluator partitioning by member count and ordinal, with a pool-membership table
 
 | | |
 |---|---|
-| state (claimed) | `ready-to-push` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
 | branch | `codex/evaluator-partition-20261110` |
 | base | `workspace/multitenant-20261102@ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364` |
 | worktree | `-` |
 | semver | `minor` |
 | review | maintainer; architecture and clinical-path review |
+| register | `BF-238`, `BF-239`, `BF-240` |
 | blocks on | `MT-BENCH-BASELINE` |
 
 **Blast radius.** Evaluator role only. Two environment variables (member count, this worker's ordinal) behind a feature flag select the tenant slice by hash; flag off keeps the single owner. A pool-membership table in PostgreSQL holds one heartbeat row per member (ordinal, expected members, ring slice, lease expiry). A member evaluates its slice only while every live row agrees on the member count and no two live rows share an ordinal; otherwise it stops its own cycle and alerts. No per-tenant lock; duplicate evaluation is bounded to one heartbeat interval after a membership change and the evaluator's outputs are idempotent by contract. Compose and Kubernetes bindings set the variables; a StatefulSet ordinal supplies the worker index. A read-only private operational module must expose configured mode/count/ordinal/rule/slice separately from observed membership, heartbeat freshness/conflicts, eligibility and actual workload progress. Standalone reports all configured tenants without fabricating a membership lease. The endpoint-composition lane owns shared listener plumbing; this lane owns evaluator payload/schema and observed-state semantics.
@@ -11541,14 +11594,40 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; UNMEASURED until implemented. Gate: scale-event control under the baseline workload. Run with members=2, then change to members=3 mid-cycle with a rolling restart; independently observe that bounded overlapping evaluation produces no duplicate logical durable/external effect, measure the overlap window, and show none misses more than one lease TTL of alarm ticks; control: start two workers with the same ordinal and show the second's commits are refused with the membership-conflict symptom and an alert is raised. Inspect the actual private operational API during standalone, healthy multi-member and conflicted/stale states; configuration-only false health is a separate red control. Inspection remains callable while evaluation is blocked and must not schedule work or acquire ownership.
+- **NO GATE** &mdash; Focused implementation/native transitions measured; scale-event control under the matched baseline remains UNMEASURED. Gate: under the baseline workload. Run with members=2, then change to members=3 mid-cycle with a rolling restart; independently observe that bounded overlapping evaluation produces no duplicate logical durable/external effect, measure the overlap window, and show none misses more than one lease TTL of alarm ticks; control: start two workers with the same ordinal and show the second's commits are refused with the membership-conflict symptom and an alert is raised. Inspect the actual private operational API during standalone, healthy multi-member and conflicted/stale states; configuration-only false health is a separate red control. Inspection remains callable while evaluation is blocked and must not schedule work or acquire ownership.
 
 **Evidence.**
 
+- `reports/tenancy/m7-joined-acceptance-2026-11-12/9db-d76-293/README.md`
+- `reports/tenancy/core-h-acceptance-2026-11-12/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md`
+- `reports/tenancy/core-g-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-core-acceptance-2026-11-12/core-e-f-failures/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/final-ff515-cf5-ready/README.md`
+- `reports/tenancy/m7-paired-qualification-2026-11-12/primary-761-315-source/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-761e8f-31565-source/README.md`
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/README.md`
+- `reports/tenancy/evaluator-idle-safety-2026-11-12/native-2d0-dcc4-first-only/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/original/README.md`
+- `reports/tenancy/api-readiness-continuity-2026-11-12/cold-precondition/README.md`
+- `reports/tenancy/core-d-acceptance-2026-11-12/README.md`
+- `reports/tenancy/m7-unit-repairs-2026-11-12/evaluator-contract-version/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/repair/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-listener-195c-f0f91/README.md`
+- `reports/tenancy/evaluator-effect-idempotency-2026-11-12/original/README.md`
+- `reports/tenancy/evaluator-effect-idempotency-2026-11-12/native-cause-and-repair/README.md`
+- `reports/tenancy/evaluator-effect-idempotency-2026-11-12/fresh-paired-qualification/README.md`
+- `reports/tenancy/evaluator-effect-idempotency-2026-11-12/completion-observer-repair/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-listener-cd462-0f8749-unmeasured/README.md`
+- `reports/tenancy/producer-repeat-cause-2026-11-12/independent-repair-cd462/README.md`
+- `reports/tenancy/producer-repeat-cause-2026-11-12/independent-reducer-195c/README.md`
+- `reports/tenancy/evaluator-trusted-scheduling-2026-11-12/original/README.md`
 - `releases/cgm-remote-monitor-16.0.0/decisions.md`
 - `docs/30-design/tenancy/runtime-topology.md`
 
-**Notes.** Decision evaluator-static-partition (2026-11-09, revised the same day): pool membership table, not a per-tenant lease; the maintainer judged the per-tenant fence unnecessary overhead given idempotent outputs. Open design choices inside the item: whether a member with a stale peer row may take over that slice after the lease expires; modulo vs consistent hashing. MT-SCALE-UNBOUND measures the overlap window for any duplicate external effect. The operational API is planned, not provided by current lifecycle status/in-process health. See the runtime-topology ownership inventory: notification attempts, future connector actors, realtime checkpoint/fanout and maintenance claims need their own ownership semantics; the evaluator ring is not imposed on every component.
+**Notes.** 2026-11-12 final application batch: core9db/deploymentd76/image293 is locally accepted after CoreH full/default-browser/enabled-corpus execution, current readiness/clinical/TIME/export, scoped older proof reuse and final prcheck. Actual capacity and production M7 remain unmeasured; the linked receipt claims acceptance only. Earlier failed and unmeasured episodes retain their outcomes. 2026-11-12: BF-238 scheduling, BF-239 repeat-clock preservation and BF-240 empty inspection are fixed locally; original/red and repaired native controls retain their exact source scopes. Earlier cd462/0f paired clinical and realtime proofs pass; later 47b/be952 stock/clinical and strict native TIME pass before the unclassified publisher failure. Source2d adds six read-only clinical-job flags; capability4/profile3 idle safety can honestly report no exercised TIME while preserving strict native TIME/load/recovery requirements and bounded observers. Actual2d/dcc first quiet capture passes with zeroTIME/timeWitnessfalse; subsequent stock/restore continuity fails with three B TENANT_WARMING responses, cause unclassified. Later clinical/TIME/realtime movement did not run. The repaired exact API/tenant barrier and subsequent ff515/cf5 stock, restore, clinical handoff, strict TIME and realtime movement now pass. Fresh minimal761/315 clinical/TIME proof passes at its own image; unchanged older criteria retain original attribution. CoreG passes eight default tiers but corpus838/1pending/1failure blocks source acceptance. Optional HTTP benchmark pending is not performance evidence. Comprehensive acceptance now passes Core H; actual capacity remains open, without stitching failed campaign counts. No cadence/seed/plugin/traffic change, blind phase extension or fake work witness. Member-level configured/observed/progress v2 metadata is independent of per-tenant durable leases; inspection does not drive work. Other actors retain their own ownership and maintenance contracts.
 
 ### `MT-ANDROID-LAB` &mdash; M7: Android emulator acceptance for the pinned uploader and follower shapes
 
@@ -11764,6 +11843,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
+| register | `BF-236` |
 
 **Blast radius.** Multitenant preview only. Core: one bounded, operator-set size cap for role config files, with distinct refusal errors; realtime startup warm retries an api that is not ready. nightscout-deploy (deploy/capacity-fixes-20261111): bootstrap error detail, compact JSON, nginx Docker DNS re-resolve, health- ordered start, overlay build path.
 
@@ -11777,10 +11857,11 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/realtime-cache-repair-2026-11-12/README.md`
 - `reports/tenancy/capacity-fixes-2026-11-11/README.md`
 - `reports/tenancy/deploy-capacity-fixes-2026-11-11/README.md`
 
-**Notes.** 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry). Core 5517cb6c (MULTITENANT_CONFIG_MAX_BYTES, distinct CONFIG_FILE_* refusals, SOCKET_IPC_NOT_READY and the realtime warm retry NS_TENANT_WARM_RETRY_MS); deploy 4ebd7ef4. Open: deploy load-env.js bound, edge waits on api and realtime only.
+**Notes.** 2026-11-11: the 3,000-tenant bootstrap was refused by the 1 MiB config cap (decisions.md#tenant-registry). BF-236 cache freshness/current-bound repairs are joined; final acceptance remains open. Core 5517cb6c (MULTITENANT_CONFIG_MAX_BYTES, distinct CONFIG_FILE_* refusals, SOCKET_IPC_NOT_READY and the realtime warm retry NS_TENANT_WARM_RETRY_MS); deploy 4ebd7ef4. Open: deploy load-env.js bound, edge waits on api and realtime only.
 
 ### `MT-TENANT-REGISTRY` &mdash; Tenant registry in PostgreSQL; provisioning separated from bootstrap and lab priming
 
@@ -11793,6 +11874,7 @@ alarm-readiness items, and the seam branch refresh.
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer |
+| register | `BF-234`, `BF-235` |
 
 **Blast radius.** Multitenant only. Replaces the static tenant list in role configs (decisions.md#tenant-registry, decisions.md#provisioning-split).
 
@@ -11807,6 +11889,7 @@ alarm-readiness items, and the seam branch refresh.
 **Evidence.**
 
 - `reports/tenancy/tenant-registry-2026-11-11/README.md`
+- `reports/tenancy/registry-connector-2026-11-12/README.md`
 
 **Notes.** 2026-11-11: decided; start after the quiet-machine capacity window, or run without heavy suites during it. Step (a) at f5c4c0c3 (8 commits): registry, cached resolver, provisioning library, admin /v1/tenants and `nightscout admin provision`, api/tenant-admin/admin/evaluator in registry mode, isolation tests, docs. Before the join: resolve loader conflicts with MT-CAPACITY-FIXES; gaps before default listed in the record.
 
@@ -11814,10 +11897,10 @@ alarm-readiness items, and the seam branch refresh.
 
 | | |
 |---|---|
-| state (claimed) | `blocked` |
+| state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `-` |
-| base | `-` |
+| branch | `codex/m7-join-20261111` |
+| base | `workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003` |
 | worktree | `-` |
 | semver | `n/a` |
 | review | maintainer; clinical-path review |
@@ -11831,9 +11914,13 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; To be defined: time from provisioning to a new tenant's first alarm; no alarm gap for existing tenants; break-it controls.
+- **NO GATE** &mdash; Focused native new-tenant alarm/frame and existing-tenant continuity, with frozen-roster red control, recorded below. Joined full/corpus and deployment acceptance remain incomplete; no capacity latency guarantee.
 
-**Notes.** 2026-11-11: decided; starts after the registry's step (a) lands.
+**Evidence.**
+
+- `reports/tenancy/live-add-and-config-feed-2026-11-12/README.md`
+
+**Notes.** 2026-11-12: original leaf d20354797e368b03af171f4417ead60a6282d098 joined. Dynamic staged admission, bounded bursts, failure retry and paused/suspended deferred admission/resume are implemented. Native synthetic clinical/runtime output proof and frozen-roster control are linked; final joined acceptance remains with the coordinator.
 
 ### `MT-REALTIME-SOCKET-CAP` &mdash; Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits
 
@@ -11859,17 +11946,18 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/realtime-restart-disconnect-2026-11-11/README.md`
 
 **Notes.** 2026-11-11: decided; start after the quiet capacity window. 2026-11-12: in progress on workspace/realtime-cap-20261112 (worktree externals/work/crm- realtime-cap-20261112); also carries realtime's stat-keyed config cache.
 
-### `MT-AUTHZ-COST` &mdash; api authorization cost: profile, cache verified credentials, one permission query, batched audit, shared per-tenant authorize, no connection held per request
+### `MT-AUTHZ-COST` &mdash; API authorization cost: permission snapshot, batched audit, bounded lifetime sessions and signature-proof reuse
 
 | | |
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `workspace/authz-cost-20261112` |
+| branch | `codex/m7-join-20261111` |
 | base | `workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003` |
 | worktree | `-` |
 | semver | `n/a` |
@@ -11883,13 +11971,17 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Planned: profile on a quiet machine; equal allow and deny decisions on the authorization corpora; a revoked credential is refused within the invalidation bound (break-it control); then the 3,000-tenant runs.
+- **NO GATE** &mdash; Focused capability controls are recorded below. Joined full acceptance remains incomplete after the first unit-tier failure; corpus and source-paired capacity measurements must pass before closing this cost capability.
 
 **Evidence.**
 
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/api-cost-vs-n-2026-11-11/README.md`
+- `reports/tenancy/access-signature-proof-2026-11-12/report.md`
+- `reports/tenancy/operation-lifetime-2026-11-12/report.md`
+- `reports/tenancy/m7-core-acceptance-2026-11-12/first-unit-campaign/README.md`
 
-**Notes.** 2026-11-12: decided. Starts once the capacity record is committed. 2026-11-12: started on workspace/authz-cost-20261112 (worktree externals/work/crm-authz- cost-20261112); step 1 is the profile.
+**Notes.** 2026-11-12: joined permission snapshot/audit, actual API authority, bounded lifetime sessions and positive Ed25519 proof reuse. Fresh key, claims and DB authority checks remain mandatory; legacy DATA retains Vault verification. Broader decision caching/cross-socket sharing deferred pending measured residual cost and a compatible freshness/issuance contract (authorize-cost- first). Research continues; no joined capacity gain or whole milestone closure claimed.
 
 ### `MT-EVAL-COST` &mdash; Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order
 
@@ -11944,9 +12036,11 @@ alarm-readiness items, and the seam branch refresh.
 
 **Evidence.**
 
+- `reports/tenancy/d6-native-discriminators-2026-11-11/README.md`
+- `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/capacity-2026-11-11/README.md`
 
-**Notes.** 2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Design note sent to the coordinator; backstop shape, reader placement, identity and transport await answers before implementation.
+**Notes.** 2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Maintainer answers recovered in the 2026-11-11 continuation: decisions.md#d6-paged-backstop selects paging now (watermark only if later outage measurements warrant it); decisions.md#d6-sql-reader- transport selects SQL polling for the reader; decisions.md#d6-activity- control-path requires no evaluator/realtime data work while paused or suspended, with an independent stop/resume control path. Implementation, outage latency and bounded-cost evidence remain UNMEASURED. Reader placement and identity still need their design/least-privilege review.
 
 ---
 

@@ -1,0 +1,6 @@
+test_fingerprint_no_observation_or_failed_observation_never_capacity_passes (test_m7_joined_receipt.ReceiptTests.test_fingerprint_no_observation_or_failed_observation_never_capacity_passes) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.088s
+
+OK

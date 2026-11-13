@@ -1,0 +1,427 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:nightscout:m7:component-selection:1",
+  "title": "M7 component profile selection declaration (not runtime evidence)",
+  "description": "No defaults. Additional semantic condition: tokenMaxTtlSeconds >= tokenTtlSeconds; module validates this relationship. Standalone shards and inactive Agent/resource policy remain explicit planned declarations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "apiReplicas",
+    "realtime",
+    "evaluator",
+    "secrets",
+    "resources"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "apiReplicas": {
+      "enum": [
+        1,
+        2,
+        4
+      ]
+    },
+    "realtime": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "workers",
+            "shards"
+          ],
+          "properties": {
+            "mode": {
+              "const": "standalone"
+            },
+            "workers": {
+              "enum": [
+                1
+              ]
+            },
+            "shards": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4096
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "workers",
+            "shards"
+          ],
+          "properties": {
+            "mode": {
+              "const": "fixed"
+            },
+            "workers": {
+              "enum": [
+                1,
+                2,
+                4
+              ]
+            },
+            "shards": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4096
+            }
+          }
+        }
+      ]
+    },
+    "evaluator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "workers"
+          ],
+          "properties": {
+            "mode": {
+              "const": "standalone"
+            },
+            "workers": {
+              "enum": [
+                1
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "workers"
+          ],
+          "properties": {
+            "mode": {
+              "const": "fixed"
+            },
+            "workers": {
+              "enum": [
+                1,
+                2,
+                4
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "secrets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "agent"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "vault-server",
+            "vault-agent"
+          ]
+        },
+        "agent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tokenTtlSeconds",
+            "tokenMaxTtlSeconds",
+            "policySha256",
+            "secretIdTtlSeconds",
+            "secretIdNumUses"
+          ],
+          "properties": {
+            "tokenTtlSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2764800
+            },
+            "tokenMaxTtlSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2764800
+            },
+            "policySha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "secretIdTtlSeconds": {
+              "const": 0
+            },
+            "secretIdNumUses": {
+              "const": 0
+            }
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "api",
+        "realtime",
+        "evaluator",
+        "postgres",
+        "vault-server",
+        "vault-agent"
+      ],
+      "properties": {
+        "api": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "unlimited"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "cpuNano",
+                "memoryBytes"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "finite"
+                },
+                "cpuNano": {
+                  "type": "integer",
+                  "minimum": 10000000,
+                  "maximum": 128000000000
+                },
+                "memoryBytes": {
+                  "type": "integer",
+                  "minimum": 16777216,
+                  "maximum": 1099511627776
+                }
+              }
+            }
+          ]
+        },
+        "realtime": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "unlimited"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "cpuNano",
+                "memoryBytes"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "finite"
+                },
+                "cpuNano": {
+                  "type": "integer",
+                  "minimum": 10000000,
+                  "maximum": 128000000000
+                },
+                "memoryBytes": {
+                  "type": "integer",
+                  "minimum": 16777216,
+                  "maximum": 1099511627776
+                }
+              }
+            }
+          ]
+        },
+        "evaluator": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "unlimited"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "cpuNano",
+                "memoryBytes"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "finite"
+                },
+                "cpuNano": {
+                  "type": "integer",
+                  "minimum": 10000000,
+                  "maximum": 128000000000
+                },
+                "memoryBytes": {
+                  "type": "integer",
+                  "minimum": 16777216,
+                  "maximum": 1099511627776
+                }
+              }
+            }
+          ]
+        },
+        "postgres": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "unlimited"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "cpuNano",
+                "memoryBytes"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "finite"
+                },
+                "cpuNano": {
+                  "type": "integer",
+                  "minimum": 10000000,
+                  "maximum": 128000000000
+                },
+                "memoryBytes": {
+                  "type": "integer",
+                  "minimum": 16777216,
+                  "maximum": 1099511627776
+                }
+              }
+            }
+          ]
+        },
+        "vault-server": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "unlimited"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "cpuNano",
+                "memoryBytes"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "finite"
+                },
+                "cpuNano": {
+                  "type": "integer",
+                  "minimum": 10000000,
+                  "maximum": 128000000000
+                },
+                "memoryBytes": {
+                  "type": "integer",
+                  "minimum": 16777216,
+                  "maximum": 1099511627776
+                }
+              }
+            }
+          ]
+        },
+        "vault-agent": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "unlimited"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "cpuNano",
+                "memoryBytes"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "finite"
+                },
+                "cpuNano": {
+                  "type": "integer",
+                  "minimum": 10000000,
+                  "maximum": 128000000000
+                },
+                "memoryBytes": {
+                  "type": "integer",
+                  "minimum": 16777216,
+                  "maximum": 1099511627776
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

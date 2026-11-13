@@ -1,0 +1,14 @@
+{
+  "kind": "joined-diagnostic",
+  "status": "AUTHORIZED_DIAGNOSTIC",
+  "pair": {
+    "core": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+    "deploy": "bc7b8c56b19d7a87fea668e0adb8b939e580de1e"
+  },
+  "instrument": "7eeca6ca443aaffa6639e773e9edbe438137b7a7769f99cfd38fca699bbbfa1f",
+  "limits": {
+    "tenants": 2,
+    "apiReplicas": 2,
+    "trafficSeconds": 180
+  }
+}

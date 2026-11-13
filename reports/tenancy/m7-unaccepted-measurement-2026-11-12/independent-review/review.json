@@ -1,0 +1,32 @@
+{
+  "kind": "root-independent-admission-seam-review",
+  "source": "7219ad70bd3b284d23573a3bfb115883136fd97a",
+  "base": "5d7fa02746f4695a222f1fc400dc59b61a8c717e",
+  "changedPaths": [
+    "tools/mt-bench/m7-joined/UNACCEPTED-MEASUREMENT.md",
+    "tools/mt-bench/m7-joined/adapter.py",
+    "tools/mt-bench/m7-joined/campaign.py",
+    "tools/mt-bench/m7-joined/contract.py",
+    "tools/mt-bench/m7-joined/control_unaccepted.py",
+    "tools/mt-bench/m7-joined/test_unaccepted.py",
+    "tools/queue/gates/m7_joined_receipt.py"
+  ],
+  "instrumentSHA256": "63844506159ee61f2335d8e94694a21cc48bc558b36f8146d8eb968ebdfa4f6d",
+  "instrumentFiles": 40,
+  "gateSHA256": "316a3747e86dd519c8ce302055873903e564862a590cd8e38c4d5bea3b6e7b86",
+  "gateBytes": 35213,
+  "astChecks": {
+    "originalPilotPredicatesUnchanged": true,
+    "originalRunBodyUnchangedExceptScopeAnnotation": true,
+    "cadenceAndCountConstantsUnchanged": true
+  },
+  "independentControl": {
+    "restoredExit": 0,
+    "removedActualWrappedCellGuardExit": 1,
+    "exactRedSymptom": "AssertionError: ValueError not raised",
+    "restoredAfterExit": 0,
+    "sourceFilesMutated": false
+  },
+  "scope": "read-derived code review plus synthetic recorded-evidence guard execution; no application/runtime/cloud campaign",
+  "verdict": "APPROVE_NARROW_UNACCEPTED_MEASUREMENT_SEAM"
+}

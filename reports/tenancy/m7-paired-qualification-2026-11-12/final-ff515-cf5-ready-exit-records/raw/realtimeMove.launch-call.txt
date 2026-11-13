@@ -1,0 +1,3 @@
+
+[515] tool exec call: text(await tools.exec_command({cmd:"python3 /tmp/evaluator-ready-move.py","workdir":"/home/bewest/src/rag-nightscout-ecosystem-alignment","max_output_tokens":1400,"yield_time_ms":1000,"login":false,"sandbox_permissions":"require_escalated","justification":"Run the single authorized controlled realtime ownership move after clinical and strict TIME PASS/release, preserving exact old-stop/warm/nonce-probe/current-map/census/B-session assertions and all failure diagnostics."}));
+

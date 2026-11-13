@@ -1,0 +1,15 @@
+{
+  "recordType": "NEW_PATH_REDACTED_DERIVATIVE",
+  "originalPrivateCaptureSha256": "c0a64300c752440939b1047604110867c2b8d3b80047282350edd521044742ad",
+  "transformation": "Replace local path prefixes with logical roles only; measured values unchanged. Not a new execution.",
+  "data": {
+    "coreCommit": "47b43b6246ce7f94f1f1f0d01830495a78b28add",
+    "packageSha256": "6bd42fb8f7c0d475209ef7d050a6ebaed7f2b461e12cb254124feabf0fd42a5f",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "dependencyRoot": "<DEPENDENCY_NODE_MODULES>",
+    "dependencyLockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "dependencyRootPackageJson": "ABSENT; historical d505 source package remeasured identical to47b; no fresh install claimed",
+    "sourceArchiveSha256": "f17256f68ab69773f683a543b08880e8afec2df2783f8012cd4b189a3fc3b54a",
+    "provenanceAlignment": "2b197cfc32113612f812442547ae8555e87aaf7d"
+  }
+}

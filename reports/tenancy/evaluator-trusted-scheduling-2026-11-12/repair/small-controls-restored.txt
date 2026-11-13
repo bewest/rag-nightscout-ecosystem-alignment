@@ -1,0 +1,21 @@
+
+
+  trusted evaluator scheduling contexts (recording lifetime protocol)
+    ✔ refuses tenant, active, expired and closed inherited window authority without mutating it
+    ✔ requires a branded single-owner context and preserves no-window construction
+    ✔ runs due timers with fresh admission, credits resolved jobs, and refuses late application work
+    ✔ preserves active-parent two-acquire coalescing on one client, refuses late/foreign callers and independent parent joins
+2026-11-12T12:53:26.445Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic 1","group":"default","plugin":"synthetic"}
+    ✔ preserves explicit consumer wake rejection when its activity port fails, then progresses after recovery
+    ✔ selects runtime health without walking the full tenant map or alert census (38ms)
+    ✔ does not credit unfinished windows, failed completion or generation-invalidated results
+
+  bounded evaluator inspection v2
+EVALUATOR_SELECTED_DTO_BYTES 50502
+    ✔ selects at most 128 without whole-roster summaries, including empty summary, and refuses unknown/duplicate selectors
+    ✔ carries selected v2 bodies over the actual private UDS client and refuses the prior module version
+
+
+  9 passing (204ms)
+

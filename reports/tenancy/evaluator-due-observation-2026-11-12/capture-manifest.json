@@ -1,0 +1,77 @@
+{
+  "committed-finite-domain.txt": {
+    "rawSha256": "226e28f62b5cc1b89273afb8f3ada7ec2dc1c1781cb09505823e78de62e42b78",
+    "publishedSha256": "226e28f62b5cc1b89273afb8f3ada7ec2dc1c1781cb09505823e78de62e42b78",
+    "normalization": "none"
+  },
+  "fractional-source-acae-red.txt": {
+    "rawSha256": "2be562ddcbe98f29f3299acecc16d3032c3cfee2f187aa15fb258db397df454f",
+    "publishedSha256": "1dd884f9495226ee6175164d1724ad2a795c711ecbdb6e8e9c128c6551e408f8",
+    "normalization": "workspace/scratch prefixes only"
+  },
+  "export-omitted.txt": {
+    "rawSha256": "87436bfa0bc60a5976f176a1a387dae781bb544cdac06c74681cf086a4326792",
+    "publishedSha256": "87436bfa0bc60a5976f176a1a387dae781bb544cdac06c74681cf086a4326792",
+    "normalization": "none"
+  },
+  "helper-validation-removed.txt": {
+    "rawSha256": "e0f94f2e5242d1e609a5782ad4080d38c1522a6729aa13134ed79cea44a9a827",
+    "publishedSha256": "e0f94f2e5242d1e609a5782ad4080d38c1522a6729aa13134ed79cea44a9a827",
+    "normalization": "none"
+  },
+  "schema-reason-bound-removed.txt": {
+    "rawSha256": "0446a66ac02fa65d74e8f63c913009ab651ff419e2b9df8548fd9a6ecc17a08b",
+    "publishedSha256": "0446a66ac02fa65d74e8f63c913009ab651ff419e2b9df8548fd9a6ecc17a08b",
+    "normalization": "none"
+  },
+  "missing-metadata-guard-red.txt": {
+    "rawSha256": "01bac967252c937b2bf030864dae27891baa641651fbb056718f1b49508a9e5c",
+    "publishedSha256": "01bac967252c937b2bf030864dae27891baa641651fbb056718f1b49508a9e5c",
+    "normalization": "none"
+  },
+  "missing-metadata-restored.txt": {
+    "rawSha256": "56a4a53ae1a617d9f1898b42afab88738c246223f6a254b912878cea682a69a8",
+    "publishedSha256": "56a4a53ae1a617d9f1898b42afab88738c246223f6a254b912878cea682a69a8",
+    "normalization": "none"
+  },
+  "controls.json": {
+    "rawSha256": "5ce4d65e6446a03e3b43b3979750fcbb9c6f3d1bbc21805c419721f2ea4f9f2d",
+    "publishedSha256": "5ce4d65e6446a03e3b43b3979750fcbb9c6f3d1bbc21805c419721f2ea4f9f2d",
+    "normalization": "none"
+  },
+  "instrument-final-focused.txt": {
+    "rawSha256": "ae8f14ac7360d5c95362d63a1cbbbf27ff52e1c9af7e092a642bed31606a1963",
+    "publishedSha256": "ae8f14ac7360d5c95362d63a1cbbbf27ff52e1c9af7e092a642bed31606a1963",
+    "normalization": "none"
+  },
+  "instrument-final-receipt.txt": {
+    "rawSha256": "022926f61e5cd83d1d99fa8e612a05999fb7315f7046fb44baa048cb072960bf",
+    "publishedSha256": "022926f61e5cd83d1d99fa8e612a05999fb7315f7046fb44baa048cb072960bf",
+    "normalization": "none"
+  },
+  "instrument-controls.json": {
+    "rawSha256": "0067d607b81d59a2caa22f869474da586bd4a80ebecf1474e801e9934493a827",
+    "publishedSha256": "0067d607b81d59a2caa22f869474da586bd4a80ebecf1474e801e9934493a827",
+    "normalization": "none"
+  },
+  "due-retention-omitted.txt": {
+    "rawSha256": "774d51414d6d0360708a3b5c42a888d22002300b859e852faeeddfb177899376",
+    "publishedSha256": "9e05ca79ccacca09a87f994eab008021a08071c2502a41ddfc8442b8415d9e5c",
+    "normalization": "workspace/scratch prefixes only"
+  },
+  "legacy-unknown-coerced-to-null.txt": {
+    "rawSha256": "9477e30ee9ec31a810ad2822045d1687d8afed23d63db126d2ac8544dff83054",
+    "publishedSha256": "03d4ffd5eec4883d456389e9a11b42bc7686bd2cea44d341abfad3efbd58617f",
+    "normalization": "workspace/scratch prefixes only"
+  },
+  "current-receipt-downgrade-guard-omitted.txt": {
+    "rawSha256": "d9be2312467fce07979add2410f415cef35a227a9ef7db08e1c154686a41c7a0",
+    "publishedSha256": "3bd9d5e6a1a4462757cffb2c78cd82dcbf62bff743242ebf21c7a0e08017f645",
+    "normalization": "workspace/scratch prefixes only"
+  },
+  "instrument-manifest.json": {
+    "rawSha256": "1244a58af4a4bc9250f8a99bd8844ef900e6e807aed012244ae4af3661530a7f",
+    "publishedSha256": "1244a58af4a4bc9250f8a99bd8844ef900e6e807aed012244ae4af3661530a7f",
+    "normalization": "none"
+  }
+}

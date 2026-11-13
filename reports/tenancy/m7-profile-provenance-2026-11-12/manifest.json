@@ -1,0 +1,32 @@
+{
+  "commit": "cadcb40bd22fc17b4d134e6b74d3f828d7f2d656",
+  "sha256": "0c25bf549af0c7b352e9f3f944e49c91b3fe81f736a8bcf98e34622285dc076f",
+  "files": {
+    "tools/mt-bench/capacity/k6/workload.js": "0336f9c76e0d60ef8acda42dc2863ba20d8581f41400345bb32880e295a6d0c5",
+    "tools/mt-bench/capacity/probe.js": "c1cc9cd4b0a9c6fcec887e10269d001edce7f371627779eb0dbc3ff7aaa28b97",
+    "tools/mt-bench/compose-baseline/oracle/disk.sh": "d72703d45cd8eee2f62673b26c307a69007efc22b109c59cda459cdfe91e569b",
+    "tools/mt-bench/compose-baseline/probes/sample.sh": "4dd6996e0d0e3b1c4b30aeca46627e6c8f03b045faac46df98272aa52214673a",
+    "tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.md": "b542313d170bcf122de7f6e94c346d86b4461351878c961baa9837a6108f00cc",
+    "tools/mt-bench/m7-joined/PROFILE-SEAM.md": "4e2fa355a2a699e7688f5cc3519ed14c9cc59befa50b9c31dec1bd16a6ce03f7",
+    "tools/mt-bench/m7-joined/README.md": "8d96157944324e08aef705e32fc093ce8b9647c814d67ec8491a89b881a8770b",
+    "tools/mt-bench/m7-joined/REMOTE-SEAM.md": "ff4b94f07e5ebf8fca842e2ac522e7c9bcf123462185c8afb9ccb534543759e3",
+    "tools/mt-bench/m7-joined/adapter.py": "0929d7cec2baacb32c4fae7cee0e7eebc9b7d784fa80dfe02b6fc34460c46981",
+    "tools/mt-bench/m7-joined/campaign.py": "0b3ea967340a5d372488391fc18d2399b9ba786b94beb1bbd4d702909a69d81d",
+    "tools/mt-bench/m7-joined/capabilities.json": "63035a3079fbf985eec042b70ab85892e73d352f0419499929092738d7048e34",
+    "tools/mt-bench/m7-joined/contract.py": "76a4272619a36de4e5aab35e7edcf6de3ca6d7866a25ab96550114613b3f114d",
+    "tools/mt-bench/m7-joined/diagnostic-fixture-cli.cjs": "355191a84ae6dd576b9ebcdb1899efa9aec0e98fa0797d6d221f8fff2d184d54",
+    "tools/mt-bench/m7-joined/diagnostic.cjs": "4f9d76d5a0aa2163939111d9ac7a5c174f0ba50a58b4229a48cc348ee49680c6",
+    "tools/mt-bench/m7-joined/diagnostic.test.cjs": "d4d372899f5c57e041f6fdcca10c28221778e9edde44d13177ef52768e2a9119",
+    "tools/mt-bench/m7-joined/fingerprint.cjs": "a498687364bf641519545f16b24d9c58862648477f7d15af6ebe22c397b3c4bb",
+    "tools/mt-bench/m7-joined/probe.py": "c709eba68a3b3f3d54f1d770d19cef53c4daa6c0858ec5c285097d3b9c0405e5",
+    "tools/mt-bench/m7-joined/profile_provenance.py": "bac5e573ae3b14fe2f54680e11df48035b180ab151430578ea400601cc103ebf",
+    "tools/mt-bench/m7-joined/reduce.py": "6cff33f285bba182e534a66153e8b63030bb6ba7c81319241c7f68a7557d464c",
+    "tools/mt-bench/m7-joined/restart.cjs": "608bb217b562709b747f749146abc59b2b204f5b7ab2cc4adf1e230062f1d846",
+    "tools/mt-bench/m7-joined/smoke.py": "d3b505eb5646db2984fd2c670f6383c0643fcbb47bbceb899d8694914affd982",
+    "tools/mt-bench/m7-joined/status-fixture.cjs": "c1ea318cbe6ff933a0d4cd011e11e7b20e8cd3a8e87a8dbee304f25c60c2aef6",
+    "tools/mt-bench/m7-joined/test_contract.py": "58842f1379e29e60c43c312713053fc9581dafa60fbe1832d3a5d3bcceaef176",
+    "tools/mt-bench/m7-joined/test_profile.py": "c70ecd4596379c3b9db90a5349dbd11f95d04ff282a7f5c09c3e8d4c04a06e67",
+    "tools/mt-bench/m7-joined/workload-shapes.cjs": "8da30db84c20b8102d651d365c8cccca3d07c21c6e0f18d5130d37ce668d5f07",
+    "tools/mt-bench/m7-joined/workload.py": "04d45c1f28939693d19578c1032bc07281bc5dceeca1e649458d4a1e0b8e485f"
+  }
+}

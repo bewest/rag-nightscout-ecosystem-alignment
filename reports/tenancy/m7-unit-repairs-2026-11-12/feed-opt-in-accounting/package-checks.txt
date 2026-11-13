@@ -1,0 +1,28 @@
+
+> nightscout-deploy@0.0.0 test
+> node tools/targets-check.js bindings/single/targets.json && tools/compose-identity-check.sh && node --test bindings/compose/ownership-admin/ownership-grants.test.js
+
+0 targets checked, 0 failing
+ok   committed tree matches SOURCE.md (3ba19b609af18184082cbd8aa5f978c9cfde016c)
+TAP version 13
+# Subtest: admin.json carries exactly the ownership keys core requires
+ok 1 - admin.json carries exactly the ownership keys core requires
+  ---
+  duration_ms: 1.748237
+  type: 'test'
+  ...
+# Subtest: core admin-config accepts it
+ok 2 - core admin-config accepts it
+  ---
+  duration_ms: 109.350394
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 167.990119

@@ -1,0 +1,24 @@
+
+
+  !
+
+  0 passing (23ms)
+  1 failing
+
+  1) registry-backed human access and origin clients
+       RH_ORIGINS: callbacks and CSRF follow each resolved alias; provider cache is bounded, and removals cannot use a cached provider:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+403 !== 200
+
+      + expected - actual
+
+      -403
+      +200
+      
+      at Context.<anonymous> (tests/registry-human-session.test.js:86:49)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+

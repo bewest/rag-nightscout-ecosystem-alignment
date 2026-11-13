@@ -1,0 +1,7 @@
+{"event":"owned-listener","pid":1789789,"host":"127.0.0.1","port":43751}
+{"event":"owned-listener","pid":1789789,"host":"127.0.0.1","port":43885}
+{"event":"owned-pg-schema","name":"hh_access_5221007549b58711","oid":16394}
+{"event":"owned-pg-schema","name":"hh_authority_5221007549b58711","oid":16480}
+{"event":"owned-pg-schema","name":"hh_human_5221007549b58711","oid":16578}
+{"event":"owned-extension-custody","stage":"owner-browser","resources":{"schemas":[{"name":"oc_05909021bb105fcb_legacy","oid":16644},{"name":"oc_05909021bb105fcb_settings","oid":16677},{"name":"oc_05909021bb105fcb_policy","oid":16748},{"name":"oc_05909021bb105fcb_configure","oid":16770},{"name":"oc_05909021bb105fcb_secrets","oid":16792}]}}
+{"cleanup":"closed","listeners":2}

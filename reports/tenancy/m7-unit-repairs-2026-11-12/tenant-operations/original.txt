@@ -1,0 +1,526 @@
+
+
+  tenant operations: deployment backup, restore, upgrade and rollback
+    plan
+      1) preserves issuance audit rows and the exact appended ledger without manufacturing inventory changes
+      2) refuses unknown migration effects and a column-changing issuance model instead of silently accepting them
+      ✔ validates the injected catalogue list and refuses a shared namespace
+    backup
+      3) refuses hidden physical relations with a known ledger in deployment backup and restore
+      4) refuses hidden target physical relations before any deployment restore effect
+      5) captures every catalogued table for every tenant in one read-only snapshot, with ledgers, checksums and key references
+      6) refuses a bound identity before reading any table: a bound role would produce an empty, consistent artifact
+      7) refuses a ledger the catalogue does not know, checksum drift, an empty ledger and an unregistered tenant
+      8) refuses a secret record whose stored value is not a key-referenced ciphertext, so plaintext never travels
+    restore
+      9) restores into prepared fresh namespaces in one transaction, recreates the ACL, advances identity sequences and the independent oracle matches the source
+      ✔ preserves profile successor ordinal gaps across restore and grants only exact writer sequence USAGE
+      ✔ restores exact outbox private clear/ACK/revision state and keeps ACK principal SELECT-only
+      ✔ restores both physical checkpoint instances without mixing their consumers, tenant rows or grants
+      10) control: a backup that lost one tenant from one table restores cleanly, and the independent oracle names the tenant and table
+      11) control: one tampered row is refused by the file digest before any transaction or write
+      12) control: a non-empty target namespace is refused inside the transaction with no write issued and nothing changed
+      13) control: a target ledger that is not exactly the artifact ledger is refused: unprepared, longer, or drifted
+      14) control: a column difference, a bound identity and a bad ACL role are refused before any write
+      15) control: the in-transaction oracle does not trust row counts; a write that reports success without storing rolls everything back
+      16) an interrupted restore leaves nothing behind and a rerun completes
+    explicit old/new inventory and table-scoped privileges
+      17) backs up only old populated inventory, upgrades a new namespace, refuses older readiness and restores old inventory
+      18) refuses occupied new namespaces before backup and detects row loss during an otherwise successful migration
+      19) emits only caller-supplied table grants; invalid wildcard/escalation plans refuse before statements
+    upgrade and rollback over a two-catalogue sequence
+      20) upgrade is status, backup, up, check; the record names the backup; no up is issued before the backup commits
+      21) control: a failing precheck issues neither a backup nor an up; nothing pending issues no backup
+      22) control: a ledger that moved between precheck and backup, and an up that fails, keep the artifact and issue no further up
+      23) rollback: the older check refuses the upgraded namespace with MIG_UNKNOWN, the backup restores into fresh namespaces, the older check is current there, and writes after the backup are lost
+      24) rollback validates ACL, cross-kind source aliases and empty existing schemas before preparation
+      25) control: rollback refuses when the older check finds every namespace current, when a target is not fresh, and when the artifact is not the older catalogue
+
+  tenant operations current native fixture contract (recording only)
+    ✔ admits parent-first counter inventory while retaining the exact old source for upgrade
+    ✔ binds every actual native seed insert transaction-locally and rolls back interrupted setup
+    ✔ uses explicit serving ACL declarations and observes raw ordinals and floors independently
+
+
+[TIMING STATS] Total: 32 tests, Avg: 1ms, Slow: 0
+
+  7 passing (51ms)
+  25 failing
+
+  1) tenant operations: deployment backup, restore, upgrade and rollback
+       plan
+         preserves issuance audit rows and the exact appended ledger without manufacturing inventory changes:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:317:21)
+
+  2) tenant operations: deployment backup, restore, upgrade and rollback
+       plan
+         refuses unknown migration effects and a column-changing issuance model instead of silently accepting them:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:338:21)
+
+  3) tenant operations: deployment backup, restore, upgrade and rollback
+       backup
+         refuses hidden physical relations with a known ledger in deployment backup and restore:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:362:21)
+
+  4) tenant operations: deployment backup, restore, upgrade and rollback
+       backup
+         refuses hidden target physical relations before any deployment restore effect:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:370:21)
+
+  5) tenant operations: deployment backup, restore, upgrade and rollback
+       backup
+         captures every catalogued table for every tenant in one read-only snapshot, with ledgers, checksums and key references:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:378:30)
+
+  6) tenant operations: deployment backup, restore, upgrade and rollback
+       backup
+         refuses a bound identity before reading any table: a bound role would produce an empty, consistent artifact:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:426:30)
+
+  7) tenant operations: deployment backup, restore, upgrade and rollback
+       backup
+         refuses a ledger the catalogue does not know, checksum drift, an empty ledger and an unregistered tenant:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:433:23)
+
+  8) tenant operations: deployment backup, restore, upgrade and rollback
+       backup
+         refuses a secret record whose stored value is not a key-referenced ciphertext, so plaintext never travels:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:453:30)
+
+  9) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         restores into prepared fresh namespaces in one transaction, recreates the ACL, advances identity sequences and the independent oracle matches the source:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:462:22)
+
+  10) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         control: a backup that lost one tenant from one table restores cleanly, and the independent oracle names the tenant and table:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:567:22)
+
+  11) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         control: one tampered row is refused by the file digest before any transaction or write:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:587:22)
+
+  12) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         control: a non-empty target namespace is refused inside the transaction with no write issued and nothing changed:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:605:22)
+
+  13) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         control: a target ledger that is not exactly the artifact ledger is refused: unprepared, longer, or drifted:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:619:22)
+
+  14) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         control: a column difference, a bound identity and a bad ACL role are refused before any write:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:638:22)
+
+  15) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         control: the in-transaction oracle does not trust row counts; a write that reports success without storing rolls everything back:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:655:22)
+
+  16) tenant operations: deployment backup, restore, upgrade and rollback
+       restore
+         an interrupted restore leaves nothing behind and a rerun completes:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:666:22)
+
+  17) tenant operations: deployment backup, restore, upgrade and rollback
+       explicit old/new inventory and table-scoped privileges
+         backs up only old populated inventory, upgrades a new namespace, refuses older readiness and restores old inventory:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:686:21)
+
+  18) tenant operations: deployment backup, restore, upgrade and rollback
+       explicit old/new inventory and table-scoped privileges
+         refuses occupied new namespaces before backup and detects row loss during an otherwise successful migration:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:704:24)
+
+  19) tenant operations: deployment backup, restore, upgrade and rollback
+       explicit old/new inventory and table-scoped privileges
+         emits only caller-supplied table grants; invalid wildcard/escalation plans refuse before statements:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:725:22)
+
+  20) tenant operations: deployment backup, restore, upgrade and rollback
+       upgrade and rollback over a two-catalogue sequence
+         upgrade is status, backup, up, check; the record names the backup; no up is issued before the backup commits:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:760:46)
+
+  21) tenant operations: deployment backup, restore, upgrade and rollback
+       upgrade and rollback over a two-catalogue sequence
+         control: a failing precheck issues neither a backup nor an up; nothing pending issues no backup:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:788:23)
+
+  22) tenant operations: deployment backup, restore, upgrade and rollback
+       upgrade and rollback over a two-catalogue sequence
+         control: a ledger that moved between precheck and backup, and an up that fails, keep the artifact and issue no further up:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:802:21)
+
+  23) tenant operations: deployment backup, restore, upgrade and rollback
+       upgrade and rollback over a two-catalogue sequence
+         rollback: the older check refuses the upgraded namespace with MIG_UNKNOWN, the backup restores into fresh namespaces, the older check is current there, and writes after the backup are lost:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:822:46)
+
+  24) tenant operations: deployment backup, restore, upgrade and rollback
+       upgrade and rollback over a two-catalogue sequence
+         rollback validates ACL, cross-kind source aliases and empty existing schemas before preparation:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:846:21)
+
+  25) tenant operations: deployment backup, restore, upgrade and rollback
+       upgrade and rollback over a two-catalogue sequence
+         control: rollback refuses when the older check finds every namespace current, when a target is not fresh, and when the artifact is not the older catalogue:
+
+      AssertionError [ERR_ASSERTION]: Unmodelled migration: 0002_management_session_issuance
++ actual - expected
+
++ 'undefined'
+- 'function'
+
+      + expected - actual
+
+      -undefined
+      +function
+      
+      at migrate (tests/tenant-operations.test.js:234:14)
+      at scenario (tests/tenant-operations.test.js:271:64)
+      at async Context.<anonymous> (tests/tenant-operations.test.js:861:23)
+
+
+

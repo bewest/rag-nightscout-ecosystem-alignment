@@ -1,0 +1,46 @@
+{
+  "kind": "instrument-smoke-only",
+  "acceptedWrites": 6,
+  "tenants": 2,
+  "domains": 3,
+  "sourceOwnedPayloadFunctions": true,
+  "instrument": {
+    "commit": "ab49d30770fe536513ec5793986c75178fcf0dd7",
+    "sha256": "13e2a2a484e7117c8c839bfc6eeaf5c5aa2d77de5f2cdaadae13147a251e24b3",
+    "files": {
+      "tools/mt-bench/capacity/k6/workload.js": "0336f9c76e0d60ef8acda42dc2863ba20d8581f41400345bb32880e295a6d0c5",
+      "tools/mt-bench/capacity/probe.js": "c1cc9cd4b0a9c6fcec887e10269d001edce7f371627779eb0dbc3ff7aaa28b97",
+      "tools/mt-bench/compose-baseline/oracle/disk.sh": "d72703d45cd8eee2f62673b26c307a69007efc22b109c59cda459cdfe91e569b",
+      "tools/mt-bench/compose-baseline/probes/sample.sh": "4dd6996e0d0e3b1c4b30aeca46627e6c8f03b045faac46df98272aa52214673a",
+      "tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.md": "bf2a7a07c34329f7c1294f66cc02dd66abb73f9aaabc38bbdb0f936c3840f524",
+      "tools/mt-bench/m7-joined/README.md": "9c36c747daedc98899aca1525738e37388fcb573ec4b5c65d17c457bf0b1653c",
+      "tools/mt-bench/m7-joined/REMOTE-SEAM.md": "6b1293e25dbb585a6613138d58b83aacdc2f215c56b780c4ab66ef59ee688dd7",
+      "tools/mt-bench/m7-joined/adapter.py": "a2079769889c775007876f15dac7b567b478cfd4abd5f4236cfb61db01eb88b7",
+      "tools/mt-bench/m7-joined/campaign.py": "13fb1ba63fb10ba30d7f790e5e2af5976d9f0ddf666e89e4fefeb46103978e7d",
+      "tools/mt-bench/m7-joined/contract.py": "258d3a175d5b1330280b4b18ac40dc85b4a06f94306866b0ee05f00262a26f0f",
+      "tools/mt-bench/m7-joined/diagnostic.cjs": "c6644efe11e9578e52a9bd202742cd40b91713b7bc06cdfa1aa27b531f89c759",
+      "tools/mt-bench/m7-joined/diagnostic.test.cjs": "819dd6ff2e55b7008f5e4f62e1241c1ff0f370b5aca40b3a6059412821a8a3d9",
+      "tools/mt-bench/m7-joined/probe.py": "c709eba68a3b3f3d54f1d770d19cef53c4daa6c0858ec5c285097d3b9c0405e5",
+      "tools/mt-bench/m7-joined/reduce.py": "be97045700ed11f69a8db8f063ff7bfc43caa21443c20b700539056d59e19bb4",
+      "tools/mt-bench/m7-joined/restart.cjs": "608bb217b562709b747f749146abc59b2b204f5b7ab2cc4adf1e230062f1d846",
+      "tools/mt-bench/m7-joined/smoke.py": "d3b505eb5646db2984fd2c670f6383c0643fcbb47bbceb899d8694914affd982",
+      "tools/mt-bench/m7-joined/test_contract.py": "3e7480f396c7dc7b7f9c05628b4666239a31b337d391a4289207dc2cf0c90ee9",
+      "tools/mt-bench/m7-joined/workload-shapes.cjs": "12164857d8903eba7b359612d160d0d425ee1302ee1358419ec0229cd143c232",
+      "tools/mt-bench/m7-joined/workload.py": "901add5350f3f4f8c2bc6e4eef5a5a6a2e023b086781c6a61c43d57e8406f583"
+    }
+  },
+  "workload": {
+    "baseline": "tools/mt-bench/capacity/k6/workload.js",
+    "baselineSha256": "0336f9c76e0d60ef8acda42dc2863ba20d8581f41400345bb32880e295a6d0c5",
+    "adaptedSha256": "624a23a656105a319894ac30f00685b31bbc2b8c49b1bc393a07607dbb99e926",
+    "changes": [
+      "current nominal arrival timestamps with deterministic uniqueness",
+      "explicit read 4xx counter blocks functional advancement"
+    ]
+  },
+  "foreignActiveContainers": 38,
+  "privateHostInventorySha256": "89f7e9e80afb4184c308847f7a34c0d0c4c05e6dc9c3afeedda0fa78c0aedbdc",
+  "capacity": "NO-MEASUREMENT",
+  "applicationAuthorizationClinicalRestore": "NO-MEASUREMENT",
+  "limits": "HTTP fixture and direct PG storage validate instrumentation, not shipping application behavior; no k6 scheduling or sockets run"
+}

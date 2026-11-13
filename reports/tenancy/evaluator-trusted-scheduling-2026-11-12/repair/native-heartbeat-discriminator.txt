@@ -1,0 +1,17 @@
+
+
+  native trusted evaluator jobs with one physical lifetime client
+2026-11-12T12:30:49.359Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+NATIVE_INTENT_VISIBLE {"states":["attempting"]}
+2026-11-12T12:30:50.403Z	EMITTING ALARM:
+  {"level":"Warning","title":"Synthetic alarm","message":"Synthetic details","group":"default","plugin":"synthetic"}
+NATIVE_INTENT_VISIBLE {"states":["attempting"]}
+NATIVE_JOB_BACKENDS {"lifetimePoolMax":1,"outboxPoolMax":1,"sessions":[{"usename":"job_lifetime","count":1},{"usename":"job_worker","count":1}]}
+    ✔ commits revision intents and accepted handoffs, repeats, and makes time-only progress without writes (1252ms)
+    ✔ refuses fresh suspended jobs and paused delivery, then resumes through fresh admission (256ms)
+NATIVE_JOB_CLEANUP {"containerRemoved":true,"anonymousVolumesRemoved":true,"image":"postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"}
+
+
+  2 passing (6s)
+

@@ -1,0 +1,6 @@
+test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail (test_profile.Profile.test_stats_only_exited_k6_separate_and_unknown_serving_missing_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+OK

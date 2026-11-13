@@ -1,0 +1,9 @@
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-operation-lifetime-20261112/tests/fixtures/api-fixed-roster-serving.js
+  44:5  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-operation-lifetime-20261112/tests/fixtures/multitenant-preview-replicas.js
+  115:7  warning  Found writeFileSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+  234:7  warning  Found mkdirSync from package "node:fs" with non literal argument at index 0      security/detect-non-literal-fs-filename
+
+✖ 3 problems (0 errors, 3 warnings)

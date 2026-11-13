@@ -1,0 +1,10 @@
+{
+  "focused.log": "2981a2fcf0e0ac3312fbc9f4f1dc0cfec2bc7cd9b454906c05ec02fddbb70ee4",
+  "stock-fixture.log": "d4601866321ddb9a4f6500862705d80b81cdac20b88ea828b28b71d322ec84aa",
+  "sql-smoke.log": "71bad436a5ebc583d2e8737235d21b3c1ed2d3a8549b9ee573d8bbf0f9462283",
+  "sql-smoke.json": "8eb142ff6f999c0f8f18d4e6411df143296bbaea2e3008aea6b0649c22561183",
+  "oracle-control.json": "fd1af94585a7e0b0578c14a26d43af9117f45cbf87a285cd5986cb1c93bb5673",
+  "restart-control.json": "2b6e93656d4666a8243a648ee2e30f7657b6406ca1b015078b6dc8f9f85591fd",
+  "instrument.json": "683f7a6a4bfd5d0064c930234f7a6bcfda54a5d6f9c8c3350a711988df4510ef",
+  "fixture-dependencies.json": "ffaf30bfaa441c60b029c888b677eb4eaddd95dd1dcea483dda45e6ce3045117"
+}

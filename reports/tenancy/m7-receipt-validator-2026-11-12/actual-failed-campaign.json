@@ -1,0 +1,29 @@
+{
+  "validatorSource": "142e301b745ddc7b2a60fbc1ed5db032eeb00b46",
+  "actualResultSha256": "86797be045a330998c66613b0989e67ac9e1c379d900356b43a276aaa21d12c5",
+  "status": "failed",
+  "source": {
+    "coreCommit": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+    "deployCommit": "bc7b8c56b19d7a87fea668e0adb8b939e580de1e",
+    "alignmentCommit": "7d3399ddc731b1719fceee49317476aeb6eec897"
+  },
+  "unitReturnCode": 29,
+  "actualUnitCounts": {
+    "passing": 3478,
+    "pending": 1,
+    "failing": 29
+  },
+  "unitPendingReason": "moment cache: every date string of VIEWS_CORPUS_DIR (read in place); external corpus absent",
+  "laterTierCommandsAbsent": [
+    "dom",
+    "dependency",
+    "core",
+    "harness",
+    "integration",
+    "stress",
+    "browser"
+  ],
+  "validatorRefusal": "M7_CAMPAIGN_INCOMPLETE",
+  "syntheticWrapperOnly": true,
+  "productionPassReceiptCreated": false
+}

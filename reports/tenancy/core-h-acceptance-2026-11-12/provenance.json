@@ -1,0 +1,166 @@
+{
+  "recordType": "NEW_BOUNDED_SELECTED_FIELD_DERIVATIVE",
+  "originalPrivateAssessmentSha256": "ba0bcf4000773db9e1fd8cd7ceb798e8d7488a79eef22b1688c19003482937d2",
+  "transformation": "Selected nonidentifying fields only; original raw private capture hashes remain bound. This is not another experiment.",
+  "sourcePins": {
+    "coreCommit": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "deployCommit": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+    "alignmentCommit": "5d7fa02746f4695a222f1fc400dc59b61a8c717e",
+    "instrumentCommit": "7209cb29020543a82412cd69d2751ca939cf4318"
+  },
+  "capturedSourceProvenance": {
+    "commit": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "ciEnvironmentSha256": "97ebaee8ecab5deb14c434c34e2cb05b3235b5e7a55224b82d5e3e7e4f4a0fff",
+    "nodeVersion": "v24.22.1",
+    "npmVersion": "11.19.1",
+    "nodeBinarySha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+    "instrumentCommit": "7209cb29020543a82412cd69d2751ca939cf4318",
+    "workerSha256": "4689aaabcdd2f6f00287bc5879d35eb672c8585dee42fa889f2b11874c84e788"
+  },
+  "capturedKernel": "6.8.0-147-generic",
+  "transportBundleManifestSha256": "9b9763a6345c5cfc988a5cf1c36967bff92feffac6e25f66b68593302ea2e2ea",
+  "runDeclaredSpecSha256": "a34f9d72c48df33f9082a12434a462adf225fe4839b01573cfb9fc535523db3b",
+  "rawPrivateArtifactSha256": {
+    "spec": {
+      "sha256": "879feb9f6c84974b4e934760a651047cb772c89366287182f105f8b8c6d75d51",
+      "bytes": 1828
+    },
+    "remote-spec": {
+      "sha256": "8b3d2c4aa2c76c1405b0dd01775123b7bdcb00bc0c25c4680192bec30e3d81a5",
+      "bytes": 1718
+    },
+    "run": {
+      "sha256": "ad0e1fe8baaea3cc5721d090e263af0a780a0bdcc1388ecff5cc869dfc7f9261",
+      "bytes": 574
+    },
+    "controller-result": {
+      "sha256": "5efce394f46744cbdbf4e4e79e067e75ad0f0703bb4f967a71ac47baedd47068",
+      "bytes": 1636
+    },
+    "watchdog-result": {
+      "sha256": "112f91d1040b083ee4a8e4bd43d947c440a4ebbbd7fe7549f195c8dbf6a957d6",
+      "bytes": 234
+    },
+    "independent-provider-inventory": {
+      "sha256": "fb31739575579d17ecc23066dac4a64b209f30146fc219883deaae79961dd8a9",
+      "bytes": 173
+    },
+    "compute-estimate": {
+      "sha256": "448384a6b9c54efc68e64e53bda225142591a1fd2b705a2e0cd343c87ab7f8d5",
+      "bytes": 195
+    },
+    "worker-result": {
+      "sha256": "203c422119c36b981c0773bba382f90557a8ad540aeaa5313447be50569f6602",
+      "bytes": 46595
+    },
+    "corpus-record": {
+      "sha256": "cf622a73aac7aa8121ae7e20fed0e0c641411d310f0e08d62cabbb26aa935959",
+      "bytes": 6541
+    },
+    "commands": {
+      "sha256": "841bf2bfe3b18852b687ea74a59ea0fe514831e3101961142ef7bd968199f452",
+      "bytes": 42704
+    },
+    "source-provenance": {
+      "sha256": "aa1549868caa9a46fd86d221c644319ac00f2a6eeea1dace66fc56b901d29352",
+      "bytes": 534
+    },
+    "host-provenance": {
+      "sha256": "c6a4cb6e09c59ad830438d56b6f47ebe94100ada2fce0b3346cf7ecaba05c185",
+      "bytes": 5044
+    },
+    "execution-plan": {
+      "sha256": "42ca6c0bf641c17e4006040078e14177157a0fc52ad4f4cfa8dde46382c5eea9",
+      "bytes": 6121
+    },
+    "execution-authorization": {
+      "sha256": "ce4965408a0ea4803fae620823b914b0de0fcdbb0430e7346d4bc96f5aa43e40",
+      "bytes": 867
+    },
+    "remote-archive": {
+      "sha256": "3791914f840ac814ee3d44fb645b6d92f7a41b50f342eda949fac5f2132c2688",
+      "bytes": 2092361
+    },
+    "unit-stdout": {
+      "sha256": "0a22f319d384f5af3585558c08c3d21fb0f82432fbf0e41790229a4af9143ace",
+      "bytes": 630067
+    },
+    "unit-stderr": {
+      "sha256": "0748a32ec014b5b217fa7f549cfec6fe68aa8d76976a49b54eddce698e2f8769",
+      "bytes": 19282
+    },
+    "dom-stdout": {
+      "sha256": "d8ebc083283643410b1522d7c73bbf2dfc12e799c528610c8659404ebaf0477c",
+      "bytes": 42481
+    },
+    "dom-stderr": {
+      "sha256": "fc3bd30b1165dafda9f5bcff5251c08f436c564b1bbede0082b424614a684286",
+      "bytes": 58544
+    },
+    "dependency-stdout": {
+      "sha256": "678609d2d6896babc26fc4192dc5890978ac6414a47a2b952ef8dee846d4891b",
+      "bytes": 33718
+    },
+    "dependency-stderr": {
+      "sha256": "a8301f2707dc42c772bf61a570eb564a86cb493794761b7016606a4ba82492fc",
+      "bytes": 329
+    },
+    "core-stdout": {
+      "sha256": "08a63a781c4a0eab20f9da5766f85159cc91079a526f6ecb6b7d659ef30b0dc1",
+      "bytes": 25351
+    },
+    "core-stderr": {
+      "sha256": "d45fa3524d8402a91a5b089be3829204e9fd5d8941fc27f178757574b8039604",
+      "bytes": 2342
+    },
+    "harness-stdout": {
+      "sha256": "bbcf7bc324e8d2afcecb71677daee945142cad56fbc62056c5f4bade90e6a8cc",
+      "bytes": 9136
+    },
+    "harness-stderr": {
+      "sha256": "e283a78d6a44dec1f3e30fda28dc8d831adc5db082bb4462b69f1144633a4334",
+      "bytes": 260
+    },
+    "integration-stdout": {
+      "sha256": "32cf07156eab5259890bfdbd7310b99459b2f29bf4f7546d77cbe8f46259135f",
+      "bytes": 1539759
+    },
+    "integration-stderr": {
+      "sha256": "27bf06d5db797521876783960931334d6836da6ff39acef04726b4de765e4806",
+      "bytes": 239790
+    },
+    "stress-stdout": {
+      "sha256": "6386c1dd8cb8540885f80c4f0538f7f2666d3e0261bf5e1b203b91360fda8b94",
+      "bytes": 16791
+    },
+    "stress-stderr": {
+      "sha256": "ff614964cdeed815d1905a5d7d7c4a72a5d00be338963be91f0fbf227a89444c",
+      "bytes": 1907
+    },
+    "browser-stdout": {
+      "sha256": "b7745b38cd5b1040ff63695a8db22ff0d6b032398cba1cd110dcafffd1257ec4",
+      "bytes": 71047
+    },
+    "browser-stderr": {
+      "sha256": "e3cbdb4a2b5dedc0129ec699bb734ca4abd7db25cf77aedba27c28db5082969f",
+      "bytes": 25
+    },
+    "enabled-corpus-stdout": {
+      "sha256": "8a663c8ceec5063aef69cbad19f352334cb7386bf7ba15b5dfb78d847bf5b200",
+      "bytes": 920492
+    },
+    "enabled-corpus-stderr": {
+      "sha256": "0270faf1a6b8e52f417135d77f3231773cfb7ca38ff7fd6ab66e0596406f3c1d",
+      "bytes": 95468
+    }
+  },
+  "readDerivedSourceSha256": {
+    "scripts/test-multitenant.js": "ece879b9c642f9384b042f7fe4270a69a5102b86b56120fcaf7056b9340c1e98",
+    "scripts/execution-reporter.js": "b36ca8d8552bc5dc163d12f874b299507e41738f0dd38c87fcbec27f6cd2c8b7",
+    "tests/tenant-commit-clock-http.integration.test.js": "5881a84fc082f1907aa62b121dea90076e33c5266cb8bfd94ce4ae62e887743d",
+    "tests/test-select.test.js": "8e2e032e7267ff625bd15f22194b4b8905b48c54e64ef2a7c64202b0177e2a9b"
+  },
+  "committedWorkerSha256MatchesRemoteRecordedHash": true,
+  "workerBytesRetainedInDecodedArchive": false
+}

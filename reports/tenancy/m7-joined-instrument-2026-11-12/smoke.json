@@ -1,0 +1,41 @@
+{
+  "kind": "instrument-smoke-only",
+  "acceptedWrites": 6,
+  "tenants": 2,
+  "domains": 3,
+  "sourceOwnedPayloadFunctions": true,
+  "instrument": {
+    "commit": "b8c62c00c437447b095a5ea4184bcbd108cb310c",
+    "sha256": "a25e63b83e1992f0849db1aac46eef5e8f2d7229daea60200a6068edb41fd317",
+    "files": {
+      "tools/mt-bench/capacity/k6/workload.js": "0336f9c76e0d60ef8acda42dc2863ba20d8581f41400345bb32880e295a6d0c5",
+      "tools/mt-bench/capacity/probe.js": "c1cc9cd4b0a9c6fcec887e10269d001edce7f371627779eb0dbc3ff7aaa28b97",
+      "tools/mt-bench/compose-baseline/oracle/disk.sh": "d72703d45cd8eee2f62673b26c307a69007efc22b109c59cda459cdfe91e569b",
+      "tools/mt-bench/compose-baseline/probes/sample.sh": "4dd6996e0d0e3b1c4b30aeca46627e6c8f03b045faac46df98272aa52214673a",
+      "tools/mt-bench/m7-joined/README.md": "a5f1009f4251731253d7513bcaba7f9bbe3645157d6e4973380edd38efde85fe",
+      "tools/mt-bench/m7-joined/adapter.py": "378afeae6c2f86c6927d1ab2546e7227d20e33c660afdc55a64167c6f0484a67",
+      "tools/mt-bench/m7-joined/campaign.py": "4408af2d777328a697df22d2871c570d4d4d1a6b8e79c2c9f372ac5d491c7409",
+      "tools/mt-bench/m7-joined/contract.py": "5cf5220efd4af0fb70a6b39c7b477145d9e7ad4a99d7468691c209f2b39978a6",
+      "tools/mt-bench/m7-joined/probe.py": "b0e5f120aec38e553aed5a2722cb0a48e414a594cd8e9cf9578a9b704a8ff2e0",
+      "tools/mt-bench/m7-joined/reduce.py": "593374f2c5022ccb0ffc56766ee857c86f38e07c531c04f8f40da2260c16cca0",
+      "tools/mt-bench/m7-joined/smoke.py": "cb55b93a6660dcb484e5273ac826afbf1ea1ea23c283eb20a801964e3b143751",
+      "tools/mt-bench/m7-joined/test_contract.py": "eca1b6de457e9d4d759e6e4d58232f01395ff03ef6ad8d6ef2631a08ba529b40",
+      "tools/mt-bench/m7-joined/workload-shapes.cjs": "12164857d8903eba7b359612d160d0d425ee1302ee1358419ec0229cd143c232",
+      "tools/mt-bench/m7-joined/workload.py": "901add5350f3f4f8c2bc6e4eef5a5a6a2e023b086781c6a61c43d57e8406f583"
+    }
+  },
+  "workload": {
+    "baseline": "tools/mt-bench/capacity/k6/workload.js",
+    "baselineSha256": "0336f9c76e0d60ef8acda42dc2863ba20d8581f41400345bb32880e295a6d0c5",
+    "adaptedSha256": "624a23a656105a319894ac30f00685b31bbc2b8c49b1bc393a07607dbb99e926",
+    "changes": [
+      "current nominal arrival timestamps with deterministic uniqueness",
+      "explicit read 4xx counter blocks functional advancement"
+    ]
+  },
+  "foreignActiveContainers": 44,
+  "privateHostInventorySha256": "bb065132fc035f56dd8e835dfa4ccd59638724dbc4c6263fa471fea2c46480a2",
+  "capacity": "NO-MEASUREMENT",
+  "applicationAuthorizationClinicalRestore": "NO-MEASUREMENT",
+  "limits": "HTTP fixture and direct PG storage validate instrumentation, not shipping application behavior; no k6 scheduling or sockets run"
+}

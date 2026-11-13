@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "kind": "immutable-core-d-failure-evidence-leaf",
+  "captureDate": "2026-11-12",
+  "files": {
+    "README.md": "3e94b3ad86d47cdf3384868998f0e4f21357f55674d590bbd61dd45950acb2e7",
+    "cleanup-and-cost.json": "f633a428f32e46fe2467433e3f34487d72f27c84e7d0daa9883e5619ac892064",
+    "failure-and-pending.json": "c800f825a4cfcfb3afb4aae6f3c1d5e49342b24410b10d9314425ef11665a226",
+    "provenance.json": "144fd662e373004b307e4bc5dab14b257878fb62ac14bb9d0fecf9ac7d8733e5",
+    "publication-verification.json": "37de8f6b799a2ee613b9cd2de54a3f7188250fbc5749ddc4a7c5d17b06270f49",
+    "queue-check-output.txt": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f",
+    "summary.json": "863d8252553a5c87b366b61b7a4f171dc7aaa25eb6f076946d3dc919a4ef54a6"
+  }
+}

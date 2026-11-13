@@ -1,0 +1,47 @@
+{
+  "fixed-matrix.cjs": {
+    "rawSha256": "77f5a01b9ebb05647774d2688930e7eb239c991a0ac7ccd8673a30d7eb603077",
+    "publishedSha256": "77f5a01b9ebb05647774d2688930e7eb239c991a0ac7ccd8673a30d7eb603077",
+    "normalization": "none"
+  },
+  "result.json": {
+    "rawSha256": "22782419d01189aff3de3b81168547e1fa25e1d5940b80ce65471f47e03f1ca3",
+    "publishedSha256": "22782419d01189aff3de3b81168547e1fa25e1d5940b80ce65471f47e03f1ca3",
+    "normalization": "none"
+  },
+  "focused-with-authority.txt": {
+    "rawSha256": "d20664a373c4c978e7538a2bcb7fd334c021881b6cf68cc5a79f47d0f70adbc6",
+    "publishedSha256": "d20664a373c4c978e7538a2bcb7fd334c021881b6cf68cc5a79f47d0f70adbc6",
+    "normalization": "none"
+  },
+  "control-results.json": {
+    "rawSha256": "80efd33f334480737f419116705d4bbb8ace7f3a4a03389b0f1b946c1ab0e1fd",
+    "publishedSha256": "80efd33f334480737f419116705d4bbb8ace7f3a4a03389b0f1b946c1ab0e1fd",
+    "normalization": "none"
+  },
+  "fixed-matrix-original-red.txt": {
+    "rawSha256": "355c04f9cc6a7452559fca69bc30a639b05efc59eed103ccbced6bb04d4b6eb6",
+    "publishedSha256": "fd4cb7bc76691688719b1eae5faa4b81b0f73374144c25160c7916ce1309bab7",
+    "normalization": "scratch prefixes only in error stacks"
+  },
+  "old-bug-script-candidate-red.txt": {
+    "rawSha256": "c39bfcde496a405485ef546d90d77413c07bc1e07e9e6ed2a3627eb02ca2c025",
+    "publishedSha256": "11305a75f34071ee391473e37a47636d4da4516a17c16efc188ddee19ec880c3",
+    "normalization": "scratch prefixes only in error stacks"
+  },
+  "fixed-matrix-candidate-green.txt": {
+    "rawSha256": "fe881fc479abe79da95688c1f703cdd5f43347da958a42c185b3428f58e7f935",
+    "publishedSha256": "fe881fc479abe79da95688c1f703cdd5f43347da958a42c185b3428f58e7f935",
+    "normalization": "none"
+  },
+  "stale-normal.cjs": {
+    "rawSha256": "3ed0820ce3b7203ca8fe2b3244f87cc0ab0697cfb0807ceebf8fa1f8b1e55664",
+    "publishedSha256": "3ed0820ce3b7203ca8fe2b3244f87cc0ab0697cfb0807ceebf8fa1f8b1e55664",
+    "normalization": "none"
+  },
+  "stale-normal.txt": {
+    "rawSha256": "1ba8019e3456da7612b665e95418d56db3dc1bd619bec23ff685474920a04163",
+    "publishedSha256": "1ba8019e3456da7612b665e95418d56db3dc1bd619bec23ff685474920a04163",
+    "normalization": "none"
+  }
+}

@@ -1,0 +1,19 @@
+queue-validate  queue/work-queue.yaml
+  411 items, 7 parcels, 452 runnable gates, 412 explicit no-gate markers
+FAIL  P0-F: gates[0] cwd 'externals/work/nc-jitter' does not exist
+FAIL  P0-F: gates[1] cwd 'externals/work/nc-jitter' does not exist
+FAIL  MT-ENDPOINT-TRANSPORT: gates[0] cwd 'externals/work/crm-m6b-join-20261110' does not exist
+FAIL  MT-OWNERSHIP-OPS: gates[0] cwd 'externals/work/crm-m6b-join-20261110' does not exist
+FAIL  MT-ADMIN-ROLE-OWNERSHIP: gates[0] cwd 'externals/work/crm-ownership-role-20261110' does not exist
+FAIL  MT-ROOT-ADMIN-PARITY: gates[0] cwd 'externals/work/crm-root-admin-parity-20261110' does not exist
+FAIL  MT-INTERNAL-LISTENER: gates[0] cwd 'externals/work/crm-internal-listener-20261110' does not exist
+FAIL  MT-ACTIVITY-ELIGIBILITY: gates[0] cwd 'externals/work/crm-activity-eligibility-20261110' does not exist
+FAIL  MT-EXPORT-EXPIRY: gates[0] cwd 'externals/work/crm-export-expiry-20261110' does not exist
+FAIL  MT-ADMIN-LIFECYCLE-FIT: gates[0] cwd 'externals/work/crm-admin-lifecycle-20261110' does not exist
+FAIL  MT-CONSUMER-STALE-RESELECT: gates[0] cwd 'externals/work/crm-consumer-refusal-20261110' does not exist
+FAIL  MT-TENANT-EXTENDED-SETTINGS: gates[0] cwd 'externals/work/crm-tenant-extended-settings-20261110' does not exist
+FAIL  MT-BATCH-JOIN-1110: gates[0] cwd 'externals/work/crm-batch-join-20261110' does not exist
+FAIL  MT-OWNER-LAST-GUARD: gates[0] cwd 'externals/work/crm-m6b-followups-20261110' does not exist
+FAIL  MT-KEY-RETENTION: gates[0] cwd 'externals/work/crm-m6b-join-20261110' does not exist
+FAIL  MT-VAULT-TOKEN-FILE: gates[0] cwd 'externals/work/crm-vault-token-file-20261109' does not exist
+make: *** [Makefile:989: queue-validate] Error 1

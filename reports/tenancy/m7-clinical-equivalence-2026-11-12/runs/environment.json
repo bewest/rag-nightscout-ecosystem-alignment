@@ -1,0 +1,17 @@
+{
+  "baseline": "5c60aec669362b032a10d6dd7ac368e9c61e8003",
+  "candidate": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+  "alignmentInstrumentTree": "811576c143e0847a5d716cf27a07abe138012449",
+  "node": "v22.23.4",
+  "npm": "10.9.9",
+  "packageLockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+  "installedPackageLockSha256": "52205ab6d23bcd4139565f2e437849c9fc10fc8844ced745534617099429c881",
+  "timezone": "America/Los_Angeles",
+  "TZoverride": null,
+  "diagnosticsEnabled": false,
+  "fips": 0,
+  "postgresVersion": "16.15 (Debian 16.15-1.pgdg13+2)",
+  "postgresImage": "sha256:74d436cb49d3398cf7b5d7b33635d43623d9e4da4b93c22db453f7d5d81181b1",
+  "syntheticOnly": true,
+  "lifecycleScriptsEnabled": false
+}

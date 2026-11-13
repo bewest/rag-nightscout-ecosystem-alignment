@@ -1,0 +1,30 @@
+{
+  "base": "d5e2e874659155c952b5b5deb862f12f982ac02e",
+  "source": "7ce803582f5f6c4d7506ec5321121e67e00dff09",
+  "fixtureSha256": "a9cfa73e1e1d00fa4d8425a65cd82c2dcb359d6a0a119f99b21a954a8715f2cf",
+  "transportUnchangedSha256": "97d262179905a3d41dde673bf3bdc1a64e92a6390d60105482f6f13c08d20240",
+  "executedControlSha256": "53ed202fe15c001006773637b85d925d79dd9c4c8bf438dc39285ddc81d73092",
+  "publishedControlSha256": "a388a7df6326e6d48115ee191994c0492d50d94a16a09ea63d5485df0d0c9604",
+  "packageLockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+  "node": "v22.23.4",
+  "environment": {
+    "NODE_ENV": "test",
+    "CI": "true",
+    "TZ": "UTC",
+    "ambientNsVariables": false,
+    "NODE_OPTIONS": false,
+    "NODE_PATH": false
+  },
+  "captures": {
+    "controls.json": "435c3a554574fa43b6be97d783c6fb4b066e0dc83fc2c980721fcabea2d57cc8",
+    "controls.py": "a388a7df6326e6d48115ee191994c0492d50d94a16a09ea63d5485df0d0c9604",
+    "exact-committed.txt": "19e9f956b465a0f34659db0f1e0901ccb9630a99f9dcac64dfa4d1f6ac7e565d",
+    "fixture-repaired.txt": "f9c3e494b44cf78ce071393cf42525c35d12b94dc36c66db8435baa2fa82e231",
+    "initial-affected-selection.txt": "026e0b875f020d03b40226d97b3e9e131427f653d78e078feffda5f2551d3533",
+    "isolated-D5-red.txt": "9538700e0dd2d7807b1c2ef88c41fa01d621f212b7929d805d8618b4d731f5a0",
+    "lint.txt": "6f4426d6e494e81aae816936592efeccc0630add40d5189e0c316f2a8c3b592b",
+    "owner-ablation-red.txt": "8597b68cd3f5e6d8574863b1fe62aac30b8e9230c98cc14dc20adcc32d20a259",
+    "restored-affected.txt": "192b9dc342bfd4be82a9fa73ddac8b6b950cf79572e26fb6632fda1d59346969",
+    "version-ablation-red.txt": "78e9ca87e7c3ed58ba6f802b4d1a8100a4281e42822685f9b1c70df908c3d577"
+  }
+}

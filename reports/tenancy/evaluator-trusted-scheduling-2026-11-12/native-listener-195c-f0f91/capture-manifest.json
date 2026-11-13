@@ -1,0 +1,122 @@
+{
+  "native-observation.json": {
+    "rawSha256": "5e540710ab4897dc94003de904bcd121cd71fa9fc466c07d75b283360c5bc440",
+    "publishedSha256": "5e540710ab4897dc94003de904bcd121cd71fa9fc466c07d75b283360c5bc440",
+    "normalization": "none"
+  },
+  "native-observation.json.gz": {
+    "rawSha256": "8339c0c006aaeca39da64ff10f473db597d4ec46eb57b14b57aedbb651b02836",
+    "publishedSha256": "8339c0c006aaeca39da64ff10f473db597d4ec46eb57b14b57aedbb651b02836",
+    "normalization": "none"
+  },
+  "controls.json": {
+    "rawSha256": "46ff89be0bbfdc40ed6f3418324e31b3a89e03b4ab5ac9b287ab92f6be5313be",
+    "publishedSha256": "46ff89be0bbfdc40ed6f3418324e31b3a89e03b4ab5ac9b287ab92f6be5313be",
+    "normalization": "none"
+  },
+  "observation.stdout.txt": {
+    "rawSha256": "3f0371feddb162229eb93daa6f41eb4ef381f00d2bd059251e1d109d1dde2199",
+    "publishedSha256": "3f0371feddb162229eb93daa6f41eb4ef381f00d2bd059251e1d109d1dde2199",
+    "normalization": "none"
+  },
+  "capture-driver.py": {
+    "rawSha256": "685aec4eb807dd9c5e091ae2bff8ca8b659fe2263fdcaf1ea7677f6c20f47860",
+    "publishedSha256": "747d12cd28997eb732525cbde49daf354fbb9c8e0fd32e7a66b608523b41be41",
+    "normalization": "workspace/scratch prefixes in text/archived scripts only"
+  },
+  "control-driver.py": {
+    "rawSha256": "6da5d6ac25b7e261e897fccfc032bcda87cb2437773e2db09d58f721eeea34de",
+    "publishedSha256": "e44b5ad18b58643595e9c1276c3d8f65eaee986f2279d65132a1687b0a4b14d0",
+    "normalization": "workspace/scratch prefixes in text/archived scripts only"
+  },
+  "1-evaluator.command.json": {
+    "rawSha256": "5b7fc3c9b7cee40230a2c59f985dfbee7d9b30b25ee729b0baea3f09d91297c9",
+    "publishedSha256": "5b7fc3c9b7cee40230a2c59f985dfbee7d9b30b25ee729b0baea3f09d91297c9",
+    "normalization": "none"
+  },
+  "2-evaluator-3.command.json": {
+    "rawSha256": "edff588e3e2499ffa40ae2d7592c8693d6dc603d804a66b0d65043ebcca0747a",
+    "publishedSha256": "edff588e3e2499ffa40ae2d7592c8693d6dc603d804a66b0d65043ebcca0747a",
+    "normalization": "none"
+  },
+  "0-evaluator-2.command.json": {
+    "rawSha256": "a6fbf7ca58886cf06a145cd12355fe19aaf2d3b3f6979e0dcaa3e257109b8ea7",
+    "publishedSha256": "a6fbf7ca58886cf06a145cd12355fe19aaf2d3b3f6979e0dcaa3e257109b8ea7",
+    "normalization": "none"
+  },
+  "2-evaluator.command.json": {
+    "rawSha256": "88461d8ad21b32ad05efa744829c23fae1c1ae2e49b441e6244a52ebbfadded3",
+    "publishedSha256": "88461d8ad21b32ad05efa744829c23fae1c1ae2e49b441e6244a52ebbfadded3",
+    "normalization": "none"
+  },
+  "1-evaluator-2.command.json": {
+    "rawSha256": "d47c9d13231b99c284ce78a9c4670ec6cf24d0396ba50a92d4a9208ce70cc715",
+    "publishedSha256": "d47c9d13231b99c284ce78a9c4670ec6cf24d0396ba50a92d4a9208ce70cc715",
+    "normalization": "none"
+  },
+  "2-evaluator-2.command.json": {
+    "rawSha256": "ead058e5b44021353da79b84369e3cd0fb266c4fd8c4fad18296ded6a1afbbe7",
+    "publishedSha256": "ead058e5b44021353da79b84369e3cd0fb266c4fd8c4fad18296ded6a1afbbe7",
+    "normalization": "none"
+  },
+  "1-evaluator-3.command.json": {
+    "rawSha256": "d411a06313d29ac79017e3e7d746d58ac8b0d240db0c4992648a4d1759ea0ac6",
+    "publishedSha256": "d411a06313d29ac79017e3e7d746d58ac8b0d240db0c4992648a4d1759ea0ac6",
+    "normalization": "none"
+  },
+  "0-evaluator-3.command.json": {
+    "rawSha256": "835468de929d7d054fd4eecff6d939f1a8cb82ae31e3f57cc326fc3f4fa273f4",
+    "publishedSha256": "835468de929d7d054fd4eecff6d939f1a8cb82ae31e3f57cc326fc3f4fa273f4",
+    "normalization": "none"
+  },
+  "0-evaluator.command.json": {
+    "rawSha256": "a6540577188d0169cfea3e3d2382d2dde7c4807ab963531dd73ad2ea2e63e621",
+    "publishedSha256": "a6540577188d0169cfea3e3d2382d2dde7c4807ab963531dd73ad2ea2e63e621",
+    "normalization": "none"
+  },
+  "2-evaluator.jsonl": {
+    "rawSha256": "359a08c06ba5fa9b2cf76d67562b99598e60ba803610e39e259f3ea23e87a4f2",
+    "publishedSha256": "359a08c06ba5fa9b2cf76d67562b99598e60ba803610e39e259f3ea23e87a4f2",
+    "normalization": "none"
+  },
+  "0-evaluator-3.jsonl": {
+    "rawSha256": "45ca306c33d57764b0b64fc743ff67c35ee773be2cd55d16d3ad4c9daaf7e10a",
+    "publishedSha256": "45ca306c33d57764b0b64fc743ff67c35ee773be2cd55d16d3ad4c9daaf7e10a",
+    "normalization": "none"
+  },
+  "2-evaluator-2.jsonl": {
+    "rawSha256": "13db6429b56587c5e9ced99f336a57b2e56c09d621562dd53f0f13584b586281",
+    "publishedSha256": "13db6429b56587c5e9ced99f336a57b2e56c09d621562dd53f0f13584b586281",
+    "normalization": "none"
+  },
+  "1-evaluator-3.jsonl": {
+    "rawSha256": "63594ee590a4ee40f80ce4f58f431085c63988b507e9f0db0816c215753bb4d1",
+    "publishedSha256": "63594ee590a4ee40f80ce4f58f431085c63988b507e9f0db0816c215753bb4d1",
+    "normalization": "none"
+  },
+  "2-evaluator-3.jsonl": {
+    "rawSha256": "1a0d526e4551671ba9a673439aa04c552e7170b87803ebbef3a1afa1c91d66cf",
+    "publishedSha256": "1a0d526e4551671ba9a673439aa04c552e7170b87803ebbef3a1afa1c91d66cf",
+    "normalization": "none"
+  },
+  "1-evaluator-2.jsonl": {
+    "rawSha256": "d91213731b5eb12a81c1689b9a49621716956b7605bd09308afb363af169e355",
+    "publishedSha256": "d91213731b5eb12a81c1689b9a49621716956b7605bd09308afb363af169e355",
+    "normalization": "none"
+  },
+  "1-evaluator.jsonl": {
+    "rawSha256": "52dd27037ae1381d9758d36455a16cded348ea790080a3e7431986052e72ba1f",
+    "publishedSha256": "52dd27037ae1381d9758d36455a16cded348ea790080a3e7431986052e72ba1f",
+    "normalization": "none"
+  },
+  "0-evaluator-2.jsonl": {
+    "rawSha256": "3bb898f8e889fda4d35c32f14ef4820117b98600a0d8b146c24c1c3ab8e7c00b",
+    "publishedSha256": "3bb898f8e889fda4d35c32f14ef4820117b98600a0d8b146c24c1c3ab8e7c00b",
+    "normalization": "none"
+  },
+  "0-evaluator.jsonl": {
+    "rawSha256": "2770ba68aa302a3f1513929d58829d7e70fc1aa7b20cff21d7b6804d9f9f803b",
+    "publishedSha256": "2770ba68aa302a3f1513929d58829d7e70fc1aa7b20cff21d7b6804d9f9f803b",
+    "normalization": "none"
+  }
+}

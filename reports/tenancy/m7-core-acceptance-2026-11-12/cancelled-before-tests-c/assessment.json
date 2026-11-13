@@ -1,0 +1,66 @@
+{
+  "basis": "reproduced cancellation/cleanup; clinical defect classification peer-reported by implementation coordinator",
+  "verdict": "CANCELLED_BEFORE_TEST_CAMPAIGN",
+  "reason": "Coordinator requested hold after activation, then confirmed duplicate accepted clinical alarm effects in separate paired qualification and requested cancellation",
+  "source": {
+    "coreCommit": "195c932293f3abc648da8fbe4356bf7360acd002",
+    "deployCommit": "f0f91f43784bb708385bcd4074cdfbd490fc096d",
+    "alignmentCommit": "1ff724983dd0148e10f76ad73231c46d9a532f26",
+    "instrumentCommit": "0f19dcdc2f45ac1bea69cca08f8b629e700de084"
+  },
+  "testStages": {
+    "unit": "NOT_RUN",
+    "dom": "NOT_RUN",
+    "dependency": "NOT_RUN",
+    "core": "NOT_RUN",
+    "harness": "NOT_RUN",
+    "integration": "NOT_RUN",
+    "stress": "NOT_RUN",
+    "browser": "NOT_RUN",
+    "enabled-corpus": "NOT_RUN"
+  },
+  "controllerOutcome": "failed",
+  "controllerErrors": [
+    {
+      "phase": "deploy",
+      "message": "CANCELLED"
+    }
+  ],
+  "cleanup": "verified",
+  "watchdog": {
+    "runId": "core-acceptance-20261112-c",
+    "cleanup": "verified",
+    "errors": [],
+    "events": [
+      "destroy-started",
+      "destroy-verified"
+    ],
+    "collection": "controller-finalized",
+    "finishedAt": "2026-11-12T13:29:30.988Z"
+  },
+  "collection": [
+    {
+      "phase": "collect",
+      "status": "started",
+      "at": "2026-11-12T13:28:54.776Z"
+    },
+    {
+      "phase": "collect",
+      "status": "completed",
+      "at": "2026-11-12T13:28:56.558Z"
+    }
+  ],
+  "independentCloudInventory": {
+    "verifiedAt": "2026-11-12T13:30:10.354929+00:00",
+    "runId": "core-acceptance-20261112-c",
+    "remainingDroplets": 0,
+    "remainingFirewalls": 0,
+    "remainingRunTags": 0
+  },
+  "computeEstimate": {
+    "scope": "compute estimate, not invoice; controllerstart throughwatchdog includingpreprovision; minimumUSD0.01",
+    "seconds": 231.35899996757507,
+    "estimatedComputeUSD": 0.03213319443994098
+  },
+  "acceptance": "UNMEASURED; no test tier executed; await repaired coherent refreeze"
+}

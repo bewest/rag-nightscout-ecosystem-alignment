@@ -1,0 +1,34 @@
+{
+  "normal-before.json": {
+    "sha256": "ccc2bfc1bb22ad898520016624b2d28e082eb0c17c16a160adeec7ff02316e95",
+    "bytes": 275898
+  },
+  "control.json": {
+    "sha256": "13b0ba18f47247d2d4a94445b608602b086fef29dde1b31792fdbab314990a99",
+    "bytes": 63353
+  },
+  "normal-after.json": {
+    "sha256": "2a24b7f682b45e8369c515d0960c1a8675b7456d23410baed8af841bbe8cc5ba",
+    "bytes": 275916
+  },
+  "provenance.json": {
+    "sha256": "4ce2613f0d6a6d10c242e52662cfc65732d43b3e786a979a9055a8b721f5d68d",
+    "bytes": 1723
+  },
+  "commands.json": {
+    "sha256": "d8432bbb1a729c74bdfef053299812227d82f6fd4e416e9f042431f44aeeec30",
+    "bytes": 2250
+  },
+  "result.json": {
+    "sha256": "fb7c8445f4b96526a6f673aa8754f4a25d27f449f6b713ae85eb047489ec4960",
+    "bytes": 473
+  },
+  "isolated-cache.stdout": {
+    "sha256": "f31fede43489ad7e22d38f795acab1025b9e8076243445c700146769b6de9162",
+    "bytes": 1112
+  },
+  "paired-admission-cache.stdout": {
+    "sha256": "7611f2db82d838824350bbcc7199642683a1340019a49644b3d70f0bd027284a",
+    "bytes": 2301
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "scope": "SOURCE_COMPONENT_ONLY; no HTTP/SQL/Vault/native restore; original failed-run cause unclassified",
+  "source": "2d0ae0354a38b4a88f43bc2ae5ec60c085058f64",
+  "files": {
+    "lib/server/serve/tenant-startup.js": "0e57a9a893fe3ba00605ab95be710081db26097329f8c798c501b7c7e8aa5c55",
+    "lib/server/serve/preview-api.js": "89d42c14a395a896390acd4646959a2f882361f9df37c8476b2603e05f90236d",
+    "lib/server/serve/registry-tenants.js": "253b2ca00c30e0f1389e43afa2b40c05867ae10700934c508aa640a89267f64e",
+    "lib/server/tenant-app/index.js": "afecc9340a078b5ca4a59aeaacee2c02ece97fb5ca349c0b928ec55dfef6d03d",
+    "lib/server/serve/pool-config.js": "390fca0bf03933a5a88d43a86effb45791c4d2b1555bf1dc25d853c148788999"
+  },
+  "observations": [
+    {
+      "stage": "before-restore-both-global-ready",
+      "api1": {
+        "readiness": "serve",
+        "configured": 1,
+        "ready": true,
+        "warming": 0,
+        "cold": 0,
+        "deferred": 0,
+        "failed": 0,
+        "alerts": []
+      },
+      "api2": {
+        "readiness": "serve",
+        "configured": 0,
+        "ready": true,
+        "warming": 0,
+        "cold": 0,
+        "deferred": 0,
+        "failed": 0,
+        "alerts": []
+      },
+      "tupleWarm": {
+        "api1B": true,
+        "api2B": false
+      }
+    },
+    {
+      "stage": "api2-first-B-admission",
+      "code": "TENANT_WARMING",
+      "retryAfter": 5,
+      "api2": {
+        "readiness": "serve",
+        "configured": 1,
+        "ready": true,
+        "warming": 1,
+        "cold": 0,
+        "deferred": 0,
+        "failed": 0,
+        "alerts": []
+      }
+    },
+    {
+      "stage": "exact-tuple-barrier-and-selected-A-invalidation",
+      "api1B": true,
+      "api2B": true,
+      "allAdmissionsPassed": true
+    }
+  ],
+  "initializations": 3,
+  "verdict": "POSSIBLE_MECHANISM_REPRODUCED",
+  "naiveGlobalReadyControl": "RED: cold B refusal despite both global ready",
+  "exactTupleBarrier": "GREEN",
+  "unrelatedAInvalidation": "B stays warm"
+}

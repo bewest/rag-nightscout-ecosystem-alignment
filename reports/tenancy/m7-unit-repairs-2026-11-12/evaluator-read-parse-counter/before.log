@@ -1,0 +1,25 @@
+
+
+  ...!.............
+[TIMING STATS] Total: 17 tests, Avg: 6ms, Slow: 0
+
+
+  16 passing (110ms)
+  1 failing
+
+  1) evaluator preview trusted configuration
+       parses the file once while it is unchanged, and again after any edit of the same size:
+
+      AssertionError [ERR_ASSERTION]: EV_CONFIG_PARSED_ONCE_WHILE_UNCHANGED
+
+21 !== 1
+
+      + expected - actual
+
+      -21
+      +1
+      
+      at Context.<anonymous> (tests/evaluator-preview-runtime.test.js:62:14)
+
+
+

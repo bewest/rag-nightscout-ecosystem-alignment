@@ -1,0 +1,34 @@
+
+
+  Composed component-private listener over uds
+    ✔ serves two contracts from one explicit route table through their named clients
+    ✔ refuses a request naming a foreign or unregistered service before dispatch
+    ✔ refuses a duplicate method/path or duplicate service registration before binding
+
+  Composed component-private listener over http
+    ✔ serves two contracts from one explicit route table through their named clients
+    ✔ refuses a request naming a foreign or unregistered service before dispatch
+    ✔ refuses a duplicate method/path or duplicate service registration before binding
+
+  Composition registration rules
+    ✔ refuses duplicate routes within one service and partial or foreign lifetime policies
+    ✔ refuses unsupported per-operation methods, media types and bounds at registration
+    ✔ control: duplicate-route refusal goes red when the collision check is removed
+    ✔ control: co-resident foreign-service refusal goes red when the route owner fence is removed
+
+  Per-operation media, byte and deadline bounds
+    ✔ applies the operation byte bound to requests and responses at both ends
+    ✔ applies the operation deadline independently of a longer listener deadline (385ms)
+    ✔ requires the operation media type on requests and responses
+    ✔ client refuses a response whose media type differs from the operation type
+    ✔ control: byte bound test goes red when operation bounds are replaced by the listener bound
+
+  Per-module lifetime on a composed listener
+    ✔ keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over uds
+    ✔ keeps lifecycle status/invalidation callable for suspended A while A application work refuses and B progresses over http
+    ✔ drains a held A application response before the window closes, while lifecycle status stays callable (55ms)
+    ✔ control: a blanket listener-wide window mutant fails the lifecycle invalidation assertion
+
+
+  19 passing (559ms)
+

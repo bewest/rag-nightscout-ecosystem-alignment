@@ -1,0 +1,9 @@
+{
+  "README.md": "d8ca0585dc7481b3f368f9c1bcffbfe0379d26b13bce132e487a14e221482a6d",
+  "authority-controls.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "authority-controls.stdout": "a67cc8126cad8c089abbb11e883203e2c2ade1235d8961ab1a635e89c03a3c61",
+  "packed-contract.stderr": "2728d3c0dbf4bb039f9253a5ce16dc9f75f3cd6908fac8922f3347af1f192a1c",
+  "packed-contract.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "packed-recovery.stdout": "006a952893da75c71a14d5225972f33c124f04d554a0513646d8d62356463be6",
+  "result.json": "1b7de5212c1134bf0708e6a17963b0b087481f467cb7c5b7ba125c867141557c"
+}

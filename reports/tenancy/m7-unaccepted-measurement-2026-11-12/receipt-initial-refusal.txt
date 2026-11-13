@@ -1,0 +1,17 @@
+...............................F...................
+======================================================================
+FAIL: test_missing_control_oracle_goes_red_when_validator_guard_is_ablated (test_m7_joined_receipt.ReceiptTests.test_missing_control_oracle_goes_red_when_validator_guard_is_ablated)
+----------------------------------------------------------------------
+AssertionError: 'M7_REQUIRED_PROOFS' not found in 'REFUSED M7_RECEIPT_INVALID\n'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<alignment>/tools/queue/gates/test_m7_joined_receipt.py", line 557, in test_missing_control_oracle_goes_red_when_validator_guard_is_ablated
+    with self.assertRaisesRegex(AssertionError, 'MISSING_CONTROL_FALSE_PASS'):
+AssertionError: "MISSING_CONTROL_FALSE_PASS" does not match "'M7_REQUIRED_PROOFS' not found in 'REFUSED M7_RECEIPT_INVALID\n'"
+
+----------------------------------------------------------------------
+Ran 51 tests in 88.728s
+
+FAILED (failures=1)

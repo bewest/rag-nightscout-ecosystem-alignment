@@ -1,0 +1,14 @@
+test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid (selected_controls.Unaccepted.test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid) ... FAIL
+
+======================================================================
+FAIL: test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid (selected_controls.Unaccepted.test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<reviewed-source>/tools/mt-bench/m7-joined/test_unaccepted.py", line 74, in test_real_receipt_gate_rejects_unaccepted_cell_even_when_otherwise_valid
+    with self.assertRaisesRegex(ValueError,'NOT_ACCEPTANCE'):check()
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.338s
+
+FAILED (failures=1)

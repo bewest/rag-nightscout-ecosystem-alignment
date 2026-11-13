@@ -1,0 +1,9 @@
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-d6-reader-capability-20261112/lib/server/realtime/config.js
+  62:24  warning  Found statSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-d6-reader-capability-20261112/lib/server/serve/evaluator-config.js
+  139:24  warning  Found statSync from package "node:fs" with non literal argument at index 0  security/detect-non-literal-fs-filename
+
+✖ 2 problems (0 errors, 2 warnings)
+

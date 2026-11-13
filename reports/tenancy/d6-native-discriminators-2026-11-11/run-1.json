@@ -1,0 +1,34 @@
+{
+  "captured_at": "2026-11-12T03:44:55.349853+00:00",
+  "source_head": "9179146638094fcf2b0f642a51d03a272098168e",
+  "image": "postgres@sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a",
+  "harness_sha256": "965bcf67844b63dc411246efd0c68573e0211ad851090be0c02ef01c0e79c948",
+  "container": "ns-d6-proof-1902549b8f17",
+  "cases": [
+    {
+      "name": "version",
+      "role": "postgres",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "psql: error: connection to server on socket \"/var/run/postgresql/.s.PGSQL.5432\" failed: FATAL:  the database system is shutting down",
+      "elapsed_ms": 65.114,
+      "expectation": "success",
+      "matched_expected_exit": false
+    },
+    {
+      "name": "setup",
+      "role": "postgres",
+      "exit": 2,
+      "stdout": "",
+      "stderr": "psql: error: connection to server on socket \"/var/run/postgresql/.s.PGSQL.5432\" failed: No such file or directory\n\tIs the server running locally and accepting connections on that socket?",
+      "elapsed_ms": 72.256,
+      "expectation": "success",
+      "matched_expected_exit": false
+    }
+  ],
+  "scope": "Native PostgreSQL proof; no shipping reader implementation",
+  "cleanup": {
+    "exit": 0,
+    "stderr": ""
+  }
+}

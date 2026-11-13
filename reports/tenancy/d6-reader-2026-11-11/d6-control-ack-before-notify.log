@@ -1,0 +1,30 @@
+
+
+  D6 native metadata feed, privilege and failure controls
+    ✔ uses EXECUTE-only reader authority, emits metadata hints and preserves RLS for tenant reads (206ms)
+    1) duplicates hints after lost acknowledgement without advancing before a committed notification
+
+
+  1 passing (2s)
+  1 failing
+
+  1) D6 native metadata feed, privilege and failure controls
+       duplicates hints after lost acknowledgement without advancing before a committed notification:
+
+      AssertionError [ERR_ASSERTION]: D6_NO_ACK_BEFORE_NOTIFY
++ actual - expected
+
++ '0/15356E8'
+- '0/1535570'
+         ^
+
+      + expected - actual
+
+      -0/15356E8
+      +0/1535570
+      
+      at Context.<anonymous> (tests/change-feed.integration.test.js:97:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+

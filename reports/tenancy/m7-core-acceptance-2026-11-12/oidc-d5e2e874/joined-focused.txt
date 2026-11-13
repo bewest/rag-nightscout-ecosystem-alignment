@@ -1,0 +1,71 @@
+
+
+  bounded opt-in M7 diagnostics
+    ✔ leaves disabled methods and functions unchanged and never reads a clock or starts a sink
+    ✔ preserves callback/Promise results, errors and this without double-counting SQL
+    ✔ keeps asynchronous authorization result/error identity and this intact
+    ✔ leaves custom Query instances and config callbacks untouched and marks missing coverage
+    ✔ separates held physical clients, active SQL and inclusive outer bodies with fixed labels
+    ✔ bounds pool registry and output, drops pressure/failure and does not await sink shutdown
+
+  bounded diagnostic output failure isolation
+    ✔ does not keep the process alive with an unref worker or timer (48ms)
+    ✔ never closes application stdout when the diagnostic worker shuts down (454ms)
+    ✔ treats real EPIPE as missing telemetry without changing application result or drain (455ms)
+    ✔ drops snapshots under actual stdout backpressure instead of queuing JSON (60ms)
+
+  fixed logical realtime placement
+    ✔ SHARD_OBSERVER: pure operators validate instance endpoints without a serving role or service alias fallback
+    ✔ SHARD_VECTOR: pins canonical UUID text, SHA256 leading unsigned big-endian word and explicit-count modulus
+    ✔ SHARD_STABILITY: worker count never changes logical shards, and consumer/alarm routes share owner incarnation and generation
+    ✔ SHARD_EXCLUSION: refuses route-only takeover and stopped incarnations still named as owners
+    ✔ SHARD_REVISION: refuses stale/mutated maps and repartition; publishers require consecutive revisions while readers tolerate missed publications
+    ✔ SHARD_IDLE: unassigned shards refuse routing, idle owners need no fabricated tenant, unchanged owners accept older nonfuture routing generations
+    ✔ SHARD_IDLE_EXCLUSION: removing or reincarnating an idle worker still requires actual platform stop confirmation
+    ✔ SHARD_CONFIG: refuses ambiguous endpoints, implicit counts, reused self identities and unsupported algorithms
+
+  placement-derived fixed maintenance coverage
+    ✔ SHARD_COHORT: pins every fixed peer and actual reported backend including the idle/draining roster, and shares publication lock through invalidation
+    ✔ SHARD_COHORT_OMISSION: a second realtime role does not excuse omitting another declared worker
+    ✔ SHARD_COHORT_SUBSET: does not accept self-reported coverage or hide an unreachable draining peer
+    ✔ SHARD_COHORT_REVISION: a changed generation invalidates a pinned attempt even if the same workers remain
+
+  registry placement subset selection
+    ✔ SHARD_ROSTER: warms only assigned tenants, changes subset without a data/registry write, and leaves unchanged polling constant
+
+  alarm routing across controlled placement
+    ✔ SHARD_ALARM: same epoch routes to current owner, stale routing refuses before effect, and uncertainty retains request/attempt without transparent retry
+
+  quiet target startup admission
+    ✔ SHARD_PAUSED_WARM: skips protected initialization for paused/suspended targets, inspects idle state and returns to eligible without a fake successful warm (302ms)
+    ✔ SHARD_DEFER_BRAND: application errors with a matching code still fail initialization
+
+  sharded alarm envelope bound
+    ✔ reserves the maximum placement tuple only for the selected sharded transport
+
+  multitenant pool configuration
+    ✔ reads and rejects pool limits before application dependencies are installed
+    ✔ keeps the previous built-in values when nothing is set
+    ✔ reads each role from its own names
+    ✔ refuses NS_POOL_API_MAX="0"
+    ✔ refuses NS_POOL_API_MAX="-1"
+    ✔ refuses NS_POOL_API_MAX="1.5"
+    ✔ refuses NS_POOL_API_MAX="x"
+    ✔ refuses NS_POOL_API_MAX=" 4"
+    ✔ refuses NS_POOL_API_MAX="04"
+    ✔ refuses NS_POOL_API_MAX="1001"
+    ✔ refuses NS_POOL_API_MAX="1e3"
+    ✔ refuses an out-of-range timeout and startup concurrency
+    ✔ sizes the operation lifetime pool from the environment
+
+  bounded tenant startup warm
+    ✔ initializes every tenant with at most the configured number at once (134ms)
+    ✔ control: concurrency at the tenant count reproduces the unbounded warm
+    ✔ still reports the first failure after every tenant settles
+    ✔ preserves item order and allSettled shape
+
+
+[TIMING STATS] Total: 44 tests, Avg: 35ms, Slow: 0
+
+  44 passing (2s)
+

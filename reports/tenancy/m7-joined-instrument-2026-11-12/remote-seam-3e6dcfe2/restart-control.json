@@ -1,0 +1,5 @@
+{
+  "baseline": "observed",
+  "broken": "M7_RESTART_NOT_OBSERVED",
+  "restored": "observed"
+}

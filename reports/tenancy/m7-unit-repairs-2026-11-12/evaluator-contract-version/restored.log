@@ -1,0 +1,26 @@
+
+
+  Internal service API contracts
+    ✔ fixes service ownership, names, wire paths and immutable versioned descriptors
+    ✔ accepts socket authority wire values and refuses unknown envelope, credential and permission fields
+    ✔ preserves canonical mutation payloads while rejecting unsupported event/namespace combinations and extra envelope fields
+    ✔ fixes ownership operation identifiers and refuses credential-bearing or ambiguous ownership wire values
+    ✔ fixes the connector inspection read: counts and codes only, never an endpoint or credential
+    ✔ preserves extensible notification payloads and fixes the handoff response without claiming device delivery
+    ✔ requires complete lifecycle identities and exact invalidation acknowledgements
+    ✔ fails unsupported schema vocabulary and exercises the implemented JSON Schema subset
+    ✔ ablation: the unknown-field guard goes red when additional-property rejection is removed
+
+  bounded evaluator inspection v2
+EVALUATOR_SELECTED_DTO_BYTES 68550
+    ✔ selects at most 128 without whole-roster summaries, including empty summary, and refuses unknown/duplicate selectors
+    ✔ preserves future, overdue and absent due observations without scheduling or inventing a cadence
+    ✔ preserves fractional due returned by accepted source pump settings without rounding
+    ✔ refuses missing or malformed due values, free text and oversized source reasons
+    ✔ refuses missing or malformed clinical job observations without coercing unknown to quiet
+    ✔ carries selected v2 bodies over the actual private UDS client and refuses the prior module version (38ms)
+    ✔ actual runtime/window inspection over private UDS does not schedule work or acquire tenant authority
+
+
+  16 passing (77ms)
+

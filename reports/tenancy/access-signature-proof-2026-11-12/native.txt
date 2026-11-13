@@ -1,0 +1,39 @@
+
+
+  private operator management sessions (owned PostgreSQL/Vault and serving API cohort)
+    ✔ selects and signs only the current registry-mapped management key
+    ✔ creates a current tenant-bound credential, is idempotent concurrently and never persists plaintext (113ms)
+admin: {"operation":"management-session-issue","outcome":"created"}
+admin: {"operation":"management-session-issue","outcome":"existing"}
+    ✔ issues through the actual private admin composition and stays absent on API listeners (84ms)
+    ✔ refuses revoked and expired sessions and requires an explicit fresh request (94ms)
+    ✔ serializes the real owner revocation writer against signing, then refuses the next request (171ms)
+    ✔ serializes the real active-key revoke writer and refuses the next issuance (165ms)
+    ✔ refuses a session that expires during a provider call without committing new authority
+    ✔ rolls back all issuance rows after signing when the durable audit insert fails (61ms)
+    ✔ keeps its live metadata-only backend compatible with actual restore and rejects a clinical-write grant (378ms)
+    ✔ holds the actual restore data window until issuance ends and refuses issuance after suspension (239ms)
+    ✔ blocks the actual deletion activity writer until issuance commits and refuses subsequent issuance (175ms)
+    ✔ pins explicit Vault versions across rotation and refuses retired signing versions (154ms)
+    ✔ rechecks exact authority function and extra EXECUTE grants before every issuance (234ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-d2b4b0689df73464","volumes":["432e075cc7e5625723603a5e63a85365a09d926a61e3fb18108ec02204e01448","14bf415c07ff8f3c1c67ecd90cfc88e59e5815a8f7b4c4adf0acbc2cb01693dd"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-d2b4b0689df73464","volumes":["c8372b06dba9c97a5c1a8b77132f0da283315537d363012332fb3c549165823b"]}
+
+  fixed roster with two actual API CLI processes and real lifetime leases
+    ✔ shares stored outcomes and current authority through both direct replicas and the service (483ms)
+    ✔ refuses a fixed-roster API without the shared clock before opening any listener (204ms)
+FIXED_ROSTER_CLOCK_ENABLED {"first":1794465843153,"second":1794465843154,"allDestinationsConverged":true}
+    ✔ uses the shared write clock so a later replica write appears after the prior client history cursor (284ms)
+    ✔ refuses omitted real API backends and service-aliased participants before suspending A (63ms)
+    ✔ holds A maintenance until its post-commit response finishes while B continues on the other replica (555ms)
+    ✔ rejects a replaced actual API incarnation under its old pin, and accepts a fresh pin (929ms)
+FIXED_ROSTER_POOL_OBSERVED [{"application_name":"nightscout-operation-lifetime","connections":4},{"application_name":"nightscout-preview-data","connections":4}]
+    ✔ bounds aggregate operation/data pools under concurrent service traffic (126ms)
+    ✔ control: prematurely finishing the real response lifetime makes the held-response drain oracle red (227ms)
+    ✔ preserves a committed B write after killing its actual API before the success response (923ms)
+    ✔ keeps A suspended after losing a completed invalidation reply while B remains available (158ms)
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-vault-7b80d1bb3b03219b","volumes":["e488799c5f763ffd908bc7c6599c774e68264888d1a0ba9db17cba240cd5c9b2","67e88c771f4a106be9c034e039172d65d65c0d24b0186e6d6b898dbed1e25f7a"]}
+REPLICA_OWNED_VOLUME_CLEANUP {"container":"ns-preview-replicas-pg-7b80d1bb3b03219b","volumes":["83d997878d714ab55f09242fa2d7471af7c2934f279eb776e6d2091fe289fcc0"]}
+
+
+  23 passing (22s)

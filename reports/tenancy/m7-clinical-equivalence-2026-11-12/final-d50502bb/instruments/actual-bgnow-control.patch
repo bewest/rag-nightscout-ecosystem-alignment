@@ -1,0 +1,5 @@
+--- a/lib/plugins/bgnow.js
++++ b/lib/plugins/bgnow.js
+@@ -124 +124 @@
+-      details.mean = mean;
++      details.mean = mean + 1;

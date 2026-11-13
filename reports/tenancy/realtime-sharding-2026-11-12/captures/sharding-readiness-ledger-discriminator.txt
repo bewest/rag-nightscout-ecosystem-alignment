@@ -1,0 +1,18 @@
+
+
+  !
+
+  0 passing (4s)
+  1 failing
+
+  1) actual fixed-roster realtime sharding
+       SHARD_NATIVE_BOOT: actual API and two realtime owners warm only their assigned tenant:
+     Error: SHARD_REGISTRY_LEDGER_DISCRIMINATOR: honest grant refuses; removing only registry ledger SELECT passes; original grant restored
+      at startRealtime (tests/fixtures/realtime-sharding-native.js:73:15)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at async Object.setup (tests/fixtures/realtime-sharding-native.js:151:5)
+      at async Context.<anonymous> (tests/realtime-sharding-native.integration.test.js:9:11)
+
+
+
+

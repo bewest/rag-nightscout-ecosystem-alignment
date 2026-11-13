@@ -1,0 +1,31 @@
+{
+  "observedAtMs": 1794494718025,
+  "hostLoad": [
+    0.625,
+    1.935546875,
+    4.78271484375
+  ],
+  "logicalCpus": 16,
+  "retainedOwnedProjects": [
+    {
+      "project": "ns-evaluator-binding-proof-20261112-repair",
+      "containersRetained": 15,
+      "running": 0
+    },
+    {
+      "project": "ns-evaluator-binding-proof-20261112-final",
+      "containersRetained": 15,
+      "running": 0
+    },
+    {
+      "project": "ns-evaluator-binding-proof-20261112",
+      "containersRetained": 12,
+      "running": 0
+    },
+    {
+      "project": "ns-evaluator-binding-20261112",
+      "containersRetained": 12,
+      "running": 0
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# multitenant: running 1 suites with NS_COHORT_SNAPSHOT_DOCKER_TEST
+
+
+  native cohort constructor admission cuts
+    ✔ waits for every captured real backend while a continuous B-like constructor stream remains independent (59ms)
+    ✔ keeps an unadmitted physical backend refused at a bounded timeout
+    ✔ refuses a native rejected role and an admitted backend in another database (41ms)
+
+
+[TIMING STATS] Total: 3 tests, Avg: 45ms, Slow: 0
+
+  3 passing (3s)
+
+# multitenant: 3 passing, 0 pending, 0 failing
+# multitenant: run record written to /tmp/cohort-constructor-corpus-run.json

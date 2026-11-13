@@ -1,0 +1,20 @@
+within deploy base exit 0
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=1000 :: 19 base content transitions, 19 due
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=60000 :: 19 base content transitions, 19 due
+within deploy candidate exit 0
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=1000 :: 19 base content transitions, 19 due
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 17 transitions, due at most 0 ms before base
+PASS CONTENT_EQUIVALENT slow=60000 :: 19 base content transitions, 19 due
+within full base exit 0
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 52 transitions, due at most 999 ms before base
+DIFF CONTENT_EQUIVALENT slow=1000 :: 245 base content transitions, 245 due
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 52 transitions, due at most 999 ms before base
+DIFF CONTENT_EQUIVALENT slow=60000 :: 245 base content transitions, 156 due
+within full candidate exit 0
+PASS ALARM_SET_EQUIVALENT slow=1000 :: 52 transitions, due at most 999 ms before base
+DIFF CONTENT_EQUIVALENT slow=1000 :: 245 base content transitions, 245 due
+PASS ALARM_SET_EQUIVALENT slow=60000 :: 52 transitions, due at most 999 ms before base
+DIFF CONTENT_EQUIVALENT slow=60000 :: 245 base content transitions, 156 due

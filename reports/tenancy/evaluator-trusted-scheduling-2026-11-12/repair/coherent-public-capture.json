@@ -1,0 +1,5 @@
+{
+  "originalPrivateSha256": "f7340e17c71b4ee8a7b4ad855cb87915609320dc894ad76c81420158ff23e009",
+  "publicCapture": "coherent-affected.txt",
+  "redaction": "Only console error body fields omitted; private raw capture retained locally. Counts and stack/control verdicts unchanged."
+}

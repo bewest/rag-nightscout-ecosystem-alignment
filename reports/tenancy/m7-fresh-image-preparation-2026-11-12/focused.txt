@@ -1,0 +1,121 @@
+
+
+  multitenant pool configuration
+    ✔ reads and rejects pool limits before application dependencies are installed
+    ✔ keeps the previous built-in values when nothing is set
+    ✔ reads each role from its own names
+    ✔ refuses NS_POOL_API_MAX="0"
+    ✔ refuses NS_POOL_API_MAX="-1"
+    ✔ refuses NS_POOL_API_MAX="1.5"
+    ✔ refuses NS_POOL_API_MAX="x"
+    ✔ refuses NS_POOL_API_MAX=" 4"
+    ✔ refuses NS_POOL_API_MAX="04"
+    ✔ refuses NS_POOL_API_MAX="1001"
+    ✔ refuses NS_POOL_API_MAX="1e3"
+    ✔ refuses an out-of-range timeout and startup concurrency
+    ✔ sizes the operation lifetime pool from the environment
+
+  bounded tenant startup warm
+    ✔ initializes every tenant with at most the configured number at once (140ms)
+    ✔ control: concurrency at the tenant count reproduces the unbounded warm
+    ✔ still reports the first failure after every tenant settles
+    ✔ preserves item order and allSettled shape
+
+  explicit realtime preview source contracts
+    ✔ requires bounded explicit config and uses shared PG/environment validation without enabling a default
+    ✔ fresh preview admission covers all credentials and rejects unknown/path/header selectors without D15 claims
+    ✔ requires same origin for browsers and allows native absent Origin without trusting engine path
+    ✔ keeps current root/opaque/JWT/carriers scoped and never promotes storage accessToken into root
+    ✔ uses actual asymmetric token verification/current state without any legacy provider call
+    ✔ disconnects restored A sockets and discards A projection while retaining B sockets/output
+    ✔ full replacement reaches browser consumer and tenant-local current fanout stops after revocation
+    ✔ forwards original socket credential/main and alarm ack and relays actual replies or noack on outage
+    ✔ builds an actual recovered empty frame that clears the existing browser SGV consumer
+    ✔ reports the single-site devicestatus defaults and the operator override in the realtime status frame
+    ✔ uses the explicit recovery backstop with no wake and contains a failed tenant
+    ✔ wires the actual private receiver to canonical source and durable alarm while refusing forged host or transport
+    ✔ uses the actual alarm sink adapter contract and current per-socket rights without external delivery claims
+    ✔ isolates refused alarm subscribers while preserving API outage failure
+[32mALARM SOCKET: [0memitted alarm to subscribed clients
+    ✔ preserves actual treatmentnotify alarm precedence for announcement at 190
+[32mALARM SOCKET: [0memitted urgent_alarm to subscribed clients
+    ✔ preserves actual treatmentnotify alarm precedence for announcement at 300
+    ✔ fences old delivery when socket credential epoch changes in /
+    ✔ fences old delivery when socket credential epoch changes in /alarm
+    ✔ fences old delivery when socket credential epoch changes in retro
+    ✔ matches actual single storage subscribe without inventing offline cursor or replay
+    ✔ classifies normalized typed twin ambiguity against actual single normalization and broadcaster
+    ✔ storage changes use existing normalized wire shapes and include connected typed identity absence
+    ✔ separates recovery scheduling from writes and fences late acquisition after close/config change
+    ✔ private handler uses fixed owned operations and bounded bodies without network listeners
+    ✔ refuses unsafe IPC directories and pre-existing paths without starting a server
+
+  selected API-local serving status compatibility
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+API KEY present, enabling API
+enabling feature: bgnow
+enabling feature: delta
+enabling feature: direction
+enabling feature: timeago
+enabling feature: devicestatus
+enabling feature: upbat
+enabling feature: errorcodes
+enabling feature: profile
+enabling feature: bolus
+enabling feature: dbsize
+enabling feature: runtimestate
+enabling feature: basal
+enabling feature: careportal
+    ✔ reproduces omitted-status client retry and dynamically admits loaded only with selected capability, including derived display context (159ms)
+Tenant warm drained: ready 1 failed 0 deferred 0 after 2 ms
+    ✔ holds actual API boot readiness until complete private receiver and invalidates quiesce/close before resource teardown
+Tenant warm drained: ready 1 failed 0 deferred 0 after 0 ms
+    ✔ never returns a ready role after readiness/serving/domain/private failures and invalidates close before teardown
+Tenant warm drained: ready 1 failed 0 deferred 0 after 1 ms
+
+
+[TIMING STATS] Total: 45 tests, Avg: 10ms, Slow: 0
+
+  45 passing (442ms)
+

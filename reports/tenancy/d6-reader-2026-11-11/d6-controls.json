@@ -1,0 +1,30 @@
+[
+  {
+    "control": "ack-before-notify",
+    "exit": 1,
+    "semantic_marker": "D6_NO_ACK_BEFORE_NOTIFY",
+    "marker_found": true,
+    "expected_red": true
+  },
+  {
+    "control": "backstop-disabled",
+    "exit": 1,
+    "semantic_marker": "D6_READER_OUTAGE_BACKSTOP",
+    "marker_found": true,
+    "expected_red": true
+  },
+  {
+    "control": "activity-hints-disabled",
+    "exit": 1,
+    "semantic_marker": "D6_ACTIVITY_HINT_NOT_A_DATA_WRITE",
+    "marker_found": true,
+    "expected_red": true
+  },
+  {
+    "control": "full-roster-on-hint",
+    "exit": 1,
+    "semantic_marker": "D6_TARGETED_HINT_ONLY",
+    "marker_found": true,
+    "expected_red": true
+  }
+]

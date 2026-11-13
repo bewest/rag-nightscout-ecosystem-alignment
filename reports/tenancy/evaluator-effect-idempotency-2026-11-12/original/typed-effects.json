@@ -1,0 +1,262 @@
+{
+  "clinicalWindow": [
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "request": "c60c1789-13c7-499d-b767-e4435a97fea2",
+      "origin": "95139286799413a786373c40c71708e397ca874d11dc73db2df74fb39f49d1ae",
+      "state": "accepted",
+      "created": 1794489648198,
+      "accepted": 1794489650380,
+      "relativeMs": 0,
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "kind": "normal",
+      "level": 2,
+      "group": "default",
+      "plugin": "simplealarms",
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb",
+      "titleDigest": "83d806496af4fca564b64d8c6ab3c0d6242a33c8443514350e79238ceb0d2134",
+      "messageDigest": "9d042daa49798487e13d16bd08760a37ec8babb5b61976bcd3081dddf5c03f2b",
+      "keys": [
+        "debug",
+        "eventName",
+        "group",
+        "kind",
+        "level",
+        "message",
+        "plugin",
+        "pushoverSound",
+        "title"
+      ]
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "request": "2ecc4a72-cc62-4f3c-b516-22927b5cd2c4",
+      "origin": "ceec7e7511d53c88de148c80a975cc5a8a55776a70fc9a9d2c05c0f174eeb4b3",
+      "state": "accepted",
+      "created": 1794489648260,
+      "accepted": 1794489650456,
+      "relativeMs": 0,
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "kind": "normal",
+      "level": 2,
+      "group": "default",
+      "plugin": "simplealarms",
+      "payloadDigest": "8228e7e8b02cf1b8393b5405bdf66851ba3279ee4daaa29d94dba8707012b6b2",
+      "titleDigest": "83d806496af4fca564b64d8c6ab3c0d6242a33c8443514350e79238ceb0d2134",
+      "messageDigest": "ad4772bc357f36a65ac9fa6632ee5f6b86e2cc117101ef95732ebd4ed9e763b3",
+      "keys": [
+        "debug",
+        "eventName",
+        "group",
+        "kind",
+        "level",
+        "message",
+        "plugin",
+        "pushoverSound",
+        "title"
+      ]
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "request": "6fa19018-292f-4a9b-99fd-95545302f18b",
+      "origin": "a73c5838b56976c235cfd5491c2cd583ad352d3c6aa794a9b52fe36aa9ce6687",
+      "state": "accepted",
+      "created": 1794489652100,
+      "accepted": 1794489654408,
+      "relativeMs": 3840,
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "kind": "normal",
+      "level": 2,
+      "group": "default",
+      "plugin": "simplealarms",
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc",
+      "titleDigest": "83d806496af4fca564b64d8c6ab3c0d6242a33c8443514350e79238ceb0d2134",
+      "messageDigest": "41e79e45171efaa85be3c447f5144b2db903ef60de2447e8fdb0bb05e223755d",
+      "keys": [
+        "debug",
+        "eventName",
+        "group",
+        "kind",
+        "level",
+        "message",
+        "plugin",
+        "pushoverSound",
+        "title"
+      ]
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "request": "c345c9da-334c-45e8-9d72-03328635320a",
+      "origin": "770d33451be9f1bc21e0278cb9e215f124653e325ffbbf835a2448787bd646ac",
+      "state": "accepted",
+      "created": 1794489652636,
+      "accepted": 1794489655017,
+      "relativeMs": 4438,
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "kind": "normal",
+      "level": 2,
+      "group": "default",
+      "plugin": "simplealarms",
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb",
+      "titleDigest": "83d806496af4fca564b64d8c6ab3c0d6242a33c8443514350e79238ceb0d2134",
+      "messageDigest": "9d042daa49798487e13d16bd08760a37ec8babb5b61976bcd3081dddf5c03f2b",
+      "keys": [
+        "debug",
+        "eventName",
+        "group",
+        "kind",
+        "level",
+        "message",
+        "plugin",
+        "pushoverSound",
+        "title"
+      ]
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "request": "2417cb97-a0a9-4a1f-83f6-8bae54ae4997",
+      "origin": "1e3fb057df301267c16044457b4e5dbc0d85692fe2be483d500e4dfe3c8d8f02",
+      "state": "accepted",
+      "created": 1794489652643,
+      "accepted": 1794489657208,
+      "relativeMs": 4383,
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "kind": "normal",
+      "level": 2,
+      "group": "default",
+      "plugin": "simplealarms",
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc",
+      "titleDigest": "83d806496af4fca564b64d8c6ab3c0d6242a33c8443514350e79238ceb0d2134",
+      "messageDigest": "41e79e45171efaa85be3c447f5144b2db903ef60de2447e8fdb0bb05e223755d",
+      "keys": [
+        "debug",
+        "eventName",
+        "group",
+        "kind",
+        "level",
+        "message",
+        "plugin",
+        "pushoverSound",
+        "title"
+      ]
+    }
+  ],
+  "laterOrdinaryRepeats": [
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "relativeMs": 64789,
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc"
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "relativeMs": 64905,
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb"
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "relativeMs": 124846,
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc"
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "relativeMs": 124974,
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb"
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "relativeMs": 184847,
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc"
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "relativeMs": 185386,
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb"
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "relativeMs": 244872,
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc"
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "relativeMs": 245421,
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb"
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "relativeMs": 305236,
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc"
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "relativeMs": 305968,
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb"
+    },
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "relativeMs": 365318,
+      "payloadDigest": "01752b0e9d2cea3d0c778de8cdf1baccd1d7999ee8bdb49f4faa97711b26d6fc"
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "relativeMs": 366361,
+      "payloadDigest": "23bbc1756a4c89467ba7da29c0fce44dde08a46888ea941c1e259b65c30f34cb"
+    }
+  ],
+  "producer": [
+    {
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "revision": 13,
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "output": [
+        "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+        "0419217d35f25f036de05f198f9b5429f7c15f77e7d5f88905d67d3d1422807b",
+        1794489651492
+      ],
+      "clinicalIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "repeatAt": 1794490073578,
+      "alarms": [
+        {
+          "group": "default",
+          "level": 1,
+          "lastAckTime": 0,
+          "silenceTime": 1800000
+        },
+        {
+          "group": "default",
+          "level": 2,
+          "lastAckTime": 0,
+          "silenceTime": 1800000,
+          "lastEmitTime": 1794490013578
+        }
+      ]
+    },
+    {
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "revision": 12,
+      "configIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "output": [
+        "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+        "a7209a9fd9a71e16557325a8c2b78a596bab99cf5e58cade0541384ea9337fcd",
+        1794489647141
+      ],
+      "clinicalIdentity": "f09b9e99bacd37b21b9a33093e901cf23fd9190473dc79352dc899012c4b6071",
+      "repeatAt": 1794490074559,
+      "alarms": [
+        {
+          "group": "default",
+          "level": 1,
+          "lastAckTime": 0,
+          "silenceTime": 1800000
+        },
+        {
+          "group": "default",
+          "level": 2,
+          "lastAckTime": 0,
+          "silenceTime": 1800000,
+          "lastEmitTime": 1794490014559
+        }
+      ]
+    }
+  ]
+}

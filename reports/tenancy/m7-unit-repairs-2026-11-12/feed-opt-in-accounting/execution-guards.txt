@@ -1,0 +1,13 @@
+
+
+  Executed test-file accounting
+    ✔ accounts for disabled opt-in labs but still rejects enabled skips, failures and empty labs (1634ms)
+    ✔ fails empty/pending intended files even alongside passing helpers, serially and in parallel (930ms)
+  ✔ helper
+  ✔ helper
+TEST_EXECUTION: no intended test files (support tests do not count)
+    ✔ does not count the database safety/cleanup files as intended coverage
+
+
+  3 passing (3s)
+

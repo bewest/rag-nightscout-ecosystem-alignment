@@ -1,0 +1,1 @@
+{"argv": ["tests/native/oidc-matrix/run.sh", "--out", "$PRIVATE_CAPTURE/controls", "--control", "single:single-shipping-eight-hour-exchange,browser:csrf,consumer:consumer-current-data-authority-bypass"], "timezone": "UTC", "ambientNSNodeFlagsRemoved": true}

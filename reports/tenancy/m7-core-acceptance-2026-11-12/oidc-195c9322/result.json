@@ -1,0 +1,71 @@
+{
+  "kind": "current-frozen-source-native-identity-client-acceptance",
+  "sourceCommit": "195c932293f3abc648da8fbe4356bf7360acd002",
+  "baselineStages": 9,
+  "baselineComplete": true,
+  "semanticControls": 3,
+  "allRedAndRestored": true,
+  "sourcePorcelainAfter": [],
+  "newDependencyInstall": true,
+  "freshProductionBundle": true,
+  "newProjects": [
+    "oidcmatrix-20261112t131704z-1749108",
+    "oidcmatrix-20261112t131814z-1785243"
+  ],
+  "resourcesAbsent": [
+    {
+      "project": "oidcmatrix-20261112t131704z-1749108",
+      "containers": [],
+      "volumes": [],
+      "networks": []
+    },
+    {
+      "project": "oidcmatrix-20261112t131814z-1785243",
+      "containers": [],
+      "volumes": [],
+      "networks": []
+    }
+  ],
+  "node": "v22.23.4",
+  "browser": "Google Chrome 154.0.8037.57",
+  "oref0Commit": "d219baf9559d62a8bb0bd42014192a2d7c0839ef",
+  "images": {
+    "postgres": {
+      "container": "9500a87f08147f38f4f653b6d6e9162bee8ea4dea2c82622974c8ea57c8a3880",
+      "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "repoDigests": [
+        "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea"
+      ],
+      "version": "postgres (PostgreSQL) 16.15",
+      "serverVersion": "16.15"
+    },
+    "mongo": {
+      "container": "e9d91b9902d326fe7cf9173a5b640e352a8a5662eeb4c072e6c6046f0ee20870",
+      "imageId": "sha256:ac1502203bffd13c241ca25a7bae60cbd968fd0011247f6727524634b3f2f6e3",
+      "repoDigests": [
+        "mongo@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b"
+      ],
+      "version": "db version v7.0.43",
+      "serverVersion": "7.0.43"
+    },
+    "vault": {
+      "container": "e0c3dade981aa9792735f4c45e677e8e32390b9b5f1b7bf4fe6f6def2cf50318",
+      "imageId": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "repoDigests": [
+        "hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2"
+      ],
+      "version": "Vault v2.2.1 (0e7c41b936218bd2401ab0f891c93bec10e2e8e4), built 2026-10-22T16:27:49Z",
+      "serverVersion": "2.2.1"
+    }
+  },
+  "limitations": [
+    "synthetic provider and client only; no realIdP/device/liveprovider/generalinterop",
+    "not fulltiers/browsercorpus/capacity/pilot/paireddeployment acceptance",
+    "historical D505 results unchanged"
+  ],
+  "publicationNormalization": "source/workspace/privatecapture path prefixes and trailing log whitespace only; no assertions/status/count/value changes",
+  "executedCommands": "runs/matrix-command.json and runs/controls-command.json",
+  "artifactCount": 53,
+  "instrumentFileCount": 20,
+  "bundleFileCount": 16
+}

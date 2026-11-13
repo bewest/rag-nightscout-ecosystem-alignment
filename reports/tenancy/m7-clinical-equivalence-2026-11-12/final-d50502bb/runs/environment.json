@@ -1,0 +1,25 @@
+{
+  "sources": {
+    "base": {
+      "sourceCommit": "5c60aec669362b032a10d6dd7ac368e9c61e8003",
+      "porcelain": [],
+      "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e"
+    },
+    "candidate": {
+      "sourceCommit": "d50502bb6126bda2bb0af384569e1d95de114f2f",
+      "porcelain": [],
+      "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e"
+    }
+  },
+  "clinicalInstrumentSource": "275b3bb4b0b0f67d7b0552ef00a90420b6e6a73a",
+  "alignmentEvidenceBase": "701ef3b11935757c94d2e1f3367fa1089ced1d4c",
+  "node": "v22.23.4",
+  "npm": "10.9.9",
+  "timezone": "UTC",
+  "diagnostics": "OFF; diagnostic environment flags omitted",
+  "dependencies": {
+    "provenance": "new owned copy of prior lane-owned exact-lock npm ci --ignore-scripts installation",
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e"
+  },
+  "scope": "synthetic component memory projection; actual PG positive control separate; no capacity claim"
+}

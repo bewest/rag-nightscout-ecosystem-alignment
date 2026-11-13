@@ -1,0 +1,72 @@
+
+
+  pure local Ed25519 signature proof reuse
+    1) refuses changed signed bytes or signatures after a valid proof primes the cache; never caches a negative
+
+
+  0 passing (4ms)
+  1 failing
+
+  1) pure local Ed25519 signature proof reuse
+       refuses changed signed bytes or signatures after a valid proof primes the cache; never caches a negative:
+     AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at Context.<anonymous> (/tmp/ns-proof-control-cr2Ywk/tests/access-signature-proof.test.js:45:14)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+
+SIGNATURE_PROOF_CONTROL constant-proof-key expected assertion went red: Missing expected exception
+
+
+  pure local Ed25519 signature proof reuse
+    1) keeps one process bound and evicts cold proofs instead of growing with tenants
+
+
+  0 passing (47ms)
+  1 failing
+
+  1) pure local Ed25519 signature proof reuse
+       keeps one process bound and evicts cold proofs instead of growing with tenants:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+257 !== 258
+
+      + expected - actual
+
+      -257
+      +258
+      
+      at Context.<anonymous> (/tmp/ns-proof-control-cr2Ywk/tests/access-signature-proof.test.js:87:82)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+
+SIGNATURE_PROOF_CONTROL entry-bound-removed expected assertion went red: 257 !== 258
+
+
+  pure local Ed25519 signature proof reuse
+    1) enforces the encoded proof byte budget before the entry budget and leaves oversized proofs uncached
+
+
+  0 passing (32ms)
+  1 failing
+
+  1) pure local Ed25519 signature proof reuse
+       enforces the encoded proof byte budget before the entry budget and leaves oversized proofs uncached:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+140 !== 141
+
+      + expected - actual
+
+      -140
+      +141
+      
+      at Context.<anonymous> (/tmp/ns-proof-control-cr2Ywk/tests/access-signature-proof.test.js:98:82)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+
+SIGNATURE_PROOF_CONTROL encoded-byte-bound-removed expected assertion went red: 140 !== 141

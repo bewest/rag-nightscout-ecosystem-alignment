@@ -1,0 +1,35 @@
+TAP version 13
+# Subtest: UI_REGISTRY_NATIVE: new exact aliases render while running; private/unknown selectors, privilege tamper and old roster fail closed
+not ok 1 - UI_REGISTRY_NATIVE: new exact aliases render while running; private/unknown selectors, privilege tamper and old roster fail closed
+  ---
+  duration_ms: 1594.309919
+  type: 'test'
+  location: '/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/deploy-ui-registry-20261112/bindings/compose/multitenant/ui-registry.integration.test.js:15:1'
+  failureType: 'testCodeFailure'
+  error: 'expected 200 "OK", got 421 "Misdirected Request"'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    TestContext.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/deploy-ui-registry-20261112/bindings/compose/multitenant/ui-registry.integration.test.js:54:93)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+    Test._assertStatus (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-live-add-20261112/node_modules/supertest/lib/test.js:309:14)
+    /home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-live-add-20261112/node_modules/supertest/lib/test.js:365:13
+    Test._assertFunction (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-live-add-20261112/node_modules/supertest/lib/test.js:342:13)
+    Test.assert (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-live-add-20261112/node_modules/supertest/lib/test.js:195:23)
+    localAssert (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-live-add-20261112/node_modules/supertest/lib/test.js:138:14)
+    Server.<anonymous> (/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-tenant-live-add-20261112/node_modules/supertest/lib/test.js:152:11)
+    Object.onceWrapper (node:events:633:28)
+    Server.emit (node:events:519:28)
+    emitCloseNT (node:net:2420:8)
+    process.processTicksAndRejections (node:internal/process/task_queues:88:21)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1637.772633

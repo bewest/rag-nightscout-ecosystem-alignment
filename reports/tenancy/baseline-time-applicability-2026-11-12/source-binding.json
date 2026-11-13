@@ -1,0 +1,59 @@
+{
+  "coreCommit": "47b43b6246ce7f94f1f1f0d01830495a78b28add",
+  "deployCommit": "be95214a6cae427e1898b0ca6ce39825163ee291",
+  "alignmentCommit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+  "selectedCommittedSnapshots": {
+    "bindings/compose/multitenant/prime.js": {
+      "commit": "be95214a6cae427e1898b0ca6ce39825163ee291",
+      "sha256": "9ee31a76445f9f5abdcc95c93cd3516f2bd9001783ce45bc0a3434cd5eac9b2c",
+      "snapshot": "prime.js"
+    },
+    "tools/mt-bench/m7-joined/adapter.py": {
+      "commit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+      "sha256": "3a9ac29ee24921117b2004d3364a6928d698415e3b55c226d88306cd0e2c72b3",
+      "snapshot": "adapter.py"
+    },
+    "tools/mt-bench/m7-joined/evaluator_progress.py": {
+      "commit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+      "sha256": "527e85c228e5f71d3a3e6c85dd75b89d8bf5ed79ff08127eee47670f2dd5cf36",
+      "snapshot": "evaluator_progress.py"
+    },
+    "tools/mt-bench/m7-joined/evaluator_recovery.py": {
+      "commit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+      "sha256": "3207573fae9d0df442c39ef4218af3e53264e9ac63d43d4f05bb2f9ded10f2cf",
+      "snapshot": "evaluator_recovery.py"
+    },
+    "tools/mt-bench/m7-joined/probe.py": {
+      "commit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+      "sha256": "19025609933bb2202583fab694035eaebf6d2d8cd491b4ca756470b64bbb3142",
+      "snapshot": "probe.py"
+    },
+    "tools/mt-bench/m7-joined/workload.py": {
+      "commit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+      "sha256": "04d45c1f28939693d19578c1032bc07281bc5dceeca1e649458d4a1e0b8e485f",
+      "snapshot": "workload.py"
+    },
+    "tools/mt-bench/capacity/k6/workload.js": {
+      "commit": "4ddea55301c3d1f95faf25e15a80051bbb122e8b",
+      "sha256": "0336f9c76e0d60ef8acda42dc2863ba20d8581f41400345bb32880e295a6d0c5",
+      "snapshot": "workload.js"
+    }
+  },
+  "privateOriginalSha256": {
+    "full-projection-defaults-confirmed.json": "55ea260291e8ecfb770bcf30858e732546617a988df107a91a9b482538450ea1",
+    "dependency-provenance.json": "c0a64300c752440939b1047604110867c2b8d3b80047282350edd521044742ad",
+    "host-toolchain-supplement.json": "0c887860bc7ceafab061fcdeb1dd5f2db5d6af564059922842ece95378860f1a",
+    "full-projection-execution.json": "35105351589ed927347668f640358e08386be040a6de5b5a83b4a430da6e467d",
+    "full-projection-confirmation.cjs": "2e605729b9a40baa1626b95851ca832a3b65839171ab335a0ba040a4065068c8",
+    "full-projection-confirmation.stdout": "65a89324db36623cfd740d9a2177313aca863996dfc41d1ef4a7fb05d0bc5d3d",
+    "full-projection-confirmation.stderr": "91c111466d1ec1c572936c5121bb9e7538bb83a7daacdf71ae1ff40ab9658b0d",
+    "negative-control.json": "593e044b7b60c2eaa540bb5bb4727c5a56081324d5c93bc71f4b126d393f9928",
+    "partial-next-due.cjs": "91a1e6f24fbdf5e86c256b7b16689cdf419d338c0c05dc75e02745b596df51e5",
+    "control-broken.cjs": "2de0e9341e7947cc412b18171431f4695d5a081d371148a810147cef878e43b0",
+    "control-restored.cjs": "0d423605ab294da5ef65334a7daeb7ac310a6be9063d9e7de1e1670bda1a75b6",
+    "evaluator-due-errorcodes-disabled.cjs": "5f7e07a7f770c199e177d119c35f6cea4ce5202fdbb38b0432453f415040dcbc",
+    "broken.stderr": "3a3f07d615b934d3a48a65e4ea327deb8992a9db7cc7287690a423b65d1482d3",
+    "restored.stdout": "594e9e9e7fa4c87cf059b512b6fe55db2e1e52ffaf28cfa2cc215b310cfbbeb8"
+  },
+  "transformationPolicy": "Public derivatives are new artifacts; local path prefixes replaced with logical roles. Private originals remain unchanged. No source archive, dependency tree, environment file or real user data published."
+}

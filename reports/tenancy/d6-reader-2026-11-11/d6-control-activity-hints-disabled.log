@@ -1,0 +1,23 @@
+
+
+  D6 native metadata feed, privilege and failure controls
+    ✔ uses EXECUTE-only reader authority, emits metadata hints and preserves RLS for tenant reads (197ms)
+    1) signals pause/suspend/resume with no data write while another tenant progresses
+
+
+  1 passing (2s)
+  1 failing
+
+  1) D6 native metadata feed, privilege and failure controls
+       signals pause/suspend/resume with no data write while another tenant progresses:
+
+      AssertionError [ERR_ASSERTION]: D6_ACTIVITY_HINT_NOT_A_DATA_WRITE
+      + expected - actual
+
+      -false
+      +true
+      
+      at Context.<anonymous> (tests/change-feed.integration.test.js:132:14)
+
+
+

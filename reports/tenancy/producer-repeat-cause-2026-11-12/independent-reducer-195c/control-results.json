@@ -1,0 +1,12 @@
+[
+  {
+    "case": "transientIneligible",
+    "expectedExit": 1,
+    "actualExit": 1
+  },
+  {
+    "case": "preservedDeadlineControl",
+    "expectedExit": 0,
+    "actualExit": 0
+  }
+]

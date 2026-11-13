@@ -1,0 +1,2 @@
+{"code":"EVALUATOR_WINDOW_REFUSED","cycles":1,"errors":["LIFECYCLE_WINDOW_SCOPE_INVALID"]}
+{"inspectionReads":100,"stalledBefore":{"cycles":1,"queries":31,"pending":1},"stalledAfter":{"cycles":1,"queries":31,"pending":1},"inspectionDidNotScheduleWork":true}

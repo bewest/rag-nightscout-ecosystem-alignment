@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "kind": "immutable-baseline-d-primary-idle-evidence",
+  "recordDate": "2026-11-12",
+  "files": {
+    "README.md": "42f2cd1bf72fdbd368a778cb24022a8d0739393c9689fc68fe85662d2f48c342",
+    "cleanup.json": "a1832b20091d3b6625b2291a6502b80c06691a5106091ee2cead3cc884cb373a",
+    "idle-result.json": "df05481cf5b3cd2e3564beb85cbf1b89d64a15828f396c1e1048d9e5f74742cf",
+    "projection-controls.json": "325e1180f6578b3b9a91b723a8cc7c870bc54c3aca92b02c0542d3b55c43aa04",
+    "provenance.json": "37ef2c238fb5d8d97e41cea70b6bb0c12c39a1989e4f010d71dd6056f00d97ab",
+    "publication-verification.json": "e3e18cfb01c0b9450f8e4424cb8b4260942f6b9bd8698a64ca22d23fa30c70fb",
+    "queue-check-output.txt": "07fcd2d64dbf078d535ba266b7933ce9245d192ffc6203b137f0aec68639a09f",
+    "resource-bookends.json": "ef9b7edebe5ce25b1965ca40d10fc90863b189696b22ead3f871d26bf4a315cc"
+  }
+}

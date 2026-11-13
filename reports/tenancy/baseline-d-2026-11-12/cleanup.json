@@ -1,0 +1,21 @@
+{
+  "recordType": "PRIMARY_SAVED_CAPTURE_WHITELIST_PROJECTION",
+  "originalPrivateAssessmentSha256": "a93feedb7198fb25b37730903c17559f7e7f841ef36960ecaf7772f13feca968",
+  "transformation": "Nonidentifying structured projections and raw artifact hash anchors only; no raw logs/SQL/host/provider identities/keypaths.",
+  "cleanup": {
+    "controllerCleanup": "verified",
+    "watchdogCleanup": "verified",
+    "independentCheckedAt": "2026-11-13T00:27:37.405Z",
+    "remainingCounts": {
+      "droplets": 0,
+      "firewalls": 0,
+      "tags": 0
+    },
+    "exactTemporaryKeyRemovalCount": 2,
+    "temporaryKeyStates": [
+      "removed-exact-original",
+      "removed-exact-original"
+    ],
+    "cleanup": "verified"
+  }
+}

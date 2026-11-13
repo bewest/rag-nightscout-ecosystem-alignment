@@ -1,0 +1,8 @@
+{
+  "original-9c-tail-red.log": "9f131b87aa2a281bcb01754c9f6a08281e64cb1eaf3a1057e807d76e5c2adac6",
+  "followup-controls-green.log": "ab8b98f544f3bef04578cf842b8ca3c7b86c68ef678c4dde05518d7d169612f3",
+  "affected-green.log": "e0ac0d9eba23821bdb8c8da8dd783a5d00f2686d2a137346e6fc425a1fde5920",
+  "isolated-pure-green.log": "f0138838705d39226806b803101eb808663127263287aa346b9c18a3175c7993",
+  "isolated-pure-inputs.json": "0ee003a1091cd18e4eb3da7fe19572342095274b8754c90b7d44d9497f219edf",
+  "host-source-attestation.json": "5aee682c493b5a6e59e9cef77d6f29bc15e126f864f60e7bb438de7946047df3"
+}

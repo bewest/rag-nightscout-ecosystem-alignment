@@ -1,0 +1,14 @@
+test_diagnostics_default_bounds_and_composed_dropped_or_changed_flags (test_profile.Profile.test_diagnostics_default_bounds_and_composed_dropped_or_changed_flags) ... FAIL
+
+======================================================================
+FAIL: test_diagnostics_default_bounds_and_composed_dropped_or_changed_flags (test_profile.Profile.test_diagnostics_default_bounds_and_composed_dropped_or_changed_flags)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/m7-profile-controls-20261112-gfhuctu_/tools/mt-bench/m7-joined/test_profile.py", line 35, in test_diagnostics_default_bounds_and_composed_dropped_or_changed_flags
+    with self.assertRaisesRegex(RuntimeError,'ENV_MISMATCH'):profile.verify_environment(broken,chosen)
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)

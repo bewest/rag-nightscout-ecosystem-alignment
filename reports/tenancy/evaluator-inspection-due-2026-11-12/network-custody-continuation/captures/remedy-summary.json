@@ -1,0 +1,147 @@
+{
+  "beforeAt": 1794498084963,
+  "afterAt": 1794498085161,
+  "beforeNetworkCount": 33,
+  "afterNetworkCount": 31,
+  "removeExit": 0,
+  "removedIds": [
+    "48fbd57bf806c5b7232bae573d5590d5274b311059d5411b68fcdc3160095b00",
+    "6f97e9b495b2f6fb28780e2069554d52e7141a5f2a786b71987da7d91c70d2cc"
+  ],
+  "networks": [
+    {
+      "id": "48fbd57bf806c5b7232bae573d5590d5274b311059d5411b68fcdc3160095b00",
+      "name": "ns-evaluator-binding-20261112_backend",
+      "driver": "bridge",
+      "internal": true,
+      "project": "ns-evaluator-binding-20261112",
+      "subnets": [
+        "192.168.32.0/20"
+      ],
+      "attachedEndpoints": 0
+    },
+    {
+      "id": "6f97e9b495b2f6fb28780e2069554d52e7141a5f2a786b71987da7d91c70d2cc",
+      "name": "ns-evaluator-binding-20261112_edge",
+      "driver": "bridge",
+      "internal": false,
+      "project": "ns-evaluator-binding-20261112",
+      "subnets": [
+        "192.168.48.0/20"
+      ],
+      "attachedEndpoints": 0
+    }
+  ],
+  "retainedContainers": [
+    {
+      "id": "11ed96d33fe076f973911b7d810c79c949515cc689e10c29735707dd5ee4b091",
+      "name": "/ns-evaluator-binding-20261112-evaluator-3-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "6ca550b35401fed51ba44b9ec438f7387d2cb6d9ac0ee7c6d86de3ab599153c1",
+      "name": "/ns-evaluator-binding-20261112-nginx-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:6769dc3a703c719c1d2756bda113659be28ae16cf0da58dd5fd823d6b9a050ea",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "e0d7736506cc144e6f6d32f67b9c80d2c9bc2e732f8c4aed8c19b9b588711487",
+      "name": "/ns-evaluator-binding-20261112-evaluator-2-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "3ba855b067497bd3ac4ec06f86e94a5e1dab1ef7c811b987ccf7976f8121431e",
+      "name": "/ns-evaluator-binding-20261112-evaluator-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "fb7dacf41266b07e25843478a83c6ca556aa26e3044c9dd2888c34633a8ca261",
+      "name": "/ns-evaluator-binding-20261112-realtime-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "72102b0a1a9c9f9405ed5b8cc80e4044ffd2abbad7c7419565506e5e42751558",
+      "name": "/ns-evaluator-binding-20261112-tenant-admin-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "de6e28e5e3faad06a126b6a24c31bc5ab2b9f937ce3756317f325eb4138ec7fb",
+      "name": "/ns-evaluator-binding-20261112-ui-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "ec62f58a3b5610a40c99e89a1f1910cd0b0a5197147e4932d03e8069a54c8f10",
+      "name": "/ns-evaluator-binding-20261112-api-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "86916faf7fac4872b650de3f4fcdffa1fe39fa5ddca93303e06dd1085410b089",
+      "name": "/ns-evaluator-binding-20261112-admin-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "55e0101fcb1b997243019f886c563f2489c5199f503d28f4093b36a7dda949f7",
+      "name": "/ns-evaluator-binding-20261112-feed-reader-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:5b785befb5a5a89689148cbbc50c2159506a7a831b9a382a7238350a3f3684b9",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "dc5e90d014143326acf96504d56f38bdc2c9f331467b7f657ff9dc4459082790",
+      "name": "/ns-evaluator-binding-20261112-postgres-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    },
+    {
+      "id": "99a20ede33b21a95bf46cd2051e095d12f1c9ef8759090f17c5304584e7f8d82",
+      "name": "/ns-evaluator-binding-20261112-vault-1",
+      "status": "exited",
+      "running": false,
+      "image": "sha256:8794a735d581b92ae3d138e677fc79b5722749ce53674334507f2141e35da8c8",
+      "project": "ns-evaluator-binding-20261112",
+      "semanticImageNetworkMountMetadataUnchanged": true
+    }
+  ],
+  "limitation": "Original network IDs are irreversibly removed. Historical proof retains original identity; restarting retained old containers requires explicit networking reconstruction. Containers, volumes, DB state and images retained.",
+  "instrumentFinding": "Initial equality check was order-sensitive for two Mounts lists. Shell continued after that assertion; one authorized startup completed before pause attempt. Canonical comparison shows no semantic custody change. Qualification held for coordinator disposition."
+}

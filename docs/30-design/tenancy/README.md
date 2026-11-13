@@ -1,13 +1,19 @@
 # Tenancy: what to read and maintain
 
 *Contributor-facing living reading guide, current with the release decisions of
-2026-11-10. Each document below owns one kind of fact; it links to the others
+2026-11-12. Each document below owns one kind of fact; it links to the others
 rather than restating them. [Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md)
 own adopted policy, the [queue](../../../queue/work-queue.yaml) owns claimed item
 state and the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
 own merges, acceptance and publication. Retired journals, answered packets and
 superseded analyses are in the [tenancy archive](../../archive/tenancy/README.md);
 a date in a filename does not establish currency.*
+
+For an outsider's first reading, start with [runtime topology](runtime-topology.md)
+for reusable roles and scale envelopes, [deployment bindings](deployment-bindings-and-public-names.md)
+for configuration and trust, then [production sequencing](production-critical-path.md)
+for evidence and admission. The release record is a journal of executed work, not
+the architecture explanation.
 
 For a diagram-first review, open the [multitenant database and component ownership
 page](../../../site/pages/multitenant-database-design.html), rendered from the SQL
@@ -21,7 +27,7 @@ guide below.
 | [Delivery roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration) | Delivery boundaries and the M0–M5, M6a–M6d and M7 promotion criteria. |
 | [Completion schedule](multitenant-integration-batching-plan-2026-11-06.md#5-current-completion-schedule-adopted-2026-11-06) | Batch sequence, lane ownership and [completion-focused coordination](multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination). |
 | [M5/M6 decision index](m5-m6-decision-list.md) | Every settled policy topic with its decision row; no human-policy topic is open. |
-| [Production critical path](production-critical-path.md) | Blockers between the accepted one-host preview and production, closing evidence and prior art; its topology and HA deferrals are proposals. |
+| [Production critical path](production-critical-path.md) | Production closure criteria, diagnostic/acceptance sequencing and conditional topology/HA decisions; current blockers remain in the queue/release records. |
 
 ## Decisions and contracts
 
@@ -40,7 +46,7 @@ guide below.
 | Document | Owns |
 |---|---|
 | [Single and multitenant architecture](single-and-multitenant-architecture.md) | Mode comparison, compatibility and the [current service composition and restore integration](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07). |
-| [Runtime topology](runtime-topology.md) | Zones, components, private APIs and the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement). |
+| [Runtime topology](runtime-topology.md) | Reusable roles, scale envelopes, private APIs and the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement). |
 | [Private API composition and scaling plan](selectable-endpoints-and-api-scaling-plan.md) | The adopted `serve.internal` listener, graceful shutdown, fixed-roster API replicas and their acceptance matrix. |
 | [Realtime sharding plan](realtime-sharding-plan.md) | Proposed realtime tenant placement, recovery and co-location comparison. |
 | [Evaluator/realtime communication](evaluator-realtime-communication.md) | Clinical projections, notification handoff, private API forwarding, output revisions and alarm repeat. |

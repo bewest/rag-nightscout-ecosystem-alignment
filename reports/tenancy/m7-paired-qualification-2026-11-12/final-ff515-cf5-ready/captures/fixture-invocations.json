@@ -1,0 +1,32 @@
+{
+  "meaning": "Recorded executed fixture argv/environment, not an additional run",
+  "stock": {
+    "argv": [
+      "node",
+      "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-readypair-20261112/deploy/multitenant/shipping-sharding.integration.test.js"
+    ],
+    "environment": {
+      "NS_UI_TEST_CORE": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-readypair-20261112",
+      "NS_COMPOSE_SHARDING_STATE": "/tmp/ns-evaluator-binding-proof-20261112-ready",
+      "NS_COMPOSE_SHARDING_PROJECT": "ns-evaluator-binding-proof-20261112-ready",
+      "NS_COMPOSE_SHARDING_PORT": "18383",
+      "NS_COMPOSE_SHARDING_PROFILE": "evaluator",
+      "NS_EVALUATOR_SETTINGS_TRAFFIC": "1"
+    },
+    "log": "/tmp/evaluator-ready-stock-restore.log"
+  },
+  "clinical": {
+    "argv": [
+      "node",
+      "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-readypair-20261112/deploy/multitenant/shipping-evaluator.integration.test.js"
+    ],
+    "environment": {
+      "NS_UI_TEST_CORE": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/crm-evaluator-readypair-20261112",
+      "NS_EVALUATOR_BINDING_STATE": "/tmp/ns-evaluator-binding-proof-20261112-ready",
+      "NS_EVALUATOR_BINDING_PROJECT": "ns-evaluator-binding-proof-20261112-ready",
+      "NS_EVALUATOR_BINDING_PORT": "18383"
+    },
+    "log": "/tmp/evaluator-ready-clinical.log"
+  },
+  "environmentSelection": "Inherited NS_, BENCH_ and MULTITENANT_ values removed before explicit fixture values; no credential values passed in CLI/recorded environment"
+}

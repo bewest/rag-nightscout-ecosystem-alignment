@@ -1,0 +1,36 @@
+
+
+  Internal service API contracts
+    1) fixes service ownership, names, wire paths and immutable versioned descriptors
+    ✔ accepts socket authority wire values and refuses unknown envelope, credential and permission fields
+    ✔ preserves canonical mutation payloads while rejecting unsupported event/namespace combinations and extra envelope fields
+    ✔ fixes ownership operation identifiers and refuses credential-bearing or ambiguous ownership wire values
+    ✔ fixes the connector inspection read: counts and codes only, never an endpoint or credential
+    ✔ preserves extensible notification payloads and fixes the handoff response without claiming device delivery
+    ✔ requires complete lifecycle identities and exact invalidation acknowledgements
+    ✔ fails unsupported schema vocabulary and exercises the implemented JSON Schema subset
+    ✔ ablation: the unknown-field guard goes red when additional-property rejection is removed
+
+
+  8 passing (11ms)
+  1 failing
+
+  1) Internal service API contracts
+       fixes service ownership, names, wire paths and immutable versioned descriptors:
+
+      AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+2 !== 1
+
+      + expected - actual
+
+      -2
+      +1
+      
+      at <core-worktree>/tests/internal-api-contracts.test.js:27:14
+      at Array.flatMap (<anonymous>)
+      at Context.<anonymous> (tests/internal-api-contracts.test.js:25:44)
+      at process.processImmediate (node:internal/timers:484:21)
+
+
+

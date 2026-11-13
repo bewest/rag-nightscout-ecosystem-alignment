@@ -1,0 +1,285 @@
+tests/connector-sources.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: durable registry connector definitions, encrypted credentials and independent revision refresh; fixture-owned Vault
+tests/registry-realtime-settings.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: registry realtime persisted D15 settings, HTTP/socket serialization and missing-state refusal; fixture-owned Vault
+tests/tenant-live-add.integration.test.js
+  flags: NS_TENANT_LIVE_ADD_TEST=1 MULTITENANT_STATIC_TENANTS=lab
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: live provision to clinical alarm/frame, existing-tenant continuity, deferred warm/activity resume and burst/removal; owned PostgreSQL and Vault
+tests/api-fixed-roster.integration.test.js
+  flags: NS_API_ROSTER_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: two API replica restore census with real private endpoints and roster controls; own PostgreSQL
+tests/registry-human-session.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: registry-provisioned human keys and durable PostgreSQL sessions; fixture owns Vault
+tests/change-feed.integration.test.js
+  flags: NS_D6_FEED_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: D6 fixed-slot pgoutput reader, EXECUTE-only wrappers, LISTEN/paged recovery and semantic controls; own PostgreSQL
+tests/tenant-insertion-upgrade.integration.test.js
+  flags: NS_TENANT_INSERTION_UPGRADE_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: populated immutable-prefix upgrades through actual runner, per-tenant floors, old catalogue refusal and transaction rollback
+tests/tenant-insertion-readiness.integration.test.js
+  flags: NS_TENANT_INSERTION_READINESS_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: actual typed tenant-local allocator schemas, exact function/trigger/RLS/ACL/floor admission with physical red/restored controls
+tests/owner-configuration.integration.test.js
+  flags: NS_OWNER_CONFIGURATION_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: explicit configure authority, actual owner settings CAS/history and DATA presentation-only reads; separate from original owner9
+tests/owner-preview.integration.test.js
+  flags: NS_OWNER_PREVIEW_TEST=1
+  provided by the script: postgres; starts its own: postgres+vault; disabled: pending opt-in
+  note: actual headless tenant-admin CLI workers; operator-provisioned synthetic management credentials, no human issuer
+tests/tenant-socket-order-capability.integration.test.js
+  flags: NS_SOCKET_ORDER_CAPABILITY_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: experimental optional successor; old catalogue MIG_UNKNOWN and populated upgrade refusal are expected
+tests/tenant-socket-data-forwarding.integration.test.js
+  flags: NS_SOCKET_DATA_FORWARDING_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+  note: real sockets; pinned AAPS DATA pattern replay, not an actual Android binary; selected fixture transport only
+tests/postgres-connection.test.js
+  flags: (admin URI only)
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+tests/entries-importer-postgres.integration.test.js
+  flags: NS_POPULATED_RECOVERY_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: postgres+postgres; disabled: pending opt-in
+  note: existing import target plus owned stopped-write populated source/restore-target reference
+tests/postgres-entries-read.test.js
+  flags: (admin URI only)
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/postgres-entries-write.test.js
+  flags: (admin URI only)
+  provided by the script: postgres+mongo; starts its own: none; disabled: describe.skip, silent
+tests/api3.entries-crud.http.test.js
+  flags: NS_ENTRIES_CRUD_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/tenant-rest-entries.integration.test.js
+  flags: NS_ENTRIES_CRUD_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/tenant-rest-identifier-race.integration.test.js
+  flags: NS_ENTRIES_CRUD_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/tenant-rest-identity-differential.integration.test.js
+  flags: NS_ENTRIES_CRUD_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/tenant-frame-concurrency.integration.test.js
+  flags: NS_ENTRIES_CRUD_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/tenant-durable-replay.integration.test.js
+  flags: NS_TENANT_DURABLE_REPLAY_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+tests/tenant-projection-evaluator.integration.test.js
+  flags: NS_TENANT_PROJECTION_EVALUATOR_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+tests/tenant-current-state-recovery-proof.integration.test.js
+  flags: NS_M5_CURRENT_STATE_PROOF_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: bounded current-state acquisition and explicit evaluator preview lifecycle; no notification/provider acceptance
+tests/tenant-alarm-state.integration.test.js
+  flags: NS_TENANT_ALARM_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: durable tenant-wide alarm suppression and consumed output; actual private transport acceptance is separate
+tests/tenant-notifications.integration.test.js
+  flags: NS_TENANT_NOTIFICATIONS_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: durable notification intent, attempt/retry identity and selected-consumer semantics; no device-delivery claim
+tests/evaluator-consumers.integration.test.js
+  flags: NS_EVALUATOR_CONSUMERS_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: actual selected evaluator role, committed private producer state/outbox, controlled UDS sink and current ACK semantics; real recipient delivery is separate
+tests/tenant-activity.integration.test.js
+  flags: NS_EVALUATOR_CONSUMERS_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: pause/suspend eligibility: evaluator work lists from eligible tenants, recompute on unpause, other tenants unaffected
+tests/evaluator-consumer-timer-churn.integration.test.js
+  flags: NS_EVALUATOR_CONSUMERS_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: stale producer selection under evaluator timer churn is reselected, not refused; NS_CONSUMER_* knobs are for measurement
+tests/evaluator-consumer-load.integration.test.js
+  flags: NS_EVALUATOR_CONSUMERS_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: consumer wakes and producer selections per window with content-change revisions; NS_CONSUMER_LOAD_* knobs are for measurement
+tests/change-stamps.integration.test.js
+  flags: (admin URI only)
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: decision change-stamp-definer-function: catalogue, deployment grants, attribute check and refusals
+tests/tenant-registry.integration.test.js
+  flags: (admin URI only)
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: decision tenant-registry: definer lookup/revision/enumeration narrowness, per-tenant RLS on attributes, attribute check
+tests/tenant-registry-provision.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: decision provisioning-split: idempotent provisioning, injected failures leave no partial tenant, bounded batches
+tests/admin-provisioning.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: decision operator-rest-api: provisioning REST on the admin role and the `nightscout admin provision` client (secret never on stdout/stderr); spawns the shipping CLI as a child
+tests/registry-tenant-set.integration.test.js
+  flags: (admin URI only)
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: decision tenant-registry stage 1: evaluator/realtime start set, removal within the bound, waiting count and alert, restart cost (NS_REGISTRY_RESTART_COUNTS)
+tests/api-registry.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: postgres; starts its own: vault; disabled: pending opt-in
+  note: decision tenant-registry: api in registry mode serves a tenant provisioned while running within the refresh bound; spawns the shipping CLI as a child
+tests/postgres-tenant-scan.integration.test.js
+  flags: (admin URI only)
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: scanTenants: one READ ONLY round trip under each tenant's forced-RLS binding
+tests/pool-membership.integration.test.js
+  flags: (admin URI only)
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: pool membership: two kinds, member/inspector/operator identities, operator-set count, agreement, lease expiry
+tests/incremental-view.integration.test.js
+  flags: NS_TENANT_DURABLE_REPLAY_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: decision incremental-refresh: edit, soft and hard delete, gap, mismatch
+tests/tenant-write-clock-complete.integration.test.js
+  flags: NS_TENANT_COMMIT_CLOCK_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: decision write-clock-complete: every supported write advances the clock, hard deletes also last_delete_stamp
+tests/evaluator-wake.integration.test.js
+  flags: NS_TENANT_PROJECTION_EVALUATOR_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: work on change: lost wake, duplicate delivery, restart, hard delete and unstamped update re-evaluated, idle, eviction
+tests/evaluator-cost.integration.test.js
+  flags: NS_TENANT_PROJECTION_EVALUATOR_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: evaluator cost lane C/D/E: copies stay independent of plugin mutation
+tests/views-keep.integration.test.js
+  flags: NS_TENANT_PROJECTION_EVALUATOR_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: evaluator cost lane B: a kept working set re-cut equals a fresh load
+tests/projection-total-order.integration.test.js
+  flags: NS_TENANT_PROJECTION_EVALUATOR_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: decision view-reads-total-order: SQL and in-process paths agree, ties broken on the insertion ordinal
+tests/evaluator-consumer-wake.integration.test.js
+  flags: NS_EVALUATOR_CONSUMERS_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+  note: consumers on change: an idle tenant is not polled; a new alarm is delivered by the revision wake
+tests/operation-window-epoch.integration.test.js
+  flags: NS_OPERATION_WINDOW_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: restore fence and catalogue admission epoch with the deployment plan's catalogue and grants
+tests/tenant-operations.integration.test.js
+  flags: NS_TENANT_OPERATIONS_PG_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: representative entries/clock recovery and upgrade contracts; full populated deployment recovery is separate
+tests/tenant-commit-clock-port.integration.test.js
+  flags: NS_TENANT_COMMIT_CLOCK_TEST=1
+  provided by the script: postgres; starts its own: none; disabled: pending opt-in
+tests/tenant-commit-clock-http.integration.test.js
+  flags: NS_TENANT_COMMIT_CLOCK_HTTP_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: functional cases enabled; benchmark remains pending unless NS_TENANT_COMMIT_CLOCK_BENCHMARK=1
+tests/api-fixed-roster-serving.integration.test.js
+  flags: NS_API_ROSTER_SERVING_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: two actual API CLI processes; response drain/current authority/census/uncertainty; non-API peers are synthetic lifecycle-only
+tests/multitenant-preview-replicas.integration.test.js
+  flags: NS_MULTITENANT_PREVIEW_REPLICAS_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: spawns the shipping CLI as independent processes on one host
+tests/tenant-rest-derived.integration.test.js
+  flags: NS_REST_DERIVED_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/tenant-rest-treatments.integration.test.js
+  flags: NS_REST_TREATMENTS_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: none; disabled: pending opt-in
+tests/tenant-rest-context.integration.test.js
+  flags: NS_REST_CONTEXT_HTTP_TEST=1
+  provided by the script: postgres+mongo; starts its own: vault; disabled: pending opt-in
+tests/tenant-rest-device-activity.integration.test.js
+  flags: NS_REST_DEVICE_ACTIVITY_TEST=1
+  provided by the script: postgres+mongo; starts its own: vault; disabled: pending opt-in
+  note: its own Vault is hashicorp/vault:latest, unpinned
+tests/tenant-rest-profile-food.integration.test.js
+  flags: NS_PROFILE_FOOD_HTTP_TEST=1
+  provided by the script: postgres+mongo+vault; starts its own: none; disabled: pending opt-in
+  note: mounts transit at the fixed path "transit": one run per Vault
+tests/tenant-rest-settings-differential.integration.test.js
+  flags: NS_SETTINGS_DIFFERENTIAL_TEST=1
+  provided by the script: postgres+mongo+vault; starts its own: none; disabled: pending opt-in
+tests/postgres-migrations.integration.test.js
+  flags: NS_MIGRATION_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+tests/mongodb-migrations.integration.test.js
+  flags: NS_MIGRATION_MONGO_DOCKER_TEST=1
+  provided by the script: none; starts its own: mongo; disabled: pending opt-in
+  note: mongo:8.0.34 replica set
+tests/postgres-secrets.integration.test.js
+  flags: NS_SECRETS_POSTGRES_DOCKER_TEST=1 NS_VAULT_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: NS_VAULT_DOCKER_TEST=1 enables its one backup-restore case, which starts raft Vaults
+tests/vault-secrets.integration.test.js
+  flags: NS_VAULT_DOCKER_TEST=1
+  provided by the script: none; starts its own: vault; disabled: pending opt-in
+tests/tenant-key-retention.integration.test.js
+  flags: NS_KEY_RETENTION_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: post-deletion 30-day key retention: destroys Transit keys in its own Vault dev
+tests/tenant-runtime-vault.integration.test.js
+  flags: NS_TENANT_RUNTIME_VAULT_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+tests/tenant-entries-http.integration.test.js
+  flags: NS_TENANT_HTTP_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+tests/tenant-credential-http.integration.test.js
+  flags: NS_TENANT_CREDENTIAL_HTTP_DOCKER_TEST=1
+  provided by the script: mongo; starts its own: postgres; disabled: pending opt-in
+  note: owns its PostgreSQL; its differential cases open CUSTOMCONNSTR_mongo
+tests/tenant-authorization-postgres.integration.test.js
+  flags: NS_TENANT_AUTHORITY_POSTGRES_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+tests/subject-management-http.integration.test.js
+  flags: NS_SUBJECT_MANAGEMENT_HTTP_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+tests/subject-admin-postgres.integration.test.js
+  flags: NS_SUBJECT_ADMIN_POSTGRES_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+tests/tenant-ownership-postgres.integration.test.js
+  flags: NS_TENANT_OWNERSHIP_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: operator-assisted add/transfer/recover with concurrent-transfer and foreign-authority controls over the private ownership service
+tests/admin-role-ownership.integration.test.js
+  flags: NS_ADMIN_ROLE_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: spawns `nightscout multitenant admin`; ownership operations on the admin listener with the deployment plan's ownership_operator grants
+tests/admin-lifecycle-fit.integration.test.js
+  flags: NS_ADMIN_LIFECYCLE_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+  note: tenant A restore through the maintenance controller and remote cohort census with the admin role connected; ownership refusal while held; admin on the consumer address at another port
+tests/owner-subject-policy.integration.test.js
+  flags: NS_OWNER_SUBJECT_POLICY_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+tests/tenant-rest-authority-review.test.js
+  flags: NS_REST_AUTHORITY_REVIEW_TEST=1
+  provided by the script: none; starts its own: postgres; disabled: pending opt-in
+tests/storage-port-contract.integration.test.js
+  flags: NS_STORAGE_PORT_CONTRACT_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+mongo; disabled: pending opt-in
+  note: mongo:7.0
+tests/tenant-frame-acquisition.integration.test.js
+  flags: NS_FRAME_ACQUISITION_TEST=1
+  provided by the script: none; starts its own: postgres+mongo; disabled: pending opt-in
+  note: mongo:8.0.34
+tests/tenant-rest-client-replay.integration.test.js
+  flags: NS_REST_CLIENT_REPLAY_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: spawns the shipping CLI as a child
+tests/multitenant-preview-process.integration.test.js
+  flags: NS_MULTITENANT_PREVIEW_PROCESS_DOCKER_TEST=1
+  provided by the script: none; starts its own: postgres+vault; disabled: pending opt-in
+  note: spawns the shipping CLI as a child
+# 77 opt-in suites (77 in the inventory); 39 start their own containers

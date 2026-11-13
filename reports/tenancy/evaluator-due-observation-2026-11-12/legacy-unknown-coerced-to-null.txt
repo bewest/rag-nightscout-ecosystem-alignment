@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_historical_real_captures_keep_original_policy_and_unknown_due (test_evaluator_progress.Progress.test_historical_real_captures_keep_original_policy_and_unknown_due)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<alignment>/externals/work/alignment-m7-evaluator-progress-20261112/tools/mt-bench/m7-joined/test_evaluator_progress.py", line 106, in test_historical_real_captures_keep_original_policy_and_unknown_due
+    self.assertTrue(all('dueAt' not in row and 'dueReason' not in row for rows in decoded[0]['allRows'].values() for row in rows.values()))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

@@ -1,0 +1,17 @@
+{
+  "archiveSha256": "5d15f733bac783458d4dde3fc96201c70b5fc7723fc54258d5033ff5e2afe57f",
+  "removedNetworkIds": [
+    "31e5dfaddbc7e0f50bc78cecac4343aef79bdd81c8b75dd6d6f481dc162abfdc",
+    "0f31eb58081f9199cd18fe7fc796f528e06b6dc0ac9ffc420b0fbe0da1ce971a"
+  ],
+  "removeExit": 0,
+  "beforeNetworkCount": 33,
+  "afterNetworkCount": 31,
+  "retainedStoppedContainers": 15,
+  "guard": {
+    "verified": true,
+    "containers": 15,
+    "comparison": "all keys; order-insensitive nested arrays/multisets"
+  },
+  "limitation": "Only these two historical network IDs are removed irreversibly; retained old containers require deliberate networking reconstruction to restart. All containers/volumes/private database state/images retained."
+}

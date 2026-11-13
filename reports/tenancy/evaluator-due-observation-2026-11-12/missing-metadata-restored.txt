@@ -1,0 +1,8 @@
+
+
+  bounded evaluator inspection v2
+    ✔ refuses missing or malformed due values, free text and oversized source reasons
+
+
+  1 passing (3ms)
+

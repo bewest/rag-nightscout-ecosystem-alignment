@@ -1,0 +1,32 @@
+TAP version 13
+# Subtest: stock long polling remains connected while its next response waits beyond five seconds
+not ok 1 - stock long polling remains connected while its next response waits beyond five seconds
+  ---
+  duration_ms: 6270.117911
+  type: 'test'
+  location: '<owned-binding>/bindings/compose/multitenant/socket-edge.test.js:74:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<owned-binding>/bindings/compose/multitenant/socket-edge.test.js:89:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6323.940089

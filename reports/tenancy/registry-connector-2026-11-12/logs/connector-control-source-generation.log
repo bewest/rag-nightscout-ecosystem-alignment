@@ -1,0 +1,14 @@
+
+
+  !
+
+  0 passing (8ms)
+  1 failing
+
+  1) durable connector source configuration
+       CS_DYNAMIC: sources add/update/delete without restart; all sources of a tenant share one pool slice; credentials are re-read per poll:
+     AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async Context.<anonymous> (tests/connector-sources.test.js:50:7)
+
+
+

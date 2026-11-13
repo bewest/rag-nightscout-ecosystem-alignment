@@ -1,0 +1,8 @@
+{
+  "kind": "explicit-host-functional-startup-settlement",
+  "requestedSeconds": 12,
+  "startedAtMs": 1794528301882,
+  "notProductFix": true,
+  "endedAtMs": 1794528313882,
+  "elapsedSeconds": 12.000161425676197
+}

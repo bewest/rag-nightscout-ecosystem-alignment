@@ -1,0 +1,11 @@
+{
+  "bgnow-control.patch": "9b21bfa7514ff40e33fa4e4772bbc873494668e514e1a7194b26dd3dff67c114",
+  "check-control.py": "24950867e0e2c0c8ab9b49d5b7df3b8f32cd46e700e18be1659d6ae341bd34a8",
+  "check-within.py": "c4027bd15ba46e92a94ab3b5713ec2b8ea16cbe7e4d011b4ded8e5915c9c4ca6",
+  "compare.cjs": "0df9c949b1a897a14babe781cd645f15d1e332d5a2cbb8cd4b5bc2f8c55dd921",
+  "equivalence.cjs": "1a37bcea1ab415786a7bc5b6b00764245c4eb5ef7b1b1feacd3d18170207a28b",
+  "observe-pg.cjs": "57bdb45eef774a652ebb4f4f3c80e853840310bafc72a1daa34baf067407b204",
+  "run.py": "fa15e2b9a947e415772ac2e3b59bcc396af9b2f0c21bc7aa201e202d5234255e",
+  "trace.cjs": "47a1de898c1e4be658599832b91f3f04774cc9560c2d97abdc9a55860969f593",
+  "within.py": "38b33f5743f7f3f83a99f99eb959ba4f7a4bf7445e2f3f899369880ee76c8e80"
+}

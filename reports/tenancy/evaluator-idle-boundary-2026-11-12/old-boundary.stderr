@@ -1,0 +1,32 @@
+test_actual_read_brackets_and_selected_metadata_use_no_additional_fetches (test_evaluator_idle.Idle.test_actual_read_brackets_and_selected_metadata_use_no_additional_fetches) ... ok
+test_all_clinical_slots_and_explicit_null_pending_refuse (test_evaluator_idle.Idle.test_all_clinical_slots_and_explicit_null_pending_refuse) ... ok
+test_all_foreign_rows_retained_and_no_hidden_work_or_pending_job (test_evaluator_idle.Idle.test_all_foreign_rows_retained_and_no_hidden_work_or_pending_job) ... ok
+test_clock_missing_wall_jump_helper_outside_or_round_overlap_refuses (test_evaluator_idle.Idle.test_clock_missing_wall_jump_helper_outside_or_round_overlap_refuses) ... ok
+test_crossing_uncompleted_and_final_only_demand_stay_unmeasured (test_evaluator_idle.Idle.test_crossing_uncompleted_and_final_only_demand_stay_unmeasured) ... ok
+test_earlier_due_inside_final_read_with_actual_completion_is_exercised (test_evaluator_idle.Idle.test_earlier_due_inside_final_read_with_actual_completion_is_exercised) ... ERROR
+test_failures_resets_new_demand_foreign_and_unhealthy_cannot_be_quiet (test_evaluator_idle.Idle.test_failures_resets_new_demand_foreign_and_unhealthy_cannot_be_quiet) ... ok
+test_final_read_bracket_due_ambiguity_is_not_opportunity_proof (test_evaluator_idle.Idle.test_final_read_bracket_due_ambiguity_is_not_opportunity_proof) ... ok
+test_malformed_due_and_missing_legacy_are_not_explicit_null (test_evaluator_idle.Idle.test_malformed_due_and_missing_legacy_are_not_explicit_null) ... ok
+test_missing_opportunity_or_job_guards_produces_false_pass_then_restored_refuses (test_evaluator_idle.Idle.test_missing_opportunity_or_job_guards_produces_false_pass_then_restored_refuses) ... ok
+test_observed_due_requires_actual_later_time_even_if_later_due_moves_future (test_evaluator_idle.Idle.test_observed_due_requires_actual_later_time_even_if_later_due_moves_future) ... ok
+test_packed_recomputation_and_bool_slot_tamper (test_evaluator_idle.Idle.test_packed_recomputation_and_bool_slot_tamper) ... ok
+test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured (test_evaluator_idle.Idle.test_positive_time_progress_with_any_pending_clinical_slot_is_busy_unmeasured) ... ok
+test_quiet_future_and_explicit_no_timer_are_not_work_witnesses (test_evaluator_idle.Idle.test_quiet_future_and_explicit_no_timer_are_not_work_witnesses) ... ok
+
+======================================================================
+ERROR: test_earlier_due_inside_final_read_with_actual_completion_is_exercised (test_evaluator_idle.Idle.test_earlier_due_inside_final_read_with_actual_completion_is_exercised)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-idle-boundary-20261112/tools/mt-bench/m7-joined/test_evaluator_idle.py", line 42, in test_earlier_due_inside_final_read_with_actual_completion_is_exercised
+    value=idle.assess(rounds,[A,B]);self.assertEqual(value['classifications']['TIME_EXERCISED'],1)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "in_memory_idle_control", line 104, in assess
+  File "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/alignment-m7-idle-boundary-20261112/tools/mt-bench/m7-joined/evaluator_progress.py", line 23, in need
+    if not value:raise Refused(code,verdict)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evaluator_progress.Refused: M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.011s
+
+FAILED (errors=1)

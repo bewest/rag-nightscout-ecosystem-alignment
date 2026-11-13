@@ -1,0 +1,17 @@
+{
+  "controls": [
+    {
+      "control": "due-retention-omitted",
+      "symptom": "M7_EVALUATOR_PROGRESS_PROOF"
+    },
+    {
+      "control": "legacy-unknown-coerced-to-null",
+      "symptom": "AssertionError"
+    },
+    {
+      "control": "current-receipt-downgrade-guard-omitted",
+      "symptom": "ValueError not raised"
+    }
+  ],
+  "restoration": "exact original bytes"
+}

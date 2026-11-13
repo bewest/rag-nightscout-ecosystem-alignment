@@ -1,0 +1,9 @@
+Preparation refused: Cannot find module 'moment'
+Require stack:
+- <owned-source>/lib/api3/shared/dateTools.js
+- <owned-source>/lib/api3/generic/setup.js
+- <owned-source>/lib/server/tenant-app/domain-catalogue.js
+- <owned-source>/lib/server/serve/preview-config.js
+- <owned-source>/lib/server/serve/pool-config.js
+- <owned-source>/deploy/multitenant/registry-plan.js
+- <owned-source>/deploy/multitenant/prepare.js

@@ -1,0 +1,25 @@
+
+
+  !
+
+  0 passing (2s)
+  1 failing
+
+  1) durable connector source definitions and registry refresh (native PostgreSQL)
+       CS_REFRESH: registry revisions refresh multiple sources, destination alias is tenant-bound, unchanged polls issue no source enumeration, deletion removes the assignment:
+
+      AssertionError [ERR_ASSERTION]: CS_NORMAL_COST: unchanged revision does not enumerate tenants
+
+3 !== 2
+
+      + expected - actual
+
+      -3
+      +2
+      
+      at Context.<anonymous> (tests/connector-sources.integration.test.js:110:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+
+
+
