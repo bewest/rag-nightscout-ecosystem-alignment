@@ -101,5 +101,7 @@ The final native container is removed and its exact absence is verified. No paid
 resources were created. The sole integration owner reviews/joins the exact pair,
 then coordinates matched runtime measurement. The metadata/policy modules tested
 natively on bbbb6e79 are byte-identical in the final realtime-only child. Full/browser/enabled-corpus and
-final prcheck belong to its coherent candidate. The same implementation lane
-maintains one local handoff for custody and the prospective local N experiment.
+final prcheck belong to its coherent candidate. The implementation lane maintains its source-custody handoff. Prospective local
+N measurement belongs to the separate measurement owner and its evolving
+HANDOFF-idle-scaling-measurement-2026-11-13.md. That preparation has no runtime
+resources or results in this capture.
