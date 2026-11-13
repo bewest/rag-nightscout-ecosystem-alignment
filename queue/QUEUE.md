@@ -8487,7 +8487,7 @@ alarm-readiness items, and the seam branch refresh.
 | `MT-REALTIME-SOCKET-CAP` | Realtime: remove the per-process socket cap, add disconnect cause codes, an unauthorized-socket deadline, and edge flood limits | `in-progress` | `workspace/realtime-cap-20261112` | n/a | 0 run + 1 no-gate |
 | `MT-AUTHZ-COST` | API authorization cost: permission snapshot, batched audit, bounded lifetime sessions and signature-proof reuse | `in-progress` | `codex/m7-join-20261111` | n/a | 0 run + 1 no-gate |
 | `MT-EVAL-COST` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept working set, in-process view reads with total order | `ready-to-push` | `codex/eval-cost-20261111` | n/a | 0 run + 1 no-gate |
-| `MT-D6-SLOT-READER` | D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N | `in-progress` | `workspace/d6-slot-20261112` | n/a | 0 run + 1 no-gate |
+| `MT-D6-SLOT-READER` | D6: prove maintained CDC through clinical evaluation, durable output and realtime recovery | `in-progress` | `codex/pgstream-flow-20261113` | n/a | 0 run + 1 no-gate |
 
 ### `ST-PG` &mdash; Current-dev PostgreSQL entries adapter and real RLS proof
 
@@ -12012,19 +12012,19 @@ alarm-readiness items, and the seam branch refresh.
 
 **Notes.** 2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms. Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.
 
-### `MT-D6-SLOT-READER` &mdash; D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N
+### `MT-D6-SLOT-READER` &mdash; D6: prove maintained CDC through clinical evaluation, durable output and realtime recovery
 
 | | |
 |---|---|
 | state (claimed) | `in-progress` |
 | repo | `cgm-remote-monitor` |
-| branch | `workspace/d6-slot-20261112` |
-| base | `workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003` |
-| worktree | `externals/work/crm-d6-slot-20261112` |
+| branch | `codex/pgstream-flow-20261113` |
+| base | `codex/m7-coherent-join-20261112@4b13bf8bbfe578416441d7322837ec5aabeba1ea` |
+| worktree | `externals/work/crm-pgstream-flow-20261113` |
 | semver | `n/a` |
 | review | maintainer; security review (replication privilege, definer function) |
 
-**Blast radius.** Realtime and evaluator change detection (lib/server/realtime/change- detector.js, runtime.js wake path, lib/server/serve/evaluator-runtime.js backstop pass, lib/change-stamps); a new slot reader role and its SECURITY DEFINER catalogue; PostgreSQL configuration (wal_level=logical, max_replication_slots, max_slot_wal_keep_size), a publication on the tenant write clock, a least-privilege replication identity; core deploy/multitenant bootstrap and the nightscout-deploy Compose binding.
+**Blast radius.** Proposed evaluator input/settings and recoverable due-work ownership; persisted completed clinical output and browser frame; realtime output/control consumption; maintained pgstream replication adapter, PostgreSQL wal2json/slot retention, and eventual deployment wiring. Existing clinical-write decoupling, tenant authority/isolation, restore and single-tenant compatibility obligations remain.
 
 **What an operator sees.** _Nothing. No operator-visible change._
 
@@ -12032,15 +12032,16 @@ alarm-readiness items, and the seam branch refresh.
 
 **Gates.**
 
-- **NO GATE** &mdash; Planned: change-to-frame latency at 1,000 and 3,000 tenants with the reader running no worse than the stage 1 poll, and per-call detector DB cost flat in N; with the reader stopped the backstop alone delivers every change within its bound and an alert fires (control: backstop also disabled goes red); a grep gate that fails when a trigger emits NOTIFY (control: planted trigger); restore and epoch suites green.
+- **NO GATE** &mdash; The small destructive local pgstream proof is not a read-only queue gate or production acceptance. Establish committed input/settings to actual clinical evaluation, durable completed output and an already-connected socket client; due work without writes, restart/redelivery and newer generations, quiet idle and meaningful dropped-work controls. Deployment closure still needs durable recovery, overlapping-owner/restore fencing, authority lifecycle, bounded WAL outage behavior and least-privilege integration. No capacity or broad acceptance campaign precedes the thin flow.
 
 **Evidence.**
 
+- `reports/tenancy/pgstream-flow-2026-11-13/README.md`
 - `reports/tenancy/d6-native-discriminators-2026-11-11/README.md`
 - `reports/tenancy/m7-join-2026-11-11/README.md`
 - `reports/tenancy/capacity-2026-11-11/README.md`
 
-**Notes.** 2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Maintainer answers recovered in the 2026-11-11 continuation: decisions.md#d6-paged-backstop selects paging now (watermark only if later outage measurements warrant it); decisions.md#d6-sql-reader- transport selects SQL polling for the reader; decisions.md#d6-activity- control-path requires no evaluator/realtime data work while paused or suspended, with an independent stop/resume control path. Implementation, outage latency and bounded-cost evidence remain UNMEASURED. Reader placement and identity still need their design/least-privilege review.
+**Notes.** 2026-11-13: event-driven reset (release decisions event-driven-reset). One capability owner and one successor M7 coordinator; old polling tuning and paid retry are stopped. Maintained upstream CDC is evaluated before more custom transport. Proposed model: evaluator owns raw changes and durable due state; realtime consumes durable output/alarm and viewer/auth lifecycle, initially co-located as useful. Existing acquired-input checkpoints do not prove clinical completion. Prototype and delivery guarantees retain their exact measured scope; this item remains in-progress, not production accepted. The pgstream-flow report records final v1.6.0 local positives and deliberate red controls on frozen aba583199e9ab8a4bb907adc46dc9262a3dcedf5. Notifier liveness, schema/control routing, actual process recovery, overlapping- owner/restore fencing, authority lifecycle and WAL-cap recovery remain open. Capability owner stopped after cleanup; successor coordinator owns the next integration boundary.
 
 ---
 

@@ -19,7 +19,7 @@ this guide does not promote M6.
 
 ## Event-driven target and first proof
 
-**Direction adopted 2026-11-13; adapter and recovery behavior UNMEASURED.**
+**Direction adopted 2026-11-13; deployment integration and autonomous recovery UNMEASURED.**
 The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
 owns this priority. The ownership and placement model below is proposed for the
 proof; it is not implementation acceptance. Evaluate maintained pgstream CDC (change data capture) before
@@ -74,6 +74,12 @@ work, early acknowledgement, tenant misrouting and output feedback. Verify the
 upstream acknowledgement/checkpoint/retry contract, schema/plugin footprint,
 strict failure behavior and bounded WAL retention. This is a prototype criterion,
 not an adopted pgstream delivery guarantee or production acceptance.
+
+The [local pgstream proof](../../../reports/tenancy/pgstream-flow-2026-11-13/README.md)
+now establishes this bounded flow on a single serialized adapter. It records the
+executed source, positive and red controls, explicit cache-loss recovery and
+remaining notifier-liveness, schema-routing and ownership/recovery gaps. It does
+not enable a shipping role or establish production delivery guarantees.
 
 ## Inspected implementation reference
 
