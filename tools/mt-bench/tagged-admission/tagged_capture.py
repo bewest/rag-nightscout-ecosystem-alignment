@@ -14,6 +14,12 @@ import signal
 import time
 import tagged_admission as T
 
+MAX_HELD_GENERATIONS = 128
+MAX_COMMANDS = 131
+TOTAL_OUTPUT_BYTES = 16*1024*1024
+EPISODE_SECONDS = 120
+CLEANUP_RESERVE_SECONDS = 4
+
 
 def write(path, value):
     with open(path, 'x', opener=lambda p, f: os.open(p, f, 0o600)) as output:
@@ -73,21 +79,37 @@ def capture(spec, output, run=None):
     cli, state = Path(spec['controllerCli']), Path(spec['state'])
     T.need(cli.is_absolute() and state.is_absolute() and not cli.is_symlink(), 'CAPTURE_PATH')
     T.need(hashlib.sha256(cli.read_bytes()).hexdigest() == spec['controllerCliSha256'], 'CONTROLLER_BYTES')
+    ledger_file=state/'connection-budget/ledger.json'
+    if ledger_file.exists():
+        T.need(ledger_file.stat().st_size <= 1048576, 'LEDGER_BOUND')
+        preflight=json.loads(ledger_file.read_text())
+        T.need(sum(r['state'] != 'RETIRED' for rows in preflight['slots'].values() for r in rows) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
     output = Path(output)
     output.mkdir(mode=0o700)  # no overwrite/retry of an episode
     write(output/'capture-spec.private.json',spec)
     write(output/'capture-once.json', {'startedMonotonicNs':time.monotonic_ns(), 'kind':T.KIND})
     environment = {key:os.environ[key] for key in ('PATH','HOME','USER','LANG') if key in os.environ}
+    episode_deadline=time.monotonic()+EPISODE_SECONDS
+    output_bytes=0
     def execute(argv):
-        return bounded_execute(argv, environment)
+        remaining=episode_deadline-time.monotonic()-CLEANUP_RESERVE_SECONDS
+        return bounded_execute(argv, environment,deadline_seconds=min(90,remaining),output_bytes=min(4*1024*1024,TOTAL_OUTPUT_BYTES-output_bytes))
     invoke = run or execute
     sequence = 0
     def command(argv):
-        nonlocal sequence
+        nonlocal sequence, output_bytes
+        T.need(sequence < MAX_COMMANDS and time.monotonic()+CLEANUP_RESERVE_SECONDS < episode_deadline
+               and output_bytes < TOTAL_OUTPUT_BYTES, 'GLOBAL_CAPTURE_BUDGET')
         sequence += 1
         started_ns=time.monotonic_ns()
         result = invoke(argv)
         finished_ns=time.monotonic_ns()
+        remaining=TOTAL_OUTPUT_BYTES-output_bytes
+        if len(result.stdout)+len(result.stderr) > remaining:
+            kept_stdout=result.stdout[:remaining];remaining-=len(kept_stdout)
+            result.stdout=kept_stdout;result.stderr=result.stderr[:remaining]
+            result.captureFailure='GLOBAL_OUTPUT_BOUND';result.operationOutcome='UNKNOWN'
+        output_bytes+=len(result.stdout)+len(result.stderr)
         prefix = output/str(sequence).zfill(3)
         # Capture every direct code and original output before checking it.
         for suffix, data in [('.stdout',result.stdout),('.stderr',result.stderr)]:
@@ -107,6 +129,14 @@ def capture(spec, output, run=None):
            and raw.get('expected') == {k:spec['expected'][k] for k in ('source','project','workingDirectory','imageId')}, 'OBSERVE_IDENTITY')
     plan = json.loads((state/'connection-budget/plan.json').read_text())
     ledger = raw['ledger']  # atomically captured under the same controller lock
+    T.need(sum(r['state'] != 'RETIRED' for rows in ledger['slots'].values() for r in rows) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
+    image_result=command(['docker','image','inspect',spec['expected']['imageId']])
+    T.need(image_result.returncode == 0, 'IMAGE_INSPECTION_FAILED')
+    images=json.loads(image_result.stdout)
+    T.need(isinstance(images,list) and len(images)==1 and images[0].get('Id') == spec['expected']['imageId'], 'IMAGE_IDENTITY')
+    labels=images[0].get('Config',{}).get('Labels',{}) or {}
+    image_source={'coreCommit':labels.get('org.opencontainers.image.revision'),'deployCommit':labels.get('org.nightscout.deploy.revision')}
+    T.need(image_source == spec['expected']['source'], 'IMAGE_SOURCE')
     processes = []
     for sid, rows in ledger['slots'].items():
         for row in rows:
@@ -126,7 +156,7 @@ def capture(spec, output, run=None):
                         'cid':value['Id'],'startedAt':status.get('StartedAt'),'running':status.get('Running'),
                         'project':labels.get('com.docker.compose.project'),'workingDirectory':labels.get('com.docker.compose.project.working_dir'),
                         'service':labels.get('com.docker.compose.service'),'imageId':value.get('Image'),
-                        'source':{'coreCommit':labels.get('org.opencontainers.image.revision'),'deployCommit':labels.get('org.nightscout.deploy.revision')}})
+                        'source':image_source})
                 # Nonzero inspection remains UNKNOWN, including missing; no
                 # parse of free-form stderr can establish physical retirement.
             processes.append(capture)
@@ -136,6 +166,7 @@ def capture(spec, output, run=None):
     value={'expected':spec['expected'],'plan':plan,'ledger':ledger,'processes':processes,'census':{'resource':raw['resource'],'tags':raw['tags']}}
     write(output/'intake.private.json',value)
     result=T.observe(**value)
+    result['collectorBudget']={'maximumHeldGenerations':MAX_HELD_GENERATIONS,'maximumCommands':MAX_COMMANDS,'maximumRawCommandBytes':TOTAL_OUTPUT_BYTES,'maximumWallSeconds':EPISODE_SECONDS,'commands':sequence,'rawCommandBytes':output_bytes}
     write(output/'result.private.json',result)
     return result
 

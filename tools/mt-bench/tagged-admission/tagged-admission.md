@@ -33,8 +33,8 @@ node "$BINDING/connection-budget-cli.js" "$STATE" observe
 node "$BINDING/connection-budget-cli.js" "$STATE" stop "$DECLARED_SLOT"
 ```
 
-`observe` is a source-owner addition under review. The existing source supports
-only bind/start/stop. Do not call `ports.observe` directly: that bypasses the
+`observe` is present in the exact deployment source pinned by the intake.
+The earlier `10014` source supports only bind/start/stop. Do not call `ports.observe` directly: that bypasses the
 controller lock and durable observer reservation. Do not substitute an uncharged
 `psql` command. The observer reports authenticated PostgreSQL connections only.
 
@@ -58,18 +58,23 @@ observations. Each episode retains its own actual source, workload and instrumen
 identity. Full/browser/clinical acceptance and final prcheck remain coordinator
 owned. No episode has run through this new instrument yet.
 
-`tagged_capture.py` is the smallest capture driver. It invokes only the reviewed
-CLI `observe` and `docker inspect` for exact ledger container IDs. It retains the
+`tagged_capture.py` is the smallest capture driver. It invokes the reviewed
+CLI `observe`, inspects the exact expected image ID and reads its source labels,
+then runs `docker inspect` for exact ledger container IDs. Every container must
+use that verified image; container-label inheritance is not assumed. It retains the
 CLI output and an atomic ledger snapshot, then checks actual container custody.
 A nonzero inspect result is `UNKNOWN`, including a missing container; its credits
-remain held. Each capture uses a new private directory, fixed 90-second command
-deadlines and a four-MiB combined command-output cap. It records direct process
+remain held. Each capture uses a new private directory, a maximum of 90 seconds and 4 MiB of output per command. One capture has at most
+128 held generations, 131 commands, 16 MiB of raw command output and 120 seconds
+of elapsed time. These are instrument limits, not product capacity limits or
+performance targets. Each command deadline uses the smaller of 90 seconds and
+the remaining episode time after reserving four seconds for exit and cleanup. It records direct process
 exit codes and refuses incomplete captures. It does not run lifecycle effects.
 The coordinator places captures before and after the controller commands above.
 Same-incarnation shutdown ACK joins and the clinical healthy-B/TIME adapters are
 separate remaining boundaries.
 
-Run a read-only capture after the reviewed observer API is frozen:
+Run a read-only capture only after the coordinator admits the exact prepared pair:
 
 ```bash
 python3 tools/mt-bench/tagged-admission/tagged_capture.py \

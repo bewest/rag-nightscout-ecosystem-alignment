@@ -11,7 +11,7 @@ import re
 
 KIND = 'm7-tagged-admission-observation-v1'
 CORE = '074eab44ee75b9175c951b6a8add3df3e9554af7'
-DEPLOY = '10014da15691c441bff151fb6cbadcdf452ff796'
+DEPLOY = '479affb738e01e8f6fe1a476da63a0260ee08f50'
 
 
 def need(value, code):

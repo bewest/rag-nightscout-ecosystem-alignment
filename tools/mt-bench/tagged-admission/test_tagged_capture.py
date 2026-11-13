@@ -26,19 +26,39 @@ class CaptureDriver(unittest.TestCase):
             calls=[]
             def run(argv):
                 calls.append(argv)
-                return subprocess.CompletedProcess(argv,0,json.dumps(raw if argv[0]=='node' else inspected).encode(),b'')
+                return subprocess.CompletedProcess(argv,0,json.dumps(raw if argv[0]=='node' else [{'Id':container['imageId'],'Config':{'Labels':labels}}] if argv[1]=='image' else inspected).encode(),b'')
             result=C.capture(spec,p/'out',run)
-            self.assertEqual(calls,[['node',str(cli),str(state),'observe'],['docker','inspect',container['cid']]])
+            self.assertEqual(calls,[['node',str(cli),str(state),'observe'],['docker','image','inspect',container['imageId']],['docker','inspect',container['cid']]])
             self.assertEqual(result['nativeAcceptance'],'UNMEASURED')
             self.assertEqual(json.loads((p/'out/001.stdout').read_bytes()),raw)
             with self.assertRaises(FileExistsError):C.capture(spec,p/'out',run)
-            self.assertEqual(len(calls),2)
+            self.assertEqual(len(calls),3)
+            def wrong_image(argv):
+                if argv[0]=='docker' and argv[1]=='image':
+                    return subprocess.CompletedProcess(argv,0,json.dumps([{'Id':container['imageId'],'Config':{'Labels':{}}}]).encode(),b'')
+                return run(argv)
+            with self.assertRaisesRegex(ValueError,'IMAGE_SOURCE'):C.capture(spec,p/'bad-image-source',wrong_image)
             def missing(argv):
-                return run(argv) if argv[0]=='node' else subprocess.CompletedProcess(argv,1,b'',b'synthetic inspect failure')
+                return run(argv) if argv[0]=='node' or argv[1]=='image' else subprocess.CompletedProcess(argv,1,b'',b'synthetic inspect failure')
             result=C.capture(spec,p/'unknown',missing)
             self.assertEqual(result['generations'][0]['inspection'],'UNKNOWN')
             self.assertEqual(result['generations'][0]['declaredMaximumHeld'],4)
             self.assertEqual(result['nativeAcceptance'],'UNMEASURED')
+            # Recording controls prove global guards act before another effect.
+            for field,value in [('MAX_COMMANDS',0),('EPISODE_SECONDS',0),('TOTAL_OUTPUT_BYTES',16)]:
+                original=getattr(C,field);setattr(C,field,value);before=len(calls)
+                try:
+                    with self.assertRaisesRegex(ValueError,'GLOBAL_CAPTURE_BUDGET|COMMAND_CAPTURE_INCOMPLETE'):
+                        C.capture(spec,p/field,run)
+                    self.assertEqual(len(calls)-before,1 if field=='TOTAL_OUTPUT_BYTES' else 0)
+                    if field=='TOTAL_OUTPUT_BYTES':
+                        self.assertLessEqual((p/field/'001.stdout').stat().st_size,16)
+                        self.assertEqual(json.loads((p/field/'001.json').read_text())['operationOutcome'],'UNKNOWN')
+                finally:setattr(C,field,original)
+            too_many=copy.deepcopy(v['ledger']);too_many['slots']['api']*=129
+            (state/'connection-budget/ledger.json').write_text(json.dumps(too_many));before=len(calls)
+            with self.assertRaisesRegex(ValueError,'EPISODE_GENERATION_BOUND'):C.capture(spec,p/'too-many',run)
+            self.assertEqual(len(calls),before)
 
 class ActualBoundedChild(unittest.TestCase):
     def test_closed_output_pipes_live_child_keeps_raw_and_unknown_outcome(self):
