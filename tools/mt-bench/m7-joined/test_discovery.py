@@ -107,6 +107,33 @@ class Discovery(unittest.TestCase):
         self.assertEqual(events,['k6']);self.assertFalse((folder/'load/.restart').exists());self.assertEqual(record.value['processes']['probe']['returncode'],7)
         self.assertIsNone(record.value['oracle']);self.assertEqual(record.value['oracleFindings']['probeCountProof'],'UNMEASURED');self.assertEqual(record.value['status'],'PARTIAL');self.assertEqual(record.value['capacityAcceptance'],'NOT_GRANTED')
 
+    def fingerprint_collection(self,kind):
+        folder,m=self.setup();m.update(project='owned',port=1234,restartRoles=['api'],generator={'tools':{'node':{'path':'node'}}})
+        a.write(folder/'deploy-before-host.json',{});a.write(folder/'tenants.private.json',[{'id':'a'},{'id':'b'}]);events=[]
+        metrics={'writes_ok':{'count':2},'writes_ok{tenant:a}':{'count':1},'writes_ok{tenant:b}':{'count':1},'writes_uncertain{tenant:a}':{'count':0},'writes_uncertain{tenant:b}':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0},'settings_fingerprint_observed':{'count':1 if kind=='mismatch' else 0},'settings_fingerprint_'+kind:{'count':1}}
+        class Process:
+            pid=12345;returncode=0
+            def poll(self):return None
+            def wait(self,timeout):return 0
+        def popen(*args,**kwargs):
+            out=folder/'load';(out/'.window').touch();a.write(out/'probe.json',{'restart':{'runtimeAcquisitionObservation':{'verdict':'PASS'}}});return Process()
+        def command(argv,**kwargs):
+            if argv[:3]==['docker','image','inspect']:return '[{"Id":"sha256:recording"}]'
+            a.write(folder/'load/k6-summary.json',{'metrics':metrics});a.write(folder/'load/fanout.json',{'probeWrites':{'byTenant':{}}});events.append('k6')
+        def stored(*args):events.append('counts');return {'a':{'entries':1},'b':{'entries':1}}
+        def reduced(*args):events.append('measurements');return {'complete':True,'scope':'recording-only'}
+        @contextlib.contextmanager
+        def ctx(*args):yield
+        with contextlib.ExitStack() as stack:
+            for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','enabled_idle','job_record','stop_job','assert_owned'):stack.enter_context(patch.object(a,name))
+            stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
+            for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
+            stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(a,'stored',side_effect=stored));stack.enter_context(patch('reduce.measurements',side_effect=reduced))
+            with self.assertRaisesRegex(RuntimeError,'M7_FUNCTIONAL_SETTINGS_FINGERPRINT'):d.run_discovery(a,folder,m,'k6')
+        value=a.document(folder/'summary.json');self.assertEqual(events,['k6','counts','measurements']);self.assertEqual(value['oracle']['verdict'],'GREEN');self.assertTrue(value['measurements']['complete']);self.assertEqual(value['settingsFingerprintObservation']['verdict'],'FAIL');self.assertEqual(value['hardFailures'][-1]['code'],'M7_FUNCTIONAL_SETTINGS_FINGERPRINT');self.assertTrue((folder/'load/stored-counts.json').is_file())
+    def test_fingerprint_invalid_retains_existing_counts_and_measurements_before_refusal(self):self.fingerprint_collection('invalid')
+    def test_fingerprint_mismatch_retains_existing_counts_and_measurements_before_refusal(self):self.fingerprint_collection('mismatch')
+
     def test_timeout_stops_only_exact_owned_k6_before_recovery(self):
         folder,m=self.setup();record=d.Record(a,folder,m);record.value['processes']['k6']={'timeout':True,'returncode':None}
         row={'Id':'1'*64,'Config':{'Labels':{a.OWNER:m['owner'],'com.docker.compose.service':'k6'}}}
