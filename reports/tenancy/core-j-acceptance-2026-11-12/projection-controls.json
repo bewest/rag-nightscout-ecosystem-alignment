@@ -1,0 +1,32 @@
+{
+  "scope": "Offline publication-metadata validation only; no application rerun",
+  "positive": "ACCEPTED_FULL_SOURCE_EXECUTION_PASS_ONLY",
+  "negativeControls": [
+    {
+      "control": "wrongSource",
+      "outcome": "REFUSED",
+      "symptom": "source identity mismatch"
+    },
+    {
+      "control": "missingSuccessfulStage",
+      "outcome": "REFUSED",
+      "symptom": "missing stage"
+    },
+    {
+      "control": "failedCorpus",
+      "outcome": "REFUSED",
+      "symptom": "corpus failed"
+    },
+    {
+      "control": "unverifiedOwnedCleanup",
+      "outcome": "REFUSED",
+      "symptom": "owned cleanup unverified"
+    },
+    {
+      "control": "capacityScopeOverclaim",
+      "outcome": "REFUSED",
+      "symptom": "scope overclaim"
+    }
+  ],
+  "restoredAfterEach": "ACCEPTED_FULL_SOURCE_EXECUTION_PASS_ONLY"
+}

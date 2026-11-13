@@ -1,0 +1,308 @@
+{
+  "recordType": "PRIMARY_CAPTURE_WHITELIST_PROJECTION",
+  "ownedMongoCleanupVerified": true,
+  "fixtureResiduals": [],
+  "fixtureVolumeResiduals": [],
+  "mongoHealth": [
+    {
+      "stage": "mongo-health-after-browser",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-core",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-dependency",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-dom",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-enabled-corpus",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-harness",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-integration",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-stress",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-after-unit",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-browser",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-core",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-dependency",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-dom",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-enabled-corpus",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-harness",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-integration",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-stress",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-before-unit",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    },
+    {
+      "stage": "mongo-health-ready",
+      "requestedNofile": 65536,
+      "configuredNofile": {
+        "Name": "nofile",
+        "Hard": 65536,
+        "Soft": 65536
+      },
+      "effectiveNofile": {
+        "soft": 65536,
+        "hard": 65536,
+        "process": "mongod"
+      }
+    }
+  ],
+  "corpusOwnedFixtures": {
+    "createdCount": 2,
+    "removed": [
+      {
+        "kind": "vault",
+        "verifiedAbsent": true,
+        "anonymousVolumeCount": 2
+      },
+      {
+        "kind": "postgres",
+        "verifiedAbsent": true,
+        "anonymousVolumeCount": 1
+      }
+    ],
+    "remaining": []
+  },
+  "independentCleanup": {
+    "checkedAt": "2026-11-13T00:55:16.267Z",
+    "controllerCleanup": "verified",
+    "watchdogCleanup": "verified",
+    "cleanup": "verified"
+  },
+  "remainingProviderResources": {
+    "droplets": 0,
+    "firewalls": 0,
+    "tags": 0
+  },
+  "temporaryKeyDeletion": {
+    "count": 2,
+    "states": [
+      "removed-exact-original",
+      "removed-exact-original"
+    ]
+  }
+}
