@@ -52,7 +52,7 @@ def generate(root, target):
     target = Path(target)
     target.write_text(source)
     helpers={}
-    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs'):
+    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs'):
         data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
         helpers[name]=hashlib.sha256(data).hexdigest()
     return {"baseline": str(baseline.relative_to(root)), "baselineSha256": hashlib.sha256(baseline.read_bytes()).hexdigest(),
