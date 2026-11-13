@@ -54,7 +54,7 @@ place to go stale.
 | a decision that shapes a release | `releases/<product>-<version>/decisions.md` | one row per decision, stated as it stands |
 | what merged, what was tested, what is left | `releases/<product>-<version>/contents.md` update tables | appending a dated table; the file is the state of record for a cycle |
 | a tenancy decision (D1–D23) | `docs/30-design/tenancy/multitenancy-decisions.md` | editing the decision; the roadmap links to it |
-| a measurement | a dated record under `docs/60-research/<horizon>/` or `reports/` | never edited after capture |
+| a measurement summary and provenance | a compact dated record under `docs/60-research/<horizon>/` or `reports/` | never edited after capture |
 
 `progress.md` is the dated journal of the **research** facets (section 1, second row). Programme
 status, merges and handoffs go in the release records, not there.
@@ -123,6 +123,13 @@ step. Use ASD-STE100-inspired plain language without claiming formal conformity.
 
 **What goes into the public repository**
 
+- Raw capacity and acceptance outputs belong in ignored `data/capacity/<run>/`,
+  `data/acceptance/<run>/`, an existing ignored run workspace, or an external evidence store.
+  This includes full logs, traces, SQL/cgroup samples, per-tenant oracles and run archives.
+  Commit concise findings, selected aggregates or figures, source/workload/command details,
+  limitations, checksums and a retained-evidence identifier. Do not force-add bulk outputs.
+  Retain captured originals unchanged outside Git. Retiring existing tracked captures requires
+  preserving their evidence and updating dependent links and gates.
 - No names, emails, identifiers or glucose traces from user data, logs or exports. Synthetic data
   only in commits. No credentials, tokens or database URLs anywhere; use the environment.
 - A defect live on the shipping release is described by **mechanism, never recipe**: no request,

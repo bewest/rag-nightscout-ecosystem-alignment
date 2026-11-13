@@ -151,7 +151,9 @@ follows the procedure piloted on 2026-09-25:
   one-line note (the definition of done's snapshot rule).
 - **A superseded record** (an earlier test run of the same candidate) leaves the reader's path. The
   living document that supersedes it carries its history row, and anything it alone measured.
-- **Retention:** git retains every record. **Proposed:** records that are evidence for a release
+- **Retention:** the [repository contract](../../AGENTS.md) separates compact Git records from
+  bulk run outputs retained unchanged in ignored storage or an external evidence store.
+  **Proposed:** records that are evidence for a release
   (the integration record, verification records, lab results) are kept retrievable for at least as
   long as that release is supported. A pushed tag per release would pin them.
 - **Health data.** Records contain synthetic data only, unless a data holder has agreed otherwise

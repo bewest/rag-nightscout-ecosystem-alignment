@@ -72,6 +72,12 @@ attached_assets/
 .copilot-session.db
 checkpoints/
 
+# Raw run data. Commit compact reports and provenance, not complete captures.
+/data/capacity/
+/data/acceptance/
+# Legacy capacity harness output; already tracked records are unaffected.
+/reports/tenancy/**/runs/
+
 # Installed dependencies. Never tracked: a manifest plus a lockfile is what
 # makes a tool reproducible, and the tree itself is noise in the diff.
 node_modules/
