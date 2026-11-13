@@ -1,0 +1,419 @@
+{
+  "version": 1,
+  "kind": "INDEPENDENT_DISCOVERY_OBSERVATIONS",
+  "capacityAcceptance": "NOT_GRANTED",
+  "matchedScalingCurve": false,
+  "derivationCommit": "c098d68d686b609c2cde7a2c1bfed7f9848b5167",
+  "pair": {
+    "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+    "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753"
+  },
+  "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+  "topology": {
+    "api": 1,
+    "realtime": 1,
+    "evaluator": 1,
+    "vault": "server"
+  },
+  "cadence": {
+    "accel": 1,
+    "hotFactor": 10,
+    "socketsPerTenant": 2,
+    "idleSeconds": 120,
+    "loadSeconds": 300
+  },
+  "missingMeaning": "null/UNMEASURED, never fabricated zero",
+  "points": [
+    {
+      "runId": "discovery-reference-20261112-a",
+      "tenants": 500,
+      "originalStatus": "PARTIAL",
+      "instrument": "ec01d588441cedb7f7a6eb4b2f711ad948612dbe00f4ef940674afa0247afcf1",
+      "host": {
+        "cpuModel": "Intel(R) Xeon(R) Platinum 8358 CPU @ 2.60GHz",
+        "logicalCores": 16
+      },
+      "processReturnCodes": {
+        "k6": 0,
+        "probe": 0
+      },
+      "strictChecks": {
+        "readiness": {
+          "verdict": "PASS",
+          "code": null,
+          "hardFailure": false
+        },
+        "idle": {
+          "verdict": "PASS",
+          "code": null,
+          "hardFailure": false
+        },
+        "load": {
+          "verdict": "PASS",
+          "code": null,
+          "hardFailure": false
+        },
+        "recovery": {
+          "verdict": "PASS",
+          "code": "RECOVERY_BASELINE_UNAVAILABLE",
+          "hardFailure": false
+        },
+        "collection": {
+          "verdict": "UNMEASURED",
+          "code": "M7_FUNCTIONAL_SETTINGS_FINGERPRINT",
+          "hardFailure": true
+        }
+      },
+      "fingerprint": {
+        "observations": 0,
+        "invalid": 510,
+        "mismatch": 0,
+        "verdict": "FAIL"
+      },
+      "counts": {
+        "originalOracle": null,
+        "storedCountQuery": "NOT_RUN",
+        "probeUncertainty": "UNKNOWN_LEGACY",
+        "admissionsClosed": null,
+        "pending": null
+      },
+      "k6": {
+        "requestsIncludingSetup": 6095,
+        "k6ReportedRatePerSecondIncludingSetup": 18.033839345217643,
+        "failureFraction": 0,
+        "failedRequests": 0,
+        "durationP95Ms": 2397.9504036000003,
+        "droppedIterations": 9,
+        "writesAccepted": 1529,
+        "writesUncertain": 0,
+        "writesRefused": null,
+        "readRefusals": null
+      },
+      "sockets": {
+        "primed": 1000,
+        "total": 1000,
+        "deliveredFrames": 232,
+        "expectedFrames": 232,
+        "stockRecovered": 538,
+        "retryRecovered": 1000,
+        "stockAllRecoveredMs": null,
+        "retryAllRecoveredMs": 10636
+      },
+      "sqlCalls": {
+        "idle": {
+          "status": "OBSERVED",
+          "callDelta": 449405,
+          "intervalSeconds": [122.68, 123.003],
+          "callsPerSecondBounds": [3653.622, 3663.21]
+        },
+        "load": {
+          "status": "OBSERVED",
+          "callDelta": 2890196,
+          "intervalSeconds": [342.956, 343.272],
+          "callsPerSecondBounds": [8419.56, 8427.297]
+        }
+      },
+      "cpu": {
+        "idle": {
+          "status": "APPROXIMATE_BOOKENDS",
+          "seconds": 122.827,
+          "meanCoreEquivalents": {
+            "api": 0.059,
+            "realtime": 0.27,
+            "evaluator": 1.123,
+            "postgres": 5.888,
+            "vault": 0.063
+          }
+        },
+        "load": {
+          "status": "APPROXIMATE_BOOKENDS",
+          "seconds": 343.126,
+          "meanCoreEquivalents": {
+            "api": 0.834,
+            "realtime": 0.358,
+            "evaluator": 0.909,
+            "postgres": 7.393,
+            "vault": 0.175
+          }
+        }
+      },
+      "cleanup": {
+        "providerRemaining": {
+          "droplets": 0,
+          "firewalls": 0,
+          "tags": 0
+        },
+        "exactTemporaryKeysRemoved": 2,
+        "controller": "verified",
+        "watchdog": "verified"
+      },
+      "sha256": {
+        "originalSummary": "b8561aec46bb4f8766caae7d45ecf98ceb99db71c31618e05644855760943551",
+        "k6Summary": "2f08395b3061be82a353e62f96b6369a53c0dee64b480a321d419613a9cb7315",
+        "hostInventory": "88fdae1afb40e183d70bbc95cdc68d4e7d69dd4d2d0076f997ca965995117d29",
+        "closedArchive": "bb26a40c3a8b2cdc8309d6c9026deaeab4b7db526306f036ddddff7a840512cd",
+        "cleanup": "ca62a15184b84b7556f3b39f86f195b92a955780864bb184e241635b721ccefa",
+        "bookendHashIndex": "023ecffae45de2d0e9cd5f98628afe3360090b4dcb7ba9a179f80b90e4a1b84b"
+      }
+    },
+    {
+      "runId": "discovery-reference-20261112-c750",
+      "tenants": 750,
+      "originalStatus": "MEASURED",
+      "instrument": "1a6b990eba18cdfa36df018b9b1000fe94d28577d09cf0e8621f3e5902ba184b",
+      "host": {
+        "cpuModel": "Intel(R) Xeon(R) Platinum 8168 CPU @ 2.70GHz",
+        "logicalCores": 16
+      },
+      "processReturnCodes": {
+        "k6": 0,
+        "probe": 0
+      },
+      "strictChecks": {
+        "readiness": {
+          "verdict": "PASS",
+          "code": null,
+          "hardFailure": false
+        },
+        "idle": {
+          "verdict": "UNMEASURED",
+          "code": "M7_EVALUATOR_IDLE_JOB_PENDING",
+          "hardFailure": false
+        },
+        "load": {
+          "verdict": "FAIL",
+          "code": "M7_EVALUATOR_PROGRESS_ERROR",
+          "hardFailure": false
+        },
+        "recovery": {
+          "verdict": "UNMEASURED",
+          "code": "RECOVERY_BASELINE_UNAVAILABLE",
+          "hardFailure": false
+        }
+      },
+      "fingerprint": {
+        "observations": 263,
+        "invalid": 0,
+        "mismatch": 0,
+        "verdict": "PASS"
+      },
+      "counts": {
+        "originalOracle": "GREEN",
+        "storedCountQuery": "OBSERVED",
+        "probeUncertainty": "RECORDED_V2",
+        "admissionsClosed": true,
+        "pending": 0
+      },
+      "k6": {
+        "requestsIncludingSetup": 8389,
+        "k6ReportedRatePerSecondIncludingSetup": 20.79843904704645,
+        "failureFraction": 0.7830492311360114,
+        "failedRequests": 6569,
+        "durationP95Ms": 30001.2729686,
+        "droppedIterations": 717,
+        "writesAccepted": 631,
+        "writesUncertain": 1472,
+        "writesRefused": null,
+        "readRefusals": null
+      },
+      "sockets": {
+        "primed": 1500,
+        "total": 1500,
+        "deliveredFrames": 134,
+        "expectedFrames": 280,
+        "stockRecovered": 383,
+        "retryRecovered": 1500,
+        "stockAllRecoveredMs": null,
+        "retryAllRecoveredMs": 46704
+      },
+      "sqlCalls": {
+        "idle": {
+          "status": "OBSERVED",
+          "callDelta": 354811,
+          "intervalSeconds": [123.877, 124.293],
+          "callsPerSecondBounds": [2854.634, 2864.198]
+        },
+        "load": {
+          "status": "OBSERVED",
+          "callDelta": 2650876,
+          "intervalSeconds": [412.16, 412.651],
+          "callsPerSecondBounds": [6424.029, 6431.665]
+        }
+      },
+      "cpu": {
+        "idle": {
+          "status": "APPROXIMATE_BOOKENDS",
+          "seconds": 124.097,
+          "meanCoreEquivalents": {
+            "api": 0.082,
+            "realtime": 0.308,
+            "evaluator": 1.252,
+            "postgres": 7.261,
+            "vault": 0.083
+          }
+        },
+        "load": {
+          "status": "APPROXIMATE_BOOKENDS",
+          "seconds": 412.397,
+          "meanCoreEquivalents": {
+            "api": 1.046,
+            "realtime": 0.404,
+            "evaluator": 0.891,
+            "postgres": 8.28,
+            "vault": 0.212
+          }
+        }
+      },
+      "cleanup": {
+        "providerRemaining": {
+          "droplets": 0,
+          "firewalls": 0,
+          "tags": 0
+        },
+        "exactTemporaryKeysRemoved": 2,
+        "controller": "verified",
+        "watchdog": "verified"
+      },
+      "sha256": {
+        "originalSummary": "29219d49202e4afc65bf034da1b95584b347fe064cfe0befcdec887e8154a1b1",
+        "k6Summary": "f9c60711afc7edd17164421b218779800b59af5f0b2d869ec1762c909d8c5211",
+        "hostInventory": "26d1e992523f49e93afe220f1ef354f56b25c75f361f2b3a0bc1c3342f8bfa55",
+        "closedArchive": "bfa071b6a6caac517ffc3f902644e4fe0480985dd4ca5c10e30c908ac418d96c",
+        "cleanup": "4af7da04f098dcc58f941b877680d91147b073df3654eb7647e198d970aa9d13",
+        "bookendHashIndex": "2781d9b1e3e0ddfa191fad1088a8e05989b68441ff8e0345250826b62dee6364"
+      }
+    },
+    {
+      "runId": "discovery-reference-20261112-b1000",
+      "tenants": 1000,
+      "originalStatus": "PARTIAL",
+      "instrument": "11343639dab11dadc02c4bf2fbedd37bf47facaf0aae0741f5ffef6591a163f2",
+      "host": {
+        "cpuModel": "Intel(R) Xeon(R) Platinum 8280 CPU @ 2.70GHz",
+        "logicalCores": 16
+      },
+      "processReturnCodes": {
+        "k6": 0,
+        "probe": 0
+      },
+      "strictChecks": {
+        "readiness": {
+          "verdict": "PASS",
+          "code": null,
+          "hardFailure": false
+        },
+        "idle": {
+          "verdict": "UNMEASURED",
+          "code": "M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED",
+          "hardFailure": false
+        },
+        "load": {
+          "verdict": "FAIL",
+          "code": "M7_EVALUATOR_PROGRESS_ERROR",
+          "hardFailure": false
+        },
+        "recovery": {
+          "verdict": "UNMEASURED",
+          "code": "RECOVERY_BASELINE_UNAVAILABLE",
+          "hardFailure": false
+        },
+        "collection": {
+          "verdict": "UNMEASURED",
+          "code": "M7_DISCOVERY_WRONG_DATA",
+          "hardFailure": true
+        }
+      },
+      "fingerprint": {
+        "observations": 216,
+        "invalid": 0,
+        "mismatch": 0,
+        "verdict": "PASS"
+      },
+      "counts": {
+        "originalOracle": null,
+        "storedCountQuery": "OBSERVED",
+        "probeUncertainty": "UNKNOWN_LEGACY",
+        "admissionsClosed": null,
+        "pending": null
+      },
+      "k6": {
+        "requestsIncludingSetup": 11184,
+        "k6ReportedRatePerSecondIncludingSetup": 26.655893008779742,
+        "failureFraction": 0.8202789699570815,
+        "failedRequests": 9174,
+        "durationP95Ms": 30001.276013749997,
+        "droppedIterations": 921,
+        "writesAccepted": 741,
+        "writesUncertain": 2057,
+        "writesRefused": null,
+        "readRefusals": null
+      },
+      "sockets": {
+        "primed": 2000,
+        "total": 2000,
+        "deliveredFrames": 122,
+        "expectedFrames": 290,
+        "stockRecovered": 194,
+        "retryRecovered": 2000,
+        "stockAllRecoveredMs": null,
+        "retryAllRecoveredMs": 69560
+      },
+      "sqlCalls": {
+        "idle": {
+          "status": "OBSERVED",
+          "callDelta": 413387,
+          "intervalSeconds": [123.374, 123.749],
+          "callsPerSecondBounds": [3340.544, 3350.661]
+        },
+        "load": {
+          "status": "OBSERVED",
+          "callDelta": 3303699,
+          "intervalSeconds": [430.174, 430.579],
+          "callsPerSecondBounds": [7672.7, 7679.91]
+        }
+      },
+      "cpu": {
+        "idle": {
+          "status": "APPROXIMATE_BOOKENDS",
+          "seconds": 123.567,
+          "meanCoreEquivalents": {
+            "api": 0.072,
+            "realtime": 0.273,
+            "evaluator": 1.376,
+            "postgres": 7.434,
+            "vault": 0.073
+          }
+        },
+        "load": {
+          "status": "APPROXIMATE_BOOKENDS",
+          "seconds": 430.369,
+          "meanCoreEquivalents": {
+            "api": 1.126,
+            "realtime": 0.444,
+            "evaluator": 0.937,
+            "postgres": 7.937,
+            "vault": 0.207
+          }
+        }
+      },
+      "cleanup": {
+        "providerRemaining": {
+          "droplets": 0,
+          "firewalls": 0,
+          "tags": 0
+        },
+        "exactTemporaryKeysRemoved": 2,
+        "controller": "verified",
+        "watchdog": "verified"
+      },
+      "sha256": {
+        "originalSummary": "ae14e8d86ff747ec618353e12901e38eb8c0a287fb22effa9b34a1618f0c0ac4",
+        "k6Summary": "d797c1181d17074150e578026c17fe08e54b0c0920e06b31622b1c5b04c00413",
+        "hostInventory": "8ab87a22f8d74482e7f01cbed1fb0ec2b880c5394eb615ea6f25f75766fefa72",
+        "closedArchive": "38afcf004e8a8b647a5416b2d517a38cb9f6078eabf2b0c15ab9fdf7fe197064",
+        "cleanup": "9059948cfca10f3e5ced88ef8e501befe0b27c496a523f244d7640b2a0a50566",
+        "bookendHashIndex": "b544045914e14fc4ad65a43d8a287fddcaf0350c55d6397e4f43b17f1855201f"
+      }
+    }
+  ]
+}
