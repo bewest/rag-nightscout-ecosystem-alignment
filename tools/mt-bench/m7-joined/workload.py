@@ -16,8 +16,11 @@ def generate(root, target):
     old_get="""  return http.get(BASE + path + q(path.includes('?')) + 'token=' + t.token,
     { headers: { Host: t.host }, tags: { name }, timeout: '30s' });"""
     require(source.count(old_get)==1,'M7_WORKLOAD_GET_ANCHOR_CHANGED')
+    signature='function get (t, path, name) {'
+    require(source.count(signature)==1,'M7_WORKLOAD_GET_SIGNATURE_CHANGED')
+    source=source.replace(signature,'function get (t, path, name, responseType) {')
     source=source.replace(old_get,"""  const response = http.get(BASE + path + q(path.includes('?')) + 'token=' + t.token,
-    { headers: { Host: t.host }, tags: { name }, timeout: '30s' });
+    { headers: { Host: t.host }, tags: { name }, timeout: '30s', ...(responseType === undefined ? {} : {responseType}) });
   if (response.status >= 400 && response.status < 500) responsesRefused.add(1);
   return response;""")
     helper=(Path(__file__).parent/'fingerprint.cjs').read_text()
@@ -28,7 +31,7 @@ def generate(root, target):
     old="export function r_status () { const { t } = pick(); get(t, '/api/v1/status.json', 'GET v1 status'); }"
     require(source.count(old)==1,'M7_WORKLOAD_STATUS_ANCHOR_CHANGED')
     source=source.replace(old,"""export function r_status () {
-      const { t } = pick(); const response = get(t, '/api/v1/status.json', 'GET v1 status');
+      const { t } = pick(); const response = get(t, '/api/v1/status.json', 'GET v1 status', 'text');
       if (response.status !== 200) return;
       try {
         if (typeof response.body !== 'string' || response.body.length > 131072 || !/^[a-f0-9]{64}$/.test(__ENV.SETTINGS_FINGERPRINT || '')) throw Error('invalid');
@@ -40,4 +43,4 @@ def generate(root, target):
     target=Path(target);target.parent.mkdir(parents=True,exist_ok=True);target.write_text(source)
     return {'baseline':'tools/mt-bench/capacity/k6/workload.js','baselineSha256':hashlib.sha256(baseline.read_bytes()).hexdigest(),
             'adaptedSha256':hashlib.sha256(target.read_bytes()).hexdigest(),
-            'changes':['current nominal arrival timestamps with deterministic uniqueness','explicit read 4xx counter blocks functional advancement','existing status response fixed whitelist fingerprint; no extra request']}
+            'changes':['current nominal arrival timestamps with deterministic uniqueness','explicit read 4xx counter blocks functional advancement','existing status GET retains text body for fixed whitelist fingerprint under global discard; no extra request']}
