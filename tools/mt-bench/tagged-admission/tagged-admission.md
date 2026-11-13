@@ -83,7 +83,10 @@ python3 tools/mt-bench/tagged-admission/tagged_capture.py \
 
 The owner-readable-only JSON spec contains `kind` equal to
 `m7-tagged-admission-observation-v1`, absolute `controllerCli` and `state` paths,
-the reviewed `controllerCliSha256`, and `expected`. The expected object contains
+the reviewed `controllerCliSha256`, an independently pinned `collectorSha256`,
+and `expected`. The collector fingerprint covers these five source, test and
+contract files; it is recorded separately and must remain unchanged through
+the capture. It does not enter the legacy instrument fingerprint. The expected object contains
 that same kind, the independently checked source pair, immutable image ID,
 project, working directory and plan hash. It must come from the qualified
 prepared image and private plan, rather than copying whatever a new observation

@@ -21,6 +21,14 @@ EPISODE_SECONDS = 120
 CLEANUP_RESERVE_SECONDS = 4
 
 
+def instrument_identity():
+    directory=Path(T.__file__).resolve().parent
+    names=('tagged_admission.py','tagged_capture.py','test_tagged_admission.py','test_tagged_capture.py','tagged-admission.md')
+    files={name:hashlib.sha256((directory/name).read_bytes()).hexdigest() for name in names}
+    value={'kind':T.KIND,'files':files}
+    return {**value,'sha256':hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
+
+
 def write(path, value):
     with open(path, 'x', opener=lambda p, f: os.open(p, f, 0o600)) as output:
         json.dump(value, output, indent=2)
@@ -76,6 +84,8 @@ def bounded_execute(argv, environment, *, deadline_seconds=90, exit_wait_seconds
 
 def capture(spec, output, run=None):
     T.need(spec.get('kind') == T.KIND, 'EXPLICIT_INSTRUMENT_REQUIRED')
+    collector=instrument_identity()
+    T.need(spec.get('collectorSha256') == collector['sha256'], 'COLLECTOR_IDENTITY')
     cli, state = Path(spec['controllerCli']), Path(spec['state'])
     T.need(cli.is_absolute() and state.is_absolute() and not cli.is_symlink(), 'CAPTURE_PATH')
     T.need(hashlib.sha256(cli.read_bytes()).hexdigest() == spec['controllerCliSha256'], 'CONTROLLER_BYTES')
@@ -87,6 +97,7 @@ def capture(spec, output, run=None):
     output = Path(output)
     output.mkdir(mode=0o700)  # no overwrite/retry of an episode
     write(output/'capture-spec.private.json',spec)
+    write(output/'collector-identity.json',collector)
     write(output/'capture-once.json', {'startedMonotonicNs':time.monotonic_ns(), 'kind':T.KIND})
     environment = {key:os.environ[key] for key in ('PATH','HOME','USER','LANG') if key in os.environ}
     episode_deadline=time.monotonic()+EPISODE_SECONDS
@@ -165,7 +176,9 @@ def capture(spec, output, run=None):
            or (not ledger_file.exists() and not processes), 'LEDGER_CHANGED_DURING_INSPECTION')
     value={'expected':spec['expected'],'plan':plan,'ledger':ledger,'processes':processes,'census':{'resource':raw['resource'],'tags':raw['tags']}}
     write(output/'intake.private.json',value)
+    T.need(instrument_identity() == collector, 'COLLECTOR_CHANGED')
     result=T.observe(**value)
+    result['collector']=collector
     result['collectorBudget']={'maximumHeldGenerations':MAX_HELD_GENERATIONS,'maximumCommands':MAX_COMMANDS,'maximumRawCommandBytes':TOTAL_OUTPUT_BYTES,'maximumWallSeconds':EPISODE_SECONDS,'commands':sequence,'rawCommandBytes':output_bytes}
     write(output/'result.private.json',result)
     return result

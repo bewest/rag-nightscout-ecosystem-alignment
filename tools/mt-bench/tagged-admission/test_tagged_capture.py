@@ -22,7 +22,10 @@ class CaptureDriver(unittest.TestCase):
             container=v['processes'][0]['container'];labels={'com.docker.compose.project':container['project'],'com.docker.compose.project.working_dir':container['workingDirectory'],
                  'com.docker.compose.service':'api','org.opencontainers.image.revision':T.CORE,'org.nightscout.deploy.revision':T.DEPLOY}
             inspected=[{'Id':container['cid'],'Image':container['imageId'],'State':{'Running':True,'StartedAt':container['startedAt']},'Config':{'Labels':labels}}]
-            spec={'kind':T.KIND,'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state),'expected':v['expected']}
+            spec={'kind':T.KIND,'collectorSha256':C.instrument_identity()['sha256'],'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state),'expected':v['expected']}
+            bad_spec={**spec,'collectorSha256':'9'*64}
+            with self.assertRaisesRegex(ValueError,'COLLECTOR_IDENTITY'):
+                C.capture(bad_spec,p/'bad-collector',lambda argv: self.fail('collector mismatch reached effect'))
             calls=[]
             def run(argv):
                 calls.append(argv)
@@ -76,7 +79,7 @@ class ActualBoundedChild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             p=Path(directory);cli=p/'cli.js';cli.write_text('// synthetic pinned child\n')
             state=p/'state';state.mkdir();marker=state/'observer-claim.json';marker.write_text('UNCERTAIN')
-            spec={'kind':T.KIND,'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state)}
+            spec={'kind':T.KIND,'collectorSha256':C.instrument_identity()['sha256'],'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state)}
             def run(argv):
                 return C.bounded_execute([sys.executable,'-c',"import os,time;os.write(1,b'original-out');os.write(2,b'original-err');os.close(1);os.close(2);time.sleep(60)"],{},deadline_seconds=1,exit_wait_seconds=.1)
             with self.assertRaisesRegex(ValueError,'COMMAND_CAPTURE_INCOMPLETE'):C.capture(spec,p/'failed',run)
