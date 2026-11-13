@@ -1,0 +1,343 @@
+{
+  "schemaVersion": 1,
+  "recordDate": "2026-11-13",
+  "kind": "UNSELECTED_500_OFF_ON_IDLE_DISCOVERY",
+  "measurementBasis": "reproduced remote observations; bounded public derivative of unchanged private capture",
+  "status": "PARTIAL",
+  "controllerOutcome": "completed",
+  "controllerReturnCode": 0,
+  "sourceAcceptance": "NOT_CLAIMED",
+  "capacityAcceptance": "NOT_GRANTED",
+  "source": {
+    "coreCommit": "4f09765b767dd02da6791a0f77356383ddcea9a7",
+    "deploymentCommit": "fd7ee57f231eb1a390f1f8397c30507fae66ccb2",
+    "externalBindingTree": "c3c4947156872e8d24243b30682607638d0c8ff7",
+    "externalOverlayApplied": true,
+    "transportCommit": "d806f108828275cea64eca256ca7a84f4969c8c6",
+    "toolchain": {
+      "node": "v24.22.1",
+      "nodeBinarySha256": "569128f3066ac7be59b10b9a0adef708def642ee37cbf9d560a9bdb68f872108",
+      "npm": "11.19.1",
+      "npmPackageSha256": "f6478d5600180a23f73e4217610c7709a71cedb4ae13f6c3e15ecb457f5d4fd6",
+      "files": 1108,
+      "sourceManifestSha256": "1e548f389196f07208bd2401b9aaf46784aa01179bf7b8380ce25a1c4d45dd10"
+    },
+    "singleBuiltImageSha256": "sha256:06a9a3e9e0fd1c0fb0bdce40542bd2d67c3772cd9e67bb23cfe0a46144a6bbeb"
+  },
+  "protocol": {
+    "tenants": 500,
+    "seedMetadata": 42,
+    "order": [
+      "OFF",
+      "ON"
+    ],
+    "windowsPerArm": 2,
+    "scheduledIdleSecondsPerWindow": 120,
+    "inspection": "UNSELECTED_FULL_ROSTER_NO_SELECTED_BATCHING",
+    "ordinaryClientLoadScheduled": false,
+    "ordinarySqlLogging": "OFF",
+    "sweepMs": {
+      "OFF": null,
+      "ON": 30000
+    },
+    "commonHeartbeatTimeoutMs": 120000,
+    "heartbeatShippingDefaultMs": 5000,
+    "lostHintFault": "NOT_INJECTED",
+    "sameHostImageCohortAndNonSweepConfigCustodyVerified": true,
+    "workDemandAndClinicalAgeEquivalence": "UNMEASURED",
+    "environment": "one colocated 16-vCPU/32-GiB CPU-optimized VM, PostgreSQL16.15 and Vault server",
+    "selectedConnectionBudgetProfile": false,
+    "subsequentSettingsOptimizationIncluded": false
+  },
+  "arms": {
+    "OFF": {
+      "windows": [
+        {
+          "index": 1,
+          "completedWork": {
+            "completedAcquisitions": 0,
+            "completedTimeCycles": 4,
+            "failedCompletions": 0
+          },
+          "databaseSessionBirths": {
+            "delta": "13867",
+            "observedRatePerSecondLower": "112.8988771498490983158335387",
+            "observedRatePerSecondUpper": "113.4714857484151297822558119"
+          },
+          "readyAtBothBookends": 500,
+          "admittedAtBothBookends": 500,
+          "evaluationAlertsAtBothBookends": 0,
+          "confirmationAgeMaximumMs": 31149,
+          "timeTargetsDueByAfterRequestStart": 4,
+          "targetsWithoutObservedCompletion": 0,
+          "maximumOverdueMs": 0,
+          "naturalFeedCounterDeltas": {
+            "pages": 7,
+            "checks": 1792,
+            "hints": 0,
+            "refused": 0,
+            "reconnects": 0,
+            "sweeps": 4,
+            "rotated": 1792
+          },
+          "freshnessMeaning": "BOOKENDS_ONLY_NO_COMPLETE_DEMAND_PROOF"
+        },
+        {
+          "index": 2,
+          "completedWork": {
+            "completedAcquisitions": 0,
+            "completedTimeCycles": 163,
+            "failedCompletions": 0
+          },
+          "databaseSessionBirths": {
+            "delta": "13756",
+            "observedRatePerSecondLower": "112.0306277879626772109013540",
+            "observedRatePerSecondUpper": "112.6031193847239515978974196"
+          },
+          "readyAtBothBookends": 500,
+          "admittedAtBothBookends": 500,
+          "evaluationAlertsAtBothBookends": 0,
+          "confirmationAgeMaximumMs": 30820,
+          "timeTargetsDueByAfterRequestStart": 163,
+          "targetsWithoutObservedCompletion": 0,
+          "maximumOverdueMs": 0,
+          "naturalFeedCounterDeltas": {
+            "pages": 9,
+            "checks": 2048,
+            "hints": 0,
+            "refused": 0,
+            "reconnects": 0,
+            "sweeps": 4,
+            "rotated": 2304
+          },
+          "freshnessMeaning": "BOOKENDS_ONLY_NO_COMPLETE_DEMAND_PROOF"
+        }
+      ],
+      "weightedCpuCores": {
+        "postgres": {
+          "lower": 4.384047543388975,
+          "upper": 4.393993483985622
+        },
+        "realtime": {
+          "lower": 0.2661608584593446,
+          "upper": 0.26676060638126015
+        },
+        "evaluator": {
+          "lower": 0.7966487054157018,
+          "upper": 0.7983430225618151
+        },
+        "api": {
+          "lower": 0.07553884806586528,
+          "upper": 0.07570153790553112
+        }
+      },
+      "freshWrite": {
+        "status": "OBSERVED",
+        "writeCorrelation": "EXACT_GET_SERVER_STAMP_COVERED_BY_PUBLISHED_INPUT",
+        "postToAckMs": 166.222022,
+        "postToExactGetMs": 301.862579,
+        "ackToExactGetMs": 135.640557,
+        "milestoneUpperSeconds": 10.395312085,
+        "rightCensored": false,
+        "sampleCount": 1,
+        "lostHintScenario": "NOT_INJECTED"
+      },
+      "sqlDiagnostic": {
+        "status": "UNMEASURED",
+        "scope": "SEPARATE_LOGGED_DIAGNOSTIC_NOT_ORDINARY_CPU",
+        "secondsCap": 5,
+        "bytesCap": 134217728,
+        "assignment": "UNASSIGNED_UNTIL_COMPLETE_VALIDATED_ACQUISITION",
+        "reason": "IDLE_DIAGNOSTIC_LOGGER_NOT_READY"
+      },
+      "sqlRateStatus": "UNMEASURED",
+      "latencyPercentiles": "UNMEASURED_ONE_SAMPLE_PER_ARM",
+      "completedTimeCyclesTotal": 167,
+      "failedCompletionsTotal": 0
+    },
+    "ON": {
+      "windows": [
+        {
+          "index": 1,
+          "completedWork": {
+            "completedAcquisitions": 0,
+            "completedTimeCycles": 0,
+            "failedCompletions": 0
+          },
+          "databaseSessionBirths": {
+            "delta": "14140",
+            "observedRatePerSecondLower": "114.4869087034866696581733180",
+            "observedRatePerSecondUpper": "115.0363564315753947210840866"
+          },
+          "readyAtBothBookends": 500,
+          "admittedAtBothBookends": 500,
+          "evaluationAlertsAtBothBookends": 0,
+          "confirmationAgeMaximumMs": 30269,
+          "timeTargetsDueByAfterRequestStart": 0,
+          "targetsWithoutObservedCompletion": 0,
+          "maximumOverdueMs": 0,
+          "naturalFeedCounterDeltas": {
+            "pages": 11,
+            "checks": 2083,
+            "hints": 0,
+            "refused": 0,
+            "reconnects": 0,
+            "sweeps": 4,
+            "rotated": 2050
+          },
+          "freshnessMeaning": "BOOKENDS_ONLY_NO_COMPLETE_DEMAND_PROOF"
+        },
+        {
+          "index": 2,
+          "completedWork": {
+            "completedAcquisitions": 0,
+            "completedTimeCycles": 171,
+            "failedCompletions": 0
+          },
+          "databaseSessionBirths": {
+            "delta": "13514",
+            "observedRatePerSecondLower": "110.1974772842927562748703067",
+            "observedRatePerSecondUpper": "110.6715745333049745883243692"
+          },
+          "readyAtBothBookends": 500,
+          "admittedAtBothBookends": 500,
+          "evaluationAlertsAtBothBookends": 0,
+          "confirmationAgeMaximumMs": 31133,
+          "timeTargetsDueByAfterRequestStart": 172,
+          "targetsWithoutObservedCompletion": 1,
+          "maximumOverdueMs": 157,
+          "naturalFeedCounterDeltas": {
+            "pages": 25,
+            "checks": 2233,
+            "hints": 0,
+            "refused": 0,
+            "reconnects": 0,
+            "sweeps": 5,
+            "rotated": 2050
+          },
+          "freshnessMeaning": "BOOKENDS_ONLY_NO_COMPLETE_DEMAND_PROOF"
+        }
+      ],
+      "weightedCpuCores": {
+        "postgres": {
+          "lower": 3.898416324518847,
+          "upper": 3.9075849349154104
+        },
+        "realtime": {
+          "lower": 0.1045924611297689,
+          "upper": 0.10480330100638567
+        },
+        "evaluator": {
+          "lower": 0.7825277175446205,
+          "upper": 0.7841917053485996
+        },
+        "api": {
+          "lower": 0.07654091976768308,
+          "upper": 0.07669723203103554
+        }
+      },
+      "freshWrite": {
+        "status": "OBSERVED",
+        "writeCorrelation": "EXACT_GET_SERVER_STAMP_COVERED_BY_PUBLISHED_INPUT",
+        "postToAckMs": 160.816526,
+        "postToExactGetMs": 290.936363,
+        "ackToExactGetMs": 130.119837,
+        "milestoneUpperSeconds": 4.192762829000003,
+        "rightCensored": false,
+        "sampleCount": 1,
+        "lostHintScenario": "NOT_INJECTED"
+      },
+      "sqlDiagnostic": {
+        "status": "UNMEASURED",
+        "scope": "SEPARATE_LOGGED_DIAGNOSTIC_NOT_ORDINARY_CPU",
+        "secondsCap": 5,
+        "bytesCap": 134217728,
+        "assignment": "UNASSIGNED_UNTIL_COMPLETE_VALIDATED_ACQUISITION",
+        "reason": "IDLE_DIAGNOSTIC_LOGGER_NOT_READY"
+      },
+      "sqlRateStatus": "UNMEASURED",
+      "latencyPercentiles": "UNMEASURED_ONE_SAMPLE_PER_ARM",
+      "completedTimeCyclesTotal": 171,
+      "failedCompletionsTotal": 0
+    }
+  },
+  "cpuMeaning": "whole-container mean logical cores, weighted across both same-incarnation counter/request-bracket windows; includes sparse observer overhead, not SQL-family CPU",
+  "evidenceSha256": {
+    "OFF/idle1/before.json": "9c9dc5fddcf3e58937e91a6ebc5c89e64f5797630f9bc7a72a39102345600f10",
+    "OFF/idle1/after.json": "eef9316552164d0913447a641764bba895bf8143febadcc46ecbda4dec267f1f",
+    "OFF/idle1/observation.json": "6eadcac908bf0de14d0ba6e48f5213f0f58a4d37f99566c2aff14afeb16f6e2e",
+    "OFF/idle2/before.json": "61e59e467c563be6341bc15818d0eae9fc47744c33ae677a69f962bb865abf37",
+    "OFF/idle2/after.json": "782f569b2f3b77877fc6a4746fc97767927d90b8331dbfd8f47e26432ae5f05b",
+    "OFF/idle2/observation.json": "528f70ebf3a63425c5d3654cdfdfade23c757b7112884740094c5e95ab9b19a6",
+    "ON/idle1/before.json": "4f45b2868e2650a186d83c67f5e330c489f905bf0a2c125a7313b435cebe8ff8",
+    "ON/idle1/after.json": "d6a96ec25f92efbe9aabe73ac39e2701aeb233a5ee12a8c6b770be9b917e826c",
+    "ON/idle1/observation.json": "26939e2491951467b1798ba01a7f45eb1a3f8f85a3f13c89ac309f3120db65be",
+    "ON/idle2/before.json": "72df596f00c5c9268c9339fdfcf338f373801281a27bd95d706f8b36a2f2e1a4",
+    "ON/idle2/after.json": "18056bcb64dd4941dd70738a4c3feeb5ed7ebfa1634871f52eb121fc638fceac",
+    "ON/idle2/observation.json": "c6c12ac71f8ff1713dfcf41230f45d6c8a3e2ad93d17a97a0bbd080c9463f988",
+    "archive": "e78cf931602675ce07f43a345d8bb07ad8acc726c60264270c1bc4fac09ec154",
+    "workerLedger": "2de2535e6ee1a8bbd7f4b89699d9089bf2e6188776ac51f7810ba0ca346d1f88",
+    "sourcePackProof": "8858526438aafa230d909b94bcbbca62ab90cca6049eb350cb19dac01ecb57eb",
+    "spec": "8a7671d2d9cb8ebb867eaa51f7f2c04047b9c912f66c1aa440a45da93bd3f2a1",
+    "directControllerReceipt": "5ef17add22075c32d1f675080936c1c196a8e5c70599b1ccc7977607fbaefc4d",
+    "controllerLog": "af3caabb34fff1481053cdc7c3e9f9643af7d894527ab85c7982281d7718d948",
+    "controllerResult": "07d332df47e10d60390d99afef4d63bdf0cbf6b49689993595a6908ffca40246",
+    "watchdogResult": "a7d36cd845679c33c4659b9dc5eb85bdb9f284beceb763aa071755dd2a2d35df",
+    "independentCleanup": "247247a348f1ce94cacdb6da7a468c49f73a6580d5a1c9a385e06623052fed49",
+    "accountPreflight": "5cff8f88ee9b45b7bf96ab5bbce2d996c9dbda07fd4c439d1d19516d71886512",
+    "accountPostflight": "ae471bc7b4339f426c97bec7b17b16f524d95e291955d38d35dbac319499c446",
+    "assessment": "1a2a92e82ea110e7fd91f8e170e657d1135a155a8ac8f0f270bb6ca4acd01e62",
+    "parentRemeasurement": "c0b6b00c67e5a06ff40c94544baf1e61f03cbfd788a4512372d225f3527e6004",
+    "rootClosureReview": "60895165b203449a18fc7ab6fdce1384b1b4a230240b76e221d4642fd58cc781"
+  },
+  "cleanup": {
+    "independentZeroOwnedResources": true,
+    "originalKeysRemoved": 2,
+    "accountIdentityCategoriesUnchanged": 12,
+    "controllerReturnCode": 0,
+    "watchdogCleanup": "verified",
+    "watchdogProcessReturnCode": "UNMEASURED_NOT_INFERRED_FROM_CLEANUP"
+  },
+  "costEstimate": {
+    "controllerElapsedSeconds": 1829.68315867,
+    "computeAtCapturedPriceUSD": 0.2541226609263889,
+    "meaning": "planning price times controller-through-watchdog interval; not an invoice",
+    "hourlyPlanningPriceUSD": 0.5
+  },
+  "limits": [
+    "Fixed OFF then ON with two windows per arm; order, seed-age and demanded-work equivalence unmeasured.",
+    "Shipping primer writes one synthetic reading per tenant plus authorization/ownership/session state. historyHours24 and hotFactor10 metadata do not prove a 24-hour workload.",
+    "No ordinary HTTP/socket capacity workload or tenant-capacity/clinical/production acceptance.",
+    "Zero alerts at sampled bookends does not prove continuous freshness or every TIME deadline.",
+    "One ON due target was157ms past after-read request start without an observed completion; no complete TIME-demand proof.",
+    "DB-wide session-counter births include observer/control/health and have unmeasured stats propagation lag; they are not statement QPS or service-level churn.",
+    "SQL logger refused output path before log stream opened; SQL query rates/family/service attribution are UNMEASURED, not zero.",
+    "One write sample per arm supports exact view and published-input milestones; no clinical payload/delivery assertion, latency distribution or causal latency improvement.",
+    "Natural feed hints/heartbeat only; no healthy-lost-hint, listener-reconnect or500-selected-count proof.",
+    "Descriptive CPU changes are not an efficiency, causal speedup or capacity acceptance.",
+    "No live source patch, retry, extension, queue promotion or programme contents edit for this record."
+  ],
+  "descriptiveCpuReductionPercentBounds": {
+    "postgres": {
+      "lower": 10.86809857233546,
+      "upper": 11.278513754582454
+    },
+    "realtime": {
+      "lower": 60.62407462425805,
+      "upper": 60.791639159687975
+    },
+    "evaluator": {
+      "lower": 1.5636754296364463,
+      "upper": 1.9810162511904594
+    },
+    "api": {
+      "lower": -1.5334943473856333,
+      "upper": -1.108804240145611
+    }
+  },
+  "archive": {
+    "bytes": 13103539,
+    "members": 1321,
+    "sha256": "e78cf931602675ce07f43a345d8bb07ad8acc726c60264270c1bc4fac09ec154"
+  }
+}
