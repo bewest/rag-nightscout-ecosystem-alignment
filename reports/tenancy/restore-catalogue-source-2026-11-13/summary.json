@@ -1,0 +1,89 @@
+{
+  "kind": "restore-catalogue-bounded-source-review",
+  "source": "85225269767482498427191d121e5b8b06d6c72b",
+  "sourceStatus": "fixed-on-branch",
+  "reviewVerdict": "APPROVED_BOUNDED_SOURCE_CATALOGUE",
+  "applicationDevMerged": false,
+  "released": false,
+  "ownerAffected": {
+    "passing": 329,
+    "pending": 64
+  },
+  "independentFocused": {
+    "passing": 81,
+    "exit": 0,
+    "initialSandboxFailurePreserved": true
+  },
+  "semanticMutants": 9,
+  "originalAdjacentCases": 7,
+  "native": {
+    "version": "16.15",
+    "sourceHashesMatched": true,
+    "snapshots": [
+      {
+        "case": "lower",
+        "admitted": true
+      },
+      {
+        "case": "lifetime",
+        "admitted": true
+      },
+      {
+        "case": "maintenance",
+        "admitted": true
+      },
+      {
+        "case": "grouping-mutant",
+        "admitted": false
+      },
+      {
+        "case": "grouping-restored",
+        "admitted": true
+      },
+      {
+        "case": "literal-mutant",
+        "admitted": false
+      },
+      {
+        "case": "literal-restored",
+        "admitted": true
+      },
+      {
+        "case": "clearance-rls-mutant",
+        "admitted": false
+      },
+      {
+        "case": "clearance-rls-restored",
+        "admitted": true
+      }
+    ],
+    "execs": 22,
+    "elapsedMs": 3801,
+    "bytes": 214733,
+    "cleanupIndependentlyVerified": true,
+    "receiptSha256": "8ddaf77f8d573e5f9bf6f81ba0575daf4ebbe9d564aebff182f808e05f70f035",
+    "limits": [
+      "native-owner-and-grant-drift-on-both-tables-UNMEASURED",
+      "not-clinical-or-selected-runtime-acceptance",
+      "not-full-campaign"
+    ]
+  },
+  "evidenceCustody": {
+    "firstTwoFixtureFailuresPreserved": true,
+    "originalOwner3a6ControlsOverwritten": "SUPERSEDED_EVIDENCE_LOST_NOT_RECONSTRUCTED",
+    "oldAnyMutationGap": "VACUOUS_ORIGINAL_PRESERVED_CHECKED_INSTRUMENT_SEPARATE",
+    "thirdRunnerExclusiveOutputGuard": false,
+    "futureGuard": "SOURCE_CONTROL_ONLY_NOT_RETROACTIVE"
+  },
+  "selectedArtifactSha256": {
+    "owner-final-proof": "38f490924d8fc1ba7f4e1426a0c6dc94356ff3318af1943384b02e47390724c7",
+    "owner-affected": "47830840163526eab8759bcb66cf4d398b8a250dbd2c2c5c535b7e46feffb2b1",
+    "immutable-native-replay": "1ca8c370ebafde88658e16a561f14cd4bfba345731f19e0a13cdb36bead8ea01",
+    "independent-processes": "650d7d414528e580e763af5b4c31c8ffc1d280b6d8e78f885dcd26ad532e78fd",
+    "independent-authorized-processes": "a776ec897b80c90d21cb3a943f70f95959f54ebbb105acfeeed9bbb986503709",
+    "independent-focused": "888b5fce69f104c2175baad18c283608805713773711d01638b97d3259e7b157",
+    "independent-source-match": "9b87f30f3d7141903ecd58645652fb0c41b349d920f30be5451f04dde121a01f",
+    "actual-native-receipt": "8ddaf77f8d573e5f9bf6f81ba0575daf4ebbe9d564aebff182f808e05f70f035",
+    "root-native-review": "6dd8f56204ce5ec9dc813d41c45a0806fe250a03b0e0963e5df7a8231955e8d4"
+  }
+}
