@@ -1,0 +1,47 @@
+{
+  "kind": "lifecycle-operator-bounded-source-review",
+  "companion": "f098dcc368a80fd0fdeb25c72316523a5c6dd955",
+  "archiveCore": "b06106eb8748e975cbe651f6ab51a2b664bd34a1",
+  "verdict": "APPROVED_BOUNDED_SOURCE_ACCOUNTING",
+  "owner": {
+    "companionPassing": 49,
+    "coreAffectedPassing": 64,
+    "processes": 13
+  },
+  "independent": {
+    "passing": 35,
+    "processes": 5,
+    "oidControls": [
+      {
+        "case": "role-oid",
+        "returnCode": 1
+      },
+      {
+        "case": "database-oid",
+        "returnCode": 1
+      },
+      {
+        "case": "restored",
+        "returnCode": 0
+      }
+    ]
+  },
+  "selectedSourceLiteral": "d0036890d0623ae79f14bfa71e7226c0fa122a29",
+  "sourcePinsChanged": false,
+  "runtimeEffectsExecuted": false,
+  "limits": [
+    "native-three-command-effects-UNMEASURED",
+    "native-RLS-authority-audit-B-continuity-UNMEASURED",
+    "actual-interrupted-restore-fixture-not-yet-authored",
+    "controlRecovery1-UNKNOWN-lease-blocks-next-operator",
+    "collector-active-control-native-interop-separate",
+    "not-full-campaign-or-capacity-acceptance"
+  ],
+  "selectedArtifactSha256": {
+    "owner-receipt": "cd32fcfa81f8d686f2b3b757cda864a319f7a82d4dc4c79ebe7ab053abd1198f",
+    "owner-summary": "e7e33fe6c8c65858aa78c177e6ae84c2534aa8be75f00e7b5e7d86592feae791",
+    "independent-review": "989cbd2751ba994678ed7680acbb5523234037da9f5183d5334284c2ed7afea0",
+    "independent-processes": "17e60abdfbaa248a171da888de387efac505d77fe961289565928f8c7c21e4bd",
+    "independent-oid-controls": "0cdae44b5191b549e0f06a9cffb787bda4a7e807f789b3470282343a4e1d5abf"
+  }
+}
