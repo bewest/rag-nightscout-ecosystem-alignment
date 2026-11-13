@@ -112,8 +112,8 @@ def discovery_load(a,d,m,k6_id,record):
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
-            process=a.subprocess.Popen([m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--per','2','--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery','3000','--restart','1','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT)
-            a.job_record(out/'probe-job.json',process,m['owner']);deadline=a.time.monotonic()+600
+            process=a.subprocess.Popen([m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--per','2','--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery','3000','--restart','1','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            a.job_record(out/'probe-job.json',process,m['owner'],group=True);deadline=a.time.monotonic()+600
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
             primed=(out/'.window').is_file()
             if (out/'probe.json').is_file():

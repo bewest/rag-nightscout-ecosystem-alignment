@@ -75,7 +75,8 @@ class Discovery(unittest.TestCase):
             pid=12345;returncode=0
             def poll(self):return None
             def wait(self,timeout):events.append('wait');return 0
-        def popen(*args,**kwargs):(folder/'load/.window').touch();return Process()
+        def popen(*args,**kwargs):
+            self.assertIs(kwargs['start_new_session'],True);(folder/'load/.window').touch();return Process()
         @contextlib.contextmanager
         def ctx(*args):yield
         def observed(*args):events.append('load');raise p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
