@@ -1790,6 +1790,8 @@
       
         
       
+        
+      
     
     
     
@@ -2414,7 +2416,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-11 at <code>558f3a3d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-12 at <code>9ab7c284a</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2837,7 +2839,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <tr>
 <td style="text-align: right;">1</td>
 <td><code>MT-AUTHZ-COST</code></td>
-<td>api authorization cost: profile, cache verified credentials, one permission quer</td>
+<td>API authorization cost: permission snapshot, batched audit, bounded lifetime ses</td>
 <td><code>in-progress</code></td>
 <td>&mdash;</td>
 </tr>
@@ -3048,7 +3050,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">2</td>
 <td><code>DEPLOY-VAULT-AGENT</code></td>
 <td>M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-progress</code></td>
 <td><code>MT-VAULT-TOKEN-FILE</code></td>
 </tr>
 <tr>
@@ -3090,14 +3092,14 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">2</td>
 <td><code>MT-REALTIME-SHARDING</code></td>
 <td>M7: realtime tenant sharding, controlled ownership moves and recovery</td>
-<td><code>not-started</code></td>
+<td><code>in-progress</code></td>
 <td><code>MT-ENDPOINT-TRANSPORT</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">2</td>
 <td><code>MT-TENANT-LIVE-ADD</code></td>
 <td>Running evaluator and realtime pick up newly provisioned tenants without a resta</td>
-<td><code>blocked</code></td>
+<td><code>in-progress</code></td>
 <td><code>MT-TENANT-REGISTRY</code></td>
 </tr>
 <tr>
@@ -3216,7 +3218,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td style="text-align: right;">4</td>
 <td><code>MT-EVALUATOR-PARTITION</code></td>
 <td>M7: evaluator partitioning by member count and ordinal, with a pool-membership t</td>
-<td><code>ready-to-push</code></td>
+<td><code>in-progress</code></td>
 <td><code>MT-BENCH-BASELINE</code></td>
 </tr>
 <tr>
@@ -3232,13 +3234,6 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td>M6b follow-up: refuse revoking the last usable owner's subject (BF-229)</td>
 <td><code>in-flight-upstream</code></td>
 <td><code>MT-M6B-JOIN</code></td>
-</tr>
-<tr>
-<td style="text-align: right;">4</td>
-<td><code>MT-SCALE-UNBOUND</code></td>
-<td>M7: prove each component scales horizontally or vertically as intended, with no</td>
-<td><code>not-started</code></td>
-<td><code>MT-BENCH-BASELINE</code>, <code>MT-API-FIXED-ROSTER</code>, <code>MT-REALTIME-SHARDING</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">5</td>
@@ -3274,6 +3269,13 @@ handoff are measured; live provider/device delivery remains separately gated by
 <td>Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad</td>
 <td><code>in-flight-upstream</code></td>
 <td><code>MT-OWNER-LAST-GUARD</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>MT-SCALE-UNBOUND</code></td>
+<td>M7: prove each component scales horizontally or vertically as intended, with no</td>
+<td><code>in-progress</code></td>
+<td><code>MT-BENCH-BASELINE</code>, <code>MT-API-FIXED-ROSTER</code>, <code>MT-REALTIME-SHARDING</code>, <code>MT-EVALUATOR-PARTITION</code></td>
 </tr>
 <tr>
 <td style="text-align: right;">6</td>

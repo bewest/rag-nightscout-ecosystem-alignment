@@ -1159,6 +1159,8 @@
       
         
       
+        
+      
     
     
     
@@ -2449,7 +2451,7 @@
 
 
 <h1 id="working-in-this-repository-the-contract-for-any-agent">Working in this repository: the contract for any agent<a class="headerlink" href="#working-in-this-repository-the-contract-for-any-agent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>e95108d74</code>.</em></p>
+<p><em>Living document, last changed 2026-11-12 at <code>3cbf37c82</code>.</em></p>
 <p><em>What this is: the operating contract for coding agents (contributor-facing). Read before anything
 else; leads to <a href="docs/00-overview/REVIEWER-ONBOARDING.html">docs/00-overview/REVIEWER-ONBOARDING.md</a>.
 Vendor-neutral: Copilot, Claude Code, Codex, Cursor and local models all read this file. The
@@ -2605,6 +2607,20 @@ status, merges and handoffs go in the release records, not there.</p>
    its control in <code>queue/gate-controls.yaml</code>; <code>make queue-vacuity</code> runs them.</li>
 </ol>
 <h2 id="5-working-rules">5. Working rules<a class="headerlink" href="#5-working-rules" title="Permanent link">&para;</a></h2>
+<p><strong>Writing designs and handoffs</strong></p>
+<p>Write for a reader who has none of the chat history. Lead with the purpose or
+outcome, then explain the mechanism and its practical limits. Use short, active
+sentences and one consistent name for each component. Define technical terms on
+first use; retain precise contract names and safety requirements. Keep <strong>must</strong>
+for obligations, <strong>does</strong> for supported behavior and <strong>proposed</strong> for a design
+that has not been adopted.</p>
+<p>Use a diagram for relationships and a table for comparisons when either replaces
+repeated prose. Link to the fact's existing home. A design explains responsibilities,
+interfaces, state ownership, failure/recovery behavior and compatibility. A handoff
+leads with what closed, what blocks progress, and the next action and owner; keep
+the source anchors and evidence needed to resume. Update the existing document
+or lane handoff rather than adding a parallel summary, style score or reporting
+step. Use ASD-STE100-inspired plain language without claiming formal conformity.</p>
 <p><strong>Git and worktrees</strong></p>
 <ul>
 <li>The main checkout stays on <code>main</code>. Branch work happens in a worktree (<code>git worktree add</code>), one

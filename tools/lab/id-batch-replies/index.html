@@ -1159,6 +1159,8 @@
       
         
       
+        
+      
     
     
     
@@ -1665,6 +1667,8 @@
       
         
       
+        
+      
     
     
     
@@ -2084,6 +2088,64 @@
           
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../d6-native-discriminators/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    d6-native-discriminators/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
         
       
     
@@ -2163,7 +2225,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8_9" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8_10" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -2185,14 +2247,14 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_8_8_9" id="__nav_8_8_9_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_8_8_10" id="__nav_8_8_10_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_8_9_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_8_9">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_8_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_8_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3923,6 +3985,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -4225,6 +4291,8 @@
       
         
       
+        
+      
     
     
     
@@ -4251,6 +4319,66 @@
     
   
     qc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    queue/
   
 
     
@@ -5182,11 +5310,11 @@ must never be pointed at a real site.</p>
 <li><strong>Server:</strong> the cgm-remote-monitor prototype branch <code>proto/id-batch-replies</code> (the reply variants sit
   behind an opt-in; see <code>lib/api/shared/batch-reply.js</code> there), booted three times: <code>WRITE_VALIDATION</code>
   off, <code>WRITE_VALIDATION=reject</code>, and <code>WRITE_IDENTIFIER=strict</code>.</li>
-<li><strong>Clients:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/id-batch-replies/clients.js">clients.js</a> reproduces each client's handling of the reply, rule by rule,
+<li><strong>Clients:</strong> <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/tools/lab/id-batch-replies/clients.js">clients.js</a> reproduces each client's handling of the reply, rule by rule,
   with the client's <code>file:line</code> at the pins it lists: Loop (NightscoutKit, NightscoutService, Loop's
   RemoteDataServicesManager), Trio, xDrip+, xDrip4iOS. AndroidAPS sends no v1 batch (API v3, one document
   per request) and is listed as not applicable. nightscout-connect is <strong>run</strong>, not modelled:
-  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/lab/id-batch-replies/connect-run.js">connect-run.js</a> loads its real Nightscout output module and calls it cycle by cycle.</li>
+  <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/tools/lab/id-batch-replies/connect-run.js">connect-run.js</a> loads its real Nightscout output module and calls it cycle by cycle.</li>
 <li><strong>Per scenario x reply variant x client:</strong> the client's batch goes to the real server with the variant's
   opt-in header (the harness plays a server whose default reply is that variant; the client logic never
   sees the header). The harness hands the reply to the client's rules and re-sends what the client would

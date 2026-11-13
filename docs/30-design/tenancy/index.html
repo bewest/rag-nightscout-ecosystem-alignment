@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -2983,7 +2985,7 @@
   <span class="md-ellipsis">
     
   
-    From accepted one-host preview to production
+    From multitenant preview to production
   
 
     
@@ -3068,6 +3070,34 @@
     
   
     Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="claimed-public-names-and-deploy-companion-2026-11-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claimed public names, the alias registry and the deploy companion: scope split and line of sight
   
 
     
@@ -4863,6 +4893,8 @@
       
         
       
+        
+      
     
     
     
@@ -5498,15 +5530,20 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>3ec0260a0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-12 at <code>d445eae32</code>.</em></p>
 <p><em>Contributor-facing living reading guide, current with the release decisions of
-2026-11-10. Each document below owns one kind of fact; it links to the others
+2026-11-12. Each document below owns one kind of fact; it links to the others
 rather than restating them. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">Release decisions</a>
-own adopted policy, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/queue/work-queue.yaml">queue</a> owns claimed item
+own adopted policy, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/queue/work-queue.yaml">queue</a> owns claimed item
 state and the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 own merges, acceptance and publication. Retired journals, answered packets and
 superseded analyses are in the <a href="../../archive/tenancy/index.html">tenancy archive</a>;
 a date in a filename does not establish currency.</em></p>
+<p>For an outsider's first reading, start with <a href="runtime-topology.html">runtime topology</a>
+for reusable roles and scale envelopes, <a href="deployment-bindings-and-public-names.html">deployment bindings</a>
+for configuration and trust, then <a href="production-critical-path.html">production sequencing</a>
+for evidence and admission. The release record is a journal of executed work, not
+the architecture explanation.</p>
 <p>For a diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">multitenant database and component ownership
 page</a>, rendered from the SQL
 guide below.</p>
@@ -5537,7 +5574,7 @@ guide below.</p>
 </tr>
 <tr>
 <td><a href="production-critical-path.html">Production critical path</a></td>
-<td>Blockers between the accepted one-host preview and production, closing evidence and prior art; its topology and HA deferrals are proposals.</td>
+<td>Production closure criteria, diagnostic/acceptance sequencing and conditional topology/HA decisions; current blockers remain in the queue/release records.</td>
 </tr>
 </tbody>
 </table>
@@ -5595,7 +5632,7 @@ guide below.</p>
 </tr>
 <tr>
 <td><a href="runtime-topology.html">Runtime topology</a></td>
-<td>Zones, components, private APIs and the <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/worker map</a>.</td>
+<td>Reusable roles, scale envelopes, private APIs and the <a href="runtime-topology.html#logical-rest-cohesion-and-worker-placement">logical REST/worker map</a>.</td>
 </tr>
 <tr>
 <td><a href="selectable-endpoints-and-api-scaling-plan.html">Private API composition and scaling plan</a></td>
@@ -5634,7 +5671,7 @@ guide below.</p>
 <tbody>
 <tr>
 <td><code>nightscout-deploy</code> (sibling repository; local <code>/home/bewest/src/nightscout-deploy</code>)</td>
-<td>The Compose tree, edge, identity-provider profiles and Vault Agent overlay, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-home-now">from the next #8898 batch on</a>; see the <a href="claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private">scope split</a>.</td>
+<td>The Compose tree, edge, identity-provider profiles and Vault Agent overlay, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-home-now">from the next #8898 batch on</a>; see the <a href="claimed-public-names-and-deploy-companion-2026-11-09.html#2-scope-split-core-sibling-repository-hoster-private">scope split</a>.</td>
 </tr>
 <tr>
 <td><a href="deployment-and-rig-testing.html">Deployment and rig testing</a></td>

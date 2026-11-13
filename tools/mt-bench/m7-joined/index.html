@@ -1,0 +1,4204 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Contributor workspace for the Nightscout ecosystem alignment programme">
+      
+      
+      
+        <link rel="canonical" href="https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/m7-joined/index.html">
+      
+      
+        <link rel="prev" href="../external-generator/index.html">
+      
+      
+        <link rel="next" href="DIAGNOSTIC-SEAM.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Joined M7 capacity adapter - Nightscout ecosystem alignment</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <meta name="robots" content="noindex, nofollow">
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#joined-m7-capacity-adapter" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-header__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Nightscout ecosystem alignment
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Joined M7 capacity adapter
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/00-overview/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../releases/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../queue/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Queue
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../docs/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  docs/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../mapping/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  mapping/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reports/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  reports/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  tools/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../traceability/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  traceability/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../visualizations/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  visualizations/
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../site/pages/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Pages
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../.github/index.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  More
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../index.html" title="Nightscout ecosystem alignment" class="md-nav__button md-logo" aria-label="Nightscout ecosystem alignment" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Nightscout ecosystem alignment
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    rag-nightscout-ecosystem-alignment
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/00-overview/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../releases/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releases
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Queue
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../docs/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    docs/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../mapping/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mapping/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../reports/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    reports/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    tools/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    tools/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aaps/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aaps/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../aid-autoresearch/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    aid-autoresearch/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../animations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    animations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../cgmencode/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    cgmencode/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../kotlin-nightscout-tests/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    kotlin-nightscout-tests/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../lab/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lab/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../index.html" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mt-bench/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_9" id="__nav_8_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mt-bench/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../compose-baseline/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compose-baseline/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../external-generator/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    external-generator/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="index.html" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-joined/
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_8_9_4" id="__nav_8_9_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    m7-joined/
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DIAGNOSTIC-SEAM.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fresh-image functional diagnostic before full acceptance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PROFILE-SEAM.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source-paired profile provenance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="REMOTE-SEAM.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Remote controller seam
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="UNACCEPTED-MEASUREMENT.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explicit pre-acceptance baseline collection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="component-profiles-interface.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explicit M7 component profiles — integration interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mongo-iso-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mongo-iso-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../mongo-views-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mongo-views-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../nrg-resolution-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nrg-resolution-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../postgrest-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    postgrest-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../rls-poc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rls-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../rust/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rust/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../ns2parquet/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ns2parquet/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../nsprobe/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nsprobe/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../nsschema/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    nsschema/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../programme/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    programme/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../qc/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    qc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../queue/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    queue/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../review/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    review/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../seam/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    seam/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../site/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    site/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../structure-diagrams/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    structure-diagrams/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../swift-nightscout-tests/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    swift-nightscout-tests/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../test-harness/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    test-harness/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../traceability/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    traceability/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../visualizations/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    visualizations/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../../site/pages/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pages
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    
+  
+  
+  
+    <a href="../../../.github/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    More
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+  
+
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#source-and-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source and ownership
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands-after-the-handoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands after the handoff
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instrument" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instrument
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oracle-and-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oracle and controls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#successful-evaluator-completion-observer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Successful evaluator completion observer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Successful evaluator completion observer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baseline-idle-safety-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Baseline idle-safety boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sql-snapshot-request-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQL snapshot request bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discovery runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="joined-m7-capacity-adapter">Joined M7 capacity adapter<a class="headerlink" href="#joined-m7-capacity-adapter" title="Permanent link">&para;</a></h1>
+<p><em>Living document, last changed 2026-11-12 at <code>0b7e7ed42</code>.</em></p>
+<p>This prepares the <strong>next</strong> measurement; it does not establish a capacity result.
+The prior capacity record and authorization/allocation profiles retain their own
+source scope. No prior working-tree lib mount or bootstrap patch is reused here.
+Only committed paired core/deployment sources can serve a run.</p>
+<p>A separate <a href="DIAGNOSTIC-SEAM.html">fresh-image diagnostic</a> permits bounded useful tests
+before full acceptance without claiming acceptance or capacity.</p>
+<p>The coordinator must finish the coherent candidate and its full acceptance, then
+hand over a quiet host. This lane does not stop foreign containers, including a
+peer's <code>nsauthz-base-n1000</code>, or start a capacity campaign during other work.</p>
+<h2 id="source-and-ownership">Source and ownership<a class="headerlink" href="#source-and-ownership" title="Permanent link">&para;</a></h2>
+<p><code>adapter.py prepare</code> creates a unique detached core worktree from a <strong>full commit</strong>,
+archives the deployment's committed Compose tree over its deployment directory,
+and writes the product build overlay marker. Every remaining core input must pass
+the shipping build's two-source admission. There is no borrowed node_modules:
+probe dependencies use a separate owned install of the exact committed core package.json
+and lockfile with npm ci --include=dev --omit=optional --ignore-scripts --force.
+The serving image still prunes development dependencies. generator-provenance.json
+pins host Node/npm paths, hashes and versions, manifests, client entry/version/hash;
+actual stock-client resolution is checked before deployment traffic and each workload.
+The controller must preserve that host toolchain across cells/profiles.
+Preparation failures retain private prepare-commands/ raw stdout/stderr even before
+owner.json exists; prepare-failure.json contains only a sanitized error code.
+Generator installation output is private under generator-commands/.
+The image's core/deployment labels and immutable image ID are checked. Serving
+mounts cannot replace <code>/opt/app</code> or any subtree; all existing binding mounts must
+resolve within this cell's own private state. External/shared resources refuse.
+Ambient NS_/BENCH_/NODE_OPTIONS settings cannot silently alter the experiment.</p>
+<p>Every cell has a random project nonce, private worktree/state, randomly selected
+loopback port and ownership labels on its containers/networks/volumes. Cleanup
+verifies ownership before removing only that project and its recorded worktree.
+An ownership/source mismatch refuses rather than forcing cleanup. No attach mode
+or foreign teardown command exists. Raw state/config contains synthetic credentials;
+keep the entire work directory private and outside any checkout. Do not commit it.</p>
+<p>Build, deploy and traffic require a source-matched frozen acceptance receipt:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="nt">"kind"</span><span class="p">:</span><span class="s2">"joined-acceptance"</span><span class="p">,</span><span class="nt">"status"</span><span class="p">:</span><span class="s2">"UNMEASURED"</span><span class="p">,</span><span class="nt">"pair"</span><span class="p">:{</span><span class="nt">"core"</span><span class="p">:</span><span class="s2">"FULL_COMMITTED_CORE_SHA"</span><span class="p">,</span><span class="nt">"deploy"</span><span class="p">:</span><span class="s2">"FULL_COMMITTED_DEPLOY_SHA"</span><span class="p">},</span><span class="nt">"evidenceSha256"</span><span class="p">:</span><span class="s2">"SHA256_OF_COORDINATOR_ACCEPTANCE_RECORD"</span><span class="p">}</span>
+</code></pre></div>
+<p>The example deliberately refuses. The coordinator supplies <code>PASS</code> only after
+acceptance; provisional source heads are never silently substituted. The receipt
+is an attribution gate, not a new permission dialog. A build/initial deployment
+also requires load below the chosen quiet threshold and <strong>zero foreign running
+containers</strong>. During owned workload, foreign-container checks continue; the owned
+workload's own load average is measured instead of rejecting its expected CPU.
+Host inventories include container IDs/labels, image IDs, load, RAM, Docker/context,
+kernel and process names/CPU/RSS, never command arguments/environments. Only local
+Unix-socket Docker contexts are supported: host metrics must describe that daemon.</p>
+<h2 id="commands-after-the-handoff">Commands after the handoff<a class="headerlink" href="#commands-after-the-handoff" title="Permanent link">&para;</a></h2>
+<p>Run from the alignment checkout containing the committed instrument:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>prepare<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>--directory<span class="w"> </span>/absolute/private/m7-cell<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--core-repo<span class="w"> </span>/absolute/core-repository<span class="w"> </span>--core-commit<span class="w"> </span>FULL_CORE_SHA<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>--deploy-repo<span class="w"> </span>/absolute/deploy-repository<span class="w"> </span>--deploy-commit<span class="w"> </span>FULL_DEPLOY_SHA<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>--image<span class="w"> </span>ns-m7:paired-image<span class="w"> </span>--freeze<span class="w"> </span>/absolute/private/frozen-acceptance.json<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--tenants<span class="w"> </span><span class="m">1000</span><span class="w"> </span>--replicas<span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>build<span class="w"> </span>/absolute/private/m7-cell
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>deploy<span class="w"> </span>/absolute/private/m7-cell
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>run<span class="w"> </span>/absolute/private/m7-cell<span class="w"> </span>--k6-image<span class="w"> </span>PINNED_OR_LOCALLY_RESOLVED_K6_IMAGE
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>down<span class="w"> </span>/absolute/private/m7-cell
+</code></pre></div>
+<p><code>build</code> is unnecessary when the matching image already exists. Docker's resolved
+k6 image ID is recorded and used for execution. No floating tag runs after pinning.
+<code>prepare</code> only stages local source/TLS/config; it sends no performance traffic.
+It accepts explicit diagnostic seed counts1..10000; campaign ladders constrain
+the performance steps. Binding preparation must expose committed
+<code>primer provision</code>/<code>primer prime</code>, and either private <code>primer/tenants.json</code> or
+<code>ops/tenants.json</code> with exact <code>{version:1,tenants:[{id,host,dataToken,...}]}</code>.
+Conflicting outputs, legacy <code>token</code> fields or missing tokens refuse. Provisioning
+uses the private admin API; restore commissioning precedes API priming, and a
+private local publisher completes custody before remaining roles start. Seeding
+uses DATA APIs. There is no direct tenant-row
+or Vault seeding in the campaign adapter.</p>
+<p><code>campaign.py pilot</code> supplies a distinct500→750→1000 remote pilot. See
+<a href="REMOTE-SEAM.html">the remote controller seam</a> for host prerequisites, cost ownership,
+commands, stage order, verdicts and artifacts. The controller enforces its current maintainer-authorized spending/deadline policy;
+this adapter performs no cloud action.</p>
+<p><code>campaign.py all</code> accepts the same source/image/freeze arguments plus <code>--work</code> and
+<code>--k6-image</code>. It measures 1 API at 1,000 → 3,000 → 5,000 → 10,000, then 2 and 4 APIs
+at those counts on the <strong>same frozen pair and image</strong>. Every failed correctness or
+instrument gate stops growth. <code>campaign.py ladder --replicas 1</code> (then2, then4)
+provides separate explicit ladders in the same <code>--work</code> ledger. A measured profile
+ceiling stays FAIL; the coordinator may start the next profile at1,000 after a
+source/instrument/host-matched <code>measured-profile-ceiling</code> receipt links the failure
+artifact and diagnosis hashes. Any stored-oracle, authority/refusal or functional
+failure sets a global block: a ceiling receipt cannot override it. It never automatically starts anyway on a busy
+host. <code>check-campaign</code> refuses missing count/replica rows, mixed source/instrument/
+image identities and unmeasured cells. Realtime worker placement remains the
+product binding's selected topology; the API-replica matrix is not a claim that
+all possible realtime placements or automatic takeover were measured.</p>
+<h2 id="instrument">Instrument<a class="headerlink" href="#instrument" title="Permanent link">&para;</a></h2>
+<p>The source manifest hashes every adapter file and every reused tracked instrument.
+The existing <code>capacity/k6/workload.js</code> supplies seven client shapes: CGM
+entry and Loop devicestatus uploaders, AAPS-style v3 treatments, and follower
+entry/devicestatus/treatment/status reads. The generated workload records two explicit adaptations: current deterministic
+nominal-arrival timestamps replace prior day-old timestamps (which could suppress
+current frame changes), and read4xx responses increment a functional refusal
+counter. Payloads and client route shapes are reused. Default cadence is real (one CGM cycle
+per 300 seconds), hot tenant factor10. Default idle600s/load900s. Two stock-browser
+polling sockets per tenant use JWT exchange and preserve stock reconnect behavior;
+retry-flood results are labelled separately. All sockets must prime before load.</p>
+<p>The capacity socket probe is generated from its tracked source with explicit,
+anchor-checked adaptations (and both hashes retained): actual replica-service
+restart roster, hot/cold write-to-frame distributions, strict initial priming, and
+sparse private runtime acquisition inspection replacing the prior lifecycle-lease
+proxy. New runtime <code>ready &amp;&amp; cycles&gt;0</code> confirms acquisition in the restarted
+process; it is <strong>not clinical equivalence</strong>. Write stamp→durable evaluator checkpoint
+latency remains an independent per-write SQL observation with about1s resolution.
+Missing/oversized inspection fails as NO-INSTRUMENT, never falls back to leases.</p>
+<p>Inspection cadence is15s; payload byte totals, call counts and wall time are saved.
+Per-role Docker CPU/memory, process RSS snapshots, cgroup CPU/anon/memory.current,
+PG statement counts/time and waits/locks are retained. A60s sampler-disabled idle
+window precedes the600s sampled idle window; per-minute rates and collection costs
+let the reviewer assess observer overhead. Two-second sampler/controller and host
+probe CPU/RSS are recorded. Load samples are bounded by load timestamps; reconnect
+samples remain separate raw observations. Cgroup usage/anon and process RSS are
+named separately; no figure is described as JavaScript heap or hard process bound.
+<code>pg_stat_statements</code> lives only in the maintenance database to preserve application
+operation-window admission. No diagnostic extension enters the application DB.</p>
+<h2 id="oracle-and-controls">Oracle and controls<a class="headerlink" href="#oracle-and-controls" title="Permanent link">&para;</a></h2>
+<p>Client acknowledgements are compared with independent superuser SQL stored counts
+per tenant and domain/run marker. The oracle does not call the API. Empty workloads,
+unknown tenants or missing accepted totals cannot be green. Uncertain writes are
+reported and refuse a capacity pass. The adapter alters one owned synthetic stored
+row, requires RED, restores it in <code>finally</code>, and requires GREEN. A summary cannot
+claim a passing cell without complete metrics, primed/delivered/recovered sockets,
+observed runtime acquisition and the oracle control. No latency or CPU capacity
+threshold is invented; report those distributions and marginal costs as measured.</p>
+<p>Focused preparation only:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/test_contract.py<span class="w"> </span>-v
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/smoke.py<span class="w"> </span>/new/private/smoke-output
+</code></pre></div>
+<p>The smoke owns one tiny PostgreSQL fixture and six synthetic HTTP accepted writes
+using the tracked payload functions under deterministic mocks. It proves the
+independent SQL oracle/control wiring, <strong>not</strong> k6 scheduling, product authorization,
+clinical behavior, full deployment, stock sockets or capacity. These remain
+UNMEASURED until the coordinator runs the frozen adapter on a quiet host.</p>
+<p>The restart observer rejects command failure or an unchanged container StartedAt;
+its own PG smoke control skips a restart, requires refusal, then actually restarts
+and observes a new process. Sharded placement additionally requires its committed
+controlled-replacement binding helper; raw restart is refused until that seam exists.</p>
+<h2 id="successful-evaluator-completion-observer">Successful evaluator completion observer<a class="headerlink" href="#successful-evaluator-completion-observer" title="Permanent link">&para;</a></h2>
+<p>Profile-selection version3 pins the unchanged strict <code>evaluatorProgress</code> policy and
+the separate <code>evaluatorIdleSafety</code> policy in capabilities.json version4.
+The source must expose evaluator-inspection module v2 before preparation. Selectors
+contain at most128 unique synthetic UUIDs. One read-only process per exact evaluator
+instance pages ALL configured synthetic IDs, including foreign rows; no hash-based
+query prefilter hides duplicate evaluation. Inspection invokes no clinical work.</p>
+<p>The existing enabled-idle phase starts before either k6 or the socket/write probe:
+its body only sleeps for the unchanged120s pilot/600s capacity interval. It is the
+no-clinical-write idle observation. All tenants still receive the original load phase;
+there is no additional cold cohort, plugin change, HTTP request, or deadline SLO.
+The historical strict idle checker still requires successful time-only completion
+for every owner. Current baseline idle instead uses a separate idle-safety result:
+actual observed due opportunities require later successful time progression; a
+healthy already-acquired owner with stable authority, no error or clinical job,
+and no captured due within the complete observation may report
+TIME_NOT_EXERCISED/zero completions. Explicit current null due with complete
+clinical-job metadata is NO_TIMER_DECLARED; historical/missing state is UNKNOWN.
+A later future due never erases an earlier observed opportunity. Any acquisition
+delta during idle is new demand and refuses. Load still requires successful work
+progression. Legacy <code>cycles</code> and evaluation age cannot satisfy
+this check. Missing opportunity cannot manufacture a work witness. Error, ownership, runtime or lifecycle
+generation changes refuse. Input/output revisions may advance normally. Every ID
+must have exactly one admitted ready owner; foreign counters must remain unchanged
+from their explicitly retained phase baseline. Hidden recovered errors refuse.</p>
+<p>Three bookend/midpoint snapshots use at most4 instances,10000 IDs,1024 private
+requests and64MiB response bytes per phase. Each request retains the existing
+server caps and uses a conservative1MiB client cap,128 selected rows and5s timeout.
+Private raw and deterministic-gzip artifacts retain compact complete rows and
+source/image/instrument/profile attribution. Partial body failures preserve collected
+evidence before propagating the original failure. Query/response/wall overhead and
+serialization/gzip/primary-file publication CPU/wall costs are recorded separately.</p>
+<p>Recovery is a separate scope: a bounded pre-restart runtime baseline, then the
+existing900s/15s cadence. Every exact evaluator must have a different runtime ID,
+at least one successful fresh owned acquisition, two stable coverage/counter
+observations, and no failure/foreign progress. Its private recovery artifact is
+separate from capacity-phase progression. Missing/error/stale-worker receipts cannot
+pass. The restart helper still independently proves actual container starts.
+Neither observer proves clinical output equivalence or native transport by itself.</p>
+<p>Focused component controls can use a NEW owned exact product source:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">M7_PROGRESS_CORE</span><span class="o">=</span>/absolute/owned/core<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>-s<span class="w"> </span>tools/mt-bench/m7-joined<span class="w"> </span>-p<span class="w"> </span>test_evaluator_progress.py
+</code></pre></div>
+<p>This uses actual runtime/window/inspection with a recording SQL port and synthetic
+component. Native product scheduling/durability and final paired-image transport
+remain separately required. An omitted source fixture is explicitly skipped.</p>
+<p>Due-observation completeness uses capabilities3, observation contract2 and explicit
+<code>evaluator-progress-phase-v2</code> / <code>evaluator-recovery-v2</code> artifacts. Compact tuples
+now retain dueAt/dueReason for EVERY owner/foreign row; safe finite fractional
+numbers are preserved without rounding. Missing/malformed current fields refuse
+rather than becoming null. Preparing a new cell requires these fields in its
+exact source's private-v2 response schema, and its image/client must use that
+source. An older strict private-v2 client refuses the added response fields;
+there is no mixed-source compatibility claim.</p>
+<p>This changes observation retention, not the progress predicate, deadline, cadence,
+threshold, query/decompression budget or clinical claim. No future/past due value
+is automatically interpreted as sufficient opportunity or a passed phase. Historical
+phase/recovery v1 artifacts retain their original policy/version/columns and can
+be decoded/verified as historical records. Missing old due fields stay UNKNOWN
+(absent), distinct from an observed null/no timer. Current cell receipts require
+v2 artifacts and cannot downgrade to an old unknown-due shape. The actual historical
+195c PASS and repaired cd462 UNMEASURED captures are tested read-only and unchanged.</p>
+<h3 id="baseline-idle-safety-boundary">Baseline idle-safety boundary<a class="headerlink" href="#baseline-idle-safety-boundary" title="Permanent link">&para;</a></h3>
+<p>Current idle assessor module4 produces <code>evaluator-idle-safety-v2</code>. It retains
+three complete ID/instance snapshots and common wall-minus-monotonic clock
+brackets. Missing state, clock jumps and ambiguous observations remain refused.
+Strict work/source inspection remain module2; old idle artifacts retain their
+original module's outcome and cannot serve as current receipts.</p>
+<p>First and midpoint observations still require every clinical job flag clear.
+Only an original FINAL exact running-bit owner with a prior declared TIME
+opportunity may create a completion obligation. The final legacy-body increase
+must exceed the measured TIME increase by exactly one; all original readiness,
+identity, generation, acquisition, failure, foreign-row and clock guards remain.
+A running flag or null due is never completion evidence.</p>
+<p>After successful original AFTER cost snapshots, the adapter may make ONE point
+inspection round over at most128 obligated IDs on every fixed evaluator instance.
+All RPCs share one monotonic5-second deadline and the existing phase query/byte
+budgets; there is no retry. The selected owner must gain exactly one completed
+TIME, retain its final legacy-body/acquisition counts and owner/runtime/generation,
+show no failure, and have all jobs clear. Selected nonowners remain unchanged and
+idle. Missing, still-running, reset, extra-body/acquisition or final-only demand
+stays refused. No earlier busy observation is excused.</p>
+<p>The artifact retains the original three global rounds plus a separate point-tail
+round and cost/clock metadata. Original measured TIME counts and resource windows
+never include the tail completion. The new classification
+<code>TIME_COMPLETED_AFTER_WINDOW</code> is not throughput or a native work witness. Unselected
+tenants are covered only by the original global snapshots; no global tail or
+continuous quiescence claim follows. AFTER-snapshot or tail failure preserves
+partial evidence and cannot yield PASS. The external app helper uses this same
+adapter boundary and policy.</p>
+<p>The private DTO exposes six existing clinical states: running (through complete
+window resolution), booting, owned acquire/time and borrowed acquire/time tickets.
+The new compact artifact encodes these in that order as a validated integer
+bitmask0..63; bool, missing, extra or malformed state refuses. Named source DTO
+booleans remain exact. Full owner/foreign rows and original byte/query/gzip budgets
+are retained. Old strict phase/recovery v1/v2 artifacts keep their original checker
+semantics; current idle receipts cannot downgrade to them.</p>
+<p>An idle-safety PASS always declares <code>timeWitness:false</code>, including when actual time
+progress is observed. Capacity support separately requires a coordinator-pinned
+exact-source native successful-TIME witness, recomputed with the unchanged strict
+v2 checker. Quiet baseline capacity never establishes active-alarm capacity. Load
+and changed-runtime recovery remain strict. A future due or explicit null cannot
+excuse an earlier observed opportunity without later completed time work.</p>
+<p>Readiness collection permits one first-admission transition only when warming:
+a valid admitted, ready, error-free owner with all successful and failed
+completion counters zero may have an explicitly present null completion age
+while its first operation-window release is pending. This remains WARMING with
+no credited acquisition. Nonwarming collection, missing age, nonzero counters
+with null age, errors and progress requirements remain strict. Refused field
+checks retain fixed predicate/field names and bounded positional indices, never
+raw rows, tenant IDs or runtime values. Readiness deadlines, polling cadence,
+workload and native TIME proof requirements are unchanged.</p>
+<p>Idle assessor module3 accepts already observed successful TIME work after each
+first/midpoint opportunity even when its due time falls inside the final fetch
+bracket. It still refuses final-only demand and any opportunity without later
+credited work; a later future/null due cannot erase an earlier opportunity.
+This is not a deadline claim. Policy/wire row schema remains version1, while
+<code>evaluatorIdleSafety.moduleVersion=3</code> explicitly pins this assessor; the source
+inspection/strict-work protocol remains version2. Historical module2 records
+retain their original policy/result and do not silently become current proofs.</p>
+<p>Enabled idle attempts its existing AFTER cgroup/PostgreSQL bookend in <code>finally</code>,
+including observer refusal. PASS still has only the original BEFORE/AFTER pair.
+If AFTER also refuses, a bounded fixed diagnostic records actual partial-file
+availability and the original phase exception is preserved. Missing bookends
+are never fabricated, and an AFTER failure without a phase failure still fails
+the run. No sampling window, query set, workload or retry policy is expanded.</p>
+<h3 id="sql-snapshot-request-bounds">SQL snapshot request bounds<a class="headerlink" href="#sql-snapshot-request-bounds" title="Permanent link">&para;</a></h3>
+<p>The existing role totals and statement-list queries are unchanged. Each existing
+psql invocation now records adjacent host wall/monotonic start and finish values
+in <code>before-sql-snapshot-timing.json</code> / <code>after-sql-snapshot-timing.json</code>, including
+fixed status on failure. No extra query or polling is added. These are request
+brackets, not exact SQL execution instants. <code>sql_counter_rate_bounds</code> requires
+successful, nonoverlapping same-domain monotonic bounds and a nonnegative counter
+delta; it returns a range from the shortest/longest possible elapsed interval.
+Missing old timings remain unmeasured. Nominal120seconds or nearby cgroup times
+cannot substitute for SQL timestamps. SQL execution time remains distinct from
+database-role CPU; wall stamps support correlation, not a cross-host clock claim.</p>
+<h3 id="discovery-runs">Discovery runs<a class="headerlink" href="#discovery-runs" title="Permanent link">&para;</a></h3>
+<p><code>prepare --run-purpose discovery</code> freezes an explicit observational route;
+<code>acceptance</code> remains the default. Discovery preserves raw strict idle/work
+verdicts, including UNMEASURED and failed work-completion counters, and executes
+the existing bounded HTTP load despite incomplete socket priming. Missing
+<code>.window</code> stops/drains the owned probe before HTTP load; it does not manufacture
+a restart or probe-count proof. The original workload, deadlines and cadence
+are retained. Failed HTTP requests, dropped iterations, dark sockets and
+recovery timeouts are outcomes rather than performance SLOs.</p>
+<p><code>check-discovery &lt;summary.json&gt;</code> accepts only the explicit discovery cell or
+aggregate shape, matching source/image/profile/ownership identity and no known
+hard safety violation. Status MEASURED means complete observations; PARTIAL
+retains absent measurements. Both carry <code>capacityAcceptance: NOT_GRANTED</code> and
+cannot pass <code>check-pilot</code> or <code>check-campaign</code>. Known wrong stored counts,
+foreign/source/reset/custody violations, invalid settings fingerprints and
+explicit unsafe output remain refusals. A failed evaluator completion counter
+alone is preserved as a FAIL finding, not classified as unsafe clinical output.</p>
+<p>The independent count oracle retains ACK &lt;= stored &lt;= ACK + uncertain. Missing
+ack metadata is UNMEASURED, never zero; known per-tenant/domain bounds and
+foreign scope still refuse even with other fields missing. Probe counts are
+separately UNMEASURED when fanout metadata is absent. Raw process exits,
+probe partials, strict progress artifacts and existing AFTER bookends are
+retained on failure. A timed-out k6 CLI requires an exact owned-container stop
+before recovery. No observation route grants functional or capacity acceptance.</p>
+<p>Recording controls: <code>python3 -m unittest discover -s tools/mt-bench/m7-joined -p
+ test_discovery.py</code> (join the command on one line). The optional
+<code>discovery-transport-control.py --repo &lt;transport&gt; --commit &lt;full commit&gt;</code> tests
+the actual Record producer against an immutable transport validator without
+executing commands, applications or networks.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.indexes", "navigation.prune", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+
+  </body>
+</html>

@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -2700,6 +2702,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#reuse-the-components-across-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reuse the components across profiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-inventory-and-operator-topic-readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component inventory and operator-topic readiness
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#read-the-diagrams" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2734,10 +2758,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposed-fixed-roster-api-scale-target" class="md-nav__link">
+  <a href="#fixed-roster-api-scale-placement-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Proposed fixed-roster API-scale target
+        Fixed-roster API-scale placement example
       
     </span>
   </a>
@@ -2769,13 +2793,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Ownership and placement constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scale-envelopes-and-fleet-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scale envelopes and fleet planning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#work-needed-to-reach-the-target" class="md-nav__link">
+  <a href="#qualification-and-delivery-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Work needed to reach the target
+        Qualification and delivery boundaries
       
     </span>
   </a>
@@ -3124,7 +3165,7 @@
   <span class="md-ellipsis">
     
   
-    From accepted one-host preview to production
+    From multitenant preview to production
   
 
     
@@ -3209,6 +3250,34 @@
     
   
     Architecture seams and execution-profile integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="claimed-public-names-and-deploy-companion-2026-11-09.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claimed public names, the alias registry and the deploy companion: scope split and line of sight
   
 
     
@@ -5004,6 +5073,8 @@
       
         
       
+        
+      
     
     
     
@@ -5545,6 +5616,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#reuse-the-components-across-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reuse the components across profiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-inventory-and-operator-topic-readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component inventory and operator-topic readiness
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#read-the-diagrams" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5579,10 +5672,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#proposed-fixed-roster-api-scale-target" class="md-nav__link">
+  <a href="#fixed-roster-api-scale-placement-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Proposed fixed-roster API-scale target
+        Fixed-roster API-scale placement example
       
     </span>
   </a>
@@ -5614,13 +5707,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Ownership and placement constraints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scale-envelopes-and-fleet-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scale envelopes and fleet planning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
-  <a href="#work-needed-to-reach-the-target" class="md-nav__link">
+  <a href="#qualification-and-delivery-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Work needed to reach the target
+        Qualification and delivery boundaries
       
     </span>
   </a>
@@ -5656,17 +5766,177 @@
 
 
 <h1 id="runtime-topology-zones-components-and-private-apis">Runtime topology: zones, components and private APIs<a class="headerlink" href="#runtime-topology-zones-components-and-private-apis" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
-<p><em>Living contributor-facing architecture guide, refreshed 2026-11-10. Structure is
+<p><em>Living document, last changed 2026-11-12 at <code>3cbf37c82</code>.</em></p>
+<p><em>Living contributor-facing architecture guide, reconciled 2026-11-12. Structure is
 </em><em>read-derived</em><em>; measured acceptance retains its exact source in the linked
 records. This Markdown generates the site's <code>runtime-topology.html</code>. The
 <a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API work plan</a> owns remaining
-implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/queue/work-queue.yaml">queue</a>
+implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/queue/work-queue.yaml">queue</a>
 owns claimed work state. A diagram is not deployment or capacity acceptance.</em></p>
+<h2 id="reuse-the-components-across-profiles">Reuse the components across profiles<a class="headerlink" href="#reuse-the-components-across-profiles" title="Permanent link">&para;</a></h2>
+<p>A deployment profile selects where the same roles run and how they share work.
+Configuration can select a supported capability. It cannot supply missing ownership,
+migration or recovery behavior.</p>
+<pre class="mermaid"><code>flowchart TB
+  R["Reusable roles: API, evaluator, realtime, admin and change feed"]
+  R --&gt; S["Small group&lt;br/&gt;Roles can share a host"]
+  R --&gt; O["Operator deployment&lt;br/&gt;Scale roles separately"]
+  R -.-&gt; F["Proposed fleet&lt;br/&gt;Several bounded deployment groups"]
+  S --&gt; C["Same authority, write, ownership and recovery contracts"]
+  O --&gt; C
+  F -.-&gt; C</code></pre>
+<p>The arrows show composition choices, not an upgrade sequence or a capacity claim.
+Fleet placement and tenant moves need separate design and qualification.
+The <a href="#scale-envelopes-and-fleet-planning">scale envelopes</a> define the evidence needed
+for each profile. The <a href="deployment-bindings-and-public-names.html#experiment-rigs-and-deployment-recipes">deployment guide</a>
+distinguishes experimental rigs from operating recipes.</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Role</td>
+<td>A responsibility, such as serving API requests or evaluating tenant data.</td>
+</tr>
+<tr>
+<td>Replica</td>
+<td>Another instance of a role. It needs a valid work-assignment rule.</td>
+</tr>
+<tr>
+<td>Cohort</td>
+<td>The declared processes that cooperate on a workload and its maintenance.</td>
+</tr>
+<tr>
+<td>Instance / incarnation</td>
+<td>An actual process / one lifetime of that process. A replacement has a new incarnation.</td>
+</tr>
+<tr>
+<td>Shard / partition</td>
+<td>A selected share of tenant work. The role's assignment rule determines its owner.</td>
+</tr>
+<tr>
+<td>Cell</td>
+<td>A proposed bounded deployment, datastore and recovery unit. Several cells could form a fleet.</td>
+</tr>
+<tr>
+<td>Admission / fencing</td>
+<td>Checks that permit work / controls that prevent an old or invalid actor from continuing it.</td>
+</tr>
+<tr>
+<td>Hint / checkpoint</td>
+<td>A signal to inspect authoritative state / a position or revision in a named input stream or snapshot. Its contract states what completion it proves.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="component-inventory-and-operator-topic-readiness">Component inventory and operator-topic readiness<a class="headerlink" href="#component-inventory-and-operator-topic-readiness" title="Permanent link">&para;</a></h2>
+<p>The component boundaries are clear enough to organize operator reference topics.
+They do not imply separate binaries, containers or production qualification.
+The inventory below groups existing responsibilities; release records own their
+current acceptance. Role launch details remain in the application source.</p>
+<p><strong>Read-derived source check, 2026-11-12:</strong> cgm-remote-monitor
+<code>ff5156b984424f1ef34bcef22d5bfa0071354cfa</code>, <code>lib/server/serve/roles.js</code>,
+<code>lib/cli/index.js</code> and <code>lib/cli/commands/multitenant.js</code>.
+The role registry declares API, evaluator, realtime, vcpool, tenant-admin, admin and feed-reader.
+UI, maintenance jobs and backing services have different entry points.</p>
+<table>
+<thead>
+<tr>
+<th>Component or responsibility</th>
+<th>Boundary and state ownership</th>
+<th>Natural reference topic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API</td>
+<td>REST version adapters and canonical clinical writes; current client authority. Each instance has pools, caches and in-flight requests.</td>
+<td>Request service, authority, pool limits, replica routing and drain.</td>
+</tr>
+<tr>
+<td>Evaluator</td>
+<td>Tenant acquisition and clinical/plugin computation; input checkpoints, eligible output and notification production have separate completion meanings.</td>
+<td>Assignment, scheduling, freshness, output eligibility and recovery.</td>
+</tr>
+<tr>
+<td>Realtime</td>
+<td>Client connections, subscriptions and record fanout; forwards authorized writes to API. Owns its projection and connection state.</td>
+<td>Socket service, authority checks, tenant placement and reconnect/recovery.</td>
+</tr>
+<tr>
+<td>vcpool</td>
+<td>Tenant connector actors. Reads scoped configuration and sends tenant-bound writes through the API.</td>
+<td>Connector membership, credentials, outbound limits and retries.</td>
+</tr>
+<tr>
+<td>Tenant-admin</td>
+<td>Tenant owner management with a separate credential audience; distinct from clinical DATA and operator ownership control.</td>
+<td>Owner settings, delegation and management listener.</td>
+</tr>
+<tr>
+<td>Admin</td>
+<td>Private operator ownership, pool and provisioning operations with scoped backing identities. It is not a lifecycle participant.</td>
+<td>Operator control, provisioning, credentials and refused operations.</td>
+</tr>
+<tr>
+<td>UI</td>
+<td>Page and asset delivery in the selected deployment binding. It is not a role in the inspected CLI registry.</td>
+<td>Browser endpoint, routing and asset configuration.</td>
+</tr>
+<tr>
+<td>Maintenance jobs/controller</td>
+<td>Explicit migration and restore operations; exact participant roster, incarnation and operation claims.</td>
+<td>Migration, backup/restore, fencing, uncertain outcomes and recovery.</td>
+</tr>
+<tr>
+<td>Feed-reader</td>
+<td>Dedicated metadata slot reader that emits change hints. It runs alone, outside tenant-operation cohorts.</td>
+<td>Reader ownership, slot retention, hint transport and recovery.</td>
+</tr>
+<tr>
+<td>Projections and durable delivery</td>
+<td>Library/protocol responsibilities used by workers; input positions and effect completion have separate contracts.</td>
+<td>Replay, checkpoints, retained work and delivery guarantees.</td>
+</tr>
+<tr>
+<td>Edge and backing dependencies</td>
+<td>Deployment-selected ingress, PostgreSQL, Vault and optional identity/monitoring services. Their availability and custody affect the whole deployment.</td>
+<td>Binding, credentials, retained data, resource budgets and dependency recovery.</td>
+</tr>
+</tbody>
+</table>
+<p>Use the <a href="evaluator-realtime-communication.html">communication guide</a> for output and
+checkpoint ownership. Use the <a href="deployment-bindings-and-public-names.html">deployment guide</a>
+for resource bindings and the <a href="production-critical-path.html">production path</a> for
+operational closure. Proposed cell/fleet control remains a design topic; it is
+not another implemented service in this inventory.</p>
+<p>A component passes the operator-topic maturity test when a reader can identify
+its purpose, inputs, outputs, authority, retained state and owner.
+The same topic must explain configuration, startup refusal, readiness, shutdown,
+failure recovery, compatibility and operating limits. Follow existing contract
+and evidence links for each answer; mark missing answers as unmeasured or proposed.
+These are review questions for the existing design, not another status checklist.</p>
+<p>The inspected CLI already selects multitenant roles and provides migration,
+healthcheck, environment, diagnostic and operator-client commands. Its top-level multitenant
+summary still names only API and tenant-admin, while the registry supports more roles.
+The admin summary advertises provisioning but omits its removal verb.
+These are discoverability gaps, not evidence of missing implementations.
+The <code>admin</code> client and <code>admin</code> server role have different responsibilities.
+A healthcheck response also does not prove tenant progress or completed evaluation.
+Role-specific reference material is still spread across source documents and guides.
+Measured resource limits, remote placement and recovery qualification also remain
+source/profile-specific. The architecture is ready for coherent topics; a complete
+production operations manual would need those answers joined for a selected profile.
+No new command, help option or man page is required for this documentation work.</p>
 <h2 id="read-the-diagrams">Read the diagrams<a class="headerlink" href="#read-the-diagrams" title="Permanent link">&para;</a></h2>
-<p>The three plates answer different questions: the historical accepted deployment,
-the internal-listener composition in the batch join (in acceptance), and the proposed
-fixed-roster scale target. Read downward through client ingress, edge, service destinations,
+<p>The three plates preserve different architectural scopes: the historical accepted
+deployment, the November private-listener composition, and a fixed-roster scale
+placement example. Their captured heads and publication labels belong to those
+plates; use release contents for current implementation and acceptance.
+Read downward through client ingress, edge, service destinations,
 actual role processes and backing resources. Components sit on a grid; named
 terminals and a communication ledger replace long crossing connectors.</p>
 <p>A trust zone is not a host or Pod. A logical API contract, bound listener and
@@ -5675,7 +5945,7 @@ the exact instance endpoints needed for maintenance are also different identitie
 <h3 id="historical-accepted-one-host-reference">Historical accepted one-host reference<a class="headerlink" href="#historical-accepted-one-host-reference" title="Permanent link">&para;</a></h3>
 <p><img alt="Historical accepted one-host reference" src="diagrams/accepted-one-host-topology.svg" /></p>
 <p><a href="diagrams/accepted-one-host-topology.png">PNG preview</a> · <a href="diagrams/accepted-one-host-topology.svg">SVG source</a></p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
 measures synthetic UI/socket/ordinary restore; the
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a>
 retains its separate-role restore and restart scope. The reference publishes lab
@@ -5684,15 +5954,14 @@ OIDC, network transport, scaling or production measurements.</p>
 <h3 id="private-api-composition-one-internal-listener-per-role">Private API composition: one internal listener per role<a class="headerlink" href="#private-api-composition-one-internal-listener-per-role" title="Permanent link">&para;</a></h3>
 <p><img alt="Private API composition, one internal listener per role" src="diagrams/current-internal-api-topology.svg" /></p>
 <p><a href="diagrams/current-internal-api-topology.png">PNG preview</a> · <a href="diagrams/current-internal-api-topology.svg">SVG source</a></p>
-<p>The plate draws the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">internal-listener decisions</a>
-as built on lane <code>78ecba76</code> and joined, with the admin-role, activity and alarm-repeat lanes, on
-<code>codex/batch-join-20261110</code>. That join is <strong>in acceptance, not pushed</strong>; the
-<a href="../../../reports/tenancy/internal-listener-2026-11-10/index.html">lane evidence</a> records its focused,
-Compose and break-it runs. Draft #8898 at <code>b70ad83f</code> still opens one listener per contract
-(<code>alarm.sock</code>, <code>cohort-&lt;role&gt;.sock</code>); its <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">joined acceptance</a>
-retains that source. The shared transport, contracts, schemas and named clients came with <code>dc795bd1</code>
-(<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/7d3399ddc731b1719fceee49317476aeb6eec897/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">acceptance</a>).
-These measurements do not qualify a remote HTTP deployment or multiple API replicas.</p>
+<p>The plate illustrates the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">adopted listener composition</a>.
+In this composition, each process that serves private contracts has one private listener.
+Explicit contract modules select its operations. The <a href="../../../reports/tenancy/internal-listener-2026-11-10/index.html">listener evidence</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">shared-transport acceptance</a>
+retain their executed heads and controls. Their source-scoped passes do not qualify
+every network, topology or later candidate. Current integration/publication belongs
+in <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>, not
+in a second chronological account here.</p>
 <p><strong>Both application and lifecycle operations are private APIs.</strong> The labels name
 purpose, not different networks or mandatory sockets:</p>
 <table>
@@ -5721,42 +5990,44 @@ purpose, not different networks or mandatory sockets:</p>
 </tr>
 </tbody>
 </table>
-<p>Each role process opens one <code>serve.internal</code>: API serves socket-authority and
+<p>Each process that serves private contracts opens one <code>serve.internal</code>.
+API serves socket-authority and
 lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant; evaluator and
 tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
 unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
 listener finishes in-flight calls up to a deadline (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>).
-The <code>admin</code> role keeps its own operator-plane listener (<code>ADMIN_HOSTNAME</code>/<code>ADMIN_PORT</code>) for
-ownership operations, with its own <code>ownership_operator</code> database identity; it is not a lifecycle
-participant (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase">restore census</a>,
+The <code>admin</code> role serves ownership operations on its operator listener
+(<code>ADMIN_HOSTNAME</code>/<code>ADMIN_PORT</code>). It uses the <code>ownership_operator</code> database identity.
+It is not a lifecycle participant (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase">restore census</a>,
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admin-plane-same-address-different-port">same address, different port</a>). Evaluator's in-process
 <code>health()</code> result is not a remote metrics endpoint.</p>
-<p>The private application arrows are different calls, not a generic proxy chain:
-<code>evaluator → realtime</code> delivers notifications; <code>realtime → API</code> asks for current
-permissions and forwards authorized client writes/acknowledgements. Realtime
+<p>The private arrows show specific calls.
+<code>evaluator → realtime</code> delivers notifications.
+<code>realtime → API</code> checks current permissions and forwards authorized writes and acknowledgements. Realtime
 owns Socket.IO semantics, subscriptions and fanout. It also checks recipients'
 current permissions during delivery. That synchronous authority dependency is
 read-derived; its latency, load and failure effects need measurement.</p>
-<h3 id="proposed-fixed-roster-api-scale-target">Proposed fixed-roster API-scale target<a class="headerlink" href="#proposed-fixed-roster-api-scale-target" title="Permanent link">&para;</a></h3>
+<p><a id="proposed-fixed-roster-api-scale-target"></a></p>
+<h3 id="fixed-roster-api-scale-placement-example">Fixed-roster API-scale placement example<a class="headerlink" href="#fixed-roster-api-scale-placement-example" title="Permanent link">&para;</a></h3>
 <p><img alt="Proposed fixed-roster API scale target" src="diagrams/proposed-fixed-roster-network-topology.svg" /></p>
 <p><a href="diagrams/proposed-fixed-roster-network-topology.png">PNG preview</a> · <a href="diagrams/proposed-fixed-roster-network-topology.svg">SVG source</a></p>
-<p>Keep public/management and private interfaces independently bound. The adopted
-shape (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">decision</a>, 2026-11-10) gives each role
-process one private listener, <code>serve.internal</code>, serving the contract modules the
-role's code selects; configuration chooses only <code>host</code>/<code>port</code> or <code>socket</code>
-(default: a unix socket under a runtime directory) and cannot move or merge
-contracts. On SIGTERM it <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">drains in-flight calls up to a deadline</a>.
-An operational contract would be another module on that listener. #8898 at
-<code>b70ad83f</code> still opens one listener per contract; the composition is built and
-accepted in the 2026-11-10 batch join (<code>MT-INTERNAL-LISTENER</code>, <code>MT-BATCH-JOIN-1110</code>),
-which is not pushed.</p>
-<p>The target also shows two equivalent REST replicas behind a service destination,
-with directly addressable private instance endpoints for maintenance. It is not
-an accepted multihost or Kubernetes deployment. Realtime tenant placement and recovery have their own
-<a href="realtime-sharding-plan.html">sharding proposal</a>; the two-API fixture shown here
-retains one realtime process and does not establish realtime scale-out. Evaluator partitioning is separately
-adopted/queued under <code>MT-EVALUATOR-PARTITION</code>; the current reference remains one
-active owner. A replica count is not a workload-assignment rule.</p>
+<p>Bind public, management and private interfaces separately.
+Each process that serves private contracts has one <code>serve.internal</code> listener under the
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">adopted decision</a>.
+The role's code selects its contract modules. Configuration selects a socket or
+host/port; it cannot move or merge contracts. The default is a Unix socket.
+On SIGTERM, the listener <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">drains in-flight calls up to a deadline</a>.
+Operational inspection is another explicit private contract; its existence does
+not imply a public metrics endpoint or complete production monitoring.</p>
+<p>The plate shows equivalent REST replicas behind a service destination, with
+directly addressable private instance endpoints for maintenance. Implementation
+and bounded native checks for fixed API rosters, evaluator partitions and realtime
+placement are recorded in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.
+Qualification still belongs to the exact source/image, transport and deployment;
+this example does not establish multi-host, Kubernetes, capacity or failover admission.
+Realtime <a href="realtime-sharding-plan.html">sharding and recovery</a> uses tenant ownership;
+evaluator partitioning uses its selected membership/ordinal policy. A replica count
+alone establishes neither assignment nor safe handoff.</p>
 <h2 id="logical-rest-cohesion-and-worker-placement">Logical REST cohesion and worker placement<a class="headerlink" href="#logical-rest-cohesion-and-worker-placement" title="Permanent link">&para;</a></h2>
 <p><strong>REST APIs v1/v2/v3 form one stateless request-serving component.</strong> Version
 adapters remain inside each equivalent replica. Data, authorization and owner REST
@@ -5818,41 +6089,114 @@ credential-renewal system or mandatory gateway is implied by these diagrams.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="work-needed-to-reach-the-target">Work needed to reach the target<a class="headerlink" href="#work-needed-to-reach-the-target" title="Permanent link">&para;</a></h2>
+<h3 id="scale-envelopes-and-fleet-planning">Scale envelopes and fleet planning<a class="headerlink" href="#scale-envelopes-and-fleet-planning" title="Permanent link">&para;</a></h3>
+<p><em>Post-baseline planning clarification, 2026-11-12; evidence below is UNMEASURED.
+Cell/fleet arrangement is </em><em>PROPOSED</em><em>, requiring explicit maintainer adoption.
+This adds no gate or prerequisite to current acceptance or the pilot.</em></p>
+<p>10,000 tenants is an arbitrary experimental point and current preview bound,
+not an overall product goal. Planning covers small groups of 10–100 tenants and operators with hundreds or thousands.
+It also needs a credible path to 100,000+ tenants <strong>across a fleet</strong>. Record tenants, human users,
+concurrent sockets, active evaluation tenants and active alarm/delivery demand
+separately; none is a multiplier implied by another. A cohort is the selected
+workload/participant scope. A proposed cell is a bounded deployment/datastore
+and recovery unit; fleet totals must not be presented as one cell's or one
+PostgreSQL instance's capacity.</p>
+<p>Reuse the same API, evaluator, realtime, PostgreSQL and change-feed components
+across qualified profiles. Experimental rigs isolate variables; they are not
+production recipes. Fleet routing, placement, cross-database tenant moves and
+control-plane recovery are additional responsibilities: adding replicas does
+not implement them. The existing <a href="deployment-and-rig-testing.html#deployment-choices-and-fault-domains">deployment/fault-domain guide</a>
+keeps per-tenant cells distinct from shared-cohort and multi-host choices.</p>
+<table>
+<thead>
+<tr>
+<th>Envelope</th>
+<th>Evidence needed</th>
+<th>Next bounded proof and owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small group</td>
+<td>Whole-stack fixed and marginal cost at idle and steady load. Include application, database, secrets and platform resources.</td>
+<td>Measurement and deployment owners compare two selected profiles after the baseline. Use one population and workload; change one axis.</td>
+</tr>
+<tr>
+<td>Operator fleet</td>
+<td>Density and total cost within freshness, correctness and recovery limits. Include capacity after the declared node or dependency failure.</td>
+<td>Measurement and deployment owners test one stated failure on a selected topology. Check independent tenant progress and recovery before recommending a recipe.</td>
+</tr>
+<tr>
+<td>Large fleet, proposed</td>
+<td>Bounded routing, provisioning, database growth, maintenance and recovery across deployment groups. Total fleet size is not one database's capacity.</td>
+<td>Architecture and storage owners first inventory boundaries. A two-group synthetic move/recovery proof can inform an explicit placement and migration decision.</td>
+</tr>
+</tbody>
+</table>
+<p>Small-profile cost differences can justify packaging changes. They do not adopt a
+new production profile. Fleet experiments require independent stored-data and
+ownership checks. They do not prove fleet capacity or adopt a cell architecture.</p>
+<p>Keep the same behavior across topology choices. Preserve current tenant authority
+and revocation, committed write outcomes and uncertainty. Preserve owned work,
+checkpoints, lifecycle fencing, response drain, timer rules and public client contracts.
+Proposed compatibility seams are versioned
+internal contracts/capabilities <strong>or explicit coordinated-upgrade refusal</strong>, not
+a blanket mixed-version promise. Keep role instance/incarnation distinct from a
+service address, durable tenant identity distinct from a worker, and hints
+distinct from durable truth. Transport adapters share a behavioral contract;
+these seams do not require a universal framework or a new broker.</p>
+<p>Each design brief states the required property, affected code and smallest necessary change.
+It names the owner and explains compatibility, migration and failure behavior.
+It specifies one discriminating control and the evidence needed to justify infrastructure changes. Classify it as required correctness/compatibility,
+measured optimization, bounded prototype or deferred hypothesis. This is a
+<strong>proposed tracking rubric</strong>, preserving adopted decisions rather than choosing
+a fleet topology or adding current acceptance requirements.</p>
+<p>Comparative baselines and savings remain <strong>ASSUMPTION</strong> until reproduced with
+whole-stack resource/cost accounting, workload, retention, prices and availability
+scope. Before raising a preview limit, inventory work that scans the whole tenant roster.
+Account for connection pools, file descriptors, queues, backpressure, WAL retention and database growth.
+Include every maintenance participant. Identify bounded work per request/tick and explicit degraded recovery;
+extra worker count does not remove these constraints. The maintainer adopts
+later architecture/profile choices from those measurements with the named
+owners. These envelopes neither raise current limits nor infer PostgreSQL HA,
+automatic realtime failover or a production capacity claim.</p>
+<p><a id="work-needed-to-reach-the-target"></a></p>
+<h2 id="qualification-and-delivery-boundaries">Qualification and delivery boundaries<a class="headerlink" href="#qualification-and-delivery-boundaries" title="Permanent link">&para;</a></h2>
 <p>The <a href="selectable-endpoints-and-api-scaling-plan.html#remaining-work-and-acceptance">work plan</a>
-defines owners, integration boundaries and controls. It separates code already
-incorporated in <code>dc795bd1</code> from these remaining changes:</p>
+retains the implementation seams and intended failure controls. Consult the queue
+and release records before treating a listed seam as missing implementation.
+The durable qualification questions are:</p>
 <ol>
-<li>The adopted <code>serve.internal</code> listener per role, with graceful shutdown and
-   explicit lifetime policies; define operational endpoints without pretending
-   <code>/metrics</code> already exists.</li>
-<li>Deployment binding and remote UDS/HTTP parity, preserving the selected trust,
-   actual acknowledgement and suspension semantics. Gateway hooks are an optional
-   deployment integration, not a new authentication prerequisite.</li>
-<li>Fixed-roster API service/instance addressing and native concurrency,
-   all-instance restore, replacement and uncertainty acceptance.</li>
-<li><a href="realtime-sharding-plan.html">Realtime sharding and recovery</a>, including a
-   measured co-location option, stable assignment and complete owner coverage.</li>
-<li>Measured scaling/fanout costs and separately scoped evaluator partitioning.</li>
+<li>Does the selected private binding preserve authority, exact operations,
+   response completion, shutdown and commit/response uncertainty?</li>
+<li>Do all actual API instances initialize the relevant tenant and participate in
+   maintenance, including actors outside ordinary service routing?</li>
+<li>Do evaluator partition changes and realtime moves preserve checkpoints,
+   current authority and durable effect identity without duplicate protected output?</li>
+<li>Is successful evaluator work distinguished from healthy quiet state, failed
+   work and inspection? A health response is not proof of per-tenant progress.</li>
+<li>What workload and resource envelope does the admitted topology meet, including
+   restart, dependency outage and other-tenant interference?</li>
 </ol>
-<p>No milestone promotion, default enablement or production admission follows from
-this reconciliation. Historical captures remain unchanged; stale living prose
-is corrected in place rather than kept as a second current design. The
-<a href="deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">deployment guide</a>
-owns platform/binding examples. This page owns topology interpretation; the work
-plan owns the acceptance matrix; the queue owns work state.</p>
+<p>These are separate from production/default admission. Gateway hooks, additional
+brokers and new fleet protocols are selected by a concrete requirement or measured
+constraint, not by diagram shape. This page explains components and topology.
+The <a href="deployment-bindings-and-public-names.html#configurable-transports-and-independently-scaled-api">deployment guide</a>
+owns binding responsibilities. The <a href="production-critical-path.html">production guide</a> explains admission order.
+The queue and release records own current state.</p>
 <p>Figures are generated by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/7d3399ddc731b1719fceee49317476aeb6eec897/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
 Use <code>--png</code> to render previews and <code>--check</code> to detect stale vector outputs. Review
 the figures with contract/listener or deployment changes. Rendering checks
 freshness and layout, not application runtime acceptance.</p>
 <h2 id="evaluator-inspection-and-workload-ownership">Evaluator inspection and workload ownership<a class="headerlink" href="#evaluator-inspection-and-workload-ownership" title="Permanent link">&para;</a></h2>
-<p>The planned evaluator operational API includes read-only assignment and membership
-inspection, not only process liveness. <code>MT-ENDPOINT-TRANSPORT</code> owns the shared
-operational listener/module plumbing; <code>MT-EVALUATOR-PARTITION</code> owns the evaluator's
-assignment facts, membership rules, payload/schema and scaling controls. Neither
-the current lifecycle status response nor in-process <code>health()</code> exposes a ring API.</p>
-<p>The inspection contract must distinguish:</p>
+<p>The private evaluator inspection contract exposes bounded read-only state and
+successful-completion observations. Its schema and current implementation are
+owned by the source capability and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release evidence</a>.
+It does not drive evaluation or turn a process health check into workload proof.
+Membership/assignment health and workload progress are distinct concepts; a field
+must name the actual rule and observation rather than inventing a generic ring.</p>
+<p>The interpretation and any extension of that contract must distinguish:</p>
 <ul>
 <li>Configured mode and assignment rule/version, member count, this instance's
   ordinal and actual incarnation, and intended hash slice.</li>
@@ -5876,9 +6220,8 @@ must name the actual rule rather than inventing token-range metadata.</p>
 <p>Stable assignment intends one evaluator owner per tenant. The adopted M7 policy
 allows a bounded overlap window with idempotent effects during membership change;
 it does not establish instantaneous exactly-once execution or automatic takeover.
-Those transition/duplicate-effect criteria remain unmeasured. The operational API
-must report conflicts and blocked work even when it refuses evaluation; querying
-inspection must not itself create work, acquire ownership or clear suspension.</p>
+Transition and duplicate-effect claims require their actual source-scoped evidence. The operational API must report conflicts and blocked work, including when evaluation refuses.
+Inspection must not create work, acquire ownership or clear suspension.</p>
 <p>Evaluator is not the only component with ownership-sensitive state. A ring is
 one possible assignment mechanism, not a universal scaling rule:</p>
 <table>
@@ -5903,7 +6246,7 @@ one possible assignment mechanism, not a universal scaling rule:</p>
 <tr>
 <td>Connector actors</td>
 <td>Tenant/source account, polling cursor/session and upstream effects</td>
-<td>Future tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. <code>MT-CONNECTOR-SYNC</code> currently tests an external existing connector; it does not implement a partitioned tenant-side pool.</td>
+<td>Tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. External connector-to-tenant and tenant-side connector directions have separate evidence; use the release record for joined scope rather than infer either direction from the other.</td>
 </tr>
 <tr>
 <td>Realtime</td>
@@ -5993,6 +6336,8 @@ scale with tenant load even when it has no per-tenant scheduler.</p>
       <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
+  
+  <script src="https://unpkg.com/mermaid@11.17.2/dist/mermaid.min.js"></script>
   
 
   </body>
