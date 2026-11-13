@@ -1,0 +1,68 @@
+{
+  "scope": "SOURCE_PROTOCOL_COMPATIBILITY_ONLY",
+  "state": "fixed on a branch; not application dev or released",
+  "source": {
+    "core": "b06106eb8748e975cbe651f6ab51a2b664bd34a1",
+    "parent": "7d84afd783c9f5b8cc9fcd4a417e04861f982983"
+  },
+  "mechanism": "Required lifecycle catalogue identity expanded while wire version remained unchanged",
+  "transition": {
+    "oldWireVersion": 2,
+    "newWireVersion": 3,
+    "requiredIdentityFields": 10,
+    "placementAndConfigurationPayloadVersionsChanged": false,
+    "upgrade": "Operator and every cohort participant together, then acquire fresh pins",
+    "oldResponseIdentityFields": 8
+  },
+  "reproduced": {
+    "originalSchemaDiscriminatorExit": 1,
+    "repairedSchemaDiscriminatorExit": 0,
+    "oldWireControl": {
+      "repairedExit": 0,
+      "mutantExit": 2,
+      "symptom": "Old wire request dispatches successfully instead of being refused before handler dispatch",
+      "restoredExit": 0
+    },
+    "affectedPassing": 73
+  },
+  "localToolchain": {
+    "node": "v22.23.4",
+    "npm": "10.9.9"
+  },
+  "unmeasured": [
+    "Full joined core campaign",
+    "Selected companion operator execution",
+    "Full clinical/native/capacity acceptance",
+    "Final prcheck"
+  ],
+  "provenance": [
+    {
+      "file": "original.log",
+      "sha256": "e1e2adfbafd39fb0bdb823ceb422859304edf31b656734ea22de59c5c174cad3"
+    },
+    {
+      "file": "repaired-schema.log",
+      "sha256": "e626f1852f81f0a76a6a806c4b40512725b99ca5462c33468e09308fd9057168"
+    },
+    {
+      "file": "repaired-wire.log",
+      "sha256": "3e938539bfa132ae2b2a29da15065a21df2c9d07586c2d6f379e678360968e74"
+    },
+    {
+      "file": "old-wire-mutant.log",
+      "sha256": "01f63d6cdd92746fc5995b2b29ce285c26a79b0250c83d27a50ffe40ef24c781"
+    },
+    {
+      "file": "restored-wire.log",
+      "sha256": "05e8c29ae97d8cf1997423487a5c893850809598566035c98762dd1bc82bcbb8"
+    },
+    {
+      "file": "affected.log",
+      "sha256": "7ab09e791aa1aedd2967fd440d953b535f18e85266d9c335f0c4197e60301a33"
+    },
+    {
+      "file": "controls.json",
+      "sha256": "116d3768629d05a85c0cea0d874200be77533668af14a8e8f358999fb6dff552"
+    }
+  ]
+}
