@@ -1,0 +1,75 @@
+{
+  "captured": "2026-11-13",
+  "scope": "LOCAL_BRANCH_SOURCE_REVIEW_AND_BOUNDED_NATIVE_DIAGNOSTICS",
+  "state": "fixed on local branches; not merged to application dev or released",
+  "core": "e1f130ecf500eacaee8626af3d83a16a23a23731",
+  "deployment": "abe3e82df1f149b1213455c37b9e6177acf31adf",
+  "ensure": {
+    "sourceReview": "approved",
+    "changedBlobsIndependentlyMatched": 29,
+    "rootFocused": {
+      "files": 4,
+      "passing": 82,
+      "exit": 0
+    },
+    "foundationFocused": {
+      "source": "794c2570015480c580ea43524de2c89efe76b9fd",
+      "files": 16,
+      "passing": 603
+    },
+    "finalAuthorFocused": {
+      "source": "e1f130ecf500eacaee8626af3d83a16a23a23731",
+      "files": 3,
+      "passing": 77
+    },
+    "native": "UNMEASURED",
+    "selectedRuntime": "UNSUPPORTED_IN_THIS_CAPABILITY",
+    "factoryReset": "NOT_IMPLEMENTED"
+  },
+  "commissioner": {
+    "sourceChecks": {
+      "passing": 6,
+      "exit": 0,
+      "scope": "direct Node source recording"
+    },
+    "r2": "FAIL_BEFORE_PRIVILEGE_MATRIX",
+    "r5": "ORIGINAL_FAIL_SEQUENCE_CAUSE_REPRODUCED; ACL_INSTRUMENT_22023_BEFORE_PREFIX",
+    "r6": "ORIGINAL_FAIL_RETAINED; METADATA_OWNER_ROUNDTRIP_AND_EXACT_SELECT_RESTORATION_REPRODUCED",
+    "repairedPrivilegeMatrix": "UNMEASURED",
+    "nativeProbeSource": {
+      "core": "c57459d2ba7271b72e74fbffb48dc7045dd4488b",
+      "deployment": "8a88d65ca3d3ebf03b839a3e9d012b2c25abcc71",
+      "episodes": [
+        "R2",
+        "R5",
+        "R6"
+      ]
+    }
+  },
+  "settingsFirst": {
+    "fixture": "06935fb0fd08ee8f1799b126015c6084dfbc8d82",
+    "source": "0a2561d45173cd535628a64aabb42e3492aeecc2",
+    "status": "FAIL_DURING_TABLE_OWNER_GUARD_RESTORATION",
+    "intentSelectedFailurePhases": "NOTRUN",
+    "r6IsFullSettingsQualification": false
+  },
+  "cleanup": {
+    "commissionerR2": "independent exact object and nonce absence PASS",
+    "commissionerR5": "independent exact object and correct-label nonce absence PASS",
+    "commissionerR6": "independent exact object and nonce absence PASS",
+    "settingsFirst": "independent exact object/name/nonce absence PASS",
+    "commissionerVolumeAbsence": "UNMEASURED"
+  },
+  "privateEvidence": {
+    "home": "externals/work/m7-ensure-native-evidence-20261113",
+    "files": 21,
+    "manifests": {
+      "manifest.json": "d0d5a9ddc5cd07f88228a3b54201d6fd4d4e8fd8ea98b60af36beb5853dcc1f7",
+      "settings-supplement-manifest.json": "27e55286d32fac14039506c0a56af4c4ae403130e2d7e8498fb93a755212d115",
+      "commissioner-r6-supplement-manifest.json": "86f30b9b0fbeb2b440ae1617b01925cc3debfdaaffe52bc6333fc4d9c3c17788"
+    }
+  },
+  "runtimePinsChanged": false,
+  "fullCampaignRepeated": false,
+  "pushes": false
+}
