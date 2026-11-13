@@ -107,7 +107,7 @@ class Discovery(unittest.TestCase):
         self.assertEqual(events,['k6']);self.assertFalse((folder/'load/.restart').exists());self.assertEqual(record.value['processes']['probe']['returncode'],7)
         self.assertIsNone(record.value['oracle']);self.assertEqual(record.value['oracleFindings']['probeCountProof'],'UNMEASURED');self.assertEqual(record.value['status'],'PARTIAL');self.assertEqual(record.value['capacityAcceptance'],'NOT_GRANTED')
 
-    def fingerprint_collection(self,kind):
+    def fingerprint_collection(self,kind,corrupt=False):
         folder,m=self.setup();m.update(project='owned',port=1234,restartRoles=['api'],generator={'tools':{'node':{'path':'node'}}})
         a.write(folder/'deploy-before-host.json',{});a.write(folder/'tenants.private.json',[{'id':'a'},{'id':'b'}]);events=[]
         metrics={'writes_ok':{'count':2},'writes_ok{tenant:a}':{'count':1},'writes_ok{tenant:b}':{'count':1},'writes_uncertain{tenant:a}':{'count':0},'writes_uncertain{tenant:b}':{'count':0},'writes_ok{kind:entries}':{'count':2},'writes_ok{kind:devicestatus}':{'count':0},'writes_ok{kind:treatments}':{'count':0},'settings_fingerprint_observed':{'count':1 if kind=='mismatch' else 0},'settings_fingerprint_'+kind:{'count':1}}
@@ -119,8 +119,8 @@ class Discovery(unittest.TestCase):
             out=folder/'load';(out/'.window').touch();a.write(out/'probe.json',{'restart':{'runtimeAcquisitionObservation':{'verdict':'PASS'}}});return Process()
         def command(argv,**kwargs):
             if argv[:3]==['docker','image','inspect']:return '[{"Id":"sha256:recording"}]'
-            a.write(folder/'load/k6-summary.json',{'metrics':metrics});a.write(folder/'load/fanout.json',{'probeWrites':{'byTenant':{}}});events.append('k6')
-        def stored(*args):events.append('counts');return {'a':{'entries':1},'b':{'entries':1}}
+            a.write(folder/'load/k6-summary.json',{'metrics':metrics});a.write(folder/'load/fanout.json',{'probeWrites':{'byTenant':{}}});a.write(folder/'load/probe-accounting.json',{'version':2,'kind':'m7-discovery-probe-accounting','runId':'m7-'+m['owner'][:12],'roster':['a','b'],'admissionsClosed':True,'attempts':0,'byTenant':{}});events.append('k6')
+        def stored(*args):events.append('counts');return {'a':{'entries':2 if corrupt else 1},'b':{'entries':1}}
         def reduced(*args):events.append('measurements');return {'complete':True,'scope':'recording-only'}
         @contextlib.contextmanager
         def ctx(*args):yield
@@ -129,8 +129,13 @@ class Discovery(unittest.TestCase):
             stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
             stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(a,'stored',side_effect=stored));stack.enter_context(patch('reduce.measurements',side_effect=reduced))
-            with self.assertRaisesRegex(RuntimeError,'M7_FUNCTIONAL_SETTINGS_FINGERPRINT'):d.run_discovery(a,folder,m,'k6')
-        value=a.document(folder/'summary.json');self.assertEqual(events,['k6','counts','measurements']);self.assertEqual(value['oracle']['verdict'],'GREEN');self.assertTrue(value['measurements']['complete']);self.assertEqual(value['settingsFingerprintObservation']['verdict'],'FAIL');self.assertEqual(value['hardFailures'][-1]['code'],'M7_FUNCTIONAL_SETTINGS_FINGERPRINT');self.assertTrue((folder/'load/stored-counts.json').is_file())
+            with self.assertRaisesRegex(RuntimeError,'M7_DISCOVERY_WRONG_DATA' if corrupt else 'M7_FUNCTIONAL_SETTINGS_FINGERPRINT'):d.run_discovery(a,folder,m,'k6')
+        value=a.document(folder/'summary.json');self.assertEqual(events,['k6','counts','measurements']);self.assertTrue(value['measurements']['complete']);self.assertTrue((folder/'load/stored-counts.json').is_file())
+        if corrupt:
+            self.assertIsNone(value['oracle']);self.assertEqual(value['oracleFindings']['verdict'],'RED');self.assertEqual(value['strictChecks']['collection']['verdict'],'FAIL');self.assertGreater(value['countDiagnostics']['failureCount'],0);self.assertLessEqual(len(value['countDiagnostics']['failures']),64);self.assertEqual(value['hardFailures'][-1]['code'],'M7_DISCOVERY_WRONG_DATA')
+        else:
+            self.assertEqual(value['oracle']['verdict'],'GREEN');self.assertEqual(value['settingsFingerprintObservation']['verdict'],'FAIL');self.assertEqual(value['hardFailures'][-1]['code'],'M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
+    def test_count_failure_retains_actual_findings_and_existing_resource_reducer(self):self.fingerprint_collection('invalid',corrupt=True)
     def test_fingerprint_invalid_retains_existing_counts_and_measurements_before_refusal(self):self.fingerprint_collection('invalid')
     def test_fingerprint_mismatch_retains_existing_counts_and_measurements_before_refusal(self):self.fingerprint_collection('mismatch')
 

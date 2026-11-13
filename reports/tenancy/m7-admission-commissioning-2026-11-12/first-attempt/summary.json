@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "recordDate": "2026-11-12",
+  "scope": "FIRST_COMMISSIONING_FAILURE_AND_MOUNT_SEMANTICS",
+  "verdict": "COMMISSIONING_FAIL",
+  "source": {
+    "coreCommit": "074eab44ee75b9175c951b6a8add3df3e9554af7",
+    "deployCommit": "3d13c63bc404397d6daee501c152288b12d5931d",
+    "imageId": "sha256:32b7f3eabc915d7eaa939cd06a2d1277a162ec86cff04b1b6c65ad33c15a3a4f",
+    "instrumentCommit": "01a6e1b1bcae51ee77c1e004c32dfb55ac6004e0",
+    "planSha256": "a71b875dbdc93d26a3948aca77c7bc03e7b9c39b2bdbf0778266bfd2c324a21d"
+  },
+  "original": {
+    "commissioning": "FAIL",
+    "nativeAcceptance": "UNMEASURED",
+    "failedStage": "infrastructure bootstrap",
+    "directExit": 1,
+    "errorCode": "CONNECTION_BUDGET_PRIVATE_DIRECTORY",
+    "workersStarted": 0,
+    "tenantOrClinicalProvisioning": false,
+    "hostCommands": 35,
+    "hostOutputBytes": 334663,
+    "uncertainHostEffect": true,
+    "cleanupError": "CLEANUP_UNCONFIRMED"
+  },
+  "cleanup": {
+    "normalRetirementClaimed": false,
+    "originalErrors": [],
+    "independentOwnedObservedStopped": true,
+    "exactRetainedServices": [
+      "postgres",
+      "vault"
+    ],
+    "containersNetworksVolumesRetained": true,
+    "originalUncertaintyRetained": true
+  },
+  "mountCases": [
+    {
+      "case": "file-mount",
+      "directExit": 1,
+      "observation": {
+        "uid": 1000,
+        "parentUid": 0,
+        "parentMode": "755",
+        "fileUid": 1000,
+        "fileMode": "600",
+        "readOk": false,
+        "error": "CONNECTION_BUDGET_PRIVATE_DIRECTORY"
+      },
+      "independentExactContainerAbsent": true
+    },
+    {
+      "case": "private-directory-mount",
+      "directExit": 0,
+      "observation": {
+        "uid": 1000,
+        "parentUid": 1000,
+        "parentMode": "700",
+        "fileUid": 1000,
+        "fileMode": "600",
+        "readOk": true
+      },
+      "independentExactContainerAbsent": true
+    }
+  ],
+  "mechanism": "A file-only bind leaves its container-created parent owned by root with mode0755; private JSON reading requires a private final directory. A copied private directory bind preserves uid1000/mode0700 and passes without weakening the reader.",
+  "limits": [
+    "Mount fixture proves filesystem semantics only, not worker startup",
+    "No controller bind, normal worker retirement, clinical episode or capacity acceptance",
+    "Later fd24 count source and its image were not executed by this attempt",
+    "New source repair/freeze and fresh state are required before retry"
+  ],
+  "evidence": [
+    {
+      "kind": "original-result",
+      "file": "result.private.json",
+      "sha256": "9fb460e84e7126a74b21e07ad98372a8f166febfe5f13e1850a110673f8a75e6"
+    },
+    {
+      "kind": "failed-bootstrap-receipt",
+      "file": "018-result.json",
+      "sha256": "8160e635883b9e290359b03e732ea1f2cc2e9169184c7eb11260f9263e94f5e5"
+    },
+    {
+      "kind": "failed-bootstrap-stderr",
+      "file": "stderr.log",
+      "sha256": "f19f8bef7d1491d03b82cbc28696865d9387c1e38d133ee203c8354293cc91b9"
+    },
+    {
+      "kind": "original-cleanup",
+      "file": "finally-stopped.private.json",
+      "sha256": "da12e733c059bf0a6f645175fa90d39aaa815fa91ad1a3104ab5c09d623187f8"
+    },
+    {
+      "kind": "independent-retained-resource-census",
+      "file": "stopped-after-first-run.private.json",
+      "sha256": "57c9d6634b21bf1e548395936fe57b44002fc185a5cd95c6bb317ff83f455d6e"
+    },
+    {
+      "kind": "mount-semantics",
+      "file": "results.private.json",
+      "sha256": "e667b6d25b4b6df7e0a29ad855a3ebc81739aa7741a6cde445845b638d09b73e"
+    },
+    {
+      "kind": "old-profile-unchanged",
+      "file": "old-profile-unchanged.private.json",
+      "sha256": "0ec2217881039887adcb3d11c0ac583fd1fcfeb066bff160d60c93ef4535dac4"
+    },
+    {
+      "kind": "independent-mount-container-absence",
+      "file": "mount-fixture-cleanup.private.json",
+      "sha256": "f0dbdb5fe0be3be6201a10d828338d981c3d6ac32f90c68ba4ac7ccb2cbb13d8"
+    },
+    {
+      "kind": "root-focused-checks",
+      "file": "m7-commissioning-root-focused-01a-20261112.log",
+      "sha256": "df92d0172230ea8f67692f5b789de956a8dc2fdd364bc60c27abc2e66b0f9343"
+    }
+  ],
+  "retainedEvidence": [
+    "ns-adm-3d2d8d2f2d874c46/commission-run-once-01a",
+    "m7-admission-mount-semantics-20261112-9e9576d2",
+    "m7-commission-root-review-20261112"
+  ]
+}

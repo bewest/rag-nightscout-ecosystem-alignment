@@ -43,8 +43,10 @@ def check_discovery(value):
         require(oracle.get('verdict')=='GREEN' and not oracle.get('failures'),'M7_DISCOVERY_WRONG_DATA')
         if 'rows' in oracle:
             rows=oracle['rows'];require(isinstance(rows,list) and len(rows)==value['tenants'] and len({r.get('tenant') for r in rows})==len(rows),'M7_DISCOVERY_COUNT_ROSTER')
+            require(oracle.get('probeCountProof')=='KNOWN' and oracle.get('probeAccounting',{}).get('version')==2 and oracle['probeAccounting'].get('admissionsClosed') is True and oracle['probeAccounting'].get('pending')==0,'M7_DISCOVERY_PROBE_COUNTS_UNMEASURED')
             for row in rows:
                 require(all(type(row.get(k)) in (int,float) and row[k]>=0 for k in ('accepted','stored','uncertain')) and row['accepted']<=row['stored']<=row['accepted']+row['uncertain'] and row.get('match') is True,'M7_DISCOVERY_WRONG_DATA')
+                require(all(type(row.get(k)) is int and row[k]>=0 for k in ('probeAccepted','probeStored','probeUncertain','probeRefused','probePending')) and row['probePending']==0 and row['probeAccepted']<=row['probeStored']<=row['probeAccepted']+row['probeUncertain'],'M7_DISCOVERY_WRONG_DATA')
     probe=value.get('probe') or {};require(not probe.get('hardFailure') and not hard_recovery(probe.get('restart',{}).get('runtimeAcquisitionObservation',{})),'M7_DISCOVERY_HARD_FAILURE')
     for row in value['strictChecks'].values():
         require(isinstance(row,dict) and row.get('verdict') in ('PASS','FAIL','UNMEASURED'),'M7_DISCOVERY_CHECK_SHAPE')
@@ -57,7 +59,7 @@ class Record:
         self.a,self.d,self.m=a,d,m
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json') if (file:=self.d/folder/name).is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
         row={'verdict':getattr(error,'verdict','UNMEASURED'),'code':safe_code(error),'hardFailure':hard};self.value['strictChecks'][stage]=row
@@ -99,7 +101,16 @@ def run_discovery(a,d,m,k6_image):
         finally:a.phase_snapshot(d,out,'after')
         out=d/'idle';out.mkdir();a.quiet(d,m,'idle-before',check_load=False);a.psql(d,'SELECT pg_stat_statements_reset();')
         record.observe('idle',lambda:a.enabled_idle(d,m,out,m['cadence']['idleSeconds']))
-        discovery_load(a,d,m,k6_id,record)
+        try:discovery_load(a,d,m,k6_id,record)
+        except Exception as error:
+            if hasattr(error,'oracleFindings'):
+                # File-only reducer: no extra SQL or work after a hard count
+                # refusal; already captured cost bookends must remain visible.
+                from reduce import measurements
+                try:record.value['measurements']=measurements(d,m)
+                except Exception as missing:record.value['measurements']={'complete':False,'code':safe_code(missing)}
+                record.save()
+            raise
         for phase in ('idle','load'):
             if (d/phase/'evaluator-progress.json').is_file():record.value.setdefault('evaluatorProgress',{})[phase]=a.progress_summary(d/phase)
         from reduce import measurements
@@ -169,9 +180,17 @@ def discovery_load(a,d,m,k6_id,record):
     if (out/'k6-summary.json').is_file():
         metrics=a.document(out/'k6-summary.json')['metrics'];record.value['metrics']={key:metrics[key] for key in ('http_reqs','http_req_failed','dropped_iterations','writes_ok','writes_refused','writes_uncertain','responses_refused') if key in metrics}
         fingerprint=a.profile_provenance.fingerprint_check(metrics);record.value['settingsFingerprintObservation']=fingerprint;record.save()
-        result,known=count_observation(a,d,out,runid,metrics)
+        try:result,known=count_observation(a,d,out,runid,metrics)
+        except Exception as error:
+            if hasattr(error,'oracleFindings'):
+                record.value['oracleFindings']=error.oracleFindings
+                record.value['countDiagnostics']={k:v for k,v in error.oracleFindings.items() if k in ('verdict','code','failures','failureCount','probeCountProof','probeAccounting','domains','missingFieldCount')}
+                record.save()
+            raise
         record.value['oracle']=result if known else None
-        record.value['oracleFindings']=result;record.save()
+        record.value['oracleFindings']=result
+        record.value['countDiagnostics']={k:v for k,v in result.items() if k in ('verdict','code','failures','failureCount','probeCountProof','probeAccounting','domains','missingFieldCount')}
+        record.save()
         if not known:record.value['strictChecks']['counts']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
 
     record.save()
@@ -193,32 +212,8 @@ def k6_command(a,d,m,image,runid):
 
 
 def count_observation(a,d,out,runid,metrics):
-    """Reuse the one stored-count query; missing ack metadata is never zero."""
-    tenants=a.document(d/'tenants.private.json');expected={r['id'] for r in tenants};values=a.stored(d,runid);a.write(out/'stored-counts.json',values)
-    known_probes=(out/'fanout.json').is_file();probes=a.document(out/'fanout.json')['probeWrites']['byTenant'] if known_probes else {}
-    require(set(values)<=expected and set(probes)<=expected,'M7_ORACLE_TENANT_SCOPE')
-    missing=[];uncertain_total=0;all_uncertain=True;domains={k:0 for k in ('entries','devicestatus','treatments')}
-    for tenant in sorted(expected):
-        row=values.get(tenant,{})
-        require(set(row)<=set(domains)|{'probe'} and all(type(v) is int and v>=0 for v in row.values()),'M7_ORACLE_COUNTS_INVALID')
-        ok='writes_ok{tenant:'+tenant+'}';uncertain='writes_uncertain{tenant:'+tenant+'}'
-        absent=[key for key in (ok,uncertain) if key not in metrics];missing+=absent
-        if uncertain in metrics:uncertain_total+=a.metric(metrics,uncertain)
-        else:all_uncertain=False
-        if not absent:
-            accepted=a.metric(metrics,ok);ambiguous=a.metric(metrics,uncertain);stored=sum(row.get(kind,0) for kind in domains)
-            require(accepted<=stored<=accepted+ambiguous,'M7_DISCOVERY_WRONG_DATA')
-        if known_probes:require(row.get('probe',0)==probes.get(tenant,0),'M7_DISCOVERY_WRONG_DATA')
-        for kind in domains:domains[kind]+=row.get(kind,0)
-    for kind,count in domains.items():
-        key='writes_ok{kind:'+kind+'}'
-        if key not in metrics:missing.append(key)
-        elif all_uncertain:require(a.metric(metrics,key)<=count<=a.metric(metrics,key)+uncertain_total,'M7_DISCOVERY_WRONG_DATA')
-    if missing:return {'verdict':'UNMEASURED','code':'M7_DISCOVERY_ACK_METADATA_MISSING','missingFieldCount':len(missing),'missingFields':missing[:64],'probeCountProof':'KNOWN' if known_probes else 'UNMEASURED'},False
-    derived={**metrics}
-    if 'writes_ok' not in derived:derived['writes_ok']={'count':sum(a.metric(metrics,'writes_ok{tenant:'+tenant+'}') for tenant in expected)}
-    result=a.oracle(values,derived,probes,tenants,strict=False,allow_empty=True,probes_known=known_probes)
-    require(result['verdict']=='GREEN','M7_DISCOVERY_WRONG_DATA');return result,True
+    from discovery_counts import observe
+    return observe(a,d,out,runid,metrics)
 
 
 def stop_k6(a,m,record):

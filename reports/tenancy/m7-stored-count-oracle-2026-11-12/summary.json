@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "recordDate": "2026-11-12",
+  "scope": "SOURCE_AND_SQL_COMPILER_COUNTS_ONLY",
+  "verdict": "PASS_BOUNDED_SCOPE",
+  "anchors": {
+    "alignmentBase": "91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71",
+    "core": "074eab44ee75b9175c951b6a8add3df3e9554af7",
+    "deploymentBase": "3d13c63bc404397d6daee501c152288b12d5931d",
+    "initialDeployment": "4272ead77400aa0fc356188c78135ebce8f11410",
+    "deployment": "fd24ec8aef878a982f175dc2c927fd46e1e1bd98",
+    "bindingTree": "21a7c2c52a2b2d5e0112b0866d2440f93f04e10e",
+    "reducedFixtureTree": "fdc9f8dd2644b8789c86abeb030fbc0ad7304780",
+    "unchangedDeltaGitBlob": "74ac615ae4406b7ecb3d6dc013c90342e9adb578",
+    "countModuleSha256": "34f87a42171c39a07c664434eef294603d6eee52bfccd700639edcb4e86ffed7"
+  },
+  "sourceChecks": [
+    {
+      "check": "stored-counts",
+      "passed": 8,
+      "failed": 0,
+      "sha256": "0d396c990298166b39bcb8230e33d44855f96be4de8458a52d690bed160e4303"
+    },
+    {
+      "check": "controller",
+      "passed": 6,
+      "failed": 0,
+      "sha256": "7be0406386a34d3716d664b24b67eb2854aee7d195516795028909a3cc1ec661"
+    },
+    {
+      "check": "adapter",
+      "passed": 1,
+      "failed": 0,
+      "sha256": "fe995c31351c3f4c20b42b6131577c6838fb8b2e45f5cafbb2e954e4a27c6224"
+    }
+  ],
+  "sourceIdentity": "PASS: committed binding tree, core fixture and five-file delta",
+  "packageCheck": "PASS: zero registered targets, identity check, ownership-grants test",
+  "guardControls": [
+    {
+      "case": "selector-fields",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "selector-bound",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "foreign-sql-scope",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "hide-foreign-result",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "adapter-credit-before-sql",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "shared-total-ceiling",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "resource-match",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "custody-project",
+      "red": 1,
+      "restored": 0
+    },
+    {
+      "case": "diagnostic-fallback",
+      "red": 1,
+      "restored": 0
+    }
+  ],
+  "ledgerRegression": {
+    "original": {
+      "scope": "recording ports; no Docker/SQL",
+      "ordinary": "CONNECTION_CONTROLLER_LEDGER",
+      "counts": "controlled-native-stored-counts",
+      "sqlDoubleCalls": 1
+    },
+    "repaired": {
+      "scope": "recording ports; no Docker/SQL",
+      "ordinary": "CONNECTION_CONTROLLER_LEDGER",
+      "counts": "CONNECTION_CONTROLLER_LEDGER",
+      "sqlDoubleCalls": 0
+    },
+    "sourceFix": "Reuse ordinary observe canonical incarnation predicate before count credit/effect"
+  },
+  "initialFixtureFailure": {
+    "kind": "INSTRUMENT_STDIN_NOT_FORWARDED",
+    "symptom": "docker exec omitted -i; psql returned empty output; JSON assertion failed",
+    "countsMeasured": false,
+    "cleanup": "exact CID removed; independent root absence confirmed",
+    "retainedEvidence": "m7-stored-count-pg-semantics-20261112"
+  },
+  "sqlSemantics": {
+    "postgres": {
+      "serverVersionNum": 160015,
+      "version": "PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit"
+    },
+    "imageId": "sha256:81bd698b4594e751a3269e4dcd3e03a4a0ec0daf7b72e7aa1abd43cce9887542",
+    "manifest": "postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "cases": [
+      {
+        "case": "empty",
+        "queryExit": 0,
+        "assertionExit": 0
+      },
+      {
+        "case": "seeded",
+        "queryExit": 0,
+        "assertionExit": 0
+      },
+      {
+        "case": "foreign-exclusion-mutant",
+        "queryExit": 0,
+        "assertionExit": 1
+      },
+      {
+        "case": "restored",
+        "queryExit": 0,
+        "assertionExit": 0
+      },
+      {
+        "case": "foreign-cleared",
+        "queryExit": 0,
+        "assertionExit": 0
+      }
+    ],
+    "control": "Removing foreign exclusion returned foreign entries 2 instead of expected 1; exact exported expression restored PASS",
+    "cleanup": {
+      "ownedExactCidStoppedAndRemoved": true,
+      "rootIndependentlyConfirmedAbsent": true,
+      "dataRetained": true
+    },
+    "actualBounds": {
+      "hostCommands": 31,
+      "rawOutputBytes": 137390,
+      "elapsedSeconds": 2.0151025620289147
+    },
+    "limits": {
+      "wallSeconds": 300,
+      "workSeconds": 210,
+      "cleanupReserveSeconds": 90,
+      "hostCommands": 40,
+      "workHostCommands": 32,
+      "outputBytes": 8388608,
+      "workOutputBytes": 7340032,
+      "perCommandSeconds": 30,
+      "statementMs": 3000,
+      "connectSeconds": 3
+    },
+    "network": "none",
+    "ports": 0,
+    "pull": "never"
+  },
+  "rosterScope": {
+    "maximum": 128,
+    "rule": "Pass the whole same-marker episode roster. Foreign means outside that requested roster; require all four foreign totals zero. Do not batch a larger same-marker roster or infer global cleanliness from a partial roster.",
+    "intendedNativeRoster": 16
+  },
+  "unmeasured": [
+    "Selected controller SQL integration",
+    "New deployment application image",
+    "Clinical native episode",
+    "Native capacity or acceptance"
+  ],
+  "retainedEvidence": [
+    "m7-stored-count-controls-final-20261112",
+    "m7-stored-count-controls-detailed-20261112",
+    "m7-count-ledger-root-review-20261112",
+    "m7-stored-count-pg-semantics-20261112",
+    "m7-stored-count-pg-semantics-20261112-repaired",
+    "m7-stored-count-root-cleanup-20261112",
+    "m7-count-oracle-record-verification-20261112"
+  ],
+  "provenance": [
+    {
+      "kind": "fixture-script",
+      "file": "run.py",
+      "sha256": "1af6ff83b6e203b7c1f14e9eae5ca81bfe62f56b1df87896de6a80b538fcfa40"
+    },
+    {
+      "kind": "fixture-results",
+      "file": "results.json",
+      "sha256": "d3edb2ecc3758032ab22dafa5c82fc73a417cddab37b3e6418c44042168ab288"
+    },
+    {
+      "kind": "server-version",
+      "file": "server-version.json",
+      "sha256": "015c7b81432f81351c196867227e7d9d8965955ca21613460a954478543e896a"
+    },
+    {
+      "kind": "command-record",
+      "file": "commands.json",
+      "sha256": "87f0af9cd21a2c4396774fcb9e9f4970069c2ee1c493b4913e7c2a226ad72de3"
+    },
+    {
+      "kind": "final-bounds-and-cleanup",
+      "file": "final.json",
+      "sha256": "2fa0aba6879d485073d42d7c57d14828af906d0cc6aab56e67bd58c64a55017e"
+    },
+    {
+      "kind": "exported-expression",
+      "file": "exported-expression.sql",
+      "sha256": "bcc033c497211e7f947e184bc17d76ec9ceb084302ca5b206313a133c86821e7"
+    },
+    {
+      "kind": "source-module",
+      "file": "source-module.json",
+      "sha256": "b79b2a8c6ce770a2ee73f2e468f2acd1c20a8335b8b15356babe9ea04968afec"
+    },
+    {
+      "kind": "root-cleanup-witness",
+      "file": "repaired-fixture.json",
+      "sha256": "d3d116e839e8694b776558a429f01971371837ce1b1e7bc2a5a3e64ee1d02617"
+    },
+    {
+      "kind": "root-original-ledger",
+      "file": "original.json",
+      "sha256": "eb1129f5969eadcb9ac77636213f4fd34bd439b9810c48c10d6bbd9a0c9ba610"
+    },
+    {
+      "kind": "root-repaired-ledger",
+      "file": "repaired.json",
+      "sha256": "e65ffb896ca0dc52653efda685223c82e6133a2034cf524e68470d9a8abb3277"
+    },
+    {
+      "kind": "source-identity",
+      "file": "source-identity.log",
+      "sha256": "c25bb8f8798fde338f4090b5c7e1d21e5c61ca3f696309209cdf84f6fb9190dd"
+    },
+    {
+      "kind": "package-check",
+      "file": "package.log",
+      "sha256": "d8388f9d9bbedcabc9b80cc512ba9dc8e0ffda95939cf657af85a4180d054ec7"
+    },
+    {
+      "kind": "mutation-results",
+      "file": "results.json",
+      "sha256": "1b6528af2818b407b4098c540eba37556fbd94cecee1cb4c51edbababf2db618"
+    }
+  ],
+  "guardControlAttribution": "Nine source controls target initial 4272ead; the final ledger regression separately fails on 4272ead and passes on fd24ec8. The SQL module is unchanged between those commits.",
+  "recordValidation": {
+    "projection": "PASS: selected SQL case results and provenance match independent root cleanup witness",
+    "queueCheck": "FAIL before gates: new alignment worktree lacks ignored external lane directories required by queue validation; no worktrees repointed",
+    "retainedLog": "m7-count-oracle-record-verification-20261112/alignment-queue-check.log"
+  }
+}

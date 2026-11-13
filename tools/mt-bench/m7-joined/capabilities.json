@@ -128,6 +128,16 @@
       "PARTIAL"
     ],
     "strictFindingsPreserved": true,
-    "missingPrimeDoesNotSuppressHttpLoad": true
+    "missingPrimeDoesNotSuppressHttpLoad": true,
+    "probeAccounting": {
+      "version": 2,
+      "scope": "discovery only; strict acceptance probe equality unchanged",
+      "attempts": "recorded before HTTP",
+      "uncertainStatuses": "0 or 500..599",
+      "closure": "admissions closed and no pending attempts",
+      "countBound": "per tenant accepted <= stored <= accepted + uncertain",
+      "missingLegacyLedger": "UNMEASURED",
+      "maxAttempts": 100000
+    }
   }
 }

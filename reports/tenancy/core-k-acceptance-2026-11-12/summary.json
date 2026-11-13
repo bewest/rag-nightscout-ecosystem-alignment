@@ -1,0 +1,156 @@
+{
+  "kind": "CORE_SOURCE_EXECUTION_SELECTED_PROJECTION",
+  "runId": "core-acceptance-20261112-k",
+  "measurement": "FULL_SOURCE_EXECUTION_PASS",
+  "scope": "CORE_SOURCE_EXECUTION_ONLY",
+  "executedCoreCommit": "074eab44ee75b9175c951b6a8add3df3e9554af7",
+  "executedTrackedDeployFixtureTree": "fdc9f8dd2644b8789c86abeb030fbc0ad7304780",
+  "externalDeployOverlayExecuted": false,
+  "provenanceOnly": {
+    "deployCommit": "479affb738e01e8f6fe1a476da63a0260ee08f50",
+    "alignmentCommit": "d21a43804267bef2b74e00477af19400fd5f8289"
+  },
+  "worker": {
+    "instrumentCommit": "232be23ed0e42ff3647ce0108026fa0769173d18",
+    "reportedWorkerSha256": "4689aaabcdd2f6f00287bc5879d35eb672c8585dee42fa889f2b11874c84e788",
+    "reportedLockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "committedWorkerAndLockMatch": true
+  },
+  "toolchain": {
+    "node": "v24.22.1",
+    "npm": "11.19.1"
+  },
+  "stages": [
+    {
+      "stage": "unit",
+      "returnCode": 0,
+      "passing": 3622,
+      "pending": 1,
+      "failing": 0,
+      "stdoutSha256": "b6134cc780cc42bbaa22628b8c37af2df616f4b8a60170492d13c6d35a33f993",
+      "stderrSha256": "3b1151b3311c13c3f2d692553f9ee8d8e28fb0c81e7ca904c6d8cef4d4daa1eb"
+    },
+    {
+      "stage": "dom",
+      "returnCode": 0,
+      "passing": 205,
+      "pending": 0,
+      "failing": 0,
+      "stdoutSha256": "e19b7e67939d5f5c805d610f0ebf0d9b188eba05d1bf20bae6cc269467f07155",
+      "stderrSha256": "fc3bd30b1165dafda9f5bcff5251c08f436c564b1bbede0082b424614a684286"
+    },
+    {
+      "stage": "dependency",
+      "returnCode": 0,
+      "passing": 368,
+      "pending": 2,
+      "failing": 0,
+      "stdoutSha256": "3bf68dd135bbe2e6317eb5cf0f4d1ea5154fcafdfe97873d9223dbeb51f1e8a8",
+      "stderrSha256": "b54f9c0451f67cd8ce957d7b1feeb3ca5d234510455971d8f3ee3425c0c3f381"
+    },
+    {
+      "stage": "core",
+      "returnCode": 0,
+      "passing": 319,
+      "pending": 0,
+      "failing": 0,
+      "stdoutSha256": "08a63a781c4a0eab20f9da5766f85159cc91079a526f6ecb6b7d659ef30b0dc1",
+      "stderrSha256": "d45fa3524d8402a91a5b089be3829204e9fd5d8941fc27f178757574b8039604"
+    },
+    {
+      "stage": "harness",
+      "returnCode": 0,
+      "passing": 99,
+      "pending": 0,
+      "failing": 0,
+      "stdoutSha256": "d1b0d7982d781c87f331daff3d270cb09e237a7d43b976087197efd8a26aa500",
+      "stderrSha256": "5db09779ed7c31889ca98c1ff29875732ef2af8cce590ff46a67c8a24bbd7508"
+    },
+    {
+      "stage": "integration",
+      "returnCode": 0,
+      "passing": 3643,
+      "pending": 836,
+      "failing": 0,
+      "stdoutSha256": "6342d67f3d0cbb07917f7c06950d9aa62376b18e492511a0f25f1ec096ced104",
+      "stderrSha256": "cb7205ce76bfaf4a9c1444d71feebb80d9d03541946dca7ed6386043426ae3e3"
+    },
+    {
+      "stage": "stress",
+      "returnCode": 0,
+      "passing": 18,
+      "pending": 0,
+      "failing": 0,
+      "stdoutSha256": "f1c357edb16250225f15b7988e5ac84837ac056ab09cc61b47c0e3f733f9c07a",
+      "stderrSha256": "ff614964cdeed815d1905a5d7d7c4a72a5d00be338963be91f0fbf227a89444c"
+    },
+    {
+      "stage": "browser",
+      "returnCode": 0,
+      "passing": 686,
+      "pending": 0,
+      "failing": 0,
+      "stdoutSha256": "2d341e99deb5fc10f754a95060cff69f52d73778191ad085fa1d4cad26deaaaf",
+      "stderrSha256": "e3cbdb4a2b5dedc0129ec699bb734ca4abd7db25cf77aedba27c28db5082969f"
+    },
+    {
+      "stage": "enabled-corpus",
+      "returnCode": 0,
+      "passing": 839,
+      "pending": 1,
+      "failing": 0,
+      "stdoutSha256": "e913d175119d402c2def6f9c96c9dc4d52420d75081fefdf78f68f5a71a10c9e",
+      "stderrSha256": "4ac3827cd388313d9483a505e63b6b994d93f04f2d6d042e1229270743d0a29e"
+    }
+  ],
+  "corpus": {
+    "selectedSuites": 86,
+    "passing": 839,
+    "pending": 1,
+    "failing": 0,
+    "returnCode": 0,
+    "perFileCompletedBodyLedger": "NOT_SEPARATELY_RECORDED"
+  },
+  "cleanup": {
+    "mongoVerified": true,
+    "containerResiduals": [],
+    "volumeResiduals": [],
+    "corpusCreated": 2,
+    "corpusRemovedVerified": 2,
+    "corpusRemaining": [],
+    "providerRemaining": {
+      "droplets": 0,
+      "firewalls": 0,
+      "tags": 0
+    },
+    "controller": "verified",
+    "watchdog": "verified",
+    "exactOriginalTemporaryKeysRemoved": 2,
+    "observedAt": "2026-11-13T04:12:54.496Z"
+  },
+  "retainedEvidenceIds": {
+    "worker": "core-acceptance-20261112-k",
+    "scope": "perf-cloud-core-stage-20261112-k",
+    "cleanup": "perf-cloud-core-observe-20261112-k/cleanup-verification-1794543174497.json",
+    "assessment": "perf-cloud-core-k-assessment-20261112"
+  },
+  "sha256": {
+    "archive": "446d3457d6a12c8903cb84d88101504f60a8d1284780d8dce12ddfd4785dd89c",
+    "workerResult": "2d7a68aa1e65f08b35e97889f41490c4b6779badbd0d61dc56106e66bc344088",
+    "commandLedger": "f90105afd6f4b97ac87d29c09145cf5b85e835af08b290e4023074dfcac49813",
+    "corpus": "6848da53d0209d377851cc2df784cd59c61552b9f06d14a63c4018285946463a",
+    "sourceProvenance": "e218ca16026d40762a9d08b49c0436af8b80a5f49f9caf320a950e59ff665030",
+    "capturedSpec": "d265eff558998bf3a35737d7debdadda08c4eb910f82ef8a0a60c2fe4f095079",
+    "executionScope": "bdb5e4ffdc92005b8e76d24f0effe29fef6d0e613c264b6ff67725e83a992c25",
+    "independentCleanup": "4c49ceb7842478bd2195ae568928b6983d99ba89de57c11b0ed13cea2030714e",
+    "parentAssessment": "092f5a000c40a1aabace2cd5b41df3a3a9d92d186b21c5b107149e112f206204"
+  },
+  "notClosed": [
+    "external deployment execution",
+    "serving-image/native qualification",
+    "current clinical qualification",
+    "capacity acceptance",
+    "final prcheck",
+    "release/production readiness"
+  ]
+}

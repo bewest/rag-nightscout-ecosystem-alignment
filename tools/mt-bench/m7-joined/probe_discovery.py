@@ -6,6 +6,10 @@ def adapt(source):
         nonlocal source
         require(source.count(old)==1,'M7_DISCOVERY_PROBE_ANCHOR_CHANGED');source=source.replace(old,new)
     change("const signalDir = path.dirname(args.signal);", "const signalDir = path.dirname(args.signal);\nconst discovery=process.env.M7_RUN_PURPOSE==='discovery';\nlet retainedOut;\nconst hardProgress=value=>value?.verdict==='FAIL'&&!['M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE'].includes(value.code);\nconst typedCode=e=>/^M7_[A-Z_]+$/.test(e?.message||'')?e.message:'M7_PROBE_OBSERVATION_UNAVAILABLE';\nconst savePartial=()=>{if(discovery&&retainedOut)fs.writeFileSync(args.out,JSON.stringify(retainedOut)+'\\n');};")
+    change("  const byTenant = {}; const writes = { ok: 0, failed: 0 };", "  const byTenant = {}; const writes = { ok: 0, failed: 0 };\n  const accounting=discovery?require('./probe-accounting.cjs').create({ids:tenants.map(t=>t.id),runId:args.runid,persist:value=>fs.writeFileSync(path.join(signalDir,'probe-accounting.json'),JSON.stringify(value)+'\\n')}):null;")
+    change("    writers.push(request('POST', t,", "    const attempt=accounting?accounting.begin(t.id):null;\n    writers.push(request('POST', t,")
+    change("      if (r.status === 200) { writes.ok++;", "      if(accounting)accounting.settle(attempt,r.status);\n      if (r.status === 200) { writes.ok++;")
+    change("  await Promise.all(writers);", "  if(accounting)accounting.close();\n  await Promise.all(writers);")
     change("  const jwts = new Array(tenants.length);", "  retainedOut=out; if(discovery){out.runPurpose='discovery';savePartial();}\n  const jwts = new Array(tenants.length);")
     change("jwts[i] = await exchange(tenants[i]);", "try{jwts[i] = await exchange(tenants[i]);}catch(error){if(!discovery)throw error; (out.exchangeUnavailable||=[]).push({tenantIndex:i,code:'M7_EXCHANGE_UNAVAILABLE'});savePartial();}")
     change("{ open(i, jwts[i]); if (OPEN)", "{ if(!discovery||jwts[i])open(i, jwts[i]); if (OPEN)")
