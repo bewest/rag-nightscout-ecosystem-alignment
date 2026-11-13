@@ -1,0 +1,320 @@
+{
+  "version": 1,
+  "experiment": "idle3-collector-fresh-clinical-ingestion",
+  "experimentId": "d2017c00-b0cc-4dff-9a5b-5d24c960939e",
+  "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+  "appNonce": "77e7ad81-37b7-4ff2-8cb4-531327b4dbf1",
+  "core": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+  "deploy": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+  "instrumentCommit": "c62ecb446cb34649f0e80e0e41ecac0088024bc2",
+  "startedAt": 1794528314768,
+  "requests": [
+    {
+      "stage": "credential-exchange",
+      "tenantOrdinal": 0,
+      "startedAt": 1794528315168,
+      "endedAt": 1794528315219,
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "credential-exchange",
+      "tenantOrdinal": 1,
+      "startedAt": 1794528315173,
+      "endedAt": 1794528315216,
+      "status": 200,
+      "code": null
+    },
+    {
+      "stage": "fresh-ingestion",
+      "tenantOrdinal": 0,
+      "startedAt": 1794528315219,
+      "endedAt": 1794528315276,
+      "status": 201,
+      "code": null
+    },
+    {
+      "stage": "fresh-ingestion",
+      "tenantOrdinal": 1,
+      "startedAt": 1794528315220,
+      "endedAt": 1794528315296,
+      "status": 201,
+      "code": null
+    }
+  ],
+  "reads": [
+    {
+      "stage": "before",
+      "service": "evaluator-2",
+      "startedAt": 1794528314814,
+      "returnCode": 0,
+      "endedAt": 1794528315168,
+      "bytes": 2194,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "before",
+      "service": "evaluator",
+      "startedAt": 1794528314816,
+      "returnCode": 0,
+      "endedAt": 1794528315154,
+      "bytes": 2194,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "before",
+      "service": "evaluator-3",
+      "startedAt": 1794528314817,
+      "returnCode": 0,
+      "endedAt": 1794528315151,
+      "bytes": 2242,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "after-0",
+      "service": "evaluator-2",
+      "startedAt": 1794528315297,
+      "returnCode": 0,
+      "endedAt": 1794528315626,
+      "bytes": 2194,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "after-0",
+      "service": "evaluator",
+      "startedAt": 1794528315298,
+      "returnCode": 0,
+      "endedAt": 1794528315629,
+      "bytes": 2194,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "after-0",
+      "service": "evaluator-3",
+      "startedAt": 1794528315300,
+      "returnCode": 0,
+      "endedAt": 1794528315626,
+      "bytes": 2242,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "after-1",
+      "service": "evaluator-2",
+      "startedAt": 1794528315680,
+      "returnCode": 0,
+      "endedAt": 1794528316058,
+      "bytes": 2217,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "after-1",
+      "service": "evaluator",
+      "startedAt": 1794528315682,
+      "returnCode": 0,
+      "endedAt": 1794528316048,
+      "bytes": 2215,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "after-1",
+      "service": "evaluator-3",
+      "startedAt": 1794528315684,
+      "returnCode": 0,
+      "endedAt": 1794528316037,
+      "bytes": 2242,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "inputs": [
+    {
+      "tenantOrdinal": 0,
+      "identifier": "evaluator-shipping-9f84adae-1f19-4f55-b1d5-b9e7d9dcf50e",
+      "type": "sgv",
+      "sgv": 400,
+      "date": 1794528315219,
+      "utcOffset": 0,
+      "app": "synthetic-evaluator-proof"
+    },
+    {
+      "tenantOrdinal": 1,
+      "identifier": "evaluator-shipping-60a1d8ca-393e-401f-995b-c166e09c0436",
+      "type": "sgv",
+      "sgv": 401,
+      "date": 1794528315220,
+      "utcOffset": 0,
+      "app": "synthetic-evaluator-proof"
+    }
+  ],
+  "outcome": "opportunity-established",
+  "inspectorSha256": "c9e0370e8a3ca4d08dfd70b1290a36a0d57f33c34f3a5639a2e6d81b77b707e8",
+  "shippingFixtureSha256": "b7074f0dffab4268f987751c288ca3443d2e8e2d98d94942f700128e8ebb5278",
+  "beforeOwners": [
+    {
+      "runtimeId": "fcff391b-f053-4dde-b356-c48daf2b7863",
+      "ordinal": 1,
+      "observedAt": 1794528315157,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      },
+      "assignedOrdinal": 1,
+      "admitted": true,
+      "code": null,
+      "ready": true,
+      "cycles": 1,
+      "progress": {
+        "generation": 5,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 0,
+        "lastCompletedAgeMs": 15220,
+        "failedCompletions": 0
+      },
+      "dueAt": null,
+      "dueReason": null,
+      "outputRevision": 1,
+      "inputCheckpoint": 1794523585945,
+      "evaluation": {
+        "ageMs": 430,
+        "alert": null
+      },
+      "delivery": {
+        "state": "handoff-accepted",
+        "code": null,
+        "passes": 1,
+        "repeatAt": null
+      }
+    },
+    {
+      "runtimeId": "2fd477c7-76d0-468a-9272-07a141b75fad",
+      "ordinal": 0,
+      "observedAt": 1794528315144,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      },
+      "assignedOrdinal": 0,
+      "admitted": true,
+      "code": null,
+      "ready": true,
+      "cycles": 1,
+      "progress": {
+        "generation": 5,
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 0,
+        "lastCompletedAgeMs": 15114,
+        "failedCompletions": 0
+      },
+      "dueAt": null,
+      "dueReason": null,
+      "outputRevision": 1,
+      "inputCheckpoint": 1794523585947,
+      "evaluation": {
+        "ageMs": 305,
+        "alert": null
+      },
+      "delivery": {
+        "state": "handoff-accepted",
+        "code": null,
+        "passes": 1,
+        "repeatAt": null
+      }
+    }
+  ],
+  "uploadsCompletedAt": 1794528315296,
+  "latestOwners": [
+    {
+      "runtimeId": "fcff391b-f053-4dde-b356-c48daf2b7863",
+      "ordinal": 1,
+      "observedAt": 1794528316047,
+      "tenant": "11111111-1111-4111-8111-111111111111",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      },
+      "assignedOrdinal": 1,
+      "admitted": true,
+      "code": null,
+      "ready": true,
+      "cycles": 2,
+      "progress": {
+        "generation": 5,
+        "completedAcquisitions": 2,
+        "completedTimeCycles": 0,
+        "lastCompletedAgeMs": 207,
+        "failedCompletions": 0
+      },
+      "dueAt": 1794528316797,
+      "dueReason": "slow:alarm-message",
+      "outputRevision": 2,
+      "inputCheckpoint": 1794528315271,
+      "evaluation": {
+        "ageMs": 212,
+        "alert": null
+      },
+      "delivery": {
+        "state": "handoff-accepted",
+        "code": null,
+        "passes": 2,
+        "repeatAt": null
+      }
+    },
+    {
+      "runtimeId": "2fd477c7-76d0-468a-9272-07a141b75fad",
+      "ordinal": 0,
+      "observedAt": 1794528316034,
+      "tenant": "22222222-2222-4222-8222-222222222222",
+      "jobs": {
+        "running": false,
+        "booting": false,
+        "acquire": false,
+        "time": false,
+        "parentAcquire": false,
+        "parentTime": false
+      },
+      "assignedOrdinal": 0,
+      "admitted": true,
+      "code": null,
+      "ready": true,
+      "cycles": 2,
+      "progress": {
+        "generation": 5,
+        "completedAcquisitions": 2,
+        "completedTimeCycles": 0,
+        "lastCompletedAgeMs": 53,
+        "failedCompletions": 0
+      },
+      "dueAt": 1794528316937,
+      "dueReason": "slow:alarm-message",
+      "outputRevision": 2,
+      "inputCheckpoint": 1794528315290,
+      "evaluation": {
+        "ageMs": 57,
+        "alert": null
+      },
+      "delivery": {
+        "state": "handoff-accepted",
+        "code": null,
+        "passes": 2,
+        "repeatAt": null
+      }
+    }
+  ],
+  "opportunityReads": 2,
+  "opportunityAt": 1794528316059,
+  "externalWritesStoppedAt": 1794528315296,
+  "finishedAt": 1794528316059
+}

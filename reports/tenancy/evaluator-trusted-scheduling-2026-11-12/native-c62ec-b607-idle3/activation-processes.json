@@ -1,0 +1,25 @@
+{
+  "kind": "direct-settled-activation-processes",
+  "startedAtMs": 1794528291190,
+  "phases": {
+    "restart": {
+      "pid": 1504474,
+      "processGroup": 1504474,
+      "startedAtMs": 1794528291190,
+      "timedOut": false,
+      "returnCode": 0,
+      "finishedAtMs": 1794528301832
+    },
+    "sequence": {
+      "pid": 1507502,
+      "processGroup": 1507502,
+      "startedAtMs": 1794528301832,
+      "timedOut": false,
+      "returnCode": 0,
+      "finishedAtMs": 1794528339033
+    }
+  },
+  "returnCode": 0,
+  "retainedStopped15": true,
+  "finishedAtMs": 1794528339097
+}
