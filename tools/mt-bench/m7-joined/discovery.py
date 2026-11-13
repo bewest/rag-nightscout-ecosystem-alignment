@@ -22,18 +22,18 @@ def check_discovery(value):
     require(re.fullmatch(r'[a-f0-9]{64}',value.get('instrument','')) and re.fullmatch(r'[a-f0-9]{64}',value.get('hostIdentity','')) and re.fullmatch(r'sha256:[a-f0-9]{64}',value.get('imageId','')),'M7_DISCOVERY_IDENTITY')
     from profile_provenance import check_identity
     chosen=check_identity(value.get('profileSelection'))
-    declared=value.get('settingsFingerprint',{})
-    require(declared.get('sha256')==chosen['settings']['sha256'] and declared.get('sourceCommit')==value['pair']['core'] and chosen['settings']['sourceCommit']==value['pair']['core'],'M7_DISCOVERY_DECLARED_SETTINGS')
     if value['kind']=='m7-joined-discovery':
         cells=value.get('cells');require(isinstance(cells,list) and 1<=len(cells)<=12,'M7_DISCOVERY_CELLS')
         roster=[]
         for row in cells:
             require(row.get('kind')=='m7-joined-discovery-cell','M7_DISCOVERY_CELL_KIND');check_discovery(row)
-            require(all(row.get(k)==value.get(k) for k in ('pair','instrument','hostIdentity','imageId','profileSelection','settingsFingerprint')),'M7_DISCOVERY_MIXED_IDENTITY')
+            require(all(row.get(k)==value.get(k) for k in ('pair','instrument','hostIdentity','imageId','profileSelection')),'M7_DISCOVERY_MIXED_IDENTITY')
             roster.append((row['tenants'],row['replicas']))
         require(len(set(roster))==len(roster),'M7_DISCOVERY_DUPLICATE_CELL')
         if value['status']=='MEASURED':require(all(row['status']=='MEASURED' for row in cells),'M7_DISCOVERY_MISSING_MEASUREMENT')
         return True
+    declared=value.get('settingsFingerprint',{})
+    require(declared.get('sha256')==chosen['settings']['sha256'] and declared.get('sourceCommit')==value['pair']['core'] and chosen['settings']['sourceCommit']==value['pair']['core'],'M7_DISCOVERY_DECLARED_SETTINGS')
     require(re.fullmatch(r'[a-f0-9]{32}',value.get('owner','')) and value.get('ownershipVerified') is True,'M7_DISCOVERY_OWNERSHIP')
     require(type(value.get('tenants')) is int and 1<=value['tenants']<=10000 and value.get('replicas') in (1,2,4),'M7_DISCOVERY_TOPOLOGY')
     require(isinstance(value.get('strictChecks'),dict) and isinstance(value.get('processes'),dict) and isinstance(value.get('hardFailures'),list),'M7_DISCOVERY_OBSERVATIONS')

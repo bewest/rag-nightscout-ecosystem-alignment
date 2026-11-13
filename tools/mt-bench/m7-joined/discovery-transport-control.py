@@ -31,5 +31,11 @@ def main():
         except RuntimeError as error:assert 'PROFILE_SELECTION_SHAPE' in str(error)
         else:raise AssertionError('MISSING_DECLARED_PROFILE_FALSE_PASS')
         adapter.write(cell/'summary.json',original);module.pilot.validate_discovery_cell(cell,500,identity)
-        print(json.dumps({'kind':'recording-source-producer-transport-control','transportCommit':args.commit,'hashes':hashes,'partialProducerAccepted':True,'missingProfileRefused':True,'restored':True}))
+        cells=[original]
+        for count in (750,1000):
+            target=root/('cell-'+str(count));module.populate(target,count);other=adapter.document(target/'owner.json')
+            other.update(owner='f'*32,hostIdentity=identity['hostIdentity'],imageId=identity['imageId'],runPurpose='discovery');adapter.write(target/'owner.json',other)
+            produced=Record(adapter,target,other);produced.value['ownershipVerified']=True;produced.save();module.pilot.validate_discovery_cell(target,count,identity);cells.append(produced.value)
+        aggregate=module.pilot.assemble(cells,identity);check_discovery(aggregate)
+        print(json.dumps({'aggregateActualTransportAccepted':True,'kind':'recording-source-producer-transport-control','transportCommit':args.commit,'hashes':hashes,'partialProducerAccepted':True,'missingProfileRefused':True,'restored':True}))
 if __name__=='__main__':main()

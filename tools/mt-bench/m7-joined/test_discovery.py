@@ -139,7 +139,7 @@ class Discovery(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'TENANT_SCOPE'):d.count_observation(a,folder,out,'synthetic',{})
 
     def test_aggregate_requires_matching_identity_and_no_acceptance_label(self):
-        result,_,_=self.run_recording(p.Refused('M7_EVALUATOR_IDLE_JOB_PENDING'));aggregate={**{k:result[k] for k in ('version','pair','hostIdentity','instrument','imageId','runPurpose','status','capacityAcceptance','profileSelection','settingsFingerprint')},'kind':'m7-joined-discovery','cells':[result]};d.check_discovery(aggregate)
+        result,_,_=self.run_recording(p.Refused('M7_EVALUATOR_IDLE_JOB_PENDING'));aggregate={**{k:result[k] for k in ('version','pair','hostIdentity','instrument','imageId','runPurpose','status','capacityAcceptance','profileSelection')},'kind':'m7-joined-discovery','cells':[result]};d.check_discovery(aggregate)
         broken=copy.deepcopy(aggregate);broken['cells'][0]['instrument']='0'*64
         with self.assertRaisesRegex(RuntimeError,'MIXED_IDENTITY'):d.check_discovery(broken)
         broken=copy.deepcopy(aggregate);broken['capacityAcceptance']='PASS'
