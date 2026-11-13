@@ -30,7 +30,7 @@ async function main(specFile,directory){
   async socketState({tenant}){need(spec.ids.includes(tenant)&&client,'SESSION_TENANT');return client.socketState(tenant);},
   async healthyB({tenant}){need(spec.ids.includes(tenant)&&client,'SESSION_TENANT');const rounds=[];for(let i=0;i<3;i++){rounds.push(await client.healthyB(tenant));if(i!==2)await new Promise(r=>setTimeout(r,1000));}return{...rounds.at(-1),rounds};},
   async isolation({a,b}){need(spec.ids.includes(a)&&spec.ids.includes(b)&&client,'SESSION_TENANT');return client.isolation(a,b);},
-  async close(){need(client,'SESSION_NOT_PRIMED');const result=client.close();clientClosed=true;closed=true;return result;}
+  async close(){need(client,'SESSION_NOT_PRIMED');clientClosed=true;const result=client.close();closed=true;return result;}
  };
  persist('session-ready.json',{nonce:spec.nonce,kind:'native-clinical-http-session',source:spec.source,hostNodeVersion:process.version,stockSocketVersion:stock.version});
  try{

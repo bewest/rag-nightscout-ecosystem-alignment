@@ -28,7 +28,7 @@ function create(spec,{prime,io,persist,now=Date.now,mono=monotonic,delay=ms=>new
   check();const socket=io(url,options),engine=socket.io?.engine;
   need(engine&&typeof engine.on==='function','CLIENT_STOCK_ENGINE_UNOBSERVED');
   engine.on('packet',packet=>{const data=packet?.data;const size=data===undefined?0:Buffer.isBuffer(data)?data.length:Buffer.byteLength(typeof data==='string'?data:JSON.stringify(data));socketBytes+=size;
-   if(size>1048576||socketBytes>268435456){socketBudgetRefused=true;socket.emit('connect_error',Error('CLIENT_SOCKET_BYTE_BUDGET'));socket.close();}
+   if(size>1048576||socketBytes>268435456){socketBudgetRefused=true;socket.close();}
   });return socket;
  }
  const credential=id=>{need(spec.ids.includes(id),'CLIENT_TENANT');const row=spec.credentials.find(x=>x.id===id);need(row&&typeof row.host==='string'&&typeof row.dataToken==='string'&&typeof row.rootHash==='string','CLIENT_CREDENTIAL');return row;};
@@ -106,7 +106,7 @@ function create(spec,{prime,io,persist,now=Date.now,mono=monotonic,delay=ms=>new
   return {tenantA:a,tenantB:b,crossStatus:cross.status,crossAuthorizationRefused:[401,403,421].includes(cross.status),socketConnectedBeforeRefusal:connected,socketExplicitRefusal:explicitDisconnect,foreignFrames,positiveOwnFrame:own.ownFrameAfterWrite,scope:'bounded actual cross-credential DATA and stock root-socket refusal with authorized positive progression'};
  }
 
- function close(){need(!closed,'CLIENT_ALREADY_CLOSED');closed=true;let failure;for(const ledger of Object.values(ledgers))try{ledger.close();}catch(error){failure=failure||error;}for(const s of sockets.values()){s.socket.close();s.agent.destroy();}if(failure)throw failure;return{admissionsClosed:true,requests,responseBytes:bytes,socketBytes,socketBudgetRefused,httpEvidence:{requestsBegun:requests,responsesRecorded:recordedResponses,pages:Math.ceil(requests/64),complete:recordedResponses===requests},ledgers:Object.fromEntries(Object.entries(ledgers).map(([k,v])=>[k,v.snapshot()]))};}
+ function close(){need(!closed,'CLIENT_ALREADY_CLOSED');closed=true;let failure;for(const ledger of Object.values(ledgers))try{ledger.close();}catch(error){failure=failure||error;}for(const s of sockets.values()){s.socket.close();s.agent.destroy();}persist('socket-budget.json',{socketBytes,socketBudgetRefused,maximumBytes:268435456,maximumPacketBytes:1048576});if(failure)throw failure;need(!socketBudgetRefused,'CLIENT_SOCKET_BYTE_BUDGET');return{admissionsClosed:true,requests,responseBytes:bytes,socketBytes,socketBudgetRefused,httpEvidence:{requestsBegun:requests,responsesRecorded:recordedResponses,pages:Math.ceil(requests/64),complete:recordedResponses===requests},ledgers:Object.fromEntries(Object.entries(ledgers).map(([k,v])=>[k,v.snapshot()]))};}
  function rebind(endpoints){check();validate({...spec,endpoints});spec.endpoints=endpoints;return{endpointsBound:true};}
  return {request,write,history,clinical,firstTouchStorm,connect,socketState,healthyB,isolation,close,rebind};
 }

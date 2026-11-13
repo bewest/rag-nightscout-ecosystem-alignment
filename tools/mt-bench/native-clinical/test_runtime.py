@@ -94,6 +94,30 @@ class Runtime(unittest.TestCase):
                 def read(file):return {'slots':{'api':[{'incarnation':generation}]}}if file.name=='ledger.json'else ack
                 with patch.object(C,'read',side_effect=read):h.stop_ack('api',cold=True)
             self.assertEqual(set(h.coldProofs),{'old','new'});self.assertEqual(len(list(h.out.glob('cold-high-water-api-*.private.json'))),2)
+    def test_actual_producer_terminal_thread_requires_positive_group_custody(self):
+        import threading
+        from types import SimpleNamespace
+        def producer(result,error=None):
+            p=object.__new__(D.Producer);p.cancelled=threading.Event();p.result=result;p.error=error;p.thread=SimpleNamespace(join=lambda **kw:None,is_alive=lambda:False);return p
+        for result,error in [(None,None),({'groupDrained':False,'failure':'GROUP_DRAIN_UNKNOWN'},None),({'groupDrained':True},OSError('receipt failure'))]:
+            p=producer(result,error)
+            with self.assertRaisesRegex(Exception,'PRODUCER_CLEANUP_UNKNOWN'):p.abort()
+            with tempfile.TemporaryDirectory()as td:
+                h=RecordingHost(plan(),Path(td)/'run');h.producer=p;h.allocation_attempted=True
+                with self.assertRaisesRegex(Exception,'CLEANUP_UNCONFIRMED'):h.cleanup_owned()
+                value=json.loads((h.out/'finally-stopped.private.json').read_text());self.assertTrue(value['uncertainHostEffect']);self.assertEqual(value['lateDaemonEffect'],'UNCONFIRMED');self.assertEqual(value['errors'][0]['stage'],'producer-cancel');self.assertTrue(all(not r['State']['Running']for r in h.rows.values()))
+        p=producer({'groupDrained':True,'failure':'COMMAND_CANCELLED'});p.abort();self.assertTrue(p.cancelled.is_set())
+    def test_producer_reservations_refuse_before_child_construction(self):
+        for mode,code in [('commands','COMMAND_COUNT'),('bytes','PRODUCER_OUTPUT_RESERVATION')]:
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory()as td:
+                p=plan();p.update(maximumProducerOutputBytes=4194304,ids=[],runId='model');p['hostDependencies']['nodeVersion']='model'
+                # These two fixed helper inputs are read before the reservation;
+                # source hashes are stubbed without executing any source module.
+                h=RecordingHost(p,Path(td)/'run');h.endpoints=lambda:{}
+                if mode=='commands':h.n=p['maximumCommands']-p['cleanupReserveCommands']
+                else:h.bytes=p['maximumOutputBytes']-p['cleanupReserveOutputBytes']-4194304+1
+                with patch.object(C,'sha',return_value='model'),patch.object(D,'Producer',side_effect=AssertionError('NO_CHILD'))as constructor,self.assertRaisesRegex(Exception,code):R.Host.start_producer(h)
+                constructor.assert_not_called()
     def test_ports_stop_requires_controller_then_actual_ack(self):
         with tempfile.TemporaryDirectory()as td:
             h=RecordingHost(plan(),Path(td)/'run');h.stop_ack('api');self.assertEqual(h.events[-2:],[('controller','stop','api'),('ack','api')])

@@ -71,6 +71,9 @@ class Gates(unittest.TestCase):
         for row in after.values():row['diagnostics']['changeFeed']['health'].update(checks=2,hints=1)
         self.assertEqual(G.feed_delivery(before,after,5000)['result'],'PASS');after['ev1']['runtimeId']='replacement'
         with self.assertRaisesRegex(G.Refused,'FEED_RUNTIME_CHANGED'):G.feed_delivery(before,after,5000)
+    def test_late_socket_budget_refusal_cannot_pass_final_accounting(self):
+        for closed in ({'socketBudgetRefused':True,'socketBytes':268435457},{'socketBudgetRefused':False},{}):
+            with self.assertRaisesRegex(G.Refused,'SOCKET_INPUT_BUDGET_UNCONFIRMED'):G.raw_http_ledgers(closed,'/must-not-read-any-receipt')
     def test_runtime_source_guard_precedes_any_host_construction(self):
         from unittest.mock import patch
         import runtime

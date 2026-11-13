@@ -121,7 +121,7 @@ class Producer:
         need(value.get('nonce')==self.plan['nonce']and value.get('sequence')==self.n and value.get('action')==action and value.get('outcome')=='OK','PRODUCER_PHASE_REFUSED');return value['value']
     def abort(self):
         self.cancelled.set();self.thread.join(timeout=5)
-        need(not self.thread.is_alive(),'PRODUCER_CLEANUP_UNKNOWN')
+        need(not self.thread.is_alive()and self.error is None and isinstance(self.result,dict)and self.result.get('groupDrained')is True,'PRODUCER_CLEANUP_UNKNOWN')
     def close(self):
         value=self.phase('close',seconds=30);self.thread.join(timeout=5)
         need(not self.thread.is_alive()and self.error is None and self.result is not None and self.result['returnCode']==0 and self.result['failure']is None and self.result['groupDrained'],'PRODUCER_EXIT_UNKNOWN');return value

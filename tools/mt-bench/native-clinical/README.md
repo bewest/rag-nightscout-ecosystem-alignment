@@ -127,7 +127,7 @@ host deadline, and 4 MiB stdout/stderr reserved before construction. It admits a
 most 8,192 explicit HTTP requests and 16 concurrent sockets. The HTTP-wide
 observer, including source primer and stock handshakes, permits at most 16,384
 requests/256 MiB response bytes. Private accounting writes have a separate
-256 MiB cumulative bound. Stock Engine.IO packets have an independent 256 MiB cumulative input ceiling and one MiB packet/payload ceiling; source-day frames allow at most 512 SGVs. Receipt pages contain at most 64 records; no page may
+256 MiB cumulative bound. Stock Engine.IO packets have an independent 256 MiB cumulative input ceiling and one MiB packet/payload ceiling; source-day frames allow at most 512 SGVs. A late packet-limit breach is persisted and refuses both client close and final accounting; it cannot become a successful closed ledger. A finished producer thread is insufficient cleanup proof: its terminal result must positively confirm the owned group drained, otherwise cleanup retains uncertainty. Receipt pages contain at most 64 records; no page may
 exceed 64 KiB. Source primer's existing finite warming policy is preserved.
 These are instrument bounds; none is a product SLO or a production profile.
 

@@ -67,6 +67,8 @@ class Host(C.Host):
     def start_producer(self):
         directory=self.out/'http-session';directory.mkdir(mode=0o700);custody=directory/'client-custody';custody.mkdir(mode=0o700)
         spec={'version':1,'kind':'native-clinical-http-client','nonce':self.p['nonce'],'source':self.p['source'],'ids':self.p['ids'],'runId':self.p['runId'],'sourceRoot':str(Path(self.p['base']).parent.parent),'primerConfig':str(Path(self.p['state'])/'primer/config.json'),'clientCustody':str(custody),'endpoints':self.endpoints(),'sourceHelpers':{name:C.sha(Path(self.p['base'])/name)for name in ('prime.js','connection-budget-files.js')},'hostNodeVersion':self.p['hostDependencies']['nodeVersion'],'maximumRequests':8192,'maximumSockets':16,'maximumHttpBytes':268435456,'maximumWallMs':1200000}
+        need(self.n<self.p['maximumCommands']-self.p['cleanupReserveCommands'],'COMMAND_COUNT')
+        need(self.p['maximumOutputBytes']-self.bytes-self.p['cleanupReserveOutputBytes']>=self.p['maximumProducerOutputBytes'],'PRODUCER_OUTPUT_RESERVATION')
         # Reserve the complete child output allowance before construction. Host
         # bytes report actual output after join; no concurrent over-allocation.
         self.n+=1;self.reservedProducerBytes=self.p['maximumProducerOutputBytes'];self.p['maximumOutputBytes']-=self.reservedProducerBytes
@@ -100,11 +102,11 @@ class Host(C.Host):
         self.cleanup=True;errors=[]
         if self.producer is not None and not self.producerClosed:
             try:self.producer.abort()
-            except Exception as error:errors.append({'stage':'producer-cancel','error':str(error)})
+            except BaseException as error:self.uncertain=True;errors.append({'stage':'producer-cancel','error':str(error)})
         try:C.save(self.out/'root-cleanup-spec.private.json',{'kind':'m7-clinical-exact-owned-cleanup-v1','plan':self.p,'allocationAttempted':self.allocation_attempted,'images':self.images,'known':self.owned})
         except BaseException as error:errors.append({'stage':'cleanup-spec-publication','error':str(error)})
         if not self.allocation_attempted:
-            C.save(self.out/'finally-no-allocation.json',{'allocationAttempted':False,'cleanupEffects':0});return
+            C.save(self.out/'finally-no-allocation.json',{'allocationAttempted':False,'cleanupEffects':0,'errors':errors,'uncertainHostEffect':self.uncertain});need(not errors and not self.uncertain,'CLEANUP_UNCONFIRMED');return
         if not getattr(self,'skip_controller_cleanup',False):
             for slot in reversed(self.p['startOrder']):
                 try:

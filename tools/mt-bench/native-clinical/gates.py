@@ -124,6 +124,7 @@ def feed_delivery(before,after,heartbeat_bound):
 
 def raw_http_ledgers(closed,directory):
     from pathlib import Path
+    need(closed.get('socketBudgetRefused')is False and type(closed.get('socketBytes'))is int and 0<=closed['socketBytes']<=268435456,'SOCKET_INPUT_BUDGET_UNCONFIRMED')
     evidence=closed.get('httpEvidence',{});need(evidence.get('complete')is True and type(evidence.get('requestsBegun'))is int and evidence['requestsBegun']==evidence.get('responsesRecorded')and 0<evidence['requestsBegun']<=8192,'RAW_HTTP_INCOMPLETE')
     need(type(evidence.get('pages'))is int and evidence['pages']==(evidence['requestsBegun']+63)//64,'RAW_HTTP_PAGE_BOUND')
     seen=set();attempts={field:{}for field in FIELDS}
