@@ -240,7 +240,8 @@ def prepare_staged(args,target,pinned):
          "pair": {"core": args.core_commit, "deploy": args.deploy_commit}, "coreRepository": str(Path(args.core_repo).resolve()),
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
-         "freeze": str(Path(args.freeze).resolve()), "runPurpose":getattr(args,"run_purpose","acceptance"), "profile":args.profile,"cadence":CADENCE[args.profile]}
+         "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":CADENCE[args.profile]}
+    if getattr(args,"run_purpose","acceptance")=="discovery":m["runPurpose"]="discovery"
     m["diagnostics"]=profile_provenance.selection(getattr(args,"diagnostics","off"),getattr(args,"diagnostics_interval_ms",5000))
     m['measurementMode']=getattr(args,'measurement_mode','accepted')
     if m['measurementMode']=='unaccepted':
