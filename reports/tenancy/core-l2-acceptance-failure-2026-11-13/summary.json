@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "recordDate": "2026-11-13",
+  "campaignLabel": "core L2",
+  "outcome": "FAILED",
+  "measurementBasis": "reproduced: captured remote execution; publication is an offline derivative, not a rerun",
+  "scope": "FROZEN_CORE_FUNCTIONAL_ACCEPTANCE_EXECUTION",
+  "source": {
+    "executedCoreCommit": "b06106eb8748e975cbe651f6ab51a2b664bd34a1",
+    "executedTrackedMultitenantTree": "adbf30ac5c9fbde59df454dcf0b1bb3c00bae43f",
+    "externalOverlayApplied": false,
+    "sourceCleanCaptured": true,
+    "metadataOnlyProvenance": {
+      "deployCommit": "9996ede0a62b798d4448cc44682d8d41e77f12f2",
+      "alignmentCommit": "2f289e4849891a8776dcc5a15c0f0af0e4ed33bd"
+    }
+  },
+  "toolchainAndInstrument": {
+    "lockSha256": "6418fe21c18346435f643b8496d6b7ec23c9c6de28f1925c3bb2028eb575e93e",
+    "ciEnvironmentSha256": "97ebaee8ecab5deb14c434c34e2cb05b3235b5e7a55224b82d5e3e7e4f4a0fff",
+    "nodeVersion": "v24.22.1",
+    "npmVersion": "11.19.1",
+    "nodeBinarySha256": "e32e2d16081cf644f88392934288086e7662529d0d43277c34f7aad2207cfafb",
+    "instrumentCommit": "9a21239fc6b295444846ab5ea8c60a2470686071",
+    "workerSha256": "4689aaabcdd2f6f00287bc5879d35eb672c8585dee42fa889f2b11874c84e788"
+  },
+  "execution": {
+    "stageOrder": [
+      {
+        "id": "unit",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 3730,
+        "pending": 1,
+        "failing": 0
+      },
+      {
+        "id": "dom",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 205,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "id": "dependency",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 368,
+        "pending": 2,
+        "failing": 0
+      },
+      {
+        "id": "core",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 319,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "id": "harness",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 99,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "id": "integration",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 3643,
+        "pending": 853,
+        "failing": 0
+      },
+      {
+        "id": "stress",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 18,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "id": "browser",
+        "status": "passed",
+        "returnCode": 0,
+        "passing": 686,
+        "pending": 0,
+        "failing": 0
+      },
+      {
+        "id": "enabled-corpus",
+        "status": "failed",
+        "returnCode": 1,
+        "passing": 846,
+        "pending": 1,
+        "failing": 10
+      }
+    ],
+    "workerOutcome": "failed",
+    "workerCompletedTests": [
+      "unit",
+      "dom",
+      "dependency",
+      "core",
+      "harness",
+      "integration",
+      "stress",
+      "browser"
+    ],
+    "corpus": {
+      "selectedSuites": 88,
+      "returnCode": 1,
+      "mochaStatus": 10,
+      "passing": 846,
+      "pending": 1,
+      "failing": 10,
+      "pendingCase": "reports end-to-end successful request latency and throughput",
+      "pendingReason": "optional NS_TENANT_COMMIT_CLOCK_BENCHMARK=1 workload not enabled; no performance measurement",
+      "coverageLimit": "Selected-suite count is not an independently recorded per-file execution ledger."
+    },
+    "originalFailures": [
+      {
+        "number": 1,
+        "sourcePath": "tests/change-feed.integration.test.js",
+        "line": 227,
+        "case": "D6 settings/policy metadata",
+        "capturedSymptom": "settingsReader.health().degraded true; expected false"
+      },
+      {
+        "number": 2,
+        "sourcePath": "tests/m7-diagnostics.integration.test.js",
+        "line": 66,
+        "case": "Diagnostics default off",
+        "capturedSymptom": "response.error AbortError/ABORT_ERR with TimeoutError cause; expected undefined"
+      },
+      {
+        "number": 3,
+        "sourcePath": "tests/m7-diagnostics.integration.test.js",
+        "line": 63,
+        "case": "Diagnostics enabled",
+        "capturedSymptom": "compound held-response line reports true != false; exact conjunct not disambiguated by terminal failure"
+      },
+      {
+        "number": 4,
+        "sourcePath": "tests/operation-lifetime-discriminator.integration.test.js",
+        "line": 139,
+        "case": "Lost registration reply / replacement owner",
+        "capturedSymptom": "actual LIFECYCLE_RESTORE_PREFLIGHT_ORPHANED_OPERATIONS; expected LIFECYCLE_RESTORE_DRAIN_TIMEOUT"
+      },
+      {
+        "number": 5,
+        "sourcePath": "tests/operation-lifetime-discriminator.integration.test.js",
+        "line": 193,
+        "case": "Held responses, 1 lease lane",
+        "capturedSymptom": "ALL_HELD_RESPONSES_STILL_FENCE_RESTORE: entered true; expected false"
+      },
+      {
+        "number": 6,
+        "sourcePath": "tests/operation-lifetime-discriminator.integration.test.js",
+        "line": 197,
+        "case": "Held responses, 2 lease lanes",
+        "capturedSymptom": "reply.error AbortError/ABORT_ERR with TimeoutError cause; expected undefined"
+      },
+      {
+        "number": 7,
+        "sourcePath": "tests/operation-lifetime-discriminator.integration.test.js",
+        "line": 197,
+        "case": "Held responses, 4 lease lanes",
+        "capturedSymptom": "reply.error AbortError/ABORT_ERR with TimeoutError cause; expected undefined"
+      },
+      {
+        "number": 8,
+        "sourcePath": "tests/operation-lifetime-discriminator.integration.test.js",
+        "line": 207,
+        "case": "Early-completion negative control",
+        "capturedSymptom": "control actual data committed did not become ready; prerequisite failed before expected assert.throws at211"
+      },
+      {
+        "number": 9,
+        "sourcePath": "tests/operation-lifetime-discriminator.integration.test.js",
+        "line": 234,
+        "case": "Lease-backend death / replacement",
+        "capturedSymptom": "result.error?.code undefined; expected LIFECYCLE_RESTORE_DRAIN_TIMEOUT; no stronger inference from optional-chain value"
+      },
+      {
+        "number": 10,
+        "sourcePath": "tests/api-fixed-roster-serving.integration.test.js",
+        "line": 95,
+        "case": "Two actual API CLI processes",
+        "capturedSymptom": "HELD_RESPONSE_BLOCKS_RESTORE: entered true; expected false"
+      }
+    ]
+  },
+  "exitAndCustody": {
+    "controllerReturnCode": 1,
+    "receiptKind": "DIRECT_CONTROLLER_SUBPROCESS_COMPLETION",
+    "startedAtUTC": "2026-11-13T09:16:13.055372+00:00",
+    "finishedAtUTC": "2026-11-13T09:37:40.769773+00:00",
+    "collection": "completed; original archive retained unchanged in private evidence custody",
+    "archiveBytes": 1993472,
+    "watchdogProcessReturnCode": null,
+    "watchdogProcessReturnCodeMeaning": "UNMEASURED; cleanup result is not a process-exit receipt"
+  },
+  "cleanup": {
+    "workerOwnMongoCleanupVerified": true,
+    "fixtureResiduals": [],
+    "fixtureVolumeResiduals": [],
+    "corpusSharedFixturesCreated": 2,
+    "corpusSharedFixturesRemoved": 2,
+    "corpusSharedFixturesAllRemovedVerified": true,
+    "corpusRemaining": [],
+    "controllerCleanup": "verified",
+    "watchdogCleanup": "verified",
+    "independentRemainingOwnedResources": {
+      "droplets": 0,
+      "firewalls": 0,
+      "tags": 0
+    },
+    "independentCheckedAtUTC": "2026-11-13T09:37:43.229Z",
+    "originalTemporaryKeysRemoved": 2,
+    "accountPrePostIdentityCategoriesUnchanged": 12
+  },
+  "evidenceSha256": {
+    "remoteArchive": "2f75893b5c48b143b195f061338bb15f4d6a9a47a9ae359256271d7203241c76",
+    "workerResult": "b8c9407773eb774e85a1974cd2c9d304a67d4d7bb50d2dee2b9b828000fe98d9",
+    "commands": "38245f17eb29c04b0fb1e97e23c4fb659825a2d9fdf453b4291b377e9fadba09",
+    "corpus": "588c55802fa27d50c5efd1af3cde45b62efa6515195c9943adf2a7f984bd6655",
+    "sourceProvenance": "a6fb1a8f5cb7edb0cc247477df082226b371e4cfb2c23b84b0051a390b7c3f35",
+    "corpusStdout": "051cefa252463c771b128199f08dd5f96fcf2754a0f45499fada093b3ee49729",
+    "corpusStderr": "d5c1536cfdc848d9253de89e04671e65059a1a81a29622e761bd4c4945b6ba7b",
+    "directControllerReceipt": "44142dfd884887b97b1aa86f3885001041e1e7b36e3a2d0eaa621dbaec7d8e15",
+    "controllerLog": "554140ad6895c2cddde869bc9ec3772174c2b95562d1c8937d76793628d78a66",
+    "independentCleanup": "8fcc69cb58f63c1f36ec73a22bb21e3f2d2c03cec806b9b9b0f5c8466ab794c9",
+    "accountPreflight": "a386b6b3ee139e7243cac3d9a7c9d46b358940edee5d21b716577af4fd38c7d7",
+    "accountPostflight": "190e89c3185fa02223113ca97da0ef5ea3f79e4900f5be666521b31322a2c3f2",
+    "privateAssessment": "d02575256f17dcd05c24740e865856555161053d8aed6d27223ae4cd54e8577e",
+    "coordinatorClosureReview": "04e9c2ffc212a96dce3fc592dca811821cdd06ea7a5ee312abe5cc293138d916"
+  },
+  "interpretationLimits": [
+    "Original L2 campaign remains FAILED regardless of later focused passes or repairs.",
+    "Nine response-lifetime-related cases and the separate D6 metadata-feed case are captured symptoms, not proof of a shared root cause.",
+    "Later standalone D6 results do not classify the cause of its full-corpus failure.",
+    "The early-completion control failed its readiness prerequisite before reaching its intended negative assertion; it is an actual campaign failure.",
+    "Nested expected red-control diagnostics in a passing tier do not negate the ten corpus failures.",
+    "No conclusion that failures are product-only, fixture-only or timing-only; isolation and restore guarantees remain required.",
+    "No external-overlay, serving-image, native, capacity, final-prcheck, release or production acceptance claim.",
+    "No source change, retry, paid launch, queue promotion or programme contents edit was performed for this record."
+  ]
+}
