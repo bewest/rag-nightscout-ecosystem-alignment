@@ -1,9 +1,9 @@
 'use strict';
 const assert = require('node:assert/strict');
 const ANCHORS = Object.freeze({
-  core: 'df71c8e815d65d3abcdf6109664ea841bba17733',
-  deploy: '8c27567186f7ede8b6c49674d9751f9e79e8d330',
-  suppliedImage: 'sha256:e58c3f616445618215810069a2c845c1df78e200f96facf20906f66a0e95f7bb',
+  core: 'debcc2c7a44fb812b342d0e524ff0611045094d1',
+  deploy: '2e9afbb6906441e096e9e86e892cc44073d5b0ae',
+  suppliedImage: 'sha256:e0cadd35872c43fa63602d6c8945952383df462aef69d72a5465378b0e20cd77',
   suppliedBindingPrefix: '56183'
 });
 const quote = value => { assert.match(value, /^[a-z][a-z0-9_]{0,62}$/); return '"' + value + '"'; };
@@ -45,6 +45,14 @@ function observeClients (pg, role, scope, jobs) {
   return { starts, violations, live, snapshot: () => ({ peakDirect, peakTotal, live: live.size }),
     restore () { pg.Client.prototype.connect = original; } };
 }
+function writeGrantRefusal (error) {
+  return error instanceof Error && error.name === 'Error' && error.code === undefined &&
+    error.message === 'unsafe settings scope' && error.cause === undefined && error.cleanupError === undefined;
+}
+async function expectRefusal (operation, expected) {
+  assert.notEqual(expected, undefined, 'Every mutation requires an explicit refusal matcher');
+  return assert.rejects(operation, expected);
+}
 // Only the reused fixture's admin instance is bounded; application reader SQL
 // and its reviewed timeout/cadence are untouched. Install before open resumes.
 function boundAdmin (client) {
@@ -55,4 +63,4 @@ function boundAdmin (client) {
     return configured.then(() => original(query, ...args));
   };
 }
-module.exports = { ANCHORS, PHASES, quote, waitFor, exactBackend, TERMINATE, observeClients, boundAdmin };
+module.exports = { ANCHORS, PHASES, quote, waitFor, exactBackend, TERMINATE, observeClients, boundAdmin, writeGrantRefusal, expectRefusal };

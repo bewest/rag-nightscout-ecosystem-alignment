@@ -6,7 +6,7 @@ const { createRequire } = require('node:module');
 const { execFileSync } = require('node:child_process');
 const { randomBytes } = require('node:crypto');
 const { AsyncLocalStorage } = require('node:async_hooks');
-const { ANCHORS, PHASES, quote: q, waitFor, exactBackend, TERMINATE, observeClients, boundAdmin } = require('./support.cjs');
+const { ANCHORS, PHASES, quote: q, waitFor, exactBackend, TERMINATE, observeClients, boundAdmin, writeGrantRefusal, expectRefusal } = require('./support.cjs');
 function argument (name) { const i = process.argv.indexOf(name); return i < 0 ? undefined : process.argv[i + 1]; }
 async function run () {
   if (!process.argv.includes('--run')) {
@@ -58,7 +58,7 @@ async function run () {
   const read = (tenant, id) => scope.withTenant(tenant, () => jobs.run({ id, tenant }, () => loaded.readCurrent(tenant, shared)));
   async function restoredMutation (name, change, restore, expected) {
     phase = name;
-    try { await change(); await assert.rejects(read(lab.A, name), expected); }
+    try { await change(); await expectRefusal(() => read(lab.A, name), expected); }
     finally { await restore(); }
     assert.equal((await read(lab.A, name + '-restored')).env.settings.units, 'mmol'); record(name);
   }
@@ -119,7 +119,7 @@ async function run () {
     await restoredMutation('SELECT-refusal-restoration', () => lab.admin.query(`REVOKE SELECT ON ${settingsTable} FROM ${q(settingsRole)}`),
       () => lab.admin.query(`GRANT SELECT ON ${settingsTable} TO ${q(settingsRole)}`), { code: 'SETTINGS_STORE_UNSAFE' });
     await restoredMutation('write-grant-refusal-restoration', () => lab.admin.query(`GRANT UPDATE ON ${settingsTable} TO ${q(settingsRole)}`),
-      () => lab.admin.query(`REVOKE UPDATE ON ${settingsTable} FROM ${q(settingsRole)}`));
+      () => lab.admin.query(`REVOKE UPDATE ON ${settingsTable} FROM ${q(settingsRole)}`), writeGrantRefusal);
     const original = (await lab.admin.query(`SELECT name,checksum FROM ${ledger} ORDER BY name LIMIT 1`)).rows[0];
     await restoredMutation('catalogue-refusal-restoration', () => lab.admin.query(`UPDATE ${ledger} SET checksum=$2 WHERE name=$1`, [original.name, '0'.repeat(64)]),
       () => lab.admin.query(`UPDATE ${ledger} SET checksum=$2 WHERE name=$1`, [original.name, original.checksum]), { code: 'MIG_DRIFT' });

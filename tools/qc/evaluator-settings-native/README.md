@@ -1,18 +1,19 @@
 # Evaluator-owned settings: prepared native PostgreSQL acceptance
 
-Status: **PREPARED; NATIVE RUN UNMEASURED; PENDING COORDINATOR REPIN**.
-The fixture-only repair is awaiting a replacement frozen core head. Keep the
-explicit X pin below until the coordinator supplies that exact head; do not
-guess/rebind or activate this draft against a superseded cohort. This external instrument does not
+Status: **PREPARED; REPINNED J; NATIVE RUN UNMEASURED**.
+The coordinator must release the exact native window before activation.
+A Unix-socket-only transport blocker is recorded below; repinning alone does
+not qualify that transport.
+This external instrument does not
 change application source, test tiers, deployment source, the image, or the
 primary baseline source pack. It is outside that pack's existing paths.
 
 Frozen source anchors independently inspected during preparation:
 
-- Core X: `df71c8e815d65d3abcdf6109664ea841bba17733`.
-- Deployment Y: `8c27567186f7ede8b6c49674d9751f9e79e8d330`.
+- Core J: `debcc2c7a44fb812b342d0e524ff0611045094d1`.
+- Deployment J: `2e9afbb6906441e096e9e86e892cc44073d5b0ae`.
 - Supplied, not independently inspected here: image
-  `sha256:e58c3f616445618215810069a2c845c1df78e200f96facf20906f66a0e95f7bb`,
+  `sha256:e0cadd35872c43fa63602d6c8945952383df462aef69d72a5465378b0e20cd77`,
   binding prefix `56183`.
 
 The existing native `postgres-secrets.integration.test.js` checks settings
@@ -42,12 +43,29 @@ From this directory:
 ```bash
 node --check run.cjs
 node offline.test.cjs
+# Optional explicit-source constructor/parse check, without connect:
+NS_SETTINGS_SOURCE_CORE=/absolute/path/to/frozen-core node offline.test.cjs
 node run.cjs --plan
 ```
 
 These verify instrument guard/control behavior only. A plan is never acceptance.
 The offline observer uses a synthetic EventEmitter to check forwarding and
 accounting; it supplies no PostgreSQL or clinical evidence.
+
+## Explicit Unix-socket URI preflight limitation
+
+Actual J settings-config accepts a percent-encoded socket-directory hostname,
+for example `postgresql://synthetic:placeholder@%2Ftmp%2Fsynthetic_socket/settings_native_test`.
+The standard pg Client constructor decodes its host to `/tmp/synthetic_socket`
+without connecting. However, J's actual migration options manually use
+`URL.hostname` without decoding: the migration Client receives literal
+`%2Ftmp%2Fsynthetic_socket`. That is not a Unix socket directory. The ordinary
+`?host=/socket` form is also refused by the existing configuration contract.
+The optional explicit-source offline test proves these constructor/parse
+facts and stops before connect; it does NOT mark a socket-only native recipe
+runnable. Coordinator must resolve this transport mismatch without a harness
+SQL/config guard bypass. No fallback TCP publication or product edit is part
+of this artifact repair.
 
 ## Native recipe — only after the coordinator releases its exact window
 
@@ -90,7 +108,7 @@ source names; no credential is written into the config or measurement.
    read/identity; a current operator pin makes A `mmol` while B stays `mg/dl`. Ambient tenant B requesting A must refuse, then valid A/B reads restore. Successful A/B values alone are not treated as RLS isolation proof.
 2. Disable RLS on the owned settings table: the next read must refuse
    `SETTINGS_STORE_UNSAFE`. Restore, then fresh read succeeds. Revoked SELECT
-   has the same prediction. A temporary UPDATE grant must refuse in readiness.
+   has the same prediction. A temporary UPDATE grant must refuse with exactly uncoded `Error('unsafe settings scope')`, with no cause/cleanupError. In J, readiness runs before catalogue/object screening; expecting `SETTINGS_STORE_UNSAFE` here would mismatch the source. Unrelated dependency errors, coded errors and uncertain cleanup must fail this criterion.
 3. Corrupt one owned migration-ledger checksum: the next read must refuse
    `MIG_DRIFT`. Restore the exact captured value, then fresh read succeeds.
    These are native red/restored controls, not changes to guard cadence.

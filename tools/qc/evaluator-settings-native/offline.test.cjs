@@ -3,7 +3,7 @@
 const test = require('node:test'), assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const { AsyncLocalStorage } = require('node:async_hooks');
-const { ANCHORS, PHASES, quote, exactBackend, TERMINATE, observeClients, boundAdmin } = require('./support.cjs');
+const { ANCHORS, PHASES, quote, exactBackend, TERMINATE, observeClients, boundAdmin, writeGrantRefusal, expectRefusal } = require('./support.cjs');
 test('synthetic identifier and exact-backend selectors refuse mismatches', () => {
   assert.equal(quote('esn_synthetic_settings'), '"esn_synthetic_settings"');
   for (const bad of ['peer.schema', 'x";DROP ROLE x', 'x'.repeat(64)]) assert.throws(() => quote(bad));
@@ -58,3 +58,36 @@ test('owned admin instance receives deadlines before mutation SQL and preserves 
   assert.equal(observed.length, 2); assert.match(observed[0][0].text, /statement_timeout/); assert.match(observed[0][0].text, /lock_timeout/);
   assert.equal(observed[1][0].query_timeout, 3000); assert.equal(observed[1][0].text, 'UPDATE synthetic SET value=$1'); assert.deepEqual(observed[1][1], [1]);
 });
+
+test('write-grant criterion rejects unrelated, coded and cleanup failures; old any-rejection is a false positive', async () => {
+  const valid = () => new Error('unsafe settings scope');
+  const unrelated = new Error('synthetic unrelated dependency failure');
+  await assert.rejects(() => Promise.reject(unrelated)); // Original criterion wrongly accepts this.
+  for (const wrong of [unrelated, Object.assign(valid(), { code: 'SETTINGS_STORE_UNSAFE' }),
+    Object.assign(valid(), { cause: new Error('synthetic primary') }), Object.assign(valid(), { cleanupError: new Error('synthetic end') }),
+    Object.assign(valid(), { name: 'PostgresCleanupError', code: 'POSTGRES_CLEANUP_UNCONFIRMED' })]) {
+    await assert.rejects(expectRefusal(() => Promise.reject(wrong), writeGrantRefusal), { code: 'ERR_ASSERTION' });
+    await expectRefusal(() => Promise.reject(valid()), writeGrantRefusal);
+  }
+});
+test('omitting a mutation matcher is a failing instrument, not acceptance', async () => {
+  let invoked = false;
+  await assert.rejects(expectRefusal(() => { invoked = true; return Promise.reject(new Error('unrelated')); }), /explicit refusal matcher/);
+  assert.equal(invoked, false);
+});
+test('explicit source accepts encoded socket credentials but migration Client host remains encoded (known transport blocker)',
+  { skip: !process.env.NS_SETTINGS_SOURCE_CORE }, async () => {
+    const fs = require('node:fs'), path = require('node:path'), Module = require('node:module');
+    const core = process.env.NS_SETTINGS_SOURCE_CORE, local = Module.createRequire(path.join(core, 'package.json'));
+    const uri = 'postgresql://synthetic:placeholder@%2Ftmp%2Fsynthetic_socket/settings_native_test';
+    const selected = local('./lib/server/serve/settings-config')({ connectionEnv: 'READ', namespaces: { settings: 'synthetic_settings', operatorPolicy: 'synthetic_policy' } },
+      { READ: uri }, { namespaces: { entries: 'synthetic_entries' }, connections: [uri.replace('synthetic:placeholder', 'clinical:placeholder')] }, { invalid: () => { throw new Error('actual settings config refusal'); } });
+    assert.equal(selected.connectionString, uri);
+    assert.equal(new (local('pg').Client)({ connectionString: uri }).connectionParameters.host, '/tmp/synthetic_socket');
+    const filename = path.join(core, 'lib/migrations/postgres.js'), loaded = new Module(filename, module);
+    loaded.filename = filename; loaded.paths = Module._nodeModulePaths(path.dirname(filename)); const original = loaded.require.bind(loaded); let host;
+    class Client { constructor (options) { host = options.host; } async connect () { throw new Error('OFFLINE_STOP'); } async end () {} }
+    loaded.require = name => name === 'pg' ? { Client } : original(name); loaded._compile(fs.readFileSync(filename, 'utf8'), filename);
+    await assert.rejects(loaded.exports.run('check', { direct: true, connectionString: uri, namespace: 'synthetic', catalogue: local('./lib/operator-policy/postgres-candidate.json') }), /OFFLINE_STOP/);
+    assert.equal(host, new URL(uri).hostname); assert(!host.startsWith('/'), 'Do not claim socket native readiness from pg.Client decoding alone');
+  });
