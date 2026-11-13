@@ -1,0 +1,89 @@
+{
+  "recordType": "PRIMARY_SAVED_CAPTURE_WHITELIST_PROJECTION",
+  "originalPrivateAssessmentSha256": "a93feedb7198fb25b37730903c17559f7e7f841ef36960ecaf7772f13feca968",
+  "transformation": "Nonidentifying structured projections and raw artifact hash anchors only; no raw logs/SQL/host/provider identities/keypaths.",
+  "source": {
+    "sourcePins": {
+      "coreCommit": "9db0ce94f072c8f34aab889f0181afa4269a6758",
+      "deployCommit": "d76ef17878edb610cdeae75aeef9c07f94b60753",
+      "alignmentCommit": "c62ecb446cb34649f0e80e0e41ecac0088024bc2",
+      "instrumentCommit": "f9a39f7dbca1efb9787afd61c15443e545717ef2"
+    },
+    "instrumentSha256": "b60704009d490e04b587220f40d789192c530227b31ac4aafe6bdf160c948320",
+    "instrumentFileCount": 45,
+    "imageId": "sha256:293a5c531faac6c156305159246e39defd2592612c302af275efe807102a6d3e",
+    "owners": 500,
+    "profile": "remote-pilot",
+    "cadence": {
+      "accel": 1,
+      "hotFactor": 10,
+      "socketsPerTenant": 2,
+      "idleSeconds": 120,
+      "loadSeconds": 300
+    },
+    "readinessVerdict": "PASS"
+  },
+  "idle": {
+    "originalKind": "evaluator-idle-safety-v1",
+    "originalVerdict": "UNMEASURED",
+    "originalCode": "M7_EVALUATOR_IDLE_JOB_PENDING",
+    "owners": 500,
+    "roundTotals": [
+      {
+        "rows": 500,
+        "completedAcquisitions": 500,
+        "completedTimeCycles": 0,
+        "failedCompletions": 0,
+        "jobMasks": {
+          "0": 500
+        }
+      },
+      {
+        "rows": 500,
+        "completedAcquisitions": 500,
+        "completedTimeCycles": 0,
+        "failedCompletions": 0,
+        "jobMasks": {
+          "0": 500
+        }
+      },
+      {
+        "rows": 500,
+        "completedAcquisitions": 500,
+        "completedTimeCycles": 7,
+        "failedCompletions": 0,
+        "jobMasks": {
+          "0": 499,
+          "1": 1
+        }
+      }
+    ],
+    "finalRunningWitnessWithoutIdentifiers": [
+      {
+        "service": "evaluator",
+        "completedAcquisitions": 1,
+        "completedTimeCycles": 0,
+        "failedCompletions": 0,
+        "legacyCycles": 2,
+        "admitted": true,
+        "ready": true,
+        "code": null,
+        "alert": null,
+        "dueAt": null,
+        "dueReason": null,
+        "jobs": 1
+      }
+    ],
+    "jobMaskMeaning": "Source six-bit clinical flag encoding:1=running; other five flags false",
+    "laterCompletion": "UNMEASURED_NO_LATER_OBSERVATION",
+    "runtimeOutcome": "NO_COMPLETED_HUNG_OR_MISSED_WORK_CLAIM",
+    "interpretation": "One job was observed running in the final snapshot. No later completion observation exists; final null due is not proof of no demand or completed work. Seven successful TIME completions elsewhere do not settle that job."
+  },
+  "laterStages": {
+    "load": "NOT_RUN",
+    "recovery": "NOT_RUN",
+    "750": "NOT_RUN",
+    "1000": "NOT_RUN"
+  },
+  "capacity": "NOT_ASSESSED"
+}

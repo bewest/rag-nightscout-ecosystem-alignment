@@ -1,0 +1,26 @@
+{
+  "scope": "In-memory metadata negatives only; no runtime/app tests",
+  "original": "CONSISTENT_UNMEASURED_EVIDENCE",
+  "controls": [
+    {
+      "case": "wrong-source",
+      "result": "REFUSED",
+      "reason": "WRONG_SOURCE"
+    },
+    {
+      "case": "invent-final-completion",
+      "result": "REFUSED",
+      "reason": "INVENTED_RUNTIME_COMPLETION"
+    },
+    {
+      "case": "unstamped-SQL-QPS",
+      "result": "REFUSED",
+      "reason": "UNSTAMPED_SQL_RATE_CLAIM"
+    },
+    {
+      "case": "capacity-PASS",
+      "result": "REFUSED",
+      "reason": "CAPACITY_LAUNDERING"
+    }
+  ]
+}
