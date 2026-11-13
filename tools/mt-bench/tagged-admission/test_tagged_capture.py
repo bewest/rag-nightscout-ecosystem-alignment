@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-from test_tagged_admission import fixture
+from test_tagged_admission import fixture,operator_fixture
 import tagged_capture as C
 import tagged_admission as T
 
@@ -23,6 +23,8 @@ class CaptureDriver(unittest.TestCase):
                  'com.docker.compose.service':'api','org.opencontainers.image.revision':T.CORE,'org.nightscout.deploy.revision':T.DEPLOY}
             inspected=[{'Id':container['cid'],'Image':container['imageId'],'State':{'Running':True,'StartedAt':container['startedAt']},'Config':{'Labels':labels}}]
             spec={'kind':T.KIND,'collectorSha256':C.instrument_identity()['sha256'],'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state),'expected':v['expected']}
+            wrong_source=copy.deepcopy(spec);wrong_source['expected']['source']={}
+            with self.assertRaisesRegex(ValueError,'SOURCE'):C.capture(wrong_source,p/'wrong-source',lambda argv:self.fail('wrong source reached a command'))
             bad_spec={**spec,'collectorSha256':'9'*64}
             with self.assertRaisesRegex(ValueError,'COLLECTOR_IDENTITY'):
                 C.capture(bad_spec,p/'bad-collector',lambda argv: self.fail('collector mismatch reached effect'))
@@ -63,6 +65,60 @@ class CaptureDriver(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'EPISODE_GENERATION_BOUND'):C.capture(spec,p/'too-many',run)
             self.assertEqual(len(calls),before)
 
+class OperatorCapture(unittest.TestCase):
+    def run_fixture(self,directory,value,mode=None):
+        p=Path(directory);cli=p/'cli.js';cli.write_text('// fixed recording controller only\n');state=p/'state';(state/'connection-budget').mkdir(parents=True)
+        (state/'connection-budget/plan.json').write_text(json.dumps(value['plan']));ledger=state/'connection-budget/ledger.json';ledger.write_text(json.dumps(value['ledger']))
+        raw={'version':1,'kind':'controlled-connection-observation','hostMonotonic':{'startedNs':'1','finishedNs':'2'},'visibility':'PG_STAT_AUTHENTICATED_ONLY','source':value['expected']['source'],'planSha256':value['plan']['sha256'],'expected':{k:value['expected'][k]for k in('source','project','workingDirectory','imageId')},'ledger':value['ledger'],**value['census']}
+        captures=value['processes']+value['controlProcesses'];containers={}
+        labels={'org.opencontainers.image.revision':T.CORE,'org.nightscout.deploy.revision':T.DEPLOY}
+        for cap in captures:
+            container=cap['container']
+            if container is None:continue
+            containers[container['cid']]={'Id':container['cid'],'Image':container['imageId'],'State':{'Running':container['running'],'StartedAt':container['startedAt']},'Config':{'Labels':{**labels,'com.docker.compose.project':container['project'],'com.docker.compose.project.working_dir':container['workingDirectory'],'com.docker.compose.service':container['service'],**({'org.nightscout.operator.incarnation':cap['incarnation']}if cap['processInstanceId']==T.CONTROL else{})}}}
+        spec={'kind':T.KIND,'collectorSha256':C.instrument_identity()['sha256'],'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state),'expected':value['expected']};calls=[]
+        def run(argv):
+            calls.append(argv)
+            if argv[0]=='node':
+                if mode=='closed-delete':ledger.unlink()
+                return subprocess.CompletedProcess(argv,0,json.dumps(raw).encode(),b'')
+            if argv[1]=='image':return subprocess.CompletedProcess(argv,0,json.dumps([{'Id':value['expected']['imageId'],'Config':{'Labels':labels}}]).encode(),b'')
+            actual=copy.deepcopy(containers[argv[-1]])
+            if actual['Config']['Labels']['com.docker.compose.service']==T.CONTROL:
+                if mode=='unknown':return subprocess.CompletedProcess(argv,1,b'',b'recording unknown')
+                if mode=='label':actual['Config']['Labels']['org.nightscout.operator.incarnation']='e'*32
+                if mode=='image':actual['Image']='sha256:'+'f'*64
+                if mode=='birth':actual['State']['StartedAt']='foreign-birth'
+                if mode=='race':ledger.write_text('{}')
+            return subprocess.CompletedProcess(argv,0,json.dumps([actual]).encode(),b'')
+        return spec,p/'out',run,calls
+    def test_fixed_control_inspection_and_unknown_never_refunds(self):
+        for mode in(None,'unknown'):
+            with tempfile.TemporaryDirectory()as directory:
+                v=operator_fixture();spec,out,run,calls=self.run_fixture(directory,v,mode);r=C.capture(spec,out,run)
+                self.assertEqual([argv[:2]for argv in calls],[['node',spec['controllerCli']],['docker','image'],['docker','inspect'],['docker','inspect']]);self.assertEqual(calls[-1][-1],v['ledger']['controlLeases'][0]['container']['cid']);self.assertEqual(r['heldCredits']['control'],1);self.assertEqual(r['controls'][0]['leaseState'],'UNKNOWN');self.assertEqual(r['controls'][0]['inspection'],'UNKNOWN'if mode else'STOPPED');self.assertEqual(r['nativeAcceptance'],'UNMEASURED')
+    def test_custody_or_ledger_race_refuses_and_raw_survives(self):
+        for mode in('label','image','birth','race','closed-delete'):
+            with tempfile.TemporaryDirectory()as directory:
+                v=operator_fixture('CLOSED'if mode=='closed-delete'else'UNKNOWN')
+                if mode=='closed-delete':v['ledger']['slots']['api']=[];v['processes']=[];v['census']['tags']=[]
+                spec,out,run,calls=self.run_fixture(directory,v,mode)
+                with self.subTest(mode=mode),self.assertRaisesRegex(ValueError,'CONTROL_PROCESS_CUSTODY|LEDGER_CHANGED_DURING_INSPECTION'):C.capture(spec,out,run)
+                self.assertTrue((out/'001.stdout').exists());self.assertFalse((out/'result.private.json').exists())
+    def test_control_consumes_existing_generation_and_command_bound(self):
+        with tempfile.TemporaryDirectory()as directory:
+            v=operator_fixture();spec,out,run,calls=self.run_fixture(directory,v);limit=C.MAX_HELD_GENERATIONS;C.MAX_HELD_GENERATIONS=1
+            try:
+                with self.assertRaisesRegex(ValueError,'GENERATION_BOUND'):C.capture(spec,out,run)
+                self.assertEqual(calls,[])
+            finally:C.MAX_HELD_GENERATIONS=limit
+    def test_closed_history_and_empty_v2_remain_explicit(self):
+        for empty in(False,True):
+            with tempfile.TemporaryDirectory()as directory:
+                v=operator_fixture('CLOSED')
+                if empty:v['ledger']['controlLeases']=[]
+                spec,out,run,calls=self.run_fixture(directory,v);r=C.capture(spec,out,run);self.assertEqual(len(calls),3);self.assertEqual(r['ledgerVersion'],2);self.assertEqual(r['controls'],[])
+
 class ActualBoundedChild(unittest.TestCase):
     def test_closed_output_pipes_live_child_keeps_raw_and_unknown_outcome(self):
         import sys
@@ -79,7 +135,7 @@ class ActualBoundedChild(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             p=Path(directory);cli=p/'cli.js';cli.write_text('// synthetic pinned child\n')
             state=p/'state';state.mkdir();marker=state/'observer-claim.json';marker.write_text('UNCERTAIN')
-            spec={'kind':T.KIND,'collectorSha256':C.instrument_identity()['sha256'],'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state)}
+            spec={'kind':T.KIND,'collectorSha256':C.instrument_identity()['sha256'],'controllerCli':str(cli),'controllerCliSha256':hashlib.sha256(cli.read_bytes()).hexdigest(),'state':str(state),'expected':{'source':{'coreCommit':T.CORE,'deployCommit':T.DEPLOY}}}
             def run(argv):
                 return C.bounded_execute([sys.executable,'-c',"import os,time;os.write(1,b'original-out');os.write(2,b'original-err');os.close(1);os.close(2);time.sleep(60)"],{},deadline_seconds=1,exit_wait_seconds=.1)
             with self.assertRaisesRegex(ValueError,'COMMAND_CAPTURE_INCOMPLETE'):C.capture(spec,p/'failed',run)

@@ -93,3 +93,49 @@ prepared image and private plan, rather than copying whatever a new observation
 reports. The output directory must not exist. The driver records the spec and
 all direct command results before validating them. A failed capture directory is
 retained unchanged; a new episode needs a new directory and owner decision.
+
+
+## Explicit operator-lease v2 observation
+
+Source/model compatibility now also covers the exact independently reviewed
+companion helper `f098dcc368a80fd0fdeb25c72316523a5c6dd955` and its version-one
+`lifecycleOperator` protocol. The core/deployment admission constants above are
+unchanged historical fixture pins. This compatibility work does not admit that
+companion as an executable pair or transfer earlier image/native evidence.
+
+A plan without that capability requires an explicit version-one worker ledger
+and no control history. An enabled plan requires a fresh version-two ledger with
+explicit `controlLeases`, including empty or CLOSED-only history. Missing,
+unsupported, mixed or malformed versions refuse; there is no inferred migration.
+The collector validates the fixed principal/file/tenant declarations, each intent
+and its hash, source, plan, nonce, incarnation, exact lifecycle tag, one-credit
+lease, container custody and at most one unclosed lease. Collisions with worker
+incarnations, nonces or tags and any missing/foreign census tag refuse. A source
+protocol or profile change needs an explicit review rather than schema widening.
+
+Version-two intake adds a separate private `controlProcesses` capture list.
+Workers retain their existing attribution and controls are marked `actor: control`;
+control history and held credit are explicit even if authenticated occupancy is
+zero. ISSUED, BOUND and UNKNOWN all retain one credit. CLOSED is reported only
+from the validated ledger, not inferred from an absent process, local close,
+zero census, or a claimed receipt. This observer does not authenticate a new
+quiescence ACK or grant closure authority. Original application names remain
+UNKNOWN for control actors.
+
+The fixed capture inspects each unclosed control lease's original exact CID,
+image, source, project, directory, service, StartedAt and operator-incarnation
+label. Unbound or failed inspection remains explicit uncertainty with held
+credit. No PID discovery, arbitrary program, SQL, or new observer reservation is
+introduced. Control actors share the existing 128-held-generation, 131-command,
+16-MiB and 120-second budgets. The atomic ledger must still match after all
+inspections, including empty and CLOSED-only version-two captures.
+
+The output separates authenticated `occupancy.workers` and `occupancy.control`
+from declared `heldCredits`. The controller's occupancy must exactly match the
+attributed census sums. `occupancyWithinHeldCredits` reports the comparison
+without hiding an observed overage or refunding an unused credit. No occupancy
+snapshot proves a peak or preauthentication absence. Every result still grants
+no lifecycle authority and reports native acceptance UNMEASURED. Existing valid
+version-one intake bytes are preserved; the separate collector fingerprint
+changes with these reviewed source/test/contract bytes. The legacy measurement
+selector and its fingerprint are untouched.

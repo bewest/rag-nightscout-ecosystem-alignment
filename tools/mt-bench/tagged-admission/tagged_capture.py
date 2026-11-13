@@ -82,8 +82,16 @@ def bounded_execute(argv, environment, *, deadline_seconds=90, exit_wait_seconds
     return result
 
 
+
+def held_count(plan, ledger):
+    controls = T.control_leases(plan,ledger)
+    workers = sum(row['state'] != 'RETIRED' for rows in ledger['slots'].values() for row in rows)
+    return workers + (sum(row['state'] != 'CLOSED' for row in controls) if controls is not None else 0)
+
+
 def capture(spec, output, run=None):
     T.need(spec.get('kind') == T.KIND, 'EXPLICIT_INSTRUMENT_REQUIRED')
+    T.need(spec.get('expected',{}).get('source') == {'coreCommit':T.CORE,'deployCommit':T.DEPLOY}, 'SOURCE')
     collector=instrument_identity()
     T.need(spec.get('collectorSha256') == collector['sha256'], 'COLLECTOR_IDENTITY')
     cli, state = Path(spec['controllerCli']), Path(spec['state'])
@@ -91,9 +99,10 @@ def capture(spec, output, run=None):
     T.need(hashlib.sha256(cli.read_bytes()).hexdigest() == spec['controllerCliSha256'], 'CONTROLLER_BYTES')
     ledger_file=state/'connection-budget/ledger.json'
     if ledger_file.exists():
+        plan = json.loads((state/'connection-budget/plan.json').read_text())
         T.need(ledger_file.stat().st_size <= 1048576, 'LEDGER_BOUND')
         preflight=json.loads(ledger_file.read_text())
-        T.need(sum(r['state'] != 'RETIRED' for rows in preflight['slots'].values() for r in rows) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
+        T.need(held_count(plan,preflight) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
     output = Path(output)
     output.mkdir(mode=0o700)  # no overwrite/retry of an episode
     write(output/'capture-spec.private.json',spec)
@@ -140,7 +149,7 @@ def capture(spec, output, run=None):
            and raw.get('expected') == {k:spec['expected'][k] for k in ('source','project','workingDirectory','imageId')}, 'OBSERVE_IDENTITY')
     plan = json.loads((state/'connection-budget/plan.json').read_text())
     ledger = raw['ledger']  # atomically captured under the same controller lock
-    T.need(sum(r['state'] != 'RETIRED' for rows in ledger['slots'].values() for r in rows) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
+    T.need(held_count(plan,ledger) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
     image_result=command(['docker','image','inspect',spec['expected']['imageId']])
     T.need(image_result.returncode == 0, 'IMAGE_INSPECTION_FAILED')
     images=json.loads(image_result.stdout)
@@ -148,33 +157,38 @@ def capture(spec, output, run=None):
     labels=images[0].get('Config',{}).get('Labels',{}) or {}
     image_source={'coreCommit':labels.get('org.opencontainers.image.revision'),'deployCommit':labels.get('org.nightscout.deploy.revision')}
     T.need(image_source == spec['expected']['source'], 'IMAGE_SOURCE')
-    processes = []
-    for sid, rows in ledger['slots'].items():
-        for row in rows:
-            if row['state'] == 'RETIRED':continue
-            original = row.get('container')
-            capture = {'processInstanceId':sid,'incarnation':row['incarnation'],'container':None,'inspection':'UNBOUND'}
-            if original:
-                cid = original['cid']
-                T.need(T.hexid(cid,64), 'INSPECTION_CUSTODY')
-                actual = command(['docker','inspect',cid])
-                capture.update(inspectedCid=cid,inspection='UNKNOWN')
-                if actual.returncode == 0:
-                    values=json.loads(actual.stdout)
-                    T.need(isinstance(values,list) and len(values)==1,'INSPECT_RESULT')
-                    value=values[0];labels=value.get('Config',{}).get('Labels',{}) or {};status=value.get('State',{})
-                    capture.update(inspection='RUNNING' if status.get('Running') is True else 'STOPPED',container={
-                        'cid':value['Id'],'startedAt':status.get('StartedAt'),'running':status.get('Running'),
-                        'project':labels.get('com.docker.compose.project'),'workingDirectory':labels.get('com.docker.compose.project.working_dir'),
-                        'service':labels.get('com.docker.compose.service'),'imageId':value.get('Image'),
-                        'source':image_source})
-                # Nonzero inspection remains UNKNOWN, including missing; no
-                # parse of free-form stderr can establish physical retirement.
-            processes.append(capture)
+    processes = [];controlProcesses = []
+    controls = T.control_leases(plan,ledger)
+    actors = [(sid,row,False) for sid,rows in ledger['slots'].items() for row in rows if row['state'] != 'RETIRED']
+    actors += [(T.CONTROL,row,True) for row in controls or [] if row['state'] != 'CLOSED']
+    for sid, row, is_control in actors:
+        if is_control:T.control_custody(row,spec['expected'])
+        original = row.get('container')
+        capture = {'processInstanceId':sid,'incarnation':row['incarnation'],'container':None,'inspection':'UNBOUND'}
+        if original:
+            cid = original['cid']
+            T.need(T.hexid(cid,64), 'INSPECTION_CUSTODY')
+            actual = command(['docker','inspect',cid])
+            capture.update(inspectedCid=cid,inspection='UNKNOWN')
+            if actual.returncode == 0:
+                values=json.loads(actual.stdout)
+                T.need(isinstance(values,list) and len(values)==1,'INSPECT_RESULT')
+                value=values[0];labels=value.get('Config',{}).get('Labels',{}) or {};status=value.get('State',{})
+                capture.update(inspection='RUNNING' if status.get('Running') is True else 'STOPPED',container={
+                    'cid':value['Id'],'startedAt':status.get('StartedAt'),'running':status.get('Running'),
+                    'project':labels.get('com.docker.compose.project'),'workingDirectory':labels.get('com.docker.compose.project.working_dir'),
+                    'service':labels.get('com.docker.compose.service'),'imageId':value.get('Image'),
+                    'source':image_source, **({'operatorIncarnation':labels.get('org.nightscout.operator.incarnation')} if is_control else {})})
+            # Nonzero inspection remains UNKNOWN, including missing; no
+            # parse of free-form stderr can establish physical retirement.
+        (controlProcesses if is_control else processes).append(capture)
     ledger_file=state/'connection-budget/ledger.json'
     T.need((ledger_file.exists() and json.loads(ledger_file.read_text()) == ledger)
-           or (not ledger_file.exists() and not processes), 'LEDGER_CHANGED_DURING_INSPECTION')
+           or (not ledger_file.exists() and not processes and controls is None), 'LEDGER_CHANGED_DURING_INSPECTION')
     value={'expected':spec['expected'],'plan':plan,'ledger':ledger,'processes':processes,'census':{'resource':raw['resource'],'tags':raw['tags']}}
+    if controls is not None:
+        T.need('occupancy' in raw, 'CONTROL_OCCUPANCY_MISSING')
+        value['controlProcesses'] = controlProcesses;value['census']['occupancy'] = raw['occupancy']
     write(output/'intake.private.json',value)
     T.need(instrument_identity() == collector, 'COLLECTOR_CHANGED')
     result=T.observe(**value)
