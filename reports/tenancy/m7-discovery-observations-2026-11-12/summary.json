@@ -55,7 +55,7 @@
         },
         "recovery": {
           "verdict": "PASS",
-          "code": "RECOVERY_BASELINE_UNAVAILABLE",
+          "code": null,
           "hardFailure": false
         },
         "collection": {
@@ -187,8 +187,9 @@
         },
         "recovery": {
           "verdict": "UNMEASURED",
-          "code": "RECOVERY_BASELINE_UNAVAILABLE",
-          "hardFailure": false
+          "code": null,
+          "hardFailure": false,
+          "derivedCategory": "RECOVERY_BASELINE_UNAVAILABLE"
         }
       },
       "fingerprint": {
@@ -314,8 +315,9 @@
         },
         "recovery": {
           "verdict": "UNMEASURED",
-          "code": "RECOVERY_BASELINE_UNAVAILABLE",
-          "hardFailure": false
+          "code": null,
+          "hardFailure": false,
+          "derivedCategory": "RECOVERY_BASELINE_UNAVAILABLE"
         },
         "collection": {
           "verdict": "UNMEASURED",

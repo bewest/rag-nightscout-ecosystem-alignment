@@ -25,6 +25,7 @@ mechanism. C's v2 ledger closed with no pending attempts and GREEN count bounds.
 MEASURED means observations were collected: C still has idle UNMEASURED, load
 ERROR/FAIL and unavailable recovery baseline, with incomplete frame observation.
 Count bounds override none of those findings. Missing counters remain null.
+Absent codes stay null; B/C error labels appear separately as derived categories.
 
 All hosts had 16 logical cores, but different Xeon Platinum CPUs: A8358, C8168,
 B8280. Instruments also differ. The summary derives SQL request-bracket rate
