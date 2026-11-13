@@ -2499,3 +2499,11 @@ This is one evolving local batch, not pushed or fully accepted. Full/browser/ena
 |---|---|
 | Trusted-worker architecture adopted; implementation assigned | The [decision](decisions.md#trusted-worker-performance-boundary) places cross-tenant scheduling in trusted workers and operational integrity inspection outside individual tenant execution budgets. Public/routed tenant protections remain. One implementation owner covers evaluator/feed/settings and the necessary realtime consumption and deployment wiring in isolated worktrees; the existing M7 coordinator remains the sole integrator. Local lane custody: `externals/work/HANDOFF-trusted-worker-performance-2026-11-13.md`. |
 | Acceptance remains open | **Read-derived:** the current change-stamp/version functions iterate tenant bindings and queries; ordinary evaluator cycles read settings inside their operation window. The batch must prove unchanged-tenant behavior, generation-race handling, due clinical work, settings/activity invalidation, missed-hint recovery and public tenant isolation, with actual server work measured where available. No application fix, capacity result, runtime pin, paid campaign, release or push is claimed. |
+
+
+### Update — event-driven design reset (2026-11-13)
+
+| Capability / state | Evidence and next boundary |
+|---|---|
+| Direction adopted; sole successor custody accepted | The [event-driven decision](decisions.md#event-driven-reset) and [communication target](../../docs/30-design/tenancy/evaluator-realtime-communication.md#event-driven-target-and-first-proof) prioritize one small local pgstream flow. Successor coordinator owns M7 integration, design and local resources; one capability owner will own the complete adapter proof. Local custody: `externals/work/HANDOFF-event-driven-design-reset-2026-11-13.md`. |
+| Source anchors confirmed; implementation remains open | Reproduced with `git log -1`: alignment `6b851339ef1cf0a86076f1264ed5962b4df5d876`, core `4b13bf8bbfe578416441d7322837ec5aabeba1ea`, deployment `84accb33c3daccebfdf886300c3ba6c638e003c6`. These are reference inputs, not pgstream implementation or deployment capacity evidence. Earlier captures and stopped lanes remain preserved. The cancelled retry stays CANCELLED_NOT_RUN; no new paid run, app-dev merge, push or release. |

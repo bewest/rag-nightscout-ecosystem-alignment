@@ -15,6 +15,15 @@ passing a functional preview or running a capacity experiment. This guide explai
 how those pieces join without making every later production feature a prerequisite
 to testing an independently ready capability.
 
+## Immediate M7 priority
+
+The [event-driven reset](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
+puts a small local pgstream adapter proof first. Establish the
+[complete clinical-to-client flow and recovery](evaluator-realtime-communication.md#event-driven-target-and-first-proof)
+before further polling tuning, capacity runs or broad acceptance. Then measure a
+small matched sample before planning production capacity. No new paid resources
+or retry of the cancelled 500-tenant run is authorized by this sequence.
+
 ## The proposed first production boundary
 
 Qualify a bounded deployment of the reusable API, evaluator, realtime, admin and

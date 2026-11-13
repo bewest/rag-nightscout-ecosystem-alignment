@@ -169,9 +169,12 @@ inform component and recovery decisions. M6 is split into M6a–M6d and M7
 the M6a and M6b joined candidates have acceptance records on draft #8898
 ([M6a](../../reports/tenancy/m6a-join-2026-11-09/README.md),
 [M6b](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)), with
-no milestone promoted. Deployment trust (M6c) and the M7 bench, scale, evaluator
-partition, realtime sharding and Android items follow, in the order the generated
-table gives; multi-host failover has no acceptance.
+no milestone promoted. Deployment trust (M6c) remains open. The immediate M7 priority is the
+[event-driven reset](../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset):
+prove the small local pgstream clinical-to-client flow and recovery before more
+polling tuning, capacity runs or broad acceptance. The generated table retains
+queue dependencies; it does not authorize restarting parked campaigns. Multi-host
+failover has no acceptance.
 Use the [deployment models and fault domains](../30-design/tenancy/deployment-and-rig-testing.md)
 to distinguish these boundaries. Tenant-local suppression and controlled notification
 handoff are measured; live provider/device delivery remains separately gated by

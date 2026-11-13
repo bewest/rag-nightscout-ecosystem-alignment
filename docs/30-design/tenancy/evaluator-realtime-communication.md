@@ -17,6 +17,71 @@ boundary. Decisions remain in [tenancy decisions](multitenancy-decisions.md), th
 The [delivery dashboard](multitenant-delivery-dashboard.md) owns milestone status;
 this guide does not promote M6.
 
+## Event-driven target and first proof
+
+**Direction adopted 2026-11-13; adapter and recovery behavior UNMEASURED.**
+The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
+owns this priority. The ownership and placement model below is proposed for the
+proof; it is not implementation acceptance. Evaluate maintained pgstream CDC (change data capture) before
+further tuning or benchmarking the polling implementation described below.
+
+| Logical module | Owns | Durable recovery boundary |
+|---|---|---|
+| Evaluator/materializer | Raw clinical and settings changes, clinical computation, time-driven work and versioned output | Existing input versions, projections, processed checkpoints, notification producer state and recoverable next-due work |
+| Realtime gateway | Output/alarm changes, browser frames, viewers and current authorization lifecycle | Persisted output revisions and existing alarm/retry state; rebuild local connections and caches after restart |
+
+The proposed ownership model gives evaluator raw inputs for clinical computation. Realtime consumes
+committed outputs; it does not independently sweep raw inputs. Keep these as two
+logical modules and initially co-locate them where that simplifies the local
+proof. This changes the prototype placement priority of the earlier
+[separate-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes).
+Independent physical scaling remains possible, subject to evidence.
+
+“Stateless evaluator” means caches can disappear without losing correctness.
+Tenant versions, completed work, pending alarms and due times remain state and
+must survive process loss. A timer must become eligible without another write.
+Restart reconstructs due work and resumes committed versions; a newer generation
+must remain pending when an older evaluation completes. Input acquisition alone
+must never acknowledge completed clinical evaluation.
+
+```mermaid
+flowchart LR
+  W[Clinical/settings commit] --> PG[(PostgreSQL WAL)]
+  PG --> CDC[pgstream input routing]
+  CDC --> E[Evaluator/materializer]
+  D[(Recoverable due work)] --> E
+  E --> O[(Versioned output and checkpoint)]
+  O --> OC[pgstream output routing]
+  OC --> R[Realtime gateway]
+  A[Viewer/auth lifecycle] --> R
+  R --> B[Authorized browser]
+```
+
+The adapter must distinguish input, output and control tables. Output publication
+must not loop back into raw-input evaluation. Prefer output CDC to a new direct
+RPC delivery chain. Reuse the [B7 recovery contract](durable-event-delivery-contract-2026-11-06.md)
+and existing producer/output/checkpoint storage before adding a queue. HTTP 2xx
+acknowledges recoverable work or durable completion; RAM-only enqueue is
+insufficient. Clinical write transactions remain independent of notification
+availability, as [D6](multitenancy-decisions.md#d6) requires.
+
+One capability owner first proves a small local flow with pinned pgstream and
+actual app, clinical and socket modules: committed input and settings changes,
+correct tenant evaluation, durable output and actual client update; due work
+without a write; restart/redelivery and concurrent-generation correctness;
+quiet idle without roster scans. Focused break-it controls must detect dropped
+work, early acknowledgement, tenant misrouting and output feedback. Verify the
+upstream acknowledgement/checkpoint/retry contract, schema/plugin footprint,
+strict failure behavior and bounded WAL retention. This is a prototype criterion,
+not an adopted pgstream delivery guarantee or production acceptance.
+
+## Inspected implementation reference
+
+The sections below describe the pinned implementation in the opening provenance
+block. Its independent raw-input projections and polling schedules are reference
+behavior, not the target to preserve. Existing isolation, clinical, authority,
+restore and single-tenant compatibility obligations still apply.
+
 ## The two outputs have different owners
 
 Realtime and evaluator each acquire clinical data from PostgreSQL. The evaluator
