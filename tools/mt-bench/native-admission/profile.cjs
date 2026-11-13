@@ -2,7 +2,7 @@
 // Source-only preparation. This module neither imports a PG client nor launches
 // Docker/services. Actual deployment config is evaluated only after source admission.
 const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process'),crypto=require('node:crypto');
-const CORE='074eab44ee75b9175c951b6a8add3df3e9554af7',DEPLOY='af328d87e2f1a242a6af7d1315760c6bffdd7d85';
+const CORE='d0036890d0623ae79f14bfa71e7226c0fa122a29',DEPLOY='d831c372b39ac19aff4271ecc5e2b1639d176448';
 const need=(v,c)=>{if(!v)throw Object.assign(Error(c),{code:c});};
 const git=(root,args)=>cp.execFileSync('git',['-C',root,...args],{encoding:'utf8',timeout:10000,maxBuffer:1048576,stdio:['ignore','pipe','pipe']}).trim();
 function generate(input){

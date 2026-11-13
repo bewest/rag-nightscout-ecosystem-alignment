@@ -85,7 +85,7 @@ class Controls(unittest.TestCase):
         original=C.read
         def previous_source(file):
             value=original(file)
-            if str(file).endswith('/source-input.private.json'):value['source']['deployCommit']='3d13c63bc404397d6daee501c152288b12d5931d'
+            if str(file).endswith('/source-input.private.json'):value['source']={'coreCommit':'074eab44ee75b9175c951b6a8add3df3e9554af7','deployCommit':'af328d87e2f1a242a6af7d1315760c6bffdd7d85'}
             return value
         with patch.object(C,'read',side_effect=previous_source):
             with self.assertRaisesRegex(RuntimeError,'SOURCE_PIN'):C.prepare(ROOT)

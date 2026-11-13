@@ -1,7 +1,7 @@
 # Admission commissioning
 
 This first executable episode qualifies wiring and normal retirement only. It
-uses core074 and reviewed deploymentaf328 with its exact qualified image. The
+uses reviewed cored003 and deploymentd831 with its exact qualified image. The
 image and qualification hashes are fixed in `commissioning.py`. It does
 not claim the full clinical admission episode or native acceptance.
 
