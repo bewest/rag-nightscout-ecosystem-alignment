@@ -47,6 +47,8 @@ def generate(root, target):
     # the runner supplies a narrowly scoped Docker CLI through a host process.
     # Probe executes on the host with npm dependencies from an owned extraction
     # of this exact image (runner records the image and dependency archive hash).
+    from probe_discovery import adapt
+    source=adapt(source)
     target = Path(target)
     target.write_text(source)
     helpers={}

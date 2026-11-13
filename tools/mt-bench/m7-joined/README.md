@@ -326,3 +326,38 @@ delta; it returns a range from the shortest/longest possible elapsed interval.
 Missing old timings remain unmeasured. Nominal120seconds or nearby cgroup times
 cannot substitute for SQL timestamps. SQL execution time remains distinct from
 database-role CPU; wall stamps support correlation, not a cross-host clock claim.
+
+
+### Discovery runs
+
+`prepare --run-purpose discovery` freezes an explicit observational route;
+`acceptance` remains the default. Discovery preserves raw strict idle/work
+verdicts, including UNMEASURED and failed work-completion counters, and executes
+the existing bounded HTTP load despite incomplete socket priming. Missing
+`.window` stops/drains the owned probe before HTTP load; it does not manufacture
+a restart or probe-count proof. The original workload, deadlines and cadence
+are retained. Failed HTTP requests, dropped iterations, dark sockets and
+recovery timeouts are outcomes rather than performance SLOs.
+
+`check-discovery <summary.json>` accepts only the explicit discovery cell or
+aggregate shape, matching source/image/profile/ownership identity and no known
+hard safety violation. Status MEASURED means complete observations; PARTIAL
+retains absent measurements. Both carry `capacityAcceptance: NOT_GRANTED` and
+cannot pass `check-pilot` or `check-campaign`. Known wrong stored counts,
+foreign/source/reset/custody violations, invalid settings fingerprints and
+explicit unsafe output remain refusals. A failed evaluator completion counter
+alone is preserved as a FAIL finding, not classified as unsafe clinical output.
+
+The independent count oracle retains ACK <= stored <= ACK + uncertain. Missing
+ack metadata is UNMEASURED, never zero; known per-tenant/domain bounds and
+foreign scope still refuse even with other fields missing. Probe counts are
+separately UNMEASURED when fanout metadata is absent. Raw process exits,
+probe partials, strict progress artifacts and existing AFTER bookends are
+retained on failure. A timed-out k6 CLI requires an exact owned-container stop
+before recovery. No observation route grants functional or capacity acceptance.
+
+Recording controls: `python3 -m unittest discover -s tools/mt-bench/m7-joined -p
+ test_discovery.py` (join the command on one line). The optional
+`discovery-transport-control.py --repo <transport> --commit <full commit>` tests
+the actual Record producer against an immutable transport validator without
+executing commands, applications or networks.

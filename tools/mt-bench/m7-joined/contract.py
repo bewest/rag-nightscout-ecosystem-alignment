@@ -55,7 +55,7 @@ def metric(metrics, name, field="count"):
     return value
 
 
-def oracle(stored, metrics, probes, tenants, strict=False):
+def oracle(stored, metrics, probes, tenants, strict=False, allow_empty=False, probes_known=True):
     """Independent SQL counts vs client-acknowledged counts; never API reads."""
     expected = {row["id"] for row in tenants}
     require(expected and set(stored).issubset(expected) and set(probes).issubset(expected), "M7_ORACLE_TENANT_SCOPE")
@@ -67,11 +67,11 @@ def oracle(stored, metrics, probes, tenants, strict=False):
         count = sum(values.get(kind, 0) for kind in total)
         accepted = metric(metrics, f"writes_ok{{tenant:{tenant}}}")
         uncertain = metric(metrics, f"writes_uncertain{{tenant:{tenant}}}")
-        match = accepted <= count <= accepted + uncertain and values.get("probe", 0) == probes.get(tenant, 0)
+        match = accepted <= count <= accepted + uncertain and (not probes_known or values.get("probe", 0) == probes.get(tenant, 0))
         if strict:
             match = match and accepted > 0 and uncertain == 0
         rows.append({"tenant": tenant, "stored": count, "accepted": accepted, "uncertain": uncertain,
-                     "probeStored": values.get("probe", 0), "probeAccepted": probes.get(tenant, 0), "match": match})
+                     "probeStored": values.get("probe", 0), "probeAccepted": probes.get(tenant, 0) if probes_known else None, "match": match})
         if not match:
             failures.append("tenant:" + tenant)
         for kind in total:
@@ -84,10 +84,10 @@ def oracle(stored, metrics, probes, tenants, strict=False):
         uncertain = sum(row["uncertain"] for row in rows)
         if not accepted <= count <= accepted + uncertain:
             failures.append("domain:" + kind)
-    require(sum(row["accepted"] for row in rows) > 0, "M7_ORACLE_NO_ACCEPTED_WRITES")
+    require(allow_empty or sum(row["accepted"] for row in rows) > 0, "M7_ORACLE_NO_ACCEPTED_WRITES")
     require(sum(row["accepted"] for row in rows) == metric(metrics, "writes_ok"), "M7_ORACLE_CLIENT_TOTAL_MISMATCH")
     return {"verdict": "RED" if failures else "GREEN", "rows": rows, "domains": total, "failures": failures,
-            "uncertain": sum(row["uncertain"] for row in rows)}
+            "uncertain": sum(row["uncertain"] for row in rows), **({"probeCountProof":"UNMEASURED"} if not probes_known else {})}
 
 
 def serving_mounts(config):
@@ -217,6 +217,7 @@ def is_unaccepted(document):
 
 
 def accepted_claim_scope(document):
+    require(document.get("runPurpose","acceptance")!="discovery","M7_DISCOVERY_NOT_ACCEPTANCE")
     require(not is_unaccepted(document),"M7_UNACCEPTED_MEASUREMENT_NOT_ACCEPTANCE")
 
 
