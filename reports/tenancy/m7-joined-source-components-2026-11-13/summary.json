@@ -1,0 +1,85 @@
+{
+  "scope": "SOURCE_COMPONENTS_AND_RECORDING_MODEL_ONLY",
+  "status": "fixed on local branches; no application dev merge or release",
+  "coherentCore": "577450bddc85120cad523acaf49cf2c471ff5ac4",
+  "coherentDeployment": "fd7ee57f231eb1a390f1f8397c30507fae66ccb2",
+  "boundaries": {
+    "planContract": {
+      "core": "7977200d97d0ee4a2b78120b6d1ffdad96620b52",
+      "passing": 212,
+      "originalControls": "serialization-bound and temporary-path original RED; repaired GREEN",
+      "fiveLegacyHelpers": "retained byte-identical to6454",
+      "runtimeAcceptance": "UNMEASURED"
+    },
+    "prospectiveConsumer": {
+      "deploy": "9b309b0bf1e9b44c75a47de1ce2b657edd55363a",
+      "topologyProcessCounts": [
+        6,
+        7,
+        7
+      ],
+      "contractFailure": 0,
+      "identityExitCode": 1,
+      "overallExitCode": 1,
+      "bindingDefaultsAndPins": "unchanged"
+    },
+    "realtimeTransaction": {
+      "core": "136e09be767bac7bd3f20530bc1027d095d4e0c3",
+      "passing": 95,
+      "actualDriverSubset": 15,
+      "reviewerExtendedSubset": 16,
+      "originalProtocolFailureExit": 4,
+      "protocolMutationExits": [
+        2,
+        1,
+        1
+      ],
+      "activityMutationExits": [
+        1,
+        1,
+        1
+      ],
+      "restoredExit": 0,
+      "native": "UNMEASURED"
+    },
+    "joinedConsumerHeartbeat": {
+      "core": "577450bddc85120cad523acaf49cf2c471ff5ac4",
+      "deploy": "ebaf5ad83b324f2c1aa72a191a8897b04b30c8f2",
+      "passing": 14,
+      "enabledBoundaryChecks": 6,
+      "semanticControls": 2,
+      "identityExitCode": 1,
+      "overallExitCode": 1,
+      "defaultsAndPins": "unchanged"
+    },
+    "hostController": {
+      "core": "6454f137beff0f09356056f66e10a2a1f3d06053",
+      "deploy": "73a7716d4c517ac201befcf6a68b86224be5e513",
+      "passingProcesses": 16,
+      "namedChecks": 106,
+      "sourceHashesMatched": 468,
+      "dependencyHashesMatched": 86,
+      "extraRootControls": "BOUND persistence omission RED/restored; wrong action bytes refuse before ticket; async wait retains UNKNOWN",
+      "producerParity": "actual fixed-adapter RECORDING observation2/storedcount2 accepted by exact84e envelope intake only",
+      "productionControlVersion2": "NOT_ADVERTISED",
+      "fixedRuntime": "OPEN"
+    }
+  },
+  "privateReviewSha256": {
+    "planContract": "b47322330ce83b8f590fc488376cd44790eea0123e9de31a5660df54a0f8fb0c",
+    "prospectiveConsumer": "364a0d01614fb268db723ffef9eee79d61137f0efecda6f0839b3a46ca159ca6",
+    "realtimeTransaction": "591b313f9e17eedd41c70dcff793e085915854d0166360e4479ef26bb94ea865",
+    "joinedConsumerHeartbeat": "d5aa352fa55d3fc8d08287fa6ca4666456a36d64bc5cccd3dc0edfb23a4172de",
+    "hostController": "2c03a1ad9ba6b4177592059c1364093748f994ad36c10cccbdd16d3fa124ae83"
+  },
+  "limits": [
+    "Original L2 remains FAILED and original D6 corpus cause remains UNMEASURED",
+    "Component checks are attributed to exact sources, not a full campaign on the joined pair",
+    "Recording PostgreSQL protocol and synthetic EOF do not prove real retirement, locks, RLS or process custody",
+    "Envelope intake does not recompute occupancy; full observe/count/selector/custody and clinical gates remain independent",
+    "Fixed launcher/bootstrap/capture/restore/commissioner/realtime host integration remains OPEN",
+    "Non-realtime fixture conversion and full static retirement remain OPEN; legacy helpers and flags retained",
+    "No new paid resources, runtime selection, native/clinical/capacity/production acceptance, push, app dev merge or release"
+  ],
+  "localCustody": "externals/work/HANDOFF-m7-coherent-join-2026-11-13.md"
+}
