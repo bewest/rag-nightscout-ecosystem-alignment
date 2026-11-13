@@ -1,0 +1,77 @@
+{
+  "kind": "original-idle-refusal-predicate-projection",
+  "sourceAlignment": "9f9ec51715a0dd1eb284eba24bbad991ecb21fac",
+  "instrument": "1e62ae298b465a66b48639c98602c9788668b9a0a3d51ff1c054d75b33c6dc08",
+  "originalRawSha256": "602164ec7b8ebc49b9906ecbc92e3635c8c30bbbc0dd1afcef4481d2f56c3b67",
+  "originalVerdict": "UNMEASURED",
+  "originalCode": "M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED",
+  "originalIdleModuleVersion": 2,
+  "ownerCoverage": [
+    500,
+    500,
+    500
+  ],
+  "successfulTimeTotals": [
+    0,
+    0,
+    23
+  ],
+  "violations": [
+    {
+      "sortedSelectorOrdinal": 22,
+      "round": 0,
+      "dueMinusFinalStartMs": 352.117919921875,
+      "dueMinusFinalEndMs": -598.7099609375,
+      "completedTimeCycles": [
+        0,
+        0,
+        1
+      ],
+      "completedAcquisitions": [
+        1,
+        1,
+        1
+      ],
+      "failedCompletions": [
+        0,
+        0,
+        0
+      ],
+      "jobsFlags": [
+        0,
+        0,
+        0
+      ],
+      "lastDueNull": true
+    },
+    {
+      "sortedSelectorOrdinal": 22,
+      "round": 1,
+      "dueMinusFinalStartMs": 352.117919921875,
+      "dueMinusFinalEndMs": -598.7099609375,
+      "completedTimeCycles": [
+        0,
+        0,
+        1
+      ],
+      "completedAcquisitions": [
+        1,
+        1,
+        1
+      ],
+      "failedCompletions": [
+        0,
+        0,
+        0
+      ],
+      "jobsFlags": [
+        0,
+        0,
+        0
+      ],
+      "lastDueNull": true
+    }
+  ],
+  "finalReadBracketMs": 950.827880859375,
+  "meaning": "The original observer rejects an already credited successful TIME cycle at its final RPC boundary; this projection does not rewrite its outcome or qualify load/recovery."
+}

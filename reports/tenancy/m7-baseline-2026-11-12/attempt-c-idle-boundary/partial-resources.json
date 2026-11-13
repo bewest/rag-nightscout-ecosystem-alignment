@@ -1,0 +1,37 @@
+{
+  "kind": "partial-idle-resource-observation",
+  "actualCellTenants": 500,
+  "maximumPlannedTenants": 1000,
+  "phase": "idle-disabled",
+  "cgroupIntervalSeconds": 62.01543736457825,
+  "containerIdentityUnchanged": true,
+  "cpuCoreEquivalents": {
+    "postgres": 7.8433003082845865,
+    "evaluator": 1.280565668401782,
+    "realtime": 0.32531617702535576
+  },
+  "sqlRoleDeltas": {
+    "display_reader": {
+      "deltaCalls": 127271,
+      "deltaSqlExecutionMs": 145172.587136
+    },
+    "activity_reader": {
+      "deltaCalls": 30937,
+      "deltaSqlExecutionMs": 5281.275075000005
+    },
+    "feed_reader": {
+      "deltaCalls": 4182,
+      "deltaSqlExecutionMs": 24237.74853000001
+    }
+  },
+  "sqlSnapshotClock": "NO_SQL_TIMESTAMPS; exact QPS and role CPU unmeasured",
+  "enabledIdle": "Sampler series exists but AFTER bookends absent; no exact enabled-idle SQL delta or sampler-overhead attribution",
+  "loadAndRecovery": "NOT_RUN",
+  "capacity": "UNMEASURED",
+  "inputSha256": {
+    "before-pg-role.tsv": "782c6d893207adf3f5877c2a942f4258e9977b0da32cb4d65854598504035891",
+    "after-pg-role.tsv": "f4f639a1a50f2cd63a76b5dec52f00da4150bd8f04b8d5cd1e077a337b72774b",
+    "before-cgroups.json": "a1286b75887ba7657ec00246b73fa6840aa444b45ac42f8b9f9f671b17c075cf",
+    "after-cgroups.json": "1bc1709e5048c5b640978963a4fab7d233c4e68c2822897a8c84f0a75f64a703"
+  }
+}
