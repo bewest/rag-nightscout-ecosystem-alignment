@@ -112,5 +112,22 @@
     "nativeTimeWitnessRequired": true,
     "deadlineClaim": false,
     "continuousQuiescenceClaim": false
+  },
+  "runPurpose": {
+    "default": "acceptance",
+    "choices": [
+      "acceptance",
+      "discovery"
+    ],
+    "discoverySummaryKind": "m7-joined-discovery-cell",
+    "capacityAcceptance": "NOT_GRANTED",
+    "check": "check-discovery",
+    "discoveryAggregateKind": "m7-joined-discovery",
+    "statuses": [
+      "MEASURED",
+      "PARTIAL"
+    ],
+    "strictFindingsPreserved": true,
+    "missingPrimeDoesNotSuppressHttpLoad": true
   }
 }

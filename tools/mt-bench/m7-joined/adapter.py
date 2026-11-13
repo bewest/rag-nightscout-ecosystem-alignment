@@ -240,7 +240,7 @@ def prepare_staged(args,target,pinned):
          "pair": {"core": args.core_commit, "deploy": args.deploy_commit}, "coreRepository": str(Path(args.core_repo).resolve()),
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
-         "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":CADENCE[args.profile]}
+         "freeze": str(Path(args.freeze).resolve()), "runPurpose":getattr(args,"run_purpose","acceptance"), "profile":args.profile,"cadence":CADENCE[args.profile]}
     m["diagnostics"]=profile_provenance.selection(getattr(args,"diagnostics","off"),getattr(args,"diagnostics_interval_ms",5000))
     m['measurementMode']=getattr(args,'measurement_mode','accepted')
     if m['measurementMode']=='unaccepted':
@@ -564,12 +564,12 @@ def stored(d, runid):
     return rows
 
 
-def count_oracle(d, strict=True):
+def count_oracle(d, strict=True, allow_empty=False):
     out = d / "load";metrics = document(out / ("client-acks.json" if document(d/"owner.json").get("profile")=="fresh-image-diagnostic" else "k6-summary.json"))["metrics"]
     probes = document(out / "fanout.json")["probeWrites"]["byTenant"]
     values = stored(d, (out / "runid").read_text().strip())
     write(out / "stored-counts.json", values)
-    result = oracle(values, metrics, probes, document(d / "tenants.private.json"), strict=strict)
+    result = oracle(values, metrics, probes, document(d / "tenants.private.json"), strict=strict,allow_empty=allow_empty)
     write(out / "oracle.json", result)
     return result
 
@@ -687,6 +687,9 @@ def loadgen_process(d, process):
 
 
 def run(d,m,k6_image):
+    if m.get('runPurpose','acceptance')=='discovery':
+        from discovery import run_discovery
+        return run_discovery(sys.modules[__name__],d,m,k6_image)
     try:return run_cell(d,m,k6_image)
     except Exception as error:
         if m.get('measurementMode')=='unaccepted':
@@ -851,6 +854,7 @@ def parser():
     prep = sub.add_parser("prepare")
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image"):prep.add_argument("--"+name, required=True)
     prep.add_argument("--freeze","--receipt",dest="freeze",required=True)
+    prep.add_argument("--run-purpose",choices=("acceptance","discovery"),default="acceptance")
     prep.add_argument("--diagnostics",choices=("off","on"),default="off")
     prep.add_argument("--diagnostics-interval-ms",type=int,default=5000)
     prep.add_argument('--measurement-mode',choices=('accepted','unaccepted'),default='accepted')
@@ -862,6 +866,7 @@ def parser():
         if cmd == "run":own.add_argument("--k6-image", required=True)
     check = sub.add_parser("check-campaign");check.add_argument("summary")
     check = sub.add_parser("check-pilot");check.add_argument("summary")
+    check = sub.add_parser("check-discovery");check.add_argument("summary")
     check = sub.add_parser("check-unaccepted-measurement");check.add_argument("summary")
     check = sub.add_parser("check-diagnostic");check.add_argument("summary")
     sub.add_parser("manifest")
@@ -877,6 +882,9 @@ def main():
     if args.command == "manifest":return print(json.dumps(instrument(),indent=2))
     if args.command == "prepare":return prepare(args)
     if args.command == "check-campaign":campaign_check(document(args.summary));return print("M7_CAMPAIGN_COMPLETE")
+    if args.command == "check-discovery":
+        from discovery import check_discovery
+        check_discovery(document(args.summary));return print("M7_DISCOVERY_RECORDED_NOT_CAPACITY_ACCEPTANCE")
     if args.command == "check-pilot":pilot_check(document(args.summary));return print("M7_REMOTE_PILOT_COMPLETE")
     if args.command == "check-unaccepted-measurement":unaccepted_check(document(args.summary));return print("M7_UNACCEPTED_COLLECTION_COMPLETE_NOT_ACCEPTANCE")
     if args.command == "check-diagnostic":diagnostic_check(document(args.summary));return print("M7_DIAGNOSTIC_PASS_ONLY")
