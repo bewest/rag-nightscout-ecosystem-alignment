@@ -2451,7 +2451,7 @@
 
 
 <h1 id="working-in-this-repository-the-contract-for-any-agent">Working in this repository: the contract for any agent<a class="headerlink" href="#working-in-this-repository-the-contract-for-any-agent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>3cbf37c82</code>.</em></p>
+<p><em>Living document, last changed 2026-11-12 at <code>d37d66e68</code>.</em></p>
 <p><em>What this is: the operating contract for coding agents (contributor-facing). Read before anything
 else; leads to <a href="docs/00-overview/REVIEWER-ONBOARDING.html">docs/00-overview/REVIEWER-ONBOARDING.md</a>.
 Vendor-neutral: Copilot, Claude Code, Codex, Cursor and local models all read this file. The
@@ -2578,8 +2578,8 @@ place to go stale.</p>
 <td>editing the decision; the roadmap links to it</td>
 </tr>
 <tr>
-<td>a measurement</td>
-<td>a dated record under <code>docs/60-research/&lt;horizon&gt;/</code> or <code>reports/</code></td>
+<td>a measurement summary and provenance</td>
+<td>a compact dated record under <code>docs/60-research/&lt;horizon&gt;/</code> or <code>reports/</code></td>
 <td>never edited after capture</td>
 </tr>
 </tbody>
@@ -2645,6 +2645,13 @@ step. Use ASD-STE100-inspired plain language without claiming formal conformity.
 </ul>
 <p><strong>What goes into the public repository</strong></p>
 <ul>
+<li>Raw capacity and acceptance outputs belong in ignored <code>data/capacity/&lt;run&gt;/</code>,
+  <code>data/acceptance/&lt;run&gt;/</code>, an existing ignored run workspace, or an external evidence store.
+  This includes full logs, traces, SQL/cgroup samples, per-tenant oracles and run archives.
+  Commit concise findings, selected aggregates or figures, source/workload/command details,
+  limitations, checksums and a retained-evidence identifier. Do not force-add bulk outputs.
+  Retain captured originals unchanged outside Git. Retiring existing tracked captures requires
+  preserving their evidence and updating dependent links and gates.</li>
 <li>No names, emails, identifiers or glucose traces from user data, logs or exports. Synthetic data
   only in commits. No credentials, tokens or database URLs anywhere; use the environment.</li>
 <li>A defect live on the shipping release is described by <strong>mechanism, never recipe</strong>: no request,

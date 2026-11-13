@@ -2514,6 +2514,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4848,6 +4856,64 @@
     
   
     core-j-acceptance-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../core-k-acceptance-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core-k-acceptance-2026-11-12/
   
 
     
@@ -7370,6 +7436,180 @@
     
   
     m7-diagnostics-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-discovery-fingerprint-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-fingerprint-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-discovery-observations-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-observations-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../m7-discovery-observer-repairs-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-observer-repairs-2026-11-12/
   
 
     
@@ -10593,29 +10833,29 @@
 <p>The coordinator identified a completeness gap in the
 <a href="../index.html">constructor snapshot repair</a>: its new native suite was in the
 integration tier but absent from the enabled multitenant corpus. The actual
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/before-list.txt">before-list check</a> refuses the missing inventory row.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/before-list.txt">before-list check</a> refuses the missing inventory row.</p>
 <p>Source follow-up <code>71348c1ea62ce8cc7ab9eb4c73f7c4c9b1fcef21</code> adds the file/flag row
 to <code>scripts/test-multitenant.js</code> and the ownership/cleanup row to
 <code>docs/multitenant-test-corpus.md</code>. It includes the preceding fixture-only
 <code>5606226ec856d461b254c372228608eb1b462c5d</code> history. Product and native test bodies
 are unchanged by this registration.</p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/after-list.txt">selected inventory</a> now includes exactly the requested
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/after-list.txt">selected inventory</a> now includes exactly the requested
 suite with <code>NS_COHORT_SNAPSHOT_DOCKER_TEST=1</code>, no shared database capability, and
 its own PostgreSQL fixture. The fixture pins image
 <code>postgres@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea</code>,
 uses an owned random-loopback container and generated private capabilities, and
 removes only that container and its anonymous volume in teardown.</p>
 <p>Execution through the actual enabled-corpus runner, selecting only this suite,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/selected-run.txt">passes 3 checks with 0 pending and 0 failing</a>. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/selected-run.json">run record</a> is retained. The runner provides no shared
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/selected-run.txt">passes 3 checks with 0 pending and 0 failing</a>. The
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/selected-run.json">run record</a> is retained. The runner provides no shared
 fixture here: creation and teardown are performed inside the selected test, so
 its own container is not a runner-created shared resource. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/tier-inventory.txt">tier inventory</a> remains 702 files in 8 tiers.</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/tier-inventory.txt">tier inventory</a> remains 702 files in 8 tiers.</p>
 <p>This measured the registration and selected native execution while preparing
 the committed follow-up. It was not a full enabled corpus or comprehensive
 campaign. The earlier native initialization implementation and captures remain
 source-attributed separately; actual fresh paired shipping restore and evaluator
-acceptance are still pending. Captures are pinned by <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/SHA256SUMS">SHA256SUMS</a>.</p>
+acceptance are still pending. Captures are pinned by <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/followup-enabled-corpus/SHA256SUMS">SHA256SUMS</a>.</p>
 
 
 

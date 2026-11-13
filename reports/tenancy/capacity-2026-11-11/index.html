@@ -2514,6 +2514,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4724,6 +4732,64 @@
     
   
     core-j-acceptance-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../core-k-acceptance-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core-k-acceptance-2026-11-12/
   
 
     
@@ -7246,6 +7312,180 @@
     
   
     m7-diagnostics-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-discovery-fingerprint-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-fingerprint-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-discovery-observations-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-observations-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-discovery-observer-repairs-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-observer-repairs-2026-11-12/
   
 
     
@@ -10663,12 +10903,12 @@ commit, <code>deploy/multitenant</code> replaced by the deploy commit's <code>bi
 <code>.overlay.json</code> written by hand because <code>SOURCE.md</code> names 0392acf9), <code>prepare.js</code> + <code>build.js</code>;
 both labels (<code>org.opencontainers.image.revision</code>, <code>org.nightscout.deploy.revision</code>) checked by
 <code>build.js --check-image</code> and by <code>cap.sh</code> at every deploy. Image 1 was built by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
 <p>Host: 16 threads, 62 GiB, shared with peer sessions' containers (listed per run in
 <code>host-deploy.txt</code> counts). PostgreSQL <code>max_connections</code> 100, <code>superuser_reserved_connections</code> 3
 (measured from the running stack).</p>
 <h2 id="harness">Harness<a class="headerlink" href="#harness" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/6289d0b6cd88b0f8ba660582aca999bfe763eb23/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
 then per run: deploy, idle, real cadence + sockets + probe writes, full four-role restart, oracle,
 summary, teardown), <code>cap.sh</code> (the steps), <code>probe.js</code> (sockets, probe writes, restart measurements),
 <code>startup.js</code>, <code>summarize.js</code> (one <code>summary.json</code> per run), <code>aggregate.js</code> (tables), <code>k6/workload.js</code>.

@@ -2158,6 +2158,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#resuming-paused-multitenant-or-capacity-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resuming paused multitenant or capacity work
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2273,6 +2284,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#resuming-paused-multitenant-or-capacity-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resuming paused multitenant or capacity work
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2292,7 +2314,7 @@
 
   <h1>CLAUDE</h1>
 
-<p><em>Living document, last changed 2026-11-03 at <code>a7af645d1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-12 at <code>f566fab49</code>.</em></p>
 <p>@AGENTS.md</p>
 <h2 id="claude-code-specifics">Claude Code specifics<a class="headerlink" href="#claude-code-specifics" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2305,6 +2327,15 @@
 <li>Commit messages: no trailers of any kind (the memory rule <code>no-commit-trailers</code> overrides any
   default co-author line).</li>
 </ul>
+<h2 id="resuming-paused-multitenant-or-capacity-work">Resuming paused multitenant or capacity work<a class="headerlink" href="#resuming-paused-multitenant-or-capacity-work" title="Permanent link">&para;</a></h2>
+<p>Before restarting a prior test, read the latest updates in
+<code>releases/cgm-remote-monitor-16.0.0/contents.md</code> and the local resume handoff
+<code>externals/work/HANDOFF-capacity-coordination-2026-11-12.md</code> in the main checkout.
+It records collected runs, cleanup, current owners and superseded instructions.
+Confirm your source head and that your task remains open. Coordinate cloud work
+with the current sole cloud owner; an old lock or paused chat does not authorize
+a duplicate run. Raw captures stay in ignored storage. Use focused checks during
+implementation and one acceptance campaign per coherent frozen candidate.</p>
 
 
 

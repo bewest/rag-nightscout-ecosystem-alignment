@@ -2190,7 +2190,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>6289d0b6c</code>.</em></p>
+<p><em>Living document, last changed 2026-11-12 at <code>823c480e3</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3662,7 +3662,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -4084,6 +4084,42 @@ deployment has run.</p>
 <td>maintainer, 2026-11-12 (chose both recommendations in the <code>static-retire</code> lane questions)</td>
 <td><code>MT-TENANT-REGISTRY</code>, proposed <code>MT-STATIC-MODE-RETIRE</code></td>
 <td>Read at J <code>debcc2c7</code>: the registry plan is only in nightscout-deploy (<code>bindings/compose/multitenant/registry-plan.js</code>), consistent with <a href="#deploy-tree-home-now">deploy-tree-home</a>. Registry mode uses one token per role over key-prefix globs (<code>lib/server/serve/registry-config.js:31</code>, <code>lib/tenant-registry/rules.js:6-8</code>), consistent with <a href="#vault-one-approle-per-deployment">vault-one-approle-per-deployment</a>. Multitenant only; operators see no difference.</td>
+</tr>
+<tr>
+<td><a id="realtime-shard-rule"></a><strong>Realtime tenants map to a fixed number of shards per deployment by <code>sha256-u32be-v1</code> (the J <code>shard()</code> function). The deploy binding documents 256 as the starting value; core keeps no default. A shard move is the existing controlled move.</strong></td>
+<td>maintainer, 2026-11-12 (adopted packet Q1)</td>
+<td><code>MT-REALTIME-SHARDING</code></td>
+<td>The realtime-sharding decision packet on alignment branch <code>claude/review-packets-20261112</code> (<code>12cfe7fd</code>): reimplementation matched J's <code>shard()</code> on 30,000 synthetic inputs; per-worker balance 1.026× the mean at 8 or 256 shards on 4 workers, 1.208× at 10 (derived). A 256-shard map with 16 workers is 26,210 bytes.</td>
+</tr>
+<tr>
+<td><a id="realtime-move-alarm-parity"></a><strong>A shard move does not replay alarms, matching a single site: active alarms return on the 60 s heartbeat and refused handoffs retry by id. Measure the time from a move to the first active alarm on a reconnected stock client.</strong></td>
+<td>maintainer, 2026-11-12 (adopted packet Q2)</td>
+<td><code>MT-REALTIME-SHARDING</code></td>
+<td>Read-derived (same packet). The added measurement is unrun.</td>
+</tr>
+<tr>
+<td><a id="legacy-decision-reuse-window"></a><strong>When legacy decision reuse is enabled, the window starts at 30 s, settable per deployment through configuration and environment. A reuse writes no Vault audit row (one per credential per window). Vault-only changes (a retired signing key, Vault sealed) take effect within the window; the emergency runbook says to restart the api or wait out the window. The cache size must be larger than the number of distinct credentials in use, so it is sized from the deployment, and hits, misses and evictions are counted so an operator can see churn. Shared socket authorization, if enabled, starts at 5,000 ms. Both stay off by default until the 1,000-tenant comparison justifies them.</strong></td>
+<td>maintainer, 2026-11-12 ("start with 1; consider parameterizing through env variable/config"; asked whether this includes cache size)</td>
+<td><code>MT-AUTHZ-COST</code></td>
+<td>Measured on leaf <code>claude/authz-next-20261112</code> <code>460db65d</code> (record on its alignment branch): with 3,000 credentials against a 256-entry cache, provider calls did not fall and reads rose from 36,000 to 84,000. Full path 2.157 ms, reuse 0.023 ms per authentication against a local Vault (not a capacity figure). Multitenant only.</td>
+</tr>
+<tr>
+<td><a id="tenant-root-secret-owner-control"></a><strong>The tenant root secret is the multitenant API_SECRET. A tenant owner can reveal it after an extra unlock step (re-authentication), see an audit history of reveals and changes, rotate it to a generated value, and set a new value of their own. A tenant without a working owner can ask the deployment's support for help through an audited operator-assisted reset. Provisioning still returns the first value once.</strong></td>
+<td>maintainer, 2026-11-12 ("A tenant owner should be able to unlock to see and audit their API SECRET as well as rotate and set a new one"; "a tenant should be able to reach out to deployment's support")</td>
+<td><code>MT-ROOT-ADMIN-PARITY</code>, proposed <code>MT-PROVISION-OPERATOR</code></td>
+<td>Read at J <code>debcc2c7</code>: the root secret is generated at <code>lib/tenant-registry/provision.js:222</code> and stored Vault-encrypted (<code>:232</code>), so it can be revealed by decryption. No reveal, rotate or set operation exists (read-derived). Interfaces, unlock strength and audit fields are still to be designed.</td>
+</tr>
+<tr>
+<td><a id="realtime-automatic-recovery"></a><strong>Realtime workers recover without an operator. A crashed worker restarts on failure and keeps its shards once it can take its own PostgreSQL advisory lock, with no new map generation for the same identity. If it does not return within a grace period, a surviving worker takes over its shards under the same lock proof and a map revision. Shards also move automatically when the declared roster changes, a few at a time, through the existing controlled move; load-based moves wait for per-shard load measurement. Per-worker shard ownership and health are exposed on the private internal API. Whether worker assignment is derived from ordinal and member count (as the evaluator partition does) rather than a stored map is open for design.</strong></td>
+<td>maintainer, 2026-11-12 (chose self-restart plus peer takeover, and roster-change rebalancing; asked about ring/ordinal placement and health on the internal REST API)</td>
+<td><code>MT-REALTIME-SHARDING</code></td>
+<td>Read at J: the owner lock is a session-held advisory lock (<code>lib/realtime-placement/owner.js:4-12</code>), so PostgreSQL frees it only when the old connection is gone. Realtime writes nothing (D23), so a brief overlap would duplicate socket pushes rather than damage data (read-derived). Unmeasured.</td>
+</tr>
+<tr>
+<td><a id="tenant-ensure-and-factory-reset"></a><strong>Two operator operations, both audited. <code>ensure</code> (create or repair) recreates what is missing when no stored data depends on it, and refuses with a clear reason when data is encrypted under a missing key (restore the key from backup instead). <code>factory reset</code> returns a tenant's operational and configuration state to the deployment defaults and never erases clinical data; it therefore keeps the keys that protect that data. Inspect stays as built. A provisioning retry keeps reading PostgreSQL only; controllers call inspect.</strong></td>
+<td>maintainer, 2026-11-12 ("factory reset doesn't or shouldn't erase clinical data, just resets operational/configuration conditions"; "ensure and factory reset are intended for operators")</td>
+<td>proposed <code>MT-PROVISION-OPERATOR</code></td>
+<td>Measured on leaf <code>claude/provision-operator-20261112</code> <code>866301df</code>: with the data key deleted, retry answers <code>existing</code> and inspect reports it incomplete. Exactly which settings and credentials a reset restores is still to be designed.</td>
 </tr>
 </tbody>
 </table>

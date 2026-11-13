@@ -2514,6 +2514,14 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4834,6 +4842,64 @@
     
   
     core-j-acceptance-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../core-k-acceptance-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    core-k-acceptance-2026-11-12/
   
 
     
@@ -7356,6 +7422,180 @@
     
   
     m7-diagnostics-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-discovery-fingerprint-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-fingerprint-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-discovery-observations-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-observations-2026-11-12/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../m7-discovery-observer-repairs-2026-11-12/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    m7-discovery-observer-repairs-2026-11-12/
   
 
     
@@ -10633,18 +10873,18 @@ unsharded realtime role and three fixed evaluator participants.</p>
 that phase and did not replay restore or reopen the tenant. A focused cache
 invalidation against that already suspended tenant produced successful replies
 from every participant, followed by realtime status HTTP 503. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/actual-peer-status-refusal.log">peer/operation/status capture</a> retains
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/actual-peer-status-refusal.log">peer/operation/status capture</a> retains
 only bounded operational metadata. It is not an HTTP body or clinical trace.</p>
 <p>The initial hypothesis came from <code>lib/storage/postgres-connection.js</code>: connection
 construction adds its resource record with <code>datastore: null</code> before awaiting
 role and physical backend identity admission. The synchronous
 <code>cohortDatastore()</code> refuses any such record. Realtime's short-lived persisted
 settings readers can overlap a lifecycle status observation.</p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/instrument/cohort-constructor-probe.cjs">native discriminator</a> reproduces
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/instrument/cohort-constructor-probe.cjs">native discriminator</a> reproduces
 that mechanism using an actual operation window and PostgreSQL connections:
 a baseline snapshot is valid, holding another connected constructor before
 identity publication makes the snapshot refuse, and releasing admission restores
-the same datastore. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-before-held.log">capture</a> records both
+the same datastore. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-before-held.log">capture</a> records both
 outcomes. This is reproduced native initialization behavior; the peer status
 capture independently measures the actual deployment refusal. No private error
 body was substituted for a measured handler cause.</p>
@@ -10684,23 +10924,23 @@ identity checks remain required.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/focused-after.log">Affected source checks</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/focused-after.log">Affected source checks</a></td>
 <td>48 pass: constructor cuts, monotonic timeout, failed role, mismatched database, continuous constructor stream, original actor recognition, persistent unknown/wrong-birth refusal, incarnation/census controls, close/release refusal and storage failure behavior</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-after-commit.log">Native exact committed source</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-after-commit.log">Native exact committed source</a></td>
 <td>3 pass on a newly owned disposable PostgreSQL instance: a held real backend plus continuing constructor stream, bounded timeout, rejected native role and another actual database</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-await-removed-control.log">Admission wait removed</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-await-removed-control.log">Admission wait removed</a></td>
 <td>1 pass, 2 fail: held backend yields datastore unavailable; timeout no longer reports the required timeout cause</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-await-restored.log">Exact source bytes restored</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/native-await-restored.log">Exact source bytes restored</a></td>
 <td>3 native pass</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/tier-inventory.log">Tier inventory</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/capture/tier-inventory.log">Tier inventory</a></td>
 <td>702 files, 8 tiers</td>
 </tr>
 </tbody>
@@ -10728,7 +10968,7 @@ oracle. The earlier suspended tenant and immutable failure evidence stay retaine
 No new owner configuration authority protocol, failover, census exception or
 clinical protocol was introduced by this repair.</p>
 <p>Captured files and the two original diagnostic instruments are pinned by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/6289d0b6cd88b0f8ba660582aca999bfe763eb23/reports/tenancy/cohort-constructor-snapshot-2026-11-12/SHA256SUMS">SHA256SUMS</a>. Lane details remain in local
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/91eb81c6a1ddaea51b929ab9ab2d2b26df2fcf71/reports/tenancy/cohort-constructor-snapshot-2026-11-12/SHA256SUMS">SHA256SUMS</a>. Lane details remain in local
 <code>externals/work/HANDOFF-evaluator-binding-2026-11-12.md</code>.</p>
 
 

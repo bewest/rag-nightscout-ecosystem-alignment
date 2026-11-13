@@ -2648,7 +2648,7 @@
 
 
 <h1 id="document-control--proposal">Document control — proposal<a class="headerlink" href="#document-control--proposal" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-12 at <code>d37d66e68</code>.</em></p>
 <p><em>What this is: a proposal (contributor- and maintainer-facing). Read after the <a href="DEFINITION-OF-DONE.html">definition of
 done</a>; leads back to the <a href="index.html">overview</a>. </em><em>DRAFT PROPOSAL, requiring review by the maintainer and by
 a quality-management professional before it is adopted or relied on.</em><em> Written 2026-09-25 against
@@ -2838,7 +2838,9 @@ follows the procedure piloted on 2026-09-25:</p>
   one-line note (the definition of done's snapshot rule).</li>
 <li><strong>A superseded record</strong> (an earlier test run of the same candidate) leaves the reader's path. The
   living document that supersedes it carries its history row, and anything it alone measured.</li>
-<li><strong>Retention:</strong> git retains every record. <strong>Proposed:</strong> records that are evidence for a release
+<li><strong>Retention:</strong> the <a href="../../AGENTS.html">repository contract</a> separates compact Git records from
+  bulk run outputs retained unchanged in ignored storage or an external evidence store.
+  <strong>Proposed:</strong> records that are evidence for a release
   (the integration record, verification records, lab results) are kept retrievable for at least as
   long as that release is supported. A pushed tag per release would pin them.</li>
 <li><strong>Health data.</strong> Records contain synthetic data only, unless a data holder has agreed otherwise

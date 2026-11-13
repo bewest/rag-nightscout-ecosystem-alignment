@@ -5937,6 +5937,10 @@
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/core-k-acceptance-2026-11-12/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/d6-native-discriminators-2026-11-11/index.html</loc>
          <lastmod>2026-11-13</lastmod>
     </url>
@@ -6282,6 +6286,18 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-diagnostics-2026-11-12/report.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-discovery-fingerprint-2026-11-12/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-discovery-observations-2026-11-12/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/m7-discovery-observer-repairs-2026-11-12/index.html</loc>
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>
@@ -7186,6 +7202,14 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/rust/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/tagged-admission/index.html</loc>
+         <lastmod>2026-11-13</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/tagged-admission/tagged-admission.html</loc>
          <lastmod>2026-11-13</lastmod>
     </url>
     <url>
