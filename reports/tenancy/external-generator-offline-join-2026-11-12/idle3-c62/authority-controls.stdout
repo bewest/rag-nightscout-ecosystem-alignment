@@ -1,0 +1,1 @@
+{"findings":[{"name":"wrong-app-pair","refused":true,"code":"JOINED_ACCEPTANCE_PAIR_MISMATCH","keyOrOutputCreated":false},{"name":"missing-source-extension","refused":true,"code":"COMMAND_FAILED","keyOrOutputCreated":false}],"restored":true}
