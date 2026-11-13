@@ -23,7 +23,7 @@ CLEANUP_RESERVE_SECONDS = 4
 
 def instrument_identity():
     directory=Path(T.__file__).resolve().parent
-    names=('tagged_admission.py','tagged_capture.py','test_tagged_admission.py','test_tagged_capture.py','tagged-admission.md')
+    names=('tagged_admission.py','tagged_capture.py','test_tagged_admission.py','test_tagged_capture.py','tagged-admission.md','test_common_recovery.py','common_model_fixture.cjs','common_model_fixture.json')
     files={name:hashlib.sha256((directory/name).read_bytes()).hexdigest() for name in names}
     value={'kind':T.KIND,'files':files}
     return {**value,'sha256':hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
@@ -102,6 +102,7 @@ def capture(spec, output, run=None):
         plan = json.loads((state/'connection-budget/plan.json').read_text())
         T.need(ledger_file.stat().st_size <= 1048576, 'LEDGER_BOUND')
         preflight=json.loads(ledger_file.read_text())
+        if plan.get('version') == 2:T.common_leases(plan,preflight,spec['expected'])
         T.need(held_count(plan,preflight) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
     output = Path(output)
     output.mkdir(mode=0o700)  # no overwrite/retry of an episode
@@ -140,7 +141,7 @@ def capture(spec, output, run=None):
     observed = command(['node',str(cli),str(state),'observe'])
     T.need(observed.returncode == 0, 'OBSERVER_FAILED')
     raw = json.loads(observed.stdout)
-    T.need(raw.get('version') == 1 and raw.get('kind') == 'controlled-connection-observation'
+    T.need(type(raw.get('version')) is int and raw['version'] in (1,2) and raw.get('kind') == 'controlled-connection-observation'
            and raw.get('visibility') == 'PG_STAT_AUTHENTICATED_ONLY', 'VISIBILITY')
     brackets=raw.get('hostMonotonic',{})
     T.need(all(isinstance(brackets.get(k),str) and brackets[k].isdigit() for k in ('startedNs','finishedNs'))
@@ -148,6 +149,8 @@ def capture(spec, output, run=None):
     T.need(raw.get('source') == spec['expected']['source'] and raw.get('planSha256') == spec['expected']['planSha256']
            and raw.get('expected') == {k:spec['expected'][k] for k in ('source','project','workingDirectory','imageId')}, 'OBSERVE_IDENTITY')
     plan = json.loads((state/'connection-budget/plan.json').read_text())
+    T.need(raw['version'] == (2 if plan.get('version') == 2 else 1), 'ENVELOPE_PLAN_VERSION')
+    if raw['version'] == 2:T.envelope(spec['expected'],plan,raw)
     ledger = raw['ledger']  # atomically captured under the same controller lock
     T.need(held_count(plan,ledger) <= MAX_HELD_GENERATIONS, 'EPISODE_GENERATION_BOUND')
     image_result=command(['docker','image','inspect',spec['expected']['imageId']])
@@ -160,7 +163,7 @@ def capture(spec, output, run=None):
     processes = [];controlProcesses = []
     controls = T.control_leases(plan,ledger)
     actors = [(sid,row,False) for sid,rows in ledger['slots'].items() for row in rows if row['state'] != 'RETIRED']
-    actors += [(T.CONTROL,row,True) for row in controls or [] if row['state'] != 'CLOSED']
+    actors += [(row.get('class',T.CONTROL),row,True) for row in controls or [] if row['state'] != 'CLOSED']
     for sid, row, is_control in actors:
         if is_control:T.control_custody(row,spec['expected'])
         original = row.get('container')

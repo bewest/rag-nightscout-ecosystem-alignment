@@ -139,3 +139,40 @@ no lifecycle authority and reports native acceptance UNMEASURED. Existing valid
 version-one intake bytes are preserved; the separate collector fingerprint
 changes with these reviewed source/test/contract bytes. The legacy measurement
 selector and its fingerprint are untouched.
+
+
+## Common ledger3 compatibility: source/model only
+
+The declared common contract at deployment `cbd631364699210a0e8d452d58e45d675e03dd51`
+adds host plan2, lifecycle capability2, ledger3, and observation2/stored-count2.
+The fixed control classes are lifecycle-operator, restore-commissioner and
+realtime-recovery. This instrument checks exact class principals and worker
+DB identity, capability-derived worker/class tags, exact process custody,
+primitive identities, generation bounds, two shared held control credits,
+one active execution, and stopped-predecessor/setup-terminal constraints.
+Authenticated physical occupancy is classed separately from held credits.
+UNKNOWN with zero clients stays UNKNOWN and charged. This instrument never
+retires credit, dispatches a control, or interprets a completion as quiescence.
+
+`observe_envelope()` validates shared ledger/census attribution for either
+version2 envelope. It does not certify the stored-count payload, selector,
+PG-container custody, clinical isolation, or HTTP ledger; those existing oracle
+checks must still run. The fixed capture command remains `observe` and never
+executes stored-counts, SQL or a caller-selected command. Both held controls
+consume the existing shared generation/command/output/deadline budgets.
+
+`common_model_fixture.cjs` is a test-only actual-helper producer using an
+explicit immutable archived common module. Its deterministic JSON is synthetic
+model input, not output from an actual controller CLI. For the CBD archive,
+control-recovery.js SHA256 is
+`82eabd74efbadd2da0ed81fc1212b7447a46e0f6b10f34838cc48475b86f5143`;
+fixture JSON SHA256 is
+`1a30bd217a05387ab2d70a2070abec825799d5c2490ca8638b4af3dd7750887c`.
+The archive's actual controller still refuses host plan2 and emits legacy
+version1 envelopes. Producer parity with the next repaired immutable common
+checkpoint remains required before final selection. The historical CORE/DEPLOY
+constants remain unchanged and are model fixture pins, not a selected new pair.
+Legacy v1 and f098 v2 observations keep their existing output bytes.
+
+Focused checks: `python3 -m unittest discover -s tools/mt-bench/tagged-admission -p 'test_*.py'`.
+No native, resource, SQL, capacity or clinical acceptance follows from them.

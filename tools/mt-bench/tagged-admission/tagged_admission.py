@@ -44,8 +44,125 @@ def tag(incarnation, capability):
 CONTROL = 'lifecycle-operator'
 UUID = re.compile(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}')
 
+# Closed source/model interface for common control-recovery contract version 1.
+CLASSES = ('lifecycle-operator', 'restore-commissioner', 'realtime-recovery')
+IDENTIFIER = re.compile(r'[a-z][a-z0-9_]{0,62}')
+
+def exact(value, keys):
+    return type(value) is dict and set(value) == set(keys)
+
+def integer(value, low, high):
+    return type(value) is int and low <= value <= high
+
+def principal3(value):
+    need(exact(value, ('role','roleOid','database','databaseOid'))
+         and all(type(value[k]) is str and IDENTIFIER.fullmatch(value[k]) for k in ('role','database'))
+         and all(type(value[k]) is str and re.fullmatch(r'[1-9][0-9]{0,9}',value[k]) and int(value[k]) <= 4294967295 for k in ('roleOid','databaseOid')), 'COMMON_PRINCIPAL')
+
+def common_custody(original, expected, service):
+    need(exact(original, ('cid','startedAt','project','workingDirectory','service','imageId','source'))
+         and hexid(original['cid'],64) and type(original['startedAt']) is str and 0 < len(original['startedAt']) <= 100
+         and type(original['service']) is str and original['service'] == service
+         and type(original['project']) is str and re.fullmatch(r'[a-z][a-z0-9-]{0,62}',original['project'])
+         and type(original['workingDirectory']) is str and original['workingDirectory'].startswith('/')
+         and type(original['imageId']) is str and re.fullmatch(r'sha256:[a-f0-9]{64}',original['imageId'])
+         and all(type(original[k]) is str and original[k] == expected[k] for k in ('imageId','project','workingDirectory'))
+         and exact(original['source'], ('coreCommit','deployCommit')) and all(hexid(v,40) for v in original['source'].values()) and original['source'] == expected['source'], 'COMMON_CONTAINER_CUSTODY')
+
+def common_leases(plan, ledger, expected=None):
+    """Declared CBD contract. No dispatch, retirement or inferred cleanup."""
+    need(type(plan.get('version')) is int and plan['version'] == 2
+         and type(plan.get('lifecycleOperator')) is dict and type(plan['lifecycleOperator'].get('version')) is int
+         and plan['lifecycleOperator']['version'] == 2, 'COMMON_PLAN_VERSION')
+    need(exact(ledger, ('version','planSha256','resourceEpoch','slots','controlLeases'))
+         and type(ledger['version']) is int and ledger['version'] == 3, 'COMMON_LEDGER_VERSION')
+    need(hexid(plan.get('sha256'),64) and plan['sha256'] == sha({k:v for k,v in plan.items() if k != 'sha256'})
+         and ledger['planSha256'] == plan['sha256'] and ledger['resourceEpoch'] == [plan['resource']['systemIdentifier'],plan['resource']['postmasterStartedAt']]
+         and all(type(v) is str and v for v in ledger['resourceEpoch']), 'COMMON_PLAN_IDENTITY')
+    if expected is not None:
+        need(plan['source'] == expected['source'] and plan['sha256'] == expected['planSha256'], 'COMMON_EXPECTED_IDENTITY')
+    recovery = plan.get('controlRecovery')
+    need(exact(recovery, ('version','classes')) and type(recovery['version']) is int and recovery['version'] == 1
+         and exact(recovery['classes'], CLASSES), 'COMMON_CLASSES')
+    database = plan.get('workerDatabase')
+    need(exact(database, ('database','databaseOid')) and type(database['database']) is str and IDENTIFIER.fullmatch(database['database'])
+         and type(database['databaseOid']) is str and re.fullmatch(r'[1-9][0-9]{0,9}',database['databaseOid']) and int(database['databaseOid']) <= 4294967295, 'COMMON_DATABASE')
+    need(type(plan['resource'].get('allowances')) is dict and type(plan['resource']['allowances'].get('controlRecovery')) is int
+         and plan['resource']['allowances']['controlRecovery'] == 2, 'COMMON_ALLOWANCE')
+    for name in CLASSES:
+        entry = recovery['classes'][name]
+        need(exact(entry, ('principal',)), 'COMMON_CLASS')
+        principal3(entry['principal'])
+        need(all(entry['principal'][k] == database[k] for k in database), 'COMMON_DATABASE')
+    op = recovery['classes'][CONTROL]['principal']; ddl = recovery['classes']['restore-commissioner']['principal']
+    need(op['role'] != ddl['role'] and op['roleOid'] != ddl['roleOid'], 'COMMON_COMMISSION_PRINCIPAL')
+    slots = plan['slots'];need(type(slots) is list and len(slots) <= 10000, 'COMMON_SLOTS')
+    names = [s.get('processInstanceId') for s in slots if type(s) is dict]
+    need(len(names) == len(slots) and all(type(n) is str and re.fullmatch(r'[a-z][a-z0-9-]{0,62}', n) and n not in CLASSES for n in names)
+         and len(set(names)) == len(names) and exact(ledger['slots'], names), 'COMMON_SLOTS')
+    ids, nonces, tags = set(), set(), set()
+    def identity(row, required):
+        inc, nonce = row.get('incarnation'), row.get('nonce')
+        need(hexid(inc,32) and hexid(nonce,32) and inc != nonce and inc not in ids and nonce not in nonces, 'COMMON_INCARNATION')
+        need(type(row.get('tags')) is list and all(type(t) is str for t in row['tags'])
+             and len(row['tags']) == len(required) and set(row['tags']) == required and not tags.intersection(required), 'COMMON_TAGS')
+        ids.add(inc);nonces.add(nonce);tags.update(required)
+    total = 0
+    for slot in slots:
+        rows = ledger['slots'][slot['processInstanceId']]
+        need(type(rows) is list, 'COMMON_WORKER_ROWS');total += len(rows)
+        need(total <= 4096 and integer(slot.get('maximumOutstandingGenerations'),1,4096), 'COMMON_WORKER_BOUND')
+        caps = slot.get('capabilities');need(type(caps) is dict and len(caps) > 0 and all(type(k) is str for k in caps), 'COMMON_CAPABILITIES')
+        for row in rows:
+            need(exact(row, ('incarnation','nonce','tags','container','state','retired')) and row['state'] in ('ISSUED','RETIRED')
+                 and type(row['retired']) is bool and row['retired'] == (row['state'] == 'RETIRED'), 'COMMON_WORKER_ROW')
+            need(hexid(row['incarnation'],32), 'COMMON_INCARNATION')
+            identity(row, {tag(row['incarnation'],k) for k in caps})
+            need(row['state'] != 'RETIRED' or row['container'] is not None, 'COMMON_WORKER_CONTAINER')
+            if row['container'] is not None:common_custody(row['container'],expected or row['container'],slot['processInstanceId'])
+        need(sum(r['state'] != 'RETIRED' for r in rows) <= slot['maximumOutstandingGenerations'], 'COMMON_WORKER_BOUND')
+    rows = ledger['controlLeases'];need(type(rows) is list and len(rows) <= 4096, 'COMMON_HISTORY')
+    for row in rows:
+        need(exact(row, ('state','class','credits','incarnation','nonce','tags','intentSha256','planSha256','source','principal','container','stopped'))
+             and type(row['class']) is str and row['class'] in CLASSES and type(row['state']) is str and row['state'] in ('ISSUED','BOUND','UNKNOWN','CLOSED')
+             and type(row['credits']) is int and row['credits'] == 1 and hexid(row['intentSha256'],64), 'COMMON_ROW')
+        need(hexid(row['incarnation'],32), 'COMMON_INCARNATION')
+        identity(row, {tag(row['incarnation'],row['class'])})
+        principal3(row['principal'])
+        need(type(row['planSha256']) is str and row['planSha256'] == plan['sha256']
+             and exact(row['source'], ('coreCommit','deployCommit')) and row['source'] == plan['source']
+             and row['principal'] == recovery['classes'][row['class']]['principal'], 'COMMON_IDENTITY')
+        need(row['state'] == 'UNKNOWN' or (row['container'] is None if row['state'] == 'ISSUED' else row['container'] is not None), 'COMMON_BINDING')
+        if row['container'] is not None:
+            common_custody(row['container'],expected or row['container'],row['class'])
+        proof = row['stopped']
+        need(proof is None or (row['state'] == 'UNKNOWN' and row['container'] is not None
+             and exact(proof, ('container','resourceEpoch','noFutureDispatch')) and proof['container'] == row['container']
+             and proof['resourceEpoch'] == ledger['resourceEpoch'] and proof['noFutureDispatch'] is True), 'COMMON_STOPPED')
+    active = sum(r['state'] in ('ISSUED','BOUND') for r in rows)
+    need(sum(r['state'] != 'CLOSED' for r in rows) <= 2 and active <= 1, 'COMMON_CAPACITY')
+    need(not active or all(r['stopped'] is not None and r['class'] != 'restore-commissioner' for r in rows if r['state'] == 'UNKNOWN'), 'COMMON_PREDECESSOR')
+    return rows
+
+
+def envelope(expected, plan, raw):
+    """Check declared envelope2 metadata; counts remain original evidence only."""
+    need(type(raw) is dict and type(raw.get('version')) is int and raw['version'] == 2
+         and raw.get('kind') in ('controlled-connection-observation','controlled-native-stored-counts')
+         and raw.get('visibility') == 'PG_STAT_AUTHENTICATED_ONLY', 'COMMON_ENVELOPE')
+    need(raw.get('source') == expected['source'] and raw.get('planSha256') == expected['planSha256']
+         and raw.get('expected') == {k:expected[k] for k in ('source','project','workingDirectory','imageId')}, 'COMMON_ENVELOPE_IDENTITY')
+    brackets = raw.get('hostMonotonic')
+    need(exact(brackets, ('startedNs','finishedNs')) and all(type(v) is str and re.fullmatch(r'[0-9]{1,24}',v) for v in brackets.values())
+         and int(brackets['finishedNs']) >= int(brackets['startedNs']), 'COMMON_ENVELOPE_BRACKETS')
+    common_leases(plan,raw.get('ledger'),expected)
+    return {k:raw[k] for k in ('resource','tags','occupancy')}
+
+
 def control_leases(plan, ledger):
     """Exact proposed f098 v2 protocol. No migration or inferred zero credit."""
+    if plan.get('version') == 2:
+        return common_leases(plan, ledger)
     version = ledger.get('version')
     need(type(version) is int and version in (1, 2), 'LEDGER_VERSION')
     operator = plan.get('lifecycleOperator')
@@ -106,6 +223,9 @@ def control_leases(plan, ledger):
 
 
 def control_custody(row, expected):
+    if 'class' in row:
+        if row['container'] is not None:common_custody(row['container'],expected,row['class'])
+        return
     original = row['container']
     if original is None:return
     need(isinstance(original,dict) and set(original) == {'cid','startedAt','project','workingDirectory','service','imageId','source'}
@@ -114,14 +234,14 @@ def control_custody(row, expected):
 
 
 def control_observation(expected, rows, captures, mappings):
-    need(isinstance(captures,list) and len(captures) <= 1, 'CONTROL_PROCESS_BOUND')
+    need(isinstance(captures,list) and len(captures) <= (2 if any('class' in r for r in rows) else 1), 'CONTROL_PROCESS_BOUND')
     held = {row['incarnation']:row for row in rows if row['state'] != 'CLOSED'}
     seen = set();result = []
     for row in rows:control_custody(row,expected)
     for capture in captures:
         need(isinstance(capture,dict), 'CONTROL_PROCESS')
         inc = capture.get('incarnation')
-        need(inc in held and inc not in seen and capture.get('processInstanceId') == CONTROL, 'CONTROL_PROCESS_ROSTER');seen.add(inc)
+        need(hexid(inc,32) and inc in held and inc not in seen and capture.get('processInstanceId') == held[inc].get('class',CONTROL), 'CONTROL_PROCESS_ROSTER');seen.add(inc)
         row = held[inc];original = row['container'];container = capture.get('container');inspection = capture.get('inspection')
         need(capture.get('health') is None, 'CONTROL_HEALTH_UNSUPPORTED')
         if original is None:
@@ -132,9 +252,10 @@ def control_observation(expected, rows, captures, mappings):
             else:
                 need(isinstance(container,dict) and all(container.get(k) == v for k,v in original.items()) and container.get('operatorIncarnation') == inc, 'CONTROL_PROCESS_CUSTODY')
                 need((inspection == 'RUNNING' and container.get('running') is True) or (inspection == 'STOPPED' and container.get('running') is False), 'CONTROL_INSPECTION_STATE')
+        actor = row.get('class',CONTROL)
         name = row['tags'][0];need(name not in mappings,'TAG_COLLISION')
-        mappings[name] = {'actor':'control','processInstanceId':CONTROL,'incarnation':inc,'capability':CONTROL,'leaseState':row['state'],'creditsHeld':1,'originalApplicationNameStatus':'UNKNOWN'}
-        result.append({'processInstanceId':CONTROL,'incarnation':inc,'leaseState':row['state'],'intentSha256':row['intentSha256'],'declaredMaximumHeld':1,'inspection':inspection,'cleanup':'UNKNOWN','creditAuthority':'controller ledger; census never refunds'})
+        mappings[name] = {'actor':'control','processInstanceId':actor,'incarnation':inc,'capability':actor,'leaseState':row['state'],'creditsHeld':1,'originalApplicationNameStatus':'UNKNOWN'}
+        result.append({'processInstanceId':actor,'incarnation':inc,'leaseState':row['state'],'intentSha256':row['intentSha256'],'declaredMaximumHeld':1,'inspection':inspection,'cleanup':'UNKNOWN','creditAuthority':'controller ledger; census never refunds'})
     need(seen == set(held), 'MISSING_CONTROL_PROCESS')
     return result
 
@@ -150,11 +271,11 @@ def observe(expected, plan, ledger, processes, census, controlProcesses=None):
     need(expected.get('kind') == KIND, 'EXPLICIT_INSTRUMENT_REQUIRED')
     source = {'coreCommit': CORE, 'deployCommit': DEPLOY}
     need(expected.get('source') == plan.get('source') == source, 'SOURCE')
-    need(re.fullmatch(r'sha256:[a-f0-9]{64}', expected.get('imageId', '')), 'IMAGE')
-    need(re.fullmatch(r'[a-z][a-z0-9-]{0,62}', expected.get('project', '')), 'PROJECT')
+    need(type(expected.get('imageId')) is str and re.fullmatch(r'sha256:[a-f0-9]{64}', expected['imageId']), 'IMAGE')
+    need(type(expected.get('project')) is str and re.fullmatch(r'[a-z][a-z0-9-]{0,62}', expected['project']), 'PROJECT')
     need(isinstance(expected.get('workingDirectory'), str) and expected['workingDirectory'].startswith('/'), 'DIRECTORY')
     body = {k: v for k, v in plan.items() if k != 'sha256'}
-    need(plan.get('kind') == 'controlled-connection-budget-plan' and plan.get('version') == 1
+    need(plan.get('kind') == 'controlled-connection-budget-plan' and type(plan.get('version')) is int and plan['version'] in (1,2)
          and expected.get('planSha256') == plan.get('sha256') == sha(body), 'PLAN_IDENTITY')
     epoch = [plan['resource']['systemIdentifier'], plan['resource']['postmasterStartedAt']]
     need(ledger.get('planSha256') == plan['sha256'] and ledger.get('resourceEpoch') == epoch
@@ -165,9 +286,10 @@ def observe(expected, plan, ledger, processes, census, controlProcesses=None):
          and resource.get('superuserReserved') == plan['resource']['reserved']['superuser']
          and resource.get('otherReserved') == plan['resource']['reserved']['other'], 'RESOURCE_SETTINGS')
     need(type(resource.get('unmanagedClients')) is int and resource['unmanagedClients'] >= 0, 'UNMANAGED_COUNT')
+    controls = control_leases(plan, ledger)
+    if plan['version'] == 2:common_leases(plan,ledger,expected)
     slots = {s['processInstanceId']: s for s in plan['slots']}
     need(len(slots) == len(plan['slots']) and set(slots) == set(ledger['slots']), 'ROSTER')
-    controls = control_leases(plan, ledger)
     if controls is None:need(controlProcesses is None or controlProcesses == [], 'UNPLANNED_CONTROL_PROCESSES')
     need(isinstance(processes, list) and len(processes) <= 10000, 'PROCESS_BOUND')
     held = {(sid, row['incarnation']): row for sid, generations in ledger['slots'].items()
@@ -240,6 +362,7 @@ def observe(expected, plan, ledger, processes, census, controlProcesses=None):
     seen_tags = set()
     attributed = []
     for row in rows:
+        if plan['version'] == 2:need(exact(row,('applicationName','count')) and type(row['applicationName']) is str, 'COMMON_CENSUS_ROW')
         name = row.get('applicationName')
         need(name in mappings and name not in seen_tags, 'UNKNOWN_TAG_OR_MAPPING')
         need(type(row.get('count')) is int and 0 <= row['count'] <= 1000000, 'CENSUS_COUNT')
@@ -251,7 +374,19 @@ def observe(expected, plan, ledger, processes, census, controlProcesses=None):
             'preauthentication': 'UNKNOWN: absent from census is not retired',
             'nativeAcceptance': 'UNMEASURED', 'lifecycleAuthority': 'NONE',
             'originalNames': 'PRIVATE attribution only; raw census is unchanged'}
-    if controls is not None:
+    if plan['version'] == 2:
+        control_by_tag = {r['tags'][0]:r['class'] for r in controls if r['state'] != 'CLOSED'}
+        physical = {'workers':sum(r['count'] for r in rows if r['applicationName'] not in control_by_tag),
+                    'control':{c:sum(r['count'] for r in rows if control_by_tag.get(r['applicationName']) == c) for c in CLASSES}}
+        occupancy = {'physical':physical,'heldControlCredits':len(control_rows),'activeControlExecutions':sum(r['state'] in ('ISSUED','BOUND') for r in controls)}
+        raw = census.get('occupancy')
+        need(exact(raw, ('physical','heldControlCredits','activeControlExecutions')) and exact(raw['physical'], ('workers','control'))
+             and exact(raw['physical']['control'],CLASSES) and all(integer(x,0,1000000) for x in [raw['physical']['workers'],*raw['physical']['control'].values()])
+             and integer(raw['heldControlCredits'],0,2) and integer(raw['activeControlExecutions'],0,1) and raw == occupancy, 'COMMON_OCCUPANCY')
+        result.update(ledgerVersion=3,controls=control_rows,controlHistory={'total':len(controls),'closed':sum(r['state'] == 'CLOSED' for r in controls)},occupancy=occupancy,
+                      heldCredits={'workers':sum(r['declaredMaximumHeld'] for r in generations),'control':len(control_rows)},
+                      controlCreditAuthority='ledger state only; zero authenticated census never closes or refunds')
+    elif controls is not None:
         need('occupancy' in census, 'CONTROL_OCCUPANCY_MISSING')
         control_names = {row['tags'][0] for row in controls if row['state'] != 'CLOSED'}
         occupancy = {'workers':sum(row['count'] for row in rows if row['applicationName'] not in control_names), 'control':sum(row['count'] for row in rows if row['applicationName'] in control_names)}
@@ -259,6 +394,16 @@ def observe(expected, plan, ledger, processes, census, controlProcesses=None):
             raw_occupancy=census['occupancy'];need(isinstance(raw_occupancy,dict) and set(raw_occupancy)=={'workers','control'} and all(type(x)is int and x>=0 for x in raw_occupancy.values()) and raw_occupancy == occupancy, 'OCCUPANCY_MISMATCH')
         result.update(ledgerVersion=2,controls=control_rows,controlHistory={'total':len(controls),'closed':sum(row['state'] == 'CLOSED' for row in controls)},occupancy=occupancy,heldCredits={'workers':sum(row['declaredMaximumHeld'] for row in generations),'control':len(control_rows)},occupancyWithinHeldCredits={'workers':occupancy['workers']<=sum(row['declaredMaximumHeld'] for row in generations),'control':occupancy['control']<=len(control_rows)},controlCreditAuthority='ledger state only; zero authenticated census never closes or refunds')
     return result
+
+
+def observe_envelope(expected, plan, raw, processes, controlProcesses):
+    """Shared attribution only, for declared observation2 or stored-count2.
+
+    Stored clinical counts/selector/PG custody require their own existing oracle
+    checks. Passing this function never certifies those payloads or native work.
+    """
+    census = envelope(expected, plan, raw)
+    return observe(expected,plan,raw['ledger'],processes,census,controlProcesses)
 
 
 def main():
