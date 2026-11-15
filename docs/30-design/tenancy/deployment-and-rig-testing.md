@@ -39,6 +39,61 @@ maps ordinary Kubernetes resources onto these logical roles without assuming
 multi-host membership or a particular Ingress controller. Its candidate resource
 layout and access-policy extensions need their own acceptance.
 
+## Concurrent experiments and acceptance
+
+Agents may run isolated synthetic branch experiments before the branch has full
+acceptance, alongside implementation and other experiments. The maintainer's
+[experiment decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#concurrent-branch-experiments)
+governs this workflow. Acceptance qualifies a selected candidate and its claims;
+it is not a prerequisite for discovering that candidate's faults.
+
+| Run purpose | Execution prerequisites | Result boundary |
+|---|---|---|
+| Branch experiment or diagnosis | Identified source/image/instrument, synthetic input, owned resources, finite limits and focused checks for the changed path | Record failures, partial observations and unknown metrics independently. No capacity or release acceptance. |
+| Performance comparison | Experiment prerequisites plus matched workload and declared host contention | Compare only compatible observations. Record setup, steady traffic, recovery and observer cost separately. |
+| Candidate acceptance | Frozen coherent source/configuration plus applicable full, browser, clinical, isolation and recovery checks | Promote only the criteria actually measured on that candidate. |
+
+Use the existing discovery path, including `pgstream-sample` with
+`--run-purpose discovery` on the runner branch, for pre-acceptance experiments.
+Keep strict/default acceptance separate. The existing
+[fresh-image diagnostic](../../../tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.md)
+is a small functional profile; its limits do not define every discovery workload.
+The reusable runner's current local qualification and remaining remote boundary
+are recorded in the [release update](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15).
+
+Give each concurrent lane its own worktree, project identity, database/state,
+ports, networks and cleanup custody. Record contention on shared hosts. Reserve
+a quiet host for a comparison that needs one; do not impose a global quiet-host
+lock on diagnostics. Do not stop peer resources. Reuse immutable images and
+qualified unchanged dependencies. Keep an active run on its original helper;
+a new branch or helper version must not reset that run.
+
+Within existing resource and spending authority, changing tenant count, rate or
+duration needs a configuration change and applicable input checks, not another
+human approval or full application campaign. Run the actual generated probe on
+a tiny fixture before expensive seeding when its generator or remote environment
+changes. Record focused controls on changed code; reuse unchanged evidence with
+its original source attribution. Missing optional instrumentation, slow startup,
+HTTP errors and expected saturation are findings, not automatic bans on collecting
+other bounded observations. A missing essential oracle leaves the dependent claim
+unmeasured. An intended outage or refusal stays confined to synthetic owned resources.
+
+Stop for lost resource ownership, breached budget/deadline, credential exposure,
+cross-tenant effects or a source mismatch that prevents identifying the experiment.
+Preserve raw outputs and any valid observations even when a run stops. Never
+convert a failed correctness check into accepted capacity. Keep independent
+experiments running when one lane fails. Reusing a seeded fixture requires its
+runtime owner's custody and finite deadline; record its existing history and use
+new output metadata rather than overwriting a capture.
+
+Remote provisioning has an additional tool-permission boundary. A source receipt
+does not change Codex permissions. If automatic review rejects provisioning or
+cleanup, retain the denial and resolve the supported approval path with the user;
+do not cycle through new launch scripts or executors. A remote diagnostic must
+qualify its own transport/environment, without repeating unrelated application
+acceptance. Start with the smallest useful remote point and reuse that qualified
+path for larger authorized configurations.
+
 ## Deployment choices and fault domains
 
 Tenancy, storage, execution and placement answer different questions. The

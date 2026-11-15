@@ -157,6 +157,17 @@ step. Use ASD-STE100-inspired plain language without claiming formal conformity.
 
 **Agents running agents**
 
+Branch experiments run concurrently with implementation and acceptance. Full acceptance is
+required to promote a candidate, not to start an isolated synthetic experiment. Use the
+[experiment policy](docs/30-design/tenancy/deployment-and-rig-testing.md#concurrent-experiments-and-acceptance)
+to separate execution limits from result qualification. A missing optional metric, expected
+overload or incomplete observation does not invalidate other observations or require a new
+application acceptance campaign. Keep the exact failure and its scope. Never turn missing
+evidence into a pass. Each lane owns its resources and cleanup; a shared host is recorded as
+shared rather than reserved globally for every diagnostic. Preserve running lanes when another
+branch or instrument changes. Use focused controls for changed code and one coherent final
+acceptance campaign for the selected candidate.
+
 Milestones run with background agents without asking each time. Give each lane a complete
 capability or an explicit milestone criterion, one owner and one integration boundary. Keep its
 helper changes, fixture repairs and authored controls in that lane; use another agent when the
