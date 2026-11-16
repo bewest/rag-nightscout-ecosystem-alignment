@@ -1327,3 +1327,19 @@ owner repairs future finite-window propagation. The next roster selection is
 10,000/64 at the same offered rate after those focused boundaries qualify, followed
 by independent viewer or REST-rate changes at a fixed roster. No new framework,
 paid allocation, image rebuild for count changes or release is implied.
+
+### Retained realtime and SQL pressure detail
+
+A subsequent read-only reduction accepts the existing same-incarnation realtime
+counter bookends, spanning 164.541–165.112s. They record 910 received and 892
+completed deliveries, 72,818 retries, 6,191 work queries, 4,219 metadata updates
+and 74,602 metadata rows. Watched tenants are 64 at both bookends; the batch
+high-water gauge is 64, which is not a window average. This retry activity is
+observed alongside the clinical-pending and frame failures; no causal attribution
+or prescription to remove retries follows. The 36 PostgreSQL lock samples show
+at most one ungranted lock. Sampled waits do not prove continuous absence of lock
+or pool pressure. The local driver has 34 retained CPU/memory samples, including
+11 rounded to 1024 MiB. Driver FD peak, NIC drops/backlog and ordinary REST final
+counts remain UNMEASURED. The immutable compact reduction is
+`attribution-current/n1000-driver-system-detail.json`, SHA-256
+`716c5c22d993f68c97639334c8ec976745c32331ac605cad1a3c1b6a77890de6`.
