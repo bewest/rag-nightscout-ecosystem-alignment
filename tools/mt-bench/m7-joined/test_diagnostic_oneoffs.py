@@ -3,11 +3,28 @@ import copy
 import json
 from pathlib import Path
 import unittest
+import tempfile
+from unittest.mock import patch
 import adapter
 import diagnostic_resources as r
 import discovery
 import orchestration_binding as b
 import test_orchestration_binding as fixtures
+
+
+# These actor-free controls exercise real flock on their own scratch lock.
+# Production admission and the active proof's global driver lock stay untouched.
+def setUpModule():
+    global _unit_directory, _unit_lock_patch
+    _unit_directory=tempfile.TemporaryDirectory(prefix='m7-oneoff-unit-')
+    _unit_lock_patch=patch('experiment_batch.global_lock_path',return_value=Path(_unit_directory.name)/'heap.lock')
+    _unit_lock_patch.start()
+
+
+def tearDownModule():
+    r.configure()
+    _unit_lock_patch.stop()
+    _unit_directory.cleanup()
 
 
 class DiagnosticOneoffs(unittest.TestCase):
