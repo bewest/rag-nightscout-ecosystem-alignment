@@ -112,15 +112,28 @@ def baseline_snapshot(raw_batches):
             lifecycle[field] = field_value
         if lifecycle['SandboxID'] and not re.fullmatch('[a-f0-9]{64}', lifecycle['SandboxID']):
             raise ValueError('M4_CONTAINER_SANDBOX_ID')
-        observed, live = {}, set()
+        observed, live, unattached = {}, set(), []
         for name, endpoint in ns['Networks'].items():
             if type(name) is not str or not name or len(name) > 255 or any(ord(c) < 32 for c in name) or type(endpoint) is not dict or type(endpoint.get('NetworkID')) is not str:
                 raise ValueError('M4_CONTAINER_NETWORK_SHAPE')
             nid = endpoint['NetworkID']
-            if not re.fullmatch('[a-f0-9]{64}', nid) or nid in observed or (nid in maps and name != network['identities'][nid]['name']):
-                raise ValueError('M4_CONTAINER_GLOBAL_MEMBERSHIP')
             if type(endpoint.get('Gateway')) is not str or (endpoint.get('Aliases') is not None and (type(endpoint['Aliases']) is not list or any(type(alias) is not str for alias in endpoint['Aliases']))):
                 raise ValueError('M4_CONTAINER_GATEWAY_ALIAS_TYPE')
+            if nid == '':
+                state = row.get('State', {})
+                if (not inactive_configured(row, endpoint, lifecycle) or
+                        state.get('Status') != 'created' or
+                        type(state.get('Pid')) is not int or state['Pid'] != 0 or
+                        any(state.get(field) != '0001-01-01T00:00:00Z'
+                            for field in ['StartedAt', 'FinishedAt'])):
+                    raise ValueError('M4_CONTAINER_UNATTACHED_ENDPOINT_REFUSED')
+                # A configured name is not a network identity or a live endpoint.
+                # Keep the complete raw endpoint, including the empty ID, static.
+                # The global membership check below still rejects any live claim.
+                unattached.append(name)
+                continue
+            if not re.fullmatch('[a-f0-9]{64}', nid) or nid in observed or (nid in maps and name != network['identities'][nid]['name']):
+                raise ValueError('M4_CONTAINER_GLOBAL_MEMBERSHIP')
             if nid not in maps or cid not in maps[nid]:
                 # Configured membership survives stop/create; no live endpoint
                 # or authority is inferred. Keep ALL configured fields exact.
@@ -154,6 +167,8 @@ def baseline_snapshot(raw_batches):
         static['NetworkSettings'] = ns
         identities['containers'][cid] = {'id': cid, 'name': row['Name'], 'staticFingerprint': fingerprint(static)}
         observations[cid] = {'sandbox': lifecycle, 'endpoints': observed, 'runtime': runtime_observations(row)}
+        if unattached:
+            observations[cid]['unattachedConfigured'] = sorted(unattached)
     for row in rows['volumes']:
         if type(row.get('Name')) is not str or row['Name'] in identities['volumes']:
             raise ValueError('M4_VOLUME_STATIC_SHAPE')

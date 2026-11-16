@@ -78,6 +78,14 @@ or ownership authority. State, RestartCount and ExecIDs remain runtime observati
 No unrelated Sandbox transition has been reproduced by this source-only work; the
 classification is prospective. It does not claim host quiescence or unchanged full endpoints.
 
+A never-started container may have a configured network name with an empty NetworkID.
+The adapter retains that complete configured endpoint in its static fingerprint without
+adding a global network or endpoint. Admission requires typed `created` state, zero PID,
+zero start/finish timestamps, false active-state flags and empty sandbox, endpoint and
+address fields with zero prefixes. Any actual global membership still refuses. Configured
+names are observations, not inspect or cleanup handles. Every raw configured field and the
+complete inventory remain exact across baseline comparison; this rule needs a fresh baseline.
+
 Each container is created stopped under a fixed initially absent name, journaled by exact ID,
 validated against the typed image/argv/env/mount specification, then independently inspected.
 `custody/custody.jsonl` is fsynced before `custody/observer.jsonl` and its exclusive receipt

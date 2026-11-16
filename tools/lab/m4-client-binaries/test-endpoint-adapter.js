@@ -93,6 +93,58 @@ function stoppedRows () {
  const endpoint={NetworkID:nid,EndpointID:'',MacAddress:'',IPAddress:'',IPPrefixLen:0,GlobalIPv6Address:'',GlobalIPv6PrefixLen:0,Gateway:'',IPv6Gateway:'',Aliases:null,UnknownStatic:{preserved:true}};
  return {containers:[{Id:cid,Name:'/synthetic-stopped',Created:'synthetic-created',Image:'sha256:'+'a'.repeat(64),Config:{Env:['SYNTHETIC_PRIVATE=value']},HostConfig:{OomKillDisable:false},Mounts:[],State:{Status:'exited',Running:false,Restarting:false,Paused:false,Dead:false},NetworkSettings:{Ports:{},Networks:{[networkName]:endpoint},SandboxID:'',SandboxKey:''}}],networks:[{Id:nid,Name:networkName,Containers:{},UnknownStatic:true}]};
 }
+function unattachedRows () {
+ const given=stoppedRows(),row=given.containers[0];
+ row.State={...row.State,Status:'created',Pid:0,StartedAt:'0001-01-01T00:00:00Z',FinishedAt:'0001-01-01T00:00:00Z'};
+ row.NetworkSettings.Networks['synthetic-network-'+nid].NetworkID='';
+ return given;
+}
+test('never-started configured-but-unattached membership preserves its empty ID without a global endpoint or handle',()=>{
+ const observer=require('./custody-observer'),given=unattachedRows(),commands=[],invoke=explicitTransport(given.containers,given.networks);
+ const before=observer.baselineSnapshot(args=>{commands.push(args);return invoke(args);});
+ assert.equal(before.ids.containers.length,1);assert.equal(before.ids.networks.length,1);
+ assert.deepEqual(before.endpointMaps,{[nid]:{}});
+ assert.deepEqual(before.containerObservations[cid].unattachedConfigured,['synthetic-network-'+nid]);
+ assert.deepEqual(before.containerObservations[cid].endpoints,{});
+ assert(!commands.some(args=>args.includes('')),'EMPTY_CONFIGURED_ID_MUST_NOT_BECOME_DOCKER_HANDLE');
+ const after=observer.verifyBaseline(invoke,before);assert.equal(after.endpointComparison.fullEquality,true);
+ assert.deepEqual(after.identities,before.identities);assert(!JSON.stringify(after).includes('SYNTHETIC_PRIVATE=value'));
+ const noGlobal=structuredClone(given);noGlobal.networks=[];
+ const snapshot=observer.baselineSnapshot(explicitTransport(noGlobal.containers,noGlobal.networks));
+ assert.equal(snapshot.ids.networks.length,0);assert.deepEqual(snapshot.endpointMaps,{});
+ const multiple=structuredClone(given);multiple.containers[0].NetworkSettings.Networks['second-configured']=structuredClone(Object.values(multiple.containers[0].NetworkSettings.Networks)[0]);
+ const two=observer.baselineSnapshot(explicitTransport(multiple.containers,multiple.networks));
+ assert.deepEqual(two.containerObservations[cid].unattachedConfigured,['second-configured','synthetic-network-'+nid]);
+});
+test('empty configured network IDs still refuse active previously-started malformed or globally attached shapes',()=>{
+ const observer=require('./custody-observer'),endpoint=row=>row.NetworkSettings.Networks['synthetic-network-'+nid];
+ const mutations=[
+  r=>{r.State.Status='running';},r=>{r.State.Status='exited';},r=>{delete r.State.Status;},
+  ...['Running','Restarting','Paused','Dead'].flatMap(key=>[r=>{r.State[key]=true;},r=>{r.State[key]=0;},r=>{delete r.State[key];}]),
+  r=>{r.State.Pid=1;},r=>{r.State.Pid=false;},r=>{delete r.State.Pid;},
+  ...['StartedAt','FinishedAt'].flatMap(key=>[r=>{r.State[key]='2026-11-15T00:00:00Z';},r=>{r.State[key]=null;},r=>{delete r.State[key];}]),
+  ...['EndpointID','MacAddress','IPAddress','Gateway','IPv6Gateway','GlobalIPv6Address'].flatMap(key=>[r=>{endpoint(r)[key]='nonempty';},r=>{endpoint(r)[key]=false;},r=>{delete endpoint(r)[key];}]),
+  ...['IPPrefixLen','GlobalIPv6PrefixLen'].flatMap(key=>[r=>{endpoint(r)[key]=1;},r=>{endpoint(r)[key]=false;},r=>{delete endpoint(r)[key];}]),
+  ...['SandboxID','SandboxKey'].flatMap(key=>[r=>{r.NetworkSettings[key]='nonempty';},r=>{r.NetworkSettings[key]=false;}]),
+  r=>{endpoint(r).Aliases=false;},r=>{endpoint(r).NetworkID=null;},r=>{endpoint(r).NetworkID='malformed';},r=>{delete endpoint(r).NetworkID;}
+ ];
+ for(const mutate of mutations){const given=unattachedRows();mutate(given.containers[0]);assert.throws(()=>observer.baselineSnapshot(explicitTransport(given.containers,given.networks)),/M4_ENDPOINT_PROFILE_REFUSED/);}
+ const attached=unattachedRows();attached.networks[0].Containers[cid]=synthetic()[nid][cid];
+ assert.throws(()=>observer.baselineSnapshot(explicitTransport(attached.containers,attached.networks)),/M4_ENDPOINT_PROFILE_REFUSED/,'GLOBAL_MEMBERSHIP_CANNOT_BE_HIDDEN_BY_EMPTY_CONFIGURED_ID');
+});
+test('unattached membership retains every raw configured field and complete inventory in baseline equality',()=>{
+ const observer=require('./custody-observer'),given=unattachedRows(),before=observer.baselineSnapshot(explicitTransport(given.containers,given.networks));
+ for(const mutate of [
+  r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].NetworkID=nid;},
+  r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].Aliases=['changed'];},
+  r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].UnknownStatic.preserved=1;},
+  r=>{r.NetworkSettings.Networks['synthetic-network-'+nid].NewUnknown=true;},
+  r=>{r.NetworkSettings.Networks.renamed=r.NetworkSettings.Networks['synthetic-network-'+nid];delete r.NetworkSettings.Networks['synthetic-network-'+nid];},
+  r=>{r.Config.Env=['DIFFERENT_PRIVATE_VALUE'];},r=>{r.HostConfig.Unknown=true;},r=>{r.UnknownTop=true;}
+ ]){const changed=structuredClone(given);mutate(changed.containers[0]);assert.throws(()=>observer.verifyBaseline(explicitTransport(changed.containers,changed.networks),before),/M4_BASELINE_CHANGED/);}
+ assert.throws(()=>observer.verifyBaseline(explicitTransport(given.containers,[]),before),/M4_BASELINE_CHANGED/);
+ assert.equal(observer.verifyBaseline(explicitTransport(given.containers,given.networks),before).endpointComparison.fullEquality,true);
+});
 test('actual adapter distinguishes typed inactive configured membership without weakening active correlation or exact configuration',()=>{
  const observer=require('./custody-observer'),given=stoppedRows(),capture=()=>observer.baselineSnapshot(explicitTransport(given.containers,given.networks)),before=capture();
  assert.equal(observer.verifyBaseline(explicitTransport(given.containers,given.networks),before).endpointComparison.fullEquality,true);
