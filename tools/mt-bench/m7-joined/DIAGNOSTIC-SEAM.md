@@ -135,6 +135,15 @@ quotas are adequate for a workload is UNMEASURED. A constrained generator or
 service is a finding, not capacity acceptance. The old profile retains its
 250 millicpu/512 MiB evaluator allocation and refuses the new Go role.
 
+The explicit `local-diagnostic-external-pgstream-evaluator250-4cpu-8g-v1`
+variant changes only evaluator CPU to 250 millicpus. Evaluator memory remains
+256 MiB; the independent Go service remains at 125 millicpus/256 MiB. Its full
+reservation is 4,000 millicpus, 8,192 MiB container memory and 1,024 MiB host V8
+heaps. It is a separate diagnostic profile for a CPU comparison, not evidence
+that the original profile passes. The frozen configuration and actual container
+limits must match that selection. Capture effective `cpu.max` separately;
+requested CPU is not a measurement of the kernel's quota rounding.
+
 Deployment includes the independent service in the maintained role roster.
 Preflight requires Node counters in the evaluator container and Go counters in
 the pgstream container, with exact image/command and running-container birth

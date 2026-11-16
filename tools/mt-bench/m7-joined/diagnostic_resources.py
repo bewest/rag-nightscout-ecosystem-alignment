@@ -20,6 +20,9 @@ from types import MappingProxyType
 
 NAME = 'local-diagnostic-4cpu-8g-v1'
 EXTERNAL_NAME = 'local-diagnostic-external-pgstream-4cpu-8g-v1'
+EVALUATOR250_NAME = 'local-diagnostic-external-pgstream-evaluator250-4cpu-8g-v1'
+EXTERNAL_PROFILES = (EXTERNAL_NAME, EVALUATOR250_NAME)
+PROFILES = (NAME, *EXTERNAL_PROFILES)
 PROFILE_KEY = 'x-nightscout-diagnostic-profile'
 MIB = 1024 * 1024
 MAX_CPU = 4000  # millicpus; integral accounting avoids float undercounts
@@ -61,14 +64,14 @@ HOST = MappingProxyType({'probe': (512, 1), 'generator': (256, 1), 'helper': (12
 
 
 def selection(name=None):
-    need(name in (None, NAME, EXTERNAL_NAME), 'SELECTION_INVALID')
+    need(name in (None, *PROFILES), 'SELECTION_INVALID')
     return name
 
 
 def role_limit(role, profile=NAME):
     selection(profile)
-    if profile==EXTERNAL_NAME and role in ('evaluator','pgstream'):
-        return Limit(125,256*MIB)
+    if profile in EXTERNAL_PROFILES and role in ('evaluator','pgstream'):
+        return Limit(250 if profile==EVALUATOR250_NAME and role=='evaluator' else 125,256*MIB)
     if role in LIMITS:
         return LIMITS[role]
     for kind in ('api', 'realtime', 'evaluator'):
@@ -85,7 +88,7 @@ class Plan:
     profile: str = NAME
 
     def __post_init__(self):
-        need(self.profile in (NAME,EXTERNAL_NAME),'PROFILE_CHANGED')
+        need(self.profile in PROFILES,'PROFILE_CHANGED')
         need(type(self.services) is tuple and bool(self.services), 'SERVICES_REQUIRED')
         need(len({r for r, _, _ in self.services}) == len(self.services), 'DUPLICATE_ROLE')
         for role, limit, count in self.services:
@@ -112,8 +115,8 @@ def plan(config):
     services = config.get('services', {})
     need(isinstance(services, dict) and bool(services), 'SERVICES_REQUIRED')
     need('k6' not in services, 'K6_COMPOSE_STANDALONE_AMBIGUOUS')
-    profile=config.get(PROFILE_KEY,NAME);need(profile in (NAME,EXTERNAL_NAME),'PROFILE_CHANGED')
-    need(profile!=EXTERNAL_NAME or 'pgstream' in services and 'evaluator' in services,'EXTERNAL_ROSTER_REQUIRED')
+    profile=config.get(PROFILE_KEY,NAME);need(profile in PROFILES,'PROFILE_CHANGED')
+    need(profile not in EXTERNAL_PROFILES or 'pgstream' in services and 'evaluator' in services,'EXTERNAL_ROSTER_REQUIRED')
     return Plan(tuple((r, role_limit(r,profile), 2 if r in ('bootstrap', 'primer') else 1) for r in sorted(services)),profile)
 
 
@@ -123,7 +126,7 @@ def overlay(config, selected):
         return config
     selection(selected)
     result = copy.deepcopy(config)
-    if selected==EXTERNAL_NAME:result[PROFILE_KEY]=selected
+    if selected in EXTERNAL_PROFILES:result[PROFILE_KEY]=selected
     need(result.get(PROFILE_KEY,NAME)==selected,'PROFILE_CHANGED')
     budget = plan(result)
     for role, limit, _ in budget.services:

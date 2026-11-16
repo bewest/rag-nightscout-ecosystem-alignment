@@ -303,4 +303,58 @@ class Resources(unittest.TestCase):
         self.assertEqual(r.plan(selected).record()['aggregate'],self.runtime.budget.record()['aggregate'])
 
 
+class EvaluatorCpuDiscriminator(unittest.TestCase):
+    def setUp(self):
+        self.source=config()
+        self.source['services']['pgstream']={'image':'synthetic'}
+        self.old=r.overlay(self.source,r.EXTERNAL_NAME)
+        self.new=r.overlay(self.source,r.EVALUATOR250_NAME)
+        self.addCleanup(r.configure)
+
+    def test_only_evaluator_cpu_changes_with_same_aggregate_ceiling(self):
+        before=copy.deepcopy(self.old);after=copy.deepcopy(self.new)
+        self.assertEqual(before.pop(r.PROFILE_KEY),r.EXTERNAL_NAME)
+        self.assertEqual(after.pop(r.PROFILE_KEY),r.EVALUATOR250_NAME)
+        self.assertEqual(before['services']['evaluator']['cpus'],.125)
+        self.assertEqual(after['services']['evaluator']['cpus'],.25)
+        after['services']['evaluator']['cpus']=.125
+        self.assertEqual(before,after)
+        old=r.plan(self.old).record();new=r.plan(self.new).record()
+        self.assertEqual(old['aggregate'],{'millicpus':3875,'memoryBytes':8192*r.MIB,'heapMiB':1024})
+        self.assertEqual(new['aggregate'],{'millicpus':4000,'memoryBytes':8192*r.MIB,'heapMiB':1024})
+        self.assertEqual(r.MAX_CPU,4000)
+
+    def test_wrong_cpu_memory_profile_and_aggregate_refuse_restored(self):
+        budget=r.plan(self.new)
+        for key,value in [('cpus',.125),('mem_limit',512*r.MIB)]:
+            broken=copy.deepcopy(self.new);broken['services']['evaluator'][key]=value
+            with self.assertRaisesRegex(RuntimeError,'EXISTING_LIMIT_CONFLICT'):
+                r.verify_config(broken,budget)
+        broken=copy.deepcopy(self.new);broken[r.PROFILE_KEY]=r.EXTERNAL_NAME
+        with self.assertRaisesRegex(RuntimeError,'PLAN_CHANGED'):r.verify_config(broken,budget)
+        for profile in [r.EXTERNAL_NAME,r.EVALUATOR250_NAME]:
+            broken=copy.deepcopy(self.source);broken['services']['api-2']={}
+            with self.assertRaisesRegex(RuntimeError,'AGGREGATE_EXCEEDED'):r.overlay(broken,profile)
+        r.verify_config(self.new,budget)
+
+    def test_actual_runtime_quota_control_and_source_ablation(self):
+        runtime=r.configure(r.EVALUATOR250_NAME,self.new,observe=lambda:[])
+        row={'State':{'Status':'running'},'Config':{'Labels':{'com.docker.compose.service':'evaluator'}},
+             'HostConfig':{'NanoCpus':250000000,'Memory':256*r.MIB,'MemorySwap':256*r.MIB}}
+        runtime.observe=lambda:[row]
+        self.assertEqual(runtime.containers()['evaluator'],1)
+        for key,value in [('NanoCpus',125000000),('Memory',512*r.MIB),('MemorySwap',512*r.MIB)]:
+            broken=copy.deepcopy(row);broken['HostConfig'][key]=value;runtime.observe=lambda:[broken]
+            with self.assertRaisesRegex(RuntimeError,'NATIVE_LIMITS_CHANGED'):runtime.containers()
+        runtime.observe=lambda:[row];self.assertEqual(runtime.containers()['evaluator'],1)
+        actual=r.role_limit
+        def omitted(role,profile=r.NAME):
+            return actual(role,r.EXTERNAL_NAME if profile==r.EVALUATOR250_NAME else profile)
+        with patch.object(r,'role_limit',side_effect=omitted):
+            broken=r.overlay(self.source,r.EVALUATOR250_NAME)
+            with self.assertRaisesRegex(AssertionError,'EVALUATOR_CPU_CHANGE_MUST_REACH_PRODUCER'):
+                self.assertEqual(broken['services']['evaluator']['cpus'],.25,'EVALUATOR_CPU_CHANGE_MUST_REACH_PRODUCER')
+        self.assertEqual(r.overlay(self.source,r.EVALUATOR250_NAME)['services']['evaluator']['cpus'],.25)
+
+
 if __name__=='__main__': unittest.main()

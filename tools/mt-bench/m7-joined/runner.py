@@ -368,9 +368,9 @@ def local_batch_plan(spec, payload_root):
                    options.get('deploy-commit')==spec['payload']['source']['deploy'],'SOURCE_CHANGED')
         batch.need(options.get('image-id')==options.get('image')==spec['payload']['image'],'IMAGE_CHANGED')
         selected=options.get('diagnostic-resource-profile')
-        batch.need(selected in (a.diagnostic_resources.NAME,a.diagnostic_resources.EXTERNAL_NAME),'LOCAL_PROFILE_REQUIRED')
+        batch.need(selected in a.diagnostic_resources.PROFILES,'LOCAL_PROFILE_REQUIRED')
         external=options.get('pgstream-topology','colocated-v1')=='external-service-v1'
-        batch.need(external==(selected==a.diagnostic_resources.EXTERNAL_NAME),'LOCAL_TOPOLOGY_PROFILE')
+        batch.need(external==(selected in a.diagnostic_resources.EXTERNAL_PROFILES),'LOCAL_TOPOLOGY_PROFILE')
         batch.need(options.get('fixture-project')==cell['namespace'] and cell['subnets']==[options.get('backend-subnet'),options.get('edge-subnet')], 'ISOLATION_CHANGED')
         batch.need(cell['ports']==[], 'LOCAL_PORTS_UNSUPPORTED')
         batch.need(config['workSeconds']==cell['workSeconds'] and config['cleanupSeconds']==cell['cleanupSeconds'] and options.get('offered-rps')==cell['offeredRps'],'WORKLOAD_CHANGED')

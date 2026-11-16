@@ -243,7 +243,7 @@ def load(directory, *, resource_limits=True):
     if resource_limits:
         if 'dependencyReuse' in m:require(isinstance(m['dependencyReuse'],dict),'M7_DEPENDENCY_REUSE_RECORD_REQUIRED')
         record=m.get('diagnosticResources')
-        if 'diagnosticResources' in m:require(isinstance(record,dict) and record.get('profile') in (diagnostic_resources.NAME,diagnostic_resources.EXTERNAL_NAME),'M7_DIAGNOSTIC_RESOURCE_RECORD_REQUIRED')
+        if 'diagnosticResources' in m:require(isinstance(record,dict) and record.get('profile') in diagnostic_resources.PROFILES,'M7_DIAGNOSTIC_RESOURCE_RECORD_REQUIRED')
         diagnostic_resources.configure(record.get('profile') if record is not None else None,
             document(d/'frozen.compose.json') if record is not None else None,record,
             observe=lambda:diagnostic_resource_rows(m))
@@ -674,7 +674,7 @@ def prepare_staged(args,target,pinned):
     serving_mounts(config)
     stream_topology.verify_config(m,config)
     if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
-        require(selected_resources_profile(args)==diagnostic_resources.EXTERNAL_NAME,'M7_PGSTREAM_EXTERNAL_RESOURCE_PROFILE_REQUIRED')
+        require(selected_resources_profile(args) in diagnostic_resources.EXTERNAL_PROFILES,'M7_PGSTREAM_EXTERNAL_RESOURCE_PROFILE_REQUIRED')
     measurement_topology(m,config)
     profile_provenance.select_environment(config,m["diagnostics"])
     for spec in config["services"].values():
@@ -1669,7 +1669,7 @@ def parser():
     prep.add_argument('--measurement-mode',choices=('accepted','unaccepted'),default='accepted')
     prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
     prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
-    prep.add_argument('--diagnostic-resource-profile',choices=(diagnostic_resources.NAME,diagnostic_resources.EXTERNAL_NAME))
+    prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')
     prep.add_argument('--generator-dependency-receipt-sha256')

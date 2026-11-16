@@ -171,6 +171,8 @@ class Batch(unittest.TestCase):
             options['diagnostic-resource-profile']=resources.EXTERNAL_NAME
             with self.assertRaisesRegex(RuntimeError,'LOCAL_TOPOLOGY_PROFILE'):runner.local_batch_plan(spec,tmp)
             options['pgstream-topology']='external-service-v1';runner.local_batch_plan(spec,tmp)
+            options['diagnostic-resource-profile']=resources.EVALUATOR250_NAME
+            runner.local_batch_plan(spec,tmp)
             cell['resources']['millicpus']=3999
             with self.assertRaisesRegex(RuntimeError,'LOCAL_RESERVATION_CHANGED'):runner.local_batch_plan(spec,tmp)
             cell['resources']['millicpus']=4000;spec['envelope']['millicpus']=8000
