@@ -438,6 +438,9 @@ def batch_run(spec_file, directory, payload_root):
                 until=time.monotonic()+10
                 while guard_alive(point) and time.monotonic()<until:time.sleep(.05)
                 require(not guard_alive(point),'M7_BATCH_GUARD_PENDING')
+                require(not batch.group_members(child.pid),'M7_BATCH_CELL_GROUP_REMAINS')
+                if (point/'guard-job.json').exists():
+                    require(not batch.group_members(a.document(point/'guard-job.json')['pid']),'M7_BATCH_GUARD_GROUP_REMAINS')
                 lock=root/(cell['id']+'.heap.lock')
                 if lock.exists():
                     with lock.open('r+') as stream:

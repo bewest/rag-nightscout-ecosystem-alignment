@@ -72,6 +72,19 @@ def birth(pid):
     except (FileNotFoundError, ProcessLookupError):return None
 
 
+def group_members(group):
+    """Read the exact recorded owned group; never kill or reclaim by PGID."""
+    need(type(group)is int and group>1,'GROUP_ID')
+    members=[]
+    for proc in Path('/proc').glob('[0-9]*'):
+        try:
+            row=(proc/'stat').read_text().rsplit(')',1)[1].split()
+            if row[0]!='Z' and row[2]==str(group):members.append({'pid':int(proc.name),'startTicks':row[19]})
+        except (FileNotFoundError,ProcessLookupError):continue
+        except PermissionError:need(False,'GROUP_CENSUS_UNAVAILABLE')
+    return sorted(members,key=lambda row:row['pid'])
+
+
 def write(path, value):
     temporary = path.with_name(path.name + '.' + uuid.uuid4().hex)
     with open(temporary, 'x', opener=lambda p, f: os.open(p, f, 0o600)) as stream:

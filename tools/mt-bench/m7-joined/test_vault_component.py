@@ -107,13 +107,13 @@ class Vault(unittest.TestCase):
             self.assertFalse((root/'cleanup.json').exists())
 
     def test_real_typed_process_dispatch_overlaps_and_retains_uncertain_cleanup(self):
-        for uncertain in (False,True):
+        for uncertain in (False,True,'residual'):
             with self.subTest(uncertain=uncertain),tempfile.TemporaryDirectory()as tmp:
                 root=Path(tmp);payload=root/'payload';payload.mkdir();spec,_=self.fixture(payload)
                 third=copy.deepcopy(spec['cells'][1]);third.update(id='v2',namespace='ns-vault-test-2',ports=[21742]);spec['cells'].append(third)
                 shim=root/'shim';shim.mkdir();lock=root/'global.lock';file=root/'spec.json';b.write(file,spec)
                 (shim/'runner.py').write_text("""
-import os,sys,time
+import os,sys,time,subprocess
 from pathlib import Path
 sys.path.insert(0,os.environ['TEST_VAULT_SOURCE'])
 import runner,experiment_batch as b,diagnostic_resources as r,vault_component as v
@@ -126,6 +126,8 @@ def execute(config,root):
     assert len(list(root.parent.glob('*.started')))>=2,'TYPED_OVERLAP_REQUIRED'
     time.sleep(.04)
     b.write(root/'witness.json',{'start':start,'end':time.time(),'pid':os.getpid(),'claim':cell['resources']})
+    if root.name=='v0'and os.environ['TEST_VAULT_UNCERTAIN']=='residual':
+        child=subprocess.Popen(['sleep','20']);b.write(root/'orphan.json',{'pid':child.pid,'startTicks':b.birth(child.pid)})
     b.write(root/'cleanup.json',{'status':'UNMEASURED'if root.name=='v0'and os.environ['TEST_VAULT_UNCERTAIN']=='1'else'ABSENT'})
     result={'status':'FAILED_PARTIAL'if root.name=='v0'else'MEASURED'};b.write(root/'result.json',result);lease.close();return result
 v.execute=execute
@@ -133,13 +135,24 @@ runner.batch_cell(sys.argv[2],sys.argv[3])
 """)
                 original=resources.Runtime.acquire
                 def acquire(runtime,lock_file=None):return original(runtime,lock_file or lock)
-                with patch.object(runner,'HERE',shim),patch.object(runner,'local_batch_plan',side_effect=lambda spec,root:b.plan(spec)),patch.object(runner,'guard_alive',return_value=False),patch.object(resources.Runtime,'acquire',acquire),patch.object(b,'global_lock_path',return_value=lock),patch.dict(os.environ,{'TEST_VAULT_SOURCE':str(Path(__file__).resolve().parent),'TEST_VAULT_LOCK':str(lock),'TEST_VAULT_UNCERTAIN':'1'if uncertain else'0'}):
+                with patch.object(runner,'HERE',shim),patch.object(runner,'local_batch_plan',side_effect=lambda spec,root:b.plan(spec)),patch.object(runner,'guard_alive',return_value=False),patch.object(resources.Runtime,'acquire',acquire),patch.object(b,'global_lock_path',return_value=lock),patch.dict(os.environ,{'TEST_VAULT_SOURCE':str(Path(__file__).resolve().parent),'TEST_VAULT_LOCK':str(lock),'TEST_VAULT_UNCERTAIN':'residual'if uncertain=='residual'else'1'if uncertain else'0'}):
                     result=runner.batch_run(file,root/'out',payload)
-                self.assertEqual(result['cells']['v1']['status'],'MEASURED');self.assertEqual(result['cells']['v2']['status'],'MEASURED')
-                one=b.read(root/'out/v0/witness.json');two=b.read(root/'out/v1/witness.json')
-                self.assertNotEqual(one['pid'],two['pid']);self.assertLess(max(one['start'],two['start']),min(one['end'],two['end']))
-                rows=b.read(root/'out/reservations.json')['cells'];self.assertEqual(rows['v0']['status'],'RESERVED'if uncertain else'ABSENT')
-                self.assertEqual(bool(lock.read_bytes()),uncertain)
+                try:
+                    self.assertEqual(result['cells']['v1']['status'],'MEASURED');self.assertEqual(result['cells']['v2']['status'],'MEASURED')
+                    one=b.read(root/'out/v0/witness.json');two=b.read(root/'out/v1/witness.json')
+                    self.assertNotEqual(one['pid'],two['pid']);self.assertLess(max(one['start'],two['start']),min(one['end'],two['end']))
+                    rows=b.read(root/'out/reservations.json')['cells'];self.assertEqual(rows['v0']['status'],'RESERVED'if uncertain else'ABSENT')
+                    self.assertEqual(bool(lock.read_bytes()),bool(uncertain))
+                    if uncertain=='residual':self.assertIn('M7_BATCH_CELL_GROUP_REMAINS',result['cells']['v0']['error'])
+                finally:
+                    file=root/'out/v0/orphan.json'
+                    if file.exists():
+                        job=b.read(file)
+                        if b.birth(job['pid'])==job['startTicks']:os.kill(job['pid'],15)
+                        until=time.monotonic()+3
+                        while b.birth(job['pid'])==job['startTicks']and time.monotonic()<until:time.sleep(.01)
+                        self.assertNotEqual(b.birth(job['pid']),job['startTicks'])
+
 
     def test_affinity_controls_are_confined_to_a_harmless_child(self):
         before=os.sched_getaffinity(0)
@@ -178,6 +191,14 @@ print(json.dumps(record))
         for record,rc in [(None,0),({'status':'COMPLETE','completed':6000,'target':6000},0),({'status':'PARTIAL','completed':10000,'target':10000},1)]:
             with self.assertRaisesRegex(RuntimeError,'WORKER_PARTIAL'):v.verify_completion(cfg,record,rc)
         v.verify_completion(cfg,{'status':'COMPLETE','completed':10000,'target':10000},0)
+
+    def test_actual_old_space_receipt_cannot_satisfy_total_heap_claim(self):
+        receipt={'version':'v24.22.1','heapLimit':335544320,'affinity':'Cpus_allowed_list:\t0'}
+        tools={'node':{'version':'v24.22.1'}};mask={'selected':[0]}
+        with self.assertRaisesRegex(RuntimeError,'NODE_HEAP_RECEIPT'):v.verify_node_receipt(receipt,tools,mask)
+        receipt['heapLimit']=134217728;v.verify_node_receipt(receipt,tools,mask)
+        receipt['affinity']='Cpus_allowed_list:\t0-1'
+        with self.assertRaisesRegex(RuntimeError,'AFFINITY_INHERITANCE'):v.verify_node_receipt(receipt,tools,mask)
 
     def test_runner_routes_typed_cell_on_existing_window(self):
         with tempfile.TemporaryDirectory()as tmp:

@@ -386,8 +386,9 @@ The 6000-set prefix is never promoted to a requested 10000-set completion.
 Cleanup dispatch remains under the runner's existing custody lock. It verifies
 exact container ID, creation, name, label, image and quotas, plus volume creation
 and label, then confirms absence and worker termination. The normal batch caller
-also waits for the cell and guard to exit and verifies the empty cell heap
-marker. Only then can the existing ledger release the reservation. Partial
+also waits for the cell and guard leaders to exit, requires their recorded
+process groups to have no live members, and verifies the empty cell heap marker.
+An unreadable group census refuses rather than asserting absence. Only then can the existing ledger release the reservation. Partial
 measurements with exact cleanup let independent cells continue; uncertain
 cleanup keeps the reservation and global custody marker. Private raw output and
 safe first-failure projection remain per cell. Every result retains

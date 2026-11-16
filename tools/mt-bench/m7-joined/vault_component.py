@@ -35,6 +35,7 @@ NODE_VM=128*1024**3
 HOST_CPU=1000
 WORKER=Path(__file__).with_name('vault-component-worker.cjs')
 ENV={'PATH':'/usr/local/bin:/usr/bin:/bin','LANG':'C.UTF-8'}
+NODE_CHECK='console.log(JSON.stringify({version:process.version,heapLimit:require("node:v8").getHeapStatistics().heap_size_limit,affinity:require("node:fs").readFileSync("/proc/self/status","utf8").split("\\n").find(x=>x.startsWith("Cpus_allowed_list:"))}))'
 
 
 def need(ok,code):batch.need(ok,'VAULT_'+code)
@@ -116,6 +117,11 @@ def verify_completion(config,record,returncode):
          type(record.get('completed'))is int and record['completed']==record.get('target')==config['targetSets'],'WORKER_PARTIAL')
 
 
+def verify_node_receipt(observed,tools,affinity):
+    need(observed.get('version')==tools['node']['version'] and observed.get('heapLimit')==128*MIB,'NODE_HEAP_RECEIPT')
+    need(observed.get('affinity','').split(':')[-1].strip()==str(affinity['selected'][0]),'AFFINITY_INHERITANCE')
+
+
 def limits(value):
     def apply():resource.setrlimit(resource.RLIMIT_AS,(value,value))
     return apply
@@ -190,6 +196,7 @@ def cleanup_resources(root):
     job=root/'stage-job.json'
     if job.exists():
         j=batch.read(job);need(batch.birth(j['pid'])!=j['startTicks'],'WORKER_REMAINS')
+        need(not batch.group_members(j['pid']),'WORKER_GROUP_REMAINS')
     batch.write(root/'vault-absence.json',{'status':'ABSENT','owner':state['owner'],'containers':containers,'volumes':volumes,'at':time.time()})
 
 
@@ -214,8 +221,10 @@ def execute(config,root):
             need(sorted(os.sched_getaffinity(batch.read(root/'guard-job.json')['pid']))==affinity['selected'],'AFFINITY_INHERITANCE')
             childmask=json.loads(subprocess.check_output([sys.executable,'-B','-c','import os,json;print(json.dumps(sorted(os.sched_getaffinity(0))))'],env=ENV,text=True,timeout=runner.a.remaining_seconds(5),preexec_fn=limits(NATIVE_VM)))
             need(childmask==affinity['selected'],'AFFINITY_INHERITANCE')
-            for name,argv in [('node',[tools['node']['path'],'--max-heap-size=128','--version']),('docker',[tools['docker']['path'],'--version'])]:
-                need(subprocess.check_output(argv,env=ENV,text=True,timeout=runner.a.remaining_seconds(10),preexec_fn=limits(NODE_VM if name=='node'else NATIVE_VM)).strip()==tools[name]['version'],'TOOL_VERSION')
+            observed=json.loads(subprocess.check_output([tools['node']['path'],'--max-heap-size=128','-e',NODE_CHECK],env=ENV,text=True,timeout=runner.a.remaining_seconds(10),preexec_fn=limits(NODE_VM)))
+            verify_node_receipt(observed,tools,affinity)
+            need(subprocess.check_output([tools['docker']['path'],'--version'],env=ENV,text=True,timeout=runner.a.remaining_seconds(10),preexec_fn=limits(NATIVE_VM)).strip()==tools['docker']['version'],'TOOL_VERSION')
+            batch.write(root/'tool-preflight.json',observed)
             image=json.loads(command(tools,'image','inspect',IMAGE))[0];need(image['Id']==IMAGE_ID,'IMAGE_CHANGED')
             source=root/'source'
             for name,sha in SOURCE_FILES.items():
