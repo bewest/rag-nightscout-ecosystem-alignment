@@ -14,7 +14,8 @@ def safe_code(error):
     text=str(error)
     return text if re.fullmatch(r'M7_[A-Z_]+(?::[a-zA-Z0-9_.-]+)?',text) else 'M7_DISCOVERY_INSTRUMENT_ERROR'
 
-SOFT_WORK_FAILURES=frozenset(('M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE'))
+# Counter-only ambiguity lives in observer fields; actual errors stay hard.
+SOFT_WORK_FAILURES=frozenset()
 
 def incomplete(error):return str(error) in SOFT_WORK_FAILURES or (getattr(error,'verdict','UNMEASURED')!='FAIL' and str(error) in INCOMPLETE)
 

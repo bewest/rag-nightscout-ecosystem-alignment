@@ -15,7 +15,7 @@ HARD=set('''IDLE_ASSESSMENT IDLE_CLOCK IDLE_FOREIGN_PENDING IDLE_JOBS IDLE_PHASE
 IDLE_TAIL_COVERAGE IDLE_TAIL_QUERY_BOUND IDLE_TAIL_UNEXPECTED IDLE_VERSION
 PROGRESS_ASSESSMENT PROGRESS_BODY_FAILED PROGRESS_BUDGET PROGRESS_BYTE_BOUND
 PROGRESS_COLUMNS PROGRESS_CONTRACT PROGRESS_COVERAGE PROGRESS_DUE_CONTRACT
-PROGRESS_FOREIGN PROGRESS_GATE PROGRESS_INSTANCE PROGRESS_INSTANCE_BOUND
+PROGRESS_ERROR PROGRESS_HIDDEN_FAILURE PROGRESS_FOREIGN PROGRESS_GATE PROGRESS_INSTANCE PROGRESS_INSTANCE_BOUND
 PROGRESS_OVERHEAD PROGRESS_PROOF PROGRESS_QUERY_BOUND PROGRESS_RESET
 PROGRESS_RESPONSE PROGRESS_RESPONSE_BOUND PROGRESS_SELECTOR PROGRESS_TENANTS'''.split())
 HARD={'M7_EVALUATOR_'+code for code in HARD}
@@ -70,8 +70,7 @@ class Classification(unittest.TestCase):
         for code in codes:
             expected=code not in HARD
             self.assertEqual(discovery.incomplete(progress.Refused(code)),expected,code)
-            # Only the two separately adopted work-failure counters are soft
-            # under FAIL; timing/availability codes are soft only when UNMEASURED.
+            # Timing/availability codes are soft only when UNMEASURED.
             self.assertEqual(discovery.incomplete(progress.Refused(code,'FAIL')),code in discovery.SOFT_WORK_FAILURES,code)
         self.assertFalse(discovery.incomplete(progress.Refused('M7_UNKNOWN_FUTURE_CODE')))
     def test_actual_clock_reset_coverage_and_foreign_controls_still_stop_before_load(self):
