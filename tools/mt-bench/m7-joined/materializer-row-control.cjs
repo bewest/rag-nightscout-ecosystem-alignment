@@ -197,6 +197,26 @@ async function migrationCompatibility(core,inspect){
   assert.throws(()=>catalogue.validateCatalogue(forged),e=>e.code==='MIG_OPERATION_SQL','UNREVIEWED_TYPED_TAIL_ACCEPTED');
  }
 }
+async function schedulerDueRefresh(core,start){
+ start=start||require(path.join(core,'lib/pgstream/activity-scheduler.js')).start;
+ let release,lookups=0,inFlight=0,maxInFlight=0;const hold=new Promise(resolve=>{release=resolve;}),due=new Map(),timers=new Set(),runs=[];
+ const service=start({concurrency:2,now:()=>0,
+  store:{async nextDue({exclude=[]}={}){lookups++;inFlight++;maxInFlight=Math.max(maxInFlight,inFlight);const at=Math.min(...[...due].filter(([tenant])=>!exclude.includes(tenant)).map(([,at])=>at),Infinity);try{await hold;return at===Infinity?null:at;}finally{inFlight--;}}},
+  scan:async()=>{},run:async tenant=>{runs.push(tenant);due.set(tenant,tenant==='A'?300:tenant==='B'?100:200);},send:async()=>{},
+  setTimer(fn,delay){const timer={fn,delay,unref(){}};timers.add(timer);return timer;},clearTimer:timer=>timers.delete(timer)});
+ const initializing=service.initialize(['A','B','C']);
+ try{
+  for(let turn=0;turn<100&&(runs.length!==3||!lookups);turn++)await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(runs.length,3,'HELD_DUE_QUERY_BLOCKS_CLINICAL_NEIGHBOR');
+  // A's first query captured300 while B/C were active. Their subsequent
+  // completions owe an earlier100; one dirty follow-up must reconstruct it.
+  release();await initializing;for(let turn=0;turn<10;turn++)await new Promise(resolve=>setImmediate(resolve));
+  assert([...timers].some(timer=>timer.delay===100),'HELD_DUE_QUERY_LOST_EARLIER_COMPLETION');
+  assert.equal(maxInFlight,1,'DUE_REFRESH_QUERY_AMPLIFICATION');
+  assert(lookups<=2,'DUE_REFRESH_QUERY_AMPLIFICATION');
+  return {completed:runs.length,nextDueCalls:lookups,maxInFlight,earliestDelay:100};
+ }finally{release();await initializing;await service.close();}
+}
 async function run(core,capture){
  const file=path.join(core,'lib/storage/clinical-stream-state.js'),source=fs.readFileSync(file,'utf8'),events=fs.readFileSync(capture,'utf8').trim().split('\n').map(JSON.parse);
  const api=require(file),result=exercise(api,events),controls=[];
@@ -225,6 +245,15 @@ async function run(core,capture){
  }
  await schedulerFairness(core);
  const schedulerFile=path.join(core,'lib/pgstream/activity-scheduler.js'),schedulerSource=fs.readFileSync(schedulerFile,'utf8');
+ result.dueRefresh=await schedulerDueRefresh(core);
+ const sharing='if(dueFlight){dueAgain=true;return dueFlight;}';assert.equal(schedulerSource.split(sharing).length,2,'DUE_REFRESH_ABLATION_SOURCE_MISMATCH');
+ for(const[name,replacement,symptom]of [
+  ['due-query-not-shared','',/DUE_REFRESH_QUERY_AMPLIFICATION/],
+  ['due-query-loses-earlier-completion','if(dueFlight){return dueFlight;}',/HELD_DUE_QUERY_LOST_EARLIER_COMPLETION/]
+ ]){
+  const broken={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(sharing,replacement)+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),broken,broken.exports);
+  await assert.rejects(schedulerDueRefresh(core,broken.exports.start),symptom);await schedulerDueRefresh(core);controls.push(name);
+ }
  const pumpEnd='   await due();';assert.equal(schedulerSource.split(pumpEnd).length,2,'SCHEDULER_ABLATION_SOURCE_MISMATCH');
  const barrier={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(pumpEnd,'   await Promise.allSettled([...active.values()]);await due();')+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),barrier,barrier.exports);
  await assert.rejects(schedulerFairness(core,barrier.exports.start),/IDLE_SLOT_MUST_RUN_NEIGHBOR_BEFORE_HELD_A_RELEASE/);await schedulerFairness(core);controls.push('held-tenant-batch-barrier');
@@ -260,5 +289,5 @@ async function run(core,capture){
  await assert.rejects(receipt(core,events[0],broken.exports),/RAW_ACK_BEFORE_COMMIT/);await receipt(core,events[0],receiver);controls.push('raw-ACK-before-commit');
  return {verdict:'PASS',scope:'actual-module state/native payloads and mocked SQL commit boundary; deployed recovery unmeasured',...result,controls};
 }
-module.exports={run,exercise,dueCoverage,migrationCompatibility};
+module.exports={run,exercise,dueCoverage,migrationCompatibility,schedulerDueRefresh};
 if(require.main===module){(async()=>{if(process.argv.length!==4)throw Error('Usage: node materializer-row-control.cjs APP_WORKTREE DECODER_JSONL');console.log(JSON.stringify(await run(path.resolve(process.argv[2]),path.resolve(process.argv[3]))));})().catch(error=>{console.error(error.stack);process.exitCode=1;});}
