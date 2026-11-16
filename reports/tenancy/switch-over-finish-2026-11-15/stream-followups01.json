@@ -1,0 +1,91 @@
+{
+  "basis": "reproduced",
+  "kind": "source-fixture-stream-recovery-followups",
+  "scope": "Actual pinned Go binary and default evaluator role with exact source-bound deployment configuration; not application-image or Kubernetes acceptance.",
+  "points": [
+    {
+      "evidenceId": "external-pgstream-schema-recovery02-20261115",
+      "resultSha256": "75aae42b7d00c5d14cc76ac5ab3b7366ef66cbe3ff9cb88ea66475087a661d0c",
+      "status": "PASS",
+      "source": "28a67c91f785e8a5dd1d7c282d55c803f1d2a7a4",
+      "deployment": "e9e1c4b9511d3116dfe6568985b9048b38fb5308",
+      "scope": "Actual DDL admission withdrawal and exact metadata restoration on same evaluator; independent primary recovery plus optional completed-schema diagnostic probe. No app-image/Kubernetes/general maintenance/WAL/rebootstrap qualification.",
+      "independentAbsence": {
+        "status": "PASS",
+        "checkedAt": "2026-11-16T03:11:37.341Z",
+        "deadline": "2026-11-16T03:15:21.411Z",
+        "rootGroupAbsent": true,
+        "producerGroupAbsent": true,
+        "bothGuardBirthsAbsent": true,
+        "portsAbsent": true,
+        "allOwnedContainersAbsent": true,
+        "ownedVolumes": []
+      },
+      "observations": {
+        "sameEvaluator": true,
+        "withdrawalHeartbeatAgeMs": 358,
+        "recoveryMs": 1059,
+        "optionalSchemaCompletionProbe": "PASS"
+      }
+    },
+    {
+      "evidenceId": "external-pgstream-hung-receipt02-20261115",
+      "resultSha256": "2c99cda21889dfed946bc94e398681fdf2eb25b70f37af8460fa7760e257abce",
+      "status": "PASS",
+      "source": "28a67c91f785e8a5dd1d7c282d55c803f1d2a7a4",
+      "deployment": "e9e1c4b9511d3116dfe6568985b9048b38fb5308",
+      "scope": "Fixed8.5s injected exact receipt-row hold; bounded same-evaluator release-to-durable catchup; other tenant progress recorded. Natural Go restart is an observation. Effective corrected constant retry policy checked. No exclusive replay/app-image/Kubernetes claim.",
+      "independentAbsence": {
+        "status": "PASS",
+        "checkedAt": "2026-11-16T03:02:18.332Z",
+        "deadline": "2026-11-16T03:05:50.678Z",
+        "rootGroupAbsent": true,
+        "producerGroupAbsent": true,
+        "bothGuardBirthsAbsent": true,
+        "portsAbsent": true,
+        "allOwnedContainersAbsent": true,
+        "ownedVolumes": []
+      },
+      "observations": {
+        "sameEvaluator": true,
+        "withdrawMs": 5148,
+        "baselineCatchupAfterReleaseMs": 1804,
+        "witnessCatchupAfterReleaseMs": 1805,
+        "maxRetries": 1,
+        "intervalMs": 50,
+        "exclusiveReplacementReplay": "UNMEASURED"
+      }
+    },
+    {
+      "evidenceId": "external-pgstream-slot-loss03-20261115",
+      "resultSha256": "be7babdd438d4fdc1f7577a23e1266d9ae1a2365365bbf1799ebc06fa86d9cd7",
+      "status": "PASS",
+      "source": "28a67c91f785e8a5dd1d7c282d55c803f1d2a7a4",
+      "deployment": "b728749354275e3ba8119a7190cf9489187ff685",
+      "scope": "Functional observed inactive-slot deletion: original evaluator named terminal exit1, physical149 not falsely completed, unchanged Go direct run missing-slot refusal/no recreation. Not WAL overflow, explicit rebootstrap CLI or post-rebootstrap reconciliation.",
+      "independentAbsence": {
+        "status": "PASS",
+        "checkedAt": "2026-11-16T02:29:36.987Z",
+        "deadline": "2026-11-16T02:33:03.443Z",
+        "rootGroupAbsent": true,
+        "producerGroupAbsent": true,
+        "bothGuardBirthsAbsent": true,
+        "portsAbsent": true,
+        "allOwnedContainersAbsent": true,
+        "ownedVolumes": []
+      },
+      "observations": {
+        "terminalMs": 527,
+        "sqlSlotStillAbsent": true,
+        "physical149": true,
+        "completed149": false,
+        "directRunNoInit": true
+      }
+    }
+  ],
+  "limitations": [
+    "Original construction failures and wrong retry-wire result remain unchanged in their original packets.",
+    "Final coherent enabled recovery corpus remains unmeasured on the integration candidate.",
+    "Explicit rebootstrap CLI, post-rebootstrap overdue reconstruction and actual WAL exhaustion are separate unmeasured boundaries."
+  ]
+}
