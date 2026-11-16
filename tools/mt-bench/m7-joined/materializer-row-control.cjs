@@ -199,14 +199,16 @@ async function migrationCompatibility(core,inspect){
 }
 async function schedulerDueRefresh(core,start){
  start=start||require(path.join(core,'lib/pgstream/activity-scheduler.js')).start;
- let release,lookups=0,inFlight=0,maxInFlight=0;const hold=new Promise(resolve=>{release=resolve;}),due=new Map(),timers=new Set(),runs=[];
+ let release,finishRemaining,lookups=0,inFlight=0,maxInFlight=0;const hold=new Promise(resolve=>{release=resolve;}),remaining=new Promise(resolve=>{finishRemaining=resolve;}),due=new Map(),timers=new Set(),runs=[];
  const service=start({concurrency:2,now:()=>0,
   store:{async nextDue({exclude=[]}={}){lookups++;inFlight++;maxInFlight=Math.max(maxInFlight,inFlight);const at=Math.min(...[...due].filter(([tenant])=>!exclude.includes(tenant)).map(([,at])=>at),Infinity);try{await hold;return at===Infinity?null:at;}finally{inFlight--;}}},
-  scan:async()=>{},run:async tenant=>{runs.push(tenant);due.set(tenant,tenant==='A'?300:tenant==='B'?100:200);},send:async()=>{},
+  scan:async()=>{},run:async tenant=>{if(tenant!=='A')await remaining;runs.push(tenant);due.set(tenant,tenant==='A'?300:tenant==='B'?100:200);},send:async()=>{},
   setTimer(fn,delay){const timer={fn,delay,unref(){}};timers.add(timer);return timer;},clearTimer:timer=>timers.delete(timer)});
  const initializing=service.initialize(['A','B','C']);
  try{
-  for(let turn=0;turn<100&&(runs.length!==3||!lookups);turn++)await new Promise(resolve=>setImmediate(resolve));
+  for(let turn=0;turn<100&&!lookups;turn++)await new Promise(resolve=>setImmediate(resolve));
+  assert(lookups,'DUE_LOOKUP_DID_NOT_START');finishRemaining();
+  for(let turn=0;turn<100&&runs.length!==3;turn++)await new Promise(resolve=>setImmediate(resolve));
   assert.equal(runs.length,3,'HELD_DUE_QUERY_BLOCKS_CLINICAL_NEIGHBOR');
   // A's first query captured300 while B/C were active. Their subsequent
   // completions owe an earlier100; one dirty follow-up must reconstruct it.
@@ -215,7 +217,24 @@ async function schedulerDueRefresh(core,start){
   assert.equal(maxInFlight,1,'DUE_REFRESH_QUERY_AMPLIFICATION');
   assert(lookups<=2,'DUE_REFRESH_QUERY_AMPLIFICATION');
   return {completed:runs.length,nextDueCalls:lookups,maxInFlight,earliestDelay:100};
- }finally{release();await initializing;await service.close();}
+ }finally{finishRemaining();release();await initializing;await service.close();}
+}
+async function schedulerDueRefreshFinalizer(core,start){
+ start=start||require(path.join(core,'lib/pgstream/activity-scheduler.js')).start;
+ let service,lookups=0,queued=false;const timers=new Set();
+ service=start({store:{nextDue:async({exclude})=>{lookups++;return exclude.includes('A')?500:300;}},
+  scan:async()=>{},run:async()=>{},send:async()=>{},now:()=>0,
+  setTimer(fn,delay){const timer={fn,delay,unref(){}};timers.add(timer);
+   // Deliver a real public scheduler action at the microtask boundary between
+   // finishing the query loop and settling any chained Promise finalizer.
+   if(!queued){queued=true;queueMicrotask(()=>service.removeTenant('A'));}return timer;},
+  clearTimer:timer=>timers.delete(timer)});
+ try{
+  await service.drain();for(let turn=0;turn<10;turn++)await Promise.resolve();
+  assert([...timers].some(timer=>timer.delay===500),'SETTLED_DUE_FLIGHT_LOST_NEIGHBOR_TIMER');
+  assert.equal(lookups,2,'SETTLED_DUE_FLIGHT_DID_NOT_REFRESH');
+  return {nextDueCalls:lookups,remainingTenantDue:500};
+ }finally{await service.close();}
 }
 async function run(core,capture){
  const file=path.join(core,'lib/storage/clinical-stream-state.js'),source=fs.readFileSync(file,'utf8'),events=fs.readFileSync(capture,'utf8').trim().split('\n').map(JSON.parse);
@@ -254,6 +273,10 @@ async function run(core,capture){
   const broken={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(sharing,replacement)+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),broken,broken.exports);
   await assert.rejects(schedulerDueRefresh(core,broken.exports.start),symptom);await schedulerDueRefresh(core);controls.push(name);
  }
+ result.dueSettlement=await schedulerDueRefreshFinalizer(core);
+ const release='   }finally{dueFlight=null;}\n  });';assert.equal(schedulerSource.split(release).length,2,'DUE_SETTLEMENT_ABLATION_SOURCE_MISMATCH');
+ const lateRelease={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(release,'   }finally{/* release postponed */}\n  }).finally(()=>{dueFlight=null;});')+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),lateRelease,lateRelease.exports);
+ await assert.rejects(schedulerDueRefreshFinalizer(core,lateRelease.exports.start),/SETTLED_DUE_FLIGHT_LOST_NEIGHBOR_TIMER/);await schedulerDueRefreshFinalizer(core);controls.push('settled-due-flight-loses-neighbor-timer');
  const pumpEnd='   await due();';assert.equal(schedulerSource.split(pumpEnd).length,2,'SCHEDULER_ABLATION_SOURCE_MISMATCH');
  const barrier={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(pumpEnd,'   await Promise.allSettled([...active.values()]);await due();')+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),barrier,barrier.exports);
  await assert.rejects(schedulerFairness(core,barrier.exports.start),/IDLE_SLOT_MUST_RUN_NEIGHBOR_BEFORE_HELD_A_RELEASE/);await schedulerFairness(core);controls.push('held-tenant-batch-barrier');
@@ -289,5 +312,5 @@ async function run(core,capture){
  await assert.rejects(receipt(core,events[0],broken.exports),/RAW_ACK_BEFORE_COMMIT/);await receipt(core,events[0],receiver);controls.push('raw-ACK-before-commit');
  return {verdict:'PASS',scope:'actual-module state/native payloads and mocked SQL commit boundary; deployed recovery unmeasured',...result,controls};
 }
-module.exports={run,exercise,dueCoverage,migrationCompatibility,schedulerDueRefresh};
+module.exports={run,exercise,dueCoverage,migrationCompatibility,schedulerDueRefresh,schedulerDueRefreshFinalizer};
 if(require.main===module){(async()=>{if(process.argv.length!==4)throw Error('Usage: node materializer-row-control.cjs APP_WORKTREE DECODER_JSONL');console.log(JSON.stringify(await run(path.resolve(process.argv[2]),path.resolve(process.argv[3]))));})().catch(error=>{console.error(error.stack);process.exitCode=1;});}
