@@ -218,7 +218,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
             process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
-            a.job_record(out/'probe-job.json',process,m['owner'],group=True);deadline=a.time.monotonic()+600
+            a.job_record(out/'probe-job.json',process,m['owner'],group=True);deadline=a.time.monotonic()+a.discovery_seconds(m,600)
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
             primed=(out/'.window').is_file()
             if (out/'probe.json').is_file():
@@ -232,7 +232,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             monitor=a.loadgen_process(d,process);monitor.__enter__()
             try:
                 def work():
-                    with (out/'k6.log').open('wb') as output:record.process('k6',lambda:(lambda argv,**kw:oneoff('k6-load',argv,**kw)if oneoff else a.command(argv,**kw))(k6_command(a,d,m,k6_id,runid),file=output,timeout=m['cadence']['loadSeconds']+600))
+                    with (out/'k6.log').open('wb') as output:record.process('k6',lambda:(lambda argv,**kw:oneoff('k6-load',argv,**kw)if oneoff else a.command(argv,**kw))(k6_command(a,d,m,k6_id,runid),file=output,timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)))
                     if record.value['processes']['k6'].get('timeout'):stop_k6(a,m,record,oneoff=oneoff)
                 record.observe('load',lambda:observed_load(a,d,m,out,work))
             finally:a.phase_snapshot(d,out,'after')
@@ -240,7 +240,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             a.assert_owned(m)
             if primed and not probe_stopped and process.poll() is None:
                 (out/'.restart').touch();start=time.time()
-                try:rc=process.wait(timeout=1500)
+                try:rc=process.wait(timeout=a.discovery_seconds(m,1500))
                 except a.subprocess.TimeoutExpired:rc=None
                 record.value['processes']['probe']={'returncode':rc,'startedRecoveryAt':start,'endedAt':time.time(),'timeout':rc is None,'endMonoNs':time.monotonic_ns()};record.save()
             else:

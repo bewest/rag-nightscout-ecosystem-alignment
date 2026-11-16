@@ -67,8 +67,6 @@ def validate_config(config):
         argv.extend(['--' + key, str(value)])
     # The adapter owns supported options and all source/profile admission.
     parsed = a.parser().parse_args(['prepare', '--directory', '/tmp/m7-runner-validation', *argv])
-    if parsed.diagnostic_resource_profile:
-        require(config['workSeconds']<=1500 and config['cleanupSeconds']<=300,'M7_RUNNER_DIAGNOSTIC_WINDOW_TOO_LARGE')
     require(parsed.profile == 'pgstream-sample' and parsed.run_purpose == 'discovery', 'M7_RUNNER_DISCOVERY_ONLY')
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
     require(config['workSeconds'] > sum(a.cadence_options(parsed)[k] for k in ('warmupSeconds', 'idleSeconds', 'loadSeconds')), 'M7_RUNNER_WORK_WINDOW')
@@ -244,7 +242,7 @@ def stage(root, name, args):
         write(root / 'phase.json', {'phase': name, 'startedAt': time.time()})
         with (root / (name + '.private.log')).open('xb') as output:
             child_args = [*args]
-            if child_args[:1] == ['run']:
+            if child_args[:1] in (['deploy'],['preflight'],['run']):
                 child_args += ['--work-deadline', str(state['stopWorkAt'])]
             child = subprocess.Popen([sys.executable, '-B', str(HERE / 'adapter.py'), *child_args], stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
         a.job_record(root / 'stage-job.json', child, state['owner'], group=True)

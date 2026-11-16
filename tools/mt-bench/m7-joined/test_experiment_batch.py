@@ -72,6 +72,18 @@ class Batch(unittest.TestCase):
         spec=fixture();spec['envelope']['cleanupAt']=time.time()+10
         with self.assertRaisesRegex(RuntimeError,'CELL_DEADLINE'):b.plan(spec)
 
+    def test_long_declared_window_still_requires_remaining_batch_lifetime(self):
+        spec=fixture(1);cell=spec['cells'][0]
+        cell.update(workSeconds=3600,cleanupSeconds=300)
+        spec['envelope']['cleanupAt']=5000
+        b.plan(spec,now=1000)
+        with self.assertRaisesRegex(RuntimeError,'CELL_DEADLINE'):b.plan(spec,now=1101)
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger=self.ledger(tmp,spec)
+            with self.assertRaisesRegex(RuntimeError,'CELL_DEADLINE'):ledger.reserve(cell,now=1101)
+            self.assertEqual(b.read(ledger.file)['cells'],{})
+            self.assertIsNotNone(ledger.reserve(cell,now=1000))
+
     def test_every_aggregate_dimension(self):
         for key in b.RESOURCE_KEYS:
             if key=='totalMicrousd':continue
@@ -249,7 +261,7 @@ runner.batch_cell(sys.argv[2],sys.argv[3])
         spec=fixture(1)
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp);ledger=self.ledger(tmp,spec);ticket=ledger.reserve(spec['cells'][0]);ticket['cleanupAt']=time.time()+1
-            file=path/'ticket.json';b.write(file,ticket);config=path/'config.json';b.write(config,{'workSeconds':30,'cleanupSeconds':30})
+            file=path/'ticket.json';b.write(file,ticket);config=path/'config.json';b.write(config,{'workSeconds':3600,'cleanupSeconds':300})
             with patch.dict(os.environ,{'M7_BATCH_RESERVATION':str(file)}),patch.object(b,'child_lock',return_value=path/'heap.lock'),patch.object(runner,'prepare') as prepare:
                 with self.assertRaisesRegex(RuntimeError,'M7_BATCH_CELL_DEADLINE'):runner.batch_cell(config,path/'point')
             prepare.assert_not_called()

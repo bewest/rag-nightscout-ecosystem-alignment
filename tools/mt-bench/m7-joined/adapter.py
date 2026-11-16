@@ -76,6 +76,8 @@ def private_commands(directory):
 
 @contextlib.contextmanager
 def command_deadline(until):
+    previous=_COMMAND_DEADLINE.get()
+    if previous is not None:until=previous if until is None else min(previous,until)
     token=_COMMAND_DEADLINE.set(until)
     try:yield
     finally:_COMMAND_DEADLINE.reset(token)
@@ -87,6 +89,13 @@ def remaining_seconds(default):
     remaining=deadline-time.time()
     require(remaining>0,'M7_COMMAND_DEADLINE')
     return min(default,remaining)
+
+
+def discovery_seconds(m, default):
+    # Only an existing discovery cutoff can replace a legacy stage duration.
+    if m.get('runPurpose')=='discovery' and m.get('profile')=='pgstream-sample' and _COMMAND_DEADLINE.get() is not None:
+        return remaining_seconds(float('inf'))
+    return remaining_seconds(default)
 
 
 def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None):
@@ -1000,10 +1009,10 @@ def deploy(d, m):
         before=time.monotonic()
         if name=="prime":
             prior=d/"state/primer/tenants.json"
-            write(d/"primer-start.json",{"concurrency":m.get("primerConcurrency",1),"reusedTenants":len(document(prior)["tenants"]) if prior.exists() else 0,"requestedTenants":m["tenants"],"stageTimeoutSeconds":1800})
+            write(d/"primer-start.json",{"concurrency":m.get("primerConcurrency",1),"reusedTenants":len(document(prior)["tenants"]) if prior.exists() else 0,"requestedTenants":m["tenants"],"stageTimeoutSeconds":discovery_seconds(m,1800)})
         with (d/(name+".log")).open("wb") as output:
             if scope=="local":command(["node",d/"core/deploy/multitenant"/args[0],d/"state"],file=output)
-            else:compose(d,*args,file=output,timeout=1800)
+            else:compose(d,*args,file=output,timeout=discovery_seconds(m,1800))
         stages.append({"name":name,"seconds":time.monotonic()-before})
         write(d/"deployment-stages.json",stages)
         if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
@@ -1251,7 +1260,11 @@ def progress_summary(out):
 
 def observe_progress(d,m,out,phase):
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
-    args=(progress_services(d),ids,lambda *args:progress_fetch(d,*args),m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
+    until=_COMMAND_DEADLINE.get()
+    def fetch(*args):
+        # Executor threads do not inherit ContextVars. Keep the original cutoff.
+        with command_deadline(until):return progress_fetch(d,*args)
+    args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
     if 'evaluatorOpportunities' in m:
         opportunity_contract(m)
         if phase=='load':
@@ -1278,9 +1291,12 @@ def opportunity_collector(d,m,ids):
     expected={'kind':'evaluator-work-v2','pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']}
     require(config.get('binding')==expected and config.get('kind')==expected['kind'],'M7_OPPORTUNITY_BINDING')
     require('selection' not in config,'M7_OPPORTUNITY_SELECTED_PROFILE_UNSUPPORTED')
+    until=_COMMAND_DEADLINE.get()
     database=application_database(d);node=m['generator']['tools']['node']['path']
     script="try{const o=require(process.argv[1]),x=JSON.parse(require('fs').readFileSync(0)),c=o.prepare(x.config);console.log(JSON.stringify(x.mode==='queries'?x.batches.map(ids=>o.progressQuery(c,ids)):o.progressSnapshot(x.rows,c,x.ids)));}catch(e){console.log(JSON.stringify({refused:/^[A-Z][A-Z0-9_]{1,100}$/.test(e.message)?e.message:'M7_OPPORTUNITY_READER_REFUSED'}));}"
     def invoke(value,timeout):
+        if until is not None:
+            require(until>time.time(),'M7_COMMAND_DEADLINE');timeout=min(timeout,until-time.time())
         raw=command([node,*([] if diagnostic_resources._ACTIVE is not None else ['--max-old-space-size=256']),'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
         evaluator_progress.need(len(raw.encode())<=evaluator_opportunities.ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
         value=json.loads(raw)
@@ -1299,7 +1315,7 @@ def opportunity_collector(d,m,ids):
         cost={'sqlQueries':0,'rawSqlBytes':0,'nodeCalls':0}
         try:
             for query in queries:
-                remaining=deadline-time.monotonic();evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
+                remaining=min(deadline-time.monotonic(),until-time.time() if until is not None else float('inf'));evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
                 ms=max(1,min(4000,int(remaining*1000)-100))
                 raw=psql(d,"BEGIN; SET LOCAL statement_timeout='"+str(ms)+"ms';\n"+query+"\nCOMMIT;",database,timeout=min(5,remaining))
                 count+=1;used+=len(raw.encode());cost.update(sqlQueries=count,rawSqlBytes=used)
@@ -1675,7 +1691,7 @@ def parser():
     for cmd in ("verify", "build", "deploy", "run", "preflight", "diagnose", "control", "down", "host-identity", "vault-check", "source-preflight"):
         own = sub.add_parser(cmd);own.add_argument("directory")
         if cmd in ("run","preflight"):own.add_argument("--k6-image", required=True)
-        if cmd == "run":own.add_argument("--work-deadline",type=float,help="Existing runner absolute work cutoff; never starts a new window")
+        if cmd in ("deploy","preflight","run"):own.add_argument("--work-deadline",type=float,help="Existing runner absolute work cutoff; never starts a new window")
     check = sub.add_parser("check-campaign");check.add_argument("summary")
     check = sub.add_parser("check-pilot");check.add_argument("summary")
     check = sub.add_parser("check-discovery");check.add_argument("summary")
@@ -1714,13 +1730,18 @@ def main():
         overlay = d / "core/deploy/multitenant"
         command(["node", overlay / "build.js"], cwd=overlay, timeout=1800)
     elif args.command == "source-preflight":discovery_source_preflight(d,m)
-    elif args.command == "deploy":deploy(d, m)
+    elif args.command == "deploy":
+        with command_deadline(args.work_deadline):
+            if args.work_deadline is not None:require(math.isfinite(args.work_deadline) and 0<args.work_deadline-time.time()<=10800,'M7_COMMAND_DEADLINE')
+            deploy(d, m)
     elif args.command == "preflight":
-        preflight(d,m,args.k6_image);print('M7_SAMPLE_INSTRUMENTS_CHECKED_NOT_ACCEPTANCE')
+        with command_deadline(args.work_deadline):
+            if args.work_deadline is not None:require(math.isfinite(args.work_deadline) and 0<args.work_deadline-time.time()<=10800,'M7_COMMAND_DEADLINE')
+            preflight(d,m,args.k6_image);print('M7_SAMPLE_INSTRUMENTS_CHECKED_NOT_ACCEPTANCE')
     elif args.command == "run":
         until = args.work_deadline
         if m.get('evaluatorCatchup') is not None:require(until is not None,'M7_DRAIN_WORK_DEADLINE_REQUIRED')
-        if until is not None:require(math.isfinite(until) and until>time.time(),'M7_COMMAND_DEADLINE')
+        if until is not None:require(math.isfinite(until) and 0<until-time.time()<=10800,'M7_COMMAND_DEADLINE')
         with command_deadline(until):run(d,m,args.k6_image)
     elif args.command == "diagnose":diagnose(d,m)
     elif args.command == "control":control(d, m)

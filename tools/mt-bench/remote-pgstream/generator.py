@@ -14,7 +14,7 @@ import sys
 import threading
 import time
 
-from protocol import viewer_total, Channel, binding, need, source_identity, TRAFFIC_FILES, write, workload, discovery_mode
+from protocol import viewer_total, Channel, binding, need, source_identity, TRAFFIC_FILES, write, workload, discovery_mode, work_seconds
 
 UID = 1001
 GID = 1001
@@ -64,7 +64,7 @@ def stop(process):
 
 
 def wait_file(path, process, b, seconds=600):
-    until = min(time.monotonic() + seconds, time.monotonic() + b['expiresAt'] - time.time() - 540)
+    until = time.monotonic()+work_seconds(b,seconds)
     while not path.exists():
         need(process.poll() is None, 'EXTERNAL_TRAFFIC_CHILD_FAILED')
         need(time.monotonic() < until, 'EXTERNAL_TRAFFIC_PHASE_TIMEOUT')
@@ -349,13 +349,13 @@ def session(directory, spec):
             (out / '.load-start').touch()
             _, k6 = traffic_commands(d, b, descriptor, k6_name, int(time.time() * 1000))
             with (out / 'k6.log').open('wb') as output:
-                result=run_k6(k6,d,b,k6_name,output,min(workload(b)['cadence']['loadSeconds']+600,b['expiresAt']-time.time()-540))
+                result=run_k6(k6,d,b,k6_name,output,work_seconds(b,workload(b)['cadence']['loadSeconds']+600))
                 need(discovery_mode(b) or result.returncode==0,'EXTERNAL_K6_FAILED')
             write(control / 'k6-launch.json', {'image': b['k6Image'], 'workloadSha256': descriptor['files']['workload.js'], 'trafficUid': UID, 'trustedLauncherUid': os.getuid(), 'returnCode': result.returncode, 'fixedArguments': True})
             channel.send('load-complete')
             # End the write window; no service is restarted in calibration.
             (out / '.restart').touch()
-            probe_code=probe.wait(timeout=min(1500, b['expiresAt'] - time.time() - 540))
+            probe_code=probe.wait(timeout=work_seconds(b,1500))
             write(control/'processes.json',{'k6':result.returncode,'probe':probe_code})
             need(discovery_mode(b) or probe_code == 0, 'EXTERNAL_PROBE_FAILED')
         metrics_stop.set()
@@ -364,7 +364,7 @@ def session(directory, spec):
         need(discovery_mode(b) or json.loads((control / 'generator-metrics.json').read_text()).get('complete') is True, 'EXTERNAL_GENERATOR_METRICS_MISSING')
         public_result()
         channel.send('client-complete')
-        channel.receive('finish', 600)
+        channel.receive('finish', work_seconds(b,600))
     except BaseException as error:
         failure=str(error) if re.fullmatch(r'(?:M7|REMOTE|EXTERNAL)_[A-Z_]+',str(error)) else 'EXTERNAL_GENERATOR_INCOMPLETE'
         raise

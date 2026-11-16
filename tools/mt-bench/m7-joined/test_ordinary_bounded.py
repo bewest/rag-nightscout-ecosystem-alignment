@@ -13,6 +13,15 @@ import diagnostic_resources as r
 
 
 class OrdinaryBounded(unittest.TestCase):
+    def setUp(self):
+        # These controls exercise real flock in scratch, never a live lane's lock.
+        scratch=tempfile.TemporaryDirectory();self.addCleanup(scratch.cleanup)
+        original=r.Runtime.acquire
+        lock=Path(scratch.name)/'driver.lock'
+        def acquire(runtime,lock_file=None):return original(runtime,lock_file or lock)
+        self.patch_lock=patch.object(r.Runtime,'acquire',acquire)
+        self.patch_lock.start();self.addCleanup(self.patch_lock.stop)
+
     def tearDown(self):
         r.configure()
 
@@ -27,10 +36,19 @@ class OrdinaryBounded(unittest.TestCase):
                      'generator-dependency-receipt-sha256':'d'*64,'generator-dependency-preparation':'/synthetic/preparation.json',
                      'generator-dependency-preparation-sha256':'e'*64,'generator-dependency-preparation-head':'f'*40}
             config={'version':1,'helperHead':'synthetic-head','prepare':options,'k6Image':'sha256:'+'1'*64,'workSeconds':1500,'cleanupSeconds':300}
-            a.write(path,config)
+            # Explicit duration is independent of the diagnostic CPU/RAM/heap caps.
             with patch.object(a,'git',return_value='synthetic-head'),patch.object(runner.os,'cpu_count',return_value=8):
-                read,argv=runner.load_config(path)
-            self.assertEqual(read,config)
+                for seconds in (1500,3600,10800):
+                    with self.subTest(workSeconds=seconds):
+                        config['workSeconds']=seconds;a.write(path,config)
+                        read,argv=runner.load_config(path)
+                        self.assertEqual(read,config)
+                for field,values in {'workSeconds':(29,10801,float('inf'),float('nan'),True),
+                                     'cleanupSeconds':(29,301,float('inf'),True)}.items():
+                    for value in values:
+                        with self.subTest(field=field,value=value):
+                            with self.assertRaisesRegex(RuntimeError,'M7_RUNNER_FINITE_LIMIT'):
+                                runner.validate_config({**config,field:value})
             self.assertEqual(argv[argv.index('--generator-dependency-receipt-sha256')+1],'d'*64)
             self.assertEqual(argv[argv.index('--generator-dependency-preparation-sha256')+1],'e'*64)
             # Accepted key grammar still delegates option names to the actual parser.
@@ -76,16 +94,22 @@ class OrdinaryBounded(unittest.TestCase):
     def test_execution_uses_preparation_deadline_and_refuses_expiration(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);a.write(root/'config.json',{})
-            config={'workSeconds':1500,'cleanupSeconds':300}
-            state={'owner':'synthetic','startedAt':100,'stopWorkAt':1600,'cleanupAt':1900,
+            config={'workSeconds':3600,'cleanupSeconds':300}
+            state={'owner':'synthetic','startedAt':100,'stopWorkAt':3700,'cleanupAt':4000,
                    'includesPreparation':True,'configSha256':a.digest(root/'config.json')}
             a.write(root/'execution.json',state);a.write(root/'guard-ready.json',{'owner':'synthetic'})
             with patch.object(runner,'guard_alive',return_value=True),patch.object(runner.time,'time',return_value=1500):
                 self.assertEqual(runner.execution_window(root,config),state)
-            with patch.object(runner,'guard_alive',return_value=True),patch.object(runner.time,'time',return_value=1600):
+            with patch.object(runner,'guard_alive',return_value=True),patch.object(runner.time,'time',return_value=3700):
                 with self.assertRaisesRegex(RuntimeError,'WORK_DEADLINE'):runner.execution_window(root,config)
-            state['stopWorkAt']=1700;a.write(root/'execution.json',state)
-            with self.assertRaisesRegex(RuntimeError,'WINDOW_CHANGED'):runner.execution_window(root,config)
+            for field in ('stopWorkAt','cleanupAt'):
+                a.write(root/'execution.json',{**state,field:state[field]+100})
+                with patch.object(runner,'guard_alive',return_value=True),patch.object(runner.time,'time',return_value=1500):
+                    with self.assertRaisesRegex(RuntimeError,'WINDOW_CHANGED'):runner.execution_window(root,config)
+            a.write(root/'execution.json',state)
+            with patch.object(runner.subprocess,'Popen') as launch:
+                with self.assertRaisesRegex(RuntimeError,'WINDOW_EXISTS'):runner.arm_window(root,config)
+                launch.assert_not_called()
 
     def test_guard_starts_cleanup_at_work_deadline_not_absence_deadline(self):
         with tempfile.TemporaryDirectory() as tmp:
