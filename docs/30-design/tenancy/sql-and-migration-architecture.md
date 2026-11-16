@@ -130,9 +130,12 @@ and admitted handler/storage contracts still bound actual coverage.
 Realtime owns live connections; the evaluator is a headless worker and remains
 one current workload owner. Connector actors (`vcpool`) belong to background
 polling/egress work and submit clinical writes through the canonical API boundary;
-the [ed2 role declaration](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/roles.js#L81)
-has no runnable start. Evaluator partitioning and realtime replication are separate future capabilities, not
-prerequisites for the queued request-serving API scale-out.
+the [selected role registry](https://github.com/nightscout/cgm-remote-monitor/blob/5e112547b31252ec428747c821d3cd1b3684ce2b/lib/server/serve/roles.js)
+selects its explicit preview implementation. Fixed-roster evaluator assignment
+and realtime controlled placement have source-scoped implementation records;
+[runtime topology](runtime-topology.md) and release contents own their qualification.
+A replica count does not establish workload ownership or capacity. These worker
+contracts are separate from request-serving API replicas.
 
 ### Private maintenance execution
 
