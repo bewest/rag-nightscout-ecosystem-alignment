@@ -51,7 +51,7 @@ class TailBookends(unittest.TestCase):
         events,values,error=self.exercise(after_failure=True);self.assertRegex(str(error),'AFTER_REFUSED');self.assertEqual(events,['before','after']);self.assertTrue(all(v['verdict']!='PASS'for v in values))
     def test_tail_failure_retains_partial_original_rounds(self):
         events,values,error=self.exercise(tail_failure=True);self.assertRegex(str(error),'TAIL_POINT_REFUSED');self.assertEqual(events,['before','after','tail']);self.assertEqual(len(values[-1]['rounds']),3);self.assertEqual(values[-1]['verdict'],'UNMEASURED')
-    def test_original_busy_failure_has_after_but_no_point_exception(self):
-        events,values,error=self.exercise(original_failure=True);self.assertRegex(str(error),'JOB_PENDING');self.assertEqual(events,['before','after']);self.assertTrue(all(v['verdict']!='PASS'for v in values))
+    def test_pending_job_does_not_erase_completion_or_cost_bookends(self):
+        events,values,error=self.exercise(original_failure=True);self.assertIsNone(error);self.assertEqual(events,['before','after','tail']);self.assertEqual(values[-1]['verdict'],'PASS')
 
 if __name__=='__main__':unittest.main()

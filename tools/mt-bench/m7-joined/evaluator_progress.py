@@ -13,7 +13,7 @@ LEGACY_POLICY={'version':1,'moduleVersion':2,'selectorRows':128,'maxTenants':100
         'responseMaxBytes':1048576,'rpcTimeoutMs':5000,'roundDeadlineMs':15000,
         'idleWitness':'successful-time-only-completion','loadWitness':'successful-work-progression',
         'recoveryCadenceMs':15000,'recoveryTimeoutMs':900000,'recoveryMaxRounds':60,'readinessMaxQueries':25600,'readinessMaxBytes':268435456,'readinessMaxRounds':80,'deadlineClaim':False,'workloadCohortChanged':False}
-POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed'}
+POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':3,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
 
 class Refused(RuntimeError):
     def __init__(self,code,verdict='UNMEASURED'):
@@ -163,14 +163,14 @@ def assess(rounds,ids,phase,*,policy=POLICY):
         need(set(current['owners'])==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
         for tenant in ids:
             a=previous['owners'][tenant];b=current['owners'][tenant]
-            need((a['service'],a['runtimeId'],a['generation'])==(b['service'],b['runtimeId'],b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-            need(all(b[k]>=a[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            need((a['service'],a['runtimeId'])==(b['service'],b['runtimeId']) and (policy!=LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            need(all(b[k]>=a[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             need(b['failedCompletions']==a['failedCompletions'],'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         for service,rows in previous['allRows'].items():
             need(set(current['allRows'].get(service,{}))==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
             for tenant,a in rows.items():
                 b=current['allRows'][service][tenant]
-                need(a['admitted']==b['admitted'] and a['generation']==b['generation'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+                need(a['admitted']==b['admitted'] and (policy!=LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
                 if not a['admitted']:
                     need(not b['ready'] and all(a[k]==b[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
         previous=current
@@ -178,7 +178,7 @@ def assess(rounds,ids,phase,*,policy=POLICY):
         a=first['owners'][tenant];b=rounds[-1]['owners'][tenant]
         need(a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         work=b['completedAcquisitions']-a['completedAcquisitions']+b['completedTimeCycles']-a['completedTimeCycles'];delta=b['completedTimeCycles']-a['completedTimeCycles']
-        need(work>0 and (phase!='idle' or delta>0),'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
+        need(work>0 and (policy!=LEGACY_POLICY or phase!='idle' or delta>0),'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
         minimum=work if minimum is None else min(minimum,work);work_delta+=work;time_delta+=delta;time_tenants+=delta>0
     return {'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
 

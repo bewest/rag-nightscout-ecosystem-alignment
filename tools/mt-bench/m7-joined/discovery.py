@@ -46,7 +46,7 @@ def recovery_episode(value,ids,binding):
             for tenant,before in rows.items():
                 after=current['allRows'][service][tenant]
                 require(after['admitted']==before['admitted'],'M7_DISCOVERY_ADMISSION_CHANGED')
-                require(all(after[k]>=before[k] for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_DISCOVERY_COUNTER_REWOUND')
+                require(all(after[k]>=before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_DISCOVERY_COUNTER_REWOUND')
                 if not before['admitted']:
                     require(after==before,'M7_DISCOVERY_FOREIGN_CHANGED')
                 elif after['generation']!=before['generation']:
@@ -417,7 +417,7 @@ def partial_progress(a,d,m,stage):
         for service,rows in previous['allRows'].items():
             for tenant,before in rows.items():
                 after=current['allRows'][service][tenant]
-                need((before['admitted'],before['generation'])==(after['admitted'],after['generation']) and all(after[k]>=before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+                need(before['admitted']==after['admitted'] and all(after[k]>=before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
                 if not before['admitted']:
                     need(not after['ready'] and all(after[k]==before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
                     if stage=='idle':need(not any(idle.jobs(after['jobs']).values()),'M7_EVALUATOR_IDLE_FOREIGN_PENDING','FAIL')

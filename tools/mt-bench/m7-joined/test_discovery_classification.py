@@ -36,7 +36,7 @@ class Classification(unittest.TestCase):
         return fixture.run_recording(error)
     def test_actual_tail_opportunity_unmeasured_producer_continues_load_and_preserves_finding(self):
         rows=self.raw_shape();idle.stability(rows,[A,B]);idle.clock_windows(rows)
-        error=self.error(lambda:idle.assess(rows,[A,B]));self.assertEqual((str(error),error.verdict),('M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','UNMEASURED'))
+        error=self.error(lambda:idle.assess(rows,[A,B]));self.assertEqual((str(error),error.verdict),('M7_EVALUATOR_IDLE_TAIL_REQUIRED','UNMEASURED'))
         result,calls,_=self.produce(error);self.assertEqual(calls,['load']);self.assertEqual(result['strictChecks']['idle'],{'verdict':'UNMEASURED','code':str(error),'hardFailure':False});self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED')
     def test_actual_missing_midpoint_needs_valid_partial_capture_before_continuation(self):
         fixture=producer.Discovery();self.addCleanup(fixture.doCleanups);folder,m=fixture.setup()
@@ -77,7 +77,7 @@ class Classification(unittest.TestCase):
     def test_actual_clock_reset_coverage_and_foreign_controls_still_stop_before_load(self):
         cases=[]
         rows=self.raw_shape();rows[-1]['readWindows']['evaluator']['end']['wallUs']+=10000;cases.append(('CLOCK',rows))
-        rows=self.raw_shape();rows[1]['owners'][A]['generation']+=1;cases.append(('RESET',rows))
+        rows=self.raw_shape();rows[1]['instances']['evaluator']['runtimeId']=S;cases.append(('RESET',rows))
         rows=self.raw_shape();rows[1]['owners'].pop(B);cases.append(('COVERAGE',rows))
         rows=self.raw_shape()
         for current in rows:

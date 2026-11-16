@@ -68,7 +68,7 @@ function query(config,ids,marker,progress=false){
  if(config.kind==='evaluator-work-v2'){
   const body=progress?"jsonb_build_object('tenant',c.projection->0->'output'->'tenant')":"(c.projection->0->'output')";
   state=`jsonb_build_object('kind',c.projection->0->>'kind','observed',${vector('work_observed')},'completed',${vector('work_completed')},'output',CASE WHEN jsonb_typeof(c.projection->0->'output')='object' THEN ${body} || jsonb_build_object('identity',c.output_identity,'contentDigest',c.output_digest,'outputRevision',c.output_revision,'restoreGeneration',c.output_restore_generation::text) ELSE NULL END)`;
-  typed=`jsonb_build_object('version',c.work_version,'contractDigest',c.contract_digest,'observed',c.work_observed::text[],'completed',c.work_completed::text[],'identity',c.output_identity,'digest',c.output_digest,'revision',c.output_revision::text,'generation',c.output_restore_generation::text,'enabled',c.work_enabled,'arrayBounds',array_lower(c.work_observed,1)=1 AND array_lower(c.work_completed,1)=1,'bodyMetadataAbsent',(jsonb_typeof(c.projection->0->'output') IN ('object','null') AND NOT ((c.projection->0->'output') ?| ARRAY['identity','contentDigest','outputRevision','restoreGeneration','runtimeId']))${profileFields})`;
+  typed=`jsonb_build_object('version',c.work_version,'contractDigest',c.contract_digest,'observed',c.work_observed::text[],'completed',c.work_completed::text[],'identity',c.output_identity,'digest',c.output_digest,'revision',c.output_revision::text,'generation',c.output_restore_generation::text,'enabled',c.work_enabled,'arrayBounds',array_lower(c.work_observed,1)=1 AND array_lower(c.work_completed,1)=1,'dueAt',c.work_due_at::text,'completedAt',c.work_completed_at::text,'bodyMetadataAbsent',(jsonb_typeof(c.projection->0->'output') IN ('object','null') AND NOT ((c.projection->0->'output') ?| ARRAY['identity','contentDigest','outputRevision','restoreGeneration','runtimeId']))${profileFields})`;
  }
  // One SELECT snapshot: JSON clinical body and typed metadata cannot straddle a completion.
  const stored=progress?"'[]'::jsonb":`coalesce((SELECT jsonb_agg(e.doc) FROM "${config.entries}".entries e WHERE e.tenant_id=w.tenant_id AND e.doc->>'device'='${marker}-probe'),'[]'::jsonb)`;
@@ -148,7 +148,9 @@ function progressSnapshot(rows,config,ids){
    throw error;
   }
   if(!exact(row.stamp)||(row.state.observed.clock!==undefined&&(!exact(row.state.observed.clock)||BigInt(row.state.observed.clock)>BigInt(row.stamp))))fail('M7_OPPORTUNITY_CLOCK');
-  return {tenant,writerClock:row.stamp,observed:{...row.state.observed},completed:{...row.state.completed},outputRevision:row.typed.revision,restoreGeneration:row.typed.generation};
+  const timing={};
+  for(const key of ['dueAt','completedAt'])if(Object.hasOwn(row.typed,key)){const value=row.typed[key];if(value!==null&&(!exact(value)||!Number.isSafeInteger(Number(value))))fail('M7_OPPORTUNITY_TIME');timing[key]=value===null?null:Number(value);}
+  return {...timing,tenant,writerClock:row.stamp,observed:{...row.state.observed},completed:{...row.state.completed},outputRevision:row.typed.revision,restoreGeneration:row.typed.generation};
  });
  return {kind:'evaluator-durable-progress-v1',reader:plain(config.binding),rows:values};
 }

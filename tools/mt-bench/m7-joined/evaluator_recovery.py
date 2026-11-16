@@ -23,13 +23,13 @@ def assess(baseline, rounds, ids,*,policy=p.POLICY):
     p.need(first['instances']==last['instances'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
     for tenant in ids:
         a,b=first['owners'][tenant],last['owners'][tenant]
-        p.need((a['service'],a['generation'])==(b['service'],b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+        p.need(a['service']==b['service'] and (policy!=p.LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
         p.need(a['failedCompletions']==b['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         p.need(a['completedAcquisitions']>0 and b['completedAcquisitions']>=a['completedAcquisitions'] and b['completedTimeCycles']>=a['completedTimeCycles'],'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
     for service,rows in first['allRows'].items():
         for tenant,a in rows.items():
             b=last['allRows'][service][tenant]
-            p.need((a['admitted'],a['generation'])==(b['admitted'],b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            p.need(a['admitted']==b['admitted'] and (policy!=p.LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             if not a['admitted']:
                 p.need(all(a[k]==b[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
     return {'version':policy['version'],'verdict':'PASS','observed':len(ids),'expected':len(ids),'missing':0,'instances':last['instances'],'source':'successful fresh owned acquisition in changed runtime, stable exact-instance coverage; no clinical-equivalence or deadline claim'}

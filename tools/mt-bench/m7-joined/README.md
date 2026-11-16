@@ -336,158 +336,72 @@ controlled-replacement binding helper; raw restart is refused until that seam ex
 
 ## Successful evaluator completion observer
 
-Profile-selection version3 pins the unchanged strict `evaluatorProgress` policy and
-the separate `evaluatorIdleSafety` policy in capabilities.json version4.
-The source must expose evaluator-inspection module v2 before preparation. Selectors
-contain at most128 unique synthetic UUIDs. One read-only process per exact evaluator
-instance pages ALL configured synthetic IDs, including foreign rows; no hash-based
-query prefilter hides duplicate evaluation. Inspection invokes no clinical work.
+The current evaluator is a stream-fed bounded clinical materializer. Accepted
+input, completed clinical coverage and delivered client output are separate
+positions. A transport ACK requires durable acceptance; acquisition alone does
+not prove clinical completion. Current tenant/owner/restore authority, coherent
+transaction cohorts and subscribed raw mutation delivery remain required.
+Realtime consumes completed clinical output, while the raw mutation tail remains
+independent of bounded clinical membership. Bootstrap, cache loss, stream gaps
+and missing history may read SQL.
 
-The existing enabled-idle phase starts before either k6 or the socket/write probe:
-its body only sleeps for the unchanged120s pilot/600s capacity interval. It is the
-no-clinical-write idle observation. All tenants still receive the original load phase;
-there is no additional cold cohort, plugin change, HTTP request, or deadline SLO.
-The historical strict idle checker still requires successful time-only completion
-for every owner. Current baseline idle instead uses a separate idle-safety result:
-actual observed due opportunities require later successful time progression; a
-healthy already-acquired owner with stable authority, no error or clinical job,
-and no captured due within the complete observation may report
-TIME_NOT_EXERCISED/zero completions. Explicit current null due with complete
-clinical-job metadata is NO_TIMER_DECLARED; historical/missing state is UNKNOWN.
-A later future due never erases an earlier observed opportunity. Any acquisition
-delta during idle is new demand and refuses. Load still requires successful work
-progression. Legacy `cycles` and evaluation age cannot satisfy
-this check. Missing opportunity cannot manufacture a work witness. Error, ownership, runtime or lifecycle
-generation changes refuse. Input/output revisions may advance normally. Every ID
-must have exactly one admitted ready owner; foreign counters must remain unchanged
-from their explicitly retained phase baseline. Hidden recovered errors refuse.
+Private inspection samples every selected owner and foreign row without starting
+work. Every tenant must have one admitted, ready, error-free owner. Runtime IDs,
+owner placement, counter rewinds, failed completions and foreign work remain
+checked. Component `generation` fences disposable RAM; cache eviction/recreation
+may change it without a process restart. Due work may run as acquisition after
+cache loss. Neither stable RAM generation, zero acquisition growth, TIME callback
+classification nor all job flags being clear is a clinical requirement.
 
-Three bookend/midpoint snapshots use at most4 instances,10000 IDs,1024 private
-requests and64MiB response bytes per phase. Each request retains the existing
-server caps and uses a conservative1MiB client cap,128 selected rows and5s timeout.
-Private raw and deterministic-gzip artifacts retain compact complete rows and
-source/image/instrument/profile attribution. Partial body failures preserve collected
-evidence before propagating the original failure. Query/response/wall overhead and
-serialization/gzip/primary-file publication CPU/wall costs are recorded separately.
-
-Recovery is a separate scope: a bounded pre-restart runtime baseline, then the
-existing900s/15s cadence. Every exact evaluator must have a different runtime ID,
-at least one successful fresh owned acquisition, two stable coverage/counter
-observations, and no failure/foreign progress. Its private recovery artifact is
-separate from capacity-phase progression. Missing/error/stale-worker receipts cannot
-pass. The restart helper still independently proves actual container starts.
-Neither observer proves clinical output equivalence or native transport by itself.
-
-Focused component controls can use a NEW owned exact product source:
-
-```bash
-M7_PROGRESS_CORE=/absolute/owned/core python3 -m unittest discover \
-  -s tools/mt-bench/m7-joined -p test_evaluator_progress.py
-```
-
-This uses actual runtime/window/inspection with a recording SQL port and synthetic
-component. Native product scheduling/durability and final paired-image transport
-remain separately required. An omitted source fixture is explicitly skipped.
-
-Due-observation completeness uses capabilities3, observation contract2 and explicit
-`evaluator-progress-phase-v2` / `evaluator-recovery-v2` artifacts. Compact tuples
-now retain dueAt/dueReason for EVERY owner/foreign row; safe finite fractional
-numbers are preserved without rounding. Missing/malformed current fields refuse
-rather than becoming null. Preparing a new cell requires these fields in its
-exact source's private-v2 response schema, and its image/client must use that
-source. An older strict private-v2 client refuses the added response fields;
-there is no mixed-source compatibility claim.
-
-This changes observation retention, not the progress predicate, deadline, cadence,
-threshold, query/decompression budget or clinical claim. No future/past due value
-is automatically interpreted as sufficient opportunity or a passed phase. Historical
-phase/recovery v1 artifacts retain their original policy/version/columns and can
-be decoded/verified as historical records. Missing old due fields stay UNKNOWN
-(absent), distinct from an observed null/no timer. Current cell receipts require
-v2 artifacts and cannot downgrade to an old unknown-due shape. The actual historical
-195c PASS and repaired cd462 UNMEASURED captures are tested read-only and unchanged.
-
+The current progress policy is module3 and idle-safety assessor module5.
+Successful work counters combine acquisition and TIME completions. These counters
+are diagnostics, not durable clinical proof. The separate legacy v1 progress
+policy retains its original strict semantics. Existing receipts and captured
+failures remain unchanged; reproduce historical outcomes with their original
+instrument. Current policy and assessment versions prevent an old receipt from
+silently becoming current qualification.
 
 ### Baseline idle-safety boundary
 
-Current idle assessor module4 produces `evaluator-idle-safety-v2`. It retains
-three complete ID/instance snapshots and common wall-minus-monotonic clock
-brackets. Missing state, clock jumps and ambiguous observations remain refused.
-Strict work/source inspection remain module2; old idle artifacts retain their
-original module's outcome and cannot serve as current receipts.
+Without an explicit durable opportunity selection, idle reports sampled work
+safety with `timeWitness:false`. `DUE_WORK_COMPLETED` means successful work was
+observed after a sampled due opportunity; it does not certify clinical output or
+that the callback was TIME. A quiet sample reports `TIME_NOT_EXERCISED`. Missing
+or ambiguous due observations remain UNMEASURED. Pending job flags are diagnostic;
+newer owed work must not erase an older completion. Missing due work may receive
+one bounded point observation after the original cost bookends; that observation
+never enters original-window throughput. It need not have a specific callback
+kind or an exact legacy-body count. Foreign pending work still refuses.
 
-First and midpoint observations still require every clinical job flag clear.
-Only an original FINAL exact running-bit owner with a prior declared TIME
-opportunity may create a completion obligation. The final legacy-body increase
-must exceed the measured TIME increase by exactly one; all original readiness,
-identity, generation, acquisition, failure, foreign-row and clock guards remain.
-A running flag or null due is never completion evidence.
+For `pgstream-sample` discovery, `--evaluator-opportunities received-input-v1`
+selects the existing trusted SQL collector for **idle and load**. It captures
+three SQL-before-inspection snapshots with the existing reader/source/image
+binding and budgets. Assessment version2 reads `work_due_at` and
+`work_completed_at` from the existing typed checkpoint in the same query as
+accepted/completed vectors and output restore metadata. A sampled due is complete
+when a later durable completion crosses that due and the original due is retired
+or replaced by a strictly later one. Output content/revision may remain unchanged;
+a later real deadline remains eligible. RAM generation and acquisition/TIME
+counters cannot substitute for this check. Missing timing leaves the dependent
+timer claim UNMEASURED; independently measured input coverage remains visible.
 
-After successful original AFTER cost snapshots, the adapter may make ONE point
-inspection round over at most128 obligated IDs on every fixed evaluator instance.
-All RPCs share one monotonic5-second deadline and the existing phase query/byte
-budgets; there is no retry. The selected owner must gain exactly one completed
-TIME, retain its final legacy-body/acquisition counts and owner/runtime/generation,
-show no failure, and have all jobs clear. Selected nonowners remain unchanged and
-idle. Missing, still-running, reset, extra-body/acquisition or final-only demand
-stays refused. No earlier busy observation is excused.
+Durable vector, output revision, completion-time and restore rewinds still refuse.
+These observations establish scoped checkpoint progress, not independent current
+restore/owner-authority proof, clinical equivalence, stock-client delivery,
+per-write deadlines or capacity acceptance. Existing source/native/operator and
+client checks own those claims. No new telemetry service is required.
 
-The artifact retains the original three global rounds plus a separate point-tail
-round and cost/clock metadata. Original measured TIME counts and resource windows
-never include the tail completion. The new classification
-`TIME_COMPLETED_AFTER_WINDOW` is not throughput or a native work witness. Unselected
-tenants are covered only by the original global snapshots; no global tail or
-continuous quiescence claim follows. AFTER-snapshot or tail failure preserves
-partial evidence and cannot yield PASS. The external app helper uses this same
-adapter boundary and policy.
+Selectors retain the existing bounds: 128 IDs per inspection request, 10000 IDs,
+4 instances, 1024 requests and 64MiB response bytes per phase. Original raw/gzip
+captures, source/image/instrument attribution and observer costs stay private.
+Clock brackets reject wall jumps and overlapping observations. Idle always
+attempts its AFTER cost snapshot in `finally`; missing bookends remain missing.
+The durable opportunity observer needs no additional completion-tail query.
 
-The private DTO exposes six existing clinical states: running (through complete
-window resolution), booting, owned acquire/time and borrowed acquire/time tickets.
-The new compact artifact encodes these in that order as a validated integer
-bitmask0..63; bool, missing, extra or malformed state refuses. Named source DTO
-booleans remain exact. Full owner/foreign rows and original byte/query/gzip budgets
-are retained. Old strict phase/recovery v1/v2 artifacts keep their original checker
-semantics; current idle receipts cannot downgrade to them.
-
-An idle-safety PASS always declares `timeWitness:false`, including when actual time
-progress is observed. Capacity support separately requires a coordinator-pinned
-exact-source native successful-TIME witness, recomputed with the unchanged strict
-v2 checker. Quiet baseline capacity never establishes active-alarm capacity. Load
-and changed-runtime recovery remain strict. A future due or explicit null cannot
-excuse an earlier observed opportunity without later completed time work.
-
-Readiness collection permits one first-admission transition only when warming:
-a valid admitted, ready, error-free owner with all successful and failed
-completion counters zero may have an explicitly present null completion age
-while its first operation-window release is pending. This remains WARMING with
-no credited acquisition. Nonwarming collection, missing age, nonzero counters
-with null age, errors and progress requirements remain strict. Per-row contract
-refusals also retain one private `failedRow` projection in the existing diagnostic:
-tenant/service/runtime identity, admitted/ready/code/alert, whitelisted progress
-counters and due fields. It is capped at4096 bytes; strings over64 characters are
-explicitly truncated. Bounded scalar values stay visible; unsupported structures
-and nonfinite or oversized numbers use type tags. Clinical output and arbitrary
-RPC fields are excluded. This adds no request, retry or
-acceptance change; the original failed predicate remains a refusal. Fixed
-predicate/field names and bounded positional indices accompany the projection.
-Readiness deadlines, polling cadence,
-workload and native TIME proof requirements are unchanged.
-
-Idle assessor module3 accepts already observed successful TIME work after each
-first/midpoint opportunity even when its due time falls inside the final fetch
-bracket. It still refuses final-only demand and any opportunity without later
-credited work; a later future/null due cannot erase an earlier opportunity.
-This is not a deadline claim. Policy/wire row schema remains version1, while
-`evaluatorIdleSafety.moduleVersion=3` explicitly pins this assessor; the source
-inspection/strict-work protocol remains version2. Historical module2 records
-retain their original policy/result and do not silently become current proofs.
-
-Enabled idle attempts its existing AFTER cgroup/PostgreSQL bookend in `finally`,
-including observer refusal. PASS still has only the original BEFORE/AFTER pair.
-If AFTER also refuses, a bounded fixed diagnostic records actual partial-file
-availability and the original phase exception is preserved. Missing bookends
-are never fabricated, and an AFTER failure without a phase failure still fails
-the run. No sampling window, query set, workload or retry policy is expanded.
+Restart recovery remains a separate bounded observation of changed process IDs
+and successful fresh acquisition. It does not establish clinical recovery by
+itself. The existing local under-demand recovery capability and operator drill
+own their stronger input/completion/authority/output checks.
 
 ### SQL snapshot request bounds
 

@@ -35,26 +35,21 @@ class Tail(unittest.TestCase):
         rounds=self.rounds();tail=self.point(rounds)
         value=idle.assess(rounds,[A,B],tail=tail)
         self.assertEqual(value['completedTimeDelta'],0);self.assertFalse(value['timeWitness'])
-        self.assertEqual(value['completionTail']['completedTimeDelta'],1);self.assertEqual(value['classifications']['TIME_COMPLETED_AFTER_WINDOW'],1)
+        self.assertEqual(value['completionTail']['completedTimeDelta'],1);self.assertEqual(value['classifications']['DUE_WORK_COMPLETED_AFTER_WINDOW'],1)
         self.assertEqual(idle.verify(idle.pack({**value,'rounds':rounds,'tailRound':tail}),2,['evaluator']),value)
         self.refuse(rounds,code='TAIL_REQUIRED') # original observations alone remain unqualified
-    def test_mask_or_legacy_never_substitutes_for_release_credit(self):
-        for key,value,code in [('completedTimeCycles',0,'COMPLETION'),('legacyCycles',3,'COMPLETION'),('completedAcquisitions',2,'NEW_DEMAND'),('failedCompletions',1,'ERROR'),('generation',2,'RESET'),('ready',False,'ERROR'),('code','unavailable','ERROR')]:
+    def test_tail_accepts_cache_recreation_and_acquisition_but_requires_work(self):
+        tail=self.point();row=tail['round']['owners'][A]
+        row.update(generation=99,completedTimeCycles=0,completedAcquisitions=2)
+        row['jobs']['time']=True
+        value=idle.assess(self.rounds(),[A,B],tail=tail)
+        self.assertEqual(value['completionTail']['completedWorkDelta'],1)
+        self.assertEqual(value['completionTail']['completedTimeDelta'],0)
+        for key,value,code in [('completedTimeCycles',0,'COMPLETION'),('failedCompletions',1,'ERROR'),('ready',False,'ERROR'),('code','unavailable','ERROR')]:
             tail=self.point();tail['round']['owners'][A][key]=value;self.refuse(tail=tail,code=code)
-        for flag in idle.FLAGS:
-            tail=self.point();tail['round']['owners'][A]['jobs'][flag]=True;self.refuse(tail=tail,code='JOB_PENDING')
-    def test_only_final_exact_running_with_prior_opportunity(self):
-        for flag in idle.FLAGS:
-            if flag=='running':continue
-            rounds=self.rounds();rounds[-1]['owners'][A]['jobs'][flag]=True;self.refuse(rounds,code='JOB_PENDING')
-        for i in (0,1):
-            rounds=self.rounds();rounds[i]['owners'][A]['jobs']['running']=True;self.refuse(rounds,code='JOB_PENDING')
-        rounds=self.rounds()
-        for i in (0,1):rounds[i]['owners'][A].update(dueAt=None,dueReason=None)
-        self.refuse(rounds,code='OPPORTUNITY')
-        rounds=self.rounds();rounds[-1]['owners'][A]['legacyCycles']=3;self.refuse(rounds,code='BODY')
-        rounds=self.rounds();rounds[-1]['owners'][A].update(dueAt=220050,dueReason='new')
-        self.refuse(rounds,code='OPPORTUNITY') # final-only/new pending demand cannot hide behind old due
+        rounds=self.rounds();rounds[0]['owners'][A].update(dueAt=None,dueReason=None)
+        rounds[1]['owners'][A].update(dueAt=None,dueReason=None)
+        self.assertEqual(idle.assess(rounds,[A,B])['verdict'],'PASS')
     def test_tail_clock_coverage_budget_deadline_and_erasure(self):
         for change,code in [
             (lambda t:t.update(selected=[B]),'COVERAGE'),
@@ -78,12 +73,11 @@ class Tail(unittest.TestCase):
         tail=self.point(rounds);value=idle.assess(rounds,[A,B],tail=tail)
         self.assertEqual(value['completionTail']['queries'],2)
         self.assertEqual(idle.verify(idle.pack({**value,'rounds':rounds,'tailRound':tail}),2,['evaluator','evaluator-2']),value)
-        for field,value in [('admitted',True),('generation',2),('completedTimeCycles',1),('legacyCycles',1),('ready',True)]:
+        for field,value in [('admitted',True),('completedTimeCycles',1),('legacyCycles',1),('ready',True)]:
             broken=copy.deepcopy(tail);broken['round']['allRows']['evaluator-2'][A][field]=value;self.refuse(rounds,broken,code='RESET|FOREIGN')
-        broken=copy.deepcopy(tail);broken['round']['allRows']['evaluator-2'][A]['jobs']['running']=True;self.refuse(rounds,broken,code='JOB_PENDING')
     def test_missing_completion_guard_ablates_red_and_restores(self):
         from pathlib import Path
-        source=Path(idle.__file__).read_text();needle="b['completedTimeCycles']==a['completedTimeCycles']+1 and b['legacyCycles']==a['legacyCycles']"
+        source=Path(idle.__file__).read_text();needle="work(b)>work(a) and b['legacyCycles']>=a['legacyCycles']"
         self.assertIn(needle,source);ns={'__name__':'owned_tail_mutant'};exec(source.replace(needle,'True'),ns)
         tail=self.point();tail['round']['owners'][A]['completedTimeCycles']=0
         self.refuse(tail=tail,code='COMPLETION');self.assertEqual(ns['assess'](self.rounds(),[A,B],tail=tail)['verdict'],'PASS');self.refuse(tail=tail,code='COMPLETION')
