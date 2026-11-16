@@ -879,3 +879,37 @@ block stop/down. Available bounded sender files are copied before private-state
 wipe even after a partial failure. Their structural/target/connection assessment
 remains UNMEASURED; metadata capture never grants clinical acceptance. There is
 no public flag to bypass admission or resource ownership.
+
+### Stream materializer discriminators
+
+These focused controls import the application and deployment modules from explicit
+worktrees. They do not launch a service or establish deployed recovery, clinical
+equivalence, or an operating envelope.
+
+```bash
+node tools/mt-bench/m7-joined/materializer-default-control.cjs "$CORE_WORKTREE" "$DEPLOY_WORKTREE"
+node tools/mt-bench/m7-joined/materializer-row-control.cjs "$CORE_WORKTREE" "$NATIVE_DECODER_JSONL"
+```
+
+The default control checks the maintained route and wire exports without a route
+override: all six clinical tables enter the decoder, XIDs are enabled, delivery
+is serial and strict, and output checkpoints do not feed clinical intake. Its
+controls remove clinical routes, XIDs and one decoder table filter. Restored
+exports must pass after each failure.
+
+The row control consumes retained synthetic wal2json payloads from a native
+PostgreSQL fixture with the candidate clinical storage-size migration. It keeps
+JSONB text, omitted unchanged TOAST documents, physical size updates and delete
+identities as emitted. The capture must contain an insert, ordinal-only update,
+clinical update and delete in separate transactions, followed by an eight-row
+COPY cohort with a shared LSN. No fixture values are normalized into the target
+contract. It checks coherent XID sealing, serialization/cache-loss boundaries,
+future cohorts across bootstrap, extensions, storage-size propagation and exact
+row coverage. A mocked SQL commit boundary exercises the actual receiver and
+clinical receipt module: raw ACK waits for COMMIT, a failed COMMIT refuses the
+receipt, and raw intake does not execute clinical I/O. Actual-source mutations drop same-LSN rows, deletes or XID
+isolation, or remove the raw receipt await; each must fail for its named symptom before restoration passes.
+
+Capture originals stay outside Git. Retain the executed probe, schema/source
+identity and checksum beside the capture. These controls preserve source-level
+boundary evidence; the integrator owns the final joined runtime acceptance.
