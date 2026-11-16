@@ -266,7 +266,7 @@ async function run(core,capture){
  assert.throws(()=>gapCoverage(readyGap.exports,events[0]),/GAP_MARKED_CLINICALLY_READY/);gapCoverage(api,events[0]);controls.push('GAP-marked-clinical-ready');
  for(const[name,from,to,symptom]of [
   ['equal-LSN-drop','at<position(state.last)','at<=position(state.last)',/EQUAL_LSN_ROWS_LOST/],
-  ['lost-deletes','state.staged.push(event);',"if(event.action!=='D')state.staged.push(event);",/DELETE_NOT_APPLIED/],
+  ['lost-deletes','state.staged=state.staged.concat(event);',"if(event.action!=='D')state.staged=state.staged.concat(event);",/DELETE_NOT_APPLIED/],
   ['cross-XID-cohort','const cohort=state.staged.filter(e=>e.xid===transaction);','const cohort=state.staged;',/CROSS_XID_PARTIAL_COHORT/]
  ]){
   assert.equal(source.split(from).length,2,'ABLATION_SOURCE_MISMATCH:'+name);

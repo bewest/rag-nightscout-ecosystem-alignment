@@ -2464,3 +2464,124 @@ source/image/helper custody, workload, quotas, guard and exact resource receipts
 remain with point02. `operating-point02-independent-reduction.json` records the
 integrator's independent aggregate/latency reduction. Captured originals remain
 unchanged outside Git. The existing local handoff names unpushed trees and owners.
+
+
+## Streamlined runtime integration — 2026-11-16
+
+The selected local candidate joins engine-sufficient clinical history, independent
+raw storage events and a completed-output path without a second clinical row
+projection. It preserves native history exceptions, settings expansion, profile
+fallback and expiry. Authoritative whole-history storage accounting stays outside
+the clinical cache. The [architecture contract](../../../docs/30-design/tenancy/evaluator-realtime-communication.md#bounded-clinical-input-next-batch-contract)
+owns responsibilities and compatibility. No push, dev merge or release occurred.
+
+Selected core `5e112547b31252ec428747c821d3cd1b3684ce2b`, deploy
+`460666c0c90ca649edfcf4413c5a911700e03768`, image
+`sha256:fd19d5fa091de6c54395689ea9805e387059bc8f5cc6c06d2bd96df0f1bb1d82`
+are the functionally qualified local candidate. Image bytes match 1,258 source/build inputs,
+labels and immutable source binding. Corrupting the expected clinical receipt
+hash is refused; restored verification passes. Builders and networkless verifier
+are absent. Full application qualification and final prcheck pass below.
+
+Warm clinical replay stays read-only, including transient expiry. A reproduced
+logical write stamp ahead of clinical time caused unnecessary cold bootstraps.
+The receipt now prunes using one scalar last-completed engine instant, preserving
+the accepted ordering floor. Native warm snapshot reads remain 5 → 5 after three
+coherent writes, compared with 5 → 14 on the failed source. Catalogue reads remain
+stable; authoritative statistics may refresh after writes. A real clinical clock
+rewind, settings expansion, gap or missing profile history still recovers.
+
+Raw delivery previously asserted its captured tail after the read operation
+closed and before the publication operation began. The actual role refused
+LIFECYCLE_WINDOW_SCOPE_INVALID: input was accepted, sockets stayed primed and
+connected, and realtime retained retry responsibility without sending. Validation
+now runs inside publication before current-authority reads and each send. Actual
+selected-source polling/WebSocket tests prove old-history and food CRUD, distinct
+public delete identity, fresh high water/live events, expiry without a source
+write or false raw delete, pause isolation, main frames and owner movement.
+Client binaries, the wire format and the single-tenant broadcaster are unchanged.
+
+Bounded transitions share retained read-only values and replace changed arrays;
+raw-tail eviction measures the complete UTF8 envelope once and subtracts exact
+removed elements. Prior-state immutability, changed limits, row/byte overflow,
+cohorts, equal-LSN replay and continuity-loss behavior remain checked. No new
+schema, writer path, outbox, telemetry system or trigger algorithm was added.
+The exact post-storage-size trigger is retained; a naive BEFORE trigger would
+change the stored/compressed-size meaning.
+
+Results have separate scopes and are not additive:
+
+| Measured scope | Result and practical limit |
+|---|---|
+| Aggregate affected modules and tier inventory | Selected source 296 passing, one optional VIEWS_CORPUS_DIR pending; 843 files across eight tiers pass inventory. |
+| Current selected-source roles and stock clients | Six native cases pass, zero pending/failures: actual API/evaluator/maintained producer/two realtime roles, main and raw frames, current authority/census, live-add, move/reconnect, alarms and expiry/pause controls. Exact source/deploy and owned cleanup are retained in selected-client01. This is runtime behavior, not capacity. |
+| Native and focused repair boundaries | Warm replay: one native check; migration/readiness: 15 native checks; canonical absence/raw activity: 12 native checks; efficiency: 51 focused and 10 native checks; publication scope: 60 focused checks. Each keeps its own exact source and red/restored evidence; selected comprehensive acceptance decides promotion. |
+| Operator lost-slot recovery | The ordinary two-tenant stopped/reconcile/explicit-reopen drill passes on its db9/9bb/859 source. It verifies physical/input/completed positions, actual due work and current generation before authorized API/WebSocket reopening. Thirty wrapper/oracle and 31 installed helper checks pass. Logical restore, rollback, changed owner, provider delivery and HA remain unmeasured in this drill. |
+| Original failed acceptance | acceptance/ stopped unit: 5,298 passing, six pending and seven fixture failures plus native no-body detection. acceptance02/ passed all eight tiers; native: 960 passing, two pending and eight failing identified five preconversion-prefix fixtures, two obsolete activity-in-clinical-cache expectations and warm snapshot amplification. All are repaired in selected source. The original captures are unchanged; exact prior 41 container references, 50 volumes and 18 process births and ports are absent. |
+| Final selected acceptance | acceptance03/ passes all eight regular/browser tiers: unit 5,307 (two pending), DOM 205, dependency 368 (two pending), core 319, harness 103, integration 3,673 (967 explicitly disabled opt-ins), stress 18 and browser 686. The enabled corpus executes 100 registered suites and passes 969 checks with two pending, zero failures. Final prcheck passes with official/dev 4a482627b contained and selected HEAD unchanged. |
+| Final exact cleanup | Independent audit finds 41 recorded container references, 50 volumes and 18 process births absent; producer ports 20023/20024 are free, with no recorded live groups or source-cwd actors. Fixture finalizers and the outer guard returned. The receipt states its exact-reference coverage; no global host/resource claim follows. |
+| Source controls | Default route/wire controls and actual state/scheduler/migration/commit controls pass. The lost-delete mutation now targets immutable concat instead of removed push; the original ABLATION_SOURCE_MISMATCH is retained, and the restored control still detects DELETE_NOT_APPLIED. Retained native payloads keep their original source attribution. |
+| Queue measurement | queue-status measures 210 PASS / 54 FAIL / 147 UNMEASURED, integration skipped. No item is promoted and no global-green claim follows. The stream item stays in-progress/no-gate. |
+
+The original 37-tenant quiet/TIME point on early91/b500 remains FAIL with
+M7_EVALUATOR_PROGRESS_RESET; ordinary traffic did not start. Process identity
+stays stable while 37 disposable component generations advance, acquisitions
+increase by 37, TIME cycles by one and failed completions stay zero. Source
+inspection reproduces cache recreation/classification, not lost durable work.
+There were no durable timing bookends, so that capture cannot be relabeled as a
+clinical pass or credited as lower-cost successful work.
+
+Future helper observation uses durable completed coverage, owed due work, current
+authority and restore; cache generations and acquisition/TIME classification do
+not define success. Missing timing narrows the timer claim rather than blocking
+unrelated traffic. Actual frames no longer require deleted output.rows: physical
+stored records, typed completed vectors, restore/digest and exact frame/BG-now
+values remain checked. Original operating failures retain their source/verdicts;
+future helper fixes do not backfill them. Performance owns operating claims and
+all local/remote resource custody; no supported capacity follows from this record.
+
+FULL replica identity remains selected because raw updates/deletes need old public
+identity and unchanged TOAST values. The joined synthetic unchanged-document
+metadata update measures 240 WAL bytes with DEFAULT and 19,648 with FULL for a
+19,200-byte extension, without the production size trigger. This is a material
+correctness/storage trade-off, not a throughput cause or an operating envelope.
+Whole-history scan cost and fleet heap/RSS headroom remain unmeasured here.
+
+Retained ignored originals: `externals/work/streamlined-runtime-20261116/`,
+`warm-window-native-20261116/`, `window-native-joined-20261116/`,
+`downstream-bounded-20261116/`, `raw-client-qualification-20261116/`,
+`/tmp/ns-stream-efficiency-evidence-20261116/` and the existing operator capture
+named by HANDOFF-operator-recovery. The one evolving local integration handoff is
+`externals/work/HANDOFF-switch-over-finish-2026-11-15.md`; it owns local branches,
+next action, actor custody and publishing instructions. Preserved predecessor
+captures and their original qualification are unchanged.
+
+The subsequent deploy configuration leaf `d71c8f3c680b99b0eb937742f24f7d8f9674acee`
+adds optional NS_EDGE_WORKER_PROCESSES (auto or 1–64). Default auto rendering is
+byte-identical across the four replica/realtime branches. Four focused edge
+checks pass. The pinned nginx syntax/readback fixture passes with one worker and
+16,384 connections under its explicit 0.125 CPU / 128 MiB limit; exact container
+cleanup is retained. This is configuration qualification, not traffic capacity.
+
+Core remains 5e112. Its application acceptance is reused without a comprehensive
+repeat because no application code changed and the default edge configuration
+is unchanged. Exact variation image
+`sha256:95545b0a13fa5ae0ca507e8c43176b07471e6e30ff329fc4a5275e48624487d7`
+matches 1,258 inputs and 5e112/d71 labels/binding; altered-renderer corruption is
+refused and restored qualification passes. Builders and verifier are absent.
+Original fd19/460 functional evidence is retained; this does not repin any
+entered operating point. The independent capacity owner selects and verifies
+quota-specific worker configuration before a future point.
+
+The two native pending cases are the legacy epoch-cost baseline bridge and the
+end-to-end successful-request latency/throughput diagnostic. Neither is a pass.
+Selected functional qualification does not establish supported capacity, arbitrary
+cross-revision rollback or an operator release. Broader programme queue claims
+remain separate from this candidate's measured checks.
+
+| Retained qualification artifact | SHA-256 |
+|---|---|
+| acceptance03/results.json | `6cbc79486e95ba8b652d7586a7e2f760ed967ba6bcc2c65117a2669a8a2ba468` |
+| acceptance03/root-independent-absence.json | `921ac9d17fb1e861ba28fb74854122e766851f21c02eefb9454cd67b186547e6` |
+| selected-image/image-qualification.json | `4d3b444529e3c23ca5e9b53c04e1dfaa516447db4f67345a1d0a43091a9813de` |
+| final-prcheck.log | `597b715c9e4c2c9b8b425e27c4b5260a9d17fafc6ea48142d5b5cba25ee13e46` |

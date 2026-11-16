@@ -48,7 +48,7 @@ Healthy idle has no hot full-roster polling or per-event catalogue screening.
 | Boundary | Implemented branch behavior and qualification boundary |
 |---|---|
 | Clinical CDC and durable acceptance | Six clinical routes retain typed identity, extension fields, physical storage size and insertion order. Raw rows commit to the existing input checkpoint before transport ACK. An XID (transaction identifier) cohort seals with its matching final clock, atomically with the typed observed-work receipt. Same-LSN COPY rows remain distinct. |
-| Working set and recovery | Warm evaluation reads accepted rows, without clinical source/count/statistics scans. Consistent bootstrap retains physical invalid-row history for size and correction semantics while excluding it from clinical output. A known row/byte overflow durably marks a non-ready gap, evicts the input cache and preserves the sealed clinical floor and completed output; bounded successful bootstrap is required before evaluation resumes. Malformed data is refused. |
+| Working set and recovery | Warm evaluation reads the accepted clinical window, without full clinical source reacquisition. Consistent bootstrap uses the engine's historical exceptions and settings; whole-history storage statistics stay authoritative outside the clinical cache. A known row/byte overflow durably marks a non-ready gap, evicts the input cache and preserves the sealed clinical floor and completed output; bounded successful bootstrap is required before evaluation resumes. Malformed data is refused. |
 | Scheduling and completion | One bounded scheduler owns startup, pending, due and recovery. A held tenant leaves free slots and later recovery pages available to neighbors. Retry backoff belongs to the failed tenant. Concurrent earliest-due reads coalesce, with a fresh lookup after changed work and safe ownership release before settlement. TIME acquires newly observed input before completion; input arriving during evaluation remains owed. Result/frame/revision, covered versions and next due commit under existing ownership/current-authority/restore fences before RAM completion. |
 | Realtime | The completed-output path distinguishes upstream pending, unwatched/deferred and ineligible work from actual failed delivery. Durable receipts own owed-delivery retries. Realtime does not build a raw clinical projection. |
 | Optional path | The separate selected-intake materializer remains unqualified and is explicitly refused before effects by the public evaluator configuration. It is not the default path or a prerequisite. |
@@ -125,13 +125,14 @@ executed source, positive and red controls, explicit cache-loss recovery and
 remaining notifier-liveness, schema-routing and ownership/recovery gaps. It does
 not enable a shipping role or establish production delivery guarantees.
 
-## Bounded clinical input: next-batch contract
+<a id="bounded-clinical-input-next-batch-contract"></a>
+## Bounded clinical input: selected contract
 
-*Proposed implementation contract, 2026-11-16. The census below is **read-derived**
-from application commit `543808784e0f5f03945b840142a0df31177443ba`. Paths and line
-numbers refer to that commit. The bounded-state lane owns implementation and
-focused qualification in a separate candidate; this section does not promote
-that candidate or extend the current integrator's acceptance result.*
+*Selected contract, 2026-11-16. The query census below is **read-derived** from
+application commit `543808784e0f5f03945b840142a0df31177443ba`; its path/line anchors
+retain that source. The selected implementation and reproduced qualification now
+belong to the [current integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16).
+Historical sources are not relabeled as the executed selected candidate.*
 
 The evaluator needs the rows its existing property view can read, plus recoverable
 state needed to maintain those answers. It does not need all source history in
@@ -229,11 +230,12 @@ prove that expiry neither deletes source data nor completes unseen input.
 
 ### Raw storage delivery is independent of clinical membership
 
-The local next-batch implementation is application branch
+The focused precursor implementation is application branch
 `codex/bounded-storage-20261116`, commit
-`3e085e056330d2f0ddf29c4000e526a968462620`. It includes the integrator's committed `1dc7a74576b5d77f99cc4a42d900e1692d94a393`
-scheduler and populated-backfill repairs. It is fixed on that branch and
-proposed for integration. It does not extend another candidate's acceptance.
+`3e085e056330d2f0ddf29c4000e526a968462620`. It includes the integrator's committed
+`1dc7a74576b5d77f99cc4a42d900e1692d94a393` scheduler and populated-backfill repairs. It is fixed on that branch and
+joined into the selected streamlined candidate. Its focused evidence retains its
+original source; the current integration record owns joined acceptance.
 
 The input checkpoint carries two JSONB envelopes: the clinically sufficient
 working set first, a bounded source-mutation tail second. An accepted source row
@@ -274,8 +276,49 @@ remain the authority for those responsibilities.
 The [focused qualification record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/bounded-storage-2026-11-16.md)
 contains the reproduced engine/history/expiry, native WAL/COPY/replay/RLS,
 current-authority, fleet-cache and mutation-control results, exact sources and
-retained evidence. The joined deployed default role, full/browser/enabled-native
-acceptance and operating profile remain with the integrator after selection.
+retained evidence. The integration record now owns selected-source actual-role
+client and full/browser/enabled-native qualification. Operating profiles and
+capacity retain separate source, evidence and claims.
+
+The selected stream path keeps warm replay read-only, including time-only expiry.
+It reads only the clinical component, without transferring the raw delivery tail.
+The existing receipt seal advances the window using the last completed clinical
+engine instant and prunes it while owning the input transaction. Idle state cannot grow. Evaluation
+can remove more expired rows locally; distinct remaining subsets carry distinct
+progress identities. Clock rewind or settings expansion uses consistent recovery.
+This avoids a checkpoint write and full policy comparison on each warm cycle.
+
+Completed stream output keeps the clinical result and stock-client frame without
+a second copy of raw clinical rows. The input checkpoint owns those rows; the
+independent mutation tail owns raw delivery. Nonstream snapshot output preserves
+its established row contract. Realtime reads completed output and the raw tail
+under current tenant authority; it does not reconstruct clinical projections.
+
+Raw publication opens its tenant operation before it validates a captured tail.
+It then checks current authority and every send within that operation. A closed
+read operation cannot supply an active publication scope; retries retain the
+owed delivery instead of bypassing restore checks.
+
+Bounded state transitions replace changed envelopes and arrays while sharing
+read-only retained values. Raw-tail eviction counts exact UTF8 bytes once and
+subtracts removed elements. Persisted size estimates do not override an exact
+fresh bound; overflow, cohort and prior-state mutation controls remain.
+
+Qualification follows durable outcomes. Cache eviction may advance a disposable
+component generation, and due work may need an acquisition after cache loss.
+Neither a stable RAM generation nor a particular acquisition/TIME counter split
+is an enduring clinical requirement. Preserve process/restart provenance,
+monotone completed coverage, pending work, due obligations, current authority and
+restore fences. A counter-only observation cannot establish those durable
+properties or justify relabeling an earlier failed capture.
+
+FULL replica identity is retained for the selected candidate. It supplies the
+old public identifier and unchanged TOAST document required for truthful deletes
+and corrections without another history projection. Its synthetic WAL cost is
+material, so this is an explicit correctness/storage trade-off. It is not an
+established throughput cause or an assertion that every future storage design
+must use FULL. A replacement must preserve old identity semantics and recoverable
+acceptance before acknowledgement.
 
 Full old identity adds WAL bytes for unchanged documents; the qualification
 record measures that trade-off in a synthetic fixture. It does not establish
