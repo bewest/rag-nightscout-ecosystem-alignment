@@ -1,6 +1,6 @@
 # Multitenant delivery roadmap
 
-*Contributor-facing living plan. Reconciled 2026-11-10 to the M6a/M6b joined acceptance records and adopted release decisions,
+*Contributor-facing living plan. Reconciled 2026-11-16 to the selected stream integration records and adopted release decisions,
 without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The [dashboard](multitenant-delivery-dashboard.md) owns recorded milestone claims;
 the [queue](../../../queue/work-queue.yaml) owns item states, gates and blockers.*
@@ -27,6 +27,24 @@ verdicts on the applicable final tree.
 Use the [current M5/M6 decision list](m5-m6-decision-list.md) for remaining human
 questions and measurement prerequisites. Prefer a minimal working reference with
 explicitly deferred enhancements; do not substitute a component pass for a milestone.
+
+## Current implementation and remaining qualification
+
+The [selected runtime record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16)
+closes source-scoped stream, bounded clinical-state, raw delivery, stock-client
+and functional regression criteria. Its ordinary recovery and populated
+upgrade/cold rollback retain their own executed pairs. The
+[communication contract](evaluator-realtime-communication.md) and
+[current stream topology](runtime-topology.md#current-stream-runtime) explain the
+implementation. These closures do not promote every M6/M7 criterion.
+
+Workload/resource limits and recovery under load belong to the existing operating
+report. Further subscription/intake amplification, addressed scheduling and code
+retirement belong to a separate future source candidate until qualified. The
+[production path](production-critical-path.md) owns deployment admission criteria;
+optional fleet, HA and multihost work follows the declared profile. Progress is
+reported by completed capability and remaining criterion, rather than by counting
+historical dispatch lanes or treating every open parent item as unimplemented.
 
 ## Supported boundary and owner journeys
 

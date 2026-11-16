@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-08 read-derived reconciliation: published draft #8898 carries ed2ced00. R72 retains M0\u2013M4 and R73 functional one-host M5. Later native/browser acceptance remains on c23, entire enabled corpus on 39f4, and exact-source image/cold Compose/UI/tenant-local restore/history/B continuity/pinned clients/final full on ed2. M6 stays blocked. Shared OIDC/session source is local with native acceptance UNMEASURED. Each named report owns executed source and instrument identity; recorded-evidence gates do not run a fresh current-HEAD campaign. Publication is distinct from dev merge, release, default and production admission. Capacity, multi-host ownership, provider/device and production trust remain open. Fixed-roster API scaling is planned separately from singleton evaluator ownership; all actual instances must drain and invalidate. Independent direct SQL writers are outside the adopted cooperative application-ownership contract; stronger fencing is not a prerequisite for that supported topology. Logical REST cohesion does not select a process layout; API instances consume participation hooks while private operator execution owns restore orchestration. Operator activity/resource policy remains proposed and undecided, separate from maintenance safety and observed health. REST v1/v2/v3 are version-specific adapters within one logical stateless request-serving API component; grouping does not expand admitted route coverage or select a replica/process layout.",
+ "measured": "2026-11-16 read-derived reconciliation against selected runtime records at alignment 5fdc4bf0685d35d2fac980bad1b28bd66525ccdb and selected core 5e112547b31252ec428747c821d3cd1b3684ce2b. Current architecture is stream acceptance, bounded clinical working state, completed result/checkpoint and independent raw storage delivery. Named records retain executed source/image/instrument and failed/pending limits. M6a/M6b and earlier R72/R73 keep their source-scoped acceptance; parent queue states are not milestone or production promotion. Workload/resource/recovery envelopes and future amplification/retirement work remain separate. Application dev merge, operator release, deployment trust, HA/fleet/provider admission require their own evidence.",
  "tracks": [
   {
    "id": "storage",
@@ -1178,14 +1178,18 @@
    "phase": "multi",
    "state": "progress",
    "short": "Current-property reuse / raw frames",
-   "title": "Bounded f0 characterization finds selected evaluator/API current properties agree; realtime retains a different raw browser-frame contract. Time, tenant, settings, input identity and expiry matter. A publication service is not selected.",
+   "title": "The selected multitenant stream delivers completed evaluator output without a second raw clinical projection. Independent raw storage events preserve stock subscription semantics.",
    "check": "Derived-output characterization has intended corruption/stale/cross-tenant/settings/deletion/partial-input controls and restored success. This is synthetic component evidence, not complete public auth/role, provider or distributed publication acceptance.",
    "depends": [
     "ST-VIEWS-PROFILE",
     "ARCH-SEAM-COMPOSE"
    ],
-   "ref": "Private acquisition helper reuse and independent R55 profile remain distinct. R73 accepts functional multitenant runtime; common immutable result interface/reuse, distributed publication, capacity and universal execution-profile admission remain open.",
+   "ref": "The communication contract and selected integration own current behavior. Earlier characterization retains its original source; universal computed-single and broader publication/capacity claims remain separate.",
    "spec": [
+    {
+     "label": "Current completed output and independent raw delivery",
+     "href": "../tenancy/evaluator-realtime-communication.md"
+    },
     {
      "label": "Derived-output characterization and limits",
      "href": "../../../reports/tenancy/derived-output-2026-11-07/README.md"
@@ -1233,10 +1237,14 @@
    "track": "tenancy",
    "phase": "multi",
    "state": "progress",
-   "short": "Durable runtime / replay",
-   "title": "R73 accepts the functional M5 reference on one host using polling: bounded current-state and evaluator recovery, durable alarm/request state, and actual reference roles and browser consumers. Broader operating and delivery admission remain separate.",
-   "ref": "Later native restart/restore and cold Compose acceptance close bounded one-host capabilities. Live provider/device delivery, capacity/freshness/egress, dynamic/multi-host ownership and whole M6 retain separate acceptance.",
+   "short": "Stream runtime / operating limits",
+   "title": "Selected local stream runtime has source-scoped functional qualification: recoverably accepted cohorts, bounded clinical state, completed output and independent raw delivery. Parent runtime/production work remains open.",
+   "ref": "Ordinary slot recovery and populated upgrade/cold rollback retain executed pair attribution. Capacity/latency, production trust, live provider/device, HA and fleet scope remain separate; future source optimizations are not yet qualified.",
    "spec": [
+    {
+     "label": "Selected stream integration and its limits",
+     "href": "../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16"
+    },
     {
      "label": "Current operation-window deployment/recovery acceptance",
      "href": "../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md"
@@ -1290,11 +1298,11 @@
      "href": "../tenancy/runtime-topology.md"
     },
     {
-     "label": "Proposed activity policy, maintenance safety and worker eligibility",
+     "label": "Adopted activity policy and worker admission",
      "href": "../tenancy/tenant-admission-and-activity.md"
     }
    ],
-   "check": "R73 binds recorded physical controls to executed source heads and accepted final full/default-browser/current-corpus/PR checks. Archival gate passes do not measure a fresh current HEAD."
+   "check": "Current selected-runtime record owns final functional qualification and pending cases. Recorded-evidence gates do not execute a fresh campaign or promote the whole milestone."
   }
  ],
  "decisions": [
@@ -1302,7 +1310,7 @@
    "id": "D-EVENT",
    "short": "Commit event (decided 2026-10-31)",
    "owner": "maintainer; decided 2026-10-31",
-   "question": "Adopted: one internal in-process event per write(intent), naming WriteResult.items[] without document contents; above the cap readers reload. The per-database-call event is backend instrumentation. This ships with write(intent) release 2. Multitenant cross-process recovery follows the later B7 durable delivery and bounded full current-state reconciliation contracts; R73 accepts the functional one-host polling reference. A wake/tick alone supplies no recovery guarantee. Provider/device and multi-node delivery remain separately gated.",
+   "question": "Adopted in-process write(intent) event policy retains its own scope. Current multitenant cross-process flow uses platform pgstream, recoverably accepted cohorts and atomically completed output/checkpoint/next due, with independent raw storage delivery. The communication contract owns this mechanism. R73 polling and old snapshot proofs retain their historical source; a wake alone is not recoverable completion. Live provider/device, HA and fleet admission remain separate.",
    "holds": [],
    "options": [
     {

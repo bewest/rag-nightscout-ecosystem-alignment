@@ -176,8 +176,12 @@ including bounded clinical state and independent raw delivery. The
 owns these mechanisms; the same operating report owns separately attributed
 capacity observations. Current tests may proceed independently of optional
 multihost/platform work under the [production sequencing](../30-design/tenancy/production-critical-path.md).
-The generated table retains queue dependencies and measured state remains a
-separate claim; this documentation change promotes no milestone. Multi-host
+The next work is to establish useful workload/resource and recovery limits on
+qualified sources, finish the separate stream-amplification/retirement candidate,
+and close the chosen deployment's trust and admission criteria. Performance
+experiments and source work can proceed concurrently without repinning entered
+runs. The generated table retains queue dependencies; each state remains a claim
+until its gate measures it. This documentation change promotes no milestone. Multi-host
 failover has no acceptance.
 Use the [deployment models and fault domains](../30-design/tenancy/deployment-and-rig-testing.md)
 to distinguish these boundaries. Tenant-local suppression and controlled notification
@@ -269,7 +273,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 
 The remedial work is not a sequence. It is prioritized by what reaches operators today: the
 operator-exposure table on [PROGRAMME-STATUS](PROGRAMME-STATUS.md#status-words-merged-is-not-released)
-lists the queue items for defects that are present on 15.0.8. A fix reaches operators only in a
+lists the queue items for defects that reach the tagged release named by the register. A fix reaches operators only in a
 release, so each merged fix joins the next step on the release train.
 
 ## 5. Proposals

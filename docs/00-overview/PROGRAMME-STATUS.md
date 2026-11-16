@@ -6,7 +6,7 @@ proposed for Nightscout Foundation stewardship.
 Prose revised 2026-10-08 against cgm-remote-monitor `official/dev` `fade2299` and
 `official/master` `92d08342` (tag `15.0.8`); the remedial horizon and the register paragraph
 2026-10-21, against `official/master` `c6a0d8ed` (tag `v15.0.9`); the multitenant paragraph
-2026-11-10. The tables are generated from
+2026-11-16 against the selected stream integration records. The tables are generated from
 `queue/work-queue.yaml`; see [How to check any of this yourself](#how-to-check-any-of-this-yourself).*
 
 This page answers "where is the work, and what is it waiting for" across the three
@@ -14,8 +14,9 @@ horizons the project runs in parallel. The detail lives in the queue, the backfi
 register and the design documents; this page says which of those to open.
 
 The counts below are generated and `make views-check` fails when they drift. The
-prose is hand-written and dated. Where the prose and a table disagree, the table is
-current and the prose is stale.
+prose is hand-written and dated. Tables describe recorded queue claims; measurements in linked release records
+may close a narrower capability while its parent item remains open. A generated
+state is not evidence that a gate ran or that a milestone was promoted.
 
 ---
 
@@ -83,27 +84,29 @@ shows the dependencies and bounded acceptance stages. These records distinguish 
 branch acceptance, combined integration and milestone completion; `make queue-status`
 measures the queue's claims.
 
-[R72](../30-design/remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06)
-retains the M0–M4 baseline; [R73](../30-design/remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch)
-accepts the functional M5 reference on one host at its recorded local source.
-The [published operation-window reference](../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
-adds bounded tenant-local restore, shared-role restart with another tenant suspended,
-and cold Compose/UI/client acceptance. M6 is split into M6a–M6d and M7
-([decision](../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)).
-Draft PR #8898 carries the M6a owner/OIDC and internal service API work and the M6b
-join, each with a joined acceptance record
-([M6a](../../reports/tenancy/m6a-join-2026-11-09/README.md),
-[M6b](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md));
-no M6 milestone is promoted. M7 production readiness is measured, not declared:
-[runtime topology](../30-design/tenancy/runtime-topology.md),
-[endpoint/API scaling](../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.md)
-and [realtime sharding](../30-design/tenancy/realtime-sharding-plan.md) hold the plans.
-The [deployment guide](../30-design/tenancy/deployment-and-rig-testing.md)
-explains deployment models and shared fault domains. The [release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md)
-own the current published head and remote verification for draft PR #8898.
-Local acceptance does not imply remote publication, dev merge or operator release. The
-[architecture comparison](../30-design/tenancy/single-and-multitenant-architecture.md)
-lists what it holds and which record governs each module.
+The [selected stream integration record](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16)
+owns the functionally qualified local runtime, stock-client/raw-event behavior,
+ordinary lost-slot recovery and the separately attributed populated upgrade and
+cold rollback. These are reproduced capabilities on named source/deployment pairs.
+The [communication guide](../30-design/tenancy/evaluator-realtime-communication.md)
+owns the current architecture: durable stream acceptance, bounded clinical state,
+completed output and independent raw storage delivery. Earlier R72/R73 and
+operation-window records retain their original source and scope.
+
+Remaining work has distinct boundaries. The existing operating report owns load,
+resource and recovery observations, including partial and failed points. Further
+stream amplification and code retirement are implementation work until their
+owner supplies a qualified candidate. A supported production profile also needs
+its workload limits, deployment trust and recovery objectives accepted together;
+optional HA, multihost and fleet placement retain separate scope. The
+[production path](../30-design/tenancy/production-critical-path.md) explains those
+criteria without making them prerequisites for independent experiments.
+
+The [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md)
+owns milestone claims and the [release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md)
+own integration and publication. Local source qualification, alignment records
+integration, application dev merge and an operator release are different events.
+No milestone is promoted by this documentation reconciliation.
 Decisions D1–D23 live in the
 [tenancy decisions reference](../30-design/tenancy/multitenancy-decisions.md),
 with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md)

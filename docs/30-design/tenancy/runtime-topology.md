@@ -90,9 +90,9 @@ remote placement and recovery qualification remain source/profile-specific.
 
 ## Read the diagrams
 
-The three plates preserve different architectural scopes: the historical accepted
-deployment, the November private-listener composition, and a fixed-roster scale
-placement example. Their captured heads and publication labels belong to those
+The current stream plate explains the selected runtime. Three retained plates
+show the historical accepted deployment, November private-listener composition
+and a fixed-roster scale placement example. Their captured heads and publication labels belong to those
 plates; use release contents for current implementation and acceptance.
 Read downward through client ingress, edge, service destinations,
 actual role processes and backing resources. Components sit on a grid; named
@@ -101,6 +101,20 @@ terminals and a communication ledger replace long crossing connectors.
 A trust zone is not a host or Pod. A logical API contract, bound listener and
 deployable process are separate boundaries. Ordinary service destinations and
 the exact instance endpoints needed for maintenance are also different identities.
+
+### Current stream runtime
+
+![Current stream runtime](diagrams/current-stream-runtime-topology.svg)
+
+[PNG preview](diagrams/current-stream-runtime-topology.png) · [SVG source](diagrams/current-stream-runtime-topology.svg)
+
+The [communication contract](evaluator-realtime-communication.md) owns accepted
+cohorts, bounded clinical state, completed output/checkpoint and independent raw
+storage delivery. The platform owns pgstream lifecycle. Source-scoped functional
+qualification and recovery/upgrade pairs live in the
+[selected integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16).
+This plate grants no workload, HA, provider or fleet admission. Further
+amplification and code retirement remain future-candidate work until qualified.
 
 ### Historical accepted one-host reference
 

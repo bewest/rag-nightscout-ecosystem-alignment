@@ -1,15 +1,12 @@
 # Next-gen platform: one write path, four tracks
 
-*Contributor-facing living plan. Reconciled 2026-11-08 to the published
-[operation-window acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
-and [release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
-Draft [#8898](https://github.com/nightscout/cgm-remote-monitor/pull/8898) carries
-`ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`, based on dev `4a482627`.
-Native/browser, corpus and cold-deployment campaigns retain their actual source
-heads. Current milestone claims live in the
-[delivery dashboard](../tenancy/multitenant-delivery-dashboard.md); release
-placement lives in [release allocation](release-allocation-2026-10-27.md).
-This is a map of bounded capabilities and remaining work, not production admission.*
+*Contributor-facing living plan, reconciled 2026-11-16 against the
+[selected stream integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16)
+and [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+Architecture interpretation is **read-derived**; reproduced runs keep their own
+source, deployment and instrument attribution. Queue/dashboard claims, local
+functional qualification, application publication and production admission remain
+separate. Release placement lives in [release allocation](release-allocation-2026-10-27.md).*
 
 The interactive version, with the dependency map, is the site page [nightscout-next-gen-platform.html](../../../site/pages/nightscout-next-gen-platform.html).
 
@@ -31,14 +28,13 @@ use this map to see how the platform tracks meet.
 | Scope | Current recorded acceptance | What remains |
 |---|---|---|
 | Foundations, data and tenant authority | [R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06) retains M0 and promotes M1–M4: admitted PG ports/import, actual typed/versioned owner settings, tenant refusal and route separation, pinned headless clients and source-pattern replay. | Wider owner catalogue/lifecycle and production resolution trust; Android emulator and resource bounds in C. No all-client claim. |
-| Durable runtime | [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) accepts functional M5 on one host: separate roles, polling/snapshots, durable suppression and reference notification handoff. | Live provider/device delivery, multi-node ownership and capacity/freshness/egress budgets. |
-| Tenant-local recovery and shared-process restart | [Operation-window acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md) accepts same-ID logical restore with forward client history, public-ID preservation, fail-closed uncertainty and B continuity while A remains suspended, including fresh service processes. Native evidence is on c23; cold Compose/UI/socket/restore and pinned-client evidence is on ed2. | Fixed trusted process cohort, private ingress and direct PG connections bound this proof. Dynamic membership, transaction pooling, multi-host coordination, arbitrary direct SQL writers and automatic orphan clearance remain outside it. |
-| Deployment artifact and verification | The published ed2 draft has an exact-source Compose image and cold synthetic deployment acceptance. Final full-suite and pinned-client campaigns are on ed2; native/default-browser on c23 and entire enabled corpus on 39f4 retain their source attribution. | Whole M6 stays blocked. Draft publication, dev merge, operator release, default enablement and production admission are distinct boundaries. |
-| Optional shared human identity | [Shared OIDC/session capability](../../../reports/tenancy/shared-oidc-sessions-2026-11-07/README.md) is fixed on a separate local source branch with bounded source checks and controls. | Actual signed native DB/Vault/HTTPS/browser and reference-provider acceptance are UNMEASURED. It has not joined the published Compose candidate. |
+| Stream runtime and completed output | The [selected integration](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16) qualifies the bounded clinical working set, independent raw storage delivery, current stock-client effects and final functional regression on its recorded source/image. | Workload/resource and recovery envelopes; separate future amplification/retirement changes. Provider/device, HA and fleet claims need their own evidence. |
+| Recovery and revision transitions | The same record retains ordinary two-tenant lost-slot recovery, the admitted populated upgrade pair and separate cold-backup rollback, with exact authority/due/completed-state checks. Earlier restore/restart captures retain their original scope. | Broader version/topology matrices and production recovery objectives. Operator-led recovery does not imply automatic failover. |
+| Deployment and human identity | Existing [M6a](../../../reports/tenancy/m6a-join-2026-11-09/README.md), [M6b](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md) and selected runtime records each own their executed source/profile. | The chosen production profile still needs identity/provider, ingress/secrets trust and applicable lifecycle acceptance. A branch pass or an older published draft is not admission of every later candidate. |
 | Independent single/nonresident profile | R55 accepts private acquisition on `2ee8b493`, with caller policies and the physical subscriber retained. | The computed-single branch remains separate; full writer/alarm/clinical coverage, freshness, cost and its own entry bar remain. Default single stays resident. |
 
-The [acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md)
-owns exact source/instrument identities and immutable failed and successful runs;
+The named acceptance records own exact source/instrument identities and
+immutable failed and successful runs;
 the [release record](../../../releases/cgm-remote-monitor-16.0.0/contents.md) owns
 programme disposition. This reconciliation is **read-derived** from those records,
 not a rerun of the application. Recorded-evidence gates replay archived captures;
@@ -56,7 +52,7 @@ and failure recovery under the selected topology.
 | Keep API, realtime and evaluator as explicit cooperating roles | Functional one-host M5 and later cold Compose demonstrate consumed role boundaries and restart behavior. | [Fixed-roster API scaling](../tenancy/selectable-endpoints-and-api-scaling-plan.md) needs instance-complete drain/invalidation and endpoint trust, separately from singleton evaluator ownership. Multi-host/HA adds failover and partition acceptance; platform placement/assignment does not replace application operation lifetime. |
 | Keep restore tenant-local in the reference topology | Actual restore/history convergence and B continuity, including B startup while A stays suspended. | Broader membership, orphan resolution policy and production recovery objectives. The [adopted ownership contract](../tenancy/sql-and-migration-architecture.md#supported-database-ownership-contract) excludes independent direct SQL writers; stronger fencing is not a production prerequisite for the supported cooperative topology. |
 | Continue the admitted PostgreSQL backend and migration path | Tenant-scoped native/HTTP/storage controls and append-only allocator migration/restore work. | Supported production workloads, pool limits, noisy-neighbor behavior, capacity and restore/upgrade budgets. |
-| Scope a reusable current-property result | [Derived-output characterization](../../../reports/tenancy/derived-output-2026-11-07/README.md) finds selected evaluator/API properties agree, with time/settings/identity-sensitive controls. | A reusable result interface and expiry/invalidation checks. Raw realtime frames remain a different product; no publication service or distributed result store is selected. |
+| Consume the evaluator's completed result in realtime | The selected stream implementation persists completed clinical output/checkpoint and delivers raw storage mutations independently. The [communication contract](../tenancy/evaluator-realtime-communication.md) owns the boundary. | Qualification for changed sources/profiles; no universal computed-single or fleet result-store claim. |
 | Choose resident versus computed execution for single-tenant sites | The independent prototype demonstrates bounded functional behavior and failures worth guarding. | Quiet steady-state cost, full caller/clinical coverage and per-profile reliability before changing placement or defaults. |
 | Select an identity/deployment reference for acceptance | Adopted generic OIDC, Vault progression and per-deployment trust/probe contracts define what to build and test. | Native signed/session/provider acceptance, service-login renewal and live edge/Vault probes. Source checks alone do not admit a production identity system. |
 
@@ -82,10 +78,13 @@ API participants consume admission/invalidation hooks rather than run restoratio
 orchestration. This is a clarification of responsibilities, not a new process layout.
 
 [Endpoint transport and fixed-roster API scaling](../tenancy/selectable-endpoints-and-api-scaling-plan.md)
-are queued source capabilities; Kubernetes/Jsonnet proof and evaluator partitioning
-are deferred. [Operator activity/resource policy](../tenancy/tenant-admission-and-activity.md)
-is proposed and undecided, separate from existing maintenance safety and observed
-health. The map's acceptance states and historical measurements remain unchanged.
+have fixed-roster source implementations and source-scoped records; their
+selected binding and operating limits still need qualification. Kubernetes,
+multihost and fleet placement retain separate scope. The
+[activity policy](../tenancy/tenant-admission-and-activity.md) uses adopted pause
+and suspend behavior. Resource limits are measured for each workload/profile.
+The map retains parent-item states; completed slices can coexist with remaining
+criteria. It does not turn historical evidence into a fresh pass.
 
 | Earlier overview | Retained evidence |
 |---|---|
@@ -271,7 +270,7 @@ contains request-flow, isolation and historical-comparison diagrams.
 
 Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): `nightscout single` is single-tenant and the `nightscout multitenant` namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and `TENANCY_MODE` retires as an operator setting. The [interface ownership proposal](interface-ownership-2026-10-27.md) retains its original questions; current separate-process composition and restore boundaries are in the [architecture comparison](../tenancy/single-and-multitenant-architecture.md). The settings census on dev is [t30-census-dev](../../60-research/tenancy/t30-census-dev-2026-10-27.md). The decisions D1–D23 are in the [execution plan](../tenancy/multitenancy-decisions.md).
 
-Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. R72 accepts request-local loader/cache frames at its bounded M1–M4 scope; R73 accepts the functional multitenant evaluator/realtime reference; M6 retains lifecycle and wider admission work. This does not establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the multitenant candidate. R67 bounds recovered clinical constructor evidence. R73 promotes functional M5; the independent computed-single profile retains its separate entry bar. Input acquisition and clinical result persistence are not one atomic operation.
+Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident `ddata` or computes its views from bounded queries is a second choice. R72 accepts request-local loader/cache frames at its bounded M1–M4 scope; R73 accepts the functional multitenant evaluator/realtime reference; M6 retains lifecycle and wider admission work. This does not establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the multitenant candidate. R67 bounds recovered clinical constructor evidence. R73 promotes functional M5; the independent computed-single profile retains its separate entry bar. Durable input acceptance is separate from clinical completion; selected stream completion atomically commits covered versions, result and next due before RAM advances.
 
 ## 5. Decisions and remaining questions
 

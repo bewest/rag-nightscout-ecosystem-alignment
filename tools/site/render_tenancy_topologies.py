@@ -237,6 +237,48 @@ def proposed():
     return p.finish(y+133,'proposed-fixed-roster-network-topology')
 
 
+def current_stream():
+    p = Plate('Current stream runtime: accepted input and completed output',
+        'Selected local branch architecture • bounded clinical state • independent raw storage events',
+        'READ-DERIVED  |  core 5e112547; reproduced qualification remains source/profile-specific')
+    p.zone(198, 178, '1  CANONICAL INPUT AND CHANGE TRANSPORT', 'Platform owns pgstream lifecycle', '#f1f5fb')
+    p.card(64, 246, 700, 'API → PostgreSQL committed source',
+        ['Original JSONB + generated typed columns', 'Existing tenant identity, ordering and write contracts'], h=108)
+    p.card(800, 246, 736, 'WAL → maintained pgstream service',
+        ['One active slot consumer → current private receiver', 'Independent platform restart policy; no app-owned Go child'], h=108)
+    p.arrow([(800,376),(800,414)])
+    p.zone(414, 178, '2  RECOVERABLY ACCEPTED TRANSACTION COHORT', 'Transport ACK follows durable input commit', '#eef6f6')
+    p.card(64, 462, 700, 'Bounded clinical working state',
+        ['Existing input checkpoint + observed-work receipt', 'Warm streamed changes; historical recovery when needed'], h=108)
+    p.card(800, 462, 736, 'Independent bounded raw mutation tail',
+        ['Source create / update / delete, including old-history rows', 'Shares accepted input transaction; no extra clinical projection'], h=108)
+    p.arrow([(800,592),(800,630)])
+    p.zone(630, 178, '3  CLINICAL EVALUATOR AND DURABLE COMPLETION', 'Accepted position is not completed coverage', '#f0f7f3')
+    p.card(64, 678, 700, 'One bounded pending / due scheduler',
+        ['Serial tenant execution; fair neighbor progress', 'Actual due work completes after cache loss or restart'], h=108)
+    p.card(800, 678, 736, 'Atomic completed result / checkpoint',
+        ['Covered input/settings versions + frame/revision + next due', 'Current owner, authority and restore fences before RAM advances'], h=108)
+    p.arrow([(800,808),(800,846)])
+    p.zone(846, 178, '4  REALTIME AND CLIENT EFFECTS', 'Current tenant/client authority at publication', '#f8f9fb')
+    p.card(64, 894, 700, 'Realtime consumes completed output',
+        ['Durable owed-delivery receipts; watched-client demand', 'Storage subscribers consume the separate raw mutation tail'], h=108)
+    p.card(800, 894, 736, 'Existing browser and storage contracts',
+        ['Main frames; live storage events; independent alarm retries', 'Original credentials / mutation callbacks forwarded to API'], h=108)
+    p.rect(48, 1050, 1504, 80, '#fff4dd', 'none')
+    p.text(68, 1082, 'RECOVERY: cold start, GAP, settings expansion or missing history may read consistent source state.', 20, INK, '600')
+    p.text(68, 1110, 'Disposable cache generations may change. Durable pending/completed/due/authority/restore outcomes govern correctness.', 18, MUTED)
+    y = p.table(1170, [
+        ('INPUT', 'pgstream → evaluator receiver', 'Validate and persist coherent accepted cohorts before HTTP success; computation and client/provider I/O are separate.'),
+        ('OUTPUT', 'Completed checkpoint → realtime', 'Output hints accelerate delivery; durable completed state and receipts recover missed wakes. No second raw clinical projection.'),
+        ('RAW', 'Accepted mutation tail → storage subscribers', 'Independent of clinical window membership. Live cursor, bounded continuity and current-authority checks preserve source events.'),
+        ('ALARM', 'Evaluator notification state → realtime', 'Stable request identity, suppression, due retry and current authority; handoff is not device acknowledgement or exactly-once delivery.'),
+        ('LIFE', 'Operator → exact current participant roster', 'Drain/invalidation and ownership/restore fences remain. Explicit recovery and revision-pair admission precede reopening.'),
+    ])
+    p.text(48, y+36, 'Source: core 5e112547b31252ec428747c821d3cd1b3684ce2b; architecture: evaluator-realtime-communication.md.', 17, MUTED)
+    p.text(48, y+64, 'Functional qualification is distinct from capacity, production trust, live provider delivery, HA and fleet admission.', 18, AMBER, '600')
+    return p.finish(y+85, 'current-stream-runtime-topology')
+
+
 def main():
     global OUT
     parser=argparse.ArgumentParser(description=__doc__)
@@ -248,7 +290,7 @@ def main():
         parser.error('--check is read-only; use --png when rendering')
     OUT = args.output_dir.resolve()
     RENDERED.clear()
-    paths = [accepted(),current(),proposed()]
+    paths = [current_stream(),accepted(),current(),proposed()]
     if args.check:
         stale = [path for path in paths if not path.is_file() or path.read_bytes() != RENDERED[path].encode()]
         for path in stale:
