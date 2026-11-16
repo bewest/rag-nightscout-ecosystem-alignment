@@ -67,8 +67,6 @@ def validate_config(config):
         argv.extend(['--' + key, str(value)])
     # The adapter owns supported options and all source/profile admission.
     parsed = a.parser().parse_args(['prepare', '--directory', '/tmp/m7-runner-validation', *argv])
-    if parsed.diagnostic_resource_profile:
-        require(config['workSeconds']<=1500 and config['cleanupSeconds']<=300,'M7_RUNNER_DIAGNOSTIC_WINDOW_TOO_LARGE')
     require(parsed.profile == 'pgstream-sample' and parsed.run_purpose == 'discovery', 'M7_RUNNER_DISCOVERY_ONLY')
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
     require(config['workSeconds'] > sum(a.cadence_options(parsed)[k] for k in ('warmupSeconds', 'idleSeconds', 'loadSeconds')), 'M7_RUNNER_WORK_WINDOW')
