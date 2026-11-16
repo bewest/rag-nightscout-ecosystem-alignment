@@ -5,7 +5,7 @@ import json
 import re
 import shlex
 import subprocess
-from protocol import need, private_ipv4, workload, discovery_mode
+from protocol import prepared_cadence, need, private_ipv4, workload, discovery_mode
 
 CORE = '5d305dd08f006b7956c5c9a647d5e541b307c9f1'
 DEPLOY = '0dcde57e1dd3959e3420a6e1e4ff2ef65a40902d'
@@ -67,7 +67,7 @@ def cell_contract(m, b=None):
     need(exploratory or selected['primerConcurrency'] == 1 or m['pair']['deploy'] in (PRIMER_DEPLOY,PERFORMANCE_DEPLOY), 'REMOTE_PRIMER_CONCURRENCY_UNSUPPORTED_SOURCE')
     need(m.get('profile') == 'pgstream-sample' and m.get('runPurpose') == 'discovery' and
          m.get('measurementMode', 'accepted') == 'accepted' and type(m.get('tenants')) is int and (1<=m['tenants']<=10000 if exploratory else m['tenants'] in (10, 1000, 3000, 5000, 10000)) and
-         m.get('replicas') == 1 and m.get('cadence') == selected['cadence'] and m.get('primerConcurrency', 1) == selected['primerConcurrency'], 'REMOTE_EXPLICIT_CADENCE_REQUIRED')
+         m.get('replicas') == 1 and m.get('cadence') == prepared_cadence(bound) and m.get('primerConcurrency', 1) == selected['primerConcurrency'], 'REMOTE_EXPLICIT_CADENCE_REQUIRED')
 
 def local_nics():
     # This executes only on the SUT, never on the controller/load generator.

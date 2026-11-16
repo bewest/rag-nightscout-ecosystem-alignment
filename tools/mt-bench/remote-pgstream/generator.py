@@ -14,7 +14,7 @@ import sys
 import threading
 import time
 
-from protocol import Channel, binding, need, source_identity, TRAFFIC_FILES, write, workload, discovery_mode
+from protocol import viewer_total, Channel, binding, need, source_identity, TRAFFIC_FILES, write, workload, discovery_mode
 
 UID = 1001
 GID = 1001
@@ -197,7 +197,7 @@ def traffic_commands(directory, b, descriptor, k6_name, run_start_ms):
     """The existing launch commands, bound to the validated workload."""
     selected = workload(b); cadence = selected['cadence']; d = Path(directory); out = d / 'load'
     probe = ['/usr/local/bin/node', d / 'probe.js', '--base', 'http://' + b['appAddress'] + ':' + str(b['port']),
-             '--tenants', d / 'tenants.private.json', '--runid', descriptor['trafficRunId'], '--per', str(cadence['socketsPerTenant']),
+             '--tenants', d / 'tenants.private.json', '--runid', descriptor['trafficRunId'], '--clients', str(viewer_total(b)), '--per', str(cadence['socketsPerTenant']),
              '--open', '5', '--window', str(cadence['loadSeconds']), '--probeEvery', str(cadence['probeEveryMs']),
              '--restart', '0', '--evalTimeout', '900', '--out', out / 'probe.json', '--signal', out / '.window']
     k6 = ['docker', 'run', '--rm', '--name', k6_name, '--label', 'org.nightscout.external.owner=' + b['nonce'],
@@ -342,7 +342,7 @@ def session(directory, spec):
             metrics_thread.start()
             wait_file(out / '.window', probe, b)
             primed = json.loads((out / 'prime.json').read_text())
-            need(type(primed.get('primed')) is int and 0<=primed['primed']<=workload(b)['cadence']['socketsPerTenant']*b['tenants'],'EXTERNAL_PRIME_INVALID')
+            need(type(primed.get('primed')) is int and 0<=primed['primed']<=viewer_total(b),'EXTERNAL_PRIME_INVALID')
             need(discovery_mode(b) or primed['primed'] == 2 * b['tenants'], 'EXTERNAL_PRIME_FAILED')
             channel.send('client-primed', {'primed': primed['primed']})
             channel.receive('load-start', 120)

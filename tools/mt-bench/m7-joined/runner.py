@@ -243,7 +243,10 @@ def stage(root, name, args):
         require(time.time() < state['stopWorkAt'] and not (root / 'cleanup.json').exists(), 'M7_RUNNER_WORK_DEADLINE')
         write(root / 'phase.json', {'phase': name, 'startedAt': time.time()})
         with (root / (name + '.private.log')).open('xb') as output:
-            child = subprocess.Popen([sys.executable, '-B', str(HERE / 'adapter.py'), *args], stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
+            child_args = [*args]
+            if child_args[:1] == ['run']:
+                child_args += ['--work-deadline', str(state['stopWorkAt'])]
+            child = subprocess.Popen([sys.executable, '-B', str(HERE / 'adapter.py'), *child_args], stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
         a.job_record(root / 'stage-job.json', child, state['owner'], group=True)
     try:
         rc = child.wait(timeout=max(.1, state['stopWorkAt'] - time.time()))

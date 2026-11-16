@@ -7,7 +7,8 @@
   const watchdog=setTimeout(()=>process.exit(1),16000);
   try {
     const values=require('./deploy/multitenant/service-environment').read();
-    const partition=require('./lib/server/serve/evaluator-config').partitionFor(values);
+    // Read the same pure pool contract without loading evaluator execution/settings.
+    const partition=require('./lib/pool-membership/config').fromEnvironment('evaluator',values);
     const keys=['NS_SERVE_INTERNAL_HOST','NS_SERVE_INTERNAL_PORT','NS_SERVE_INTERNAL_SOCKET','NS_SERVE_INTERNAL_SHUTDOWN_TIMEOUT_MS','XDG_RUNTIME_DIR'];
     const environment=Object.fromEntries(keys.filter(key=>Object.hasOwn(values,key)).map(key=>[key,values[key]]));
     const selfOrdinal=partition.partitioned?partition.ordinal:0;

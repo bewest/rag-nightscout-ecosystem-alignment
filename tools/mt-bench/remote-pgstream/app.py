@@ -12,7 +12,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from protocol import Channel, binding, need, source_identity, traffic_verdict, server_verdict, TRAFFIC_FILES, write, discovery_mode, topology_dependencies
+from protocol import viewer_total, Channel, binding, need, source_identity, traffic_verdict, server_verdict, TRAFFIC_FILES, write, discovery_mode, topology_dependencies
 import traffic_probe
 sys.path.insert(0, str(HERE.parent / 'm7-joined'))
 import adapter as a
@@ -221,7 +221,9 @@ def summarize(d, m, b, idle_result, load_result, recovered, health_result, resta
         k6=a.document(out/'k6-summary.json') if (out/'k6-summary.json').is_file() else {}
         return discovery_summary(d,m,b,probe,k6)
     probe, k6 = a.document(out / 'probe.json'), a.document(out / 'k6-summary.json')
-    traffic_verdict(probe, k6['metrics'], m['tenants'])
+    traffic_verdict(probe, k6['metrics'], m['tenants'],viewer_total(b))
+    from viewer_plan import check
+    check(m,a.document(d/'tenants.private.json'),probe,a.document(out/'fanout.json')['probeWrites']['byTenant'])
     from clinical import completed
     clinical = completed(d, m)
     load(d, b)  # Recheck actual NIC and admission before final qualification.
@@ -287,6 +289,9 @@ def discovery_summary(d,m,b,probe,k6):
         except Exception as error:
             if hasattr(error,'oracleFindings'):result['oracleFindings']=error.oracleFindings
             raise
+        if probe.get('window') and (out/'fanout.json').is_file():
+            from viewer_plan import check
+            result['viewerFrames']=check(m,a.document(d/'tenants.private.json'),probe,a.document(out/'fanout.json')['probeWrites']['byTenant'])
         from clinical import completed
         try:result['completedOutput']=completed(d,m)
         except RuntimeError as error:
@@ -316,8 +321,8 @@ def session(cell, spec):
     else:idle(d, m)
     channel.send('app-ready')
     primed = channel.receive('client-primed', 1800)
-    need(set(primed)=={'primed'} and type(primed['primed']) is int and 0<=primed['primed']<=m['cadence']['socketsPerTenant']*m['tenants'],'EXTERNAL_PRIME_INVALID')
-    need(discovery_mode(b) or primed == {'primed': 2 * m['tenants']}, 'EXTERNAL_PRIME_FAILED')
+    need(set(primed)=={'primed'} and type(primed['primed']) is int and 0<=primed['primed']<=viewer_total(b),'EXTERNAL_PRIME_INVALID')
+    need(discovery_mode(b) or primed == {'primed': viewer_total(b)}, 'EXTERNAL_PRIME_FAILED')
     out = d / 'load'
     out.mkdir()
     runid = 'm7-' + m['owner'][:12]

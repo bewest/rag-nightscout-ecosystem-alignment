@@ -70,7 +70,7 @@ def workload(value):
     need(isinstance(plan, dict) and set(plan) == {'reference', 'tenants', 'logicalPollingClients', 'hosts'}, 'REMOTE_RESOURCE_PLAN_SHAPE')
     need(isinstance(plan['reference'], str) and re.fullmatch(r'[A-Za-z0-9_.:/-]{1,160}', plan['reference']) is not None and
          type(plan['tenants']) is int and plan['tenants'] == value['tenants'] and
-         type(plan['logicalPollingClients']) is int and plan['logicalPollingClients'] == cadence['socketsPerTenant'] * value['tenants'], 'REMOTE_RESOURCE_PLAN_COHORT')
+         type(plan['logicalPollingClients']) is int and 0<=plan['logicalPollingClients']<=80000 and (exploratory or plan['logicalPollingClients']==cadence['socketsPerTenant']*value['tenants']), 'REMOTE_RESOURCE_PLAN_COHORT')
     hosts = plan['hosts']
     need(isinstance(hosts, dict) and set(hosts) == {'sut', 'driver'}, 'REMOTE_RESOURCE_PLAN_HOSTS')
     for host in hosts.values():
@@ -80,6 +80,18 @@ def workload(value):
              type(host['ramBytes']) is int and host['ramBytes'] > 0, 'REMOTE_RESOURCE_PLAN_HOSTS')
     need(hosts['sut']['providerId'] != hosts['driver']['providerId'], 'REMOTE_RESOURCE_PLAN_DISTINCT_HOSTS')
     return selected
+
+def viewer_total(b):
+    selected=workload(b)
+    plan=selected['resourcePlan']
+    return plan['logicalPollingClients'] if plan else selected['cadence']['socketsPerTenant']*b['tenants']
+
+def prepared_cadence(b):
+    cadence=dict(workload(b)['cadence'])
+    if viewer_total(b)!=cadence['socketsPerTenant']*b['tenants']:
+        cadence['logicalPollingClients']=viewer_total(b)
+    return cadence
+
 
 def topology(value):
     selected='pgstreamTopology' in value or 'diagnosticResourceProfile' in value or 'helperDependencies' in value
@@ -228,14 +240,15 @@ def k6_metric(metrics, key, field='count'):
         need(type(rate)in(int,float)and math.isfinite(rate)and rate>=0 and(value!=0 or rate==0),'EXTERNAL_METRIC_INVALID')
     return value
 
-def traffic_verdict(probe, metrics, tenants):
+def traffic_verdict(probe, metrics, tenants, clients=None):
+    clients=2*tenants if clients is None else clients
     def from_value(key, field='count'):
         return k6_metric(metrics,key,field)
-    need(probe.get('prime', {}).get('primed') == 2 * tenants, 'EXTERNAL_PRIME_FAILED')
+    need(probe.get('prime', {}).get('primed') == clients, 'EXTERNAL_PRIME_FAILED')
     window, restart = probe.get('window', {}), probe.get('restart', {})
     need(window.get('deliveredFrames') == window.get('expectedFrames') and type(window.get('expectedFrames')) is int
-         and window['expectedFrames'] > 0 and window.get('writes', {}).get('failed') == 0, 'EXTERNAL_FRAMES_OR_WRITES_FAILED')
-    need(not restart and window.get('sockets') == 2 * tenants and window.get('connectedAtEnd') == 2 * tenants, 'REMOTE_NO_RESTART_OR_SOCKET_COUNT')
+         and window['expectedFrames'] >= 0 and window.get('writes', {}).get('failed') == 0, 'EXTERNAL_FRAMES_OR_WRITES_FAILED')
+    need(not restart and window.get('sockets') == clients and window.get('connectedAtEnd') == clients, 'REMOTE_NO_RESTART_OR_SOCKET_COUNT')
     need(from_value('writes_refused') == 0 and from_value('responses_refused') == 0 and from_value('http_req_failed', 'rate') == 0
          and from_value('dropped_iterations') == 0, 'EXTERNAL_HTTP_FAILED')
     need(window.get('writeToEvaluationMs') == {'measurement': 'UNMEASURED', 'reason': 'Per-write SQL latency observer NOT_RUN; strict progress remains app-side; no cross-host latency inferred'}, 'EXTERNAL_SQL_LATENCY_SCOPE')

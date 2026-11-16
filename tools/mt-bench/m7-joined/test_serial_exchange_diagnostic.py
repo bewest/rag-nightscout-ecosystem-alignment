@@ -9,7 +9,7 @@ class SerialDiagnostic(unittest.TestCase):
  def test_actual_cli_and_receipt_scope(self):
   args=a.parser().parse_args(['prepare','--directory','/synthetic','--core-repo','/synthetic-core','--core-commit','a'*40,'--deploy-repo','/synthetic-deploy','--deploy-commit','b'*40,'--image','sha256:'+'c'*64,'--receipt','/synthetic-receipt','--profile','pgstream-sample','--run-purpose','discovery','--tenants','3000','--replicas','1','--serial-exchange-diagnostic'])
   self.assertEqual(a.serial_exchange_selection(args),SELECTION)
-  m={'serialExchangeDiagnostic':SELECTION,'profile':'pgstream-sample','runPurpose':'discovery','tenants':3000};r={'status':'AUTHORIZED_DIAGNOSTIC','serialExchangeDiagnostic':SELECTION}
+  m={'tenants':3000,'serialExchangeDiagnostic':SELECTION,'profile':'pgstream-sample','runPurpose':'discovery','tenants':3000};r={'status':'AUTHORIZED_DIAGNOSTIC','serialExchangeDiagnostic':SELECTION}
   a.serial_exchange_receipt(m,r)
   for value in ({'status':'AUTHORIZED_DIAGNOSTIC'}, {'status':'FROZEN','serialExchangeDiagnostic':SELECTION}, {'status':'AUTHORIZED_DIAGNOSTIC','serialExchangeDiagnostic':{**SELECTION,'tenants':63}}):
    with self.assertRaises(RuntimeError):a.serial_exchange_receipt(m,value)
@@ -32,7 +32,7 @@ class SerialDiagnostic(unittest.TestCase):
   from unittest.mock import Mock
   with tempfile.TemporaryDirectory()as tmp:
    d=Path(tmp);(d/'completion-source.json').write_text('{}');(d/'owner.json').write_text('{}');(d/'tenants.private.json').write_text('[]');(d/'serial-exchange-pair.cjs').write_text('synthetic actor')
-   m={'serialExchangeDiagnostic':SELECTION,'owner':'a'*32,'pair':{'core':'b'*40,'deploy':'c'*40},'imageId':'sha256:'+'d'*64,'instrument':{'sha256':'e'*64},'port':53001,'project':'synthetic','generator':{'tools':{'node':{'path':'/synthetic/node','sha256':'f'*64}}},'cadence':{'loadSeconds':310,'probeEveryMs':300000},'restartRoles':['api']}
+   m={'tenants':3000,'serialExchangeDiagnostic':SELECTION,'owner':'a'*32,'pair':{'core':'b'*40,'deploy':'c'*40},'imageId':'sha256:'+'d'*64,'instrument':{'sha256':'e'*64},'port':53001,'project':'synthetic','generator':{'tools':{'node':{'path':'/synthetic/node','sha256':'f'*64}}},'cadence':{'loadSeconds':310,'probeEveryMs':300000},'restartRoles':['api']}
    record=types.SimpleNamespace(value={'processes':{},'strictChecks':{}},save=Mock())
    process=types.SimpleNamespace(pid=12345,poll=lambda:None,wait=Mock(return_value=0))
    def spawn(argv,**kwargs):

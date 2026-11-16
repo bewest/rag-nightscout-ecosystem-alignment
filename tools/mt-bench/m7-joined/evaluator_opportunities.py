@@ -178,7 +178,7 @@ class Observer(p.Observer):
     def failed(self,error,extra=None):
         code=str(error)
         if not code.startswith('M7_') or not all(c.isalnum() or c in '_:' for c in code):code='M7_OPPORTUNITY_COLLECTION_REFUSED'
-        self.write(self.payload({'verdict':getattr(error,'verdict','UNMEASURED'),'phase':self.phase,'code':code,**(extra or {})}))
+        self.write(self.payload({'verdict':getattr(error,'verdict','UNMEASURED'),'phase':self.phase,'code':code,'failedCollection':getattr(error,'collection',None),**(extra or {})}))
 
     def finish(self):
         try:

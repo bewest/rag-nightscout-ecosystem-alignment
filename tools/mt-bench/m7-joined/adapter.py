@@ -6,6 +6,7 @@ import contextlib
 import contextvars
 import hashlib
 import json
+import viewer_plan
 import os
 from pathlib import Path
 import re
@@ -386,6 +387,11 @@ def cadence_options(args):
         require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_OFFERED_RPS_DISCOVERY_ONLY')
         require(type(offered) in (int,float) and math.isfinite(offered) and 1<=offered<=10000,'M7_OFFERED_RPS_RANGE')
         value['offeredRps']=offered
+    clients=getattr(args,'logical_polling_clients',None)
+    if clients is not None:
+        require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_VIEWER_DISCOVERY_ONLY')
+        require(type(clients) is int and 0<=clients<=80000,'M7_VIEWER_TOTAL_RANGE')
+        value['logicalPollingClients']=clients
     return value
 
 
@@ -1474,7 +1480,7 @@ def run_cell(d, m, k6_image):
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
         probe_process = diagnostic_resources.popen(subprocess.Popen, [m["generator"]["tools"]["node"]["path"], str(d / "probe.js"), "--base", "http://127.0.0.1:" + str(m["port"]), "--tenants", str(d / "tenants.private.json"), "--compose", spec,
-            "--runid", runid, "--per", str(m["cadence"].get("socketsPerTenant",2)), "--open", "5", "--window", str(m["cadence"]["loadSeconds"]), "--probeEvery", str(m["cadence"].get("probeEveryMs",3000)), "--restart", "1" if m["cadence"].get("restart",True) else "0", "--evalTimeout", "900", "--out", str(out / "probe.json"), "--signal", str(out / ".window")], env=probe_env, stdout=probe_log, stderr=subprocess.STDOUT)
+            "--runid", runid, "--clients", str(viewer_plan.total(m)), "--per", str(m["cadence"].get("socketsPerTenant",2)), "--open", "5", "--window", str(m["cadence"]["loadSeconds"]), "--probeEvery", str(m["cadence"].get("probeEveryMs",3000)), "--restart", "1" if m["cadence"].get("restart",True) else "0", "--evalTimeout", "900", "--out", str(out / "probe.json"), "--signal", str(out / ".window")], env=probe_env, stdout=probe_log, stderr=subprocess.STDOUT)
         job_record(out/"probe-job.json",probe_process,m["owner"])
         try:
             deadline = time.monotonic() + 600
@@ -1509,16 +1515,18 @@ def run_cell(d, m, k6_image):
     completed_output=result_probe.get('completedOutput')
     if completion:
         attributed=sample_results(d,result_probe,sql_roles)
+    from viewer_plan import check as check_viewers, total as viewer_total
+    viewer_result=check_viewers(m,document(d/'tenants.private.json'),result_probe,document(out/'fanout.json')['probeWrites']['byTenant'])
     correctness = [result["verdict"] == "GREEN", result["uncertain"] == 0, not any(not r["owned"] for r in host["containers"]),
-                   result_probe["prime"]["primed"] == 2*m["tenants"], result_probe["window"]["deliveredFrames"] == result_probe["window"]["expectedFrames"],
-                   (not m["cadence"].get("restart",True) or result_probe["restart"]["stockRecovered"] == 2*m["tenants"]), (not m["cadence"].get("restart",True) or result_probe["restart"]["runtimeAcquisitionObservation"].get("verdict") == "PASS" and result_probe["restart"]["runtimeAcquisitionObservation"]["missing"] == 0),
+                   result_probe["prime"]["primed"] == viewer_total(m), result_probe["window"]["deliveredFrames"] == result_probe["window"]["expectedFrames"],
+                   (not m["cadence"].get("restart",True) or result_probe["restart"]["stockRecovered"] == viewer_total(m)), (not m["cadence"].get("restart",True) or result_probe["restart"]["runtimeAcquisitionObservation"].get("verdict") == "PASS" and result_probe["restart"]["runtimeAcquisitionObservation"]["missing"] == 0),
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
                    result_probe["window"]["writes"]["failed"] == 0, fingerprint_result["verdict"]=="PASS", idle_progress.result["verdict"]=="PASS", load_progress.result["verdict"]=="PASS"]
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
-               "completedOutput":completed_output or "NOT_SELECTED", "sqlAttribution":attributed if completion else "NOT_SELECTED",
+               "viewerFrames":viewer_result, "completedOutput":completed_output or "NOT_SELECTED", "sqlAttribution":attributed if completion else "NOT_SELECTED",
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
                "profileSelection":m["profileSelection"],"settingsFingerprint":m["settingsFingerprint"],"settingsFingerprintObservation":fingerprint_result,
                "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("idle","load")},"idleTail":document(d/"idle/evaluator-tail-publication.json") if (d/"idle/evaluator-tail-publication.json").is_file() else None,"recovery":document(out/"evaluator-recovery.private.json.publication.json") if m["cadence"].get("restart",True) else "NOT_RUN"},
@@ -1653,6 +1661,7 @@ def parser():
     prep.add_argument("--serial-exchange-diagnostic",action="store_true",help="Receipt-selected3k diagnostic only:64 serial exchanges before/after stock priming; no ordinary traffic")
     prep.add_argument("--profile",choices=tuple(CADENCE),default="capacity")
     prep.add_argument('--sockets-per-tenant',type=int)
+    prep.add_argument('--logical-polling-clients',type=int)
     prep.add_argument('--probe-every-ms',type=int)
     prep.add_argument("--offered-rps",type=float,help="Explicit scenario HTTP arrival rate for pgstream discovery only; preserves mix")
     prep.add_argument("--jwt-setup-concurrency",type=int,choices=range(1,65),default=1)
@@ -1666,6 +1675,7 @@ def parser():
     for cmd in ("verify", "build", "deploy", "run", "preflight", "diagnose", "control", "down", "host-identity", "vault-check", "source-preflight"):
         own = sub.add_parser(cmd);own.add_argument("directory")
         if cmd in ("run","preflight"):own.add_argument("--k6-image", required=True)
+        if cmd == "run":own.add_argument("--work-deadline",type=float,help="Existing runner absolute work cutoff; never starts a new window")
     check = sub.add_parser("check-campaign");check.add_argument("summary")
     check = sub.add_parser("check-pilot");check.add_argument("summary")
     check = sub.add_parser("check-discovery");check.add_argument("summary")
@@ -1707,7 +1717,11 @@ def main():
     elif args.command == "deploy":deploy(d, m)
     elif args.command == "preflight":
         preflight(d,m,args.k6_image);print('M7_SAMPLE_INSTRUMENTS_CHECKED_NOT_ACCEPTANCE')
-    elif args.command == "run":run(d,m,args.k6_image)
+    elif args.command == "run":
+        until = args.work_deadline
+        if m.get('evaluatorCatchup') is not None:require(until is not None,'M7_DRAIN_WORK_DEADLINE_REQUIRED')
+        if until is not None:require(math.isfinite(until) and until>time.time(),'M7_COMMAND_DEADLINE')
+        with command_deadline(until):run(d,m,args.k6_image)
     elif args.command == "diagnose":diagnose(d,m)
     elif args.command == "control":control(d, m)
     elif args.command == "vault-check":vault_control(d,m,"auth-check")

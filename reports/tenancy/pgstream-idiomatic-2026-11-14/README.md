@@ -1121,3 +1121,102 @@ Ten fresh local points are closed: eight runner COMPLETED, one COMPLETED_PARTIAL
 Retained evidence identifier: `externals/work/local-operating-envelope-20261115`. Its immutable selected readback/index is `local-envelope-packet.json`, SHA-256 `161ac7181015219fcfe4b285f7a034dc656e67239e6c8468585ae365ecc0f044`; it binds selected canonical artifact checksums, exact source/helper/cadence, original clocks, controls, costs, unknowns and independent absence. The evolving local handoff remains `externals/work/HANDOFF-local-operating-envelope-2026-11-15.md`. No raw output is committed.
 
 The existing realtime/performance owner accepts the focused read-only diagnosis of the long-idle authorization-deadline gap. Integration owns the final source, any focused repair and the one coherent final acceptance campaign. A separately discovered future notifier-configuration correction is outside these frozen tuples and does not rewrite their observations. The existing batch-tooling owner owns future bounded experiment reuse. No additional point, source fallback, deadline extension, capacity promotion or comprehensive application campaign is claimed here.
+
+
+## Single-host low-rate baseline and larger-roster preflight — 2026-11-15 Pacific
+
+The reproduced fixed-v1 point `single-host/n32-r7-02-point` completes readiness, idle and load checks. It uses historical app `7e6b2cf77a66049bb0d88c1605ae7703789f070f`, deployment `16133d9d33993b08fd81a318e8d30be123051ae7`, qualified image `sha256:4d07a97f408ff5dc173557f5255ff94d0babfb11c072f50925e6e9b3eefccfcc`, helper `b2ac402ed6efd8e5f5cddc72787d7a0023d55be9` and instrument `d9034e875fbfc9782746a3181d933085bf0aa436cf3ecadca451c5596c5c6c93`. This historical image predates the realtime late-close repair and heartbeat retirement. It does not qualify the current candidate.
+
+The shared-host window has 32 synthetic tenants, one polling viewer each, one API/evaluator/realtime process, ordinary 7 offered requests/s, 30 configured idle seconds and 60 configured load seconds. All 32 tenants receive ordinary writes during load; there are no ordinary writes during idle. Existing role IPC uses UDS; Go-to-evaluator delivery uses Compose bridge HTTP. The existing external-service resource profile keeps evaluator and Go at 125m CPU/256MiB each, within its aggregate 4CPU/8GiB envelope plus 1024MiB declared host V8 heaps. The original finite clock includes preparation; it is never extended.
+
+| Reproduced observation | Result and limit |
+|---|---|
+| Ordinary accepted/stored oracle | 117 accepted = 117 stored; zero uncertain; one separately accounted accepted/stored sparse probe |
+| Evaluator progress | Load completed-work delta 80, minimum 2 per tenant; no failed completion delta. This is all-roster progress, not a final floor for every ordinary write. |
+| Idle | PASS with all 32 classified `FUTURE_DUE` / `TIME_NOT_EXERCISED`; time-work witness false |
+| Clients | 32/32 primed and connected at end; zero server disconnects; one expected sparse frame delivered |
+| Sparse latency witness | One request-to-client frame at 516ms; durable observation bracket 0–1108.048ms. No population percentile or pure executor-lag claim. |
+| Driver | 425 scenario iterations; zero dropped iterations and HTTP failures; k6 sampled mean/max CPU 1.002%/1.37% |
+| Cleanup | Runner ABSENT and independent exact project containers/networks/volumes, recorded process births/groups and heap marker all absent |
+
+Captured cost windows include collector work and exceed the configured sleep/load intervals. Memory is end-of-window cgroup usage, not peak heap. SQL statement WAL is collector-inclusive, not network bytes.
+
+| Cost | Idle, 47.889s | Load, 76.837s |
+|---|---:|---:|
+| Serving-role CPU, mean cores | 0.4585 | 0.5565 |
+| Serving-role end memory, bytes | 868634624 | 929505280 |
+| Evaluator CPU, mean cores | 0.09829 | 0.09359 |
+| Evaluator throttled / counted periods | 354 / 410 | 529 / 636 |
+| Go CPU, mean cores | 0.001441 | 0.002545 |
+| SQL calls | 3670 | 28446 |
+| SQL statement WAL, bytes | 5664 | 1274269 |
+| Three progress-collector calls, total seconds | 21.455 | 22.258 |
+
+Aggregate headroom does not establish evaluator-container quota headroom. The container includes its observer. The stable primary Node process records 1.04 CPU seconds during idle (0.02172 mean cores) and 2.58 during load (0.03358); another process lacks a complete identity-matched CPU interval. These observations do not permit causal subtraction of every observer cost. The container frequently throttles while the observer starts Node inside the same quota. This point does not isolate the cause. Retained evaluator/Go log tails contain no heartbeat-stall match; their bounded retention does not prove continuous absence. The earlier preparation refusal `M7_DEPENDENCY_REUSE_TOOL_PROVENANCE` came from ambient Node22 versus the receipt's Node24.22.1/npm11.19.1 paths and hashes. It started no application services and closed with absence PASS. Fresh preparation used the recorded tools without weakening provenance.
+
+Larger-roster preflight is source-only. The archived current app `1ce665d326616be0ee683f75953f65dae150201b` / deployment `b26c415e39fe96b09627977467afc68b3c7836ab` existing configuration generator completes at 32/1000/10000 tenants under a 256MiB V8 cap. At 10000 it produces 796253 document bytes, with maximum RSS 160072KiB. A 10001 selection refuses; restoring 10000 passes. These figures do not measure bootstrap or runtime capacity.
+
+The actual existing observer JavaScript, with recording I/O, emits 79 unique pages covering all 10000 tenants, reads its environment once and creates one client per instance. The existing Python reader accepts full coverage and rejects an omitted final page with `M7_EVALUATOR_PROGRESS_COVERAGE`; restoration passes. One evaluator needs 8/79 pages per round and 24/237 queries per three-round phase at 1000/10000 tenants, below the existing 1024-query bound. Real RPC/Node startup, the unchanged 15s round deadline and effective container/driver FD headroom at these counts remain UNMEASURED. Current host soft/hard open-file limits are 1048576; this does not establish every future container's effective limit. NGINX configuration declares 65536.
+
+At this capture, the producer required at least one viewer per tenant. A larger point can measure that coupled workload honestly; a quiet-roster-only interpretation is unsupported. k6 JWT setup retains its existing serial default, optional bounded concurrency and 300s setup deadline. The probe uses 16 JWT workers, 5ms socket-open staggering and a 600s prime bound. These declared limits are not measured large-count passes. Keep request rate, actual write-active tenants, viewer total, bootstrap/prime time and collector cost explicit. The next native point must use the runnable heartbeat-retired candidate and a meaningful larger cohort; no repeated identical 32-tenant point or extra acceptance campaign is implied.
+
+Retained evidence home: `externals/work/performance-enhancements-20261115/single-host`; evolving handoff: `externals/work/HANDOFF-performance-enhancements-2026-11-15.md`. Canonical summary SHA-256 `69e62a52a03e52ac7abd13af2fc9a8730b09e42fd53de43d57f48fe9f2867059`; independent absence `ccc66ac1c6c9454d70f0e3965bf622ed3e4ee2c0620cd16aa4d931ba95603a8f`; selected cost reduction `78866e89a30fc008de97395648fce357fe47fc032467c57533db84cc693b9c96`. Captures remain unchanged and outside Git. No capacity acceptance, paid allocation, push or release is claimed. Source integration and one final acceptance remain with 51f6; freshness owns heartbeat retirement.
+
+The next helper removes one reproduced observer startup cost: it reads the same existing `lib/pool-membership/config.fromEnvironment` contract directly, rather than loading `serve/evaluator-config` and its clinical/settings graph solely for `partitionFor`. Five alternating cold host-source pairs on the pinned historical source load 526 versus 2 modules, use 234548–261972 versus 6159–7204 microseconds CPU, and peak at 89540–93152 versus 50500–50624KiB RSS. This is source-only module cost, not a native quota or heartbeat-causality result. Seven actual parser cases preserve three valid selections and four refusals. Fifty focused checks pass with the actual product fixture enabled. Restoring the heavy import makes that fixture fail `M7_EVALUATOR_PROGRESS_UNAVAILABLE`; restoration passes. RPC source/endpoint binding, instance checks, paging, byte/query/deadline bounds and health criteria are unchanged. The next native point must independently measure its effect. Documentation links pass; queue-check refuses existing missing ignored gate worktrees (including `externals/work/nc-jitter` and `externals/work/crm-m6b-join-20261110`), so no queue-check pass is claimed.
+
+
+## Independent tenant roster and viewer total — 2026-11-15 Pacific
+
+The harness now supports sparse and zero viewers through the existing discovery
+runner. Tenant roster size and total polling viewers are independent. The
+[runner contract](../../../tools/mt-bench/m7-joined/RUNNER.md#configurable-discovery-and-strict-remote-reporting)
+defines the single declared total, deterministic mapping, legacy defaults and
+zero-frame classification. This helper change needs no application image build.
+Strict remote preset admission and source/image/deadline/budget bindings remain.
+
+Reproduced source controls execute the actual generated public JavaScript probe
+under Node v22.23.4 with in-memory HTTP, Socket.IO and filesystem ports, then feed
+its output to the actual Python reducer. They exercise complete roster parsing,
+actual emitted bindings, prime/end counts and per-write frame expectations:
+
+| Synthetic tenants | Declared/emitted/primed/end viewers | Accepted probe writes | Expected/delivered frames | Frame evidence |
+|---|---|---|---|---|
+| 5 | 2 | 4 | 2 | PASS |
+| 5 | 7 | 4 | 6 | PASS |
+| 5 | 0 | 4 | 0 | NOT_EXERCISED |
+| 3 | 17 | 4 | 23 | PASS |
+| 10000 | 1 | 4 | 1 | PASS |
+
+The 10000/1 row is a generated-JavaScript-to-Python reducer round trip. It does
+not run a native socket server, database, evaluator, application image or remote
+host and establishes no runtime capacity or large-count deadline claim.
+Missing, extra, foreign, duplicate and wrong-tenant viewer bindings refuse.
+Mutating both reported expected and delivered frame totals to the same wrong
+value also refuses. An actual emitter ablation restores the old per-tenant loop:
+it emits 10 viewers for the declared 5/7 case and fails `M7_VIEWER_BINDINGS`;
+restoring the total-based loop passes. A separate selected clinical fixture
+checks durable output with zero connected clients and reports client frames as
+`NOT_EXERCISED`; missing or foreign client identities refuse.
+
+Final focused verification: 390 joined-helper tests complete with 4 skips and no failures; 84 remote
+helper tests complete with 1 skip and no failures; 27 deployment calibration/topology
+tests complete with 2 skips and no failures; the paired worker/helper test passes. Enabled caller-to-worker-to-cell
+checks cover independent totals 2, 0 and 53 at 37 tenants. Those checks inspect
+the real parser and request/receipt binding but replace `adapter.prepare` before
+effects; they do not qualify generator dependency production or native admission.
+The selected clinical/database fixtures now declare their actual one-tenant
+roster instead of claiming 1000 tenants for one row; incomplete clients fail at
+the earlier binding guard. No clinical expectation was weakened.
+
+Retained synthetic evidence uses the existing home
+`externals/work/performance-enhancements-20261115/single-host/viewer-load/`.
+`generated-runtime-results.json` SHA-256:
+`4345b95dfa57269c62daf3d6307a937ca4c7b22ec7a0904556e81492f1b76dcc`.
+The full focused logs and the deliberate emitter break/restore remain outside
+Git. Queue-check refuses missing ignored gate worktrees, starting with
+`externals/work/nc-jitter`; it is not a pass. The first sandbox-only checks also
+refused `listen EPERM` and `spawnSync git EPERM`; required loopback checks pass
+with native tool access. Existing captures and frozen remote clones are unchanged.
+51f6 owns integration and final acceptance; the remote owner owns all allocation,
+export, finite custody and cleanup. A later source-matched native point must
+measure larger-roster bootstrap, SQL, observer deadlines and actual delivery.
