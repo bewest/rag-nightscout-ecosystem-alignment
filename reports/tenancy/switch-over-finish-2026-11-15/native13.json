@@ -1,0 +1,40 @@
+{
+  "kind": "immutable-native-partial-summary",
+  "basis": "reproduced",
+  "source": "8ddcc01208c11c18145c44c1076ae4c91f79ffa2",
+  "deploy": "23e73da7ad8d57bb0a360c29b3ef2320ed229238",
+  "execution": "Host Node source fixture; application image not used",
+  "retainedEvidenceId": "switch-over-clinical-restore-13-20261115",
+  "status": "CLOSED_FAILED_OR_PARTIAL",
+  "closedCriteria": [
+    "Scoped provider refusal with cold Node-JWT exchange, DATA reads/status and v3 write201.",
+    "Socket frame matches the stored identifier through the existing API-to-storage-to-frame mapping.",
+    "Initial synthetic BG-now SQL/realtime oracle ready."
+  ],
+  "failure": {
+    "code": "42501",
+    "source": "lib/tenant-lifecycle/index.js:111 readLedger",
+    "artifactCreated": false,
+    "withRestoreEntered": false,
+    "sevenDomainRestore": "NOT_RUN"
+  },
+  "diagnosis": {
+    "basis": "read-derived from frozen manual grant closure and source read order; native relation message was not retained",
+    "mechanism": "The manual fixture omitted SELECT on the write-clock migration ledger. The canonical product grant builder already includes that read.",
+    "repair": "New unbound witness template adds only the missing ledger read and retains original mutation grants; recording omission/restoration control is separate from native evidence."
+  },
+  "cleanup": {
+    "fixtureErrors": [],
+    "independentAbsence": "PASS",
+    "scope": "Exact two containers, twelve process births, group, nonce and listeners absent before original deadline"
+  },
+  "sha256": {
+    "results.json": "a813a7d7d22c4c7d025b318d2cba733852bb70cbc49e267f6e22d60ab1651316",
+    "capture/observations.json": "60e3f180e9eb51d1822e84bdd15ce3a066b4f688effbca4c81f60b3614a2ccf6",
+    "app-independent-absence.json": "b1fe7b20e2c5e7329cf706202cb56a26cddf03e83fdf330a6bc2d25834fdaffc"
+  },
+  "limits": [
+    "No clinical restore, final candidate, capacity or image-runtime acceptance.",
+    "Single-run approval is consumed; no retry or future-source approval inferred."
+  ]
+}

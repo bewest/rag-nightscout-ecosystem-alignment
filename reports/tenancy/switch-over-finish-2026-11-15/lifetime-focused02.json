@@ -1,0 +1,28 @@
+{
+  "kind": "immutable-focused-lifetime-summary",
+  "basis": "reproduced",
+  "source": "8128083d164d7ea721f6bff4bb7f883ce18546e9",
+  "retainedEvidenceId": "transition-lifetime-focused-02-20261115",
+  "result": {
+    "passing": 2,
+    "pending": 0,
+    "failing": 0
+  },
+  "criteria": [
+    "Actual entered clinical/delivery job refusal and fresh suspended admission pass.",
+    "A drain removes every A marker and preserves the exact original B participation; B continues."
+  ],
+  "cleanup": {
+    "independentExactAbsence": "PASS",
+    "beforeOriginalDeadline": true
+  },
+  "sha256": {
+    "private/corpus.json": "a375b56f33a62451ff6955f3505efc5f5da10f5c4e289c8a69835eb7b4df7ff8",
+    "root-independent-absence.json": "5b6b9fb270296d075bc7ea991d91cd07e4d3a218102cc2027f458388e66e36c3"
+  },
+  "limits": [
+    "Focused fixture checks only; no final comprehensive, image-runtime or capacity acceptance.",
+    "Existing maintained corpus selector and fixture assertions/timeouts.",
+    "Per-container PostgreSQL1CPU/1GiB and Vault0.5CPU/256MiB where used; shared host, no aggregate performance claim."
+  ]
+}

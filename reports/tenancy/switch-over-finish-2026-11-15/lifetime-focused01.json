@@ -1,0 +1,29 @@
+{
+  "kind": "immutable-focused-lifetime-summary",
+  "basis": "reproduced",
+  "source": "a792ef1d817bd91d881ad94052de0dbc33b7f5a8",
+  "retainedEvidenceId": "transition-lifetime-focused-01-20261115",
+  "result": {
+    "passing": 14,
+    "pending": 0,
+    "failing": 1
+  },
+  "criteria": [
+    "M7 diagnostics on/off and actual held-response drain pass.",
+    "Exact held versus idle participant drain, early-response RED control and B continuity/uncertain commit controls pass.",
+    "Job final assertion fails because it counts retained B participation after draining A; original failure preserved."
+  ],
+  "cleanup": {
+    "independentExactAbsence": "PASS",
+    "beforeOriginalDeadline": true
+  },
+  "sha256": {
+    "private/corpus.json": "d2ccd36964d715db2de8b9c2a7fdbe59a11c5390ff2f0513ec7532eb11dec27f",
+    "root-independent-absence.json": "3de9cf8af405f2baee41ce7a98feeb3c860406e1153712e8081ff368f9094488"
+  },
+  "limits": [
+    "Focused fixture checks only; no final comprehensive, image-runtime or capacity acceptance.",
+    "Existing maintained corpus selector and fixture assertions/timeouts.",
+    "Per-container PostgreSQL1CPU/1GiB and Vault0.5CPU/256MiB where used; shared host, no aggregate performance claim."
+  ]
+}
