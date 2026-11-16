@@ -112,6 +112,37 @@ async function invalidBootstrap(core,factory){
   assert.deepEqual(saved.rows[0].doc.extension,{preserve:true},'BOOTSTRAP_INVALID_HISTORY_LOST');
  });}finally{scope.setTenancyMode(mode);}
 }
+async function schedulerFairness(core,start){
+ start=start||require(path.join(core,'lib/pgstream/activity-scheduler.js')).start;
+ let releaseA,enteredA,released=false,total=0,maxTotal=0,maxTenant=0;const active=new Map(),timers=[],runs=[];
+ const held=new Promise(resolve=>{releaseA=resolve;}),entered=new Promise(resolve=>{enteredA=resolve;});
+ const service=start({store:{nextDue:async()=>null,work:async()=>[],deliveries:async()=>[]},scan:async()=>{},concurrency:2,
+  setTimer(fn,delay){const timer={fn,delay,unref(){}};timers.push(timer);return timer;},clearTimer(timer){const i=timers.indexOf(timer);if(i>=0)timers.splice(i,1);},
+  run:async tenant=>{total++;active.set(tenant,(active.get(tenant)||0)+1);maxTotal=Math.max(maxTotal,total);maxTenant=Math.max(maxTenant,active.get(tenant));runs.push({tenant,released});try{if(tenant==='A'){enteredA();await held;}}finally{total--;active.set(tenant,active.get(tenant)-1);}},send:async()=>{}});
+ async function flush(){for(let turn=0;turn<20;turn++){for(const timer of timers.splice(0))timer.fn();await new Promise(resolve=>setImmediate(resolve));}}
+ try{
+  service.wake('A');timers.shift().fn();await entered;service.wake('A');service.wake('B');await flush();
+  assert(runs.some(r=>r.tenant==='B'&&!r.released),'IDLE_SLOT_MUST_RUN_NEIGHBOR_BEFORE_HELD_A_RELEASE');
+  assert.equal(maxTenant,1,'CLINICAL_TENANT_EXECUTED_CONCURRENTLY');assert(maxTotal<=2,'CLINICAL_CONCURRENCY_EXCEEDED');
+  released=true;releaseA();await flush();await service.drain();
+  assert.equal(runs.filter(r=>r.tenant==='A').length,2,'NEW_INPUT_DURING_EVALUATION_LOST');
+ }finally{released=true;releaseA();await flush();await service.drain();await service.close();}
+}
+async function schedulerRetry(core,start){
+ start=start||require(path.join(core,'lib/pgstream/activity-scheduler.js')).start;let now=100;const timers=[],runs=[];
+ const service=start({store:{nextDue:async()=>null,work:async()=>[],deliveries:async()=>[]},scan:async()=>{},concurrency:2,now:()=>now,
+  setTimer(fn,delay){const timer={fn,at:now+delay,unref(){}};timers.push(timer);return timer;},clearTimer(timer){const i=timers.indexOf(timer);if(i>=0)timers.splice(i,1);},
+  run:async tenant=>{runs.push({tenant,now});if(tenant==='A')throw Error('SYNTHETIC_POISON');},send:async()=>{}});
+ async function flush(){for(let turn=0;turn<20;turn++){for(const timer of timers.filter(t=>t.at<=now)){timers.splice(timers.indexOf(timer),1);timer.fn();}await new Promise(resolve=>setImmediate(resolve));}}
+ try{
+  service.wake('A');await flush();const before=runs.filter(r=>r.tenant==='A').length;assert.equal(before,1,'INITIAL_RETRY_NOT_BOUNDED');
+  service.wake('B');await flush();assert(runs.some(r=>r.tenant==='B'),'RETRY_BLOCKS_NEIGHBOR');
+  assert.equal(runs.filter(r=>r.tenant==='A').length,before,'NEIGHBOR_INPUT_AMPLIFIES_POISON_RETRY');
+  now=1099;await flush();assert.equal(runs.filter(r=>r.tenant==='A').length,before,'POISON_RETRY_TOO_EARLY');
+  now=1100;await flush();assert.equal(runs.filter(r=>r.tenant==='A').length,before+1,'DUE_RETRY_LOST');
+  service.wake('A');await flush();assert.equal(runs.filter(r=>r.tenant==='A').length,before+2,'TARGETED_NEW_INPUT_STUCK_BEHIND_RETRY');
+ }finally{await service.close();}
+}
 async function run(core,capture){
  const file=path.join(core,'lib/storage/clinical-stream-state.js'),source=fs.readFileSync(file,'utf8'),events=fs.readFileSync(capture,'utf8').trim().split('\n').map(JSON.parse);
  const api=require(file),result=exercise(api,events),controls=[];
@@ -126,6 +157,15 @@ async function run(core,capture){
   assert.throws(()=>exercise(module.exports,events),symptom,'ABLATION_DID_NOT_DETECT:'+name);
   exercise(api,events);controls.push(name);
  }
+ await schedulerFairness(core);
+ const schedulerFile=path.join(core,'lib/pgstream/activity-scheduler.js'),schedulerSource=fs.readFileSync(schedulerFile,'utf8');
+ const pumpEnd='   await due();';assert.equal(schedulerSource.split(pumpEnd).length,2,'SCHEDULER_ABLATION_SOURCE_MISMATCH');
+ const barrier={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(pumpEnd,'   await Promise.allSettled([...active.values()]);await due();')+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),barrier,barrier.exports);
+ await assert.rejects(schedulerFairness(core,barrier.exports.start),/IDLE_SLOT_MUST_RUN_NEIGHBOR_BEFORE_HELD_A_RELEASE/);await schedulerFairness(core);controls.push('held-tenant-batch-barrier');
+ await schedulerRetry(core);
+ const targeted='excluded.delete(tenant);retryAt.delete(tenant);enqueue';assert.equal(schedulerSource.split(targeted).length,2,'RETRY_ABLATION_SOURCE_MISMATCH');
+ const amplified={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(targeted,'excluded.delete(tenant);retryAt.clear();enqueue')+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),amplified,amplified.exports);
+ await assert.rejects(schedulerRetry(core,amplified.exports.start),/NEIGHBOR_INPUT_AMPLIFIES_POISON_RETRY/);await schedulerRetry(core);controls.push('neighbor-clears-poison-backoff');
  await invalidBootstrap(core);
  const replayFile=path.join(core,'lib/storage/postgres-durable-replay.js'),replaySource=fs.readFileSync(replayFile,'utf8');
  const filter='if (stream || row.doc.isValid !== false)';assert.equal(replaySource.split(filter).length,2,'BOOTSTRAP_ABLATION_SOURCE_MISMATCH');
