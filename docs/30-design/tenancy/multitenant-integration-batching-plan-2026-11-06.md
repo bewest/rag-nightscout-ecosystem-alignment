@@ -1,6 +1,6 @@
 # Multitenant integration batching plan
 
-*Contributor-facing living coordination plan, refreshed 2026-11-10. This page owns
+*Contributor-facing living coordination plan, refreshed 2026-11-15. This page owns
 capability boundaries, integration order and verification depth. The
 [queue](../../../queue/work-queue.yaml) owns claimed item state; the
 [dashboard](multitenant-delivery-dashboard.md) owns recorded milestone claims;
@@ -113,6 +113,8 @@ list. The schedule below governs further work.
 
 ## 5. Current completion schedule (adopted 2026-11-06)
 
+**Current order, 2026-11-15:** the [single-host streaming decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#single-host-streaming-first) governs the immediate baseline. Use the existing runnable UDS composition and existing performance lane; finish supported-path qualification and bounded operating-envelope experiments without waiting for optional topology or platform expansion. Preserve their research checkpoints and gates, but do not add them to the baseline critical path. One outcome, existing evidence homes and one final coherent candidate campaign are sufficient.
+
 | Completion stage | Accepted capability and evidence | Remaining integration boundary |
 |---|---|---|
 | **A — data, control and clients (M0–M4)** | [R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06) retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later [pinned-client campaign](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json) belongs to its own source/instrument. | Preserve legacy root/subject behavior and supported PG differences. Android emulator and measured operating limits remain C; no all-client claim. A's closed criteria are not new prerequisites to re-run for the documentation refresh. |
@@ -122,7 +124,7 @@ list. The schedule below governs further work.
 | **M6b — lifecycle, keys and the joined candidate** | [MT-M6B-JOIN acceptance](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md) joins listener composition, key retention, ownership operations and single-site OIDC provisioning. | Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; the release contents carry the full list. |
 | **M6c — deployment trust** (in `nightscout-deploy`) | [Vault Agent sidecar](../../../reports/tenancy/vault-agent-2026-11-09/README.md) and the core `tokenFile` read. | Identity-provider profile and live trust probes (`DEPLOY-IDP-PROFILE`, `DEPLOY-TRUST-PROBES`). |
 | **M6d — connector sync** | [MT-CONNECTOR-SYNC lab](../../../reports/tenancy/connector-sync-2026-11-10/README.md). | Other collections, cadence, token refresh and real ingress remain UNMEASURED. |
-| **M7 — production readiness** | Plans: [production critical path](production-critical-path.md), [selectable endpoints and API scaling](selectable-endpoints-and-api-scaling-plan.md), [realtime sharding](realtime-sharding-plan.md). | Bench, contrast, scale-unbound, evaluator partition, realtime sharding, Android lab and Kubernetes binding items in the queue. |
+| **M7 — production readiness** | Plans: [production critical path](production-critical-path.md), [selectable endpoints and API scaling](selectable-endpoints-and-api-scaling-plan.md), [realtime sharding](realtime-sharding-plan.md). | Measure and qualify the declared single-host baseline first. Partition, sharding, Kubernetes and multihost operating-model proofs retain their own queue scope and are parallel research, not prerequisites for that baseline. Applicable client and correctness gates remain; no milestone is promoted by this ordering change. |
 
 ### 2026-11-09: M6 split and capability items
 

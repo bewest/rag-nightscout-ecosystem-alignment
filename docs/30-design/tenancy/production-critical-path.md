@@ -17,13 +17,19 @@ to testing an independently ready capability.
 
 ## Immediate M7 priority
 
-The [event-driven reset](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
-has a bounded local proof. The next boundary is
-[actual-role integration and its completion criteria](evaluator-realtime-communication.md#actual-role-integration-objective-and-completion-criteria):
-notifier health, schema routing, OS-process recovery and ownership/restore fences
-with one capability owner. Focused criteria precede one frozen-candidate acceptance
-campaign, then a small matched sample before planning production capacity. No new paid resources
-or retry of the cancelled 500-tenant run is authorized by this sequence.
+The [single-host streaming decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#single-host-streaming-first)
+sets the current order: use the existing evaluator/realtime composition and UDS
+interfaces, measure a bounded local workload, and qualify the supported candidate.
+Explore toward 10,000 synthetic tenants as measured resources permit. Keep actual
+transport, accepted/stored/completed progress, due work and client behavior explicit.
+Current evidence and remaining baseline criteria live in [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+
+Optional desired-N, selected-v2/HOLD, full platform recommission, Kubernetes and
+multihost operating-model proofs proceed independently. They do not block a
+supported single-host clinical witness, load experiment or qualification. Keep
+existing correctness gates for the configuration actually claimed and one final
+coherent candidate campaign; do not add a campaign or deliverable per leaf.
+This sequencing changes no workload qualification, publication or budget claim.
 
 ## The proposed first production boundary
 
