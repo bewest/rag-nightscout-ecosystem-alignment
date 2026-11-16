@@ -1687,3 +1687,110 @@ Retained point: `attribution-current/n1000-v64-r7-point-02` under the existing
 binds the original outcome, source, dispatch, bracket, cost and absence records.
 The companion LOAD reduction `repaired1000-r7-02-attribution.json` has SHA-256
 `c887aca8346dcfe1c00cf9cd6c0765ee17b86128174dfea50bcd19487fabcb6b`.
+
+## Local Vault discriminator: changed memory budget moves the observed boundary
+
+Reproduced component-only provisioning completes 4,378 synthetic key sets at
+256 MiB and 9,802 at 512 MiB. Both cases end with
+`TENANT_PROVISION_VAULT_UNAVAILABLE`; neither qualifies 10,000. The smaller case
+has a kernel-proven vault-named OOM victim. The larger case's request failure
+has no qualified cause. These observations distinguish resource budgets and
+failure modes; they establish neither an architectural tenant ceiling nor
+serving capacity. They do not replace the separate remote provisioning evidence.
+
+The finite free experiment imports the actual `createVaultKeys`, key-purpose
+rules and `createVaultTransit` modules frozen from app
+`1646f00437cb207cb5acf0da0f3474b68f78bc04`. Each completed key set acknowledges
+all six create-or-adopt key operations and one root-secret encryption using the
+secrets component's envelope with a synthetic 48-byte secret. Four workers use
+the same deterministic synthetic tenant grammar in fresh, separate Vault
+instances. This is a client-acknowledged component count, not a PostgreSQL tenant
+census or final Vault key inventory; unfinished sets can contain partial work.
+
+Both cases use pinned Vault manifest
+`hashicorp/vault@sha256:962a92876e168d68eaaa24b0b8b49bbce1cb63024060a67bba95cd158a366fc2`,
+file storage, default cache settings and one scoped provisioning token. Memory
+and memory-plus-swap limits are equal, so neither case adds swap. Docker requests
+0.125 CPU in each case; actual `cpu.max` is `13000 100000`, or 0.13 CPU. The
+larger case first completes 6,000 sets in 883.051s and then continues toward
+10,000 within the original clock. The smaller case never reaches 6,000; there
+is no matched 6,000-set success to compare.
+
+| Reproduced result | 256 MiB | Explicitly changed 512 MiB |
+|---|---:|---:|
+| Completed key sets | 4,378 | 9,802 |
+| Workload elapsed seconds | 634.891 | 1,807.154 |
+| Workload exit | 1 | 1 |
+| Final container PID 1 state | Running; OOM flag true; exit zero | Running; OOM flag false; exit zero |
+| Retained exact-cgroup kernel OOM evidence | Vault-named victim | No matching event in retained interval |
+| 10,000-set target | Not reached | Not reached |
+
+The retained kernel event at `2026-11-16T09:24:19.615889Z` names a `vault`
+process in the exact smaller-case cgroup. Its victim PID differs from Docker's
+container PID 1. Identifying it as the server is a source-bound inference:
+the probe launches only the server, its collectors invoke shell/counter/storage
+commands, and pinned image metadata confirms no default Vault CLI healthcheck.
+There is no initial process map. The later finding refines the initial
+interpretation of the still-running PID 1; that state does not prove service
+health. [Docker's resource documentation](https://docs.docker.com/engine/containers/resource_constraints/)
+describes OOM handling as killing processes within a container.
+
+For the larger case, the retrospective whole-incarnation kernel query returns
+successfully with no exact-cgroup match. Together with the false final OOM flag,
+this provides no OOM or server-death explanation for its request failure.
+Absence in retained logs does not prove service health. The bounded product
+module redacts underlying errors: the failing operation, HTTP status, transport
+cause and exact request chain remain UNMEASURED. No retry repairs that gap.
+
+Provisioning memory grows progressively and both caps reach reclaim pressure.
+A common completed-count checkpoint shows why total charged memory is not a
+heap estimate:
+
+| Counter after the 3,400-set checkpoint | 256 MiB | 512 MiB |
+|---|---:|---:|
+| Current charge, MiB | 253.90 | 408.99 |
+| Anonymous memory, MiB | 187.36 | 184.31 |
+| File cache, MiB | 9.30 | 159.88 |
+| Kernel memory, MiB | 55.51 | 62.99 |
+
+These counters are sequential reads after a workload checkpoint, not an atomic
+snapshot of an exact tenant census. Queued collection can advance the workload
+before its read. The smaller case has reclaimed most file cache while the
+anonymous charges are similar. Kernel/slab charges also grow. No fitted constant
+bytes-per-tenant or extrapolated ceiling follows from these endpoints.
+
+Collectors run inside the Vault quota, including a storage-size walk, and their
+pressure is part of the observation. Sixteen of 48 counter attempts are
+unavailable in the smaller case and 34 of 104 in the larger case. The last
+successful reads follow checkpoints 3,400 and 7,200 respectively; missing later
+counters are not zero. Both first idle reads fail, so retained idle growth versus
+reclaimable state or a later transient spike is UNMEASURED. Captured cgroup peaks
+cover successful reads only. There is no matched observer-on/off control to
+attribute collector pressure or reproduce the exact remote failure mechanism.
+Loopback HTTP replaces TLS; the probe omits PostgreSQL, admin/roster processing,
+commissioning, healthchecks, serving and viewers. The host is shared.
+
+The experiment's original work stop is `2026-11-16T10:43:40.858690Z`, with
+cleanup cutoff `10:46:40.858690Z`. The experiment closes at `09:55:49.874505Z` without
+extension. The guard's retained `FINITE_DEADLINE_CLEANED` label follows an early
+owner stop request after both cases, not expiration of the original work clock.
+Independent verification confirms zero owned containers/volumes and all three
+recorded workload/guard births and groups absent. The parent handler's exit zero
+means experiment handling completed; both workload exits remain one.
+
+Changed-incarnation and changed-limit controls refuse
+`OWNED_VAULT_INCARNATION_CHANGED` and `OWNED_VAULT_LIMIT_CHANGED`; restored
+bindings pass. The finite guard control ignores a changed process birth, accepts
+the restored identity and terminates its owned test process at the deadline.
+All four frozen source files and both entered scripts retain their recorded
+hashes. Original raw captures remain unchanged.
+
+Retained raw home: `attribution-current/vault-growth/run-091340` in the existing
+`performance-enhancements-20261115/single-host` evidence home. Immutable
+`vault-growth-outcome.json` SHA-256
+`1a9e8ca7ddf2b5064f2a293ae52abb139f0b22f6ac3758ae4ddcda5bf8d2e980`
+binds the cases and original controls. Additive `vault-growth-qualification.json`
+SHA-256 `f15c916768b866b021a8c9b67b2a53ec57d2d79d6a193fd50dd626acaa3e23d9`
+binds that outcome, retrospective kernel records, image metadata and independent
+absence. No application source, selected acceptance image or operator resource
+profile changes follow from this component experiment.
