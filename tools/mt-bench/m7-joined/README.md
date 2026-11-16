@@ -913,10 +913,17 @@ from clinical output. An actual-runtime timer cycle must acquire newly observed
 input before marking that version completed. The actual scheduler must let a
 newly addressed neighbor use a free slot while another tenant is held, preserve
 per-tenant serialization, retain input arriving during evaluation, and keep an
-unrelated tenant wake from accelerating a failed tenant retry. Actual-source mutations drop same-LSN rows, deletes or XID
+unrelated tenant wake from accelerating a failed tenant retry. Recovery pages
+must advance while an earlier tenant is held. Known row/byte overflow commits a
+bounded non-ready gap before ACK; the input cache is evicted, its sealed
+checkpoint column stays unchanged, and only successful bounded bootstrap clears
+the gap. Mocked SQL checks that gap persistence replaces old cache metadata.
+Full and compact receipt states must enforce the same exact byte boundary.
+Actual-source mutations drop same-LSN rows, deletes or XID
 isolation, restore the invalid-row bootstrap filter, remove the timer coverage
 guard, restore the held-tenant batch barrier, clear every tenant retry on one
-wake, or remove the raw receipt await; each must fail for its named symptom before restoration passes.
+wake, block recovery paging on held work, undercount metadata bytes, mark a gap
+ready, retain stale cache metadata, or remove the raw receipt await; each must fail for its named symptom before restoration passes.
 
 Capture originals stay outside Git. Retain the executed probe, schema/source
 identity and checksum beside the capture. These controls preserve source-level

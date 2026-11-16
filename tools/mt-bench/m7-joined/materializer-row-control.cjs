@@ -55,20 +55,21 @@ function exercise(api,events){
  assert.deepEqual(api.output(bulk).rows.map(r=>r.document._id).sort(),Array.from({length:8},(_,i)=>'copy-'+i),'EQUAL_LSN_ROWS_LOST');
  return {nativeActions:first.map(e=>e.action),properties:['durable-serialization boundary','unsealed invisible','duplicate idempotence','omitted TOAST retained','extension preserved','identity delete','XID isolation','snapshot retains later cohort','native COPY equal-LSN rows']};
 }
-async function receipt(core,data,receiver,failCommit=false){
- const api=require(path.join(core,'lib/storage/clinical-stream-state.js')),sql=require(path.join(core,'lib/storage/clinical-stream-sql.js'));
- const digest='a'.repeat(64),logs=[];let commit,committed=null,staged,settled=false,released=false;
+async function receipt(core,data,receiver,failCommit=false,options={}){
+ const api=require(path.join(core,'lib/storage/clinical-stream-state.js')),sql=options.sql||require(path.join(core,'lib/storage/clinical-stream-sql.js'));
+ const original=options.saved||api.empty();
+ const digest='a'.repeat(64),logs=[];let commit,committed=null,staged,settled=false,released=false,checkpoint=original.floor??0;
  const barrier=new Promise(resolve=>{commit=resolve;});
  const client={release(){released=true;},async query(text,values){
   logs.push(text.startsWith('SELECT')?'SELECT':text.startsWith('UPDATE')?'UPDATE':text);
-  if(text.startsWith('SELECT'))return {rows:[{projection:[api.empty()],contract_digest:digest}]};
-  if(text.startsWith('UPDATE')){staged=JSON.parse(values[2]);return {rowCount:1};}
+  if(text.startsWith('SELECT')){const saved=restore(original);if(text.includes("projection->0)-'rows'"))delete saved.rows;return {rows:[{projection:[saved],contract_digest:digest,checkpoint:String(original.floor)}]};}
+  if(text.startsWith('UPDATE')){staged=JSON.parse(values[2]);if(text.includes('(projection->0)||'))staged=[{...restore(original),...staged[0]}];if(text.includes('checkpoint=$5'))checkpoint=values[4];return {rowCount:1};}
   if(text==='COMMIT'){await barrier;if(failCommit)throw Error('COMMIT_REFUSED');committed=restore(staged);return {command:'COMMIT'};}
   return {};
  }};
  const config=require('./materializer-default-control.cjs').fixture(),routes=require(path.join(core,'lib/pgstream/evaluator.js')).routes(config);
  let clinicalCalls=0;
- const receive=receiver.create({routes,store:{},onInput:()=>{clinicalCalls++;return new Promise(()=>{});},onSchema:async()=>{},clinical:{accept:(tenant,event,domain)=>sql.accept({pool:{connect:async()=>client},observeBackend:async()=>{},table:'synthetic_checkpoint.tenant_consumer_checkpoint',consumer:'evaluator-test',tenant,data:event,domain,snapshotDigest:digest,...limits})}});
+ const receive=receiver.create({routes,store:{},onInput:()=>{clinicalCalls++;return new Promise(()=>{});},onSchema:async()=>{},clinical:{accept:(tenant,event,domain)=>sql.accept({pool:{connect:async()=>client},observeBackend:async()=>{},table:'synthetic_checkpoint.tenant_consumer_checkpoint',consumer:'evaluator-test',tenant,data:event,domain,snapshotDigest:digest,...limits,...(options.maxBytes?{maxBytes:options.maxBytes}:{}),...(options.maxRows?{maxRows:options.maxRows}:{})})}});
  const input={Data:{...data,schema:config.namespaces.entries}};
  const pending=receive(input).then(value=>{settled=true;return value;});
  try{
@@ -76,7 +77,7 @@ async function receipt(core,data,receiver,failCommit=false){
   assert(logs.includes('COMMIT'),'RECEIPT_DID_NOT_REACH_COMMIT');
   assert.equal(settled,false,'RAW_ACK_BEFORE_COMMIT');commit();
   if(failCommit){await assert.rejects(pending,/COMMIT_REFUSED/);assert(logs.includes('ROLLBACK'),'FAILED_COMMIT_NOT_ROLLED_BACK');assert.equal(committed,null);}
-  else{await pending;assert.equal(committed[0].staged.length,1,'RAW_PAYLOAD_NOT_DURABLE');assert.equal(committed[0].ready,false,'RAW_RECEIPT_IS_NOT_BOOTSTRAP');}
+  else{await pending;if(options.expectGap){assert.equal(committed[0].gap,'bytes','GAP_MARKER_NOT_DURABLE');assert.equal(checkpoint,original.floor,'GAP_ADVANCED_CLINICAL_COVERAGE');assert(Array.isArray(committed[0].rows)&&committed[0].rows.length===0,'GAP_CACHE_NOT_EVICTED');assert.equal(committed[0].rowCount,undefined,'GAP_SQL_RETAINED_OLD_CACHE_METADATA');assert.equal(committed[0].rowBytes,undefined,'GAP_SQL_RETAINED_OLD_CACHE_METADATA');assert.equal(committed[0].last,data.lsn,'GAP_POSITION_LOST');}else assert.equal(committed[0].staged.length,1,'RAW_PAYLOAD_NOT_DURABLE');assert.equal(committed[0].ready,false,'RAW_RECEIPT_IS_NOT_BOOTSTRAP');}
   assert.equal(released,true,'RECEIPT_CONNECTION_LEAK');assert.equal(clinicalCalls,0,'RAW_RECEIPT_RAN_CLINICAL_IO');
  }finally{commit();await pending.catch(()=>{});}
 }
@@ -143,9 +144,46 @@ async function schedulerRetry(core,start){
   service.wake('A');await flush();assert.equal(runs.filter(r=>r.tenant==='A').length,before+2,'TARGETED_NEW_INPUT_STUCK_BEHIND_RETRY');
  }finally{await service.close();}
 }
+async function schedulerRecovery(core,start){
+ start=start||require(path.join(core,'lib/pgstream/activity-scheduler.js')).start;
+ let releaseA,enteredA;const held=new Promise(resolve=>{releaseA=resolve;}),entered=new Promise(resolve=>{enteredA=resolve;}),timers=[],runs=[];
+ const pending=new Map(Array.from({length:129},(_,i)=>{const tenant=String(i).padStart(3,'0');return [tenant,{tenant,pendingAt:1}];}));
+ const service=start({store:{nextDue:async()=>null,work:async(limit,{after,exclude=[]})=>[...pending.values()].filter(r=>(!after||r.tenant>after)&&!exclude.includes(r.tenant)).slice(0,limit),deliveries:async()=>[]},scan:async()=>{},concurrency:2,
+  setTimer(fn,delay){const timer={fn,delay,unref(){}};timers.push(timer);return timer;},clearTimer(timer){const i=timers.indexOf(timer);if(i>=0)timers.splice(i,1);},run:async tenant=>{runs.push(tenant);if(tenant==='000'){enteredA();await held;}pending.delete(tenant);},send:async()=>{}});
+ async function flush(){for(let turn=0;turn<50;turn++){for(const timer of timers.splice(0))timer.fn();await new Promise(resolve=>setImmediate(resolve));}}
+ const recovering=service.recover();
+ try{await entered;await flush();assert(runs.includes('128'),'RECOVERY_PAGE_STARVED_BY_HELD_EARLIER_TENANT');}
+ finally{releaseA();await recovering;await flush();await service.close();}
+}
+function gapCoverage(api,event){
+ const row={domain:'entries',document:{_id:'retained-synthetic',sgv:100,extension:'x'.repeat(1000)},ordinal:null,storageBytes:100};
+ const saved=api.bootstrap(null,{checkpoint:1,signature:{stamp:1,deleted:0},rows:[row]},limits),bytes=Buffer.byteLength(JSON.stringify(saved));
+ const local={maxRows:1,maxBytes:bytes},metadata={...saved};delete metadata.rows;
+ api.bound(saved,local);api.bound(metadata,local);
+ assert.throws(()=>api.bound(metadata,{...local,maxBytes:bytes-1}),/CLINICAL_STREAM_BYTE_BOUND/,'METADATA_BYTE_BOUND_UNDERESTIMATED');
+ let gap=api.recoverableGap(saved,'CLINICAL_STREAM_BYTE_BOUND',event.lsn,local);
+ assert.equal(gap.ready,false,'GAP_MARKED_CLINICALLY_READY');assert(gap.floor===undefined||gap.floor===1,'GAP_ADVANCED_CLINICAL_COVERAGE');assert.equal(gap.rows.length,0,'GAP_CACHE_NOT_EVICTED');api.bound(gap,local);
+ assert.throws(()=>api.output(restore(gap)),/CLINICAL_STREAM_BOOTSTRAP_REQUIRED/,'GAP_OUTPUT_VISIBLE');
+ gap=api.stage(restore(gap),api.eventOf('entries',event),local);assert.equal(gap.staged.length,0,'GAP_RETAINS_OVERSIZE_COHORT');
+ gap=api.seal(gap,{xid:event.xid,lsn:event.lsn,floor:2,deleted:0},local);assert(gap.floor===undefined||gap.floor===1,'GAP_SEAL_ADVANCED_CLINICAL_COVERAGE');
+ assert.throws(()=>api.bootstrap(gap,{checkpoint:2,signature:{stamp:2,deleted:0},rows:[row,{...row,document:{_id:'other'}}]},local),/CLINICAL_STREAM_ROW_BOUND/,'OVERSIZE_BOOTSTRAP_MUST_REFUSE');
+ assert.equal(gap.gap,'bytes','FAILED_BOOTSTRAP_ERASED_GAP');
+ const restored=api.bootstrap(gap,{checkpoint:3,signature:{stamp:3,deleted:0},rows:[]},local);
+ assert.equal(restored.gap,undefined,'SUCCESSFUL_BOOTSTRAP_RETAINS_GAP');assert.equal(api.output(restored).checkpoint,3);
+ assert.throws(()=>api.recoverableGap(saved,'CLINICAL_STREAM_IDENTITY',event.lsn,local),/CLINICAL_STREAM_GAP_REASON/,'MALFORMED_EVENT_MUST_NOT_BECOME_GAP');
+ return {saved,maxBytes:bytes,maxRows:1,expectGap:true};
+}
 async function run(core,capture){
  const file=path.join(core,'lib/storage/clinical-stream-state.js'),source=fs.readFileSync(file,'utf8'),events=fs.readFileSync(capture,'utf8').trim().split('\n').map(JSON.parse);
  const api=require(file),result=exercise(api,events),controls=[];
+ const gapOptions=gapCoverage(api,events[0]);
+ result.properties.push('bounded durable GAP/bootstrap','full/metadata byte parity');
+ const undercount='(state.rowBytes??2)+8';assert.equal(source.split(undercount).length,2,'BYTE_ABLATION_SOURCE_MISMATCH');
+ const shortBound={exports:{}};vm.runInThisContext('(function(require,module,exports){'+source.replace(undercount,'(state.rowBytes??2)+7')+'\n})',{filename:file})(createRequire(file),shortBound,shortBound.exports);
+ assert.throws(()=>gapCoverage(shortBound.exports,events[0]),/METADATA_BYTE_BOUND_UNDERESTIMATED/);gapCoverage(api,events[0]);controls.push('metadata-byte-undercount');
+ const gapReady='ready:false,gap:code===';assert.equal(source.split(gapReady).length,2,'GAP_ABLATION_SOURCE_MISMATCH');
+ const readyGap={exports:{}};vm.runInThisContext('(function(require,module,exports){'+source.replace(gapReady,'ready:true,gap:code===')+'\n})',{filename:file})(createRequire(file),readyGap,readyGap.exports);
+ assert.throws(()=>gapCoverage(readyGap.exports,events[0]),/GAP_MARKED_CLINICALLY_READY/);gapCoverage(api,events[0]);controls.push('GAP-marked-clinical-ready');
  for(const[name,from,to,symptom]of [
   ['equal-LSN-drop','at<position(state.last)','at<=position(state.last)',/EQUAL_LSN_ROWS_LOST/],
   ['lost-deletes','state.staged.push(event);',"if(event.action!=='D')state.staged.push(event);",/DELETE_NOT_APPLIED/],
@@ -166,6 +204,10 @@ async function run(core,capture){
  const targeted='excluded.delete(tenant);retryAt.delete(tenant);enqueue';assert.equal(schedulerSource.split(targeted).length,2,'RETRY_ABLATION_SOURCE_MISMATCH');
  const amplified={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(targeted,'excluded.delete(tenant);retryAt.clear();enqueue')+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),amplified,amplified.exports);
  await assert.rejects(schedulerRetry(core,amplified.exports.start),/NEIGHBOR_INPUT_AMPLIFIES_POISON_RETRY/);await schedulerRetry(core);controls.push('neighbor-clears-poison-backoff');
+ await schedulerRecovery(core);
+ const paging='await drain({wait:false});';assert.equal(schedulerSource.split(paging).length,2,'RECOVERY_ABLATION_SOURCE_MISMATCH');
+ const blockedPage={exports:{}};vm.runInThisContext('(function(require,module,exports){'+schedulerSource.replace(paging,'await drain();')+'\n})',{filename:schedulerFile})(createRequire(schedulerFile),blockedPage,blockedPage.exports);
+ await assert.rejects(schedulerRecovery(core,blockedPage.exports.start),/RECOVERY_PAGE_STARVED_BY_HELD_EARLIER_TENANT/);await schedulerRecovery(core);controls.push('held-first-recovery-page');
  await invalidBootstrap(core);
  const replayFile=path.join(core,'lib/storage/postgres-durable-replay.js'),replaySource=fs.readFileSync(replayFile,'utf8');
  const filter='if (stream || row.doc.isValid !== false)';assert.equal(replaySource.split(filter).length,2,'BOOTSTRAP_ABLATION_SOURCE_MISMATCH');
@@ -178,6 +220,13 @@ async function run(core,capture){
  await assert.rejects(dueCoverage(core,staleTime.exports),/TIME_COMPLETED_UNCOMPUTED_INPUT/);await dueCoverage(core);controls.push('TIME-completes-uncomputed-input');
  const receiverFile=path.join(core,'lib/pgstream/receiver.js'),receiverSource=fs.readFileSync(receiverFile,'utf8'),receiver=require(receiverFile);
  await receipt(core,events[0],receiver);await receipt(core,events[0],receiver,true);
+ await receipt(core,events[0],receiver,false,gapOptions);
+ const sqlFile=path.join(core,'lib/storage/clinical-stream-sql.js'),sqlSource=fs.readFileSync(sqlFile,'utf8'),update='const update=await client.query';assert.equal(sqlSource.split(update).length,2,'GAP_SQL_ABLATION_SOURCE_MISMATCH');
+ const retainedRows={exports:{}};vm.runInThisContext('(function(require,module,exports){'+sqlSource.replace(update,'if(next.gap)delete next.rows;'+update)+'\n})',{filename:sqlFile})(createRequire(sqlFile),retainedRows,retainedRows.exports);
+ await assert.rejects(receipt(core,events[0],receiver,false,{...gapOptions,sql:retainedRows.exports}),/GAP_CACHE_NOT_EVICTED/);await receipt(core,events[0],receiver,false,gapOptions);
+ const mergeGuard='domain&&saved&&!next.gap';assert.equal(sqlSource.split(mergeGuard).length,2,'GAP_SQL_REPLACE_ABLATION_SOURCE_MISMATCH');
+ const mergedGap={exports:{}};vm.runInThisContext('(function(require,module,exports){'+sqlSource.replace(mergeGuard,'domain&&saved')+'\n})',{filename:sqlFile})(createRequire(sqlFile),mergedGap,mergedGap.exports);
+ await assert.rejects(receipt(core,events[0],receiver,false,{...gapOptions,sql:mergedGap.exports}),/GAP_SQL_RETAINED_OLD_CACHE_METADATA/);await receipt(core,events[0],receiver,false,gapOptions);controls.push('GAP-SQL-does-not-replace-cache');
  const from='await clinical.accept(row.tenant_id,data,route.domain,store);';assert.equal(receiverSource.split(from).length,2,'RECEIPT_ABLATION_SOURCE_MISMATCH');
  const broken={exports:{}};vm.runInThisContext('(function(require,module,exports){'+receiverSource.replace(from,'clinical.accept(row.tenant_id,data,route.domain,store);')+'\n})',{filename:receiverFile})(createRequire(receiverFile),broken,broken.exports);
  await assert.rejects(receipt(core,events[0],broken.exports),/RAW_ACK_BEFORE_COMMIT/);await receipt(core,events[0],receiver);controls.push('raw-ACK-before-commit');
