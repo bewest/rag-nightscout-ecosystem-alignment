@@ -1878,3 +1878,252 @@ binds 28 retained inputs, independently rechecked with zero mismatches. Future
 collector controls remain in `clinical-companion-persistence-controls-20261116`.
 The source coordinator owns the next source/resource selection and canonical programme record.
 The original point02 failure and the pre-OOM intake-delay cause remain open.
+
+### Clinical intake ordering under an injected checkpoint lock — 2026-11-16
+
+**Reproduced, bounded fault discriminator.** The actual pinned Go sender and
+current two-tenant evaluator delayed B's webhook until A's durable receipt
+transaction committed when only A's completed-checkpoint row was held. Normal
+A/B delivery completed first. This establishes behavior under the injected lock;
+it does not reproduce or explain the earlier low-load 120-second observation
+failure, establish a product defect, or grant capacity. Serial delivery is part
+of the current configured contract and needs evaluation before any change.
+
+The application source was clean at
+`58fb8444910559ee86c7a1970971090ade7ae67f` (runtime code
+`1646f00437cb207cb5acf0da0f3474b68f78bc04`). Canonical sender configuration
+came from deployment `8ddfab1e46e3fd577f1e96e738ab5207f9925abf`.
+The cached image `sha256:e3cd382058af98c8aa0fe2a71451f2a539066b087e6ed059e8d7c8124f73a126`
+supplied only the actual Go binary, whose measured SHA256 was
+`f9da5d0c299139db5236b63bdbd5cc20f6e1267db989c51d6444f429150c158b`.
+No application image was built or full acceptance campaign repeated.
+
+| observation | reproduced result |
+|---|---|
+| normal control | A and B each reached local HTTP finish 17 ms after the writer call; writer, observed and completed clocks matched |
+| injected fault | one A completed-checkpoint row held 3003 ms; PostgreSQL showed the evaluator receipt transaction waiting on that exact locker |
+| before release | both early and late SQL snapshots persisted independently; B writer clock reached its target while observed and completed stayed at the prior clock |
+| sender timeout | A's first response closed unfinished before receipt COMMIT; the same exact payload LSN arrived twice, and actual Go logs recorded the unchanged 2000 ms header timeout and retry |
+| order | B's first parsed webhook arrived after A's receipt COMMIT; its exact Data.lsn matched both sender headers |
+| recovery | exact current A/B clinical frames recovered; tenant authority, restore generation and Node/Go process births remained unchanged |
+| trace quality | 87 bounded event rows written, no pending writes, drops or persistence error at seal |
+
+A and B target clocks were `1794829799426`; their pre-release observed/completed
+clocks remained `1794829799425`. Exact held-event payload/header/idempotency LSNs
+were A `0/1CE5B88` and B `0/1CE6340`. The final confirmed-flush watermark was
+`0/1CE6340`. A postwrite `pg_current_wal_lsn()` read is only an upper bound;
+it is not the writer transaction's exact CommitPosition. Local HTTP finish
+is not proof that the sender received an ACK.
+
+The shared-host control used PostgreSQL 1 CPU/1024 MiB with 256 MiB tmpfs,
+Go 1 CPU/512 MiB, and host V8 heap limits totaling 704 MiB. Existing finite
+resource guardians enforced 240 seconds of work plus 30 seconds for cleanup.
+The normal release timer was 3000 ms, the absolute hold bound 8500 ms, and the
+server idle-transaction backstop 12000 ms. Sender timeout, retry policy, pool
+limits, authorization and application state contracts stayed unchanged.
+Fixture-only taps retained original Promise and handler return identities and
+did not await telemetry. Wrong bound, LSN, completion order and telemetry-loss
+controls went red and passed after restoration. A pre-acquisition fault control
+kept holdAcquired=false/heldMs=null; excessive acquired duration went red.
+
+The first packet stopped before acquiring a lock: a diagnostic backend-identity
+query returned SQLSTATE `42703` because it omitted `FROM pg_stat_activity`.
+Its normal delivery observations remain partial evidence; held ordering is
+UNMEASURED there. The corrected fresh packet retained an actual wrong-SQL red
+control, then required exactly one owned backend PID and birth from the valid
+query. Neither packet's clock or entered bytes were reused.
+
+Retained evidence home:
+`externals/work/performance-enhancements-20261115/single-host/attribution-current/`.
+The immutable `clinical-intake-order-point-02/outcome.json` SHA256 is
+`0275c1a9ab9e0444ed22d547369d00c689fad43d5491dc9a5ed23bfade563f68`
+and binds 27 inputs, including pre-release SQL, exact lock waiter, finite trace,
+Go logs and cleanup. The partial point01 outcome SHA256 is
+`800e4d1463b0cf8bd943d8f9187cab5e16645a0509b14a267ecabca339f0ea39`.
+Native independent absence passed at `2026-11-16T11:48:37.302Z`: exact containers,
+both guardians, root/producer process groups, private ports and actual PostgreSQL
+port were absent, with no owned volumes or queued retry. The existing local
+`externals/work/HANDOFF-clinical-pending-2026-11-15.md` holds custody detail.
+
+The clinical criterion remains open. Next ownership is the root coordinator:
+select a bounded instrument/source experiment that tests a specific cause of
+the historical intake delay. This injected-lock result alone does not justify
+early ACKs, parallel intake, larger timeouts, or a new application campaign.
+
+### Receiver in-flight promise joining: admission counterexamples — 2026-11-16
+
+**Reproduced in source/driver controls; native SQL revocation UNMEASURED.**
+Transparent receiver-local joining of identical unresolved observations does not
+preserve the current admission contract. No production optimization was adopted.
+The evaluated candidate used a receiver-local map bounded to 64 active promises,
+keyed by tenant, source kind, exact version and enabled value. The store and
+selected profile remained the same. Entries were removed on resolution or
+rejection; there was no completed-result cache, timer or early ACK. Each request
+retained its post-COMMIT pending-work hint. These properties did not prevent the
+candidate from hiding a refusal required by the second request.
+
+The evaluation used the actual receiver, typed/default or selected intake store,
+PostgreSQL connection wrapper and `pg.Pool`, with the existing synthetic SQL
+driver. The first identical notification was held at COMMIT. Controls ran the
+original receiver, the in-memory candidate, then the original again.
+
+| boundary | original and restored receiver | candidate |
+|---|---|---|
+| current default observer, new backend denied admission | first request committed; second request refused its own new-backend admission | second request shared the first result, created no second backend and succeeded |
+| selected intake, next per-use SQL assertion refused | first request committed; second request refused the selected SQL assertion | second request succeeded without another SQL assertion |
+| selected intake, retry in a real ambient tenant scope | first request committed; retry refused `PGSTREAM_INTAKE_AMBIENT_TRANSACTION` | retry shared the first result and succeeded inside the forbidden scope |
+
+Neither request acknowledged before the held COMMIT. The candidate still issued
+two pending-work hints after success. Thus preserving ACK timing and hint count
+alone is insufficient. The expected-refusal criteria went red for the candidate
+and passed for the original after restoration. The ambient-scope case uses the
+actual JavaScript tenant-scope guard. Backend and SQL refusal cases use explicit
+synthetic admission failures; they do not execute PostgreSQL policy functions or
+prove real credential/schema revocation.
+
+**Read-derived contract explanation.** `lib/pgstream/receiver.js:53` delegates
+receipt admission to each `store.observe`. Its receiver options expose no live,
+request-specific admission token that proves two calls share the same admitted
+operation. The default path checks out a client in `work-state.js:29` and may
+need to admit a new physical backend. Existing-client identity memoization does
+not authorize an arbitrary future backend. The selected private port checks
+ambient scope before entering its serial queue
+(`postgres-connection.js:714`), reobserves the actual backend and verifies its
+owner/window around execution (`:736`), and checks the SQL intake contract before
+and after receipt work, including equal-version no-op receipts
+(`intake-receipts.js:37`). Argument or immutable profile equality cannot substitute
+for those checks. Skipping the second call also skips the checks responsible for
+rejecting changed authority or configuration. Real database credential/schema
+revocation remains UNMEASURED in this source-only evaluation.
+
+Test-only application leaf `b36cc63da19cece06d1cd8f911db3070857e64cc`, parent
+`58fb8444910559ee86c7a1970971090ade7ae67f`, adds the three counterexamples to the
+existing `tests/pgstream-receiver.test.js`; production source is unchanged.
+The focused receiver/intake-SQL/profile set passed **68 tests** using Node
+24.22.1. Tier registration passed: 831 test files across 8 tiers. Whitespace
+checks passed. An optional broader protocol invocation also included
+`selected-intake-runtime.test.js`; its bounded natural-exit child assertion at
+line 140 failed and was not diagnosed or claimed green. The focused evaluation
+does not require that additional child test, a native service, a new image, a
+full application campaign or another low-load run.
+
+A subsequent matched follow-up records the exact four-file invocation and
+reproduces the same line-140 failure on both a clean `58fb` archive and the test
+leaf. This establishes baseline reproduction for that recorded batch, not the
+underlying child-process cause or a broader green result. The earlier original
+invocation remains an evidence gap. Retained comparison
+`clinical-coalescing-broader-comparison-20261116.json` SHA256
+`cf7746396586b4418d9d474ab45ee78675ea5908a2719f2437fc724fdfbb53b8`
+and raw baseline/test logs remain in the same ignored evidence home.
+
+This refutes the transparent receiver-map candidate under the current interface;
+it does not prove every explicit admission-aware design impossible. The root
+coordinator owns the next source or instrument boundary. The earlier clinical
+120-second intake delay remains unexplained.
+
+## Safe Vault request cause: identified server OOM in a new 512 MiB case
+
+Reproduced: a fresh 512 MiB component case acknowledges 9,675 complete synthetic
+key sets, then fails during key creation. The first safe client record identifies
+`data`, create/transport, `UND_ERR_SOCKET` (classified reset), 344 ms elapsed and
+no own timeout against the unchanged 10,000 ms complete-key deadline. It has no
+HTTP response status. The exact memory-cgroup kernel event names the Vault server
+PID captured before the workload and precedes the client failure. The original
+server is then absent while Docker's PID 1 remains running with its OOM flag true.
+This new case proves server OOM followed by observed socket closure. It does not
+classify the earlier 9,802-set failure, whose historical cause remains unknown.
+`UND_ERR_SOCKET` is a client transport observation, not packet-level TCP evidence.
+
+The case freezes app `3b2cec6405451d0aff103f5d21f4312606d4295b` and the same
+pinned Vault image, file backend/default cache, four workers, six actual key
+purposes and synthetic root-secret envelope as the preceding component case.
+Memory and memory-plus-swap are both 512 MiB. Requested CPU is 0.125; captured
+`cpu.max` is `13000 100000` (0.13). The 6,000-set prefix completes in 821.055s;
+the original clock rule admits continuation toward 10,000. Workload exit is one,
+with four safe refusals and a final acknowledged count of 9,675 after 1,700.909s.
+Incomplete sets can contain partial keys. This count is neither a final Vault
+key census nor a PostgreSQL tenant count.
+
+The source repair retains fixed, allowlisted diagnostics and explicitly forwards
+them through the actual provision catch to existing private admin REST log events.
+Public result JSON remains unchanged. Single and batch forwarding controls fail
+when either catch or REST forwarding is removed, then pass after restoration;
+79 focused checks pass. The direct component workload explicitly consumes the
+provenance-backed accessor and fsyncs its first failure before collector handling.
+A missing-projection control refuses `PRIVATE_SAFE_PROJECTION_REQUIRED`.
+Task-scoped root-encryption fetch observation preserves the actual request,
+response, stream and signal without reading provider bodies; identity, concurrent
+isolation and hostile-getter controls pass.
+
+Declared instrument changes include targeting RSS at the proven server rather
+than PID 1, immediate safe failure persistence, and a Node 24.22.1 total V8 heap
+cap of 128 MiB (receipt 134,217,728 bytes). The previous old-space flag permitted a
+larger total heap. Virtual limits are separate from RSS: Python parent 512 MiB,
+native subprocesses 16 GiB and Node 128 GiB. These changes and the shared host
+prevent a clean paired benchmark claim. Existing in-quota shell/cgroup/storage
+collectors attempt 102 reads; 41 are unavailable and the last successful read
+follows checkpoint 6,500. Missing counters establish no final peak or heap size.
+The legacy collector-unavailable label can accompany a successful checkpoint;
+it does not itself establish a product request failure. No idle plateau is claimed.
+
+The fresh work clock runs 11:13:30.486764Z→12:43:30.486764Z on 2026-11-16, with
+cleanup cutoff 12:46:30.486764Z. Owner cleanup closes early at 11:41:59.091151Z.
+Independent verification confirms zero exact/labelled containers or volumes,
+all three recorded parent/guard/worker births and groups absent, and the existing
+diagnostic lock available. No retry, image rebuild or application acceptance runs.
+
+Retained identifier: `vault-growth/cause-20261116/run-111330` under the existing
+`attribution-current` home. Immutable `cause-20261116/request-cause-outcome.json`
+SHA256 `03664e031e7209b86271c224c76f73849143e8b3cfe7d05a25bca64e3770c158`
+binds 37 files and entry controls; frozen sources and entered scripts recheck
+with zero mismatches. Originals remain unchanged. The source coordinator owns
+integration and the next measured dependency budget. This dependency result
+qualifies neither 10,000 sets nor application serving, clinical or frame capacity,
+and does not establish an architectural ceiling or an operator resource profile.
+
+### One 1 GiB case completes the component target
+
+Reproduced: the separately entered 1,024 MiB memory-and-swap case completes all
+10,000 acknowledged six-purpose-plus-root-encryption sets in 1,499.567s, exits
+zero and records no refusal. It uses the same frozen application source and
+byte-identical worker, four-worker concurrency, requested/effective CPU,
+10,000 ms deadlines, file backend/default cache, collectors and 128 MiB total
+Node heap as the new 512 MiB case above. The actual initial and final Vault server
+PID and birth match. Final Docker state has OOMKilled false; the retained exact
+cgroup kernel query returns no match. The final successful counter read reports
+zero OOM events. These observations close this component target only.
+
+| Dependency memory and memory-plus-swap | Acknowledged complete sets | Observed outcome |
+|---|---:|---|
+| 512 MiB, preceding new case | 9,675 of 10,000 | Identified Vault server OOM, then socket closure |
+| 1,024 MiB, this case | 10,000 of 10,000 | Workload exit zero; same server birth through final inspection |
+
+Memory is the only changed SUT resource budget. These are separate sequential
+cases on a shared host, with different finite clocks; no clean paired throughput
+or performance attribution follows. The 1 GiB case's 6,000-set prefix completes
+in 809.376s and the unchanged admission rule continues toward 10,000. Its final
+successful sample records 1,071,644,672 charged bytes, 825 memory-limit events and
+zero OOM events. Thus target completion does not establish general operational
+memory headroom or an idle plateau. Of 102 existing collector attempts, 44 are
+unavailable; the last successful read follows the 10,000-set completion. Missing
+reads are unmeasured, and charged bytes remain distinct from allocated heap.
+No final key census, SQL tenant reconstruction or serving/clinical/frame result
+is inferred from these component acknowledgments.
+
+The fresh preparation-inclusive work clock starts at 11:46:56.849578Z on
+2026-11-16; entry is at 11:50:41.963544Z after the clinical point 02 absence proof.
+Work stop remains 12:46:56.849578Z and cleanup cutoff 12:49:56.849578Z. The case
+closes early at 12:16:00.464691Z. Wrong requested/native memory, CPU and custody
+controls refuse; restored bindings pass. The exact-birth guard control terminates
+only its owned test process. Independent post-exit checks confirm no exact or
+labelled container/volume, no recorded parent/guard/worker birth or group, and an
+available diagnostic lock. No retry or further cap change is queued.
+
+Retained identifier: `vault-growth/headroom-1024-20261116/run-115041` in the same
+existing home. Immutable `headroom-1024-20261116/request-headroom-outcome.json`
+SHA256 `a1def2dfa1bfa55d5331c0fd22dc7c5cdaefdf33f3b768c725a2e50f2f995714`
+binds 36 files and entry controls. Frozen inputs recheck with zero mismatches;
+all 37 bindings of the preceding 512 MiB outcome also remain unchanged. The old
+512 MiB/9,802 failure stays historically unexplained. No operator resource
+recommendation, selected image change, application acceptance or capacity
+promotion follows; the source coordinator owns the next integration boundary.
