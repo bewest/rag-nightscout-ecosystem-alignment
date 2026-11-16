@@ -1,0 +1,138 @@
+{
+  "capturedAtUTC": "2026-11-16T04:37:38.440Z",
+  "basis": "reproduced",
+  "kind": "isolated-single-host-operational-rebootstrap",
+  "status": "PASS",
+  "scope": "Isolated canonical-image explicit rebootstrap and evaluator/due recovery; not whole maintained deployment, clinical restore, capacity or WAL exhaustion",
+  "source": {
+    "alignmentBase": "a04154a3bcc2ef08280c92879c77f5d2f7ba72d5",
+    "application": "7e6b2cf77a66049bb0d88c1605ae7703789f070f",
+    "deploymentAndOperator": "16133d9d33993b08fd81a318e8d30be123051ae7",
+    "imageId": "sha256:4d07a97f408ff5dc173557f5255ff94d0babfb11c072f50925e6e9b3eefccfcc",
+    "helperSha256": "ee3e7c514839c3c0fb5080cd4c29271d832ffd0dfb95ff47ee22ed851236a8d1"
+  },
+  "retainedEvidenceIdentifier": "operational-rebootstrap-native07-20261115",
+  "checks": {
+    "actualCanonicalImageCLI": "PASS",
+    "wrongPhysicalIdentityRefusal": "PGSTREAM_REBOOTSTRAP_BACKEND_CHANGED",
+    "zeroRemainingClientOrWalSenderBackends": 0,
+    "explicitSlotRecreation": "SLOT_RECREATED_EFFECTS_STOPPED",
+    "validSlotRefusal": "PGSTREAM_REBOOTSTRAP_SLOT_NOT_MISSING",
+    "durableObservedCompletedDueOutputPreservation": "PASS",
+    "startupWriteTargetAndExactFrame": "PASS",
+    "overdueClinicalExpiry": {
+      "status": "PASS",
+      "overdueExecutor": "acquisition",
+      "overdueDueAt": 1794803853319,
+      "overdueCompletedAt": 1794803856211,
+      "recoveryMs": 2860,
+      "tenants": 2,
+      "originalDueRetired": true,
+      "clinicalExpiryTransition": true,
+      "physicalTargetsComplete": true,
+      "noExtraInput": true,
+      "authorityAndRestorePreserved": true
+    },
+    "authorityAndRestoreGeneration": "PRESERVED",
+    "restartKind": "Explicit operator start of same evaluator and independent pgstream containers",
+    "recoveryMs": 2908,
+    "recoveryBoundMs": 30000
+  },
+  "controls": {
+    "existingHostCLI": {
+      "passed": 29,
+      "failed": 0
+    },
+    "setupVaultForwardingAndRelease": {
+      "passed": 2,
+      "failed": 0
+    },
+    "custodyAndStoppedRoles": {
+      "passed": 5,
+      "failed": 0
+    },
+    "portRoster": {
+      "passed": 2,
+      "failed": 0
+    },
+    "privateTransportDirectoryAndPath": {
+      "passed": 1,
+      "failed": 0
+    },
+    "safeStageAndAssertionProjection": {
+      "passed": 3,
+      "failed": 0
+    },
+    "recoveryOracleRuntimeViewAndMutants": {
+      "passed": 13,
+      "failed": 0,
+      "brokenRestoredSnapshotCases": 10
+    },
+    "overlap": "Counts describe distinct checks, not comprehensive application acceptance"
+  },
+  "resourceScope": {
+    "sharedHost": true,
+    "services": [
+      {
+        "kind": "postgres",
+        "cpu": 1,
+        "memoryMiB": 1024
+      },
+      {
+        "kind": "vault",
+        "cpu": 0.25,
+        "memoryMiB": 256
+      },
+      {
+        "kind": "evaluator",
+        "cpu": 0.5,
+        "memoryMiB": 512
+      },
+      {
+        "kind": "pgstream",
+        "cpu": 0.5,
+        "memoryMiB": 256
+      }
+    ],
+    "workMs": 240000,
+    "cleanupMs": 30000,
+    "ports": {
+      "vaultAPI": 21680,
+      "vaultCluster": 21681,
+      "postgres": 21684,
+      "receiver": 21682,
+      "subscriptions": 21683
+    },
+    "persistentVolumes": [],
+    "newDockerNetworks": []
+  },
+  "closure": {
+    "rootExit": 0,
+    "afterRootExit": 0,
+    "ipcCleanupExit": 0,
+    "allActorsAndPortsAbsentAtUTC": "2026-11-16T04:37:38.400Z",
+    "ownedShortIPCAbsentAtUTC": "2026-11-16T04:37:38.440Z",
+    "originalAbsenceDeadlineUTC": "2026-11-16T04:41:39.805Z"
+  },
+  "originalFailureScope": [
+    "01 lacked the underlying PostgreSQL readiness error",
+    "02 measured the fixture Vault-cluster/PostgreSQL port collision",
+    "03 canonical image receiver did not become ready",
+    "04 canonical CLI reported only generic startup failure; offline actual transport controls found permissive/long IPC fixture paths",
+    "05 actual CLI checks passed but the multiline post-recovery assertion was not identified",
+    "06 retained actual cold-start acquisition and clinical expiry; original time-only-label oracle failed; source/runtime/view controls justified the replacement"
+  ],
+  "limitations": [
+    "Synthetic source fixture provisions the exact isolated four-service project; this is not the whole maintained deployment or complete clinical restore",
+    "The external service and evaluator are deliberately started by the operator; this does not claim automatic platform restart",
+    "No WAL retention overflow, capacity, performance envelope or final joined candidate acceptance",
+    "Historical image qualification uses its actual PASS/byte-check producer contract; missing typed build/check exit-code files are not fabricated"
+  ],
+  "artifacts": {
+    "result.json": "adfd815b247862ddfaefdbb3a268b66a6b4e5dd3b51d0aba846f2eefc1987403",
+    "post-recovery-observation.json": "67dd0f44fc92eea72053f6370eb144761cebecbd73676de37bd3273048b9ca51",
+    "intentional-receipt.json": "6cdb98929d667e7f4309fca5850c4c2d52ca6a00541eb45de9b8ae3e623dd2bd",
+    "after-root-absence.json": "0dcbf42321c053b1d96d4af83b21b64966ac3afa8b01a6b7a1111bf3e2ac1b28",
+    "short-ipc-closure.json": "8d38a3640b8f00d3d08bf9e278a21526e34d82113abc8600f12340faa5dd6a87"
+  }
+}
