@@ -1,6 +1,6 @@
 # Coherent pgstream worker repair and first diagnostic — 2026-11-14
 
-Later source tuples and their limits are recorded in the [November 15 comparable experiments](#comparable-experiments-and-final-image-tiny--2026-11-15-pacific) and [local operating-envelope diagnostics](#local-operating-envelope-diagnostics--2026-11-15-pacific). Earlier captures retain their original attribution.
+Later source tuples and their limits are recorded in the [November 15 comparable experiments](#comparable-experiments-and-final-image-tiny--2026-11-15-pacific) and [local operating-envelope diagnostics](#local-operating-envelope-diagnostics--2026-11-15-pacific). The [stream-fed materializer batch](#stream-fed-clinical-materializer--2026-11-16) records the November 16 source and operating qualification. Earlier captures retain their original attribution.
 
 The coherent worker repair passes source acceptance, canonical image qualification and the first completed local 1,000-tenant/2,000-client discovery window. The window measures demand below an unknown capacity ceiling. Nothing in this record claims a merge to application `dev`, a release or capacity acceptance.
 
@@ -2348,3 +2348,119 @@ joins remain the next measured boundaries. No replacement binary is installed
 by the Node selector. Go capture status deliberately requires structural review
 and never grants clinical acceptance. Missing or ambiguous events remain
 UNMEASURED; the selected application image and its acceptance stay unchanged.
+
+
+## Stream-fed clinical materializer — 2026-11-16
+
+The [adopted target](../../../docs/30-design/tenancy/evaluator-realtime-communication.md#stream-fed-clinical-materializer--adopted-target-2026-11-16)
+is implemented on application branch `codex/materializer-20261116` and deployment
+branch `codex/materializer-deployment-20261116`. This section owns the joined
+qualification verdict; earlier records keep their original source attribution.
+Nothing is pushed, merged to application `dev` or released.
+
+| Boundary | Reproduced evidence and practical limit |
+|---|---|
+| Default native path | Retained `materializer-20261116/focused-native06`: six passing native tests, including a real held-A/new-B authorized frame, coherent correction/delete, restart and due work without writes. The tested source is recorded in the retained packet; it precedes later bounded-GAP and scheduler repairs and is not relabeled as final-source acceptance. Warm checks retain snapshot count 5, statistics 0 and catalogue 1 while clinical changes reach output. |
+| Current input and bounds | `materializer-20261116/focused-current-state02`: twelve passing native checks, including an oversized row marking a durable bounded GAP while a neighbor continues. Only validated row/byte overflow enters recovery; malformed payloads remain refused. Input cache eviction preserves the sealed clinical floor and completed output. |
+| Independent source controls | Existing default/row harnesses exercise actual modules and native decoder payloads. Mutations prove route/XID loss, premature ACK, same-LSN loss, omitted delete/cohort isolation, unsafe TIME coverage, invalid bootstrap filtering, held-neighbor/recovery-page starvation, cross-tenant retry acceleration, byte undercount and unsafe GAP retention/readiness. These are source/module controls, not a serving envelope. |
+| First comprehensive campaign | `materializer-20261116/acceptance`, application `562bc38752041024cd559451d78b068d14d664cc`: inventory passed; unit reported 5100 passing, 2 pending, 191 failing. Later tiers and enabled corpus did not run. The exact outer Mongo was removed. The failed packet/logs remain unchanged. |
+| Repair scope | A hung synthetic startup fixture leaked multitenancy mode into later tests. Fixtures now explicitly request clinical acquisition from the common scheduler and model the accepted-input protocol; no obsolete runtime boot queue was restored. A delayed-scheduler mutant now fails a bounded semantic assertion. Genuine deferred startup stays pending. Socket lifecycle fixtures represent a completed initial revision rather than revision-zero upstream pending. |
+| Migration compatibility | The independent `0099_<domain>_storage_bytes` tail has identical exact SQL/checksum in standard and ordered variants. Only this reviewed typed operation can commute with optional ordering conversion. Ordinary history remains a strict prefix; unknown names, checksum drift, duplicate rows, missing base and skipped history refuse. The existing empty-table requirement for ordering conversion remains. Historical SQL/checksums and OLD archive fixtures remain unchanged. |
+| Second comprehensive campaign | `materializer-20261116/acceptance02`, application `543808784e0f5f03945b840142a0df31177443ba`, deployment `467c804fd459a382bdb0133f552a6d8827614760`: all eight application tiers pass, including unit 5291 / 2 pending and browser 686; enabled native reports 864 passing / 1 pending / 19 failures. Exact independent absence verifies 40 container references, 50 volumes, 18 process births and recorded groups, with producer ports free. Native failure is separate from cleanup success. |
+| Grouped native repair | Populated size backfill exposed a real insertion-binding refusal. The repaired typed migration binds each tenant, measures its rows and restores the original binding; it disables no trigger. Native cases preserve old insertion history and test standard-size to ordered upgrade, including populated empty-table refusal. Other repairs address positional catalogue assertions, explicit runtime acquisition, accepted CDC before neighbor delivery, and raw receipt versus clinically completed state while paused. The missing receipt directory caused six hook errors in packet preparation; the next packet creates it before launch. A last-good-retention fixture now establishes an actual eligible model before testing refusal; the original initial-null cause remains unknown. Focused instrumentation separately observes recoverable serialization conflicts. |
+| Coalescing control and stopped campaign03 | Independent actual-module review reproduced excess earliest-due lookup frequency. Coalescing shares an in-flight indexed lookup and refreshes it after changed work. A follow-up removal-at-settlement control then reproduced a lost remaining-tenant timer; the just-entered campaign03 on `94be3ef4071b38fa3e0cd05dee1e267ad6cd5a6c` stopped during unit through its guardian. Later tiers/native did not run. Exact recorded processes and Mongo are absent. The repair clears the flight inside the async body before resolution. Earlier builds and the stopped packet remain unchanged; no profile launched. |
+| Isolated runner rehearsal | Tiny01 reached deployment/provisioning and then stopped at preflight, traffic NOT_STARTED: the resource census used the earlier CPU aggregate ceiling instead of the explicitly selected qualification profile. Exact runner cleanup is ABSENT and guard RETURNED. The qualification helper owns the profile-aware census repair and full-roster red/restored controls. This is tooling evidence, not an application or capacity failure; current app acceptance is unchanged. |
+| Fourth comprehensive campaign | `materializer-20261116/acceptance04`, frozen application `1dc7a74576b5d77f99cc4a42d900e1692d94a393`: all eight application tiers pass; enabled native reports 953 passing / 2 pending / 3 restore-resume failures. Independent absence verifies 41 container references, 50 volumes, 18 process births/groups and free producer ports. Later failures were consistent with state left by the first failed assertion; their cause is not independently established. |
+| Warm read contention | Tiny02 exercised traffic, then its progress observer stopped on a local model-generation change. Retained SQL reports a serialization refusal at the ready-input `SELECT ... FOR UPDATE`. The repaired warm path reads an immutable accepted cohort without a writer lock; cold/GAP bootstrap keeps its lock and consistent transaction. A native default-role control holds a real input writer: restored reads complete before release; the old-lock mutant blocks and then reproduces the serialization refusal. Seven native recovery checks pass on the focused repaired source. No broad transaction retry or deadline extension is added. |
+| Restore fixture boundary | A fresh remote cohort requires current participant status. The unchanged exact orphan-precheck assertion now follows existing same-process recovery/body-ended barriers and still precedes clearance. Nine focused native checks, including the J precheck ablation/restored proof, pass. The original campaign04 IPC failure remains UNKNOWN: two attempted discriminators stayed green, their behavior changes were discarded, and their original raw names are explicitly corrected in the assessment. |
+| Discovery recovery classification | Tiny02's process identity and durable completed floors stayed monotone while the local model generation changed. The original strict RESET failure stays retained. A discovery-only classifier may continue count/frame/catchup collection across a verified local recovery episode; source/process/authority/restore changes, foreign actors and counter rewinds remain hard stops. It does not turn a partial capture or strict failure into a pass. |
+| Fifth comprehensive campaign | `materializer-20261116/acceptance05`, runtime source `d7a7ff4d513abf364622582f5f2a9147936a6d48`: all eight application tiers pass. Native reports 956 passing / 2 pending / 1 failure: the consumer fixture expected a null model immediately after source commit, before CDC acceptance. Original failure and exact cleanup remain retained. |
+| Final native campaign and prcheck | `materializer-20261116/acceptance06`, app `225c8f6ed4a5ee3f740a91bfe9001b88f21fa73c`: inventory PASS; complete enabled-native selection 957 passing / 2 pending / 0 failing. The sole change from runtime d7a7 is the consumer test's actual durable GAP/observed-clock barrier. A deterministic stopped-producer control reproduces the original premature assertion; five repaired focused cases pass. No runtime predicate or deadline changes. All 1,254 shipping/build files match d7a7 byte-for-byte, so the executed campaign05 regular/browser evidence is reused. Final prcheck PASS; official/dev already contained, source unchanged. Independent campaign06 absence verifies 41 container references, 50 volumes, 10 recorded births, empty recorded groups and free producer ports. |
+| Qualified image | Runtime d7a7 / deployment `467c804fd459a382bdb0133f552a6d8827614760`, image `sha256:c4a0c2432cb0f4a1030992cfc9696645aac2e4bb2c8b4c0d03c308e4d7ac5eff`. Qualification matches all 1,254 shipping inputs; corrupted expected hash fails and restoration passes. The operating point remains attributed to this runtime/image, rather than the later test-only commit. |
+| Selected operating point | `operating-proof-20261116/point02`: COMPLETED_PARTIAL, readiness/idle PASS, no runner or hard failure; exact cleanup ABSENT and guard RETURNED, independently verified. The bounded result below closes execution and cleanup, not capacity acceptance. |
+
+The source/history audit does not establish that a test re-enabled an earlier
+clinical stream as polling. The inherited default still used control/clock routes
+and snapshot acquisition; this batch replaces that mechanism. The heartbeat
+retirement commit `7e02893dcf43878e69d09c197e9f90a471672335` already removed
+synthetic idle expiry and retained authority checks. Its legacy fixture
+expectations are not authority to restore a runtime boot queue or routine source
+rediscovery. The public evaluator boot refuses the separate selected-intake path
+before resource effects; lower-level selected ownership tests retain their
+reference scope. No historical timing cause is inferred from this source audit.
+
+Raw synthetic captures, logs, source manifests and cleanup receipts stay ignored
+under `externals/work/materializer-20261116/` and
+`externals/work/stream-materializer-qualification-20261116/`. No source pass is a
+capacity claim; no external exactly-once delivery or all-platform/HA qualification
+is claimed. Optional recommission remains outside this campaign.
+
+
+### Final source and operating result
+
+**Reproduced; fixed on local branches.** Campaign05's eight passing tiers report
+unit 5,291 (2 pending), DOM 205, dependency 368 (2 pending), core 319,
+harness 102, integration 3,647 (955 opt-in pending), stress 18 and browser 686.
+Campaign06 reruns the unfiltered enabled-native selection after the test-only
+consumer barrier repair. Optional recommission and the two native pending cases
+remain outside measured coverage. The independent source controls pass 18
+row/migration/scheduler families and three default-wiring families. Their mutation
+and restored runs are retained; these overlapping scopes must not be added.
+
+The selected local point runs 1,000 synthetic tenants, 64 logical viewers,
+7 offered scenario HTTP requests/s, hot factor 10 and acceleration 1. Its phases
+are 60 seconds warmup, 120 seconds idle and 180 seconds load, without a restart.
+It uses the existing `local-qualification-external-pgstream-6cpu-10g-v1` allocation
+on a shared host, runtime d7a7/deployment467/image above and executed helper
+`af63ef9491208ea11e0a447012221438b92031b107411f620946104bfa882078`.
+
+| Observation | Result and scope |
+|---|---|
+| Ordinary writes and clinical witnesses | 345 ordinary accepted writes exactly match stored counts: 115 each entries, devicestatus and treatments; uncertainty zero. Separately, 73 accepted clinical probe writes have durable witnesses in 73 tenants, with no missing, pending or refused witness. Clinical scope is selected-bucket BG-now mean/last, not full clinical equivalence. |
+| Clients and settings | All six expected matching client frames are observed. The 64 viewers do not represent 64 write opportunities. Settings fingerprints: 115 observations, zero invalid or mismatched. |
+| Observed latency | Durable upper-bound latency, 73 samples: median 696.740 ms, p95 1,225.609 ms, maximum 2,204.719 ms. Matching-frame request latency, six samples: median 71.281 ms, p95/maximum 628.392 ms. These include observation delay; no service-level envelope follows. |
+| Load and errors | 1,263 scenario attempts, 6.537/s over the measurement denominator; offered rate 7/s. Total HTTP count 2,263 includes 1,000 setup calls. HTTP failure ratio zero; no dropped iterations or uncertain ordinary writes. The configured load duration, k6 process lifetime and cgroup interval differ. |
+| Resource observation | Across ten service roles over 213.217 seconds: mean 0.6153 CPU cores; endpoint memory 1,552.504 MiB. Evaluator mean 0.0735 cores / endpoint 273.145 MiB; PostgreSQL 0.1648 / 412.094 MiB; pgstream 0.0041 / 59.355 MiB. This includes observer execution, excludes host/k6 costs, and is endpoint memory rather than peak or heap. No headroom claim. |
+| Completion and quiet tenants | During-load progress has 192 known completed, one known pending, 805 with no known opportunity and two unmeasured. After writers stop, fixed targets complete for all 1,000 tenants, with zero pending or changed input; collection upper bound 4,087.406 ms. Quiet tenants' old targets are included: this is not 1,000 fresh jobs/s or per-write service. Idle clinical deadlines remain TIME_NOT_EXERCISED/FUTURE_DUE. |
+| Missing control and authority scope | Point02's count-corruption control is SKIPPED because its old selector required ordinary writes in every tenant. Tiny03 separately proves the actual native count oracle GREEN / one-row corruption RED / restored GREEN on the same helper query-builder and roles, with distinct run/cohort attribution. It does not backfill the skipped point02 control. Broader direct authority coverage is NO-INSTRUMENT. |
+
+The original strict verdict remains partial. Tiny03 also retains startup
+serialization failure counters while its load generation stays stable. The
+historical pre-callback delay remains UNKNOWN; this different runtime, instrument
+and data profile cannot establish its cause. No supported capacity, full clinical
+or all-platform/HA verdict is claimed.
+
+Future helper configuration and sparse-count controls are now joined after the
+point released all custody. Versioned discovery eligibility separates source
+acceptance from experiment purpose; one authored configuration derives local and
+remote projections. Pre-effect checks preserve source/namespace/execution mirrors.
+The discovery-only sparse control requires exact whole-cohort counts, zero
+uncertainty and a positive accepted witness, corrupts exactly one nonempty-domain
+row and restores it. Strict acceptance is unchanged. Its SQL effects are simulated;
+actual remote runtime is UNMEASURED. Joined verification runs 499 checks
+(four explicit skips), and offline remote compatibility runs 96 (four skips),
+with no failures. Initial joined verification retained one synthetic missing
+optional-timeline binding and one batch fixture missing the new preflight seam;
+both fixtures are repaired without changing runtime checks. The new helper
+instrument is `166e429cc3d7cd3102fefe53988f8957521edda538dc428f559cd98e178f4b99`,
+measured at `2449c36c4f77524218e52b6b0527758ab5819608` and retained with the logs
+under `materializer-20261116/final-helper-qualification/`. This helper update does not rerun or relabel
+point02. The separate bounded clinical-window prototype remains a next-batch lane.
+
+Retained evidence homes are `externals/work/materializer-20261116/`,
+`externals/work/operating-proof-20261116/` and the existing qualifier home above.
+`acceptance06/results.json` SHA256
+`7c2456df44f4efb81bf83411fef569e2a3af7a1b49d2e354f1c81aeae94ac665`;
+its independent absence receipt SHA256
+`b64965232ecfaee8f0199c3aa9c876d56fbd44aab4d52000ce21b162ee5d15a7`;
+`final-prcheck.log` SHA256
+`bb118b89d33389a708425948589196003029124eed00985267f5ff50f2f6b912`.
+Point02 `fixture/summary.json` SHA256
+`bd378deaf32b2c990de8527dec8761269b33f3499c962f9007f63d2bfe0de6d7`;
+`fixture/load/probe.json` SHA256
+`b235bf519b48321c8de2c8d873d53769bf1abd53d57e24e8d2c6db8db1074077`.
+Source commands are retained in campaign plans/results; operating configuration,
+source/image/helper custody, workload, quotas, guard and exact resource receipts
+remain with point02. `operating-point02-independent-reduction.json` records the
+integrator's independent aggregate/latency reduction. Captured originals remain
+unchanged outside Git. The existing local handoff names unpushed trees and owners.

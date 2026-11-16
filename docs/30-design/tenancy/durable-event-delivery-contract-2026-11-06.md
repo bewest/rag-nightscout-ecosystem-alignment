@@ -9,6 +9,15 @@ evaluator or realtime wiring. It promotes no milestone, selects no provider,
 admits nothing to a release candidate, and infers no consistency stronger than
 what the cited records reproduced.*
 
+**Current direction, 2026-11-16:** the [stream-fed clinical materializer decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#stream-fed-clinical-materializer)
+supersedes routine D6 polling and snapshot rediscovery for the maintained default
+evaluator. The [current architecture](evaluator-realtime-communication.md#stream-fed-clinical-materializer--adopted-target-2026-11-16)
+owns row intake, recoverable acceptance, cohorts, scheduling and output delivery.
+The historical provider/backstop/snapshot sections below retain their original
+source and evidence; they do not authorize restoring those paths as defaults.
+Consistent snapshots remain bootstrap/recovery/history tools. Clinical, identity,
+isolation, authority and restore obligations remain required.
+
 | Anchor | Read from tool output at the time of writing |
 |---|---|
 | Alignment `main` | `18a9a5420c062aeb6cfe195d0fc0d5fd096509e2` |

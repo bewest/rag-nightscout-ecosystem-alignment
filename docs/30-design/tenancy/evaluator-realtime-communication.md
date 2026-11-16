@@ -17,6 +17,50 @@ boundary. Decisions remain in [tenancy decisions](multitenancy-decisions.md), th
 The [delivery dashboard](multitenant-delivery-dashboard.md) owns milestone status;
 this guide does not promote M6.
 
+## Stream-fed clinical materializer — adopted target, 2026-11-16
+
+The maintainer directs the evaluator to consume committed clinical inserts,
+updates and deletes into a bounded tenant working set. Clock notification
+followed by routine clinical snapshot acquisition does not meet this target.
+Settings, policy and lifecycle changes join the same processing contract.
+Preserve existing identity, ordering, units, clinical algorithms, extension
+fields and client contracts. Typed clinical projections are appropriate where
+established semantics or query/CDC benefits justify them; typed bookkeeping
+alone is not clinical materialization.
+
+Transport acknowledgement follows cheap validation and recoverably accepted
+input. Evaluation, viewer delivery and provider I/O run separately. Transport
+position and clinically completed input/settings versions are distinct. A
+transaction cohort becomes visible coherently; clinical dates do not define
+coverage. Durable input or consistent snapshot/replay recovery must reconstruct
+all accepted work after process loss. Snapshots serve bootstrap, gaps, cache
+loss and missing historical needs; warm event handling applies streamed rows.
+
+One bounded scheduler owns startup, unfinished versions, actual clinical due
+work and recovery, with fair tenant selection and serial execution per tenant.
+Completion atomically persists covered versions, result/frame/revision and next
+due under current authority, ownership and restore fences before RAM advances.
+Newer input stays pending. Realtime consumes completed output, applies current
+viewer authority/demand, and keeps one retry responsibility per owed delivery.
+Durable receipts recover lost wakes; external exactly-once delivery is not claimed.
+Healthy idle has no hot full-roster polling or per-event catalogue screening.
+
+| Boundary | Implemented branch behavior and qualification boundary |
+|---|---|
+| Clinical CDC and durable acceptance | Six clinical routes retain typed identity, extension fields, physical storage size and insertion order. Raw rows commit to the existing input checkpoint before transport ACK. An XID (transaction identifier) cohort seals with its matching final clock, atomically with the typed observed-work receipt. Same-LSN COPY rows remain distinct. |
+| Working set and recovery | Warm evaluation reads accepted rows, without clinical source/count/statistics scans. Consistent bootstrap retains physical invalid-row history for size and correction semantics while excluding it from clinical output. A known row/byte overflow durably marks a non-ready gap, evicts the input cache and preserves the sealed clinical floor and completed output; bounded successful bootstrap is required before evaluation resumes. Malformed data is refused. |
+| Scheduling and completion | One bounded scheduler owns startup, pending, due and recovery. A held tenant leaves free slots and later recovery pages available to neighbors. Retry backoff belongs to the failed tenant. Concurrent earliest-due reads coalesce, with a fresh lookup after changed work and safe ownership release before settlement. TIME acquires newly observed input before completion; input arriving during evaluation remains owed. Result/frame/revision, covered versions and next due commit under existing ownership/current-authority/restore fences before RAM completion. |
+| Realtime | The completed-output path distinguishes upstream pending, unwatched/deferred and ineligible work from actual failed delivery. Durable receipts own owed-delivery retries. Realtime does not build a raw clinical projection. |
+| Optional path | The separate selected-intake materializer remains unqualified and is explicitly refused before effects by the public evaluator configuration. It is not the default path or a prerequisite. |
+| Qualification | Focused default native tests include coherent corrections/deletes, process recovery, due work without a write, held-neighbor progress and unchanged warm snapshot/statistics query counts. Source-scoped controls are in the [existing discriminator harness](../../../tools/mt-bench/m7-joined/README.md#stream-materializer-discriminators). The [existing report](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-fed-clinical-materializer--2026-11-16) owns final source/image/operating evidence and limits. |
+
+These branch changes do not establish the cause of the historical intake delay.
+The existing lane handoff is `externals/work/HANDOFF-switch-over-finish-2026-11-15.md`.
+Both predecessor lanes released all custody after exact-resource cleanup and are
+archived; their captures remain unchanged. Single-host and single-tenant
+compatibility remain required. Optional multihost, Kubernetes, HA and complete
+platform-artifact work are not baseline prerequisites.
+
 ## Event-driven target and first proof
 
 **Direction adopted 2026-11-13; current local integration and recovery evidence retain their exact source and limits.**

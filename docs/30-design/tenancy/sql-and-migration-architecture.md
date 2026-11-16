@@ -23,6 +23,45 @@ sections are pinned to `16a1fc2d`; the other sections keep their `151de024`
 reading. The refresh is read-derived from source; acceptance of that head lives
 in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).*
 
+## Clinical stream storage extension — branch work, 2026-11-16
+
+The [adopted materializer contract](evaluator-realtime-communication.md#stream-fed-clinical-materializer--adopted-target-2026-11-16)
+uses the existing evaluator input consumer checkpoint for bounded accepted rows
+and unfinished XID cohorts. The completed consumer continues to own completed
+versions, result/frame/revision and due state. Transport acceptance and clinical
+completion are separate commits. No new durable inbox table is introduced.
+The default trusted receiver needs checkpoint-only metadata rights on its input
+consumer as well as its completed consumer; clinical source tables remain read-only.
+
+Read-derived from application branch `1dc7a74576b5d77f99cc4a42d900e1692d94a393`:
+append-only typed migrations add `storage_bytes` to each clinical table. An
+invoker-rights AFTER INSERT / UPDATE OF doc trigger measures the stored datum
+with PostgreSQL `pg_column_size`, then updates only that projection. A generated
+JSON-length column would change compressed-storage semantics. The same committed
+cohort carries both row and stored-size changes to the materializer. Bootstrap
+retains invalid physical rows for statistics/history and filters only clinical
+output. Logical export remains document/identity/order based; restore recomputes
+the storage projection through the existing INSERT path. Populated backfill binds
+each tenant explicitly and restores the previous binding, preserving the insertion
+trigger. An INSERT-only writer also needs the narrow `UPDATE(storage_bytes)` right
+for this invoker trigger; it does not need document UPDATE solely for accounting.
+Existing clinical-table
+restore/delete census includes these columns. Final qualification lives in the
+[existing evidence report](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-fed-clinical-materializer--2026-11-16).
+
+The exact reviewed `0099_<domain>_storage_bytes` migration is common to standard
+and optional ordered variants. Its SQL does not depend on insertion ordinals, so
+it can commute with the existing empty-table ordering conversion. The migration
+inspector validates known names and exact checksums first, rejects duplicates,
+and retains strict ordinary-prefix history and a required base migration. It
+computes pending work from applied names. No other operation gains this exception;
+historical SQL/checksums and the empty-table conversion requirement remain fixed.
+
+The public evaluator boot explicitly refuses optional selected multiworker intake
+until its separate grants and ownership path adopt clinical materialization. The
+maintained single-host default is the baseline; lower profile/schema/ownership
+controls remain useful without qualifying an obsolete serving path.
+
 ## Scope and evidence
 
 For diagram-first review, open the [database and component ownership visual

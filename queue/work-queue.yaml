@@ -27486,16 +27486,17 @@ items:
       2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms.
       Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.
   - id: MT-D6-SLOT-READER
-    title: "D6: prove maintained CDC through clinical evaluation, durable output and realtime recovery"
+    title: "D6: qualify default stream-fed clinical materialization and output recovery"
     parcel: tenancy
     repo: cgm-remote-monitor
-    branch: codex/pgstream-flow-20261113
-    base: codex/m7-coherent-join-20261112@4b13bf8bbfe578416441d7322837ec5aabeba1ea
-    worktree: externals/work/crm-pgstream-flow-20261113
+    branch: codex/materializer-20261116
+    base: codex/streaming-closure-20261116@58fb8444910559ee86c7a1970971090ade7ae67f
+    worktree: externals/work/cgm-materializer-20261116
     state: in-progress
     blast_radius: >
-      Proposed evaluator input/settings and recoverable due-work ownership; persisted completed clinical output
-      and browser frame; realtime output/control consumption; maintained pgstream replication adapter,
+      Default stream-fed evaluator input/settings and recoverable due-work ownership; bounded accepted
+      clinical rows, persisted completed output and browser frame; realtime output/control consumption,
+      maintained pgstream replication adapter,
       PostgreSQL wal2json/slot retention, and eventual deployment wiring. Existing clinical-write decoupling,
       tenant authority/isolation, restore and single-tenant compatibility obligations remain.
     review: maintainer; security review (replication privilege, definer function)
@@ -27505,15 +27506,15 @@ items:
     register: []
     gates:
       - no-gate: >
-          The small destructive local pgstream proof is not a read-only queue gate or production acceptance.
-          Establish committed input/settings to actual clinical evaluation, durable completed output and an
-          already-connected socket client; due work without writes, restart/redelivery and newer generations,
-          quiet idle and meaningful dropped-work controls. Deployment closure still needs durable recovery,
-          overlapping-owner/restore fencing, authority lifecycle, bounded WAL outage behavior and least-privilege
-          integration. No capacity or broad acceptance campaign precedes the thin flow.
+          Destructive local source/image and operating qualification is not a read-only queue gate.
+          The existing pgstream-idiomatic report records exact frozen source, native default-path
+          row acceptance/completion/frame/recovery controls, comprehensive campaigns and their limits.
+          Promotion retains current authority, ownership/restore fencing, clinical/client compatibility
+          and least-privilege obligations. An offered-load point does not establish capacity acceptance.
     blocks_on: []
     evidence:
       - docs/30-design/tenancy/evaluator-realtime-communication.md
+      - reports/tenancy/pgstream-idiomatic-2026-11-14/README.md
       - reports/tenancy/pgstream-flow-2026-11-13/README.md
       - reports/tenancy/d6-native-discriminators-2026-11-11/README.md
       - reports/tenancy/m7-join-2026-11-11/README.md
@@ -27533,3 +27534,12 @@ items:
       fencing, with matching deploy wiring. Internal clinical/config/output payloads are allowed within the
       trusted worker boundary; no sanitized-marker infrastructure is required solely for internal isolation.
       Fresh execution uses the same lane handoff and one owner; coordinator owns the final joined freeze.
+      2026-11-16: the explicit stream-fed materializer target supersedes routine clock-triggered clinical
+      snapshot acquisition. The current branch adds actual clinical row payloads, recoverable staged cohorts,
+      bounded GAP/bootstrap recovery, one startup/pending/due/recovery scheduler and output-only realtime.
+      Source/image/functional and matched operating qualification are recorded in the pgstream-idiomatic
+      report's stream-fed materializer section. This item remains in-progress and has no read-only gate;
+      local tests or an offered-load point do not establish production or capacity acceptance. Integration
+      owns the frozen source, canonical records and final campaign; independent qualification owns one
+      matched local operating point. Optional later clinical-window/history/accounting work is a separate
+      batch and does not mutate this frozen candidate.
