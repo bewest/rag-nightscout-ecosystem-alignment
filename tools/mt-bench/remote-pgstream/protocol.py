@@ -48,7 +48,7 @@ def workload(value):
     if selected is None:
         need(value['tenants'] in (10, 1000), 'REMOTE_WORKLOAD_PLAN_REQUIRED')
         return dict(cadence=dict(CADENCE), primerConcurrency=1, resourcePlan=None)
-    need(isinstance(selected, dict) and set(selected) == {'cadence', 'primerConcurrency', 'resourcePlan'}, 'REMOTE_WORKLOAD_SHAPE')
+    need(isinstance(selected, dict) and set(selected) in ({'cadence', 'primerConcurrency', 'resourcePlan'}, {'cadence', 'primerConcurrency', 'resourcePlan', 'jwtSetupConcurrency'}), 'REMOTE_WORKLOAD_SHAPE')
     cadence = selected['cadence']
     need(isinstance(cadence, dict) and set(cadence) in (set(CADENCE), set(CADENCE) | {'offeredRps'}), 'REMOTE_CADENCE_SHAPE')
     for key, default in CADENCE.items():
@@ -64,6 +64,8 @@ def workload(value):
     if 'offeredRps' in cadence:
         rate = cadence['offeredRps']
         need(type(rate) in (int, float) and math.isfinite(rate) and 1 <= rate <= 10000, 'REMOTE_OFFERED_RATE_RANGE')
+    jwt = selected.get('jwtSetupConcurrency', 1)
+    need(type(jwt) is int and 1 <= jwt <= 64, 'REMOTE_JWT_SETUP_CONCURRENCY_RANGE')
     concurrency = selected['primerConcurrency']
     need(type(concurrency) is int and 1 <= concurrency <= 32, 'REMOTE_PRIMER_CONCURRENCY_RANGE')
     plan = selected['resourcePlan']
@@ -80,6 +82,9 @@ def workload(value):
              type(host['ramBytes']) is int and host['ramBytes'] > 0, 'REMOTE_RESOURCE_PLAN_HOSTS')
     need(hosts['sut']['providerId'] != hosts['driver']['providerId'], 'REMOTE_RESOURCE_PLAN_DISTINCT_HOSTS')
     return selected
+
+def jwt_setup_concurrency(b):
+    return workload(b).get('jwtSetupConcurrency', 1)
 
 def viewer_total(b):
     selected=workload(b)

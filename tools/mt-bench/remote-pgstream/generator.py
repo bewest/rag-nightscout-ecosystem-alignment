@@ -207,6 +207,7 @@ def traffic_commands(directory, b, descriptor, k6_name, run_start_ms):
           '-e', 'RUN_ID=' + descriptor['trafficRunId'], '-e', 'SETTINGS_FINGERPRINT=' + descriptor['settingsFingerprint'],
           '-e', 'RUN_START=' + str(run_start_ms), '-e', 'DURATION=' + str(cadence['loadSeconds']), '-e', 'ACCEL=' + str(cadence['accel']), '-e', 'HOT_FACTOR=' + str(cadence['hotFactor']),
           '-e', 'SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status']
+    k6 += ['-e', 'JWT_SETUP_CONCURRENCY=' + str(selected.get('jwtSetupConcurrency', 1))]
     if 'offeredRps' in cadence:k6 += ['-e', 'OFFERED_RPS=' + str(cadence['offeredRps'])]
     k6 += [b['k6Image'], 'run', '--quiet', '--summary-export', '/out/k6-summary.json', '/scripts/workload.js']
     return probe, k6
@@ -233,6 +234,11 @@ def plan_k6(argv,d,b,name):
     argv=list(map(str,argv));need(argv[:2]==['docker','run']and argv[argv.index('--name')+1]==name and argv.count(b['k6Image'])==1,'EXTERNAL_K6_FIXED_ARGV')
     i=argv.index(b['k6Image']);need(argv[i+1:i+3]==['run','--quiet']and'--rm'in argv and'--cidfile'not in argv,'EXTERNAL_K6_FIXED_ARGV')
     need(argv[argv.index('--label')+1]=='org.nightscout.external.owner='+b['nonce']and argv[argv.index('--user')+1]=='1001:1001'and argv[argv.index('--network')+1]=='host'and'--read-only'in argv and argv[argv.index('--cap-drop')+1]=='ALL'and argv[argv.index('--security-opt')+1]=='no-new-privileges','EXTERNAL_K6_FIXED_SECURITY')
+    # The owned launcher uses only -e KEY=VALUE. Alternate Docker env forms
+    # must not override the bound selector without being parsed into intent.
+    need(not any(v=='--env' or v.startswith(('--env=','--env-file','-eJWT_SETUP_CONCURRENCY')) for v in argv[:i]),'EXTERNAL_K6_JWT_SETUP_CHANGED')
+    jwt_flags=[argv[n+1] for n,v in enumerate(argv[:-1]) if v=='-e' and argv[n+1].split('=',1)[0]=='JWT_SETUP_CONCURRENCY']
+    need(jwt_flags==['JWT_SETUP_CONCURRENCY='+str(workload(b).get('jwtSetupConcurrency',1))],'EXTERNAL_K6_JWT_SETUP_CHANGED')
     metadata=json.loads(subprocess.check_output(['docker','image','inspect',b['k6Image']],text=True,timeout=10));need(len(metadata)==1 and re.fullmatch('sha256:[a-f0-9]{64}',metadata[0]['Id']),'EXTERNAL_K6_IMAGE_ID')
     mounts=[];env=dict(v.split('=',1)for v in metadata[0]['Config'].get('Env',[])if'='in v)
     for n,v in enumerate(argv):
@@ -351,7 +357,7 @@ def session(directory, spec):
             with (out / 'k6.log').open('wb') as output:
                 result=run_k6(k6,d,b,k6_name,output,work_seconds(b,workload(b)['cadence']['loadSeconds']+600))
                 need(discovery_mode(b) or result.returncode==0,'EXTERNAL_K6_FAILED')
-            write(control / 'k6-launch.json', {'image': b['k6Image'], 'workloadSha256': descriptor['files']['workload.js'], 'trafficUid': UID, 'trustedLauncherUid': os.getuid(), 'returnCode': result.returncode, 'fixedArguments': True})
+            write(control / 'k6-launch.json', {'image': b['k6Image'], 'workloadSha256': descriptor['files']['workload.js'], 'trafficUid': UID, 'trustedLauncherUid': os.getuid(), 'returnCode': result.returncode, 'fixedArguments': True, 'jwtSetupConcurrency':workload(b).get('jwtSetupConcurrency',1)})
             channel.send('load-complete')
             # End the write window; no service is restarted in calibration.
             (out / '.restart').touch()

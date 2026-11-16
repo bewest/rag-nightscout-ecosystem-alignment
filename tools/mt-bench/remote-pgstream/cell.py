@@ -7,7 +7,7 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import app
 import producer
-from protocol import prepared_cadence, binding, need, workload, discovery_mode, topology_dependencies
+from protocol import prepared_cadence, binding, need, workload, discovery_mode, topology_dependencies, jwt_setup_concurrency
 from transport import POSTGRES, REPAIRED_CORE, MINIMUM_CORE, PERFORMANCE_CORE
 
 def main():
@@ -33,6 +33,7 @@ def main():
              prep.profile == 'pgstream-sample' and prep.run_purpose == 'discovery' and
              prep.measurement_mode == 'accepted' and app.a.cadence_options(prep) == prepared_cadence(b) and
              prep.primer_concurrency == selected['primerConcurrency'] and
+             prep.jwt_setup_concurrency == jwt_setup_concurrency(b) and
              prep.pgstream_topology == b.get('pgstreamTopology','colocated-v1') and
              prep.diagnostic_resource_profile == b.get('diagnosticResourceProfile'),
              'REMOTE_PREPARE_PROFILE_REQUIRED')
