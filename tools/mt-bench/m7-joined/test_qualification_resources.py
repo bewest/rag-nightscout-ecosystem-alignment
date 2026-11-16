@@ -11,6 +11,26 @@ def source():
     return {'services': {name: {'image':'synthetic'} for name in ROLES}}
 
 class QualificationResources(unittest.TestCase):
+    def test_complete_native_roster_uses_selected_ceiling(self):
+        selected=r.overlay(source(),r.QUALIFICATION_NAME)
+        rows=[]
+        for role,limit,count in r.plan(selected).services:
+            rows.extend({'State':{'Status':'running'},
+                         'Config':{'Labels':{'com.docker.compose.service':role}},
+                         'HostConfig':{'NanoCpus':limit.cpu*1000000,
+                                       'Memory':limit.memory,'MemorySwap':limit.memory}}
+                        for _ in range(count))
+        runtime=r.Runtime(selected,observe=lambda:rows)
+        self.assertEqual(sum(runtime.containers({'k6':1}).values()),len(rows)+1)
+        # The declared profile can exceed the old4CPU ceiling. Reinstating it
+        # must reproduce the native census refusal, not bypass quota checks.
+        with patch.object(r,'cpu_ceiling',return_value=r.MAX_CPU):
+            with self.assertRaisesRegex(RuntimeError,'RUNTIME_AGGREGATE_EXCEEDED'):
+                runtime.containers({'k6':1})
+        self.assertEqual(sum(runtime.containers({'k6':1}).values()),len(rows)+1)
+        with self.assertRaisesRegex(RuntimeError,'CONTAINER_CONCURRENCY_EXCEEDED'):
+            runtime.containers({'k6':2})
+
     def test_fixed_roles_overlap_accounting_and_unchanged_defaults(self):
         original=source(); saved=copy.deepcopy(original)
         selected=r.overlay(original,r.QUALIFICATION_NAME)

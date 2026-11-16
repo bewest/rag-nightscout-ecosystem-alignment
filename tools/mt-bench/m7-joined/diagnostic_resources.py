@@ -312,7 +312,7 @@ class Runtime:
             need(count <= maximum, 'CONTAINER_CONCURRENCY_EXCEEDED')
             cpu += limit.cpu * count
             memory += limit.memory * count
-        need(cpu <= MAX_CPU and memory <= memory_ceiling(self.budget.profile), 'RUNTIME_AGGREGATE_EXCEEDED')
+        need(cpu <= cpu_ceiling(self.budget.profile) and memory <= memory_ceiling(self.budget.profile), 'RUNTIME_AGGREGATE_EXCEEDED')
         return counts
 
     def compose(self, args, config):
