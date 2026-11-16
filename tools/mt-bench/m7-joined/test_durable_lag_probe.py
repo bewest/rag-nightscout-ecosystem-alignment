@@ -20,7 +20,7 @@ class DurableProbe(unittest.TestCase):
    hook=next(line for line in p.read_text().splitlines() if 'proof.clientFrames' in line)
    script="""const vm=require('node:vm'),assert=require('node:assert/strict'),lag=require(process.argv[1]);
 const socket={},proof={seen:new Set(),latencies:[],sent:0},pending=new Map([['a:1',proof]]);let now=20;
-const context={pending,t:{id:'a'},s:socket,sockets:[socket],completionSource:{},performance:{now:()=>now},frame:{sgvs:[{_id:'stored',mills:1,mgdl:123}]},at:0};socket.connects=1;
+const context={clinicalTimeline:null,pending,t:{id:'a'},s:socket,sockets:[socket],completionSource:{},performance:{now:()=>now},frame:{sgvs:[{_id:'stored',mills:1,mgdl:123}]},at:0};socket.connects=1;
 vm.runInNewContext(process.argv[2],context);now=70;vm.runInNewContext(process.argv[2],context);
 assert.equal(proof.clientFrames.get(socket).atMono,20,'later broadcast overwrote first observation');
 context.frame={sgvs:[{_id:'wrong',mills:1,mgdl:999}]};now=90;vm.runInNewContext(process.argv[2],context);
