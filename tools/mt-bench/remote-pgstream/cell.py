@@ -7,7 +7,7 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import app
 import producer
-from protocol import binding, need, workload, discovery_mode, topology_dependencies
+from protocol import prepared_cadence, binding, need, workload, discovery_mode, topology_dependencies
 from transport import POSTGRES, REPAIRED_CORE, MINIMUM_CORE, PERFORMANCE_CORE
 
 def main():
@@ -31,7 +31,7 @@ def main():
         need({'core': prep.core_commit, 'deploy': prep.deploy_commit} == b['pair'] and prep.image == b['imageId'] and
              prep.postgres_image == POSTGRES and prep.tenants == b['tenants'] and prep.replicas == 1 and
              prep.profile == 'pgstream-sample' and prep.run_purpose == 'discovery' and
-             prep.measurement_mode == 'accepted' and app.a.cadence_options(prep) == selected['cadence'] and
+             prep.measurement_mode == 'accepted' and app.a.cadence_options(prep) == prepared_cadence(b) and
              prep.primer_concurrency == selected['primerConcurrency'] and
              prep.pgstream_topology == b.get('pgstreamTopology','colocated-v1') and
              prep.diagnostic_resource_profile == b.get('diagnosticResourceProfile'),

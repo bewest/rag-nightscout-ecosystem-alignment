@@ -68,10 +68,10 @@ class DiscoverySource(unittest.TestCase):
         controller=Path(os.environ['REMOTE_PGSTREAM_CONTROLLER_ROOT']).resolve()
         spec=importlib.util.spec_from_file_location('admission_controller_worker',controller/'tools/perf-cloud/pgstream-worker.py')
         worker=importlib.util.module_from_spec(spec);spec.loader.exec_module(worker)
-        for tenants,rate,duration,clients in ((2,13,23,1),(37,73,45,3)):
+        for tenants,rate,duration,clients,total in ((2,13,23,1,2),(37,73,45,3,111),(37,73,45,3,2),(37,73,45,3,0),(37,73,45,3,53)):
             b=self.request();b['tenants']=tenants
             b['workload']['cadence'].update(offeredRps=rate,loadSeconds=duration,socketsPerTenant=clients)
-            b['workload']['resourcePlan'].update(tenants=tenants,logicalPollingClients=clients*tenants)
+            b['workload']['resourcePlan'].update(tenants=tenants,logicalPollingClients=total)
             hosts={role:{**value,'privateIPv4':b['appAddress'] if role=='sut' else b['generatorAddress']} for role,value in b['workload']['resourcePlan']['hosts'].items()}
             selected={'profile':b['profile'],'reportMode':'discovery','runId':b['runId'],'cloudId':b['cloudId'],'nonce':b['nonce'],
                       'tenants':tenants,'pins':{**b['pair'],'app':b['imageId'],'postgres':transport.POSTGRES},'cadence':b['workload']['cadence'],
@@ -91,8 +91,20 @@ class DiscoverySource(unittest.TestCase):
                 with patch.object(worker,'ROOT',d):args=worker.prepare_arguments(selected)
                 with patch.object(sys,'argv',['cell.py',*map(str,args[2:])]),patch.object(app.a,'prepare') as prepare,patch.object(app,'record_prepared_binding'):
                     cell.main();parsed=prepare.call_args.args[0]
-                    self.assertEqual(app.a.cadence_options(parsed),b['workload']['cadence']);self.assertEqual(parsed.tenants,tenants)
+                    self.assertEqual(app.a.cadence_options(parsed),protocol.prepared_cadence(b));self.assertEqual(parsed.tenants,tenants)
                     self.assertEqual(parsed.core_commit,b['pair']['core']);self.assertEqual(parsed.image,b['imageId'])
+
+    def test_independent_totals_and_local_explicit_zero_admission(self):
+        for total in (0,2,53,80000):
+            b=self.request();b['workload']['resourcePlan']['logicalPollingClients']=total
+            protocol.binding(b);self.assertEqual(protocol.viewer_total(b),total)
+            with tempfile.TemporaryDirectory() as tmp:
+                cli=reporting.DiscoveryReporting().args(b,tmp)
+                parsed=app.a.parser().parse_args(['prepare','--directory','/synthetic',*cli[cli.index('--core-repo'):],'--logical-polling-clients',str(total)])
+            self.assertEqual(app.a.cadence_options(parsed)['logicalPollingClients'],total)
+        for total in (-1,80001,True,1.5):
+            b=self.request();b['workload']['resourcePlan']['logicalPollingClients']=total
+            with self.assertRaises(RuntimeError):protocol.binding(b)
 
     def test_admission_failure_blocks_ingress_and_export_before_effects(self):
         # Exercise actual app.load ordering, keeping all host ports synthetic.

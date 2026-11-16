@@ -1,5 +1,6 @@
 """Explicit observational load route. Never grants capacity acceptance."""
 import json
+import viewer_plan
 import re
 import subprocess
 import time
@@ -169,7 +170,7 @@ def serial_exchange_diagnostic(a,d,m,record):
         'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,
         'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
     argv=[node['path'],str(d/'probe.js'),'--base',binding['baseUrl'],'--tenants',str(d/'tenants.private.json'),
-          '--compose',spec,'--runid',runid,'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),
+          '--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),
           '--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','0','--evalTimeout','900',
           '--out',str(out/'probe.json'),'--signal',str(out/'.window'),
           '--serialExchangeBinding',str(binding_path),'--serialExchangeBindingSha256',a.digest(binding_path)]
@@ -216,7 +217,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
-            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
             a.job_record(out/'probe-job.json',process,m['owner'],group=True);deadline=a.time.monotonic()+600
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
             primed=(out/'.window').is_file()
@@ -276,6 +277,11 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         record.value['countDiagnostics']={k:v for k,v in result.items() if k in ('verdict','code','failures','failureCount','probeCountProof','probeAccounting','domains','missingFieldCount')}
         record.save()
         if not known:record.value['strictChecks']['counts']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
+
+    if (record.value.get('probe') or {}).get('window') and (out/'fanout.json').is_file():
+        from viewer_plan import check
+        record.value['viewerFrames']=check(m,a.document(d/'tenants.private.json'),record.value['probe'],a.document(out/'fanout.json')['probeWrites']['byTenant'])
+        record.save()
 
     record.save()
 

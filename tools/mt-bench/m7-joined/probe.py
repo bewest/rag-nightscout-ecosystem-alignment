@@ -113,6 +113,20 @@ def generate(root, target, *, serial_exchange=False):
     if(serialCleanupFailed)throw Error('M7_SERIAL_EXCHANGE_CLEANUP_FAILED');
   }
 """+close)
+    # Quotient/remainder preserves tenant-major order for legacy per-tenant load.
+    def viewers_change(old,new):
+        nonlocal source
+        require(source.count(old)==1,'M7_VIEWER_PROBE_ANCHOR_CHANGED')
+        source=source.replace(old,new)
+    viewers_change("tenants.length*PER", "TOTAL")
+    viewers_change("const EVAL_TIMEOUT =", "const TOTAL=Number(args.clients??tenants.length*PER);if(!Number.isInteger(TOTAL)||TOTAL<0||TOTAL>80000||!tenants.length||new Set(tenants.map(t=>t.id)).size!==tenants.length)throw Error('M7_VIEWER_TOTAL_RANGE');const viewers=tenants.map((_,i)=>Math.floor(TOTAL/tenants.length)+(i<TOTAL%tenants.length?1:0));\nconst EVAL_TIMEOUT =")
+    viewers_change("k < PER;", "k < viewers[i];")
+    viewers_change("jwts[i] = await exchange(tenants[i]);", "jwts[i] = viewers[i]?await exchange(tenants[i]):null;")
+    viewers_change("expected: PER", "expected: viewers[i]")
+    viewers_change("[...pending.values()].length * PER", "[...pending.values()].reduce((n,p)=>n+p.expected,0)")
+    viewers_change("],PER,completionSource)", "],viewers[tenants.findIndex(t=>t.id===e.tenant)],completionSource)")
+    viewers_change("out.completedOutput={rosterTenants", "out.completedOutput={clientFrames:{verdict:out.window.expectedFrames===0?'NOT_EXERCISED':evalPending.every(e=>e.completion?.ready)?'PASS':'UNMEASURED'},rosterTenants")
+    viewers_change("  log('prime', out.prime);", "  out.viewerBindings=sockets.map((s,socket)=>({socket,tenant:tenants[s.index].id}));\n  log('prime', out.prime);")
     target = Path(target)
     target.write_text(source)
     helpers={}

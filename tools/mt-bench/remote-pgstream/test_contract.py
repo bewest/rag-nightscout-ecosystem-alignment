@@ -145,16 +145,23 @@ class Clinical(unittest.TestCase):
             protocol.write(d/'completion-source.json',dict(clock='sample_clock',checkpoint='sample_checkpoint',entries='sample_entries',consumer='evaluator-sample-completed',kind='evaluator-work-v1',binding=selected))
             protocol.write(d/'tenants.private.json',[dict(id=tenant)])
             (d/'load/runid').write_text('synthetic-run')
-            def capture(w,r):
+            def capture(w,r,cadence=None):
                 protocol.write(d/'load/probe.json',dict(clientWitnesses=[w]))
                 with mock.patch.object(clinical.a,'psql',return_value=json.dumps(r)):
-                    return clinical.completed(d,dict(tenants=1000),maximum=0)
+                    return clinical.completed(d,dict(tenants=1,cadence=cadence or {}),maximum=0)
             self.assertEqual(capture(witness,row)['verdict'],'PASS')
             bad=copy.deepcopy(row);bad['state']['output']['result']['properties']['bgnow']['mean']=124
             with self.assertRaisesRegex(RuntimeError,'CLINICAL_COMPLETION_UNMEASURED'):capture(witness,bad)
             self.assertEqual(json.loads((d/'completed-output.json').read_text())['verdict'],'UNMEASURED')
             missing=copy.deepcopy(witness);missing['clients']=missing['clients'][:1]
-            with self.assertRaisesRegex(RuntimeError,'CLINICAL_COMPLETION_UNMEASURED'):capture(missing,row)
+            with self.assertRaisesRegex(RuntimeError,'CLINICAL_VIEWER_BINDING'):capture(missing,row)
             self.assertEqual(capture(witness,row)['verdict'],'PASS')
+            quiet=copy.deepcopy(witness);quiet['clients']=[]
+            evidence=capture(quiet,row,{'logicalPollingClients':0})
+            self.assertEqual(evidence['verdict'],'PASS') # durable output remains checked
+            self.assertEqual(evidence['clientFrames']['verdict'],'NOT_EXERCISED')
+            for field,value in [('socket',17),('socket',True)]:
+                wrong=copy.deepcopy(witness);wrong['clients'][0][field]=value
+                with self.assertRaisesRegex(RuntimeError,'CLINICAL_VIEWER_BINDING'):capture(wrong,row)
 
 if __name__=='__main__':unittest.main()

@@ -20,8 +20,8 @@ class Database(unittest.TestCase):
     if database!='frozen_application_test':raise RuntimeError('42P01: application relation absent from postgres')
     return json.dumps(row)
    with patch.object(clinical.a,'psql',side_effect=psql):
-    self.assertEqual(clinical.completed(d,{'tenants':1000},maximum=0)['verdict'],'PASS');self.assertEqual(calls,['frozen_application_test'])
+    self.assertEqual(clinical.completed(d,{'tenants':1},maximum=0)['verdict'],'PASS');self.assertEqual(calls,['frozen_application_test'])
     source=Path(clinical.__file__).read_text();before='a.psql(d,query,a.application_database(d))';self.assertEqual(source.count(before),1);broken=types.ModuleType('ablate_explicit_database');exec(compile(source.replace(before,'a.psql(d,query)'),'<missing-explicit-database-control>','exec'),broken.__dict__)
-    with self.assertRaisesRegex(RuntimeError,'42P01'):broken.completed(d,{'tenants':1000},maximum=0)
-    self.assertEqual(calls[-1],'postgres');self.assertEqual(clinical.completed(d,{'tenants':1000},maximum=0)['verdict'],'PASS');self.assertEqual(calls[-1],'frozen_application_test')
+    with self.assertRaisesRegex(RuntimeError,'42P01'):broken.completed(d,{'tenants':1},maximum=0)
+    self.assertEqual(calls[-1],'postgres');self.assertEqual(clinical.completed(d,{'tenants':1},maximum=0)['verdict'],'PASS');self.assertEqual(calls[-1],'frozen_application_test')
 if __name__=='__main__':unittest.main()

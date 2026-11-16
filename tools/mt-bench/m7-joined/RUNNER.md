@@ -165,7 +165,25 @@ and its existing resource plan's `tenants:37` and `logicalPollingClients:111`.
 Retain the actual host identities and selected primer concurrency in that plan.
 These are configuration examples, not new authorization or measured headroom.
 
-Discovery supports 1..10000 tenants, 1..8 polling clients per tenant, bounded
+To vary the total independently, add `"logical-polling-clients":2` to local
+`prepare` for a 37-tenant roster. This discovery-only integer accepts 0..80000.
+When omitted, `sockets-per-tenant` keeps its existing default and behavior.
+Remote discovery uses the existing `resourcePlan.logicalPollingClients` as the
+total; the controller's `logicalPollingClients` mirror and receipt must match.
+Do not add a second total to remote cadence. The worker forwards the total to
+the same local parser only when it differs from the legacy per-tenant product.
+
+The first `total % tenants` roster entries receive one additional viewer over
+`floor(total / tenants)`. Viewer IDs follow tenant-major opening order. Zero
+opens no sockets and exchanges no probe-viewer JWTs; ordinary traffic and its
+independent stored-write/output checks still run. Frame evidence reports
+`NOT_EXERCISED` when selected writes have no viewers, including a zero total.
+Reducers derive frame expectations from this plan and per-tenant accepted probe
+writes, validate every emitted viewer binding and keep stored/output/authority
+checks separate. Changing load does not extend source/image/deadline or budget
+authority, and does not alter an already entered run.
+
+Discovery supports 1..10000 tenants, a legacy default of 1..8 polling clients per tenant, bounded
 cadence values and offered scenario rates 1..10000/s. Total configured phase
 time remains at most three hours and the existing earlier deadline governs.
 Strict preset ranges and source/image tuple checks remain unchanged. An exact

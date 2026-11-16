@@ -1158,8 +1158,65 @@ Larger-roster preflight is source-only. The archived current app `1ce665d326616b
 
 The actual existing observer JavaScript, with recording I/O, emits 79 unique pages covering all 10000 tenants, reads its environment once and creates one client per instance. The existing Python reader accepts full coverage and rejects an omitted final page with `M7_EVALUATOR_PROGRESS_COVERAGE`; restoration passes. One evaluator needs 8/79 pages per round and 24/237 queries per three-round phase at 1000/10000 tenants, below the existing 1024-query bound. Real RPC/Node startup, the unchanged 15s round deadline and effective container/driver FD headroom at these counts remain UNMEASURED. Current host soft/hard open-file limits are 1048576; this does not establish every future container's effective limit. NGINX configuration declares 65536.
 
-The existing producer requires at least one viewer per tenant. A larger point can measure that coupled workload honestly; a quiet-roster-only interpretation is unsupported. k6 JWT setup retains its existing serial default, optional bounded concurrency and 300s setup deadline. The probe uses 16 JWT workers, 5ms socket-open staggering and a 600s prime bound. These declared limits are not measured large-count passes. Keep request rate, actual write-active tenants, viewer total, bootstrap/prime time and collector cost explicit. The next native point must use the runnable heartbeat-retired candidate and a meaningful larger cohort; no repeated identical 32-tenant point or extra acceptance campaign is implied.
+At this capture, the producer required at least one viewer per tenant. A larger point can measure that coupled workload honestly; a quiet-roster-only interpretation is unsupported. k6 JWT setup retains its existing serial default, optional bounded concurrency and 300s setup deadline. The probe uses 16 JWT workers, 5ms socket-open staggering and a 600s prime bound. These declared limits are not measured large-count passes. Keep request rate, actual write-active tenants, viewer total, bootstrap/prime time and collector cost explicit. The next native point must use the runnable heartbeat-retired candidate and a meaningful larger cohort; no repeated identical 32-tenant point or extra acceptance campaign is implied.
 
 Retained evidence home: `externals/work/performance-enhancements-20261115/single-host`; evolving handoff: `externals/work/HANDOFF-performance-enhancements-2026-11-15.md`. Canonical summary SHA-256 `69e62a52a03e52ac7abd13af2fc9a8730b09e42fd53de43d57f48fe9f2867059`; independent absence `ccc66ac1c6c9454d70f0e3965bf622ed3e4ee2c0620cd16aa4d931ba95603a8f`; selected cost reduction `78866e89a30fc008de97395648fce357fe47fc032467c57533db84cc693b9c96`. Captures remain unchanged and outside Git. No capacity acceptance, paid allocation, push or release is claimed. Source integration and one final acceptance remain with 51f6; freshness owns heartbeat retirement.
 
 The next helper removes one reproduced observer startup cost: it reads the same existing `lib/pool-membership/config.fromEnvironment` contract directly, rather than loading `serve/evaluator-config` and its clinical/settings graph solely for `partitionFor`. Five alternating cold host-source pairs on the pinned historical source load 526 versus 2 modules, use 234548–261972 versus 6159–7204 microseconds CPU, and peak at 89540–93152 versus 50500–50624KiB RSS. This is source-only module cost, not a native quota or heartbeat-causality result. Seven actual parser cases preserve three valid selections and four refusals. Fifty focused checks pass with the actual product fixture enabled. Restoring the heavy import makes that fixture fail `M7_EVALUATOR_PROGRESS_UNAVAILABLE`; restoration passes. RPC source/endpoint binding, instance checks, paging, byte/query/deadline bounds and health criteria are unchanged. The next native point must independently measure its effect. Documentation links pass; queue-check refuses existing missing ignored gate worktrees (including `externals/work/nc-jitter` and `externals/work/crm-m6b-join-20261110`), so no queue-check pass is claimed.
+
+
+## Independent tenant roster and viewer total — 2026-11-15 Pacific
+
+The harness now supports sparse and zero viewers through the existing discovery
+runner. Tenant roster size and total polling viewers are independent. The
+[runner contract](../../../tools/mt-bench/m7-joined/RUNNER.md#configurable-discovery-and-strict-remote-reporting)
+defines the single declared total, deterministic mapping, legacy defaults and
+zero-frame classification. This helper change needs no application image build.
+Strict remote preset admission and source/image/deadline/budget bindings remain.
+
+Reproduced source controls execute the actual generated public JavaScript probe
+under Node v22.23.4 with in-memory HTTP, Socket.IO and filesystem ports, then feed
+its output to the actual Python reducer. They exercise complete roster parsing,
+actual emitted bindings, prime/end counts and per-write frame expectations:
+
+| Synthetic tenants | Declared/emitted/primed/end viewers | Accepted probe writes | Expected/delivered frames | Frame evidence |
+|---|---|---|---|---|
+| 5 | 2 | 4 | 2 | PASS |
+| 5 | 7 | 4 | 6 | PASS |
+| 5 | 0 | 4 | 0 | NOT_EXERCISED |
+| 3 | 17 | 4 | 23 | PASS |
+| 10000 | 1 | 4 | 1 | PASS |
+
+The 10000/1 row is a generated-JavaScript-to-Python reducer round trip. It does
+not run a native socket server, database, evaluator, application image or remote
+host and establishes no runtime capacity or large-count deadline claim.
+Missing, extra, foreign, duplicate and wrong-tenant viewer bindings refuse.
+Mutating both reported expected and delivered frame totals to the same wrong
+value also refuses. An actual emitter ablation restores the old per-tenant loop:
+it emits 10 viewers for the declared 5/7 case and fails `M7_VIEWER_BINDINGS`;
+restoring the total-based loop passes. A separate selected clinical fixture
+checks durable output with zero connected clients and reports client frames as
+`NOT_EXERCISED`; missing or foreign client identities refuse.
+
+Final focused verification: 390 joined-helper tests complete with 4 skips and no failures; 84 remote
+helper tests complete with 1 skip and no failures; 27 deployment calibration/topology
+tests complete with 2 skips and no failures; the paired worker/helper test passes. Enabled caller-to-worker-to-cell
+checks cover independent totals 2, 0 and 53 at 37 tenants. Those checks inspect
+the real parser and request/receipt binding but replace `adapter.prepare` before
+effects; they do not qualify generator dependency production or native admission.
+The selected clinical/database fixtures now declare their actual one-tenant
+roster instead of claiming 1000 tenants for one row; incomplete clients fail at
+the earlier binding guard. No clinical expectation was weakened.
+
+Retained synthetic evidence uses the existing home
+`externals/work/performance-enhancements-20261115/single-host/viewer-load/`.
+`generated-runtime-results.json` SHA-256:
+`4345b95dfa57269c62daf3d6307a937ca4c7b22ec7a0904556e81492f1b76dcc`.
+The full focused logs and the deliberate emitter break/restore remain outside
+Git. Queue-check refuses missing ignored gate worktrees, starting with
+`externals/work/nc-jitter`; it is not a pass. The first sandbox-only checks also
+refused `listen EPERM` and `spawnSync git EPERM`; required loopback checks pass
+with native tool access. Existing captures and frozen remote clones are unchanged.
+51f6 owns integration and final acceptance; the remote owner owns all allocation,
+export, finite custody and cleanup. A later source-matched native point must
+measure larger-roster bootstrap, SQL, observer deadlines and actual delivery.
