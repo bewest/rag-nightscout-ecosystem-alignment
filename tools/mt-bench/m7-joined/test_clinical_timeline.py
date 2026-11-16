@@ -34,6 +34,28 @@ class Timeline(unittest.TestCase):
         ipc=self.d/'state/ipc';ipc.mkdir();(ipc/'clinical-intake-timeline.jsonl').write_text('{"phase":"observe-call"}\n')
         result=t.retain(self.d,self.m);self.assertEqual(result['status'],'UNMEASURED');self.assertEqual((self.d/'clinical-timeline/clinical-intake-timeline.jsonl').read_text(),'{"phase":"observe-call"}\n');self.assertEqual(len(result['refusals']),1)
 
+    def test_raw_selection_is_explicit_and_omission_red_restored(self):
+        t.install(self.config,self.d,self.m,t.RAW_NAME);t.verify(self.config,self.d,self.m)
+        e=self.config['services']['evaluator']['environment'];e.pop('NS_M7_CLINICAL_RAW_TIMELINE')
+        with self.assertRaisesRegex(RuntimeError,'RAW_SELECTION'):t.verify(self.config,self.d,self.m)
+        e['NS_M7_CLINICAL_RAW_TIMELINE']='1';t.verify(self.config,self.d,self.m)
+        self.m['clinicalTimeline']['raw']['maxRows']+=1
+        with self.assertRaisesRegex(RuntimeError,'RAW_RECORD'):t.verify(self.config,self.d,self.m)
+        self.m['clinicalTimeline']['raw']['maxRows']-=1;t.verify(self.config,self.d,self.m)
+    def test_raw_retention_requires_independent_status_and_terminal_coverage(self):
+        t.install(self.config,self.d,self.m,t.RAW_NAME);ipc=self.d/'state/ipc';ipc.mkdir()
+        (ipc/'clinical-intake-timeline.jsonl').write_text('')
+        (ipc/'clinical-intake-timeline-status.json').write_text(json.dumps({'qualification':'COMPLETE','rows':0,'written':0,'pending':0,'dropped':0,'failed':None}))
+        row={'instance':'11111111-1111-4111-8111-111111111111','sequence':1,'phase':'raw-entry','at':1,'monoNs':'1','pid':1,'request':1,'headerLsn':'0/100','idempotency':'0/100'}
+        raw=ipc/'clinical-intake-raw.jsonl';raw.write_text(json.dumps(row)+'\n');status={'instance':row['instance'],'qualification':'COMPLETE','rows':1,'written':1,'bytes':raw.stat().st_size,'pending':0,'dropped':0,'failed':None}
+        self.assertFalse(t.raw_complete(raw,status),'MISSING_TERMINAL_MUST_REFUSE')
+        second={**row,'sequence':2,'phase':'raw-request-aborted'}
+        raw.write_text(json.dumps(row)+'\n'+json.dumps(second)+'\n');status.update(rows=2,written=2,bytes=raw.stat().st_size)
+        self.assertTrue(t.raw_complete(raw,status));(ipc/'clinical-intake-raw-status.json').write_text(json.dumps(status))
+        self.assertEqual(t.retain(self.d,self.m)['status'],'COMPLETE')
+        second['arbitrary']='DO_NOT_EMIT';raw.write_text(json.dumps(row)+'\n'+json.dumps(second)+'\n');status['bytes']=raw.stat().st_size
+        self.assertFalse(t.raw_complete(raw,status),'ARBITRARY_FIELD_MUST_REFUSE')
+
 class ActualDiscoverySelection(unittest.TestCase):
     def capture(self,load):
         import contextlib,subprocess

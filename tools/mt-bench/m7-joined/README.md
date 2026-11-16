@@ -726,3 +726,108 @@ sealed. Pass `stage=name`, matching `epoch`, `roles` and `options` to
 `compose_argv` or `checked_run`. Unknown stages, changed source/options/roles and
 namespace overrides refuse before effects. A default service command has no
 suffix. These APIs retain the caller's finite authorization and PID guard.
+
+### Clinical sender and early-request diagnostic (source qualified)
+
+The clinical completion criterion remains open. This instrument separates the
+actual maintained Go notifier's message admission/handoff, each HTTP attempt,
+Node's first request-handler entry and later selected-row parsing. It is source
+instrumentation, not a product optimization or a capacity result. No native run,
+image or resource slot is selected by this implementation.
+
+`--clinical-intake-timeline two-target-intake-timeline-raw-v2` explicitly adds a
+separate Node metadata ledger. The existing `off` default and v1 selection remain.
+The ledger writes before calling the original handler, then records request
+abort/close and response finish/close even when parsing never identifies a row.
+A later record joins the local request ID to the selected trace; it never rewrites
+the original timestamp. Instance ID plus PID and local request ID prevent a join
+across process starts. Validated LSNs, numeric connection/port metadata and fixed
+lifecycle fields are retained; bodies, URLs, authorization and arbitrary strings
+are excluded. The handler still receives the original `this` and arguments and
+returns its original promise or exception. Passive lifecycle listeners add no
+body consumer, scheduler work, admission or ACK.
+
+Raw bounds are 32,768 rows, 8 MiB and 128 pending writes, separate from the existing
+4,096-row/2 MiB selected trace. Saturation, short writes, pending drain, missing
+status or an entry without an abort/response terminal record is UNMEASURED.
+Retention verifies the record count, byte count, sequence, instance/PID, permitted
+fields and lifecycle coverage. COMPLETE here describes metadata capture; it does
+not prove target delivery or clinical completion. Node entry is a JavaScript
+handler boundary, not socket or kernel arrival. Malformed selected-row inspection
+forwards to the actual receiver's validation and preserves its rejection.
+
+`clinical-sender-trace.patch` is an experimental patch against the retained
+maintained v1.6.0 source archive, bound by `clinical-sender-source.json`. Original
+archive, go.mod and go.sum bytes stay unchanged. It instruments the actual
+notifier rather than introducing a proxy or substitute sender. It is disabled
+unless `NS_M7_CLINICAL_SENDER_TIMELINE=1`. That explicit mode reads two IDs and an explicit `clockSchema` at
+`/run/ns-intake-timeline/targets.json` and creates private, exclusive output under
+`/run/ns-ipc/clinical-sender-{timeline.jsonl,status.json}`. Deployment mounts and a
+replacement binary are **not** installed by the Node selector. Its sender target
+file is a separate role mount: the next packet must bind `clockSchema` to the
+actual selected receiver route, with no default namespace fallback. Node target
+inspection uses the original receiver clock routes.
+
+Go records message-ready after serialization and before queue-byte admission;
+fast admission or blocking Acquire enter/return/refusal; unbuffered handoff-wait;
+consumer receive; and per-attempt client.Do call/return plus passive httptrace
+connection, request-write and first-response-byte callbacks. Byte reservation
+continues through delivery and checkpoint. Consumer receipt is the dequeue
+observation; producer resumption after channel send is not an ordered substitute.
+The emitter has a process-instance nonce, PID, message and attempt IDs, two fixed
+selected tenant-clock rows, role enums and a 4,096-row/2 MiB synchronous write cap.
+Its observation writes add cost. Existing request bytes, headers, context,
+deadline, transport, retries, queueing, checkpoint and errors remain in use.
+Zero/shared LSNs do not authorize a target join; unsubscribed events are not target
+deliveries. Data LSN and commit position are separate. Missing message-ready leaves
+subscription lookup, serialization and upstream WAL timing unknown.
+
+Go status is `CAPTURED_REQUIRES_STRUCTURAL_CHECK`, never an automatic clinical pass.
+Drops, writer errors and unsupported bindings are UNMEASURED. A future native
+packet must verify per-message/attempt phases and connection joins, including late
+callbacks and aborted/unparsed attempts. LSN equality alone cannot identify a
+retry or destination. Missing or ambiguous joins remain UNMEASURED. Go elapsed
+nanoseconds are source-local; they cannot be subtracted from Node hrtime. A future
+run needs measured wall/monotonic alignment and qualified primary process births.
+
+Minimal independent source review uses a fresh owned extraction of the archive
+whose SHA256 is in the manifest, and the explicitly verified Go 1.26.7 executable.
+Check the original file digests and unchanged go.mod/go.sum before applying:
+
+```bash
+# From the verified fresh source root; CLINICAL_PATCH is an absolute path.
+patch --batch --fuzz=0 -p1 --input "$CLINICAL_PATCH"
+export GOTOOLCHAIN=local GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org
+export GOPRIVATE= GONOPROXY= GONOSUMDB=
+# Use owned GOMODCACHE/GOCACHE directories; retrieve only pinned public modules.
+"$CLINICAL_GO" test -mod=readonly -count=1 -timeout=30s ./pkg/wal/processor/webhook/notifier
+"$CLINICAL_GO" test -mod=readonly -race -count=1 -timeout=30s ./pkg/wal/processor/webhook/notifier
+```
+
+Focused Node/Python controls, from the alignment root:
+
+```bash
+node tools/mt-bench/m7-joined/clinical-intake-raw.test.cjs "$CLINICAL_CORE"
+node tools/mt-bench/m7-joined/clinical-intake-timeline.test.cjs "$CLINICAL_CORE"
+node tools/mt-bench/m7-joined/clinical-timeline-startup.test.cjs "$CLINICAL_PAIRED_SOURCE"
+PYTHONPATH=tools/mt-bench/m7-joined python3 -B -m unittest test_clinical_timeline test_probe_counts test_discovery test_pgstream_sample test_runner -q
+```
+
+The startup control needs the actual application archive plus its exact deployment
+overlay and matching dependency lock; it intercepts CLI execution before services.
+A bare application worktree has no deployment entrypoint. Controls plant missing
+or late hooks, lost attempt identity, saturation suppression and changed request
+bytes, then restore the source. Original promises, `this`, exceptions, timer
+handles, module descriptors/lazy loading, per-request admission, ACK order and
+malformed/aborted coverage are checked with actual receiver/notifier code and
+synthetic clients/streams. They do not prove native socket delivery.
+
+A future twin CLI build, if selected, requires two fresh extractions of the same
+archive, patching only the instrumented tree. Build both with the same checked
+Go executable, unchanged module sums, environment and dependencies; for example
+`CGO_ENABLED=0 "$CLINICAL_GO" build -mod=readonly -trimpath -buildvcs=false -o "$CLINICAL_OUTPUT" .`
+in each tree. Retain source/patch/toolchain/build-command/binary digests and test
+both; do not infer equivalence to the shipping f9 binary. Only the notifier-focused
+package/test executable is qualified here. Twin CLI builds, private mounts,
+replacement binary deployment and native timing remain UNMEASURED and require the
+root coordinator's next finite boundary.

@@ -1,0 +1,737 @@
+--- a/pkg/wal/processor/webhook/notifier/webhook_notifier.go
++++ b/pkg/wal/processor/webhook/notifier/webhook_notifier.go
+@@ -11,0 +12 @@
++	"net/http/httptrace"
+@@ -31,0 +33 @@
++	diagnosticTrace   *diagnosticTrace
+@@ -58 +60,2 @@
+-		logger: loglib.NewNoopLogger(),
++		diagnosticTrace: diagnosticTraceFromEnvironment(),
++		logger:          loglib.NewNoopLogger(),
+@@ -127,0 +131,5 @@
++	if len(msg.urls) > 0 {
++		msg.diagnostic = n.diagnosticTrace.bind(walEvent)
++	}
++	n.diagnosticTrace.emit("message-ready", msg.diagnostic, diagnosticFields{})
++
+@@ -130,0 +139 @@
++		n.diagnosticTrace.emit("queue-bytes-wait", msg.diagnostic, diagnosticFields{})
+@@ -132,0 +142 @@
++			n.diagnosticTrace.emit("queue-bytes-refusal", msg.diagnostic, diagnosticFields{Outcome: "REFUSED"})
+@@ -135,2 +145,6 @@
+-	}
+-
++		n.diagnosticTrace.emit("queue-bytes-acquired", msg.diagnostic, diagnosticFields{})
++	} else {
++		n.diagnosticTrace.emit("queue-bytes-fast", msg.diagnostic, diagnosticFields{})
++	}
++
++	n.diagnosticTrace.emit("handoff-wait", msg.diagnostic, diagnosticFields{})
+@@ -155,0 +170 @@
++	defer n.diagnosticTrace.seal()
+@@ -164,0 +180 @@
++				n.diagnosticTrace.emit("notify-consumed", msg.diagnostic, diagnosticFields{})
+@@ -206 +222 @@
+-			go n.webhookWorker(ctx, wg, msg.payload, msg.lsn, urlChan, errChan)
++			go n.webhookWorker(ctx, wg, msg.payload, msg.lsn, urlChan, errChan, msg.diagnostic)
+@@ -240 +256 @@
+-func (n *Notifier) webhookWorker(ctx context.Context, wg *sync.WaitGroup, payload []byte, lsn string, urls <-chan string, errChan chan<- error) {
++func (n *Notifier) webhookWorker(ctx context.Context, wg *sync.WaitGroup, payload []byte, lsn string, urls <-chan string, errChan chan<- error, diagnostic *diagnosticMessage) {
+@@ -243 +259 @@
+-		if err := n.sendWebhook(ctx, payload, lsn, url); err != nil {
++		if err := n.sendWebhook(ctx, payload, lsn, url, diagnostic); err != nil {
+@@ -249 +265 @@
+-func (n *Notifier) sendWebhook(ctx context.Context, payload []byte, lsn, url string) error {
++func (n *Notifier) sendWebhook(ctx context.Context, payload []byte, lsn, url string, diagnostic ...*diagnosticMessage) error {
+@@ -256 +272 @@
+-			return n.doSendWebhook(ctx, payload, lsn, url)
++			return n.doSendWebhook(ctx, payload, lsn, url, diagnostic...)
+@@ -268 +284 @@
+-func (n *Notifier) doSendWebhook(ctx context.Context, payload []byte, lsn, url string) error {
++func (n *Notifier) doSendWebhook(ctx context.Context, payload []byte, lsn, url string, diagnostic ...*diagnosticMessage) error {
+@@ -278,0 +295,9 @@
++	var message *diagnosticMessage
++	if len(diagnostic) > 0 {
++		message = diagnostic[0]
++	}
++	fields := n.diagnosticTrace.attempt(message, url)
++	if message != nil {
++		req = req.WithContext(httptrace.WithClientTrace(req.Context(), n.diagnosticTrace.transport(message, fields)))
++	}
++	n.diagnosticTrace.emit("send-call", message, fields)
+@@ -279,0 +305,9 @@
++	if err != nil {
++		fields.Outcome = "REFUSED"
++	} else {
++		fields.Outcome = "RETURNED"
++		if resp != nil {
++			fields.Status = resp.StatusCode
++		}
++	}
++	n.diagnosticTrace.emit("send-return", message, fields)
+--- a/pkg/wal/processor/webhook/notifier/webhook_notify_msg.go
++++ b/pkg/wal/processor/webhook/notifier/webhook_notify_msg.go
+@@ -13,0 +14 @@
++	diagnostic     *diagnosticMessage
+--- /dev/null
++++ b/pkg/wal/processor/webhook/notifier/clinical_diagnostic_trace.go
+@@ -0,0 +1,272 @@
++// SPDX-License-Identifier: Apache-2.0
++// Experimental fixture instrumentation; disabled unless explicitly selected.
++package notifier
++
++import (
++	"crypto/rand"
++	"encoding/hex"
++	"encoding/json"
++	"github.com/xataio/pgstream/pkg/wal"
++	"io"
++	"net"
++	"net/http/httptrace"
++	"net/url"
++	"os"
++	"regexp"
++	"strconv"
++	"sync"
++	"time"
++)
++
++var diagnosticSchema = regexp.MustCompile(`^[a-z][a-z0-9_]{0,62}$`)
++var diagnosticUUID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
++var diagnosticLSN = regexp.MustCompile(`^[0-9A-F]{1,8}/[0-9A-F]{1,8}$`)
++var diagnosticStamp = regexp.MustCompile(`^[0-9]{1,20}$`)
++
++type diagnosticMessage struct {
++	message            uint64
++	tenant, stamp, lsn string
++}
++type diagnosticFields struct {
++	Attempt     uint64 `json:"attempt,omitempty"`
++	Destination string `json:"destination,omitempty"`
++	Outcome     string `json:"outcome,omitempty"`
++	Status      int    `json:"status,omitempty"`
++	LocalPort   int    `json:"localPort,omitempty"`
++	RemotePort  int    `json:"remotePort,omitempty"`
++	Reused      bool   `json:"reused,omitempty"`
++}
++type diagnosticRecord struct {
++	Instance  string `json:"instance"`
++	PID       int    `json:"pid"`
++	Sequence  uint64 `json:"sequence"`
++	Phase     string `json:"phase"`
++	WallNs    int64  `json:"wallNs"`
++	ElapsedNs int64  `json:"elapsedNs"`
++	Message   uint64 `json:"message"`
++	Tenant    string `json:"tenant"`
++	Stamp     string `json:"stamp"`
++	DataLSN   string `json:"dataLsn"`
++	diagnosticFields
++}
++type diagnosticStatus struct {
++	Rows          uint64 `json:"rows"`
++	Bytes         int    `json:"bytes"`
++	Dropped       uint64 `json:"dropped"`
++	Failed        string `json:"failed"`
++	Closed        bool   `json:"closed"`
++	Qualification string `json:"qualification"`
++}
++type diagnosticTrace struct {
++	instance                          string
++	schema                            string
++	mu                                sync.Mutex
++	ids                               map[string]bool
++	writer                            io.Writer
++	started                           time.Time
++	rows, messages, attempts, dropped uint64
++	bytes, maxRows, maxBytes          int
++	failed                            string
++	closed                            bool
++	statusFile                        string
++	owned                             *os.File
++}
++
++func newDiagnosticTrace(ids []string, schema string, w io.Writer, maxRows, maxBytes int) *diagnosticTrace {
++	if !diagnosticSchema.MatchString(schema) || len(ids) != 2 || ids[0] == ids[1] || !diagnosticUUID.MatchString(ids[0]) || !diagnosticUUID.MatchString(ids[1]) || w == nil || maxRows < 1 || maxRows > 4096 || maxBytes < 1 || maxBytes > 2097152 {
++		panic("M7_CLINICAL_SENDER_BINDING")
++	}
++	var nonce [16]byte
++	if _, err := rand.Read(nonce[:]); err != nil {
++		panic("M7_CLINICAL_SENDER_INSTANCE")
++	}
++	return &diagnosticTrace{instance: hex.EncodeToString(nonce[:]), schema: schema, ids: map[string]bool{ids[0]: true, ids[1]: true}, writer: w, started: time.Now(), maxRows: maxRows, maxBytes: maxBytes}
++}
++func diagnosticTraceFromEnvironment() *diagnosticTrace {
++	if os.Getenv("NS_M7_CLINICAL_SENDER_TIMELINE") != "1" {
++		return nil
++	}
++	raw, err := os.ReadFile("/run/ns-intake-timeline/targets.json")
++	if err != nil {
++		panic("M7_CLINICAL_SENDER_TARGETS")
++	}
++	var target struct {
++		IDs         []string `json:"ids"`
++		ClockSchema string   `json:"clockSchema"`
++	}
++	if json.Unmarshal(raw, &target) != nil {
++		panic("M7_CLINICAL_SENDER_TARGETS")
++	}
++	// The constructor validates before opening output. No public/network configuration.
++	t := newDiagnosticTrace(target.IDs, target.ClockSchema, io.Discard, 4096, 2097152)
++	file, err := os.OpenFile("/run/ns-ipc/clinical-sender-timeline.jsonl", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
++	if err != nil {
++		panic("M7_CLINICAL_SENDER_OUTPUT")
++	}
++	t.writer = file
++	t.owned = file
++	t.statusFile = "/run/ns-ipc/clinical-sender-status.json"
++	return t
++}
++func (t *diagnosticTrace) bind(event *wal.Event) *diagnosticMessage {
++	if t == nil || event == nil || event.Data == nil || event.Data.Schema != t.schema || event.Data.Table != "tenant_write_clock" {
++		return nil
++	}
++	var tenant, stamp string
++	for _, columns := range [][]wal.Column{event.Data.Identity, event.Data.Columns} {
++		for _, column := range columns {
++			if column.Name == "tenant_id" {
++				tenant, _ = column.Value.(string)
++			}
++			if column.Name == "last_stamp" {
++				switch value := column.Value.(type) {
++				case string:
++					stamp = value
++				case int64:
++					stamp = strconv.FormatInt(value, 10)
++				case json.Number:
++					stamp = string(value)
++				}
++			}
++		}
++	}
++	if !t.ids[tenant] {
++		return nil
++	}
++	t.mu.Lock()
++	defer t.mu.Unlock()
++	t.messages++
++	lsn := event.Data.LSN
++	if lsn == wal.ZeroLSN || !diagnosticLSN.MatchString(lsn) || !diagnosticStamp.MatchString(stamp) {
++		t.failed = "TARGET_BINDING_UNMEASURED"
++		lsn = "UNMEASURED"
++		stamp = "UNMEASURED"
++	}
++	return &diagnosticMessage{message: t.messages, tenant: tenant, stamp: stamp, lsn: lsn}
++}
++func (t *diagnosticTrace) emit(phase string, m *diagnosticMessage, fields diagnosticFields) {
++	if t == nil || m == nil {
++		return
++	}
++	t.mu.Lock()
++	defer t.mu.Unlock()
++	if t.closed {
++		return
++	} // Structural qualification also requires all expected attempt/terminal phases.
++	now := time.Now()
++	record := diagnosticRecord{Instance: t.instance, PID: os.Getpid(), Sequence: t.rows + 1, Phase: phase, WallNs: now.UnixNano(), ElapsedNs: now.Sub(t.started).Nanoseconds(), Message: m.message, Tenant: m.tenant, Stamp: m.stamp, DataLSN: m.lsn, diagnosticFields: fields}
++	raw, err := json.Marshal(record)
++	if err != nil {
++		t.failed = "ENCODE_REFUSED"
++		return
++	}
++	raw = append(raw, '\n')
++	if t.rows >= uint64(t.maxRows) || t.bytes+len(raw) > t.maxBytes {
++		t.dropped++
++		return
++	}
++	t.rows++
++	t.bytes += len(raw)
++	n, err := t.writer.Write(raw)
++	if err != nil || n != len(raw) {
++		t.failed = "WRITE_REFUSED"
++	}
++}
++func (t *diagnosticTrace) attempt(m *diagnosticMessage, destination string) diagnosticFields {
++	if t == nil || m == nil {
++		return diagnosticFields{}
++	}
++	t.mu.Lock()
++	defer t.mu.Unlock()
++	t.attempts++
++	role := "UNMEASURED"
++	u, err := url.Parse(destination)
++	if err == nil {
++		switch u.Hostname() {
++		case "evaluator":
++			role = "evaluator"
++		case "realtime":
++			role = "realtime"
++		}
++	}
++	if role == "UNMEASURED" {
++		t.failed = "DESTINATION_UNMEASURED"
++	}
++	return diagnosticFields{Attempt: t.attempts, Destination: role}
++}
++func diagnosticPort(address net.Addr) int {
++	if address == nil {
++		return 0
++	}
++	_, port, err := net.SplitHostPort(address.String())
++	if err != nil {
++		return 0
++	}
++	value, err := strconv.Atoi(port)
++	if err != nil || value < 1 || value > 65535 {
++		return 0
++	}
++	return value
++}
++func (t *diagnosticTrace) transport(m *diagnosticMessage, fields diagnosticFields) *httptrace.ClientTrace {
++	// Callback observations never replace the transport, response or request body.
++	return &httptrace.ClientTrace{
++		GotConn: func(info httptrace.GotConnInfo) {
++			f := fields
++			f.Reused = info.Reused
++			if info.Conn != nil {
++				f.LocalPort = diagnosticPort(info.Conn.LocalAddr())
++				f.RemotePort = diagnosticPort(info.Conn.RemoteAddr())
++			}
++			t.emit("transport-got-conn", m, f)
++		},
++		WroteHeaders: func() { t.emit("transport-wrote-headers", m, fields) },
++		WroteRequest: func(info httptrace.WroteRequestInfo) {
++			f := fields
++			f.Outcome = "WRITTEN"
++			if info.Err != nil {
++				f.Outcome = "REFUSED"
++			}
++			t.emit("transport-wrote-request", m, f)
++		},
++		GotFirstResponseByte: func() { t.emit("transport-first-response-byte", m, fields) },
++	}
++}
++func (t *diagnosticTrace) status() diagnosticStatus {
++	if t == nil {
++		return diagnosticStatus{Qualification: "DISABLED"}
++	}
++	t.mu.Lock()
++	defer t.mu.Unlock()
++	q := "CAPTURED_REQUIRES_STRUCTURAL_CHECK"
++	if t.dropped > 0 || t.failed != "" {
++		q = "UNMEASURED"
++	}
++	return diagnosticStatus{t.rows, t.bytes, t.dropped, t.failed, t.closed, q}
++}
++func (t *diagnosticTrace) seal() {
++	if t == nil {
++		return
++	}
++	t.mu.Lock()
++	t.closed = true
++	if t.owned != nil {
++		if t.owned.Sync() != nil {
++			t.failed = "SYNC_REFUSED"
++		}
++		if t.owned.Close() != nil {
++			t.failed = "CLOSE_REFUSED"
++		}
++	}
++	t.mu.Unlock()
++	if t.statusFile != "" {
++		raw, _ := json.Marshal(t.status())
++		file, err := os.OpenFile(t.statusFile, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
++		if err != nil {
++			return
++		}
++		defer file.Close()
++		_, _ = file.Write(append(raw, '\n'))
++		_ = file.Sync()
++	}
++}
+--- /dev/null
++++ b/pkg/wal/processor/webhook/notifier/clinical_diagnostic_trace_test.go
+@@ -0,0 +1,384 @@
++// SPDX-License-Identifier: Apache-2.0
++package notifier
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"errors"
++	"github.com/xataio/pgstream/pkg/backoff"
++	"github.com/xataio/pgstream/pkg/wal"
++	"github.com/xataio/pgstream/pkg/wal/processor/webhook/subscription"
++	"io"
++	"net/http"
++	"net/http/httptrace"
++	"strings"
++	"sync"
++	"testing"
++	"time"
++)
++
++const diagnosticA = "11111111-1111-4111-8111-111111111111"
++const diagnosticB = "22222222-2222-4222-8222-222222222222"
++
++type diagnosticClient func(*http.Request) (*http.Response, error)
++
++func (f diagnosticClient) Do(r *http.Request) (*http.Response, error) { return f(r) }
++
++type diagnosticStore struct{}
++
++func (diagnosticStore) GetSubscriptions(context.Context, string, string, string) ([]*subscription.Subscription, error) {
++	return []*subscription.Subscription{{URL: "http://evaluator:19913/pgstream"}}, nil
++}
++func diagnosticEvent(id, lsn string) *wal.Event {
++	return &wal.Event{Data: &wal.Data{Table: "tenant_write_clock", Schema: "synthetic", LSN: lsn, Columns: []wal.Column{{Name: "tenant_id", Value: id}, {Name: "last_stamp", Value: "2"}}}, CommitPosition: wal.CommitPosition("0/DEAD")}
++}
++func diagnosticRows(t *testing.T, tr *diagnosticTrace, b *bytes.Buffer) []diagnosticRecord {
++	t.Helper()
++	tr.mu.Lock()
++	raw := append([]byte(nil), b.Bytes()...)
++	tr.mu.Unlock()
++	var result []diagnosticRecord
++	for _, line := range bytes.Split(bytes.TrimSpace(raw), []byte("\n")) {
++		if len(line) == 0 {
++			continue
++		}
++		var r diagnosticRecord
++		if err := json.Unmarshal(line, &r); err != nil {
++			t.Fatal(err)
++		}
++		result = append(result, r)
++	}
++	return result
++}
++func diagnosticPhase(rows []diagnosticRecord, phase, tenant string) bool {
++	for _, r := range rows {
++		if r.Phase == phase && r.Tenant == tenant {
++			return true
++		}
++	}
++	return false
++}
++func diagnosticAwait(t *testing.T, tr *diagnosticTrace, b *bytes.Buffer, phase, tenant string) {
++	t.Helper()
++	deadline := time.After(time.Second)
++	for {
++		if diagnosticPhase(diagnosticRows(t, tr, b), phase, tenant) {
++			return
++		}
++		select {
++		case <-deadline:
++			t.Fatalf("MISSING_PHASE_%s", phase)
++		case <-time.After(time.Millisecond):
++		}
++	}
++}
++func TestClinicalDiagnosticHandoff(t *testing.T) {
++	var buffer bytes.Buffer
++	trace := newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", &buffer, 4096, 2097152)
++	n := New(&Config{URLWorkerCount: 1, Backoff: backoff.Config{DisableRetries: true}}, diagnosticStore{})
++	n.diagnosticTrace = trace
++	entered, release := make(chan struct{}), make(chan struct{})
++	var calls int
++	var lock sync.Mutex
++	n.client = diagnosticClient(func(req *http.Request) (*http.Response, error) {
++		lock.Lock()
++		calls++
++		first := calls == 1
++		lock.Unlock()
++		if first {
++			close(entered)
++			<-release
++		}
++		return &http.Response{StatusCode: 204, Body: io.NopCloser(strings.NewReader(""))}, nil
++	})
++	ctx, cancel := context.WithCancel(context.Background())
++	defer cancel()
++	notified := make(chan error, 1)
++	go func() { notified <- n.Notify(ctx) }()
++	first := make(chan error, 1)
++	go func() { first <- n.ProcessWALEvent(ctx, diagnosticEvent(diagnosticA, "0/100")) }()
++	<-entered
++	if err := <-first; err != nil {
++		t.Fatal(err)
++	}
++	second := make(chan error, 1)
++	go func() { second <- n.ProcessWALEvent(ctx, diagnosticEvent(diagnosticB, "0/200")) }()
++	diagnosticAwait(t, trace, &buffer, "handoff-wait", diagnosticB)
++	before := diagnosticRows(t, trace, &buffer)
++	if diagnosticPhase(before, "notify-consumed", diagnosticB) {
++		t.Fatal("SECOND_CONSUMED_WHILE_FIRST_HELD")
++	}
++	select {
++	case <-second:
++		t.Fatal("UNBUFFERED_HANDOFF_BYPASSED")
++	default:
++	}
++	close(release)
++	if err := <-second; err != nil {
++		t.Fatal(err)
++	}
++	diagnosticAwait(t, trace, &buffer, "send-return", diagnosticB)
++	cancel()
++	<-notified
++	rows := diagnosticRows(t, trace, &buffer)
++	for _, id := range []string{diagnosticA, diagnosticB} {
++		for _, phase := range []string{"message-ready", "handoff-wait", "notify-consumed", "send-call", "send-return"} {
++			if !diagnosticPhase(rows, phase, id) {
++				t.Fatalf("REQUIRED_%s", phase)
++			}
++		}
++	}
++	if trace.status().Failed != "" || trace.status().Dropped != 0 {
++		t.Fatal(trace.status())
++	}
++	for _, r := range rows {
++		if r.DataLSN == "0/DEAD" {
++			t.Fatal("COMMIT_POSITION_IS_NOT_DATA_LSN")
++		}
++	}
++}
++func TestClinicalDiagnosticRetryForwarding(t *testing.T) {
++	run := func(instrumented bool) ([][]byte, []string, []diagnosticRecord, int) {
++		var buffer bytes.Buffer
++		tr := newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", &buffer, 4096, 2097152)
++		n := New(&Config{URLWorkerCount: 1, Backoff: backoff.Config{Constant: &backoff.ConstantConfig{Interval: time.Millisecond, MaxRetries: 1}}}, diagnosticStore{})
++		if instrumented {
++			n.diagnosticTrace = tr
++		}
++		var bodies [][]byte
++		var headers []string
++		originalTraceCalls := 0
++		baseContext, cancelContext := context.WithTimeout(context.WithValue(context.Background(), diagnosticContextKey{}, "original-context"), time.Second)
++		defer cancelContext()
++		ctx := httptrace.WithClientTrace(baseContext, &httptrace.ClientTrace{WroteRequest: func(httptrace.WroteRequestInfo) { originalTraceCalls++ }})
++		n.client = diagnosticClient(func(req *http.Request) (*http.Response, error) {
++			if req.Context().Value(diagnosticContextKey{}) != "original-context" || req.Context().Done() != ctx.Done() {
++				t.Fatal("CONTEXT_CHANGED")
++			}
++			actualDeadline, actualOK := req.Context().Deadline()
++			originalDeadline, originalOK := ctx.Deadline()
++			if actualOK != originalOK || !actualDeadline.Equal(originalDeadline) {
++				t.Fatal("DEADLINE_CHANGED")
++			}
++			body, err := io.ReadAll(req.Body)
++			if err != nil {
++				t.Fatal(err)
++			}
++			if string(body) != "unchanged-body" {
++				t.Fatal("REQUEST_BODY_CHANGED")
++			}
++			bodies = append(bodies, body)
++			headers = append(headers, req.Header.Get("X-Pgstream-LSN")+"/"+req.Header.Get("Idempotency-Key"))
++			if req.Method != "POST" || req.URL.String() != "http://evaluator:19913/pgstream" {
++				t.Fatal("REQUEST_CHANGED")
++			}
++			c := httptrace.ContextClientTrace(req.Context())
++			if c.WroteHeaders != nil {
++				c.WroteHeaders()
++			}
++			if c.WroteRequest != nil {
++				c.WroteRequest(httptrace.WroteRequestInfo{})
++			}
++			if len(bodies) == 1 {
++				return nil, errors.New("DO_NOT_EMIT_SECRET")
++			}
++			if c.GotFirstResponseByte != nil {
++				c.GotFirstResponseByte()
++			}
++			return &http.Response{StatusCode: 204, Body: io.NopCloser(strings.NewReader(""))}, nil
++		})
++		event := diagnosticEvent(diagnosticA, "0/100")
++		var m *diagnosticMessage
++		if instrumented {
++			m = tr.bind(event)
++		}
++		if err := n.sendWebhook(ctx, []byte("unchanged-body"), event.Data.LSN, "http://evaluator:19913/pgstream", m); err != nil {
++			t.Fatal(err)
++		}
++		tr.seal()
++		rows := diagnosticRows(t, tr, &buffer)
++		if bytes.Contains(buffer.Bytes(), []byte("DO_NOT_EMIT_SECRET")) {
++			t.Fatal("ARBITRARY_ERROR_LEAK")
++		}
++		return bodies, headers, rows, originalTraceCalls
++	}
++	baseBodies, baseHeaders, _, baseCalls := run(false)
++	bodies, headers, rows, calls := run(true)
++	if len(bodies) != 2 || !bytes.Equal(baseBodies[0], bodies[0]) || !bytes.Equal(baseBodies[1], bodies[1]) || strings.Join(baseHeaders, "|") != strings.Join(headers, "|") || calls != baseCalls || calls != 2 {
++		t.Fatal("FORWARDING_OR_RETRY_CHANGED")
++	}
++	attempts := map[uint64]bool{}
++	for _, r := range rows {
++		if r.Phase == "send-call" {
++			if r.Attempt == 0 || attempts[r.Attempt] {
++				t.Fatal("ATTEMPT_IDENTITY_REQUIRED")
++			}
++			attempts[r.Attempt] = true
++		}
++	}
++	if len(attempts) != 2 {
++		t.Fatal("TWO_ATTEMPTS_REQUIRED")
++	}
++	for _, phase := range []string{"transport-wrote-headers", "transport-wrote-request", "transport-first-response-byte"} {
++		if !diagnosticPhase(rows, phase, diagnosticA) {
++			t.Fatalf("REQUIRED_%s", phase)
++		}
++	}
++}
++
++type diagnosticShortWriter struct{}
++
++func (diagnosticShortWriter) Write(p []byte) (int, error) { return len(p) - 1, nil }
++func TestClinicalDiagnosticIntegrity(t *testing.T) {
++	for _, limit := range []struct{ rows, bytes int }{{1, 2097152}, {4096, 1}} {
++		var b bytes.Buffer
++		tr := newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", &b, limit.rows, limit.bytes)
++		m := tr.bind(diagnosticEvent(diagnosticA, "0/100"))
++		tr.emit("message-ready", m, diagnosticFields{})
++		tr.emit("handoff-wait", m, diagnosticFields{})
++		if tr.status().Dropped == 0 || tr.status().Qualification != "UNMEASURED" {
++			t.Fatal("SATURATION_MUST_REFUSE")
++		}
++	}
++	tr := newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", diagnosticShortWriter{}, 4096, 2097152)
++	tr.emit("message-ready", tr.bind(diagnosticEvent(diagnosticA, "0/100")), diagnosticFields{})
++	if tr.status().Failed != "WRITE_REFUSED" || tr.status().Qualification != "UNMEASURED" {
++		t.Fatal("SHORT_WRITE_MUST_REFUSE")
++	}
++	var b bytes.Buffer
++	tr = newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", &b, 4096, 2097152)
++	event := diagnosticEvent(diagnosticA, "ARBITRARY_SECRET")
++	event.Data.Columns[1].Value = "STAMP_SECRET"
++	tr.emit("message-ready", tr.bind(event), diagnosticFields{})
++	if bytes.Contains(b.Bytes(), []byte("SECRET")) || tr.status().Qualification != "UNMEASURED" {
++		t.Fatal("INVALID_IDENTITY_MUST_REFUSE")
++	}
++}
++
++func TestClinicalDiagnosticQueueBytes(t *testing.T) {
++	for _, cancelSecond := range []bool{false, true} {
++		t.Run(map[bool]string{false: "checkpoint-held", true: "cancelled-acquire"}[cancelSecond], func(t *testing.T) {
++			var buffer bytes.Buffer
++			trace := newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", &buffer, 4096, 2097152)
++			probe := New(&Config{}, diagnosticStore{})
++			subscriptions, _ := (diagnosticStore{}).GetSubscriptions(context.Background(), "", "", "")
++			message, err := newNotifyMsg(diagnosticEvent(diagnosticA, "0/100"), subscriptions, probe.serialiser)
++			if err != nil {
++				t.Fatal(err)
++			}
++			n := New(&Config{MaxQueueBytes: int64(message.size()), URLWorkerCount: 1, Backoff: backoff.Config{DisableRetries: true}}, diagnosticStore{})
++			n.diagnosticTrace = trace
++			entered, releaseHTTP, checkpointEntered, releaseCheckpoint := make(chan struct{}), make(chan struct{}), make(chan struct{}), make(chan struct{})
++			calls := 0
++			checkpoints := 0
++			n.client = diagnosticClient(func(req *http.Request) (*http.Response, error) {
++				calls++
++				if calls == 1 {
++					close(entered)
++					<-releaseHTTP
++				}
++				return &http.Response{StatusCode: 204, Body: io.NopCloser(strings.NewReader(""))}, nil
++			})
++			n.checkpointer = func(ctx context.Context, positions []wal.CommitPosition) error {
++				checkpoints++
++				if checkpoints == 1 {
++					close(checkpointEntered)
++					<-releaseCheckpoint
++				}
++				return nil
++			}
++			ctx, cancel := context.WithCancel(context.Background())
++			defer cancel()
++			done := make(chan error, 1)
++			go func() { done <- n.Notify(ctx) }()
++			first := make(chan error, 1)
++			go func() { first <- n.ProcessWALEvent(ctx, diagnosticEvent(diagnosticA, "0/100")) }()
++			<-entered
++			if err := <-first; err != nil {
++				t.Fatal(err)
++			}
++			secondCtx, cancelAcquire := context.WithCancel(ctx)
++			defer cancelAcquire()
++			second := make(chan error, 1)
++			go func() { second <- n.ProcessWALEvent(secondCtx, diagnosticEvent(diagnosticB, "0/200")) }()
++			diagnosticAwait(t, trace, &buffer, "queue-bytes-wait", diagnosticB)
++			diagnosticAwait(t, trace, &buffer, "message-ready", diagnosticB)
++			before := diagnosticRows(t, trace, &buffer)
++			if diagnosticPhase(before, "handoff-wait", diagnosticB) || diagnosticPhase(before, "queue-bytes-acquired", diagnosticB) {
++				t.Fatal("QUEUE_BYTES_NOT_HELD_THROUGH_DELIVERY")
++			}
++			if cancelSecond {
++				cancelAcquire()
++				if err := <-second; !errors.Is(err, context.Canceled) {
++					t.Fatal("ACQUIRE_CONTEXT_ERROR_CHANGED", err)
++				}
++				diagnosticAwait(t, trace, &buffer, "queue-bytes-refusal", diagnosticB)
++			}
++			close(releaseHTTP)
++			<-checkpointEntered
++			if diagnosticPhase(diagnosticRows(t, trace, &buffer), "queue-bytes-acquired", diagnosticB) {
++				t.Fatal("QUEUE_BYTES_NOT_HELD_THROUGH_CHECKPOINT")
++			}
++			close(releaseCheckpoint)
++			if !cancelSecond {
++				if err := <-second; err != nil {
++					t.Fatal(err)
++				}
++				diagnosticAwait(t, trace, &buffer, "send-return", diagnosticB)
++				if !diagnosticPhase(diagnosticRows(t, trace, &buffer), "queue-bytes-acquired", diagnosticB) {
++					t.Fatal("QUEUE_ACQUIRED_EVENT_REQUIRED")
++				}
++			}
++			cancel()
++			<-done
++			rows := diagnosticRows(t, trace, &buffer)
++			if !diagnosticPhase(rows, "queue-bytes-fast", diagnosticA) {
++				t.Fatal("FAST_PATH_REQUIRED")
++			}
++			for _, r := range rows {
++				if len(r.Instance) != 32 || r.PID < 1 || r.Instance != trace.instance {
++					t.Fatal("PROCESS_INSTANCE_REQUIRED")
++				}
++			}
++		})
++	}
++}
++
++func TestClinicalDiagnosticNoFalseTarget(t *testing.T) {
++	var buffer bytes.Buffer
++	trace := newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", &buffer, 4096, 2097152)
++	if trace.bind(diagnosticEvent("33333333-3333-4333-8333-333333333333", "0/100")) != nil {
++		t.Fatal("UNSELECTED_SHARED_LSN_NOT_TARGET")
++	}
++	wrongSchema := diagnosticEvent(diagnosticA, "0/100")
++	wrongSchema.Data.Schema = "unrelated"
++	if trace.bind(wrongSchema) != nil {
++		t.Fatal("WRONG_SCHEMA_NOT_TARGET")
++	}
++	zero := trace.bind(diagnosticEvent(diagnosticA, wal.ZeroLSN))
++	if zero == nil || zero.lsn != "UNMEASURED" || trace.status().Qualification != "UNMEASURED" {
++		t.Fatal("ZERO_LSN_MUST_NOT_JOIN")
++	}
++	trace = newDiagnosticTrace([]string{diagnosticA, diagnosticB}, "synthetic", &buffer, 4096, 2097152)
++	n := New(&Config{Backoff: backoff.Config{DisableRetries: true}}, nil)
++	n.diagnosticTrace = trace
++	n.subscriptionStore = &diagnosticEmptyStore{}
++	received := make(chan *notifyMsg, 1)
++	go func() { received <- <-n.notifyChan }()
++	if err := n.ProcessWALEvent(context.Background(), diagnosticEvent(diagnosticA, "0/100")); err != nil {
++		t.Fatal(err)
++	}
++	message := <-received
++	if message.diagnostic != nil || trace.status().Rows != 0 {
++		t.Fatal("UNSUBSCRIBED_NOT_A_TARGET_DELIVERY")
++	}
++}
++
++type diagnosticEmptyStore struct{}
++
++func (*diagnosticEmptyStore) GetSubscriptions(context.Context, string, string, string) ([]*subscription.Subscription, error) {
++	return nil, nil
++}
++
++type diagnosticContextKey struct{}

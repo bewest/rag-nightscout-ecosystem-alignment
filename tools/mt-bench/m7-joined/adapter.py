@@ -1680,7 +1680,7 @@ def parser():
     prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
     prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
     prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
-    prep.add_argument('--clinical-intake-timeline',choices=('off',clinical_timeline.NAME),default='off')
+    prep.add_argument('--clinical-intake-timeline',choices=('off',clinical_timeline.NAME,clinical_timeline.RAW_NAME),default='off')
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')
     prep.add_argument('--generator-dependency-receipt-sha256')
