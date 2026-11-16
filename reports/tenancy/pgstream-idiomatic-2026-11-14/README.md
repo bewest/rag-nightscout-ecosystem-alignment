@@ -2292,3 +2292,59 @@ binds 102 files, including the refusals, unchanged source receipts, actual
 activation, overlap, quotas and final independent absence. All bindings recheck
 with zero mismatches. The coordinator owns source integration and programme
 records; no further native run is queued by this result.
+
+## Sender and early-intake trace source qualification — 2026-11-16
+
+**Reproduced; instrument fixed on a local branch.** This closes the source
+instrument boundary, not the strict clinical completion criterion. The earlier
+512 MiB evaluator point remains failed and its pre-callback delay remains
+unexplained. No new native application run, image or paid allocation is implied.
+
+Helper leaf `46da665c8f860a198c9193e994e684c600100e1e` adds a finite Node ledger
+before target parsing and an opt-in patch to the actual retained Go notifier.
+Node records unparsed and aborted requests, then joins selected targets using a
+process-bound request ID. It preserves the actual handler, admission and ACK
+behavior. Go separates message-ready, queue-byte admission, unbuffered consumer
+receipt, retry attempts and passive transport observations. The original channel,
+request bytes, context, timeout, backoff and checkpoint remain in use. Its
+synchronous observation writes add cost. Neither Node handler entry nor a
+transport callback establishes kernel arrival or clinical completion.
+
+The Go source is reconstructed from retained archive SHA256
+`259bafb03c69fea67c8d879a2c0d0dde9b4e6df16d029f04bd2998591774559f`.
+Patch SHA256 is `30be3b2dd1809c4857beec95c4d35b242182c6776de4eed27c61fce54b64810f`;
+source-manifest SHA256 is
+`517b34c6a2c936dc278f22730b016d7ee88c6ce661cedd67fb276bd613ee0c25`.
+Independent zero-fuzz reconstruction matches all bound files and unchanged
+go.mod/go.sum. Actual Go 1.26.7 notifier race checks pass: 13 top-level tests,
+42 pass records and no failures. Seven independent omission/behavior controls
+fail with their expected symptoms and pass after restoration. Actual Node
+24.22.1 receiver and canonical-startup controls also pass. These are source
+checks; the focused notifier executable is not the product CLI or the shipping
+f9 binary.
+
+Review reproduced a capture-integrity defect: missing pending/dropped/failed
+fields and malformed lifecycle values could pass the original reader. Correction
+`ca1b93f977522c9b82685dda22a90cd5e34ab647` requires complete typed status and
+phase schemas, exact clean counters, request identity/header consistency and
+terminal coverage. Controls fail against the original leaf and pass after the
+repair. Legitimate aborts, incomplete responses and the historical selected
+capture with `closed:false` remain valid metadata captures; no explicit seal or
+clinical success is inferred. Root independently rechecks that compatibility.
+
+Both leaves join at helper `d458c4f5b1425575792e0f288358b995cd642892`. The joined
+focused cohort runs 119 checks: 118 pass and one explicit skip. Retained source
+outcome `externals/work/clinical-notifier-instrument-20261116/outcome.json`, SHA256
+`e7885ef0b298d6718aa719a45848a72c18d16a8836fbe0be9677bcb9375d9b1e`, binds
+45 inputs. Correction outcome
+`externals/work/clinical-trace-integrity-20261116/outcome.json`, SHA256
+`42fb729e51ab565bf7a92287849da962ef7e9fbb4d66e439ae1e1c111d58d77c`, binds
+13 inputs. Root verifies both maps with zero mismatches; originals remain ignored.
+
+The clinical owner prepares matched baseline/instrumented CLI builds from the
+same source and checked toolchain. Full CLI build output, deployment mounts,
+wall/monotonic alignment, actual process births and native connection/attempt
+joins remain the next measured boundaries. No replacement binary is installed
+by the Node selector. Go capture status deliberately requires structural review
+and never grants clinical acceptance. Missing or ambiguous events remain
+UNMEASURED; the selected application image and its acceptance stay unchanged.
