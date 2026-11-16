@@ -1541,3 +1541,50 @@ Remote custody remains with 4d9; its separately gated 10,000-tenant experiment
 must retain its actual optional-observer selection and cannot inherit a pass
 from this point. Further local reader-dependent traffic awaits a qualified
 instrument boundary, with no new application image required for reporting changes.
+
+### Follow-up — measured memory limits and remote 10k provisioning (2026-11-16)
+
+**Reproduced:** retained kernel records resolve the earlier local 1,000-tenant
+exit137 investigation. The kernel reports `CONSTRAINT_MEMCG` and kills the k6
+process at 2026-11-16T06:06:29Z in its Docker memory cgroup. The retained launch
+and exit journal supplies a unique temporal binding to that experiment. The
+original final container inspect and full argv were not retained; this is not a
+retrospective exact-inspect receipt. Preserve the earlier empty Docker query and
+partial application result. Evidence remains in
+`externals/work/k6-driver-termination-20261115/`: `kernel-original.log` SHA256
+`d48b42aba3564da4086fcc6fda22175578235a45c87330fe8881e40c9de07a42` and
+`container-binding-journal.log` SHA256
+`049cec2b71b3dc2f238fa455728fddbf38225755964ab0cb09323122fed134c7`.
+The independently observed driver memory limit does not establish application
+serving capacity or resolve that point's clinical/frame failures.
+
+The final remote experiment selected 10,000 tenants, 64 viewers, 7 requests per
+second and JWT setup concurrency16. Its immutable tuple is application
+`1646f00437cb207cb5acf0da0f3474b68f78bc04`, image-deployment
+`8ddfab1e46e3fd577f1e96e738ab5207f9925abf`, image
+`sha256:e3cd382058af98c8aa0fe2a71451f2a539066b087e6ed059e8d7c8124f73a126`,
+helper `0fe443b7f0880afc2dddf32745a5af0904253543` and controller
+`1b360b0e737ac76904d9bab5dc01b6261344932c`. It used the existing diagnostic
+per-role quotas and a separate driver host. It failed during provisioning;
+traffic and clinical/frame/ordinary SQL load measurements never began.
+
+| Retained observation | What it establishes |
+|---|---|
+| Last durable progress checkpoint: 4,800 tenants at 08:42:26.902114Z | Provisioning reached that checkpoint. Exact final committed count and failing ordinal are unmeasured. |
+| Same exact Vault container in both retained inspections: `OOMKilled=true`, exit137, finished 08:41:56.021824727Z; memory and swap caps each268435456 bytes, CPU cap0.125 | The experiment encountered Vault's 256MiB dependency memory ceiling during provisioning. It does not establish the application's serving limit or memory requirement at10k. |
+| Admin and PostgreSQL remain running, healthy and not OOM-killed in both inspections | Their container state at capture; no claim that every operation or clinical criterion passed. |
+| Provision log reports `PRIMER_CONNECTION_FAILED` | The request failed. The primer replaces underlying request errors, including its own timeout; exact transport errno and timeout status remain unmeasured. Vault's earlier death is relevant evidence, not an exact captured request-cause chain. |
+| Guard absence08:43:12.503Z; independent provider/key/guard absence08:45:37.483744Z | The owned paid resources and local custody are closed before their original cutoff. Current and reserved hourly spend are zero. |
+
+Immutable raw archives and selected attribution remain under
+`externals/work/remote-final-10000-64-20261116/`. Exact container inspection
+captures are `retained-sut-extract/work/cell/role-logs/containers.before.private.json`
+SHA256 `1f7175ed7ea511ff65e2c2dd866a787d1f4376b364cd5407ad04ade5a8475433`
+and `containers.after.private.json` SHA256
+`fad1b9d406c024495d1e497ad285d315a36b2ade5005598cc32c6404a9b140ed`.
+The conservative cumulative commitment remains15.50USD of16USD, with0.50USD
+uncommitted; actual invoice, rounding and fees are unmeasured. No further paid
+point is entered. The next local discriminator measures Vault memory growth
+with the tenant roster under the original cap and an explicitly changed cap,
+after the current local point releases its resources. The original source,
+quota, failed provisioning result and cleanup evidence remain unchanged.
