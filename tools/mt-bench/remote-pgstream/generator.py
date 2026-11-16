@@ -234,9 +234,10 @@ def plan_k6(argv,d,b,name):
     argv=list(map(str,argv));need(argv[:2]==['docker','run']and argv[argv.index('--name')+1]==name and argv.count(b['k6Image'])==1,'EXTERNAL_K6_FIXED_ARGV')
     i=argv.index(b['k6Image']);need(argv[i+1:i+3]==['run','--quiet']and'--rm'in argv and'--cidfile'not in argv,'EXTERNAL_K6_FIXED_ARGV')
     need(argv[argv.index('--label')+1]=='org.nightscout.external.owner='+b['nonce']and argv[argv.index('--user')+1]=='1001:1001'and argv[argv.index('--network')+1]=='host'and'--read-only'in argv and argv[argv.index('--cap-drop')+1]=='ALL'and argv[argv.index('--security-opt')+1]=='no-new-privileges','EXTERNAL_K6_FIXED_SECURITY')
-    # The owned launcher uses only -e KEY=VALUE. Alternate Docker env forms
-    # must not override the bound selector without being parsed into intent.
-    need(not any(v=='--env' or v.startswith(('--env=','--env-file','-eJWT_SETUP_CONCURRENCY')) for v in argv[:i]),'EXTERNAL_K6_JWT_SETUP_CHANGED')
+    # The owned launcher emits only canonical -e and -v short options.
+    # Reject attached/clustered short forms (including -e=KEY=VALUE) and all
+    # long env forms before they can bypass the parsed environment intent.
+    need(not any(v.startswith('--env') or (v.startswith('-') and not v.startswith('--') and v not in ('-e','-v')) for v in argv[:i]),'EXTERNAL_K6_JWT_SETUP_CHANGED')
     jwt_flags=[argv[n+1] for n,v in enumerate(argv[:-1]) if v=='-e' and argv[n+1].split('=',1)[0]=='JWT_SETUP_CONCURRENCY']
     need(jwt_flags==['JWT_SETUP_CONCURRENCY='+str(workload(b).get('jwtSetupConcurrency',1))],'EXTERNAL_K6_JWT_SETUP_CHANGED')
     metadata=json.loads(subprocess.check_output(['docker','image','inspect',b['k6Image']],text=True,timeout=10));need(len(metadata)==1 and re.fullmatch('sha256:[a-f0-9]{64}',metadata[0]['Id']),'EXTERNAL_K6_IMAGE_ID')

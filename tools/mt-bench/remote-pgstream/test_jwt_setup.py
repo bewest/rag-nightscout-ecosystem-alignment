@@ -57,6 +57,28 @@ class JwtSetup(unittest.TestCase):
    with self.assertRaisesRegex(RuntimeError,'ENVIRONMENT'):generator.qualify_k6(row,intent)
    self.assertEqual(generator.qualify_k6(original,intent),c.cid)
   finally:c.tmp.cleanup()
+ def test_alternate_docker_env_spellings_refuse_before_creation_intent(self):
+  # Docker also accepts attached short values and short-option clusters.
+  # Every alternate form is rejected even if it repeats the selected value.
+  forms=(['-e=JWT_SETUP_CONCURRENCY=1'],['-eJWT_SETUP_CONCURRENCY=1'],
+         ['-ite=JWT_SETUP_CONCURRENCY=1'],['--env=JWT_SETUP_CONCURRENCY=1'],
+         ['--env','JWT_SETUP_CONCURRENCY=1'],['--env-file=/synthetic/env'],
+         ['--env-file','/synthetic/env'],['-e=JWT_SETUP_CONCURRENCY=16'],
+         ['-e','JWT_SETUP_CONCURRENCY=16'])
+  for extra in forms:
+   with self.subTest(extra=extra):
+    c=actor_controls.Actor();c.setUp()
+    try:
+     b=self.selected(16);b.update({k:c.b[k]for k in ('nonce','k6Image','sourceSha256')})
+     args=generator.traffic_commands(c.d,b,{'trafficRunId':'synthetic','settingsFingerprint':'f'*64},c.name,0)[1]
+     i=args.index(b['k6Image']);altered=args[:i]+extra+args[i:]
+     with c.seams(),self.assertRaisesRegex(RuntimeError,'JWT_SETUP_CHANGED'):
+      generator.plan_k6(altered,c.d,b,c.name)
+     self.assertFalse(generator.actor_files(c.d,c.name)[0].exists())
+     with c.seams():generator.plan_k6(args,c.d,b,c.name)
+     intent=json.loads(generator.actor_files(c.d,c.name)[0].read_text())
+     self.assertEqual(intent['environment']['JWT_SETUP_CONCURRENCY'],'16')
+    finally:c.tmp.cleanup()
  @unittest.skipUnless(os.environ.get('REMOTE_PGSTREAM_CONTROLLER_ROOT'),'paired controller root required')
  def test_actual_node_validate_caller_worker_cell_admission(self):
   controller=Path(os.environ['REMOTE_PGSTREAM_CONTROLLER_ROOT']).resolve();loader=importlib.util.spec_from_file_location('jwt_controller_worker',controller/'tools/perf-cloud/pgstream-worker.py');w=importlib.util.module_from_spec(loader);loader.loader.exec_module(w)
