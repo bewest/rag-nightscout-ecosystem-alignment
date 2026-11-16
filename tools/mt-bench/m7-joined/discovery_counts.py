@@ -98,3 +98,28 @@ def observe(a,d,out,runid,metrics):
     except Exception as error:
         if hasattr(error,'oracleFindings'):raise
         fail(str(error) if str(error).startswith('M7_') else 'M7_DISCOVERY_COUNT_INSTRUMENT_ERROR')
+
+
+def control_domain(findings, tenant_count):
+    """A sparse exact cohort can witness loss without every tenant writing.
+
+    Uncertain or missing ACKs cannot establish a one-row corruption control.
+    Return only a fixed SQL domain with a positive ordinary-write witness.
+    """
+    if not isinstance(findings,dict) or findings.get('verdict')!='GREEN':return None
+    if findings.get('failureCount')!=0 or findings.get('failures')!=[] or findings.get('missingFieldCount')!=0:return None
+    accounting=findings.get('probeAccounting',{})
+    if findings.get('probeCountProof')!='KNOWN' or accounting.get('version')!=2 or accounting.get('admissionsClosed') is not True or accounting.get('pending')!=0:return None
+    rows=findings.get('rows')
+    if not isinstance(rows,list) or len(rows)!=tenant_count or not rows:return None
+    if any(not isinstance(row,dict) or not isinstance(row.get('tenant'),str) for row in rows):return None
+    if len({row['tenant'] for row in rows})!=len(rows):return None
+    for row in rows:
+        if any(type(row.get(k)) is not int or row[k]<0 for k in ('accepted','stored','uncertain','probeStored','probeAccepted','probeUncertain','probePending')):return None
+        if row.get('match') is not True or row['uncertain']!=0 or row['accepted']!=row['stored']:return None
+        if row['probeUncertain']!=0 or row['probePending']!=0 or row['probeAccepted']!=row['probeStored']:return None
+    total=sum(row['accepted'] for row in rows)
+    domains=findings.get('domains')
+    if total<=0 or findings.get('uncertain')!=0 or not isinstance(domains,dict) or set(domains)!={'entries','devicestatus','treatments'}:return None
+    if any(type(n) is not int or n<0 for n in domains.values()) or sum(domains.values())!=total:return None
+    return next(kind for kind in ('entries','devicestatus','treatments') if domains[kind]>0)

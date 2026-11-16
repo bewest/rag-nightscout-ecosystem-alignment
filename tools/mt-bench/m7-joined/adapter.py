@@ -1228,6 +1228,8 @@ def count_oracle(d, strict=True, allow_empty=False):
 
 def control(d, m):
     verify(d, m)
+    if m.get('profile')=='pgstream-sample' and m.get('runPurpose')=='discovery':
+        return discovery_oracle_control(d)
     return oracle_control(d)
 
 
@@ -1251,6 +1253,44 @@ def oracle_control(d):
     restored = count_oracle(d)
     require(restored["verdict"] == "GREEN", "M7_CONTROL_NOT_RESTORED")
     write(d / "load/oracle-control.json", {"baseline": baseline["verdict"], "broken": broken["verdict"], "restored": restored["verdict"]})
+
+
+def discovery_oracle_control(d):
+    """Sparse discovery witness; never changes default acceptance admission."""
+    from discovery_counts import observe, control_domain
+    m=document(d/'owner.json');assert_owned(m)
+    require(m.get('profile')=='pgstream-sample' and m.get('runPurpose')=='discovery','M7_DISCOVERY_CONTROL_SCOPE')
+    out=d/'load';marker=(out/'runid').read_text().strip()
+    require(re.fullmatch(r'[a-z0-9-]{1,120}',marker),'M7_RUN_ID_INVALID')
+    metrics=document(out/'k6-summary.json')['metrics']
+    def snapshot(stage):
+        assert_owned(m)
+        try:value,_=observe(sys.modules[__name__],d,out,marker,metrics)
+        except RuntimeError as error:
+            if str(error)!='M7_DISCOVERY_WRONG_DATA' or not hasattr(error,'oracleFindings'):raise
+            value=error.oracleFindings
+        write(out/('oracle-control-'+stage+'.json'),value)
+        return value
+    baseline=snapshot('baseline')
+    domain=control_domain(baseline,len(document(d/'tenants.private.json')))
+    require(domain is not None,'M7_CONTROL_BASELINE_NOT_EXACT')
+    field='enteredBy' if domain=='treatments' else 'device'
+    # Domain/field are fixed above; the marker is validated, never arbitrary SQL.
+    mutate="BEGIN; SELECT set_config('app.current_tenant_id',(SELECT tenant_id::text FROM nsdemo_{domain}.{domain} WHERE doc->>'{field}'='{old}' LIMIT 1),true); UPDATE nsdemo_{domain}.{domain} SET doc=jsonb_set(doc,'{{{field}}}',to_jsonb('{new}'::text)) WHERE tenant_id=current_setting('app.current_tenant_id')::uuid AND ctid=(SELECT ctid FROM nsdemo_{domain}.{domain} WHERE doc->>'{field}'='{old}' AND tenant_id=current_setting('app.current_tenant_id')::uuid LIMIT 1) RETURNING 'm7-count-control-victim';COMMIT;"
+    changed=False
+    try:
+        assert_owned(m);changed=True
+        result=psql(d,mutate.format(domain=domain,field=field,old=marker,new=marker+'-control'),'nightscout_compose_test')
+        require(result.splitlines().count('m7-count-control-victim')==1,'M7_CONTROL_NO_VICTIM')
+        broken=snapshot('broken')
+        require(broken.get('verdict')=='RED' and broken.get('code')=='M7_DISCOVERY_WRONG_DATA','M7_CONTROL_DID_NOT_FAIL')
+    finally:
+        if changed:
+            assert_owned(m)
+            psql(d,mutate.format(domain=domain,field=field,old=marker+'-control',new=marker),'nightscout_compose_test')
+    restored=snapshot('restored')
+    require(control_domain(restored,len(document(d/'tenants.private.json')))==domain,'M7_CONTROL_NOT_RESTORED')
+    write(out/'oracle-control.json',{'baseline':baseline['verdict'],'broken':broken['verdict'],'restored':restored['verdict']})
 
 
 def progress_services(d):

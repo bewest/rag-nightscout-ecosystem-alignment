@@ -929,6 +929,14 @@ wake, block recovery paging on held work, undercount metadata bytes, mark a gap
 ready, retain stale cache metadata, disable exact size-tail commutation, or
 remove the raw receipt await; each must fail for its named symptom before restoration passes.
 
+Earliest-due lookup controls use the actual scheduler with a held metadata query.
+Neighbors complete while one query is in flight; a newly earlier deadline must
+survive the follow-up. Sharing omission must increase lookup concurrency, and
+lost follow-up must retain the wrong deadline. A removal queued as the query
+settles must leave the remaining tenant's timer armed. A postponed ownership
+clear must make that same case fail. These controls measure scheduling/call
+boundaries, not native SQL cost or a capacity ceiling.
+
 Capture originals stay outside Git. Retain the executed probe, schema/source
 identity and checksum beside the capture. These controls preserve source-level
 boundary evidence; the integrator owns the final joined runtime acceptance.
@@ -970,3 +978,16 @@ opportunity cannot establish deadline service. Preserve failed captures and
 report driver errors separately from application errors. Final qualification
 requires the integrator's frozen source/image and applicable functional
 acceptance; this allocation changes neither application code nor acceptance.
+### Sparse discovery count control
+
+A discovery cohort need not give every tenant an ordinary write before testing
+its count oracle. The discovery-only control admits complete, exact matched
+ordinary/probe counts with no uncertainty or pending probe writes and at least
+one accepted ordinary write. Missing counters remain unknown; an empty workload
+or ambiguous counts cannot witness this control. The control selects a nonempty
+ordinary domain, temporarily changes one owned run marker, requires a RED count
+observation, then restores the marker and requires GREEN. It saves the three
+observations beside the control result. No-op corruption or failed restoration
+refuses. Strict/default acceptance keeps its requirement for a write from every
+tenant. This change applies to future helper runs; it does not qualify or relabel
+an earlier point whose control was not run.

@@ -185,7 +185,8 @@ def run_discovery(a,d,m,k6_image,oneoff=None):
                 record.value['sqlAttribution']=a.sample_results(d,probe,sql_roles)
                 record.value['completedOutput']=probe['completedOutput']
             counts=record.value.get('oracle')
-            if counts and counts.get('rows') and all(row.get('accepted',0)>0 and row.get('uncertain',0)==0 for row in counts['rows']):
+            from discovery_counts import control_domain
+            if control_domain(counts,m['tenants']) is not None:
                 a.control(d,m);record.value['oracleControl']=a.document(d/'load/oracle-control.json')
             else:record.value['strictChecks']['oracleControl']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
         for phase in ('idle','load'):
