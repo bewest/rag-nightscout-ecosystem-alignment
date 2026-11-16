@@ -138,6 +138,10 @@ def _cleanup(root, reason):
             value = a.document(job)
             if not value.get('completed'):
                 stop_stage(job, value['owner'])
+        state=a.document(root/'execution.json') if (root/'execution.json').exists() else {}
+        if state.get('producer')=='vault-component-v1':
+            import vault_component
+            vault_component.cleanup_resources(root)
         fixture = root / 'fixture'
         if (fixture / 'owner.json').exists():
             d, m = a.load(fixture,resource_limits=False)
@@ -291,6 +295,9 @@ def arm_window(root,config):
     state={'owner':uuid.uuid4().hex,'startedAt':start,'stopWorkAt':start+config['workSeconds'],
            'cleanupAt':start+config['workSeconds']+config['cleanupSeconds'],
            'configSha256':a.digest(root/'config.json'),'includesPreparation':True}
+    if config.get('producer')=='vault-component-v1':state['producer']=config['producer']
+    if os.environ.get('M7_BATCH_RESERVATION'):
+        require(state['cleanupAt']<=a.document(os.environ['M7_BATCH_RESERVATION'])['cleanupAt'],'M7_BATCH_CELL_DEADLINE')
     write(root/'execution.json',state)
     with (root/'guard.private.log').open('xb') as output:
         guardian=subprocess.Popen([sys.executable,'-B',str(Path(__file__).resolve()),'_guard',str(root)],stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
@@ -356,6 +363,12 @@ def local_batch_plan(spec, payload_root):
     axes=env['workload']
     for cell in spec['cells']:
         batch.need(cell['target']=={'kind':'local'},'LOCAL_TARGET')
+        if cell['config'].get('producer')=='vault-component-v1':
+            import vault_component
+            cell_plan=vault_component.plan(cell,spec,payload_root,allowlist)
+            next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=cell_plan
+            batch.need(cell['config']['helperInstrument']==a.instrument()['sha256'],'VAULT_HELPER_CHANGED')
+            continue
         # The current typed producer reserves its complete maximum, including
         # oneoffs/k6 and host heaps. Smaller policies need producer controls.
         batch.need(cell['resources']==batch.LOCAL_RESOURCES,'LOCAL_RESERVATION_CHANGED')
@@ -383,6 +396,7 @@ def local_batch_plan(spec, payload_root):
         # Ordinary runner only; fault profiles must first gain a typed adapter.
         batch.need(not axes['faultCases'], 'LOCAL_FAULT_UNSUPPORTED')
     for cell in planned['cells']:
+        if cell['config'].get('producer')=='vault-component-v1':continue
         cell['allocationBreakdown']={'sutAndOneoffs':{'millicpus':3500,'memoryBytes':7*1024**3},
             'driverK6':{'millicpus':500,'memoryBytes':1024**3},'hostV8':{'heapMiB':1024},
             'hostRss':'SEPARATELY_OBSERVED_NOT_HEAP_BOUNDED','generatorHeadroom':'UNMEASURED_UNLESS_RETAINED'}
@@ -401,6 +415,7 @@ def batch_run(spec_file, directory, payload_root):
         with batch.local_custody(directory,spec) as ledger:
             root=ledger.directory
             write(root/'batch.json',spec)
+            write(root/'batch-payload.json',{'root':str(Path(payload_root).resolve()),'specSha256':batch.digest(spec)})
             write(root/'batch-plan.json',planned)
             def perform(cell,ticket):
                 # Each cell is a process. Adapter process-global state is never
@@ -447,6 +462,9 @@ def batch_cell(config, directory):
             'M7_BATCH_CELL_DEADLINE')
     root=Path(directory).resolve()
     try:
+        if limits.get('producer')=='vault-component-v1':
+            import vault_component
+            return vault_component.execute(config,root)
         prepare(config,root)
         return execute(root)
     finally:

@@ -314,3 +314,87 @@ reservation/authority uncertainty stops admission. Per-cell deadlines skip only
 the expired cell; the common cutoff leaves no cell eligible. Native approval
 message lookup/provider installation remains UNMEASURED here and belongs to the
 remote custodian; source adapters do not grant tool permissions.
+
+### Typed local Vault component cells
+
+`cell.config.producer: "vault-component-v1"` selects the fixed Vault component
+executor in [vault_component.py](vault_component.py), through the same
+`batch-plan`, `batch-run`, private `_batch-cell` and result gateway. It runs the
+six actual key purposes and synthetic 48-byte root-secret encryption from the
+pinned source capsule. It does not provision SQL tenants or qualify application
+serving. Remote targets refuse; no provider or paid gateway is added.
+
+The exact config fields are `version: 1`, `producer`, `capsule` (absolute private
+allowlisted JSON path), `helperInstrument`, `workSeconds` (30–3600),
+`cleanupSeconds` (30–180), `targetSets` (1–10000) and `vaultMemoryMiB`
+(256, 512 or 1024). Unknown fields refuse. Each cell declares one unused explicit
+loopback port and an empty subnet list; it uses the existing Docker bridge,
+without creating or deleting a network. Names and ports still pass common batch
+isolation checks. `offeredRps` is zero because this producer has no application
+load driver; Vault work is bounded by target sets and four-worker concurrency,
+not an asserted zero provider-request rate. The shared workload axes bound
+`tenants` as component set count and `durationSeconds` as the work window;
+`probeEveryMs` is the inapplicable fixed zero and `hotFactor` is fixed one.
+Fault cases remain unsupported.
+
+The capsule has exact fields `version`, `producer`, `source`, `image`, `imageId`,
+`helper`, `files`, `workerSha256` and `tools`. Its source binds the shared batch
+pins; core is `3b2cec6405451d0aff103f5d21f4312606d4295b` and the four required
+module hashes are fixed by this producer. The common deploy pin is retained
+provenance, not an executed deployment tree for this component. The payload
+allowlist contains `source/lib/tenant-registry/{vault-keys,rules}.js`,
+`source/lib/secrets/{vault-transit,component}.js` and the capsule itself, with
+exact bytes and no symlinks. No credentials, token, key path or root secret is
+part of that capsule. The image is the retained pinned Vault manifest and
+matching image ID. Tools are exact resolved `node` and `docker` paths, hashes and
+version receipts; Node is 24.22.1. The executor verifies them before SUT effects,
+uses only fixed argv, refuses preloads and never installs, pulls or builds.
+Docker commands explicitly select the local Unix socket. Provider credentials
+are created in memory and sent to the fixed worker over stdin only.
+
+| Exact per-cell reservation | Meaning |
+|---|---|
+| 1130 millicpus | Vault requested 125m/effective 130m plus a conservative 1000m host allowance |
+| `vaultMemoryMiB * 1048576` bytes | The exact native Vault memory and memory-plus-swap limits |
+| 128 MiB heap | One total V8 heap; RSS remains separately observed |
+| Zero money | Local-only; this grants no remote authority |
+| Seven logical managed actors | Cell coordinator, guard, Node worker, two native-command slots, one container and one volume |
+
+Only the owned cell process and its descendants receive a one-CPU affinity mask
+chosen from their actual allowed mask. The coordinator and foreign processes
+are never pinned. The mask is verified before effects and its inheritance is
+checked in a harmless child, the guard and the Node worker. This is a bound on
+shared CPU use, not an exclusive CPU reservation or a quiet-host claim.
+Unsupported or changed affinity refuses. Python has a 512 MiB address-space
+soft limit; native command children have a 16 GiB address-space limit and Node
+has 128 GiB. Address space, RSS and V8 heap are different measurements. The seven
+logical actors are not an OS PID/thread maximum. In-container shell/storage
+collector descendants share the native Vault cgroup; timing out a Docker CLI
+does not prove an exec child ended. Exact container cleanup owns those children.
+Ordinary producer CPU semantics are unchanged, and the 8448 MiB ordinary variant
+still refuses the legacy 8192 MiB batch claim.
+
+A typed child must match the live exact-birth parent, private ticket/ledger,
+batch digest, complete config and resource claim. It then acquires the existing
+cell heap lock. Without a valid ticket the existing legacy UID-global exclusion
+remains intact; this producer provides no bypass flag. The existing runner
+arms the preparation-inclusive work/cleanup window and independent guard.
+Guard arming rechecks the absolute parent cutoff. Pipe collection and native
+commands use that same deadline; cleanup uses the original cleanup cutoff.
+The 6000-set prefix is never promoted to a requested 10000-set completion.
+
+Cleanup dispatch remains under the runner's existing custody lock. It verifies
+exact container ID, creation, name, label, image and quotas, plus volume creation
+and label, then confirms absence and worker termination. The normal batch caller
+also waits for the cell and guard to exit and verifies the empty cell heap
+marker. Only then can the existing ledger release the reservation. Partial
+measurements with exact cleanup let independent cells continue; uncertain
+cleanup keeps the reservation and global custody marker. Private raw output and
+safe first-failure projection remain per cell. Every result retains
+`capacityAcceptance: NOT_GRANTED`.
+
+Focused checks in [test_vault_component.py](test_vault_component.py) cover exact
+input/reservation rejection, real typed child overlap, partial failure/peer
+progress, uncertain-cleanup retention and affinity confined to a harmless child.
+They do not by themselves qualify native Vault overlap; that requires retained
+source-bound native actors, progress and independent exact cleanup evidence.

@@ -223,6 +223,22 @@ def child_lock():
     return file.parent/(ticket['id']+'.heap.lock')
 
 
+def reserved_cell(config):
+    """Bind a typed child to its parent's exact reviewed cell, not just a lock."""
+    need(child_lock() is not None,'TICKET_REQUIRED')
+    file=Path(os.environ['M7_BATCH_RESERVATION']);ticket=read(file)
+    for p in (file.parent/'batch.json',file.parent/'batch-payload.json'):
+        info=p.lstat();need(not stat.S_ISLNK(info.st_mode) and info.st_uid==os.getuid() and info.st_mode&0o077==0,'TICKET_CUSTODY')
+    spec=read(file.parent/'batch.json');payload=read(file.parent/'batch-payload.json');ledger=read(file.parent/'reservations.json')
+    need(digest(spec)==ticket['specSha256']==payload['specSha256'],'SPEC_CHANGED')
+    cells=[cell for cell in spec['cells'] if cell['id']==ticket['id']]
+    need(len(cells)==1 and cells[0]['config']==config,'CELL_CONFIG_CHANGED')
+    cell=cells[0];row=ledger['cells'][ticket['id']]
+    need(row['resources']==cell['resources'] and row['offeredRps']==cell['offeredRps'],'CELL_RESERVATION_CHANGED')
+    need(type(payload['root']) is str and Path(payload['root']).is_absolute(),'PAYLOAD_ROOT')
+    return cell,spec,Path(payload['root'])
+
+
 @contextmanager
 def local_custody(directory, spec):
     import diagnostic_resources as resources
