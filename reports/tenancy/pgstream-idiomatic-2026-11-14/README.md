@@ -2127,3 +2127,104 @@ all 37 bindings of the preceding 512 MiB outcome also remain unchanged. The old
 512 MiB/9,802 failure stays historically unexplained. No operator resource
 recommendation, selected image change, application acceptance or capacity
 promotion follows; the source coordinator owns the next integration boundary.
+
+## Evaluator 512 MiB diagnostic: late identified intake — 2026-11-16
+
+**Reproduced; criterion remains open.** The diagnostic still failed the unchanged
+120-second per-write completion observation budget. A frame with the probe's
+matching SGV date appeared 228.946 seconds after its request. This is a matching-date
+observation, not proof of full clinical equivalence outside the budget. Capacity
+acceptance remains **NOT_GRANTED**. No production patch or resource default was adopted.
+
+The selected case retained 1,000 tenants, 64 viewers, 7 requests/second, primer
+concurrency 4, one JWT, 10-second warmup, 30-second idle and 180-second load.
+Evaluator CPU stayed at 250 millicpus; its memory and memory-plus-swap limits were
+512 MiB, with effective swap zero. Other role allocations stayed unchanged.
+Timeline preload, client tap, SQL/RAM companion and five initial native Docker
+reads add observation cost. This is not a pure causal comparison with the earlier
+256 MiB case. The explicit profile reserves 4,000 millicpus and 8,448 MiB across
+roles, plus the existing 1,024 MiB host V8 heap allowance.
+
+Provisioning and priming persisted all 1,000 tenants. All 1,263 scenario attempts
+received HTTP responses, with zero transport failures or dropped iterations.
+Ordinary accepted/stored writes matched at 345 (115 each of entries, devicestatus
+and treatments); the one accepted probe was stored, with zero uncertain writes.
+All 64 viewers remained connected. These input/delivery counts do not satisfy
+clinical progression: readiness, idle and load each failed
+`M7_EVALUATOR_PROGRESS_ERROR`; completed output failed `M7_COMPLETION_PENDING`.
+Catchup was UNMEASURED (`M7_DRAIN_COLLECTION_REFUSED`); collection stopped with
+`M7_COMPLETED_OUTPUT_ORACLE`. The 120-second budget is an instrument budget, not
+an application service-level objective.
+
+The exact target write stamp is `1794836383991`; its parsed Data LSN, HTTP header
+and idempotency value all equal `0/6979DE8`. The retained sequence is:
+
+| interval | measured wall-clock elapsed |
+|---|---:|
+| request to writer ACK | 150 ms |
+| writer ACK to first trace-linked HTTP handler callback | 226,758 ms |
+| that callback to observed-receipt COMMIT return | 21 ms |
+| observed COMMIT return to actual scheduler run callback | 2 ms |
+| HTTP callback to durable completion callback return | 1,923 ms |
+| completion callback return to matching-date frame | 115 ms |
+
+Source-local monotonic stamps retain ordering; cross-process deltas use the
+retained common-host wall timestamps. The client's SGV date identifies the probe;
+it is separate from the request/ACK elapsed clock. Receipt COMMIT returned before
+local HTTP 204 finish. The run callback has no version field; its subsequent
+durable begin carries the exact target stamp. No timer-set event was captured,
+so the scheduling instant is UNMEASURED. No independent post-budget SQL completion
+witness was collected; the late callback/frame do not turn the strict gate green.
+
+The HTTP callback timestamp is captured at handler entry, but emitted only after
+the parsed body identifies a selected clock. Earlier aborted or unparsed attempts,
+sender enqueue/send and kernel/socket arrival are UNMEASURED. The long pre-callback
+gap cannot distinguish Go delivery from Node event-loop, pre-handler, authorization
+or body-parsing delay. Preceding selected A/B clock notifications were parsed
+before the target; global source counters are not per-target proof. A post-write
+WAL upper bound, exact commit position, Data LSN and flush watermark remain
+separate observations. The historical cause is still open.
+
+Both accepted-probe and late-probe SQL→RAM→SQL brackets are COMPLETE, with all six
+content hashes verified. At both brackets, A's writer clock exceeded its old
+observed/completed clock while RAM reported ready, idle, two acquisitions and no
+failed completion. The quiet tenant's writer stayed unchanged, with no completed
+output and RAM still booting. These are independent persisted/RAM observations;
+the unchanged wire has no pending epoch or since field, which remain UNMEASURED.
+
+The qualified primary evaluator was Node PID 3828125, birth 439651239, distinct
+from Docker PID 1. Its exact container, PID and birth, and Go PID 3830484/birth
+439652314, persisted across all five load snapshots through
+`1794836647.7142107`, after the late frame. Neither primary restarted through the
+delay. Initial Docker RestartCount was zero; final Docker restart metadata was
+not captured. The retained kernel query spans the original window through
+`1794836664`, returned successfully and contained no owned PID/container OOM
+matches. This does not exclude memory pressure, garbage collection or another
+process's OOM. An extra Node appeared in after-prime with unmeasured role; aggregate
+cgroup CPU is not attributed to the primary.
+
+Frozen alignment helper `b385219e5e1662da183e10d0c8fe13753ab46935`, instrument
+`301981ca068e58ca3faf6ae3467590f71b9b671cc564294855b09bd7ade28c0c`, ran runtime
+`1646f00437cb207cb5acf0da0f3474b68f78bc04` with deployment
+`8ddfab1e46e3fd577f1e96e738ab5207f9925abf` and image
+`sha256:e3cd382058af98c8aa0fe2a71451f2a539066b087e6ed059e8d7c8124f73a126`.
+The original prepared clock was adopted without reset. The entered execute-only
+wrapper published fsynced safe fields before runtime effects; earlier wrapper
+candidates were not entered. The `setsid` utility parent's exit was not used as
+proof that its prepare child had completed.
+
+Retained immutable evidence is
+`externals/work/performance-enhancements-20261115/single-host/attribution-current/clinical-eval250-memory512-point-02/`.
+Its `outcome.json` SHA256 is
+`fbc666e338931c35ed68ed28b0d1d21276a12906b1039dabd09414b1add3751d`,
+binding 61 inputs, independently rechecked. The finite timeline has 168 rows,
+43,174 bytes, no dropped/pending writes and SHA256
+`5a2da8029574cfb839ff85dfe5bd97606cc3b1aff4f935311c347c75ec065604`.
+Retention is COMPLETE; its status says `closed:false`, so no explicit trace seal
+is claimed. Captured originals remain outside Git.
+
+Cleanup and independent absence passed: owned containers, networks, volumes,
+port 38983 and retained process births/groups were absent; the driver lock was
+available. The lane is CLOSED and holds no resource slot or queued retry. Root
+owns the next source/integration boundary. Local custody remains in
+`externals/work/HANDOFF-clinical-pending-2026-11-15.md`.
