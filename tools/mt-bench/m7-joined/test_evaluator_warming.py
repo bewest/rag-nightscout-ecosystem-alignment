@@ -46,6 +46,28 @@ class Warming(unittest.TestCase):
         self.assertEqual(row['progress']['lastCompletedAgeMs'],{'type':'missing'})
         self.assertLessEqual(len(json.dumps(row).encode()),p.REFUSAL_ROW_MAX_BYTES)
         self.assertNotIn('must-not-publish',json.dumps(cost))
+    def test_existing_job_flags_survive_health_failure_without_arbitrary_job_data(self):
+        frame=self.frame();row=frame['view']['tenants'][0]
+        row.update(code='EVALUATOR_CLINICAL_PENDING')
+        flags=dict.fromkeys(('running','booting','acquire','time','parentAcquire','parentTime'),False)
+        flags.update(running=True,parentAcquire=True)
+        row['jobs']={**flags,'privateSyntheticMarker':'must-not-retain'}
+        with self.assertRaisesRegex(p.Refused,'ERROR') as caught:self.collect(frame)
+        self.assertEqual(caught.exception.verdict,'FAIL')
+        diagnostic=caught.exception.collection['diagnostic']['failedRow']
+        self.assertEqual(diagnostic['jobs'],flags)
+        self.assertNotIn('must-not-retain',json.dumps(diagnostic))
+        self.assertLessEqual(len(json.dumps(diagnostic).encode()),p.REFUSAL_ROW_MAX_BYTES)
+        def criterion():
+            self.assertEqual(p._refusal_row(row,'evaluator',A)['jobs'],flags)
+        criterion()
+        real=p._refusal_row
+        def omit_jobs(*args):
+            value=real(*args);value.pop('jobs');return value
+        with patch.object(p,'_refusal_row',side_effect=omit_jobs):
+            with self.assertRaises(KeyError):criterion()
+        criterion()
+
     def test_remaining_contract_diagnostics_keep_predicate_and_actual_bounded_row(self):
         for field,value in [('cycles',False),('admitted','true'),('ready',0)]:
             frame=self.frame();frame['view']['tenants'][0][field]=value
