@@ -130,7 +130,6 @@ def observational_baseline(error):
     if isinstance(diagnostic,dict):
         row=diagnostic.get('failedRow',{})
         failed=row.get('progress',{}).get('failedCompletions') if isinstance(row.get('progress'),dict) else None
-        if type(failed) is int and failed>0:return False
         if row.get('admitted') is False:raise p.Refused('M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
         if str(error)=='M7_EVALUATOR_PROGRESS_ERROR':
             # Only the decoder's existing explicit warming shape is ambiguous.
