@@ -919,11 +919,15 @@ bounded non-ready gap before ACK; the input cache is evicted, its sealed
 checkpoint column stays unchanged, and only successful bounded bootstrap clears
 the gap. Mocked SQL checks that gap persistence replaces old cache metadata.
 Full and compact receipt states must enforce the same exact byte boundary.
+The actual migration inspector must preserve standard-to-ordered upgrades with
+the single reviewed common storage-size tail; unknown or changed history,
+missing ordinary prefixes, duplicate rows and forged typed SQL still refuse.
 Actual-source mutations drop same-LSN rows, deletes or XID
 isolation, restore the invalid-row bootstrap filter, remove the timer coverage
 guard, restore the held-tenant batch barrier, clear every tenant retry on one
 wake, block recovery paging on held work, undercount metadata bytes, mark a gap
-ready, retain stale cache metadata, or remove the raw receipt await; each must fail for its named symptom before restoration passes.
+ready, retain stale cache metadata, disable exact size-tail commutation, or
+remove the raw receipt await; each must fail for its named symptom before restoration passes.
 
 Capture originals stay outside Git. Retain the executed probe, schema/source
 identity and checksum beside the capture. These controls preserve source-level

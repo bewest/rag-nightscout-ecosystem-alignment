@@ -173,10 +173,38 @@ function gapCoverage(api,event){
  assert.throws(()=>api.recoverableGap(saved,'CLINICAL_STREAM_IDENTITY',event.lsn,local),/CLINICAL_STREAM_GAP_REASON/,'MALFORMED_EVENT_MUST_NOT_BECOME_GAP');
  return {saved,maxBytes:bytes,maxRows:1,expectGap:true};
 }
+async function migrationCompatibility(core,inspect){
+ const catalogue=require(path.join(core,'lib/migrations/catalogue.js'));inspect=inspect||require(path.join(core,'lib/migrations/postgres-check.js')).inspect;
+ const isSize=file=>file.operation?.kind==='clinical-storage-size-v1';
+ const rows=files=>files.map(({name,checksum})=>({name,checksum})).sort((a,b)=>a.name.localeCompare(b.name));
+ async function check(files,applied){return inspect(async sql=>({rows:sql.includes('to_regclass')?[{present:true}]:restore(applied)}),{files,table:'"synthetic".schema_migrations'});}
+ for(const domain of ['treatments','profile','devicestatus']){
+  const standardRaw=require(path.join(core,'migrations/candidates/postgres-'+domain+'-v1.json')),orderedRaw=require(path.join(core,'migrations/candidates/postgres-'+domain+'-socket-order-v1.json'));
+  const standard=catalogue.validateCatalogue(standardRaw),ordered=catalogue.validateCatalogue(orderedRaw),size=ordered.find(isSize),ordinary=ordered.filter(f=>!isSize(f));
+  const names=new Set(standard.map(f=>f.name)),upgrade=await check(ordered,rows(standard));
+  assert.deepEqual(upgrade.pending,ordered.filter(f=>!names.has(f.name)).map(f=>f.name),'SIZE_TAIL_SKIPS_ORDINARY_UPGRADE');
+  assert.equal(standard.find(isSize).name,size.name,'STANDARD_ORDERED_SIZE_TAIL_DIFFERS');
+  assert.deepEqual((await check(ordered,rows(ordinary))).pending,[size.name],'OLD_ORDERED_SIZE_UPGRADE_LOST');
+  assert.equal((await check(ordered,rows(ordered))).current,true,'COMPLETE_ORDERED_LEDGER_REFUSED');
+  const drift=rows(ordered);drift.at(-1).checksum='0'.repeat(64);
+  await assert.rejects(check(ordered,drift),e=>e.code==='MIG_DRIFT','SIZE_CHECKSUM_DRIFT_ACCEPTED');
+  await assert.rejects(check(ordered,[...rows(ordinary),{name:'0098_synthetic_unknown',checksum:'0'.repeat(64)}]),e=>e.code==='MIG_UNKNOWN','UNKNOWN_TAIL_ACCEPTED');
+  await assert.rejects(check(ordered,rows([ordinary[0],ordinary[2],size])),e=>e.code==='MIG_HISTORY','ORDINARY_HISTORY_GAP_ACCEPTED');
+  await assert.rejects(check(ordered,rows([size])),e=>e.code==='MIG_HISTORY','SIZE_WITHOUT_BASE_HISTORY_ACCEPTED');
+  const duplicate=rows(ordered);duplicate.push(restore(duplicate.at(-1)));
+  await assert.rejects(check(ordered,duplicate),e=>e.code==='MIG_HISTORY','DUPLICATE_HISTORY_ACCEPTED');
+  const forged=restore(orderedRaw),tail=forged.migrations.find(isSize);tail.up.push('SELECT 1');tail.checksum=catalogue.checksum(tail.up);
+  assert.throws(()=>catalogue.validateCatalogue(forged),e=>e.code==='MIG_OPERATION_SQL','UNREVIEWED_TYPED_TAIL_ACCEPTED');
+ }
+}
 async function run(core,capture){
  const file=path.join(core,'lib/storage/clinical-stream-state.js'),source=fs.readFileSync(file,'utf8'),events=fs.readFileSync(capture,'utf8').trim().split('\n').map(JSON.parse);
  const api=require(file),result=exercise(api,events),controls=[];
  const gapOptions=gapCoverage(api,events[0]);
+ await migrationCompatibility(core);
+ const inspectFile=path.join(core,'lib/migrations/postgres-check.js'),inspectSource=fs.readFileSync(inspectFile,'utf8'),tail='const size = file =>';assert.equal(inspectSource.split(tail).length,2,'MIGRATION_ABLATION_SOURCE_MISMATCH');
+ const strictPrefix={exports:{}};vm.runInThisContext('(function(require,module,exports){'+inspectSource.replace(tail,'const size = file => false &&')+'\n})',{filename:inspectFile})(createRequire(inspectFile),strictPrefix,strictPrefix.exports);
+ await assert.rejects(migrationCompatibility(core,strictPrefix.exports.inspect),e=>e.code==='MIG_HISTORY');await migrationCompatibility(core);controls.push('independent-size-tail-prefix');
  result.properties.push('bounded durable GAP/bootstrap','full/metadata byte parity');
  const undercount='(state.rowBytes??2)+8';assert.equal(source.split(undercount).length,2,'BYTE_ABLATION_SOURCE_MISMATCH');
  const shortBound={exports:{}};vm.runInThisContext('(function(require,module,exports){'+source.replace(undercount,'(state.rowBytes??2)+7')+'\n})',{filename:file})(createRequire(file),shortBound,shortBound.exports);
@@ -232,5 +260,5 @@ async function run(core,capture){
  await assert.rejects(receipt(core,events[0],broken.exports),/RAW_ACK_BEFORE_COMMIT/);await receipt(core,events[0],receiver);controls.push('raw-ACK-before-commit');
  return {verdict:'PASS',scope:'actual-module state/native payloads and mocked SQL commit boundary; deployed recovery unmeasured',...result,controls};
 }
-module.exports={run,exercise,dueCoverage};
+module.exports={run,exercise,dueCoverage,migrationCompatibility};
 if(require.main===module){(async()=>{if(process.argv.length!==4)throw Error('Usage: node materializer-row-control.cjs APP_WORKTREE DECODER_JSONL');console.log(JSON.stringify(await run(path.resolve(process.argv[2]),path.resolve(process.argv[3]))));})().catch(error=>{console.error(error.stack);process.exitCode=1;});}
