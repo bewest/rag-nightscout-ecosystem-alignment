@@ -1087,7 +1087,7 @@ def process_counters(text):
     return result
 
 
-def memory_observation(container_id):
+def memory_observation(container_id, started_at=None):
     # Separate reads preserve the legacy concatenated cgroup parser exactly.
     result={'status':'UNMEASURED','scope':'container-cgroup lifetime since birth or last external reset; not phase peak'}
     try:
@@ -1105,6 +1105,15 @@ def memory_observation(container_id):
         require(bool(events),'M7_MEMORY_EVENTS_INVALID')
         result['memoryEvents']=events
     except (RuntimeError,ValueError):result['memoryEvents']='UNMEASURED'
+    if isinstance(started_at,str) and re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z',started_at):
+        try:
+            inspected=json.loads(command(['docker','inspect','--format','{{json .}}',container_id]))
+            require(inspected.get('Id')==container_id and inspected.get('State',{}).get('StartedAt')==started_at,'M7_MEMORY_BIRTH_CHANGED_DURING_READ')
+            result['birth']={'containerId':container_id,'startedAt':started_at,'source':'docker-inspect-state-started-at-v1','stableRead':True}
+        except (ValueError,RuntimeError):
+            # An optional counter cannot describe a lifetime that changed while
+            # it was read. Preserve other phase observations without continuity.
+            result.update(status='UNMEASURED',reason='container-birth-unverified');result.pop('memoryPeakBytes',None)
     return result
 
 
@@ -1117,7 +1126,7 @@ def phase_snapshot(d, out, name):
         try:
             raw = command(["docker", "exec", row["Id"], "cat", "/sys/fs/cgroup/cpu.stat", "/sys/fs/cgroup/memory.current", "/sys/fs/cgroup/memory.stat"])
             processes = command(["docker", "top", row["Id"], "-eo", "pid,comm,rss"])
-            result[role] = {"id": row["Id"], "cgroup": raw, "processRssKiB": processes,"hostProcesses":process_counters(processes),"memoryObservation":memory_observation(row["Id"])}
+            result[role] = {"id": row["Id"], "cgroup": raw, "processRssKiB": processes,"hostProcesses":process_counters(processes),"containerStartedAt":row.get("State",{}).get("StartedAt"),"memoryObservation":memory_observation(row["Id"],row.get("State",{}).get("StartedAt"))}
         except RuntimeError:
             result[role] = {"id": row["Id"], "unavailable": True}
     write(out / (name + "-cgroups.json"), {"at": time.time(), "roles": result})

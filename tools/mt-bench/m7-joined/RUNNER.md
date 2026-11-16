@@ -527,3 +527,10 @@ refuses this selection as `REMOTE_DEMAND_RECOVERY_LOCAL_ONLY`; a coordinated
 controller/deployment implementation is required before a remote capture can use
 it. Offline mocked scheduling and controls qualify helper behavior; native
 restart-under-demand remains UNMEASURED until an actual selected capture runs.
+
+Memory observations bind each read to Docker inspect `State.StartedAt` from
+the owned container census and matching post-read inspect. A changed start
+timestamp with the same container ID separates the two cgroup lifetimes. Their
+peaks remain separate observations and the phase gap/events delta are UNMEASURED.
+Same-lifetime counter rewinds still refuse. Captures without verified birth
+metadata retain unknown continuity; this does not repair old captures.

@@ -9,7 +9,7 @@ import reduce as r
 
 class MemoryPeak(unittest.TestCase):
     def row(self,peak=200,identity='same'):
-        return {'id':identity,'memoryObservation':{'status':'MEASURED','memoryPeakBytes':peak,'memoryEvents':{'oom':0,'oom_kill':0,'high':1}}}
+        return {'id':identity,'containerStartedAt':'2026-11-16T20:00:00.000000001Z','memoryObservation':{'status':'MEASURED','memoryPeakBytes':peak,'memoryEvents':{'oom':0,'oom_kill':0,'high':1},'birth':{'containerId':identity,'startedAt':'2026-11-16T20:00:00.000000001Z','source':'docker-inspect-state-started-at-v1','stableRead':True}}}
     def test_native_capture_separate_reads_missing_invalid_never_zero(self):
         with patch.object(a,'command',side_effect=['123\n','oom 0\noom_kill 0\n']) as command:
             value=a.memory_observation('exact-id')
@@ -43,12 +43,33 @@ class MemoryPeak(unittest.TestCase):
                 a.phase_snapshot(d,d,'before')
             role=a.document(d/'before-cgroups.json')['roles']['evaluator']
             self.assertEqual(role['cgroup'],raw);self.assertEqual(role['id'],'exact-id');self.assertEqual(role['memoryObservation']['memoryPeakBytes'],2048)
+    def test_restart_lifetime_gap_and_forged_birth_refusal(self):
+        first=self.row(500);last=self.row(100);last['containerStartedAt']='2026-11-16T21:00:00.000000001Z';last['memoryObservation']['birth']['startedAt']=last['containerStartedAt']
+        value=r.memory_peak_observation(first,last)
+        self.assertEqual(value['status'],'UNMEASURED');self.assertEqual(value['reason'],'container-lifetime-changed')
+        self.assertEqual(value['memoryPeakBytesBeforeLifetime'],500);self.assertEqual(value['memoryPeakBytesAfterLifetime'],100);self.assertEqual(value['memoryEventsDelta'],'UNMEASURED')
+        old=copy.deepcopy(first);del old['memoryObservation']['birth']
+        self.assertEqual(r.memory_peak_observation(old,last)['reason'],'container-birth-unavailable')
+        for field,value in [('containerId','forged'),('startedAt','forged'),('source','caller-asserted'),('stableRead',False)]:
+            bad=copy.deepcopy(last);bad['memoryObservation']['birth'][field]=value
+            with self.assertRaisesRegex(RuntimeError,'BIRTH_PROVENANCE'):r.memory_peak_observation(first,bad)
+        older=copy.deepcopy(last);older['containerStartedAt']='2026-11-16T19:00:00Z';older['memoryObservation']['birth']['startedAt']=older['containerStartedAt']
+        with self.assertRaisesRegex(RuntimeError,'BIRTH_REWIND'):r.memory_peak_observation(first,older)
+        with self.assertRaisesRegex(RuntimeError,'PEAK_RESET'):r.memory_peak_observation(first,self.row(100))
+    def test_capture_brackets_started_at_and_refuses_midread_restart(self):
+        import json
+        started='2026-11-16T20:00:00.000000001Z'
+        for changed in (False,True):
+            row={'Id':'id','State':{'StartedAt':'2026-11-16T21:00:00Z' if changed else started}}
+            with patch.object(a,'command',side_effect=['123','oom 0',json.dumps(row)]):value=a.memory_observation('id',started)
+            if changed:self.assertEqual(value['status'],'UNMEASURED');self.assertNotIn('birth',value)
+            else:self.assertEqual(value['birth']['startedAt'],started)
     def test_omitted_identity_and_monotonicity_checks_are_detectable(self):
         first=self.row();broken=self.row(100,'foreign')
         def bad_reader(first,last):return {'memoryPeakBytesAfter':last['memoryObservation']['memoryPeakBytes']}
         self.assertEqual(bad_reader(first,broken)['memoryPeakBytesAfter'],100)
         with self.assertRaisesRegex(RuntimeError,'CONTAINER_CHANGED'):r.memory_peak_observation(first,broken)
-        broken['id']='same'
+        broken['id']='same';broken['memoryObservation']['birth']['containerId']='same'
         with self.assertRaisesRegex(RuntimeError,'PEAK_RESET'):r.memory_peak_observation(first,broken)
         self.assertEqual(r.memory_peak_observation(first,self.row(300))['status'],'MEASURED')
 

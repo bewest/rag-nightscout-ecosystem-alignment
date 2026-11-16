@@ -38,8 +38,20 @@ def memory_peak_observation(first, final):
     if initial.get('status')!='MEASURED' or last.get('status')!='MEASURED':
         return {'status':'UNMEASURED','scope':scope,'reason':'missing-or-invalid-memory-peak'}
     require(isinstance(first.get('id'),str) and first['id'] and first['id']==final.get('id'),'M7_MEMORY_CONTAINER_CHANGED')
+    births=[initial.get('birth'),last.get('birth')]
+    if any(birth is None for birth in births):
+        return {'status':'UNMEASURED','scope':scope,'reason':'container-birth-unavailable'}
+    for row,birth in zip((first,final),births):
+        require(isinstance(birth,dict) and set(birth)=={'containerId','startedAt','source','stableRead'} and birth['containerId']==row['id'] and birth['startedAt']==row.get('containerStartedAt') and isinstance(birth['startedAt'],str) and re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z',birth['startedAt']) and birth['source']=='docker-inspect-state-started-at-v1' and birth['stableRead'] is True,'M7_MEMORY_BIRTH_PROVENANCE')
     before=initial.get('memoryPeakBytes');after=last.get('memoryPeakBytes')
-    require(type(before)is int and type(after)is int and 0<=before<=after,'M7_MEMORY_PEAK_RESET')
+    require(type(before)is int and type(after)is int and before>=0 and after>=0,'M7_MEMORY_PEAK_RESET')
+    def start_order(value):
+        whole,_,fraction=value.removesuffix('Z').partition('.')
+        return whole,int(fraction.ljust(9,'0'))
+    require(start_order(births[0]['startedAt'])<=start_order(births[1]['startedAt']),'M7_MEMORY_BIRTH_REWIND')
+    if births[0]['startedAt']!=births[1]['startedAt']:
+        return {'status':'UNMEASURED','scope':scope,'reason':'container-lifetime-changed','memoryPeakBytesBeforeLifetime':before,'memoryPeakBytesAfterLifetime':after,'birthBefore':births[0],'birthAfter':births[1],'memoryEventsDelta':'UNMEASURED','phaseGap':'UNMEASURED'}
+    require(before<=after,'M7_MEMORY_PEAK_RESET')
     result={'status':'MEASURED','scope':scope,'memoryPeakBytesBefore':before,'memoryPeakBytesAfter':after}
     a,b=initial.get('memoryEvents'),last.get('memoryEvents')
     if isinstance(a,dict) and isinstance(b,dict) and a and set(a)==set(b):
