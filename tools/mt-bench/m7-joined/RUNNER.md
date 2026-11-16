@@ -538,6 +538,10 @@ errors, counter rewinds, foreign work and unexpected runtime changes still
 refuse the observation. Durable accepted targets, restore and authority fences,
 completion coverage and matching client frames keep their separate checks.
 The strict progress and recovery modes retain their original counter rules.
+New pgstream discovery fixtures using `evaluator-work-v2` select the existing
+`received-input-v1` observer when the caller omits that option. The generated
+manifest records the selection. This also covers the canonical remote worker;
+its omitted CLI option does not fall back to the strict idle/load assessor.
 
 The remote supervisor has a different load route. Remote projection explicitly
 refuses this selection as `REMOTE_DEMAND_RECOVERY_LOCAL_ONLY`; a coordinated

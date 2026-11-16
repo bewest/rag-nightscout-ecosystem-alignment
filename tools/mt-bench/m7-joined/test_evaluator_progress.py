@@ -119,6 +119,17 @@ class Progress(unittest.TestCase):
         broken=copy.deepcopy(rounds);broken[-1]['owners'][A]['code']='EVALUATOR_WINDOW_REFUSED'
         with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):p.stable_discovery_baseline(broken[0],broken[-1],[A,B])
 
+    def test_default_discovery_selection_control_and_restore(self):
+        import adapter as a
+        from types import SimpleNamespace
+        def criterion(select):
+            m={'runPurpose':'discovery','profile':'pgstream-sample','completionContract':'evaluator-work-v2'}
+            select(SimpleNamespace(evaluator_opportunities=None),m)
+            self.assertEqual(m.get('evaluatorOpportunities'),'received-input-v1')
+        criterion(a.select_opportunities)
+        with self.assertRaises(AssertionError):criterion(lambda args,m:None)
+        criterion(a.select_opportunities)
+
     def test_closed_window_state_and_wrong_self_coverage_fail(self):
         def broken(frame):frame['view']['tenants'][0]['code']='EVALUATOR_WINDOW_REFUSED';return frame
         with self.assertRaises(p.Refused) as caught:self.round(transform=broken)

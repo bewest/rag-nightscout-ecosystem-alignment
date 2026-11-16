@@ -1417,6 +1417,8 @@ def opportunity_contract(m):
 
 def select_opportunities(args,m):
     selected=getattr(args,'evaluator_opportunities',None)
+    if selected is None and m.get('runPurpose')=='discovery' and m.get('profile')=='pgstream-sample' and m.get('completionContract')=='evaluator-work-v2':
+        selected='received-input-v1'
     if selected is not None:m['evaluatorOpportunities']=selected;opportunity_contract(m)
 
 

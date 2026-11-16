@@ -93,6 +93,14 @@ class DiscoverySource(unittest.TestCase):
                     cell.main();parsed=prepare.call_args.args[0]
                     self.assertEqual(app.a.cadence_options(parsed),protocol.prepared_cadence(b));self.assertEqual(parsed.tenants,tenants)
                     self.assertEqual(parsed.core_commit,b['pair']['core']);self.assertEqual(parsed.image,b['imageId'])
+                    # Actual canonical worker omits the optional knob. The shared
+                    # prepare selection must still choose discovery's durable observer.
+                    self.assertIsNone(parsed.evaluator_opportunities)
+                    manifest={'runPurpose':'discovery','profile':parsed.profile,'completionContract':parsed.completion_contract}
+                    app.a.select_opportunities(parsed,manifest)
+                    self.assertEqual(manifest['evaluatorOpportunities'],'received-input-v1')
+                    strict={**manifest,'runPurpose':'acceptance'};strict.pop('evaluatorOpportunities')
+                    app.a.select_opportunities(parsed,strict);self.assertNotIn('evaluatorOpportunities',strict)
 
     def test_independent_totals_and_local_explicit_zero_admission(self):
         for total in (0,2,53,80000):
