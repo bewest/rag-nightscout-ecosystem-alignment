@@ -196,8 +196,9 @@ The ordinary single-point commands and their defaults stay available.
 Start from [the local batch template](examples/local-batch.json). Replace its
 source/helper/receipt paths and hashes, project/CIDRs and zero cleanup cutoff
 with the reviewed inputs and original absolute cutoff; the template is inert.
-Both cells use the same immutable source/image/helper and run sequentially under
-the current whole-cell envelope even though two execution slots are declared.
+Both cells reuse the same immutable source/image/helper. The template declares
+room for two whole cells. Set its aggregate envelope to the resources allocated
+to your lane; a smaller envelope queues cells without reducing their quotas.
 
 Batch digests use the [shared canonical vectors](examples/batch-digest-vectors.json).
 Numbers must be finite; integral numbers must fit the exact shared range
@@ -235,9 +236,13 @@ This profile reserves 500 millicpus/1 GiB for k6 and the remaining 3500
 millicpus/7 GiB for SUT roles and declared oneoffs. Host heaps include helper,
 generator and probe overlaps. Host RSS/native memory remains separately observed;
 a V8 heap limit does not bound RSS. Plans expose this allocation breakdown.
-The aggregate local CPU, memory and heap envelope cannot exceed those existing
-limits. Full cells therefore queue. A smaller policy needs its own typed producer
-and controls before local full-cell concurrency can increase.
+The aggregate envelope is configurable independently of those per-cell limits.
+Two simultaneous full cells require at least 8000 millicpus, 17179869184 memory
+bytes, 2048 MiB host heaps and 128 live resources, plus their summed offered rate
+and two execution slots. The caller must keep that envelope within its allocated
+host resources. A smaller per-cell quota still needs a typed producer and controls.
+Concurrent cells share the host: record contention in comparison evidence; the
+scheduler does not reserve a quiet machine or bound host RSS.
 
 Each batch holds the original UID-global driver lock and atomically reserves
 whole cells in a private ledger. Only a live exact-birth coordinator and matching
@@ -248,7 +253,9 @@ The unchanged independent guard owns each cell's finite cleanup window, starting
 with preparation; the batch cutoff never extends it. Source-loader preflight now
 runs automatically during batch preparation before services. A failed cell keeps
 its private phase and partial outputs. Admission continues for independent cells
-when exact absence is proved. Unconfirmed cleanup retains its reservation.
+when their reservations fit. Unconfirmed cleanup retains its entire reservation.
+A child rechecks the ticket's absolute cleanup cutoff before preparation, so
+process-launch delay cannot silently authorize a fresh full window.
 Coordinator death leaves custody markers intact for explicit exact-resource
 reconciliation; PID expiry alone never frees resources.
 
@@ -276,3 +283,16 @@ and use the existing authoritative budget/custody hooks. Paid allocation and
 transport remain with the remote owner. Independent remote pairs retain exact
 unconditional deletion; retaining a pair across cells is a separate reset and
 rig-ownership capability. Active experiments stay pinned to their original tools.
+
+
+Scheduling checks use the real local caller/process/ticket/flock path with
+synthetic prepare/execute actors, and the remote caller with synthetic root hooks.
+They qualify admission, overlap, failure isolation and custody, not application
+capacity or a native live provider gateway. Remote batches reuse verified sealed
+input directories; `batch-run` does not call `bundle` or export images again.
+Changed inputs require their own matching source/image/helper pins and hashes.
+Remote cleanup uncertainty retains accounting while other eligible pairs proceed;
+reservation/authority uncertainty stops admission. Per-cell deadlines skip only
+the expired cell; the common cutoff leaves no cell eligible. Native approval
+message lookup/provider installation remains UNMEASURED here and belongs to the
+remote custodian; source adapters do not grant tool permissions.

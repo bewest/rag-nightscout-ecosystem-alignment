@@ -146,7 +146,7 @@ class Batch(unittest.TestCase):
             self.assertEqual([c[0] for c in calls],['prepare','source-preflight'])
             self.assertEqual(calls[1][1],['source-preflight',str(root/'fixture')])
 
-    def test_local_profile_no_smaller_or_larger_authority(self):
+    def test_local_whole_cell_limits_and_configurable_aggregate(self):
         spec=fixture(1)
         with tempfile.TemporaryDirectory() as tmp,patch.object(runner,'validate_config'):
             (Path(tmp)/'fixture').write_bytes(b'synthetic')
@@ -162,7 +162,9 @@ class Batch(unittest.TestCase):
             cell['resources']['millicpus']=3999
             with self.assertRaisesRegex(RuntimeError,'LOCAL_RESERVATION_CHANGED'):runner.local_batch_plan(spec,tmp)
             cell['resources']['millicpus']=4000;spec['envelope']['millicpus']=8000
-            with self.assertRaisesRegex(RuntimeError,'LOCAL_ENVELOPE_EXCEEDED'):runner.local_batch_plan(spec,tmp)
+            runner.local_batch_plan(spec,tmp)
+            spec['envelope']['millicpus']=3999
+            with self.assertRaisesRegex(RuntimeError,'CELL_OVERCOMMIT'):runner.local_batch_plan(spec,tmp)
 
     def test_real_legacy_lock_and_stale_marker(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -195,6 +197,62 @@ class Batch(unittest.TestCase):
                 ledger.reserve(spec['cells'][0])
             with self.assertRaisesRegex(RuntimeError,'STALE_HOST_LEASES'):resources.Runtime().acquire(path)
             self.assertTrue(path.read_bytes())
+
+    def test_actual_batch_caller_overlaps_processes_and_preserves_ticket_inputs(self):
+        # Real batch_run -> exec -> batch_cell -> ticket/flock. Only synthetic
+        # prepare/execute replace app actors; native SUT/provider is unmeasured.
+        spec=fixture(2)
+        spec['envelope'].update({b.CAP_KEYS[k]:v*2 for k,v in b.LOCAL_RESOURCES.items()})
+        for cell in spec['cells']:
+            cell['resources']=dict(b.LOCAL_RESOURCES)
+            cell['config']={'workSeconds':30,'cleanupSeconds':30,'source':spec['payload']['source']}
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp);shim=folder/'shim';shim.mkdir();out=folder/'output';lock=folder/'global.lock'
+            (shim/'runner.py').write_text("""
+import sys,os,time,json
+from pathlib import Path
+sys.path.insert(0,os.environ['TEST_RUNNER_SOURCE'])
+import runner,experiment_batch as b,diagnostic_resources as resources
+b.global_lock_path=lambda:Path(os.environ['TEST_RUNNER_LOCK'])
+def prepare(config,root):
+    root.mkdir();cfg=b.read(config);ticket=b.read(os.environ['M7_BATCH_RESERVATION'])
+    lease=resources.Runtime();lease.acquire()
+    start=time.time();(root.parent/(root.name+'.started')).touch()
+    until=time.monotonic()+3
+    while len(list(root.parent.glob('*.started')))<2 and time.monotonic()<until:time.sleep(.01)
+    assert len(list(root.parent.glob('*.started')))==2,'processes did not overlap'
+    time.sleep(.03)
+    b.write(root/'witness.json',{'source':cfg['source'],'cleanupAt':ticket['cleanupAt'],'start':start,'end':time.time(),'pid':os.getpid()})
+    lease.close()
+def execute(root):
+    b.write(root/'cleanup.json',{'status':'ABSENT'})
+    b.write(root/'result.json',{'status':'FAILED_PARTIAL' if root.name=='c0' else 'MEASURED'})
+runner.prepare=prepare;runner.execute=execute
+runner.batch_cell(sys.argv[2],sys.argv[3])
+""")
+            file=folder/'spec.json';b.write(file,spec)
+            original=resources.Runtime.acquire
+            def acquire(runtime,lock_file=None):return original(runtime,lock_file or lock)
+            with patch.object(runner,'HERE',shim),patch.object(runner,'local_batch_plan',side_effect=lambda s,p:b.plan(s)),patch.object(runner,'guard_alive',return_value=False),patch.object(resources.Runtime,'acquire',acquire),patch.object(b,'global_lock_path',return_value=lock),patch.dict(os.environ,{'TEST_RUNNER_SOURCE':str(Path(__file__).resolve().parent),'TEST_RUNNER_LOCK':str(lock)}):
+                result=runner.batch_run(file,out,folder)
+            self.assertEqual(result['cells']['c0']['status'],'FAILED_PARTIAL')
+            self.assertEqual(result['cells']['c1']['status'],'MEASURED')
+            one=b.read(out/'c0/witness.json');two=b.read(out/'c1/witness.json')
+            self.assertNotEqual(one['pid'],two['pid'])
+            self.assertLess(max(one['start'],two['start']),min(one['end'],two['end']))
+            for witness in (one,two):
+                self.assertEqual(witness['source'],spec['payload']['source'])
+                self.assertEqual(witness['cleanupAt'],spec['envelope']['cleanupAt'])
+            self.assertTrue(all(row['status']=='ABSENT' for row in b.read(out/'reservations.json')['cells'].values()))
+
+    def test_delayed_batch_child_refuses_before_preparation(self):
+        spec=fixture(1)
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp);ledger=self.ledger(tmp,spec);ticket=ledger.reserve(spec['cells'][0]);ticket['cleanupAt']=time.time()+1
+            file=path/'ticket.json';b.write(file,ticket);config=path/'config.json';b.write(config,{'workSeconds':30,'cleanupSeconds':30})
+            with patch.dict(os.environ,{'M7_BATCH_RESERVATION':str(file)}),patch.object(b,'child_lock',return_value=path/'heap.lock'),patch.object(runner,'prepare') as prepare:
+                with self.assertRaisesRegex(RuntimeError,'M7_BATCH_CELL_DEADLINE'):runner.batch_cell(config,path/'point')
+            prepare.assert_not_called()
 
     def test_child_stale_birth_and_foreign_nonce(self):
         spec=fixture(1)

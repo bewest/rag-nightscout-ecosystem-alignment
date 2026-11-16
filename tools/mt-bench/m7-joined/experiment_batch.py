@@ -187,7 +187,7 @@ class Reservations:
                 if sum(v['resources'][key] for v in active)+cell['resources'][key]>self.spec['envelope'][CAP_KEYS[key]]:return None
             if sum(v['offeredRps'] for v in active)+cell['offeredRps']>self.spec['envelope']['maxOfferedRps']:return None
             need(ledger['spentUpperMicrousd']+cell['resources']['totalMicrousd']<=self.spec['envelope']['totalMicrousd'],'TOTAL_COST')
-            ticket={'id':cell['id'],'nonce':uuid.uuid4().hex,'batchNonce':ledger['nonce'],'specSha256':ledger['specSha256']}
+            ticket={'id':cell['id'],'nonce':uuid.uuid4().hex,'batchNonce':ledger['nonce'],'specSha256':ledger['specSha256'],'cleanupAt':self.spec['envelope']['cleanupAt']}
             ledger['cells'][cell['id']]={**ticket,'status':'RESERVED','resources':cell['resources'],'offeredRps':cell['offeredRps']}
             ledger['spentUpperMicrousd']+=cell['resources']['totalMicrousd']
             return ticket
