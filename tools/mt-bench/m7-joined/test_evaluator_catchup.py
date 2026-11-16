@@ -92,6 +92,29 @@ class Catchup(unittest.TestCase):
         self.assertEqual(result['code'], 'M7_DRAIN_DEADLINE')
         self.assertNotIn(A, result['completionBounds'])
 
+    def test_boundary_cost_consumes_same_budget_and_reserve_precedes_fetch(self):
+        cost = {'sqlQueries': 1, 'rawSqlBytes': 128, 'nodeCalls': 1}
+        value = self.observe([self.completed()], initial_cost=cost)
+        self.assertEqual(value['queries'], 2)
+        self.assertEqual(value['responseBytes'], 256)
+        self.assertEqual(value['rounds'], 2)
+        with mock.patch.dict(c.POLICY, maxRounds=1):
+            value = self.observe([], initial_cost=cost)
+            self.assertEqual(value['rounds'], 1)
+            self.assertEqual(value['captures'], [])
+            self.assertEqual(value['code'], 'M7_DRAIN_QUERY_BOUND')
+        self.now = 3_000_000_000
+        with mock.patch.dict(c.POLICY, maxQueries=1):
+            value = self.observe([], initial_cost=cost)
+            self.assertEqual(value['queries'], 1)
+            self.assertEqual(value['captures'], [])
+            self.assertEqual(value['code'], 'M7_DRAIN_QUERY_BOUND')
+        with mock.patch.dict(c.POLICY, maxBytes=128):
+            value = self.observe([], initial_cost=cost)
+            self.assertEqual(value['responseBytes'], 128)
+            self.assertEqual(value['captures'], [])
+            self.assertEqual(value['code'], 'M7_DRAIN_BYTE_BOUND')
+
     def test_changed_or_unknown_join_bracket_refuses(self):
         with self.assertRaisesRegex(p.Refused, 'WRITER_BOUNDARY'):
             c.observe(self.boundary, [A, B], BINDING, None,

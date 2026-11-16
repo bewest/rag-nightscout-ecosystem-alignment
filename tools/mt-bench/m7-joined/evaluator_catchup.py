@@ -7,6 +7,7 @@ No clock revision subtraction is an elapsed-time or CPU measurement. This module
 never triggers evaluator work and never edits the original load capture.
 """
 import math
+import re
 import time
 import evaluator_opportunities as o
 import evaluator_progress as p
@@ -54,6 +55,7 @@ def assess(boundary, previous, current, ids, binding):
 
 
 def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns, seconds=60, interval=5,
+            initial_cost=None, round_max_queries=None, round_max_bytes=o.ROUND_BYTES,
             monotonic_ns=time.monotonic_ns, sleep=time.sleep):
     """Finite collector; retain every capture and refusal, including partial work.
 
@@ -71,7 +73,18 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
            and type(writer_stopped_ns) is int and writer_stopped_ns >= 0
            and all(type(v) is int for v in boundary_window.values())
            and writer_stopped_ns <= boundary_window['startNs'] <= boundary_window['endNs'] <= started, 'M7_DRAIN_WRITER_BOUNDARY')
-    history = []; previous = boundary; queries = 0; size = 0
+    def totals(cost):
+        p.need(isinstance(cost, dict) and type(cost.get('sqlQueries')) is int and cost['sqlQueries'] == math.ceil(len(ids) / 64)
+               and type(cost.get('rawSqlBytes')) is int and 0 < cost['rawSqlBytes'] <= o.ROUND_BYTES
+               and type(cost.get('nodeCalls')) is int and cost['nodeCalls'] == 1, 'M7_DRAIN_COST')
+        inspection = cost.get('inspection', {})
+        p.need(isinstance(inspection, dict) and all(type(inspection.get(k, 0)) is int and inspection.get(k, 0) >= 0 for k in ('queries', 'bytes')), 'M7_DRAIN_COST')
+        return cost['sqlQueries'] + inspection.get('queries', 0), cost['rawSqlBytes'] + inspection.get('bytes', 0)
+    if round_max_queries is None:round_max_queries = math.ceil(len(ids) / 64)
+    p.need(type(round_max_queries) is int and round_max_queries > 0 and type(round_max_bytes) is int and round_max_bytes > 0, 'M7_DRAIN_BOUND')
+    history = []; previous = boundary; initial_rounds = int(initial_cost is not None)
+    queries, size = totals(initial_cost) if initial_cost is not None else (0, 0)
+    p.need(queries <= POLICY['maxQueries'] and size <= POLICY['maxBytes'], 'M7_DRAIN_INITIAL_COST')
     result = initial; code = None
     last_pending = {t: boundary_window['startNs'] for t, row in initial['byTenant'].items() if row['status'] == 'PENDING'}
     bounds = {t: {'lowerNs': None, 'upperNs': boundary_window['endNs']} for t, row in initial['byTenant'].items() if row['status'] == 'COMPLETED'}
@@ -79,17 +92,18 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
         while result['verdict'] == 'UNMEASURED':
             now = monotonic_ns(); remaining = (deadline - now) / 1e9
             if remaining <= 0: code = 'M7_DRAIN_DEADLINE'; break
-            if len(history) >= POLICY['maxRounds'] or queries + math.ceil(len(ids) / 64) > POLICY['maxQueries']:
+            if len(history) + initial_rounds >= POLICY['maxRounds'] or queries + round_max_queries > POLICY['maxQueries']:
                 code = 'M7_DRAIN_QUERY_BOUND'; break
+            if size + round_max_bytes > POLICY['maxBytes']:
+                code = 'M7_DRAIN_BYTE_BOUND'; break
             start = now
             snapshot, cost = fetch(min(POLICY['roundSeconds'], remaining))
             end = monotonic_ns()
             # Retain bytes and brackets before validation, even for refused data.
             history.append({'startNs': start, 'endNs': end, 'snapshot': snapshot, 'cost': cost})
-            p.need(isinstance(cost, dict) and type(cost.get('sqlQueries')) is int and cost['sqlQueries'] == math.ceil(len(ids) / 64)
-                   and type(cost.get('rawSqlBytes')) is int and 0 < cost['rawSqlBytes'] <= o.ROUND_BYTES
-                   and cost.get('nodeCalls') == 1, 'M7_DRAIN_COST')
-            queries += cost['sqlQueries']; size += cost['rawSqlBytes']
+            used_queries, used_bytes = totals(cost)
+            p.need(used_queries <= round_max_queries and used_bytes <= round_max_bytes, 'M7_DRAIN_ROUND_COST')
+            queries += used_queries; size += used_bytes
             p.need(size <= POLICY['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
             current = assess(boundary, previous, snapshot, ids, binding)
             p.need(end <= deadline, 'M7_DRAIN_DEADLINE')
@@ -111,7 +125,8 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
         result = {**result, 'verdict': 'UNMEASURED'}
     return {**result, 'code': code, 'policy': POLICY, 'boundary': boundary,
             'reader': binding, 'writerStoppedNs': writer_stopped_ns, 'boundaryWindow': boundary_window, 'captures': history, 'startNs': started, 'endNs': monotonic_ns(),
-            'completionBounds': bounds, 'drainAfterWriterJoinMs': {t: {'lower': max(0, ((b['lowerNs'] or writer_stopped_ns) - writer_stopped_ns) / 1e6), 'upper': (b['upperNs'] - writer_stopped_ns) / 1e6} for t, b in bounds.items()}, 'queries': queries, 'rawSqlBytes': size,
+            'completionBounds': bounds, 'drainAfterWriterJoinMs': {t: {'lower': max(0, ((b['lowerNs'] or writer_stopped_ns) - writer_stopped_ns) / 1e6), 'upper': (b['upperNs'] - writer_stopped_ns) / 1e6} for t, b in bounds.items()}, 'rounds': len(history) + initial_rounds, 'queries': queries, 'responseBytes': size,
+            'costScope': 'queries/responseBytes totals include initial boundary SQL plus all tail SQL and runtime inspection response bytes; preparation node cost is separate',
             'timingScope': 'single observer monotonic collection brackets; excludes pre-entry writer-join/boundary collection; no executor CPU claim'}
 
 
@@ -148,17 +163,24 @@ def run(a, directory, manifest, record):
         p.need(all(processes.get(k, {}).get('returncode') == 0 and type(processes[k].get('endMonoNs')) is int
                    for k in ('k6', 'probe')), 'M7_DRAIN_WRITERS_NOT_JOINED')
         stopped = max(processes[k]['endMonoNs'] for k in ('k6', 'probe'))
-        accounting = a.document(directory / 'load/probe-accounting.json')
-        p.need(accounting.get('admissionsClosed') is True
-               and all(row.get('pending') == 0 for row in accounting.get('byTenant', {}).values()), 'M7_DRAIN_PROBE_PENDING')
         original = a.document(directory / 'load/evaluator-progress.json')
         rounds, ids = idle._decode(original, manifest['tenants'], a.progress_services(directory))
         ids = sorted(ids)
+        from discovery_counts import probe_metadata
+        accounting, _ = probe_metadata(a, directory / 'load',
+                                       (directory / 'load/runid').read_text().strip(), set(ids))
+        p.need(accounting is not None and accounting['admissionsClosed'] is True
+               and all(row['pending'] == 0 for row in accounting['byTenant'].values()), 'M7_DRAIN_PROBE_PENDING')
         # Bounded preparation and every child command share the original work
         # deadline. The local observation budget includes preparation/boundary.
         seconds = min(60, a.remaining_seconds(60)); until = time.monotonic_ns() + int(seconds * 1e9)
         with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + seconds)):
             collector = a.opportunity_collector(directory, manifest, ids)
+            services = a.progress_services(directory)
+            rpc_queries = len(services) * math.ceil(len(ids) / 128)
+            round_queries = math.ceil(len(ids) / 64) + rpc_queries
+            round_bytes = o.ROUND_BYTES + rpc_queries * (p.POLICY['responseMaxBytes'] + 8192)
+            value['preparationCost'] = collector.preparation_cost
             def fetch(timeout):
                 with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + timeout)):
                     snapshot, cost = collector(timeout)
@@ -181,13 +203,15 @@ def run(a, directory, manifest, record):
             p.need(remaining > 0, 'M7_DRAIN_DEADLINE')
             result = observe(boundary, ids, collector.binding, fetch,
                              writer_stopped_ns=stopped, boundary_window={'startNs': start, 'endNs': end},
-                             seconds=remaining, interval=min(5, remaining))
+                             seconds=remaining, interval=min(5, remaining), initial_cost=boundary_cost,
+                             round_max_queries=round_queries, round_max_bytes=round_bytes)
             value.update(result)
     except p.Refused as error:
         value.update(verdict=error.verdict, code=str(error))
         if hasattr(error, 'drainCapture'):value['refusedCapture'] = error.drainCapture
-    except Exception:
-        value.update(verdict='UNMEASURED', code='M7_DRAIN_COLLECTION_REFUSED')
+    except Exception as error:
+        safe = str(error) if re.fullmatch(r'M7_[A-Z_]+', str(error)) else 'M7_DRAIN_COLLECTION_REFUSED'
+        value.update(verdict='UNMEASURED', code=safe)
     a.write(output, value)
     record.value['catchup'] = {'verdict': value['verdict'], 'code': value.get('code'),
                              'artifact': str(output.relative_to(directory)), 'sha256': a.digest(output),

@@ -19,7 +19,7 @@ from test_evaluator_progress import A, B
 
 @unittest.skipUnless(fixtures.NODE.is_file(), 'qualified Node reader required')
 class Caller(unittest.TestCase):
-    def run_tail(self, *, writer_live=False, generation=False, deadline=True):
+    def run_tail(self, *, writer_live=False, generation=False, deadline=True, invalid_ledger=False):
         owner = fixtures.Caller(); self.addCleanup(owner.doCleanups)
         directory, output, manifest, _, error, _, _ = owner.exercise()
         self.assertIsNone(error)
@@ -30,7 +30,10 @@ class Caller(unittest.TestCase):
         rounds, _ = idle._decode(original, 2, ['evaluator'])
         frame = copy.deepcopy(rounds[-1])
         if generation: frame['owners'][A]['generation'] += 1
-        a.write(output/'probe-accounting.json', {'admissionsClosed': True, 'byTenant': {A: {'pending': 0}}})
+        (output/'runid').write_text('synthetic-run')
+        a.write(output/'probe-accounting.json', {'version': 2, 'kind': 'm7-discovery-probe-accounting', 'runId': 'synthetic-run', 'roster': [A,B], 'admissionsClosed': True, 'attempts': 0, 'byTenant': {}})
+        if invalid_ledger:
+            ledger=a.document(output/'probe-accounting.json');ledger['runId']='foreign-run';a.write(output/'probe-accounting.json',ledger)
         stopped = time.monotonic_ns()
         record = SimpleNamespace(value={'processes': {k: {'returncode': 0, 'endMonoNs': stopped} for k in ('k6', 'probe')},
                                         'strictChecks': {'load': {'verdict': 'UNMEASURED', 'code': 'M7_OPPORTUNITY_NOT_OBSERVED'}}}, save=lambda: None)
@@ -56,6 +59,8 @@ class Caller(unittest.TestCase):
         value, calls = self.run_tail()
         self.assertEqual(value['verdict'], 'PASS')
         self.assertEqual(len(calls), 2)
+        self.assertEqual(value['queries'], 4, 'two SQL plus two runtime inspection queries, including boundary')
+        self.assertGreater(value['responseBytes'], sum(row['cost']['rawSqlBytes'] for row in value['captures']))
         self.assertEqual(value['byTenant'][A]['targets'], {'clock': '12'})
         self.assertIn('NO-INSTRUMENT', value['authorityScope'])
         self.assertLessEqual(value['endNs']-value['startNs'], 5e9)
@@ -71,6 +76,8 @@ class Caller(unittest.TestCase):
     def test_no_tail_sql_until_writers_join_and_original_deadline_present(self):
         value, calls = self.run_tail(writer_live=True)
         self.assertEqual(value['code'], 'M7_DRAIN_WRITERS_NOT_JOINED'); self.assertEqual(calls, [])
+        value, calls = self.run_tail(invalid_ledger=True)
+        self.assertEqual(value['code'], 'M7_PROBE_COUNTS_METADATA'); self.assertEqual(calls, [])
         value, calls = self.run_tail(deadline=False)
         self.assertEqual(value['code'], 'M7_DRAIN_WORK_DEADLINE_REQUIRED'); self.assertEqual(calls, [])
 
