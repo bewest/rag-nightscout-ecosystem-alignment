@@ -1,5 +1,5 @@
 """Actual public accounting/config producer; partial reduction never grants acceptance."""
-import copy,json,sys,tempfile,unittest,types
+import copy,json,sys,tempfile,unittest,types,os,subprocess,shutil
 from pathlib import Path
 from unittest.mock import patch
 import app,cell,generator,protocol,producer,transport as t
@@ -64,13 +64,41 @@ class DiscoveryReporting(unittest.TestCase):
    with patch.object(generator.os,'geteuid',return_value=0),patch.object(generator.pwd,'getpwuid',return_value=types.SimpleNamespace(pw_name='nsload',pw_gid=generator.GID)),patch.object(generator.subprocess,'check_output',return_value='nsload'),patch.object(generator,'child') as child:
     with self.assertRaisesRegex(RuntimeError,'EXTERNAL_TRAFFIC_EXPORT_CHANGED'):generator.prepare(d,b)
     child.assert_not_called()
- def summary(self,d,counts=None,source_error=None):
+ def summary(self,d,counts=None,source_error=None,clinical_error=None,frame_error=None):
+  if frame_error:
+   (d/'tenants.private.json').write_text('[]')
   m={'pair':{'core':'a'*40,'deploy':'b'*40},'imageId':'sha256:'+'c'*64,'instrument':{},'tenants':2,'cadence':self.selected(2)['workload']['cadence']};out=d/'load';out.mkdir();(out/'runid').write_text('synthetic')
-  with patch.object(app.a,'verify',side_effect=source_error),patch.object(app,'load'),patch.object(app.a.profile_provenance,'fingerprint_check',return_value={'verdict':'UNMEASURED'}),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True),side_effect=counts),patch('clinical.completed',return_value={'verdict':'PASS'}),patch.object(app,'measurements',side_effect=RuntimeError('missing optional')):
-   return app.discovery_summary(d,m,self.selected(2),{'prime':{'primed':0}}, {'metrics':{}})
+  if frame_error:(out/'fanout.json').write_text(json.dumps({'probeWrites':{'byTenant':{}}}))
+  with patch.object(app.a,'verify',side_effect=source_error),patch.object(app,'load'),patch.object(app.a.profile_provenance,'fingerprint_check',return_value={'verdict':'UNMEASURED'}),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True),side_effect=counts),patch('clinical.completed',return_value={'verdict':'PASS'},side_effect=clinical_error),patch('viewer_plan.check',side_effect=frame_error),patch.object(app,'measurements',side_effect=RuntimeError('missing optional')):
+   return app.discovery_summary(d,m,self.selected(2),{'prime':{'primed':0},**({'window':{'writes':1}}if frame_error else{})}, {'metrics':{}})
+ def test_hard_clinical_and_frame_errors_remain_fail_and_missing_clinical_stays_unknown(self):
+  for kwargs,code in [({'clinical_error':RuntimeError('REMOTE_CLINICAL_WRONG_DATA')},'REMOTE_CLINICAL_WRONG_DATA'),({'frame_error':RuntimeError('M7_VIEWER_FRAME_WRONG_DATA')},'M7_VIEWER_FRAME_WRONG_DATA')]:
+   with tempfile.TemporaryDirectory() as root:
+    d=Path(root)
+    with self.assertRaisesRegex(RuntimeError,code):self.summary(d,**kwargs)
+    result=json.loads((d/'summary.json').read_text());self.assertEqual(result['verdict'],'FAIL');self.assertEqual(result['failure']['code'],code)
+  with tempfile.TemporaryDirectory() as root:
+   result=self.summary(Path(root),clinical_error=RuntimeError('REMOTE_CLINICAL_COMPLETION_UNMEASURED'))
+   self.assertEqual(result['verdict'],'PARTIAL');self.assertEqual(result['completedOutput']['verdict'],'UNMEASURED');self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED')
+  with tempfile.TemporaryDirectory() as root:
+   d=Path(root);(d/'idle').mkdir();(d/'idle/evaluator-progress.json').write_text(json.dumps({'verdict':'FAIL','code':'M7_EVALUATOR_PROGRESS_FOREIGN'}))
+   with self.assertRaisesRegex(RuntimeError,'REMOTE_DISCOVERY_CLINICAL_FAILURE'):self.summary(d)
+   self.assertEqual(json.loads((d/'summary.json').read_text())['verdict'],'FAIL')
+
+ @unittest.skipUnless(os.environ.get('PGCAL_REPORT_CONTROLLER_ROOT'),'actual paired controller root not selected')
+ def test_actual_controller_accepts_partial_reduction_with_unknown_observations(self):
+  # The cell protocol is PARTIAL; individual missing observations remain UNMEASURED.
+  # Exercise the real controller classifier instead of copying its admission rule.
+  with tempfile.TemporaryDirectory() as root:result=self.summary(Path(root))
+  module=Path(os.environ['PGCAL_REPORT_CONTROLLER_ROOT'])/'tools/perf-cloud/pgstream-calibration.mjs'
+  program="import {coordinateCalibration} from "+json.dumps(module.as_uri())+";const verdict=process.argv[1];const app={next:async name=>name==='server-recovery-complete'?{measurement:'NOT_RUN'}:name==='cell-complete'?{verdict}:{},send:()=>{},finish:async()=>{}};const gen={next:async name=>name==='client-primed'?{primed:0}:{},send:()=>{},finish:async()=>{}};const result=await coordinateCalibration(app,async()=>gen,async()=>{},()=>{},1,()=>1000,'discovery');if(result.verdict!=='PARTIAL')throw Error('PARTIAL_CELL_REQUIRED');let refused=false;try{await coordinateCalibration(app,async()=>gen,async()=>{},()=>{},1,()=>1000,'strict');}catch(error){if(error.message!=='PGCAL_CELL_NONPASS')throw error;refused=true;}if(!refused)throw Error('STRICT_PARTIAL_WAS_ACCEPTED');console.log('ACTUAL_CONTROLLER_PARTIAL_ADMITTED_STRICT_REFUSED');"
+  observed=subprocess.run([shutil.which('node'),'--input-type=module','-e',program,result['verdict']],capture_output=True,text=True,timeout=15)
+  self.assertEqual(observed.returncode,0,observed.stderr)
+  self.assertIn('ACTUAL_CONTROLLER_PARTIAL_ADMITTED',observed.stdout)
+
  def test_optional_missing_stays_unknown_wrong_source_and_wrong_data_retained_fail(self):
   with tempfile.TemporaryDirectory() as root:
-   d=Path(root);result=self.summary(d);self.assertEqual(result['status'],'PARTIAL');self.assertEqual(result['verdict'],'UNMEASURED');self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED');self.assertEqual(result['optionalObservations']['measurements']['verdict'],'UNMEASURED');self.assertIsNone(result['optionalObservations'].get('zero'))
+   d=Path(root);result=self.summary(d);self.assertEqual(result['status'],'PARTIAL');self.assertEqual(result['verdict'],'PARTIAL');self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED');self.assertEqual(result['optionalObservations']['measurements']['verdict'],'UNMEASURED');self.assertIsNone(result['optionalObservations'].get('zero'))
   for error in (RuntimeError('M7_SOURCE_MISMATCH'),RuntimeError('M7_DISCOVERY_WRONG_DATA')):
    with tempfile.TemporaryDirectory() as root:
     d=Path(root)
