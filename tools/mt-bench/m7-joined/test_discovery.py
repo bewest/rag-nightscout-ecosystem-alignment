@@ -25,6 +25,28 @@ class Discovery(unittest.TestCase):
         with patch.object(a,'run_cell',side_effect=p.Refused('M7_EVALUATOR_IDLE_JOB_PENDING')) as strict,patch.object(d,'run_discovery') as discovery:
             with self.assertRaisesRegex(p.Refused,'JOB_PENDING'):a.run(folder,m,'k6')
             strict.assert_called_once();discovery.assert_not_called()
+    def test_shared_discovery_records_foreign_host_without_relaxing_project_ownership(self):
+        # Shared-host diagnosis is allowed; strict acceptance still requires a
+        # quiet owned host. No Docker/process operation occurs in this control.
+        import inspect
+        folder,m=self.setup();m.update(profile='pgstream-sample',runPurpose='discovery',project='synthetic-project',quietLoad=0)
+        host={'containers':[{'id':'foreign','project':'peer-project','owned':False}], 'load':[999,999,999]}
+        with patch.object(a,'fixture_inventory',return_value=host):
+            def criterion(fn):
+                fn(folder,m,'shared');value=a.document(folder/'shared-host.json')
+                self.assertEqual(value['scope'],'shared-host diagnostic; contention recorded, no capacity acceptance')
+                self.assertFalse(value['containers'][0]['owned'])
+            criterion(a.quiet)
+            source=inspect.getsource(a.quiet);self.assertEqual(source.count(';return'),1)
+            namespace=dict(a.__dict__);exec(compile(source.replace(';return',''),a.__file__,'exec'),namespace)
+            with self.assertRaisesRegex(RuntimeError,'M7_FOREIGN_ACTIVE_CONTAINERS'):criterion(namespace['quiet'])
+            criterion(a.quiet)
+            for changed in ({'runPurpose':'acceptance'},{'profile':'remote-pilot'}):
+                with self.assertRaisesRegex(RuntimeError,'M7_FOREIGN_ACTIVE_CONTAINERS'):a.quiet(folder,{**m,**changed},'strict')
+        collision={'Config':{'Labels':{a.OWNER:'wrong-owner','com.docker.compose.project':m['project']}}}
+        with patch.object(a,'resources',return_value=[collision]):
+            with self.assertRaisesRegex(RuntimeError,'M7_RESOURCE_NOT_OWNED'):a.assert_owned(m)
+
     def run_recording(self,error):
         folder,m=self.setup();(folder/'deploy-before-host.json').write_text('{}');calls=[]
         def load(*args):
