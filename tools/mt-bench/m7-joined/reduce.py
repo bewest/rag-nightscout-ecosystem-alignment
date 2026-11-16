@@ -32,6 +32,23 @@ def process_deltas(initial,final,seconds):
     return processes
 
 
+def memory_peak_observation(first, final):
+    initial=first.get('memoryObservation',{});last=final.get('memoryObservation',{})
+    scope='per-role container-cgroup lifetime peak; not phase peak or concurrent aggregate peak'
+    if initial.get('status')!='MEASURED' or last.get('status')!='MEASURED':
+        return {'status':'UNMEASURED','scope':scope,'reason':'missing-or-invalid-memory-peak'}
+    require(isinstance(first.get('id'),str) and first['id'] and first['id']==final.get('id'),'M7_MEMORY_CONTAINER_CHANGED')
+    before=initial.get('memoryPeakBytes');after=last.get('memoryPeakBytes')
+    require(type(before)is int and type(after)is int and 0<=before<=after,'M7_MEMORY_PEAK_RESET')
+    result={'status':'MEASURED','scope':scope,'memoryPeakBytesBefore':before,'memoryPeakBytesAfter':after}
+    a,b=initial.get('memoryEvents'),last.get('memoryEvents')
+    if isinstance(a,dict) and isinstance(b,dict) and a and set(a)==set(b):
+        require(all(type(a[k])is int and type(b[k])is int and 0<=a[k]<=b[k] for k in a),'M7_MEMORY_EVENTS_RESET')
+        result['memoryEventsDelta']={key:b[key]-a[key] for key in a}
+    else:result['memoryEventsDelta']='UNMEASURED'
+    return result
+
+
 def measurements(directory, manifest):
     windows = {}
     complete = True
@@ -64,7 +81,7 @@ def measurements(directory, manifest):
             delta = b[0] - a[0]
             complete = complete and delta >= 0
             rows[role] = {"cpuUsecDelta": delta if delta >= 0 else None, "cpuCoresMean": delta / 1e6 / seconds if delta >= 0 else None,
-                          "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
+                          "memoryObservation":memory_peak_observation(first,value), "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
         # Container totals include both evaluator Node and its pgstream child.
         # Keep process identity/start time when subtracting their own counters.
         for role,value in rows.items():

@@ -484,3 +484,11 @@ traffic. A changed remote environment still needs its own small actual transport
 and probe qualification under separately authorized remote access. Offline CLI
 and protocol tests are not that qualification. An entered run stays on its
 original helper/configuration/receipt/clock and cleanup owner.
+
+Phase role snapshots retain an optional separate `memoryObservation` from
+cgroup-v2 `memory.peak` and `memory.events`. Peak bytes cover the container
+cgroup lifetime since birth or an external reset, not the measured phase. The
+reducer requires matching container identities and nondecreasing peaks/events;
+missing files or malformed reads remain UNMEASURED. It never subtracts peaks or
+sums independent role peaks as a concurrent total. Existing raw cgroup counters,
+current memory and configured-limit checks keep their separate meanings.

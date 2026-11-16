@@ -1081,6 +1081,27 @@ def process_counters(text):
     return result
 
 
+def memory_observation(container_id):
+    # Separate reads preserve the legacy concatenated cgroup parser exactly.
+    result={'status':'UNMEASURED','scope':'container-cgroup lifetime since birth or last external reset; not phase peak'}
+    try:
+        raw=command(['docker','exec',container_id,'cat','/sys/fs/cgroup/memory.peak']).strip()
+        if re.fullmatch(r'[0-9]+',raw):result.update(status='MEASURED',memoryPeakBytes=int(raw))
+        else:result['reason']='invalid-memory-peak'
+    except RuntimeError:result['reason']='memory-peak-unavailable'
+    try:
+        raw=command(['docker','exec',container_id,'cat','/sys/fs/cgroup/memory.events'])
+        events={}
+        for line in raw.splitlines():
+            key,value=line.split()
+            require(key not in events and re.fullmatch(r'[a-z_]+',key) and re.fullmatch(r'[0-9]+',value),'M7_MEMORY_EVENTS_INVALID')
+            events[key]=int(value)
+        require(bool(events),'M7_MEMORY_EVENTS_INVALID')
+        result['memoryEvents']=events
+    except (RuntimeError,ValueError):result['memoryEvents']='UNMEASURED'
+    return result
+
+
 def phase_snapshot(d, out, name):
     snapshot_owner=document(d/"owner.json")
     rows = resources(snapshot_owner, False)
@@ -1090,7 +1111,7 @@ def phase_snapshot(d, out, name):
         try:
             raw = command(["docker", "exec", row["Id"], "cat", "/sys/fs/cgroup/cpu.stat", "/sys/fs/cgroup/memory.current", "/sys/fs/cgroup/memory.stat"])
             processes = command(["docker", "top", row["Id"], "-eo", "pid,comm,rss"])
-            result[role] = {"id": row["Id"], "cgroup": raw, "processRssKiB": processes,"hostProcesses":process_counters(processes)}
+            result[role] = {"id": row["Id"], "cgroup": raw, "processRssKiB": processes,"hostProcesses":process_counters(processes),"memoryObservation":memory_observation(row["Id"])}
         except RuntimeError:
             result[role] = {"id": row["Id"], "unavailable": True}
     write(out / (name + "-cgroups.json"), {"at": time.time(), "roles": result})

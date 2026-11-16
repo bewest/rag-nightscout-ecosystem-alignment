@@ -39,7 +39,7 @@ class Bookends(unittest.TestCase):
         def write(file,value):
             if publication_error and file.name=='after-snapshot-failure.json':raise OSError('PRIVATE_SYNTHETIC_NOT_PUBLISHED')
             return original_write(file,value)
-        def command(cmd,*args,**kwargs):calls.append(cmd[:2]);return 'synthetic bounded cgroup/process observation\n'
+        def command(cmd,*args,**kwargs):calls.append(cmd);return 'synthetic bounded cgroup/process observation\n'
         row={'Config':{'Labels':{'com.docker.compose.service':'evaluator'}},'Id':'owned-recording','Name':'owned-recording'}
         with patch.object(a,'resources',return_value=[row]),patch.object(a,'command',side_effect=command),patch.object(a,'psql',side_effect=sql),patch.object(a,'sampling',sampling),patch.object(a,'observe_progress',observe),patch.object(a.time,'sleep') as sleep,patch.object(a,'write',side_effect=write):
             caught=None
@@ -49,7 +49,10 @@ class Bookends(unittest.TestCase):
         return out,caught,result,query_count,calls,raw
     def test_pass_has_original_two_bookends_and_six_sql_queries_including_cost_companion(self):
         out,error,result,queries,calls,_=self.exercise()
-        self.assertIsNone(error);self.assertEqual(result.result['verdict'],'PASS');self.assertEqual(queries,6);self.assertEqual(len(calls),4)
+        self.assertIsNone(error);self.assertEqual(result.result['verdict'],'PASS');self.assertEqual(queries,6);self.assertEqual(len(calls),8)
+        # Each original cgroup/top pair adds separate peak/events reads.
+        self.assertEqual(sum(argv[-1]=='/sys/fs/cgroup/memory.peak' for argv in calls),2)
+        self.assertEqual(sum(argv[-1]=='/sys/fs/cgroup/memory.events' for argv in calls),2)
         self.assertTrue((out/'before-cgroups.json').is_file());self.assertTrue((out/'after-pg-statements.tsv').is_file());self.assertFalse((out/'after-snapshot-failure.json').exists())
     def test_observer_refusal_still_captures_existing_after_bookend(self):
         failure=p.Refused('M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED')
