@@ -57,30 +57,88 @@ def publish(d,m,roster):
     target.write_text(json.dumps({'ids':ids})+'\n');target.chmod(0o600)
     m['clinicalTimeline'].update(targets={'hotA':ids[0],'comparisonB':ids[1],'quietScope':'quiet only if independently unchanged writer clock; never assumed'},targetsSha256=sha(target))
 
+MAX_SAFE_INTEGER=9007199254740991
+STATUS_FIELDS={'rows','bytes','pending','written','dropped','failed','closed','qualification'}
+RAW_BASE={'instance','sequence','phase','at','monoNs','pid','request','headerLsn','idempotency'}
+RAW_EXTRAS={
+    'raw-entry':{'connection','peerPort','localPort'},
+    'raw-request-aborted':set(),
+    'raw-request-close':{'complete','aborted'},
+    'raw-response-finish':{'status','finished'},
+    'raw-response-close':{'status','finished'},
+    'raw-parsed-target':set(),
+    'raw-inspector-refusal':set(),
+}
+
+def integer(value,minimum,maximum):
+    return type(value) is int and minimum<=value<=maximum
+
+def capture_complete(status,raw=False):
+    """Require the producer's complete schema; absent and falsey are distinct."""
+    fields=STATUS_FIELDS|({'instance'} if raw else set())
+    if type(status) is not dict or set(status)!=fields:return False
+    max_rows,max_bytes=(32768,8388608) if raw else (4096,2097152)
+    limits={'rows':max_rows,'bytes':max_bytes,'pending':128 if raw else max_rows,'written':max_rows,'dropped':MAX_SAFE_INTEGER}
+    if any(not integer(status[key],0,limit) for key,limit in limits.items()):return False
+    if type(status['closed']) is not bool or type(status['qualification']) is not str or status['qualification']!='COMPLETE':return False
+    if status['pending']!=0 or status['dropped']!=0 or status['failed'] is not None or status['written']!=status['rows']:return False
+    if raw and (type(status['instance']) is not str or not re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',status['instance'])):return False
+    return True
+
+def selected_complete(file,status):
+    """Check selected capture counts, including its optional explicit seal."""
+    try:
+        if not capture_complete(status):return False
+        data=file.read_bytes()
+        if len(data)>2097152:return False
+        lines=data.splitlines(keepends=True);rows=[json.loads(line) for line in lines]
+        if rows and type(rows[-1]) is dict and rows[-1].get('phase')=='trace-seal':
+            seal=rows.pop();last=lines.pop()
+            if set(seal)!={'phase','at','pid','rows','bytes','pending','written','dropped','failed'}:return False
+            if not integer(seal['at'],1,MAX_SAFE_INTEGER) or not integer(seal['pid'],1,2147483647):return False
+            if any(type(seal[key]) is not type(status[key]) or seal[key]!=status[key] for key in ('rows','bytes','pending','written','dropped','failed')):return False
+            if not status['closed']:return False
+        if len(rows)!=status['rows'] or sum(map(len,lines))!=status['bytes']:return False
+        return all(type(row) is dict and integer(row.get('sequence'),1,4096) and row['sequence']==index for index,row in enumerate(rows,1))
+    except (OSError,ValueError,TypeError):return False
+
 def raw_complete(file,status):
-    """Finite metadata integrity, not sender delivery or clinical completion."""
-    data=file.read_bytes()
-    if len(data)>8388608 or status.get('qualification')!='COMPLETE' or status.get('pending') or status.get('dropped') or status.get('failed'):return False
-    rows=[json.loads(line) for line in data.splitlines()]
-    if len(rows)>32768 or status.get('rows')!=len(rows) or status.get('written')!=len(rows) or status.get('bytes')!=len(data):return False
-    allowed={'instance','sequence','phase','at','monoNs','pid','request','headerLsn','idempotency','connection','peerPort','localPort','complete','aborted','status','finished'}
-    phases={'raw-entry','raw-request-aborted','raw-request-close','raw-response-finish','raw-response-close','raw-parsed-target','raw-inspector-refusal'}
-    entries=set();terminal=set();instance=status.get('instance');pid=None
-    if not isinstance(instance,str) or not re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',instance):return False
-    for sequence,row in enumerate(rows,1):
-        if row.get('instance')!=instance:return False
-        if pid is None:pid=row.get('pid')
-        if row.get('pid')!=pid:return False
-        if set(row)-allowed or row.get('sequence')!=sequence or row.get('phase') not in phases:return False
-        if any(type(row.get(key)) is not int or row[key]<1 for key in ('request','pid','at')) or not re.fullmatch(r'[0-9]{1,24}',row.get('monoNs','')):return False
-        if any(value not in ('ABSENT','INVALID') and not re.fullmatch(r'[0-9A-F]{1,8}/[0-9A-F]{1,8}',value) for value in (row.get('headerLsn',''),row.get('idempotency',''))):return False
-        key=row['request']
-        if row['phase']=='raw-entry':
-            if key in entries:return False
-            entries.add(key)
-        elif key not in entries:return False
-        if row['phase'] in ('raw-request-aborted','raw-response-finish','raw-response-close'):terminal.add(key)
-    return entries==terminal
+    """Finite metadata integrity; incomplete responses can be valid observations."""
+    try:
+        if not capture_complete(status,raw=True):return False
+        data=file.read_bytes()
+        if len(data)>8388608 or len(data)!=status['bytes']:return False
+        rows=[json.loads(line) for line in data.splitlines()]
+        if len(rows)!=status['rows']:return False
+        entries={};terminal=set();pid=None
+        for sequence,row in enumerate(rows,1):
+            if type(row) is not dict or row.get('phase') not in RAW_EXTRAS:return False
+            phase=row['phase']
+            if set(row)!=RAW_BASE|RAW_EXTRAS[phase] or row['instance']!=status['instance']:return False
+            if not integer(row['sequence'],1,32768) or row['sequence']!=sequence:return False
+            if not integer(row['request'],1,32768) or not integer(row['pid'],1,2147483647) or not integer(row['at'],1,MAX_SAFE_INTEGER):return False
+            if type(row['monoNs']) is not str or not re.fullmatch(r'[0-9]{1,24}',row['monoNs']):return False
+            if pid is None:pid=row['pid']
+            if row['pid']!=pid:return False
+            for value in (row['headerLsn'],row['idempotency']):
+                if type(value) is not str or (value not in ('ABSENT','INVALID') and not re.fullmatch(r'[0-9A-F]{1,8}/[0-9A-F]{1,8}',value)):return False
+            key=row['request']
+            if phase=='raw-entry':
+                if key in entries:return False
+                if row['connection'] is not None and not integer(row['connection'],1,32768):return False
+                if any(row[field] is not None and not integer(row[field],1,65535) for field in ('peerPort','localPort')):return False
+                entries[key]={'headers':(row['headerLsn'],row['idempotency']),'phases':set()}
+            elif key not in entries:return False
+            state=entries[key]
+            if (row['headerLsn'],row['idempotency'])!=state['headers'] or phase in state['phases']:return False
+            state['phases'].add(phase)
+            if phase=='raw-request-close' and any(type(row[field]) is not bool for field in ('complete','aborted')):return False
+            if phase in ('raw-response-finish','raw-response-close'):
+                if not integer(row['status'],100,999) or type(row['finished']) is not bool:return False
+                if phase=='raw-response-finish' and not row['finished']:return False
+            if phase in ('raw-request-aborted','raw-response-finish','raw-response-close'):terminal.add(key)
+        return set(entries)==terminal
+    except (OSError,ValueError,TypeError):return False
 
 def retain(d,m):
     """After owned services stop, preserve bounded trace before private-state wipe.
@@ -106,7 +164,7 @@ def retain(d,m):
             raw_ok=True
             if m['clinicalTimeline'].get('selection')==RAW_NAME:
                 raw=json.loads((out/'clinical-intake-raw-status.json').read_text());raw_ok=raw_complete(out/'clinical-intake-raw.jsonl',raw)
-            if raw_ok and value.get('qualification')=='COMPLETE' and value.get('written')==value.get('rows') and not value.get('pending') and not value.get('dropped') and not value.get('failed'):manifest['status']='COMPLETE'
+            if raw_ok and selected_complete(out/'clinical-intake-timeline.jsonl',value):manifest['status']='COMPLETE'
         except Exception:pass
     (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     return manifest

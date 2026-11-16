@@ -751,7 +751,13 @@ Raw bounds are 32,768 rows, 8 MiB and 128 pending writes, separate from the exis
 4,096-row/2 MiB selected trace. Saturation, short writes, pending drain, missing
 status or an entry without an abort/response terminal record is UNMEASURED.
 Retention verifies the record count, byte count, sequence, instance/PID, permitted
-fields and lifecycle coverage. COMPLETE here describes metadata capture; it does
+fields and lifecycle coverage. Status fields are mandatory with exact types and
+ranges; missing counters and falsey substitutes never mean zero. Each raw phase
+has an exact field schema, typed lifecycle flags, bounded numeric connection/port
+fields and consistent request identity. Response finish requires `finished:true`;
+response close with `finished:false` and explicit abort remain valid capture
+observations. A request-close alone is not a response terminal. Selected capture
+counts and its optional seal also match the retained bytes. COMPLETE here describes metadata capture; it does
 not prove target delivery or clinical completion. Node entry is a JavaScript
 handler boundary, not socket or kernel arrival. Malformed selected-row inspection
 forwards to the actual receiver's validation and preserves its rejection.
