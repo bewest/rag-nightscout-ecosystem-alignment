@@ -21,7 +21,8 @@ from types import MappingProxyType
 NAME = 'local-diagnostic-4cpu-8g-v1'
 EXTERNAL_NAME = 'local-diagnostic-external-pgstream-4cpu-8g-v1'
 EVALUATOR250_NAME = 'local-diagnostic-external-pgstream-evaluator250-4cpu-8g-v1'
-EXTERNAL_PROFILES = (EXTERNAL_NAME, EVALUATOR250_NAME)
+EVALUATOR250_MEMORY512_NAME = 'local-diagnostic-external-pgstream-evaluator250-memory512-4cpu-8448m-v1'
+EXTERNAL_PROFILES = (EXTERNAL_NAME, EVALUATOR250_NAME, EVALUATOR250_MEMORY512_NAME)
 PROFILES = (NAME, *EXTERNAL_PROFILES)
 PROFILE_KEY = 'x-nightscout-diagnostic-profile'
 MIB = 1024 * 1024
@@ -68,16 +69,33 @@ def selection(name=None):
     return name
 
 
+def memory_ceiling(profile):
+    selection(profile)
+    return 8448 * MIB if profile == EVALUATOR250_MEMORY512_NAME else MAX_MEMORY
+
+
 def role_limit(role, profile=NAME):
     selection(profile)
     if profile in EXTERNAL_PROFILES and role in ('evaluator','pgstream'):
-        return Limit(250 if profile==EVALUATOR250_NAME and role=='evaluator' else 125,256*MIB)
+        return Limit(250 if profile in (EVALUATOR250_NAME,EVALUATOR250_MEMORY512_NAME) and role=='evaluator' else 125,
+                     (512 if profile==EVALUATOR250_MEMORY512_NAME and role=='evaluator' else 256)*MIB)
     if role in LIMITS:
         return LIMITS[role]
     for kind in ('api', 'realtime', 'evaluator'):
         if re.fullmatch(kind + r'-(?:[2-9]|1[0-6])', role):
             return LIMITS[kind]
     need(False, 'UNKNOWN_ROLE')
+
+
+def verify_evaluator_cgroup(profile, cpu_max, memory_max, memory_swap_max):
+    """Validate captured cgroup-v2 values; caller owns identity and capture I/O."""
+    limit=role_limit('evaluator',profile)
+    need(isinstance(cpu_max,str) and re.fullmatch(r'[1-9][0-9]* [1-9][0-9]*\n?',cpu_max) is not None,'EFFECTIVE_CPU_INVALID')
+    quota,period=map(int,cpu_max.split())
+    need(quota*1000==limit.cpu*period,'EFFECTIVE_CPU_CHANGED')
+    need(str(memory_max).strip()==str(limit.memory),'EFFECTIVE_MEMORY_CHANGED')
+    need(str(memory_swap_max).strip()=='0','EFFECTIVE_SWAP_CHANGED')
+    return {'millicpus':limit.cpu,'memoryBytes':limit.memory,'swapBytes':0}
 
 
 @dataclass(frozen=True)
@@ -96,7 +114,7 @@ class Plan:
             need(type(count) is int and count == (2 if role in ('bootstrap', 'primer') else 1), 'MULTIPLICITY_CHANGED')
         cpu = sum(limit.cpu * count for _, limit, count in self.services) + LIMITS['k6'].cpu
         memory = sum(limit.memory * count for _, limit, count in self.services) + LIMITS['k6'].memory
-        need(cpu <= MAX_CPU and memory <= MAX_MEMORY, 'AGGREGATE_EXCEEDED')
+        need(cpu <= MAX_CPU and memory <= memory_ceiling(self.profile), 'AGGREGATE_EXCEEDED')
         need(sum(heap * count for heap, count in HOST.values()) <= MAX_HEAP, 'HOST_AGGREGATE_EXCEEDED')
 
     def record(self):
@@ -281,7 +299,7 @@ class Runtime:
             need(count <= maximum, 'CONTAINER_CONCURRENCY_EXCEEDED')
             cpu += limit.cpu * count
             memory += limit.memory * count
-        need(cpu <= MAX_CPU and memory <= MAX_MEMORY, 'RUNTIME_AGGREGATE_EXCEEDED')
+        need(cpu <= MAX_CPU and memory <= memory_ceiling(self.budget.profile), 'RUNTIME_AGGREGATE_EXCEEDED')
         return counts
 
     def compose(self, args, config):

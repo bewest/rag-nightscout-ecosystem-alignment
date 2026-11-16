@@ -151,3 +151,15 @@ checks. Reduction requires both roles and stable process births across each
 window. Go logs use the existing bounded collector; Node diagnostics environment
 flags are validated only for Node roles. Raw log, source and runtime receipts
 retain their existing homes. Old captures remain on their original helper.
+
+The opt-in `local-diagnostic-external-pgstream-evaluator250-memory512-4cpu-8448m-v1`
+variant keeps evaluator CPU at 250 millicpus and changes only its container
+memory and memory-plus-swap limit from 256 to 512 MiB relative to evaluator250.
+It reserves 4000 millicpus and 8448 MiB across the selected services, declared
+oneoff overlaps and standalone k6, plus the unchanged 1024 MiB host V8 heap
+allowance. Native host RSS remains separately observed. The old profiles retain
+their 8192 MiB ceiling. This local finite memory discriminator grants no capacity
+and changes no default or remote allocation. The existing 8192 MiB batch
+reservation explicitly refuses this larger variant; it must not underreserve it.
+Timeline preloads, mounts and extra observations are separate instrument changes
+and must be sealed and reported, not called a pure performance comparison.

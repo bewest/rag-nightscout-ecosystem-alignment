@@ -369,6 +369,7 @@ def local_batch_plan(spec, payload_root):
         batch.need(options.get('image-id')==options.get('image')==spec['payload']['image'],'IMAGE_CHANGED')
         selected=options.get('diagnostic-resource-profile')
         batch.need(selected in a.diagnostic_resources.PROFILES,'LOCAL_PROFILE_REQUIRED')
+        batch.need(a.diagnostic_resources.memory_ceiling(selected)<=batch.LOCAL_RESOURCES['memoryBytes'],'LOCAL_PROFILE_RESERVATION_UNSUPPORTED')
         external=options.get('pgstream-topology','colocated-v1')=='external-service-v1'
         batch.need(external==(selected in a.diagnostic_resources.EXTERNAL_PROFILES),'LOCAL_TOPOLOGY_PROFILE')
         batch.need(options.get('fixture-project')==cell['namespace'] and cell['subnets']==[options.get('backend-subnet'),options.get('edge-subnet')], 'ISOLATION_CHANGED')

@@ -54,6 +54,21 @@ def load_patched(name,text):
     return module
 
 
+# Actor-free unit controls own their lock; never contend with a live diagnostic
+# driver on this shared host. Runtime still exercises real flock/lease behavior.
+def setUpModule():
+    global _unit_directory, _unit_lock_patch
+    _unit_directory=tempfile.TemporaryDirectory(prefix='m7-resource-unit-')
+    _unit_lock_patch=patch('experiment_batch.global_lock_path',return_value=Path(_unit_directory.name)/'heap.lock')
+    _unit_lock_patch.start()
+
+
+def tearDownModule():
+    r.configure()
+    _unit_lock_patch.stop()
+    _unit_directory.cleanup()
+
+
 class Resources(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -355,6 +370,62 @@ class EvaluatorCpuDiscriminator(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'EVALUATOR_CPU_CHANGE_MUST_REACH_PRODUCER'):
                 self.assertEqual(broken['services']['evaluator']['cpus'],.25,'EVALUATOR_CPU_CHANGE_MUST_REACH_PRODUCER')
         self.assertEqual(r.overlay(self.source,r.EVALUATOR250_NAME)['services']['evaluator']['cpus'],.25)
+
+
+class EvaluatorMemoryDiscriminator(unittest.TestCase):
+    def setUp(self):
+        self.source=config();self.source['services']['pgstream']={'image':'synthetic'}
+        self.old=r.overlay(self.source,r.EVALUATOR250_NAME)
+        self.new=r.overlay(self.source,r.EVALUATOR250_MEMORY512_NAME)
+        self.addCleanup(r.configure)
+
+    def test_only_evaluator_memory_and_explicit_profile_ceiling_change(self):
+        before=copy.deepcopy(self.old);after=copy.deepcopy(self.new)
+        before.pop(r.PROFILE_KEY);after.pop(r.PROFILE_KEY)
+        self.assertEqual(after['services']['evaluator']['cpus'],.25)
+        for key in ('mem_limit','memswap_limit'):
+            self.assertEqual(after['services']['evaluator'][key],512*r.MIB)
+            after['services']['evaluator'][key]=256*r.MIB
+        self.assertEqual(before,after)
+        self.assertEqual(r.plan(self.new).record()['aggregate'],{'millicpus':4000,'memoryBytes':8448*r.MIB,'heapMiB':1024})
+        self.assertEqual(r.plan(self.old).record()['aggregate']['memoryBytes'],8192*r.MIB)
+        self.assertEqual(r.MAX_MEMORY,8192*r.MIB)
+        for profile in (r.NAME,r.EXTERNAL_NAME,r.EVALUATOR250_NAME):self.assertEqual(r.memory_ceiling(profile),r.MAX_MEMORY)
+
+    def test_wrong_profile_aggregate_memory_swap_and_cpu_refuse_restored(self):
+        budget=r.plan(self.new)
+        for key,value in [('cpus',.125),('mem_limit',256*r.MIB),('memswap_limit',256*r.MIB)]:
+            broken=copy.deepcopy(self.new);broken['services']['evaluator'][key]=value
+            with self.assertRaisesRegex(RuntimeError,'EXISTING_LIMIT_CONFLICT'):r.verify_config(broken,budget)
+        broken=copy.deepcopy(self.new);broken[r.PROFILE_KEY]=r.EVALUATOR250_NAME
+        with self.assertRaisesRegex(RuntimeError,'PLAN_CHANGED'):r.verify_config(broken,budget)
+        broken=copy.deepcopy(self.source);broken['services']['api-2']={}
+        with self.assertRaisesRegex(RuntimeError,'AGGREGATE_EXCEEDED'):r.overlay(broken,r.EVALUATOR250_MEMORY512_NAME)
+        r.verify_config(self.new,budget)
+
+    def test_cgroup_v2_wrong_cpu_memory_and_swap_refuse_restored(self):
+        profile=r.EVALUATOR250_MEMORY512_NAME
+        good=('25000 100000',str(512*r.MIB),'0')
+        self.assertEqual(r.verify_evaluator_cgroup(profile,*good),{'millicpus':250,'memoryBytes':512*r.MIB,'swapBytes':0})
+        for broken,code in [(('12500 100000',good[1],'0'),'EFFECTIVE_CPU_CHANGED'),((good[0],str(256*r.MIB),'0'),'EFFECTIVE_MEMORY_CHANGED'),((good[0],good[1],'max'),'EFFECTIVE_SWAP_CHANGED'),(('max 100000',good[1],'0'),'EFFECTIVE_CPU_INVALID')]:
+            with self.assertRaisesRegex(RuntimeError,code):r.verify_evaluator_cgroup(profile,*broken)
+        with self.assertRaisesRegex(RuntimeError,'EFFECTIVE_MEMORY_CHANGED'):r.verify_evaluator_cgroup(r.EVALUATOR250_NAME,*good)
+        r.verify_evaluator_cgroup(profile,*good)
+
+    def test_native_hostconfig_wrong_quota_and_source_omission_are_red(self):
+        runtime=r.configure(r.EVALUATOR250_MEMORY512_NAME,self.new,observe=lambda:[])
+        row={'State':{'Status':'running'},'Config':{'Labels':{'com.docker.compose.service':'evaluator'}},'HostConfig':{'NanoCpus':250000000,'Memory':512*r.MIB,'MemorySwap':512*r.MIB}}
+        runtime.observe=lambda:[row];self.assertEqual(runtime.containers()['evaluator'],1)
+        for key,value in [('NanoCpus',125000000),('Memory',256*r.MIB),('MemorySwap',256*r.MIB)]:
+            broken=copy.deepcopy(row);broken['HostConfig'][key]=value;runtime.observe=lambda:[broken]
+            with self.assertRaisesRegex(RuntimeError,'NATIVE_LIMITS_CHANGED'):runtime.containers()
+        runtime.observe=lambda:[row];self.assertEqual(runtime.containers()['evaluator'],1)
+        actual=r.role_limit
+        def omitted(role,profile=r.NAME):return actual(role,r.EVALUATOR250_NAME if profile==r.EVALUATOR250_MEMORY512_NAME else profile)
+        with patch.object(r,'role_limit',side_effect=omitted):
+            broken=r.overlay(self.source,r.EVALUATOR250_MEMORY512_NAME)
+            with self.assertRaisesRegex(AssertionError,'EVALUATOR_MEMORY_MUST_REACH_PRODUCER'):self.assertEqual(broken['services']['evaluator']['mem_limit'],512*r.MIB,'EVALUATOR_MEMORY_MUST_REACH_PRODUCER')
+        self.assertEqual(r.overlay(self.source,r.EVALUATOR250_MEMORY512_NAME)['services']['evaluator']['mem_limit'],512*r.MIB)
 
 
 if __name__=='__main__': unittest.main()
