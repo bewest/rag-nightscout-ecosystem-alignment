@@ -51,7 +51,12 @@ class TopologyTransport(unittest.TestCase):
   actual=json.loads(subprocess.run(['node','--input-type=module','-e',script],input=json.dumps(spec),capture_output=True,text=True,check=True).stdout);self.assertEqual(actual,b);protocol.binding(actual)
   with tempfile.TemporaryDirectory() as tmp:
    d=Path(tmp);(d/'input').mkdir();(d/'input/binding.json').write_text(json.dumps(actual));(d/'input/receipt.json').write_text(json.dumps(receipt))
-   with patch.object(worker,'ROOT',d):args=list(map(str,worker.prepare_arguments(spec)))[2:]
+   # This test stops before adapter.prepare; the explicit record is parser-only.
+   # The real dependency producer and receipt admission have separate controls.
+   dependencies={'root':'/synthetic/dependencies','receipt':'/synthetic/receipt','sha256':'e'*64}
+   with patch.object(worker,'ROOT',d):
+    with self.assertRaisesRegex(RuntimeError,'DIAGNOSTIC_DEPENDENCIES_REQUIRED'):worker.prepare_arguments(spec)
+    args=list(map(str,worker.prepare_arguments(spec,dependencies)))[2:]
    def run(argv):
     with patch.object(sys,'argv',['cell.py',*argv]),patch.object(app.a,'prepare') as prepare,patch.object(app,'record_prepared_binding'):
      cell.main();return prepare.call_args.args[0]
