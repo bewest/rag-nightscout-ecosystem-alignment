@@ -21,7 +21,7 @@ pages:
   multitenant-database-design.html:
     kind: living
     sources: [docs/30-design/tenancy/sql-and-migration-architecture.md, tools/site/render_database.py]
-    source_commit: a2dacd669c920f095a982f18e95e04722246a850
+    source_commit: e0b7ffa30b6fcddfa4b212044c34ee8496d49008
     render: tools/site/render_database.py
   nightscout-ecosystem-programme.html:
     kind: living
@@ -55,7 +55,7 @@ pages:
   nightscout-next-gen-platform.html:
     kind: living
     sources: [docs/30-design/platform/next-gen-platform-plan.md, docs/30-design/platform/next-gen-platform-plan.json]
-    source_commit: f70852564daf0c5924e6283ecbfc673878c51f2d
+    source_commit: 4617eee29cb4d112b2ae238c6cce7069db26ad35
     render: tools/site/render_nextgen.py
   api-aid-commands-2025.html:
     kind: living
