@@ -81,6 +81,165 @@ executed source, positive and red controls, explicit cache-loss recovery and
 remaining notifier-liveness, schema-routing and ownership/recovery gaps. It does
 not enable a shipping role or establish production delivery guarantees.
 
+## Bounded clinical input: next-batch contract
+
+*Proposed implementation contract, 2026-11-16. The census below is **read-derived**
+from application commit `543808784e0f5f03945b840142a0df31177443ba`. Paths and line
+numbers refer to that commit. The bounded-state lane owns implementation and
+focused qualification in a separate candidate; this section does not promote
+that candidate or extend the current integrator's acceptance result.*
+
+The evaluator needs the rows its existing property view can read, plus recoverable
+state needed to maintain those answers. It does not need all source history in
+RAM. The property view supplies both clinical properties and the completed browser
+frame (`lib/data/tenant-projection-evaluator.js:141–154`). Its windows below are
+existing query contracts, not new clinical retention policy. Narrowing those
+windows needs the existing equality and replay controls
+(`lib/data/views/bounds.js:20–25`).
+
+| Input | Existing need and source | Required cache semantics |
+|---|---|---|
+| Entries | Empty-cache loader reads `date >= now - 2 days`, ascending; property view keeps that query (`lib/data/dataloader.js:179–192`; `lib/data/views/bounds.js:97–107`). | Preserve every matching type and extension field, not only SGV. This includes meter readings and calibrations. Do not substitute the alarm-only view's newest-12/newest-1 queries. |
+| Ordinary treatments | Every `created_at >= now - 60 hours`, ascending (`lib/data/views/bounds.js:37–44,85–89`). COB chains absorption across treatments and uses historical device-status IOB; a DIA-only window changes output (`lib/data/views/bounds.js:64–79`). | Retain the full window. Duration, carbohydrate/insulin fields, units and unfamiliar fields remain engine input. An ongoing duration does not authorize inventing an additional lookback or dropping part of the existing one. |
+| Treatment history exceptions | Latest of each exact event type: Sensor Start, Sensor Change, Sensor Stop, Site Change, Insulin Change and Pump Battery Change within 62 days (`lib/data/dataloader.js:406–437`). Latest duration-zero Profile Switch within `31 * 12` days (`lib/data/dataloader.js:362–381`). | A conservative cache may retain all candidates in each specified range. Keeping only each winner requires historical fallback when a correction, soft delete or hard delete removes it. These exceptions survive ordinary 60-hour expiry. |
+| Device status | `created_at >= now - 24 hours`, or 48 hours when extended `devicestatus.days == 2` (`lib/data/views/bounds.js:46–55,90`). | Preserve complete nested uploader, pump, openaps, loop and xdripjs data. Larger plugin alert thresholds do not widen this existing query. A 24-to-48-hour settings change must recover the missing day before completing that settings version. |
+| Profile | `profile.last()` reads one visible profile sorted by `startDate DESC, _id DESC` (`lib/server/profile.js:21,176–178`; `lib/data/dataloader.js:448–457`). | There is no age cutoff and no selection of “latest before now” here. Keep the selected document, including its complete `store`, or a bounded candidate set with explicit historical fallback on winner removal. Retaining every profile has no automatic population bound. |
+| Food and activity | Property view answers both with no rows (`lib/data/views/bounds.js:92–93`; `lib/data/views/index.js:174–193`). | Do not load their history into this clinical cache. This preserves the current property view's result; it does not change REST or export. The completed frame retains its existing `food` field and current empty answer (`lib/data/ddata.js:134–158`); activity is absent from that frame. Both domains still contribute to storage accounting. |
+| Storage statistics | Tenant logical JSONB bytes across the configured source tables, including invalid and old rows (`lib/storage/postgres-tenant-stats.js:15–32`). | Maintain an independent authoritative aggregate or read that aggregate through its existing contract. Clinical eviction must not reduce `dataSize`. Per-row bytes of cached rows alone cannot answer this statistic. |
+
+The query compiler and existing engine own type handling, units and ordering.
+Entries use numeric `date`; the other range queries compare `created_at` with an
+ISO string. Replacing that membership test with a permissive date parser can
+change answers for legacy or malformed values. Preserve the existing filter's
+type and array semantics. Those queries have no upper time bound unless the
+loader is explicitly asked for a framed historical read
+(`lib/data/dataloader.js:188–192,367–368,423–424`). Future records therefore stay
+eligible input. They become clinical work when their time arrives
+(`lib/data/evaluator-due.js:62–65`). The cache does not discard them as “too new.”
+
+Typed identity is `(domain, id_kind, _id)`; a string and an ObjectId with the same
+hex text remain distinct (`lib/storage/postgres-identity.js:13–38`). Preserve each
+row's insertion ordinal and the existing total-order tie-break. Keep original
+clinical values in durable input; unit and duration normalization remains in
+`ddata`, including temporary-target conversion
+(`lib/data/ddata.js:37–79,469–505`). A record with `isValid: false` stays out of
+clinical answers, while source history and byte accounting still include it
+(`lib/server/soft-deleted.js:3–24`). A late correction is classified by its new
+contents; commit coverage is classified by the stream's versions and cohort,
+never by the record's clinical date.
+
+```mermaid
+stateDiagram-v2
+  [*] --> Recovering: start, cache loss or incompatible input contract
+  Recovering --> Ready: consistent required-history snapshot plus replay overlap
+  Ready --> Ready: durable cohort seal, window expiry or time-only computation
+  Ready --> Recovering: settings expansion, missing history, restore or GAP
+  Recovering --> Pending: required input exceeds declared bound or fetch fails
+  Pending --> Recovering: existing scheduler retries eligible work
+  Ready --> Completed: result, covered versions and next due commit together
+  Completed --> Ready: newer input remains pending
+```
+
+One existing scheduler owns expiry, clinical due work and recovery. Expiry removes
+only derived rows and schedules the next boundary even without an input write.
+Shrinking a window can prune its derived state. Expansion, backward clock movement
+or a ranked winner lost from a reduced candidate set requires a named historical
+recovery path before completion. A consistent tenant-bound snapshot includes the
+required source ranges and its input floor; replay overlap skips cohorts already
+covered by that floor and applies later committed cohorts whole. Restart may
+reuse a compatible durable working set. An incompatible policy, schema or restore
+generation must recover rather than reinterpret old coverage. Routine warm
+changes apply accepted row data; a legitimate missing-history fetch has a
+separate recovery reason and is not an every-change full-source reconcile.
+
+Window membership is not a hard memory bound. Declared row and byte limits still
+refuse a clinically required set that exceeds them; the implementation must retain
+pending work and the last completed output without certifying the refused version.
+Fleet admission must also account for retained decoded/prepared input, plugin and
+date caches, staged cohorts, result/frame copies and in-flight evaluations. Cold
+cache eviction preserves durable pending versions, deadlines, notification state
+and completed output. It must not turn tenant admission into roster scans or
+repeated failed bootstrap attempts. Viewer presence does not control clinical
+admission or deadlines.
+
+Derived expiry never deletes source rows. Source retention is separately optional:
+API v3 autoprune runs only when configured, and profile pruning is an explicit
+API DELETE operation (`lib/api3/generic/collection.js:33,139–180`;
+`lib/api/profile/index.js:232–240`). Neither guarantees the population fits a
+clinical cache. REST history/export and logical restore retain their existing
+source contracts. Restore invalidates derived membership under its existing
+suspension, authority and generation fences. Whole-history accounting must survive
+that invalidation independently; identity-only deletes and unchanged-TOAST updates
+cannot derive an evicted row's former byte size from its absent cached document.
+
+Clinical evaluation remains current-state computation. This cache does not create
+a guarantee to evaluate every superseded intermediate row version. Transaction
+cohorts must remain coherent, and durable notification requests already produced
+retain their identities, suppression and retries. Any consumer that requires an
+intermediate transition needs retained event/effect semantics before coalescing;
+window expiry or latest-state replacement cannot silently satisfy that obligation.
+Realtime continues to consume the completed result and current viewer authority,
+not a second raw projection. Qualification must compare actual engine answers and
+frame fields, distinguish required historical recovery from warm rediscovery, and
+prove that expiry neither deletes source data nor completes unseen input.
+
+### Raw storage delivery is independent of clinical membership
+
+The local next-batch implementation is application branch
+`codex/bounded-storage-20261116`, commit
+`3e085e056330d2f0ddf29c4000e526a968462620`. It includes the integrator's committed `1dc7a74576b5d77f99cc4a42d900e1692d94a393`
+scheduler and populated-backfill repairs. It is fixed on that branch and
+proposed for integration. It does not extend another candidate's acceptance.
+
+The input checkpoint carries two JSONB envelopes: the clinically sufficient
+working set first, a bounded source-mutation tail second. An accepted source row
+and its existing completed-checkpoint delivery revision commit in the same
+transaction before transport acknowledgement. The raw tail shares the existing
+input-row write; the completed frame is not rewritten for each raw event.
+Clinical bootstrap, expiry and GAP replacement preserve the second envelope.
+Lifecycle/schema invalidation resets its continuity under the existing fences.
+No new tenant table, broker, consumer retry loop or source-history projection is
+introduced. Whole-history statistics still use `postgres-tenant-stats`.
+
+The existing realtime receipt drain refreshes addressed controls once, consumes
+completed frames without clinical row transfer, and independently delivers raw
+mutations to storage subscribers. Each raw delivery failure remains local to its
+tenant. Current worker, owner, restore-generation, activity and viewer authority
+still fence publication. No viewers means no raw-tail fetch or retained offline
+client obligation. Notifications keep their independent clinical deadlines.
+
+A storage subscription records the current mutation sequence and then receives
+later normalized operations in source order. Its existing packet supplies no
+initial population, offline cursor or reset event; reconnect begins another live
+subscription. Exact retained retries are idempotent within the live cursor;
+external exactly-once delivery is not promised. A temporarily uncertain authority
+holds its cursor for recheck. If that cursor falls behind the bounded tail, the
+server disconnects it with `REALTIME_STORAGE_CONTINUITY_LOST`; it does not silently
+coalesce required mutations. An older concurrent tail read cannot move a cursor
+backwards. Clinical expiry emits no source event. Food/activity and out-of-window
+corrections/deletes remain raw events even when absent from clinical input.
+
+Append-only migration `0100_<domain>_storage_identity` sets source tables to
+`REPLICA IDENTITY FULL`. Actual old documents preserve public delete identifiers
+that differ from typed `_id`, including TOAST values. Metadata-only updates with
+unchanged documents emit no client mutation. Catalogue checks accept only this
+exact typed operation; readiness refuses the old identity mode. Existing RLS,
+grants, logical export/restore/delete inventory and single-tenant socket wiring
+remain the authority for those responsibilities.
+
+The [focused qualification record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/bounded-storage-2026-11-16.md)
+contains the reproduced engine/history/expiry, native WAL/COPY/replay/RLS,
+current-authority, fleet-cache and mutation-control results, exact sources and
+retained evidence. The joined deployed default role, full/browser/enabled-native
+acceptance and operating profile remain with the integrator after selection.
+
+Full old identity adds WAL bytes for unchanged documents; the qualification
+record measures that trade-off in a synthetic fixture. It does not establish
+serving latency, capacity or the cause of the earlier delay. Whole-history
+statistic scans and total fleet heap/RSS remain unmeasured here. The bounded
+clinical set may still exceed its declared limits when actual required input is
+too large; that stays pending/refused rather than completed.
+
 ## Actual-role integration: objective and completion criteria
 
 *Execution plan, 2026-11-13; read-derived from core prototype
