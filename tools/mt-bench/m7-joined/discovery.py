@@ -18,6 +18,45 @@ SOFT_WORK_FAILURES=frozenset(('M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRE
 
 def incomplete(error):return str(error) in SOFT_WORK_FAILURES or (getattr(error,'verdict','UNMEASURED')!='FAIL' and str(error) in INCOMPLETE)
 
+def recovery_episode(value,ids,binding):
+    """Allow more discovery collection after a sampled local cache discard.
+
+    This never clears the strict failure or certifies an unseen interval. Actual
+    process replacement, counter rewind, foreign work and restore changes stop.
+    """
+    import evaluator_idle as idle
+    import evaluator_progress as p
+    import evaluator_opportunities as o
+    p.validate_ids(ids)
+    require(value.get('kind')=='evaluator-opportunity-phase-v1' and value.get('phase')=='load'
+            and value.get('code')=='M7_EVALUATOR_PROGRESS_RESET' and value.get('verdict')=='FAIL'
+            and value.get('failedCollection') is None,'M7_DISCOVERY_RECOVERY_SHAPE')
+    require(value.get('durableBinding')==binding,'M7_DISCOVERY_RECOVERY_BINDING')
+    require(all(value.get('attribution',{}).get(k)==binding[k] for k in ('pair','imageId','instrument')),'M7_DISCOVERY_RECOVERY_BINDING')
+    require(all(value.get('attribution',{}).get(k)==binding[k] for k in ('pair','imageId','instrument')),'M7_DISCOVERY_RECOVERY_BINDING')
+    services=list(value['rounds'][0]['instances']);rounds,actual=idle._decode(value,len(ids),services)
+    require(len(rounds)==3 and actual==set(ids),'M7_DISCOVERY_RECOVERY_COVERAGE')
+    require(sum(r['queries'] for r in rounds)<=p.POLICY['maxQueriesPerPhase']
+            and sum(r['bytes'] for r in rounds)<=p.POLICY['maxBytesPerPhase'],'M7_DISCOVERY_RECOVERY_BUDGET')
+    durable=o.durable_rows(value['durable'],ids,binding);o.capture_windows(value['captureWindows'],3)
+    changes=[]
+    for previous,current in zip(rounds,rounds[1:]):
+        require(current['instances']==rounds[0]['instances'],'M7_DISCOVERY_PROCESS_REPLACED')
+        for service,rows in previous['allRows'].items():
+            for tenant,before in rows.items():
+                after=current['allRows'][service][tenant]
+                require(after['admitted']==before['admitted'],'M7_DISCOVERY_ADMISSION_CHANGED')
+                require(all(after[k]>=before[k] for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_DISCOVERY_COUNTER_REWOUND')
+                if not before['admitted']:
+                    require(after==before,'M7_DISCOVERY_FOREIGN_CHANGED')
+                elif after['generation']!=before['generation']:
+                    changes.append({'tenant':tenant,'before':before['generation'],'after':after['generation']})
+    require(changes,'M7_DISCOVERY_NO_LOCAL_RECOVERY')
+    for tenant in ids:
+        require(durable[0][tenant]['restoreGeneration']==durable[-1][tenant]['restoreGeneration'],'M7_DISCOVERY_RESTORE_CHANGED')
+    return {'kind':'local-runtime-recovery','changes':changes,'strictVerdict':'FAIL',
+            'interval':'UNMEASURED between snapshots','scope':'continued bounded discovery; no correctness or capacity promotion'}
+
 def check_discovery(value):
     require(value.get('kind') in ('m7-joined-discovery-cell','m7-joined-discovery') and value.get('version')==1 and value.get('runPurpose')=='discovery' and value.get('capacityAcceptance')=='NOT_GRANTED','M7_DISCOVERY_SHAPE')
     require(value.get('status') in ('MEASURED','PARTIAL'),'M7_DISCOVERY_STATUS')
@@ -53,6 +92,7 @@ def check_discovery(value):
     if value.get('profile')=='pgstream-sample':
         require(all(value.get(key)==expected for key,expected in UNACCEPTED_SCOPE.items()),'M7_DISCOVERY_PENDING_SCOPE')
         if value['status']=='MEASURED':
+            require(not any('recoveryEpisode' in row for row in value['strictChecks'].values()),'M7_DISCOVERY_RECOVERED_CELL_NOT_ACCEPTED')
             require(value.get('completedOutput',{}).get('verdict')=='PASS' and value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'} and value.get('sqlAttribution'),'M7_DISCOVERY_SAMPLE_PROOF')
     probe=value.get('probe') or {};require(not probe.get('hardFailure') and not hard_recovery(probe.get('restart',{}).get('runtimeAcquisitionObservation',{})),'M7_DISCOVERY_HARD_FAILURE')
     for row in value['strictChecks'].values():
@@ -77,11 +117,24 @@ class Record:
             result=fn();self.value['strictChecks'][stage]={'verdict':'PASS'};self.save();return result
         except Exception as error:
             allowed=incomplete(error);partial=None
+            episode=None
+            if str(error)=='M7_EVALUATOR_PROGRESS_RESET' and stage=='load' and self.m.get('evaluatorOpportunities')=='received-input-v1':
+                try:
+                    ids=sorted(row['id'] for row in self.a.document(self.d/'tenants.private.json'))
+                    binding={'kind':'evaluator-work-v2','pair':self.m['pair'],'imageId':self.m['imageId'],'instrument':self.m['instrument']['sha256']}
+                    episode=recovery_episode(self.a.document(self.d/stage/'evaluator-progress.json'),ids,binding)
+                    self.a.assert_owned(self.m);allowed=True
+                except Exception:
+                    # The original refusal remains authoritative when this
+                    # narrow evidence classification cannot be established.
+                    pass
             if str(error)=='M7_EVALUATOR_PROGRESS_ROUNDS' and getattr(error,'verdict',None)=='UNMEASURED':
                 try:partial=partial_progress(self.a,self.d,self.m,stage);allowed=True
                 except Exception as invalid:
                     self.failure(stage,invalid,True);raise invalid from error
             self.failure(stage,error,not allowed)
+            if episode is not None:
+                self.value['strictChecks'][stage]['recoveryEpisode']=episode;self.save()
             if partial is not None:
                 self.value['strictChecks'][stage]['partialObservation']=partial;self.save()
             if not allowed:raise
@@ -144,7 +197,8 @@ def run_discovery(a,d,m,k6_image,oneoff=None):
         # before classifying the already recorded fingerprint finding.
         record.save()
         require(record.value.get('settingsFingerprintObservation',{}).get('verdict')!='FAIL','M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
-        if record.value.get('settingsFingerprintObservation',{}).get('verdict')=='PASS' and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and (record.value['probe'].get('restart') is not None or m['profile']=='pgstream-sample' and record.value.get('completedOutput',{}).get('verdict')=='PASS' and record.value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'}) and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
+        if not any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) and record.value.get('settingsFingerprintObservation',{}).get('verdict')=='PASS' and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and (record.value['probe'].get('restart') is not None or m['profile']=='pgstream-sample' and record.value.get('completedOutput',{}).get('verdict')=='PASS' and record.value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'}) and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
+        if any('recoveryEpisode' in row for row in record.value['strictChecks'].values()):record.value['status']='PARTIAL'
         record.save();check_discovery(record.value);return record.value
     except Exception as error:
         if not record.value['hardFailures']:record.failure('collection',error,True)
