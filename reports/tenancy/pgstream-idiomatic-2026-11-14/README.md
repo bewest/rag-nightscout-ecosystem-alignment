@@ -1478,3 +1478,66 @@ any later quieter 10,000-tenant remote point within its remaining budget. Local
 10,000-tenant execution under the 1GiB driver remains unqualified. This evidence
 identifies role-quota pressure and unresolved clinical/frame failures, not a
 10,000-tenant application ceiling or a production/clinical-scale pass.
+
+## Repaired-image low-rate point: observer refusal before traffic
+
+The fresh 1,000-tenant/64-viewer point on app
+`1646f00437cb207cb5acf0da0f3474b68f78bc04`, deploy
+`8ddfab1e46e3fd577f1e96e738ab5207f9925abf` and byte-qualified image
+`sha256:e3cd382058af98c8aa0fe2a71451f2a539066b087e6ed059e8d7c8124f73a126`
+ends `FAILED_PARTIAL` before k6 launch. It provides no ordinary REST or 7-RPS
+serving result. The owned helper join is `dc38b5d7b192760d4b37c6b70832ffa19be4e058`,
+instrument `0ceefbefc6c644fcd838eaa3ef62802b4607f196cb06f01814780bb8b8940c66`;
+all 121 executed inputs match selected helper `e53fc2f667ccfe31d22df4459449fd1454677855`.
+It uses the same resource envelope, primer concurrency four, serial JWT default,
+warmup 10s/idle 30s/configured load 180s, with existing received-input opportunity
+and fixed-target drain observers. These source/instrument/observer changes do not
+support an isolated performance-gain comparison with earlier points.
+
+Reproduced setup completes all 1,000 provisioned and data-primed tenants:
+provisioning 372.368s, restore commissioning 10.215s, priming 274.554s and remaining
+roles 106.022s. All 64 viewers prime in 3.127s. The exact raw dispatch readback
+records `selectedIntake` **absent**, separately from null, with its config hash.
+The normalized completion source is unselected `evaluator-work-v2` and binds this
+exact source/image/instrument tuple; no mode was assumed from `selection`.
+
+Readiness first records `EVALUATOR_STARTING` with zero acquisitions, then
+`EVALUATOR_CLINICAL_PROGRESS_STALLED` with one acquisition, zero failed
+completions, last-completion age 1,602ms and a future due time. The latter full
+1,000-row collection completes eight queries/610,499 bytes in 4.199s. This is
+not a paging deadline failure. Idle retains its clinical-progress refusal.
+The load observer then executes 16 metadata queries/1,086,466 response bytes in
+4.075s and hard-refuses `M7_COMPLETION_TYPED_STATE` before starting k6. Its durable
+and health rounds are empty; fixed-target drain does not run. The probe is stopped
+by the runner. The failed Node invocation is not counted by the current
+`nodeCalls` increment, which follows successful return; reported zero must not
+be interpreted as zero child work.
+
+The offending typed row was not retained. A source-only control of the actual
+reader accepts its completed baseline and rejects both a no-first-output shape
+and a wrong-contract shape with the same error code, then accepts restoration.
+This demonstrates diagnostic ambiguity, not the native failure's cause. No
+validator, refusal, health threshold or source binding was relaxed. A diagnostic
+prototype was preserved outside Git and restored before transfer to the dedicated
+reader owner. That owner owns actual initial/partial/malformed-state controls and
+bounded metadata failure projection. The clinical source owner retains runtime
+causality; later source controls do not retrospectively qualify this native case.
+
+The runner cleans up at `2026-11-16T07:50:04.876710Z`, before original work stop
+`07:57:52.152783Z` and cleanup cutoff `08:02:52.152783Z`. An attempted addressed
+SQL→RAM→SQL bracket finds services already stopped; all three results remain
+UNMEASURED. There is no simultaneous pending-floor/job/health proof and no
+inference from last-completion age alone. Independent absence confirms project
+containers/networks/volumes, seven recorded process births/groups and heap marker
+absent. No ordinary accepted/stored/uncertain counts, REST percentiles, delivered
+rate, final client-frame witness or clinical-scale pass is claimed.
+
+Retained point: `attribution-current/n1000-v64-r7-point-01` in the existing
+`performance-enhancements-20261115/single-host` evidence home. Compact immutable
+`attribution-current/repaired1000-r7-outcome.json` SHA-256
+`1a37b315d955c78a3e51f44e717a3b3afb76d593e5a9ad6d22ef42e3f44f8372`
+binds the original stage/readiness/observer/probe/dispatch/bracket/absence records.
+Remote custody remains with 4d9; its separately gated 10,000-tenant experiment
+must retain its actual optional-observer selection and cannot inherit a pass
+from this point. Further local reader-dependent traffic awaits a qualified
+instrument boundary, with no new application image required for reporting changes.
