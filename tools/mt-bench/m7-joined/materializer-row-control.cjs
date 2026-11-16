@@ -94,11 +94,11 @@ async function dueCoverage(core,start){
   await service.acquire(tenant);assert.equal(commits.at(-1).observed,'2');assert.equal(commits.at(-1).computed,2);
  }finally{await service.close();}
 }
-async function invalidBootstrap(core,factory){
- const scope=require(path.join(core,'lib/storage/tenant-scope.js')),mode=scope.getTenancyMode();factory=factory||require(path.join(core,'lib/storage/postgres-durable-replay.js'));let pages=0,saved;
+async function invalidBootstrap(core,factory,gap=false){
+ const scope=require(path.join(core,'lib/storage/tenant-scope.js')),mode=scope.getTenancyMode();factory=factory||require(path.join(core,'lib/storage/postgres-durable-replay.js'));let pages=0,saved,locks=0;
  const row={domain:'entries',id_kind:'string',doc:{_id:'synthetic-invalid',isValid:false,extension:{preserve:true}},stamp:null,ordinal:null,storage_bytes:123};
  const connection={snapshotTransaction:fn=>fn(),async query(text,values){
-  if(text.includes('FOR UPDATE'))return {rows:[{checkpoint:'0',projection:null,contract_digest:null}]};
+  if(text.includes('SELECT checkpoint')){if(text.includes('FOR UPDATE'))locks++;return {rows:[{checkpoint:'0',projection:gap?[{kind:'clinical-stream-v1',ready:false,gap:'bytes',rows:[],staged:[],last:'0/20'}]:null,contract_digest:gap?replay.snapshotDigest:null}]};}
   if(text.includes('evaluator-change-signature'))return {rows:[{stamp:'0',deleted:'0'}]};
   if(text.includes('SELECT count(*)'))return {rows:[{row_count:'1',document_bytes:'100'}]};
   if(text.includes('information_schema.columns'))return {rows:[]};
@@ -111,7 +111,20 @@ async function invalidBootstrap(core,factory){
   const output=await replay.reconcile({maxRows:10,maxBytes:1048576,signature:true});
   assert.equal(output.stats.dataSize,123,'BOOTSTRAP_INVALID_STORAGE_BYTES_LOST');assert.equal(output.rows.length,0,'INVALID_ROW_VISIBLE');
   assert.deepEqual(saved.rows[0].doc.extension,{preserve:true},'BOOTSTRAP_INVALID_HISTORY_LOST');
+  assert.equal(locks,1,'COLD_BOOTSTRAP_MUST_LOCK');
  });}finally{scope.setTenancyMode(mode);}
+}
+async function warmRead(core,factory){
+ const scope=require(path.join(core,'lib/storage/tenant-scope.js')),mode=scope.getTenancyMode(),state=require(path.join(core,'lib/storage/clinical-stream-state.js'));
+ factory=factory||require(path.join(core,'lib/storage/postgres-durable-replay.js'));let reads=0;
+ const connection={snapshotTransaction:fn=>fn(),async query(text){
+  assert(!text.includes('FOR UPDATE'),'WARM_STREAM_TAKES_WRITE_LOCK');
+  assert(text.startsWith('SELECT checkpoint'),'WARM_STREAM_READS_CLINICAL_TABLES');reads++;
+  return {rows:[{checkpoint:'5',contract_digest:replay.snapshotDigest,projection:[state.bootstrap(null,{checkpoint:5,signature:{stamp:5,deleted:0},rows:[{domain:'entries',document:{_id:'synthetic-warm',sgv:123},ordinal:1,storageBytes:64}]},limits)]}]};
+ }};
+ const replay=factory({connection,checkpointTable:'synthetic_checkpoint.tenant_consumer_checkpoint',clockTable:'synthetic_clock.tenant_write_clock',domains:{entries:'synthetic_entries.entries'},consumer:'evaluator-test',projectionVersion:'synthetic-v1',pageSize:2,maxRows:10,stream:true});
+ scope.setTenancyMode('multi');
+ try{const result=await scope.withTenant('11111111-1111-4111-8111-111111111111',()=>replay.reconcile({maxRows:10,maxBytes:1048576,signature:true}));assert.equal(reads,1);assert.equal(result.checkpoint,5);assert.equal(result.rows[0].document.sgv,123);}finally{scope.setTenancyMode(mode);}
 }
 async function schedulerFairness(core,start){
  start=start||require(path.join(core,'lib/pgstream/activity-scheduler.js')).start;
@@ -290,6 +303,13 @@ async function run(core,capture){
  await assert.rejects(schedulerRecovery(core,blockedPage.exports.start),/RECOVERY_PAGE_STARVED_BY_HELD_EARLIER_TENANT/);await schedulerRecovery(core);controls.push('held-first-recovery-page');
  await invalidBootstrap(core);
  const replayFile=path.join(core,'lib/storage/postgres-durable-replay.js'),replaySource=fs.readFileSync(replayFile,'utf8');
+ await warmRead(core);await invalidBootstrap(core,undefined,true);
+ const warmLock="(stream ? '' : ' FOR UPDATE')";assert.equal(replaySource.split(warmLock).length,2,'WARM_LOCK_ABLATION_SOURCE_MISMATCH');
+ const locking={exports:{}};vm.runInThisContext('(function(require,module,exports){'+replaySource.replace(warmLock,"' FOR UPDATE'")+'\n})',{filename:replayFile})(createRequire(replayFile),locking,locking.exports);
+ await assert.rejects(warmRead(core,locking.exports),/WARM_STREAM_TAKES_WRITE_LOCK/);await warmRead(core);controls.push('warm-stream-write-lock');
+ const coldLock="checkpointSelect + ' FOR UPDATE'";assert.equal(replaySource.split(coldLock).length,2,'COLD_LOCK_ABLATION_SOURCE_MISMATCH');
+ const unlocked={exports:{}};vm.runInThisContext('(function(require,module,exports){'+replaySource.replace(coldLock,'checkpointSelect')+'\n})',{filename:replayFile})(createRequire(replayFile),unlocked,unlocked.exports);
+ await assert.rejects(invalidBootstrap(core,unlocked.exports,true),/COLD_BOOTSTRAP_MUST_LOCK/);await invalidBootstrap(core,undefined,true);controls.push('GAP-bootstrap-unlocked');
  const filter='if (stream || row.doc.isValid !== false)';assert.equal(replaySource.split(filter).length,2,'BOOTSTRAP_ABLATION_SOURCE_MISMATCH');
  const filtered={exports:{}};vm.runInThisContext('(function(require,module,exports){'+replaySource.replace(filter,'if (row.doc.isValid !== false)')+'\n})',{filename:replayFile})(createRequire(replayFile),filtered,filtered.exports);
  await assert.rejects(invalidBootstrap(core,filtered.exports),/BOOTSTRAP_INVALID_STORAGE_BYTES_LOST/);await invalidBootstrap(core);controls.push('bootstrap-drops-invalid-history');
@@ -312,5 +332,5 @@ async function run(core,capture){
  await assert.rejects(receipt(core,events[0],broken.exports),/RAW_ACK_BEFORE_COMMIT/);await receipt(core,events[0],receiver);controls.push('raw-ACK-before-commit');
  return {verdict:'PASS',scope:'actual-module state/native payloads and mocked SQL commit boundary; deployed recovery unmeasured',...result,controls};
 }
-module.exports={run,exercise,dueCoverage,migrationCompatibility,schedulerDueRefresh,schedulerDueRefreshFinalizer};
+module.exports={run,exercise,dueCoverage,migrationCompatibility,schedulerDueRefresh,schedulerDueRefreshFinalizer,warmRead,invalidBootstrap};
 if(require.main===module){(async()=>{if(process.argv.length!==4)throw Error('Usage: node materializer-row-control.cjs APP_WORKTREE DECODER_JSONL');console.log(JSON.stringify(await run(path.resolve(process.argv[2]),path.resolve(process.argv[3]))));})().catch(error=>{console.error(error.stack);process.exitCode=1;});}
