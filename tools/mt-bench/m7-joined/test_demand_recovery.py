@@ -65,6 +65,33 @@ class DemandRecovery(unittest.TestCase):
    with self.assertRaisesRegex(RuntimeError,'CONFIGURATION'):f.c.receipt_scope(changed,receipt,'run')
    with self.assertRaisesRegex(RuntimeError,'REMOTE_DEMAND_RECOVERY_LOCAL_ONLY'):
     f.rc.remote_projection(cfg,f.overlay())
+ def baseline_error(self,kind='warming'):
+  import evaluator_progress as p
+  error=p.Refused('M7_EVALUATOR_PROGRESS_ERROR','UNMEASURED' if kind=='warming' else 'FAIL')
+  row={'tenant':A,'admitted':True,'ready':False,'code':'EVALUATOR_ACQUISITION_REQUIRED','alert':None,'progress':{'generation':3,'completedAcquisitions':2,'completedTimeCycles':0,'failedCompletions':0}}
+  if kind=='failed':row['progress']['failedCompletions']=1;error.verdict='UNMEASURED'
+  if kind=='foreign':row['admitted']=False;error.verdict='UNMEASURED'
+  if kind=='clinical':row['code']='EVALUATOR_CLINICAL_PROGRESS_STALLED'
+  error.diagnostic={'predicate':'OWNER_READY_REQUIRED','field':'ready','warming':True,'failedRow':row}
+  error.collection={'queries':1,'bytes':100,'wallSeconds':.1,'completeResponses':True,'diagnostic':error.diagnostic}
+  return error
+ def test_baseline_discriminator_retains_real_semantic_failures(self):
+  self.assertTrue(r.observational_baseline(self.baseline_error()))
+  for kind in ('failed','foreign'):
+   with self.assertRaisesRegex(RuntimeError,'HIDDEN_FAILURE|FOREIGN'):r.observational_baseline(self.baseline_error(kind))
+  self.assertFalse(r.observational_baseline(self.baseline_error('clinical')))
+  for code in ('M7_EVALUATOR_PROGRESS_RESET','M7_COMPLETION_TYPED_STATE','M7_EVALUATOR_PROGRESS_COVERAGE'):
+   self.assertFalse(r.observational_baseline(r.p.Refused(code,'UNMEASURED')))
+ def test_refusal_diagnostic_is_bounded_without_raw_error_text(self):
+  error=self.baseline_error();evidence=r.refusal_evidence(error)
+  self.assertEqual(evidence['collection']['queries'],1);self.assertEqual(evidence['diagnostic']['failedRow']['tenant'],A)
+  error.diagnostic['huge']='synthetic'*100000
+  evidence=r.refusal_evidence(error)
+  self.assertLessEqual(len(json.dumps(evidence).encode()),16384);self.assertNotIn('synthetic',json.dumps(evidence))
+ def test_unexercised_fault_cannot_claim_recovery_or_require_restart_timestamp(self):
+  v=r.verify_probe({}, {'verdict':'UNMEASURED','faultExercised':False})
+  self.assertEqual(v['verdict'],'UNMEASURED')
+  with self.assertRaisesRegex(RuntimeError,'SKIP_RECEIPT'):r.verify_probe({}, {'verdict':'PASS','faultExercised':False})
  def caller(self,broken=None):
   with tempfile.TemporaryDirectory() as tmp,contextlib.ExitStack() as stack:
    d=Path(tmp);out=d/'load';out.mkdir();a.write(d/'tenants.private.json',[{'id':A},{'id':B}]);finished=threading.Event();events=[]
@@ -83,27 +110,40 @@ class DemandRecovery(unittest.TestCase):
    def work():
     events.append('load');self.marker(out/'k6.log','jwt-setup-start' if broken=='setup' else 'scenario-first-iteration')
     if broken=='setup':return
-    if not finished.wait(5):raise RuntimeError('TEST_LOAD_JOIN_TIMEOUT')
+    if broken=='baseline-unmeasured':finished.wait(1.4)
+    elif not finished.wait(5):raise RuntimeError('TEST_LOAD_JOIN_TIMEOUT')
     events.append('load-ended')
    def proof(*args):events.append('recovery');return {'verdict':'PASS'}
    auth=self.auth();after=copy.deepcopy(auth)
    if broken=='authority':after[0]['generation']='2'
-   stack.enter_context(patch.object(r,'authority',side_effect=[auth,after]));stack.enter_context(patch.object(r.p,'round_view',return_value={'instances':{}}));stack.enter_context(patch.object(r.recovery,'main',side_effect=proof))
+   stack.enter_context(patch.object(r,'authority',side_effect=[auth,after]));baseline=stack.enter_context(patch.object(r.p,'round_view',return_value={'instances':{},'owners':{A:{'failedCompletions':0},B:{'failedCompletions':0}}}))
+   if broken and broken.startswith('baseline-'):
+    kind={'baseline-unmeasured':'warming','baseline-failed':'failed','baseline-foreign':'foreign','baseline-clinical':'clinical'}[broken]
+    baseline.side_effect=self.baseline_error(kind)
+   stack.enter_context(patch.object(r.recovery,'main',side_effect=proof))
+   stack.enter_context(patch.object(r.recovery.subprocess,'run',side_effect=AssertionError('NATIVE_SUBPROCESS_FORBIDDEN_IN_FIXTURE')))
    record=SimpleNamespace(value={},save=Mock());stop=Mock(side_effect=finished.set)
    with a.command_deadline(time.time()+20):
-    if broken:
+    if broken and broken!='baseline-unmeasured':
      with self.assertRaises(RuntimeError):r.run(fake,d,m,out,work,record,stop)
     else:r.run(fake,d,m,out,work,record,stop)
    result=a.document(out/'demand-recovery.json')
-   if broken in ('setup','roles'):self.assertNotIn('restart',events)
+   if broken in ('setup','roles') or broken and broken.startswith('baseline-'):self.assertNotIn('restart',events)
    if broken=='no-change':self.assertNotIn('recovery',events)
    if not broken:
     self.assertEqual(result['verdict'],'PASS');self.assertLess(events.index('restart'),events.index('load-ended'));self.assertLess(events.index('recovery'),events.index('load-ended'))
+   elif broken=='baseline-unmeasured':
+    self.assertEqual(result['verdict'],'UNMEASURED');self.assertFalse(result['faultExercised']);stop.assert_not_called();self.assertIn('load-ended',events)
+    self.assertEqual(result['baselineObservation']['collection']['queries'],1);self.assertTrue(baseline.call_args.kwargs['warming'])
    else:self.assertEqual(result['verdict'],'FAIL')
  def test_actual_caller_recovers_while_load_is_live(self):self.caller()
  def test_restart_before_scenario_refuses(self):self.caller('setup')
  def test_changed_role_roster_refuses_before_effect(self):self.caller('roles')
  def test_no_actual_role_change_refuses_recovery(self):self.caller('no-change')
  def test_changed_authority_refuses(self):self.caller('authority')
+ def test_observational_baseline_does_not_cancel_ordinary_work(self):self.caller('baseline-unmeasured')
+ def test_actual_failed_completion_baseline_still_stops(self):self.caller('baseline-failed')
+ def test_actual_foreign_baseline_still_stops(self):self.caller('baseline-foreign')
+ def test_actual_clinical_stall_baseline_still_stops(self):self.caller('baseline-clinical')
 
 if __name__=='__main__':unittest.main()

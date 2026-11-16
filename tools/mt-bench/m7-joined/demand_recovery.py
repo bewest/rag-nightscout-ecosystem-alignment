@@ -6,6 +6,7 @@ and durable brackets and never treats transport acceptance as completion.
 """
 import contextvars
 import json
+import math
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -84,6 +85,9 @@ def assess_bracket(before,after,ids,binding,authority_before,authority_after):
 
 
 def verify_probe(probe,receipt):
+    if receipt.get('faultExercised') is False:
+        require(receipt.get('verdict')=='UNMEASURED' and 'restartStartedAtMs' not in receipt,'M7_DEMAND_RECOVERY_SKIP_RECEIPT')
+        return {'verdict':'UNMEASURED','code':'M7_DEMAND_RECOVERY_NOT_EXERCISED','scope':'ordinary traffic continued; no restart/recovery claim'}
     require(probe.get('completedOutput',{}).get('verdict')=='PASS','M7_DEMAND_RECOVERY_OUTPUT_FAILED')
     witnesses=probe.get('completedOutput',{}).get('witnesses',[])
     viewed={row['tenant'] for row in probe.get('viewerBindings',[])}
@@ -93,6 +97,57 @@ def verify_probe(probe,receipt):
             and probe['window']['expectedFrames']>0,'M7_DEMAND_RECOVERY_POST_FRAME_NOT_OBSERVED')
     return {'verdict':'PASS','postRestartViewedWitnesses':len(post),'scope':'actual post-restart request/output/client witnesses; sparse subset only'}
 
+
+
+def refusal_evidence(error):
+    """Retain fixed observer evidence, never arbitrary exception text/output."""
+    def bounded(value,depth=0):
+        if depth>8:return {'omitted':'depth-bound'}
+        if value is None or type(value) is bool:return value
+        if type(value) is int:return value if abs(value)<=9223372036854775807 else {'omitted':'integer-bound'}
+        if type(value) is float:return value if math.isfinite(value) else {'omitted':'nonfinite'}
+        if isinstance(value,str):return value if len(value)<=256 else {'omitted':'string-bound','length':len(value)}
+        if isinstance(value,dict):return {str(k)[:64]:bounded(v,depth+1) for k,v in list(value.items())[:64]}
+        if isinstance(value,list):return [bounded(v,depth+1) for v in value[:64]]
+        return {'omitted':'type-bound'}
+    collection=getattr(error,'collection',None)
+    evidence={'code':str(error) if re.fullmatch('M7_[A-Z_]+',str(error)) else 'M7_DEMAND_RECOVERY_OBSERVATION_UNAVAILABLE',
+              'verdict':getattr(error,'verdict',None) if getattr(error,'verdict',None) in ('PASS','FAIL','UNMEASURED') else 'UNMEASURED'}
+    if isinstance(collection,dict):
+        evidence['collection']={key:bounded(collection[key]) for key in ('queries','bytes','wallSeconds','completeResponses','diagnostic') if key in collection}
+    diagnostic=getattr(error,'diagnostic',None)
+    if diagnostic is not None:evidence['diagnostic']=bounded(diagnostic)
+    if len(json.dumps(evidence,allow_nan=False).encode())>16384:
+        evidence={'code':evidence['code'],'verdict':evidence['verdict'],'evidence':'UNMEASURED_BOUND_EXCEEDED'}
+    return evidence
+
+
+def observational_baseline(error):
+    """Unknown observation skips injection; known semantic failure still stops."""
+    if not isinstance(error,p.Refused) or getattr(error,'verdict',None)!='UNMEASURED':return False
+    if str(error) not in ('M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_UNAVAILABLE'):return False
+    diagnostic=getattr(error,'diagnostic',None) or (getattr(error,'collection',{}) or {}).get('diagnostic')
+    if isinstance(diagnostic,dict):
+        row=diagnostic.get('failedRow',{})
+        failed=row.get('progress',{}).get('failedCompletions') if isinstance(row.get('progress'),dict) else None
+        if type(failed) is int and failed>0:raise p.Refused('M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
+        if row.get('admitted') is False:raise p.Refused('M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
+        if str(error)=='M7_EVALUATOR_PROGRESS_ERROR':
+            # Only the decoder's existing explicit warming shape is ambiguous.
+            return (diagnostic.get('warming') is True and failed==0 and row.get('admitted') is True
+                    and row.get('code') in ('EVALUATOR_STARTING','EVALUATOR_ACQUISITION_REQUIRED')
+                    and row.get('alert') is None)
+    return str(error)=='M7_EVALUATOR_PROGRESS_UNAVAILABLE'
+
+
+def continued_durable(before,after,ids,binding,auth_before,auth_after):
+    require(validate_authority(auth_before,ids)==validate_authority(auth_after,ids),
+            'M7_DEMAND_RECOVERY_AUTHORITY_CHANGED')
+    rows=opportunities.durable_rows([before,after,after],ids,binding)
+    require(all(rows[0][tenant]['restoreGeneration'] is not None
+                and rows[0][tenant]['restoreGeneration']==rows[-1][tenant]['restoreGeneration'] for tenant in ids),
+            'M7_DEMAND_RECOVERY_RESTORE_CHANGED')
+    return {'verdict':'PASS','scope':'sampled unchanged authority/restore and monotone durable positions; fault not exercised'}
 
 def run(a,d,m,out,work,record,stop_load):
     validate(m)
@@ -124,8 +179,25 @@ def run(a,d,m,out,work,record,stop_load):
             auth_before=authority(a,d,ids);before,cost_before=collector()
             result['captures']={'before':before,'authorityBefore':auth_before,'costBefore':cost_before}
             a.write(out/'demand-recovery.json',result)
-            baseline=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b))
+            try:
+                baseline=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),warming=True)
+            except p.Refused as error:
+                result['baselineObservation']=refusal_evidence(error)
+                if not observational_baseline(error):raise
+                result.update(verdict='UNMEASURED',code='M7_DEMAND_RECOVERY_BASELINE_UNMEASURED',faultExercised=False)
+                a.write(out/'demand-recovery.json',result)
+                future.result(timeout=a.remaining_seconds(max(1,until-time.time()-3)))
+                after,cost_after=collector();auth_after=authority(a,d,ids)
+                result['continuedDurable']=continued_durable(before,after,ids,collector.binding,auth_before,auth_after)
+                result['captures'].update(after=after,authorityAfter=auth_after,costAfter=cost_after)
+                require(abs((time.time()-wall_started)-(time.monotonic()-started))<.5,'M7_DEMAND_RECOVERY_CLOCK_CHANGED')
+                result['ordinaryWindow']='ordinary load finished without fault injection; recovery remains UNMEASURED'
+                record.value['demandRecovery']=result;record.save()
+                return result
             a.write(out/'demand-recovery-baseline.private.json',baseline)
+            result['baselineArtifact']='demand-recovery-baseline.private.json'
+            require(all(row.get('failedCompletions')==0 for row in baseline.get('owners',{}).values()),
+                    'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE')
             # All rendered evaluator services, and no API/realtime/foreign role.
             require(services==a.progress_services(d),'M7_DEMAND_RECOVERY_ROLE_CHANGED')
             live(future);a.assert_owned(m)
@@ -133,6 +205,7 @@ def run(a,d,m,out,work,record,stop_load):
             a.orchestration_binding.fixture_mutation_preflight(d,restart_argv,a.command)
             compose_args=a.orchestration_binding.fixture_argv(d,[])[1:]
             script="const x=JSON.parse(process.argv[1]);require(process.argv[2]).restart(x).then(v=>console.log(JSON.stringify(v))).catch(e=>{console.error(e.code);process.exit(1)});"
+            result['faultExercised']=True
             result['restartStartedAtMs']=int(time.time()*1000)
             response=a.command([m['generator']['tools']['node']['path'],'-e',script,json.dumps({'composeArgs':compose_args,'roles':services,'at':result['restartStartedAtMs']}),a.HERE/'restart.cjs'],timeout=min(120,a.remaining_seconds(120)))
             result['restart']=json.loads(response);result['restartEndedAtMs']=int(time.time()*1000)
@@ -156,6 +229,7 @@ def run(a,d,m,out,work,record,stop_load):
             require(abs((time.time()-wall_started)-(time.monotonic()-started))<.5,'M7_DEMAND_RECOVERY_CLOCK_CHANGED')
             result['verdict']='PASS'
         except BaseException as error:
+            result['refusal']=refusal_evidence(error)
             result.update(verdict='FAIL',code=str(error) if re.fullmatch('M7_[A-Z_]+',str(error)) else 'M7_DEMAND_RECOVERY_INSTRUMENT_ERROR')
             if not future.done():
                 record.value.setdefault('processes',{}).setdefault('k6',{})
