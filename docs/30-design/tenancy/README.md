@@ -1,7 +1,7 @@
 # Tenancy: what to read and maintain
 
 *Contributor-facing living reading guide, current with the release decisions of
-2026-11-12. Each document below owns one kind of fact; it links to the others
+2026-11-16. Each document below owns one kind of fact; it links to the others
 rather than restating them. [Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md)
 own adopted policy, the [queue](../../../queue/work-queue.yaml) owns claimed item
 state and the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
@@ -9,10 +9,14 @@ own merges, acceptance and publication. Retired journals, answered packets and
 superseded analyses are in the [tenancy archive](../../archive/tenancy/README.md);
 a date in a filename does not establish currency.*
 
-For an outsider's first reading, start with [runtime topology](runtime-topology.md)
-for reusable roles and scale envelopes, [deployment bindings](deployment-bindings-and-public-names.md)
-for configuration and trust, then [production sequencing](production-critical-path.md)
-for evidence and admission. The release record is a journal of executed work, not
+For a first reading, start with [runtime topology](runtime-topology.md) for roles
+and placement, then [evaluator/realtime communication](evaluator-realtime-communication.md)
+for the current stream, bounded clinical state and separate raw storage delivery.
+Use [deployment bindings](deployment-bindings-and-public-names.md) for configuration
+and trust, then [production sequencing](production-critical-path.md) for evidence
+and admission. The [selected runtime record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16)
+owns functional qualification; the same report owns separately attributed
+operating measurements. Neither a design diagram nor an old run grants capacity. The release record is a journal of executed work, not
 the architecture explanation.
 
 For a diagram-first review, open the [multitenant database and component ownership
@@ -45,11 +49,11 @@ guide below.
 
 | Document | Owns |
 |---|---|
-| [Single and multitenant architecture](single-and-multitenant-architecture.md) | Mode comparison, compatibility and the [current service composition and restore integration](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07). |
+| [Single and multitenant architecture](single-and-multitenant-architecture.md) | Mode comparison, compatibility and the [source-pinned service and restore reference](single-and-multitenant-architecture.md#current-service-composition-and-restore-integration-2026-11-07). |
 | [Runtime topology](runtime-topology.md) | Reusable roles, scale envelopes, private APIs and the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement). |
 | [Private API composition and scaling plan](selectable-endpoints-and-api-scaling-plan.md) | The adopted `serve.internal` listener, graceful shutdown, fixed-roster API replicas and their acceptance matrix. |
-| [Realtime sharding plan](realtime-sharding-plan.md) | Proposed realtime tenant placement, recovery and co-location comparison. |
-| [Evaluator/realtime communication](evaluator-realtime-communication.md) | Clinical projections, notification handoff, private API forwarding, output revisions and alarm repeat. |
+| [Realtime sharding plan](realtime-sharding-plan.md) | Implemented fixed-roster tenant placement and controlled moves, their source-scoped qualification, and remaining topology/capacity boundaries. |
+| [Evaluator/realtime communication](evaluator-realtime-communication.md) | Stream acceptance and clinical completion, bounded working state, independent raw storage delivery, notification handoff and recovery. |
 | [SQL and migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, migrations and restore inclusion. |
 | [Counter and restore options](counter-and-restore-options.md) | History clock versus insertion order, restore alternatives and the census counter-writer rule. |
 | [Clock proof plan](postgres-tenant-clock-proof.md) | Tenant clock invariants and experiment design; acceptance records keep their own scope. |

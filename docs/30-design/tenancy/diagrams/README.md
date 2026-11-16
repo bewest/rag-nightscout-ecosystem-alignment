@@ -12,7 +12,8 @@ Two mechanisms recorded on 2026-11-10 are drawn as Mermaid where they are define
 the [tenant activity states](../multitenancy-decisions.md#tenant-activity-states-diagram)
 and the [root, owner and operator authority split](../multitenancy-decisions.md#authority-split-diagram).
 The [alarm repeat and wake sequence](../evaluator-realtime-communication.md#alarm-repeat-and-targeted-wake-diagram)
-sits beside the earlier inspected notification path.
+describes the current durable notification boundary; the earlier inspected path
+is retained in the [communication reference](../../../archive/tenancy/evaluator-realtime-reference-2026-11-16.md).
 
 Start with the [runtime topology guide](../runtime-topology.md), which owns the
 current reading path and work boundaries. The historical reference, current

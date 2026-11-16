@@ -10,7 +10,7 @@ closes the reproduced startup/progress failure for this discovery envelope.
 Capacity acceptance remains **NOT_GRANTED**. The original run's functional
 acceptance remains **UNACCEPTED**; this record does not relabel that capture.
 The complete actual-role recovery and effect-fencing criteria remain open in the
-[communication plan](../../../docs/30-design/tenancy/evaluator-realtime-communication.md#actual-role-integration-objective-and-completion-criteria).
+[communication plan](../../../docs/archive/tenancy/evaluator-realtime-reference-2026-11-16.md#actual-role-integration-objective-and-completion-criteria).
 
 ## Source and measurement boundaries
 

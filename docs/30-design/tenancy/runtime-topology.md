@@ -1,9 +1,8 @@
 # Runtime topology: zones, components and private APIs
 
-*Living contributor-facing architecture guide, reconciled 2026-11-12. Structure is
+*Living contributor-facing architecture guide, reconciled 2026-11-16. Structure is
 **read-derived**; measured acceptance retains its exact source in the linked
-records. This Markdown generates the site's `runtime-topology.html`. The
-[endpoint/API work plan](selectable-endpoints-and-api-scaling-plan.md) owns remaining
+records. The [endpoint/API work plan](selectable-endpoints-and-api-scaling-plan.md) owns remaining
 implementation and acceptance criteria; the [queue](../../../queue/work-queue.yaml)
 owns claimed work state. A diagram is not deployment or capacity acceptance.*
 
@@ -48,23 +47,24 @@ They do not imply separate binaries, containers or production qualification.
 The inventory below groups existing responsibilities; release records own their
 current acceptance. Role launch details remain in the application source.
 
-**Read-derived source check, 2026-11-12:** cgm-remote-monitor
-`ff5156b984424f1ef34bcef22d5bfa0071354cfa`, `lib/server/serve/roles.js`,
-`lib/cli/index.js` and `lib/cli/commands/multitenant.js`.
-The role registry declares API, evaluator, realtime, vcpool, tenant-admin, admin and feed-reader.
+**Read-derived source check, 2026-11-16:** cgm-remote-monitor
+`5e112547b31252ec428747c821d3cd1b3684ce2b`, `lib/server/serve/roles.js` and
+`lib/server/serve/preview-realtime.js`. The selected registry declares API,
+evaluator, realtime, vcpool, tenant-admin and admin. The platform runs pgstream
+as a separate service; the application does not own its process lifecycle.
 UI, maintenance jobs and backing services have different entry points.
 
 | Component or responsibility | Boundary and state ownership | Natural reference topic |
 |---|---|---|
 | API | REST version adapters and canonical clinical writes; current client authority. Each instance has pools, caches and in-flight requests. | Request service, authority, pool limits, replica routing and drain. |
-| Evaluator | Tenant acquisition and clinical/plugin computation; input checkpoints, eligible output and notification production have separate completion meanings. | Assignment, scheduling, freshness, output eligibility and recovery. |
-| Realtime | Client connections, subscriptions and record fanout; forwards authorized writes to API. Owns its projection and connection state. | Socket service, authority checks, tenant placement and reconnect/recovery. |
+| Evaluator | Durable stream receiver, bounded clinical working state and clinical/plugin computation. Accepted input, completed output and notification effects have separate completion meanings. | Assignment, pending/due scheduling, freshness, output eligibility and recovery. |
+| Realtime | Client connections, completed-output fanout and independent raw storage events; forwards authorized writes to API. Owns delivery receipts and connection state, without another raw clinical projection. | Socket service, authority checks, tenant placement and reconnect/recovery. |
 | vcpool | Tenant connector actors. Reads scoped configuration and sends tenant-bound writes through the API. | Connector membership, credentials, outbound limits and retries. |
 | Tenant-admin | Tenant owner management with a separate credential audience; distinct from clinical DATA and operator ownership control. | Owner settings, delegation and management listener. |
 | Admin | Private operator ownership, pool and provisioning operations with scoped backing identities. It is not a lifecycle participant. | Operator control, provisioning, credentials and refused operations. |
 | UI | Page and asset delivery in the selected deployment binding. It is not a role in the inspected CLI registry. | Browser endpoint, routing and asset configuration. |
 | Maintenance jobs/controller | Explicit migration and restore operations; exact participant roster, incarnation and operation claims. | Migration, backup/restore, fencing, uncertain outcomes and recovery. |
-| Feed-reader | Dedicated metadata slot reader that emits change hints. It runs alone, outside tenant-operation cohorts. | Reader ownership, slot retention, hint transport and recovery. |
+| Platform pgstream service | Maintained WAL change transport to the evaluator receiver. The platform owns the pinned process/restart policy; the application owns durable acceptance, completion and readiness. | Slot/receiver ownership, grants, WAL retention, delivery health and explicit gap recovery. |
 | Projections and durable delivery | Library/protocol responsibilities used by workers; input positions and effect completion have separate contracts. | Replay, checkpoints, retained work and delivery guarantees. |
 | Edge and backing dependencies | Deployment-selected ingress, PostgreSQL, Vault and optional identity/monitoring services. Their availability and custody affect the whole deployment. | Binding, credentials, retained data, resource budgets and dependency recovery. |
 
@@ -81,18 +81,12 @@ failure recovery, compatibility and operating limits. Follow existing contract
 and evidence links for each answer; mark missing answers as unmeasured or proposed.
 These are review questions for the existing design, not another status checklist.
 
-The inspected CLI already selects multitenant roles and provides migration,
-healthcheck, environment, diagnostic and operator-client commands. Its top-level multitenant
-summary still names only API and tenant-admin, while the registry supports more roles.
-The admin summary advertises provisioning but omits its removal verb.
-These are discoverability gaps, not evidence of missing implementations.
-The `admin` client and `admin` server role have different responsibilities.
-A healthcheck response also does not prove tenant progress or completed evaluation.
-Role-specific reference material is still spread across source documents and guides.
-Measured resource limits, remote placement and recovery qualification also remain
-source/profile-specific. The architecture is ready for coherent topics; a complete
-production operations manual would need those answers joined for a selected profile.
-No new command, help option or man page is required for this documentation work.
+The [current communication guide](evaluator-realtime-communication.md) explains
+accepted transaction cohorts, bounded clinical state, completed result/checkpoint
+and the separate source-mutation tail. The old metadata feed-reader and independent
+realtime clinical acquisition are retained only in the [historical reference](../../archive/tenancy/evaluator-realtime-reference-2026-11-16.md).
+Health alone does not prove completed tenant work. Measured resource limits,
+remote placement and recovery qualification remain source/profile-specific.
 
 ## Read the diagrams
 
@@ -149,7 +143,8 @@ purpose, not different networks or mandatory sockets:
 Each process that serves private contracts opens one `serve.internal`.
 API serves socket-authority and
 lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant; evaluator and
-tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
+tenant-admin serve lifecycle-participant. The selected stream evaluator also
+serves its private receiver; realtime serves completed-output hints. A process with no contract (UI) opens none. The default is a
 unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
 listener finishes in-flight calls up to a deadline ([graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)).
 The `admin` role serves ownership operations on its operator listener
@@ -199,7 +194,7 @@ modules may co-locate while retaining their credentials/audiences/listener rules
 Process layout is a deployment choice; request pools, caches and in-flight work
 still make every real instance a maintenance participant. The
 [placement/admission review](tenant-admission-and-activity.md#one-logical-api-does-not-require-one-listener-or-process)
-owns the detailed assessment and the separate open activity-policy proposal.
+owns the detailed assessment and the adopted activity policy.
 
 Nginx already performs reverse proxying and Socket.IO upgrade/tunnelling in the
 reference. An optional nginx `auth_request` or Oathkeeper decision adapter would
@@ -366,10 +361,10 @@ one possible assignment mechanism, not a universal scaling rule:
 
 | Component/work | Relevant ownership unit | Scaling implication |
 |---|---|---|
-| Clinical evaluator | Tenant's scheduled acquisition/time-based evaluation | Selected M7 member-count/ordinal assignment; partition inspection belongs here. |
+| Clinical evaluator | Tenant's accepted-input, pending and clinical due work | Selected M7 member-count/ordinal assignment; partition inspection belongs here. |
 | Notification producer/consumer | Tenant/consumer state and individual durable delivery attempts | Current consumer timers are serialized per tenant within each process; the store locks state and records attempt tokens/deadlines. Co-located consumers must follow the evaluator's admitted assignment, or have a separately qualified work-claim distribution model. A ring alone does not establish exactly-once external delivery. |
 | Connector actors | Tenant/source account, polling cursor/session and upstream effects | Tenant-side workers need explicit assignment or claims to avoid duplicate polling/ingestion. External connector-to-tenant and tenant-side connector directions have separate evidence; use the release record for joined scope rather than infer either direction from the other. |
-| Realtime | Client connections/rooms and per-tenant projection/checkpoint consumers | It has scheduled refresh work and retained state. Replication needs affinity, checkpoint ownership and complete notification fanout; it is not ordinary stateless replication and does not inherently require one realtime instance per tenant. |
+| Realtime | Client connections, completed output and raw-delivery cursors/receipts | It retains connection/delivery state and recovers missed wakes. Replication needs affinity, checkpoint ownership and complete notification fanout; it is not ordinary stateless replication and does not inherently require one realtime instance per tenant. |
 | REST/owner request serving | Individual admitted request/transaction, plus instance drain state | Equivalent replicas serve tenants without assigning each tenant to exactly one API. Every actual replica still participates in maintenance. |
 | Maintenance jobs | Exclusive claim for the affected tenant/operation | Existing database/lifecycle claim and census rules serialize destructive work; a tenant ring is not required for all maintenance jobs. |
 | PostgreSQL/Vault/edge/UI | Their native storage, connection or request responsibilities | Scale with their own mechanisms and resource bounds; the application evaluator ring does not assign their per-tenant ownership. They are not assumed to have tenant-independent cost. |

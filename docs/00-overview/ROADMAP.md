@@ -169,12 +169,15 @@ inform component and recovery decisions. M6 is split into M6a–M6d and M7
 the M6a and M6b joined candidates have acceptance records on draft #8898
 ([M6a](../../reports/tenancy/m6a-join-2026-11-09/README.md),
 [M6b](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)), with
-no milestone promoted. Deployment trust (M6c) remains open. The immediate M7 priority is the
-[event-driven reset](../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset):
-integrate the proved local pgstream flow into actual evaluator/realtime roles,
-closing [health, schema routing, process recovery and ownership fences](../30-design/tenancy/evaluator-realtime-communication.md#actual-role-integration-objective-and-completion-criteria)
-before capacity work. The generated table retains
-queue dependencies; it does not authorize restarting parked campaigns. Multi-host
+no milestone promoted. Deployment trust (M6c) remains open. The selected M7 stream runtime has
+[source-scoped functional qualification](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16),
+including bounded clinical state and independent raw delivery. The
+[current architecture](../30-design/tenancy/evaluator-realtime-communication.md)
+owns these mechanisms; the same operating report owns separately attributed
+capacity observations. Current tests may proceed independently of optional
+multihost/platform work under the [production sequencing](../30-design/tenancy/production-critical-path.md).
+The generated table retains queue dependencies and measured state remains a
+separate claim; this documentation change promotes no milestone. Multi-host
 failover has no acceptance.
 Use the [deployment models and fault domains](../30-design/tenancy/deployment-and-rig-testing.md)
 to distinguish these boundaries. Tenant-local suppression and controlled notification

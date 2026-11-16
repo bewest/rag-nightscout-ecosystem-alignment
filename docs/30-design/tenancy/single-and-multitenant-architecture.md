@@ -14,7 +14,12 @@ explicitly pinned to `83582e87`; it does not describe every file in the current
 candidate. Current delivery and milestone claims live in the
 [delivery dashboard](multitenant-delivery-dashboard.md).*
 
-## What the proofs can inform
+For the current multitenant implementation, read the [communication guide](evaluator-realtime-communication.md)
+and its linked selected-runtime qualification. The sections below retain the
+source-pinned single/multitenant comparison and earlier restore/Compose proof
+boundaries; they do not describe the selected stream's normal data path.
+
+## What the earlier proofs can inform
 
 The useful result is an executable one-host multitenant reference with separate
 services and tenant-local restore. It gives current architecture decisions a
@@ -38,7 +43,8 @@ accepted together. Merge, release and default enablement are separate decisions.
 The [deployment/fault-domain guide](deployment-and-rig-testing.md#deployment-choices-and-fault-domains)
 compares the independent tenancy, backend, computation, process and host axes.
 
-## Current service composition and restore integration (2026-11-07)
+<a id="current-service-composition-and-restore-integration-2026-11-07"></a>
+## November 7 service composition and restore reference
 
 The separate-service structure was inspected at
 `151de0248a1e4301c85b5c638185eec3ca8c38e6`; later executed behavior is attributed

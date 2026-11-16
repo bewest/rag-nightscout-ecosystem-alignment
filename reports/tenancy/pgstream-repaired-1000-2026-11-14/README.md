@@ -89,7 +89,7 @@ Full/browser/enabled-corpus acceptance and final prcheck on this candidate remai
 and failed-completion transition; the integration owner owns the next coherent
 freeze, and capacity support owns the single runner. The complete actual-role
 recovery, authority/restore and effect-fencing criteria remain open in the
-[communication plan](../../../docs/30-design/tenancy/evaluator-realtime-communication.md#actual-role-integration-objective-and-completion-criteria).
+[communication plan](../../../docs/archive/tenancy/evaluator-realtime-reference-2026-11-16.md#actual-role-integration-objective-and-completion-criteria).
 The [closed REST comparison](../rest-api-performance-2026-11-13/final-joined-local-ab.md)
 uses the earlier `311ac500` source and is not a measurement of this repair.
 

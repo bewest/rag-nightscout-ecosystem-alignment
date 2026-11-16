@@ -55,7 +55,7 @@ If you only read two, read **1** and **3**.
 Then, by horizon, when you need it:
 
 - **Modernization** — [`../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md`](../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md)
-- **Multitenancy** — [`../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md`](../30-design/tenancy/multitenancy-decisions.md) (decisions D1–D21)
+- **Multitenancy** — [tenancy reading guide](../30-design/tenancy/README.md) for current architecture and evidence homes; [tenancy decisions](../30-design/tenancy/multitenancy-decisions.md) for D1–D23
 - **Research and measurements** — `../60-research/{remedial,modernization,tenancy}/`, filed by horizon
 
 ---
@@ -89,10 +89,11 @@ that is the thing to be suspicious of.
 **5. Neither `fixed` nor `merged` means released.** In the register, `fixed` means
 repaired on a branch that has not been merged; `merged` means merged into
 `origin/dev` and not released; `released` means in a tagged release operators run.
-No programme fix is released: `official/master` is 523 commits behind `dev`
-(2026-10-02) and the shipping tag is 15.0.8. The register's open count is therefore
-not "the defects still shipping": of the 109 defects in the register's §1 (2026-10-02), 26 are
-open, 81 merged, 1 partly merged and 1 fixed on a branch. See [PROGRAMME-STATUS.md](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
+Release state belongs to the [release contents](../../releases/cgm-remote-monitor-15.0.9/contents.md) and
+[PROGRAMME-STATUS](PROGRAMME-STATUS.md#status-words-merged-is-not-released).
+The 15.0.9 cycle has a tagged release; the local multitenant candidate's
+qualification does not make it merged into dev or released. Use each release's
+contents and the register for its own scope rather than a repository-wide claim.
 
 ---
 

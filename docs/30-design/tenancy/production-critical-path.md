@@ -1,7 +1,7 @@
 # From multitenant preview to production
 
-*Living contributor-facing production guide, reconciled 2026-11-12 against the
-release decisions at alignment `8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61`.
+*Living contributor-facing production guide, reconciled 2026-11-16 against the
+release records at alignment `5fdc4bf0685d35d2fac980bad1b28bd66525ccdb`.
 This is **read-derived** sequencing and explanation, not an application measurement.
 [Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md) own
 adopted policy; the [queue](../../../queue/work-queue.yaml) owns claimed work state;
@@ -22,7 +22,14 @@ sets the current order: use the existing evaluator/realtime composition and UDS
 interfaces, measure a bounded local workload, and qualify the supported candidate.
 Explore toward 10,000 synthetic tenants as measured resources permit. Keep actual
 transport, accepted/stored/completed progress, due work and client behavior explicit.
-Current evidence and remaining baseline criteria live in [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
+The selected stream runtime has source-scoped functional qualification in the
+[existing integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16).
+Its ordinary lost-slot recovery and populated upgrade/cold rollback rehearsals
+retain their own executed revision pairs. The [communication guide](evaluator-realtime-communication.md)
+owns the implemented architecture; [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
+own current integration/publication. Capacity measurements and incomplete or failed
+points remain in the [operating report](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md).
+Functional qualification does not admit a workload or deployment profile.
 
 Optional desired-N, selected-v2/HOLD, full platform recommission, Kubernetes and
 multihost operating-model proofs proceed independently. They do not block a
