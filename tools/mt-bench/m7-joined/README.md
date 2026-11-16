@@ -932,3 +932,41 @@ remove the raw receipt await; each must fail for its named symptom before restor
 Capture originals stay outside Git. Retain the executed probe, schema/source
 identity and checksum beside the capture. These controls preserve source-level
 boundary evidence; the integrator owns the final joined runtime acceptance.
+
+## Single-host qualification allocation
+
+`--diagnostic-resource-profile local-qualification-external-pgstream-6cpu-10g-v1`
+selects one proposed allocation for local synthetic qualification with
+`external-service-v1`. It is not a measured supported envelope. Keep tenant
+roster, connected viewers and offered HTTP rate independently selected. The
+initial target is 1,000 tenants, 64 viewers and 7 offered requests per second;
+clinical completion and authorized frames must pass their existing bounds.
+
+| Role | CPU limit | Memory and memory-plus-swap limit |
+| --- | ---: | ---: |
+| evaluator | 1 CPU | 1,024 MiB |
+| PostgreSQL | 1 CPU | 1,536 MiB |
+| pgstream sender | 0.25 CPU | 256 MiB |
+| Vault | 0.25 CPU | 512 MiB |
+
+Other role limits retain the existing diagnostic values. The full selected
+roster, two bootstrap instances, two primer instances and standalone k6 reserve
+5,500 millicpus and 9,216 MiB within the explicit 6 CPU / 10 GiB ceiling. Host
+probe/generator/helper V8 heaps reserve another 1,024 MiB; native allocations,
+host RSS, Docker and operating-system costs require separate observation. This
+is a shared-host limit, not an exclusive host reservation. Existing source,
+image, ownership, quota readback, finite deadlines and cleanup checks apply.
+
+The increased evaluator and PostgreSQL CPU limits let qualification distinguish
+work demand from the inherited restrictive quotas. Observer commands execute
+inside serving cgroups and consume those quotas. Stable primary-process CPU and
+container CPU must retain separate attribution; their difference is not an
+exact observer-cost measurement. Provisioning and steady serving are separate
+results. In particular, the separate 10,000-set Vault component result does not
+qualify this allocation for that roster or prove memory headroom.
+
+Use the existing runner and strict count/clinical/frame oracles. A missing due
+opportunity cannot establish deadline service. Preserve failed captures and
+report driver errors separately from application errors. Final qualification
+requires the integrator's frozen source/image and applicable functional
+acceptance; this allocation changes neither application code nor acceptance.

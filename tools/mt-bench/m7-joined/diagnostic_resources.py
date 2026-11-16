@@ -22,7 +22,8 @@ NAME = 'local-diagnostic-4cpu-8g-v1'
 EXTERNAL_NAME = 'local-diagnostic-external-pgstream-4cpu-8g-v1'
 EVALUATOR250_NAME = 'local-diagnostic-external-pgstream-evaluator250-4cpu-8g-v1'
 EVALUATOR250_MEMORY512_NAME = 'local-diagnostic-external-pgstream-evaluator250-memory512-4cpu-8448m-v1'
-EXTERNAL_PROFILES = (EXTERNAL_NAME, EVALUATOR250_NAME, EVALUATOR250_MEMORY512_NAME)
+QUALIFICATION_NAME = 'local-qualification-external-pgstream-6cpu-10g-v1'
+EXTERNAL_PROFILES = (EXTERNAL_NAME, EVALUATOR250_NAME, EVALUATOR250_MEMORY512_NAME, QUALIFICATION_NAME)
 PROFILES = (NAME, *EXTERNAL_PROFILES)
 PROFILE_KEY = 'x-nightscout-diagnostic-profile'
 MIB = 1024 * 1024
@@ -71,11 +72,23 @@ def selection(name=None):
 
 def memory_ceiling(profile):
     selection(profile)
+    if profile == QUALIFICATION_NAME: return 10240 * MIB
     return 8448 * MIB if profile == EVALUATOR250_MEMORY512_NAME else MAX_MEMORY
+
+
+def cpu_ceiling(profile):
+    selection(profile)
+    return 6000 if profile == QUALIFICATION_NAME else MAX_CPU
 
 
 def role_limit(role, profile=NAME):
     selection(profile)
+    if profile == QUALIFICATION_NAME:
+        selected = {'postgres': Limit(1000, 1536*MIB),
+                    'vault': Limit(250, 512*MIB),
+                    'evaluator': Limit(1000, 1024*MIB),
+                    'pgstream': Limit(250, 256*MIB)}
+        if role in selected: return selected[role]
     if profile in EXTERNAL_PROFILES and role in ('evaluator','pgstream'):
         return Limit(250 if profile in (EVALUATOR250_NAME,EVALUATOR250_MEMORY512_NAME) and role=='evaluator' else 125,
                      (512 if profile==EVALUATOR250_MEMORY512_NAME and role=='evaluator' else 256)*MIB)
@@ -114,7 +127,7 @@ class Plan:
             need(type(count) is int and count == (2 if role in ('bootstrap', 'primer') else 1), 'MULTIPLICITY_CHANGED')
         cpu = sum(limit.cpu * count for _, limit, count in self.services) + LIMITS['k6'].cpu
         memory = sum(limit.memory * count for _, limit, count in self.services) + LIMITS['k6'].memory
-        need(cpu <= MAX_CPU and memory <= memory_ceiling(self.profile), 'AGGREGATE_EXCEEDED')
+        need(cpu <= cpu_ceiling(self.profile) and memory <= memory_ceiling(self.profile), 'AGGREGATE_EXCEEDED')
         need(sum(heap * count for heap, count in HOST.values()) <= MAX_HEAP, 'HOST_AGGREGATE_EXCEEDED')
 
     def record(self):
