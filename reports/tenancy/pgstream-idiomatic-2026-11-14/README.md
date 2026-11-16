@@ -1343,3 +1343,29 @@ or pool pressure. The local driver has 34 retained CPU/memory samples, including
 counts remain UNMEASURED. The immutable compact reduction is
 `attribution-current/n1000-driver-system-detail.json`, SHA-256
 `716c5c22d993f68c97639334c8ec976745c32331ac605cad1a3c1b6a77890de6`.
+
+### Driver-only 10,000-tenant discriminator
+
+The driver owner subsequently executes the actual guarded generated workload
+against a synthetic mock server, with 10,000 roster entries, 60 offered requests/s,
+the same seven shapes and VU rules, and unchanged 500m CPU/1 GiB memory and swap
+limits. The direct retained inspection reports `OOMKilled=true`, exit 137,
+started `2026-11-16T06:24:19.248988776Z` and finished
+`2026-11-16T06:25:42.157670426Z`, before its finite deadline. JWT setup completes
+and scenarios enter; no final summary exists. The source guard avoids rebuilding
+roster-sized threshold metadata inside each VU and preserves the main summary's
+tenant thresholds; it does not remove this 10,000-tenant driver limit. Remaining
+JWT-copy/live-memory mechanisms are read-derived hypotheses. No application or
+viewer actor exists in this control, so application and viewer capacity remain
+UNMEASURED. A long local 10,000-tenant application campaign is held under this
+driver cap. A remote driver with a different explicit resource envelope supplies
+a separate discriminator, not a matched whole-system capacity comparison.
+
+Retained home: `externals/work/k6-driver-termination-20261115`.
+`restored-n10000/inspect.json` SHA-256
+`1b6895b41fbd8961e572c382ff8a83eb682feae6d25e322c5e39d96c293b1393`;
+`n10000-reduction.json` SHA-256
+`f8b535e2212f4a85c902c491e6aa37e76e6dec6b459c7252e4a296c348cef6e1`.
+The owner confirms its control containers absent and driver lock available.
+This lane independently reads the retained inspection, reduction and absence;
+it does not claim a new application runtime measurement.
