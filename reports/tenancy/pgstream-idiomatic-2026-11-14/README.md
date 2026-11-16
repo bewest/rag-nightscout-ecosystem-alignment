@@ -2228,3 +2228,67 @@ port 38983 and retained process births/groups were absent; the driver lock was
 available. The lane is CLOSED and holds no resource slot or queued retry. Root
 owns the next source/integration boundary. Local custody remains in
 `externals/work/HANDOFF-clinical-pending-2026-11-15.md`.
+
+## Native local batch executor closes a two-cell component proof
+
+Reproduced on 2026-11-16: the existing `experiment_batch` runner executes two
+`vault-component-v1` cells concurrently. Each acknowledges all 64 requested
+six-purpose-plus-root-encryption sets and exits without a failure. Actual Node
+worker lifetimes overlap for 6.999678s; both workers advance through 16, 32 and
+48 sets inside that shared interval. Distinct Vault containers remain running
+across the workload, with the same actual server birth before and after each
+cell and OOMKilled false. This closes the native local executor criterion only.
+Native remote execution remains UNMEASURED; application capacity acceptance is
+`NOT_GRANTED`.
+
+The execution uses alignment head `48250593d8f89fca590890e37110fdf66379544c`,
+helper instrument `574e74dabd06ea177b7a09779f04a013d9296e42beed9198be9764cea00e48f1`,
+and the application modules from `3b2cec6405451d0aff103f5d21f4312606d4295b`.
+The maintained worker SHA256 is
+`8f721281c0885eb0155eef70dbaa9810178ed54daa94c72e708106e8da4ee876`.
+It uses the pinned cached Vault image from the preceding component cases.
+
+| Measured constraint | Each cell | Joined admission |
+|---|---|---|
+| CPU | Vault requested 125m, effective `13000 100000`; host subtree on one nonexclusive allowed CPU | 2,260m claim |
+| Vault memory and memory-plus-swap | 268,435,456 bytes each | 512 MiB claim |
+| Actual total V8 heap limit | 134,217,728 bytes | 256 MiB claim |
+| Managed actors | Seven logical resources | Fourteen; not an OS process/thread maximum |
+| Money and application traffic | Zero | Zero; maximum two concurrent cells |
+
+The coordinator retains its original CPU affinity. Its bounded virtual-address
+allowance is 16 GiB soft and 128 GiB hard; this is separate from resident memory,
+cell reservations and headroom evidence. Managed cells retain the reviewed
+512 MiB soft virtual limit, native children their 16 GiB hard limit and Node its
+128 GiB hard virtual ceiling. The actual V8 limit above is independently read.
+The host is shared. No remote allocation, image build or application campaign
+runs.
+
+The single activated parent clock starts at 14:28:14.272560Z and retains its
+absolute 14:31:14.272560Z cleanup cutoff. Both cells complete and the caller
+returns at 14:28:28.231354Z. Independent verification at 14:29:46.263375Z finds
+both exact containers and volumes absent by ID/name and actual owner label,
+all nine recorded cell/guard/worker/server/coordinator births absent, all seven
+owned process groups empty, both ports absent, both heap markers empty and
+lockable, the legacy global lock empty and lockable, and both reservations
+`ABSENT`. No uncertain reservation is promoted.
+
+A valid-source envelope below one cell's CPU claim refuses with
+`M7_BATCH_CELL_OVERCOMMIT` before output, ledger or SUT creation. Qualification
+controls make sequential workers, a wrong heap receipt and missing progress
+fail; restored observations pass. Two preactivation refusals are retained:
+the ad-hoc coordinator's 512 MiB virtual allowance prevents canonical Git
+status; the same check fails at 512 MiB and passes at bounded 16 GiB without a
+Git bypass. A report-only head advance also refuses before activation, then
+binds the frozen actual head above. Neither refusal enters a clock or creates
+actors. The preliminary independent receipt is superseded by the retained final
+check using the executor's actual owner-label contract.
+
+Retained identifier: `vault-growth/batch-executor-20261116/joined-482-quality03`
+under the existing `attribution-current` home. Immutable
+`batch-executor-20261116/request-native-batch-outcome.json` SHA256
+`8341d8622dcd405d59d37b0173396096ebd9771ac8d35039cc9633c5f64fa29c`
+binds 102 files, including the refusals, unchanged source receipts, actual
+activation, overlap, quotas and final independent absence. All bindings recheck
+with zero mismatches. The coordinator owns source integration and programme
+records; no further native run is queued by this result.
