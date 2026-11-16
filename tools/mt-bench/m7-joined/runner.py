@@ -352,8 +352,8 @@ def local_batch_plan(spec, payload_root):
     planned=batch.plan(spec)
     allowlist=batch.verify_payload(spec,payload_root)
     env=spec['envelope']
-    for key in ('millicpus','memoryBytes','heapMiB'):
-        batch.need(env[key]<=batch.LOCAL_RESOURCES[key],'LOCAL_ENVELOPE_EXCEEDED')
+    # The envelope is the caller's explicit aggregate allocation. Each cell
+    # still reserves its complete enforced producer maximum below.
     batch.need(env['hourlyMicrousd']==env['totalMicrousd']==0,'LOCAL_MONEY')
     axes=env['workload']
     for cell in spec['cells']:
@@ -440,8 +440,12 @@ def batch_run(spec_file, directory, payload_root):
 
 def batch_cell(config, directory):
     # Private entrypoint: no arbitrary lock bypass without aggregate custody.
-    from experiment_batch import child_lock
+    from experiment_batch import child_lock, read
     require(child_lock() is not None,'M7_BATCH_TICKET_REQUIRED')
+    ticket=read(os.environ['M7_BATCH_RESERVATION'])
+    limits=a.document(config)
+    require(time.time()+limits['workSeconds']+limits['cleanupSeconds']<=ticket['cleanupAt'],
+            'M7_BATCH_CELL_DEADLINE')
     root=Path(directory).resolve()
     try:
         prepare(config,root)
