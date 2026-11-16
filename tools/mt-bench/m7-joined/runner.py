@@ -117,7 +117,7 @@ def custody(root):
 def stop_stage(file, owner):
     """Use the adapter's birth/group fence, then verify termination before cleanup."""
     job = a.document(file)
-    if job.get('completed'):return
+    # A prior TERM receipt is not proof that the same-birth process exited.
     a.stop_job(file, owner)
     proc = Path('/proc') / str(job['pid']) / 'stat'
     def alive():
@@ -127,10 +127,11 @@ def stop_stage(file, owner):
     until = time.monotonic() + 10
     while alive() and time.monotonic() < until:time.sleep(.05)
     if alive():
-        require(job['group'] and os.getpgid(job['pid']) == job['pid'], 'M7_HOST_JOB_GROUP_CHANGED')
+        if job['group']:require(os.getpgid(job['pid']) == job['pid'], 'M7_HOST_JOB_GROUP_CHANGED')
         # Recheck the same birth immediately before escalation.
         require(alive(), 'M7_HOST_JOB_IDENTITY_CHANGED')
-        os.killpg(job['pid'], signal.SIGKILL)
+        if job['group']:os.killpg(job['pid'], signal.SIGKILL)
+        else:os.kill(job['pid'], signal.SIGKILL)
         until = time.monotonic() + 2
         while alive() and time.monotonic() < until:time.sleep(.05)
     require(not alive(), 'M7_RUNNER_STAGE_STILL_LIVE')
@@ -155,6 +156,7 @@ def _cleanup(root, reason):
         if state.get('producer')=='vault-component-v1':
             import vault_component
             vault_component.cleanup_resources(root)
+        if (root/'session.json').exists():stop_session_collectors(root)
         fixture = root / 'fixture'
         if (fixture / 'owner.json').exists():
             d, m = a.load(fixture,resource_limits=False)
@@ -365,6 +367,158 @@ def execute(directory, rehearsal=False):
 
 
 
+
+# Reuse is opt-in and starts its own finite window; an entered point is never adopted.
+SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'idle-seconds',
+    'load-seconds', 'offered-rps', 'hot-factor', 'probe-every-ms', 'sockets-per-tenant',
+    'logical-polling-clients', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
+    'evaluator-catchup', 'evaluator-opportunities', 'restart-during-load-after-seconds'))
+SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet',
+    'diagnostic-resource-profile', 'generator-dependencies', 'generator-dependency-receipt',
+    'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
+    'generator-dependency-preparation-sha256', 'generator-dependency-preparation-head'))
+
+
+def session_start(config_file, directory):
+    root = prepare(config_file, directory)
+    config = a.document(root/'config.json')
+    try:
+        require(config['prepare'].get('diagnostic-resource-profile') in a.diagnostic_resources.PROFILES,
+                'M7_SESSION_RESOURCE_CEILING_REQUIRED')
+        stage(root, 'deploy', ['deploy', str(root/'fixture')])
+        d, m = a.load(root/'fixture', resource_limits=False)
+        require(not m.get('attached'), 'M7_SESSION_ORIGINAL_OWNER_REQUIRED')
+        (root/'observations').mkdir(mode=0o700)
+        state = a.document(root/'execution.json')
+        value = {'version':1, 'owner':state['owner'], 'startedAt':state['startedAt'],
+            'stopWorkAt':state['stopWorkAt'], 'cleanupAt':state['cleanupAt'],
+            'runtimeOwnerSha256':a.digest(d/'owner.json'), 'runtimeOwner':m['owner'],
+            'resourceCeiling':m['diagnosticResources'], 'cleanupRunner':str(Path(__file__).resolve()),
+            'seedHistory':'Original deployment and seeding retained; subsequent observations are reused history.'}
+        with custody(root):
+            execution_window(root,config)
+            write(root/'session.json', value)
+        write(root/'result.json', {'version':1, 'status':'SESSION_OPEN', 'capacityAcceptance':'NOT_GRANTED'})
+        return value
+    except BaseException:
+        cleanup(root, 'SESSION_START_FAILURE')
+        raise
+
+
+def session_access(root, owner):
+    session = a.document(root/'session.json')
+    require(session['owner'] == owner, 'M7_SESSION_OWNER_REQUIRED')
+    # The original config/helper is immutable, but a later collector may have its own pin.
+    state = execution_window(root, a.document(root/'config.json'))
+    require(all(state[k] == session[k] for k in ('owner','startedAt','stopWorkAt','cleanupAt')),
+            'M7_SESSION_WINDOW_CHANGED')
+    d = root/'fixture'
+    require(a.digest(d/'owner.json') == session['runtimeOwnerSha256'], 'M7_SESSION_RUNTIME_CHANGED')
+    m = a.document(d/'owner.json')
+    require(not m.get('attached') and m['owner'] == session['runtimeOwner']
+            and m.get('diagnosticResources') == session['resourceCeiling'], 'M7_SESSION_RUNTIME_CHANGED')
+    return session, d, m
+
+
+@contextlib.contextmanager
+def session_observation_lock(root):
+    # Serial observations share one fixture and the original guard-visible stage record.
+    with (root/'observation.lock').open('a') as lock:
+        try:fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:raise RuntimeError('M7_SESSION_OBSERVATION_ACTIVE')
+        yield
+
+
+def session_observe(directory, owner, name, config_file, history_file):
+    root = Path(directory).resolve()
+    require(re.fullmatch(r'[a-z][a-z0-9-]{0,47}', name) is not None, 'M7_SESSION_OBSERVATION_NAME')
+    with session_observation_lock(root):
+        session, d, m = session_access(root, owner)
+        config, _ = load_config(config_file)
+        original = a.document(root/'config.json')
+        require(config['k6Image'] == original['k6Image'], 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
+        stable = lambda options:{k:v for k,v in options.items() if k not in SESSION_VARIABLE_OPTIONS}
+        require(stable(config['prepare']) == stable(original['prepare']), 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
+        history = a.document(history_file)
+        require(isinstance(history,dict) and all(k in history for k in
+            ('warmCache','seedHistory','previousWrites','restarts','activeViewers','elapsedAges')),
+            'M7_SESSION_HISTORY_REQUIRED')
+        ob = root/'observations'/name
+        require(not ob.exists(), 'M7_SESSION_OBSERVATION_EXISTS')
+        ob.mkdir(mode=0o700)
+        write(ob/'config.json',config)
+        write(ob/'history.json',{'declared':history, 'runtime':'REUSED',
+            'elapsedSessionSeconds':time.time()-session['startedAt'],
+            'previousObservations':sorted(p.name for p in ob.parent.iterdir() if p != ob),
+            'runtimeOwnerSha256':session['runtimeOwnerSha256'], 'collector':a.instrument(),
+            'clocksAndCounters':'UNCHANGED; no implicit reset or retry'})
+        failure = None
+        try:
+            try:
+                with a.command_deadline(session['stopWorkAt']):
+                    a.diagnostic_resources.configure(session['resourceCeiling']['profile'],
+                        a.document(d/'frozen.compose.json'),session['resourceCeiling'],
+                        observe=lambda:a.diagnostic_resource_rows(m))
+                    a.verify(d,m);a.image(m)
+                    write(ob/'runtime-before.json',a.resources(m))
+            finally:a.diagnostic_resources.configure()
+            argv = ['attach','--directory',str(ob/'fixture')]
+            for key,value in config['prepare'].items():
+                if key not in SESSION_PREPARE_ONLY:argv.extend(['--'+key,str(value)])
+            for key,value in {'project':m['project'],'source-root':d/'core','state':d/'state',
+                    'dependencies-root':d/'dependencies','env-file':d/'env',
+                    'compose':d/'frozen.compose.json','runtime-owner':d/'owner.json'}.items():
+                argv.extend(['--'+key,str(value)])
+            stage(root,name+'-attach',argv)
+            stage(root,name+'-preflight',['preflight',str(ob/'fixture'),'--k6-image',config['k6Image']])
+            optional_preflight(ob,ob/'fixture')
+            stage(root,name+'-run',['run',str(ob/'fixture'),'--k6-image',config['k6Image']])
+        except BaseException as error:
+            failure = {'code':code(error),'errorType':type(error).__name__}
+        finally:
+            try:
+                with custody(root), a.command_deadline(session['stopWorkAt']):
+                    stop_session_collectors(root, only=ob)
+            except BaseException as error:
+                failure = {**(failure or {}),'collectorCleanupCode':code(error)}
+            result = {'version':1,'status':'FAILED_PARTIAL' if failure else
+                    ('OBSERVED' if partial(ob)['adapterStatus']=='MEASURED' else 'OBSERVED_PARTIAL'),
+                'failure':failure,'partial':partial(ob),'finishedAt':time.time(),
+                'cleanupOwner':session['owner'],'stopWorkAt':session['stopWorkAt'],
+                'capacityAcceptance':'NOT_GRANTED','runtime':'REUSED',
+                'writeEffects':'UNCERTAIN after failure; inspect originals before another scenario' if failure else 'Retained; never reset'}
+            write(ob/'result.json',result)
+            if failure and failure.get('errorType') in ('KeyboardInterrupt','SystemExit'):
+                session_close(root,session['owner'])
+        require(failure is None,'M7_SESSION_OBSERVATION_INCOMPLETE')
+        return result
+
+
+def stop_session_collectors(root, only=None):
+    # A collector owns its jobs and oneoffs, never the fixture. This also runs
+    # from the ORIGINAL guard after killing the active adapter process group.
+    for ob in ([only] if only else sorted((root/'observations').glob('*'))):
+        d = ob/'fixture'
+        if not (d/'owner.json').is_file():continue
+        m = a.document(d/'owner.json')
+        require(m.get('attached') is True and m.get('project') == a.document(root/'fixture/owner.json')['project'],
+                'M7_SESSION_COLLECTOR_OWNER_CHANGED')
+        for file in list(d.glob('*/sampler-job.json'))+list(d.glob('*/probe-job.json'))+list(d.glob('*/diagnostic-job.json')):
+            stop_stage(file,m['owner'])
+        for row in a.resources(m):
+            if row['Config']['Labels'].get(a.OWNER) == m['owner']:
+                a.owned(row,m['owner'])
+                a.command(['docker','rm','--force','--volumes',row['Id']])
+
+
+def session_close(directory, owner):
+    root = Path(directory).resolve()
+    require(a.document(root/'session.json')['owner'] == owner, 'M7_SESSION_OWNER_REQUIRED')
+    # Always call the original immutable runner for original-instrument cleanup.
+    original = a.document(root/'session.json')['cleanupRunner']
+    return subprocess.run([sys.executable,'-B',original,'down',str(root)],check=True)
+
+
 def local_batch_plan(spec, payload_root):
     import experiment_batch as batch
     planned=batch.plan(spec)
@@ -500,7 +654,17 @@ def main():
     prep = sub.add_parser('prepare');prep.add_argument('config');prep.add_argument('directory')
     for name in ('execute', 'rehearse', 'result', 'down', '_guard', 'batch-result'):
         sub.add_parser(name).add_argument('directory')
+    start = sub.add_parser('session-start');start.add_argument('config');start.add_argument('directory')
+    observe = sub.add_parser('session-observe');observe.add_argument('directory');observe.add_argument('--owner',required=True)
+    observe.add_argument('--name',required=True);observe.add_argument('--config',required=True);observe.add_argument('--history',required=True)
+    close = sub.add_parser('session-close');close.add_argument('directory');close.add_argument('--owner',required=True)
     args = parser.parse_args()
+    if args.action in ('session-start','session-observe'):
+        def interrupted(signum, frame):raise KeyboardInterrupt()
+        signal.signal(signal.SIGTERM,interrupted)
+    if args.action == 'session-start':return print(json.dumps(session_start(args.config,args.directory),indent=2))
+    if args.action == 'session-observe':return session_observe(args.directory,args.owner,args.name,args.config,args.history)
+    if args.action == 'session-close':return session_close(args.directory,args.owner)
     if args.action == 'project':
         import run_configuration as rc
         config=a.document(args.config)

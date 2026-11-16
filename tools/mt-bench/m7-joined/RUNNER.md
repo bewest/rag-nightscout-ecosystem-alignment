@@ -81,14 +81,11 @@ rewrite: actual preparation refused `M7_WORKLOAD_SETUP_ANCHOR_CHANGED` before
 runtime. Keep that source failure distinct from an application admission failure.
 This joined helper adopts the supported single-commit compatibility repair; its default remains serial 1. Explicit batching changes setup and must be recorded in comparisons.
 
-Existing `adapter.py attach` can bind fresh collector metadata to a compatible
-prepared and seeded fixture. Its source, config, dependencies, resource IDs and
-runtime owner stay explicit; it does not acquire cleanup custody. This runner
-cleans up at the end of each point, so it cannot retain a fixture for a collector
-repair. The next minimal reuse boundary is a runtime owner retaining its fixture
-within its existing finite deadline while a new attachment collects. Record its
-existing history and do not label a reused fixture as fresh history. No snapshot
-or checkpoint system is introduced here.
+Existing `adapter.py attach` binds fresh collector metadata to a compatible
+prepared and seeded fixture. Source, config, dependency installation, resource
+IDs and runtime owner stay explicit. Attachment does not acquire cleanup custody.
+The default `prepare` / `execute` path still cleans at the end of each point.
+Opt-in bounded sessions below retain the fixture for subsequent observations.
 
 The remote trusted supervisor and `nsload` environment are not qualified by this
 local exercise. Existing remote adapters keep their separate source binding and
@@ -534,3 +531,58 @@ timestamp with the same container ID separates the two cgroup lifetimes. Their
 peaks remain separate observations and the phase gap/events delta are UNMEASURED.
 Same-lifetime counter rewinds still refuse. Captures without verified birth
 metadata retain unknown continuity; this does not repair old captures.
+
+### Reuse a bounded local fixture
+
+`session-start` uses the existing runner configuration, explicit diagnostic
+resource profile, prepare and deploy paths. It seeds once and prints the session
+owner token and original cutoffs. Preparation consumes the same `workSeconds`.
+The original independent guard remains responsible for cleanup; retain its helper
+worktree unchanged until exact absence. An existing point, foreign fixture or
+sealed run cannot be adopted into a session.
+
+```bash
+python3 -B tools/mt-bench/m7-joined/runner.py session-start CONFIG.json /tmp/OWNED-SESSION
+python3 -B tools/mt-bench/m7-joined/runner.py session-observe /tmp/OWNED-SESSION \
+  --owner OWNER_FROM_SESSION_START --name first --config CONFIG.json --history HISTORY.json
+# A second named observation uses the same seeded physical fixture.
+python3 -B tools/mt-bench/m7-joined/runner.py session-observe /tmp/OWNED-SESSION \
+  --owner OWNER_FROM_SESSION_START --name repaired-collector --config COLLECTOR-CONFIG.json --history HISTORY.json
+python3 -B tools/mt-bench/m7-joined/runner.py session-close /tmp/OWNED-SESSION --owner OWNER_FROM_SESSION_START
+```
+
+Each history input is a JSON object describing `warmCache`, `seedHistory`,
+`previousWrites`, `restarts`, `activeViewers` and `elapsedAges`. Use explicit
+`UNMEASURED` descriptions where unknown. The runner adds elapsed session time,
+prior observation names, actual pre-observation resource identities, original
+runtime-owner digest and collector identity. Inputs, errors, logs and partial
+results remain separate under `observations/NAME/`; names cannot be reused.
+No counters, clocks, caches, clinical state, leases or slots are reset or copied.
+If the question needs fresh history, use a separate default point or session.
+
+A later observation can select an explicitly pinned newer collector and receipt,
+workload timing/rate, viewer count or existing TIME/recovery observation options.
+All other preparation options, the application image, source/deployment pair,
+dependency roots, topology, configuration and resource ceiling must stay compatible.
+The existing attach and preflight paths check the physical resources and current
+runtime/authority contracts. The original guard can stop later collector jobs and
+exact-owned oneoffs without adopting their helper version. Cleanup of the runtime
+always uses the original helper and owner. Observations are serialized on this
+fixture, using the existing diagnostic driver lock without a bypass.
+
+Collector or phase failure retains partial observations and the runtime until its
+owner closes it or the original guard expires. A new name is a new observation,
+not an automatic retry of uncertain writes. Inspect the original result and
+account for previous effects before choosing another scenario. Compatibility or
+authority refusal stops that observation; it does not license source or state
+replacement. Missing optional metrics remain scoped gaps. Interrupting a collecting
+command invokes original cleanup. Losing the coordinator leaves the independent
+finite guard responsible at the original cutoff. Close is idempotent; resources
+remain reserved until cleanup and independent absence are confirmed. No command
+extends a deadline, paid budget or resource allocation.
+
+Focused local tests exercise the actual attach function with synthetic filesystem
+and resource readbacks, two named runner observations, retained collector failure,
+compatibility refusals, default cleanup and real finite child termination. Docker,
+application clinical execution and remote transport reuse are UNMEASURED here;
+this helper change grants no application acceptance or paid-resource authority.

@@ -443,11 +443,27 @@ def attach(args):
     require(not target.exists() and source.is_dir() and state.is_dir(),'M7_ATTACH_PATH')
     require(git(source,'rev-parse','HEAD')==pair['core'],'M7_OWN_CORE_HEAD_CHANGED')
     m={'version':1,'directory':str(target),'owner':uuid.uuid4().hex,'project':args.project,'pair':pair,'instrument':pinned,'image':args.image,'imageId':args.image_id or args.image,'profile':'pgstream-sample','runPurpose':'discovery','measurementMode':'accepted','cadence':cadence_options(args),'tenants':args.tenants,'replicas':1,'freeze':str(Path(args.freeze).resolve()),'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),'coreRepository':str(Path(args.core_repo).resolve()),'attached':True,'completionContract':getattr(args,'completion_contract',None),'jwtSetupConcurrency':jwt_setup_concurrency(getattr(args,'jwt_setup_concurrency',1))}
+    if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     selection=serial_exchange_selection(args)
     if selection is not None:m['serialExchangeDiagnostic']=selection
     select_opportunities(args,m)
     evaluator_catchup.select(args,m)
     require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and 1<=args.tenants<=10000 and args.replicas==1,'M7_ATTACH_SCOPE')
+    # Current receipts bind semantic configuration before attachment admission.
+    # This is provisional read-only metadata; canonical owner/dependency/resource
+    # validation below remains mandatory before a usable attachment is written.
+    m['postgresImageId']=getattr(args,'postgres_image',None)
+    m['primerConcurrency']=primer_concurrency(getattr(args,'primer_concurrency',1))
+    if getattr(args,'runtime_owner',None):
+        runtime=document(args.runtime_owner)
+        owner_path=Path(args.runtime_owner).resolve()
+        runtime_directory=Path(runtime.get('directory','')).resolve()
+        require(owner_path==runtime_directory/'owner.json' and runtime.get('prepared') is True
+                and runtime.get('project')==m['project'] and runtime.get('pair')==m['pair']
+                and runtime.get('imageId')==m['imageId'], 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
+        if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
+    from run_configuration import from_manifest
+    m['runConfiguration']=from_manifest(m)
     frozen(m,'deploy');image(m)
     target.mkdir(parents=True,mode=0o700)
     try:
@@ -477,6 +493,10 @@ def attach(args):
             shutil.copyfile(HERE/'restart.cjs',target/'restart.cjs');m['restartHelperSha256']=digest(target/'restart.cjs')
             m['probe']=generate(ROOT,target/'probe.js',serial_exchange=bool(m.get('serialExchangeDiagnostic')));m['workload']=generate_workload(ROOT,target/'k6/workload.js')
             m['generator']=attachment_generator(target,source,dependencies,m,getattr(args,'runtime_owner',None))
+            if m['generator'].get('runtimeOwner'):
+                runtime=document(args.runtime_owner)
+                if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
+            require(from_manifest(m)==m['runConfiguration'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
             candidates=[file for file in (state/'primer/tenants.json',state/'ops/tenants.json') if file.exists()]
             projections=[tenant_projection(document(file),m['tenants']) for file in candidates]
             require(projections and all(value==projections[0] for value in projections),'M7_PRIMER_OUTPUT_CONFLICT');write(target/'tenants.private.json',projections[0])
@@ -899,6 +919,10 @@ def attachment_generator(d,source,root,m,owner_file=None):
                 'M7_ATTACH_RUNTIME_GENERATOR_CHANGED')
         binding={'ownerFile':str(owner_file.resolve()),'ownerFileSha256':digest(owner_file),'owner':runtime['owner'],
                  'instrument':runtime['instrument'],'generatorProvenanceSha256':digest(provenance)}
+    if runtime and runtime.get('diagnosticResources'):
+        require(m.get('diagnosticResources')==runtime['diagnosticResources'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+        diagnostic_resources.configure(runtime['diagnosticResources']['profile'],document(d/'frozen.compose.json'),
+            runtime['diagnosticResources'],observe=lambda:diagnostic_resource_rows(m))
     tools=generator_tools();client=generator_client(d,tools)
     contexts={'generator':dependency_context(root,root/'node_modules',['socket.io-client','pg','js-yaml']),
               'source':dependency_context(source,root/'node_modules',['pg','js-yaml'])}
