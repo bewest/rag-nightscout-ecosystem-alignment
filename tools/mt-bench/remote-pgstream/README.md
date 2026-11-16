@@ -155,3 +155,10 @@ node --test tools/mt-bench/external-generator/test_recovery.cjs
 Measured source checks do not qualify a remote deployment. Startup timing,
 throughput, p95, client completion and real host headroom remain UNMEASURED until
 root runs the reviewed remote calibration.
+
+Discovery external-service topology also accepts the existing explicit
+`local-qualification-external-pgstream-6cpu-10g-v1` profile. The caller, worker,
+receipt and prepared cell retain that exact name; the shared resource producer
+sets the actual role limits and the collector verifies effective cgroups. This
+selection retains diagnostic scope and grants no capacity acceptance. The default
+4CPU/8GiB selection and strict reporting are unchanged.

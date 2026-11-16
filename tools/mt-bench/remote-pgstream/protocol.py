@@ -103,7 +103,7 @@ def prepared_cadence(b):
 def topology(value):
     selected='pgstreamTopology' in value or 'diagnosticResourceProfile' in value or 'helperDependencies' in value
     if not selected:return None
-    need(discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1' and value.get('diagnosticResourceProfile')=='local-diagnostic-external-pgstream-4cpu-8g-v1','REMOTE_EXPLICIT_TOPOLOGY')
+    need(discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1' and value.get('diagnosticResourceProfile') in ('local-diagnostic-external-pgstream-4cpu-8g-v1','local-qualification-external-pgstream-6cpu-10g-v1'),'REMOTE_EXPLICIT_TOPOLOGY')
     deps=value.get('helperDependencies')
     need(isinstance(deps,dict) and set(deps)=={'version','profile','files'} and deps['version']==1 and deps['profile'] in ('external-service-v1','external-service-batch-v1'),'REMOTE_TOPOLOGY_DEPENDENCIES')
     names={'tools/mt-bench/m7-joined/stream_topology.py','tools/mt-bench/m7-joined/diagnostic_resources.py'}
