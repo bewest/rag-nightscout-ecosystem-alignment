@@ -31,6 +31,7 @@ from workload import generate as generate_workload
 import profile_provenance
 import orchestration_binding
 import evaluator_progress
+import clinical_timeline
 import evaluator_idle
 import evaluator_opportunities
 import evaluator_catchup
@@ -697,6 +698,7 @@ def prepare_staged(args,target,pinned):
     require(not any("shared_preload_libraries" in str(x) for x in pg["command"][:-6]), "M7_POSTGRES_PRELOAD_ALREADY_SELECTED")
     selected_resources=getattr(args,'diagnostic_resource_profile',None)
     config=diagnostic_resources.overlay(config,selected_resources)
+    clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'))
     if selected_resources is not None:config=seal_diagnostic_images(config,m)
     record=diagnostic_resources.selected_record(config,selected_resources)
     if record is not None:
@@ -722,6 +724,7 @@ def verify(d, m):
     if m.get("environmentSha256"):
         require(digest(d/"env")==m["environmentSha256"] and digest(d/"core/deploy/multitenant/.env")==m["environmentSha256"],"M7_ENVIRONMENT_CHANGED")
     stream_topology.verify_config(m,document(d/"frozen.compose.json"))
+    clinical_timeline.verify(document(d/"frozen.compose.json"),d,m)
     measurement_topology(m,document(d/"frozen.compose.json"))
     profile_provenance.verify_environment(document(d/"frozen.compose.json"),m["diagnostics"])
     profile_provenance.state_environment(d/"state",document(d/"frozen.compose.json"),m["diagnostics"])
@@ -1017,6 +1020,9 @@ def deploy(d, m):
         write(d/"deployment-stages.json",stages)
         if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
         if name=="prime" and m.get("primerConcurrency",1)!=1:primer_counts(d,m)
+        if name=="publish-primer" and m.get("clinicalTimeline"):
+            clinical_timeline.publish(d,m,tenant_projection(document(d/"state/primer/tenants.json"),m["tenants"]))
+            write(d/"owner.json",m)
         if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
         if name=="bootstrap":
             fingerprint=json.loads(command(["node",HERE/"fingerprint.cjs",d/"core",m["pair"]["core"],d/"state/primer/config.json",str(m["tenants"])],phase="settings-fingerprint"))
@@ -1494,6 +1500,9 @@ def run_cell(d, m, k6_image):
     runid = "m7-" + m["owner"][:12];(out / "runid").write_text(runid)
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
     probe_env = runtime_env({"M7_GENERATOR_ROOT": str(d / "dependencies"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "M7_EVALUATOR_SERVICES": json.dumps(progress_services(d)), "M7_PROGRESS_PYTHON": sys.executable, "M7_PROGRESS_ATTRIBUTION":json.dumps(progress_attribution(m)), "STOCK_MS": "300000", "RECOVERY_MS": "120000", **({"M7_COMPLETION_SOURCE":json.dumps(completion)} if completion else {})})
+    if m.get('clinicalTimeline'):
+        targets=m['clinicalTimeline']['targets'];require(isinstance(targets,dict),'M7_CLINICAL_TIMELINE_UNPUBLISHED')
+        probe_env['M7_CLINICAL_TIMELINE_IDS']=json.dumps([targets['hotA'],targets['comparisonB']])
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
@@ -1638,6 +1647,9 @@ def _down(d, m):
             owned(row,m["owner"]);command(["docker","rm","--force","--volumes",row["Id"]])
     else:
         require(not resources(m), "M7_PARTIAL_PREPARE_HAS_RESOURCES")
+    if m.get('clinicalTimeline'):
+        try:clinical_timeline.retain(d,m)
+        except Exception as error:write(d/'clinical-timeline-retain-refusal.json',{'status':'UNMEASURED','type':type(error).__name__,'code':'M7_CLINICAL_TIMELINE_RETAIN_REFUSED'})
     core = d / "core"
     if core.exists():
         require(git(core,"rev-parse","HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
@@ -1670,6 +1682,7 @@ def parser():
     prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
     prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
     prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
+    prep.add_argument('--clinical-intake-timeline',choices=('off',clinical_timeline.NAME),default='off')
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')
     prep.add_argument('--generator-dependency-receipt-sha256')
