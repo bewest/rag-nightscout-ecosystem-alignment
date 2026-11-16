@@ -1794,3 +1794,87 @@ SHA-256 `f15c916768b866b021a8c9b67b2a53ec57d2d79d6a193fd50dd626acaa3e23d9`
 binds that outcome, retrospective kernel records, image metadata and independent
 absence. No application source, selected acceptance image or operator resource
 profile changes follow from this component experiment.
+
+## Clinical CPU discriminator: late frame and evaluator memory failure
+
+**Reproduced, 2026-11-16:** changing requested evaluator CPU from 125 to 250
+millicpus leaves the 1,000-tenant clinical criterion failed. The evaluator's
+unchanged 256 MiB cgroup kills its actual Node process during load. A matching
+probe frame eventually arrives, while the strict completed-output observation
+remains failed. This is a resource profile result; the initial intake delay
+still has no qualified cause.
+
+The finite local point uses the same frozen runtime, deployment and image as the
+[preceding repaired point](#repaired-reader-low-rate-point-http-success-clinical-and-frame-failure). Helper
+`98f3ef34686d47e4d0e558b85374ace5fb1e640f` adds one fixed
+[evaluator250 diagnostic variant](../../../tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.md).
+The actual frozen producer retains the same service roster, images, commands,
+entrypoints, restart/healthcheck policies and memory limits. Only evaluator CPU
+changes. The complete reservation rises 3,875→4,000 millicpus, with 8,192 MiB container
+memory and 1,024 MiB declared host V8 heaps unchanged. One live capture verifies
+`cpu.max=25000 100000`, 250 millicpus requested CPU and 256 MiB memory. The old point's
+effective `cpu.max` remains UNMEASURED.
+
+| Measured criterion | Result |
+|---|---|
+| Same workload | 1,000 tenants, 64 viewers, 7 offered RPS; primer concurrency 4/JWT concurrency 1; warm 10s, idle 30s, load 180s |
+| Ordinary HTTP/counts | 1,263 scenario attempts and responses; zero transport failures, HTTP failures or drops; 345 accepted=stored, zero uncertain; 115 writes in each ordinary domain |
+| Sparse probe | One accepted=stored; 64 clients prime and remain connected, zero disconnects; one of one matching frames arrives at 146.451s request-to-frame |
+| Completed output | FAIL, `M7_COMPLETION_PENDING`; 87 SQL observations retain no durable witness within the unchanged 120s per-write observation budget |
+| Clinical phases | Readiness, idle and load FAIL, `M7_EVALUATOR_PROGRESS_ERROR`; readiness retains STALLED after one acquisition, idle/load retain first acquisition STARTING |
+| Catchup | UNMEASURED, `M7_DRAIN_COLLECTION_REFUSED` |
+| Final point | FAILED_PARTIAL; hard collection failure `M7_COMPLETED_OUTPUT_ORACLE`; capacity NOT_GRANTED |
+
+The kernel's exact evaluator cgroup record at 10:43:21Z identifies
+`CONSTRAINT_MEMCG` and the same Node MainThread PID recorded before load.
+Retained Docker inspections show the same container with restartCount 0→1 and
+StartedAt 10:39:04.687959226Z→10:43:21.397084418Z; actual Node PID/birth also
+changes. Both retained Docker OOM flags are false. They describe those
+inspections, while the kernel identifies the intervening Node victim directly.
+The OOM occurs more than 120s after an observed accepted probe, so it does not
+explain the initial 120s pending interval. The early compact durable row still
+places that input before intake completion: writer clock is ahead of equal
+observed/completed clocks. A frame alone does not qualify the strict witness.
+
+Evaluator and Go process births change across the load bookends. Their
+whole-interval CPU costs are UNMEASURED even though container IDs match and
+the final cumulative counters exceed the initial counters. Subtracting those
+mixed-incarnation counters would manufacture a CPU improvement. Additional
+private observations and different shared-host activity also prevent a clean
+paired causal performance claim. No application patch, image, capacity ceiling
+or operator resource recommendation follows from this point.
+
+The addressed collector has its own failures. Its first Docker command inherits
+a 128 MiB virtual-address limit and fails before any SUT observation. A harmless
+Docker-version control reproduces `failed to reserve page summary memory`;
+ordinary execution restores success. One bounded read-only followup captures
+the quota and exact Node birth, then the existing private RAM RPC exits 1.
+Its 34 stderr bytes were not persisted; the exact refusal is UNMEASURED.
+All-or-nothing bracket persistence also loses the successful SQL-before response.
+The native bracket remains UNMEASURED. Entered bytes and failures are unchanged.
+
+A future, unentered companion derivative fixes partial persistence: it saves
+SQL-before immediately with timestamps/hash/ownership, records a RAM result or
+typed refusal, and retains SQL-after separately when budget permits. A planted
+RAM refusal makes the original collector RED for lost SQL-before; the repaired
+collector retains it and reports the complete bracket UNMEASURED. Restored
+control completes the bracket. Python's 128 MiB soft virtual-address bound remains
+separate from Docker Go's restored address reservation; child RSS is UNMEASURED.
+These controls create no SUT actors and do not reconstruct lost native evidence.
+
+The first preparation refuses receipt tool provenance before runtime because
+the shell selects Node 22. A fresh point selects the exact retained
+Node 24.22.1/npm 11.19.1 tools without weakening that check or downloading dependencies.
+Its original work window is 10:26:19.292414Z→11:06:19.292414Z, with cleanup cutoff
+11:11:19.292414Z. It closes at 10:45:56Z without extension. Independent checks
+confirm zero owned containers/networks/volumes, all old/new recorded live births
+and groups absent, and an empty, available existing heap marker. No retry remains.
+
+Retained raw home: `attribution-current/clinical-eval250-point-02` in the existing
+`performance-enhancements-20261115/single-host` home. Immutable
+`clinical-eval250-outcome-20261116.json` SHA256
+`935db72b262bde868401db2e182fc564fe6feb59dae95951af58310821d6e34c`
+binds 28 retained inputs, independently rechecked with zero mismatches. Future
+collector controls remain in `clinical-companion-persistence-controls-20261116`.
+The source coordinator owns the next source/resource selection and canonical programme record.
+The original point02 failure and the pre-OOM intake-delay cause remain open.
