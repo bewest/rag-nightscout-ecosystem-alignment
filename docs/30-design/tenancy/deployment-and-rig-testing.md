@@ -54,7 +54,7 @@ it is not a prerequisite for discovering that candidate's faults.
 | Candidate acceptance | Frozen coherent source/configuration plus applicable full, browser, clinical, isolation and recovery checks | Promote only the criteria actually measured on that candidate. |
 
 Use the existing discovery path, including `pgstream-sample` with
-`--run-purpose discovery` on the runner branch, for pre-acceptance experiments.
+`--run-purpose discovery` on the runner branch, for bounded experiments on pending or accepted sources.
 Keep strict/default acceptance separate. The existing
 [fresh-image diagnostic](../../../tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.md)
 is a small functional profile; its limits do not define every discovery workload.
@@ -93,6 +93,30 @@ do not cycle through new launch scripts or executors. A remote diagnostic must
 qualify its own transport/environment, without repeating unrelated application
 acceptance. Start with the smallest useful remote point and reuse that qualified
 path for larger authorized configurations.
+
+### Application requirements and environment capabilities
+
+Application correctness requires tenant/current authority and restore fences,
+a durable recoverable receipt before acknowledgement, coherent cohorts, separate
+accepted and clinically completed positions, actual due work, correct stock-client
+output, and durable recovery. A passing reference deployment provides evidence
+for those requirements within its measured source, workload and environment.
+
+Single-host placement, one API in a discovery profile, a Unix Docker daemon,
+Vault, a particular PostgreSQL image and selected quotas are properties of the
+current instrument or reference deployment. They constrain tests that use them;
+they are not universal application semantics. A parameter does not admit a new
+topology. An unavailable provider, browser, HA rig or optional metric leaves the
+dependent claim UNMEASURED while other bounded diagnosis may continue. Required
+source, authority, isolation, receipt and clinical checks remain in force.
+
+The [runner configuration contract](../../../tools/mt-bench/m7-joined/RUNNER.md#resolve-once-for-local-and-remote-discovery)
+separates run purpose, source acceptance evidence and execution limits. Its
+version-2 diagnostic receipts admit truthful PENDING or PASS source status without
+capacity/release promotion. Legacy captures keep their original attribution.
+Reuse unchanged module/source evidence with its identity and limits. Qualify a
+changed remote transport with a small actual remote probe; do not repeat unrelated
+application acceptance solely for a helper, configuration or environment change.
 
 ## Deployment choices and fault domains
 

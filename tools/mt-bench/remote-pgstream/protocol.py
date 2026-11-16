@@ -50,7 +50,7 @@ def workload(value):
         return dict(cadence=dict(CADENCE), primerConcurrency=1, resourcePlan=None)
     need(isinstance(selected, dict) and set(selected) in ({'cadence', 'primerConcurrency', 'resourcePlan'}, {'cadence', 'primerConcurrency', 'resourcePlan', 'jwtSetupConcurrency'}), 'REMOTE_WORKLOAD_SHAPE')
     cadence = selected['cadence']
-    need(isinstance(cadence, dict) and set(cadence) in (set(CADENCE), set(CADENCE) | {'offeredRps'}), 'REMOTE_CADENCE_SHAPE')
+    need(isinstance(cadence, dict) and set(CADENCE) <= set(cadence) and set(cadence)-set(CADENCE) <= ({'offeredRps','logicalPollingClients'} if exploratory else {'offeredRps'}), 'REMOTE_CADENCE_SHAPE')
     for key, default in CADENCE.items():
         if exploratory and key in ('warmupSeconds','idleSeconds','loadSeconds','accel','hotFactor','samplerIntervalSeconds','probeEveryMs','socketsPerTenant'):
             maximum={'samplerIntervalSeconds':60,'socketsPerTenant':8}.get(key,10800 if key!='probeEveryMs' else 3600000)
@@ -73,6 +73,8 @@ def workload(value):
     need(isinstance(plan['reference'], str) and re.fullmatch(r'[A-Za-z0-9_.:/-]{1,160}', plan['reference']) is not None and
          type(plan['tenants']) is int and plan['tenants'] == value['tenants'] and
          type(plan['logicalPollingClients']) is int and 0<=plan['logicalPollingClients']<=80000 and (exploratory or plan['logicalPollingClients']==cadence['socketsPerTenant']*value['tenants']), 'REMOTE_RESOURCE_PLAN_COHORT')
+    if 'logicalPollingClients' in cadence:
+        need(type(cadence['logicalPollingClients']) is int and cadence['logicalPollingClients']==plan['logicalPollingClients'],'REMOTE_VIEWER_MIRROR_CHANGED')
     hosts = plan['hosts']
     need(isinstance(hosts, dict) and set(hosts) == {'sut', 'driver'}, 'REMOTE_RESOURCE_PLAN_HOSTS')
     for host in hosts.values():

@@ -5,7 +5,7 @@ import re
 import subprocess
 import time
 import evaluator_catchup
-from contract import require, SHA, OWNER, UNACCEPTED_SCOPE
+from contract import require, SHA, OWNER, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope
 
 INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
 INCOMPLETE=INCOMPLETE|frozenset(('M7_OPPORTUNITY_NOT_OBSERVED','M7_OPPORTUNITY_DEADLINE','M7_OPPORTUNITY_BYTE_BOUND','M7_OPPORTUNITY_COVERAGE','M7_OPPORTUNITY_CAPTURE','M7_OPPORTUNITY_QUERY_BOUND'))
@@ -90,7 +90,7 @@ def check_discovery(value):
                 require(all(type(row.get(k)) in (int,float) and row[k]>=0 for k in ('accepted','stored','uncertain')) and row['accepted']<=row['stored']<=row['accepted']+row['uncertain'] and row.get('match') is True,'M7_DISCOVERY_WRONG_DATA')
                 require(all(type(row.get(k)) is int and row[k]>=0 for k in ('probeAccepted','probeStored','probeUncertain','probeRefused','probePending')) and row['probePending']==0 and row['probeAccepted']<=row['probeStored']<=row['probeAccepted']+row['probeUncertain'],'M7_DISCOVERY_WRONG_DATA')
     if value.get('profile')=='pgstream-sample':
-        require(all(value.get(key)==expected for key,expected in UNACCEPTED_SCOPE.items()),'M7_DISCOVERY_PENDING_SCOPE')
+        check_discovery_scope(value)
         if value['status']=='MEASURED':
             require(not any('recoveryEpisode' in row for row in value['strictChecks'].values()),'M7_DISCOVERY_RECOVERED_CELL_NOT_ACCEPTED')
             require(value.get('completedOutput',{}).get('verdict')=='PASS' and value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'} and value.get('sqlAttribution'),'M7_DISCOVERY_SAMPLE_PROOF')
@@ -104,7 +104,7 @@ def check_discovery(value):
 class Record:
     def __init__(self,a,d,m):
         self.a,self.d,self.m=a,d,m
-        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(UNACCEPTED_SCOPE if m['profile']=='pgstream-sample' else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
+        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
         self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json') if (file:=self.d/folder/name).is_file()}
         self.a.write(self.d/'summary.json',self.value)

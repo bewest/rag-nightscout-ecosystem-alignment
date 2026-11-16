@@ -68,6 +68,8 @@ def validate_config(config):
     # The adapter owns supported options and all source/profile admission.
     parsed = a.parser().parse_args(['prepare', '--directory', '/tmp/m7-runner-validation', *argv])
     require(parsed.profile == 'pgstream-sample' and parsed.run_purpose == 'discovery', 'M7_RUNNER_DISCOVERY_ONLY')
+    from run_configuration import validate_prepare
+    validate_prepare(parsed)
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
     require(config['workSeconds'] > sum(a.cadence_options(parsed)[k] for k in ('warmupSeconds', 'idleSeconds', 'loadSeconds')), 'M7_RUNNER_WORK_WINDOW')
     return config, argv
@@ -75,6 +77,14 @@ def validate_config(config):
 
 def prepare(config_file, directory):
     config, argv = load_config(config_file)
+    # Validate receipt/config mirrors before creating output or arming a guard.
+    parsed=a.parser().parse_args(['prepare','--directory','/tmp/m7-runner-validation',*argv])
+    receipt=a.document(parsed.freeze)
+    if receipt.get('version')==2:
+        from run_configuration import from_args, validate_execution
+        validate_execution(config,receipt)
+        resolved=from_args(parsed,a.instrument()['sha256'])
+        a.receipt_scope({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},receipt,'deploy')
     root = Path(directory).resolve()
     require(not root.exists(), 'M7_RUNNER_OUTPUT_EXISTS')
     root.mkdir(mode=0o700, parents=True)
@@ -83,8 +93,7 @@ def prepare(config_file, directory):
     arm_window(root,config)
     try:
         stage(root,'prepare',['prepare','--directory',str(root/'fixture'),*argv])
-        if os.environ.get('M7_BATCH_RESERVATION'):
-            stage(root,'source-preflight',['source-preflight',str(root/'fixture')])
+        stage(root,'source-preflight',['source-preflight',str(root/'fixture')])
         write(root / 'result.json', {'version': 1, 'status': 'PREPARED', 'phase': 'prepare', 'runtimeStarted': False, 'configSha256': a.digest(root / 'config.json'), 'capacityAcceptance': 'NOT_GRANTED'})
     except BaseException as error:
         write(root / 'result.json', {'version': 1, 'status': 'FAILED', 'phase': 'prepare', 'code': code(error), 'runtimeStarted': False, 'capacityAcceptance': 'NOT_GRANTED'})
@@ -325,12 +334,12 @@ def execute(directory, rehearsal=False):
     state=execution_window(root,config)
     failure = None
     try:
+        if rehearsal:
+            generated_control(root, d, m)
         stage(root, 'deploy', ['deploy', str(d)])
         stage(root, 'preflight', ['preflight', str(d), '--k6-image', config['k6Image']])
         # Essential source/runtime/instrument checks stay in adapter preflight.
         optional_preflight(root, d)
-        if rehearsal:
-            generated_control(root, d, m)
         stage(root, 'run', ['run', str(d), '--k6-image', config['k6Image']])
         if m.get('vaultRefusalControl'):stage(root,'vault-check',['vault-check',str(d)])
     except BaseException as error:
@@ -479,6 +488,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     sub.add_parser('identity')
+    project=sub.add_parser('project');project.add_argument('config');project.add_argument('--remote-overlay');project.add_argument('--source-acceptance')
     for mode in ('batch-plan','batch-run'):
         command=sub.add_parser(mode);command.add_argument('config');command.add_argument('--payload-root',required=True)
         if mode=='batch-run':command.add_argument('directory')
@@ -487,6 +497,12 @@ def main():
     for name in ('execute', 'rehearse', 'result', 'down', '_guard', 'batch-result'):
         sub.add_parser(name).add_argument('directory')
     args = parser.parse_args()
+    if args.action == 'project':
+        import run_configuration as rc
+        config=a.document(args.config)
+        acceptance=a.document(args.source_acceptance) if args.source_acceptance else None
+        value=rc.remote_projection(config,a.document(args.remote_overlay),acceptance) if args.remote_overlay else rc.resolve(config,acceptance)
+        return print(json.dumps(value,indent=2))
     if args.action == 'batch-result':
         root=Path(args.directory).resolve();spec=a.document(root/'batch.json')
         retained=a.document(root/'batch-result.json') if (root/'batch-result.json').exists() else {'batch':spec['id'],'cells':{},'capacityAcceptance':'NOT_GRANTED'}

@@ -15,6 +15,7 @@ def main():
     parser.add_argument('action', choices=('prepare', 'deploy', 'export', 'session', 'down'))
     parser.add_argument('--binding', required=True)
     parser.add_argument('--cell', required=True)
+    parser.add_argument('--run-config', help='Existing runner config; derive prepare argv instead of authoring mirrors')
     args, remaining = parser.parse_known_args()
     raw = json.loads(Path(args.binding).read_text())
     if args.action == 'down':
@@ -27,6 +28,10 @@ def main():
     if args.action == 'prepare':
         if b.get('workload') is not None:
             need(time.time() + selected['cadence']['loadSeconds'] + 540 < b['expiresAt'], 'REMOTE_DURATION_OUTSIDE_ENVELOPE')
+        if args.run_config:
+            need(not remaining,'REMOTE_CONFIG_MIRROR_REFUSED')
+            import runner
+            run_config, remaining=runner.load_config(args.run_config)
         prep = app.a.parser().parse_args(['prepare', '--directory', args.cell, *remaining])
         need({'core': prep.core_commit, 'deploy': prep.deploy_commit} == b['pair'] and prep.image == b['imageId'] and
              prep.postgres_image == POSTGRES and prep.tenants == b['tenants'] and prep.replicas == 1 and
@@ -41,6 +46,9 @@ def main():
             need(prep.completion_contract == 'evaluator-work-v2', 'REMOTE_REPAIRED_COMPLETION_V2_REQUIRED')
         # Validate the genuine authorization before even preparing source/state.
         receipt = app.a.document(prep.freeze)
+        if args.run_config:
+            from run_configuration import validate_execution
+            validate_execution(run_config,receipt)
         need(receipt.get('remoteReportMode','strict') == b.get('reportMode','strict') and receipt.get('status') == 'AUTHORIZED_DIAGNOSTIC' and receipt.get('remoteProfile') == b['profile'] and
              receipt.get('remoteTransport') == b['transport'] and receipt.get('remoteExtensionSha256') == b['sourceSha256'] and
              receipt.get('remotePgstreamTopology') == b.get('pgstreamTopology') and receipt.get('remoteDiagnosticResourceProfile') == b.get('diagnosticResourceProfile') and receipt.get('remoteHelperDependencies') == b.get('helperDependencies') and

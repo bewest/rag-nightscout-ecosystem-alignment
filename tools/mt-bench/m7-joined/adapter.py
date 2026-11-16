@@ -359,7 +359,13 @@ def serial_exchange_receipt(m, value):
 def frozen(m,operation):
     require(Path(m["freeze"]).is_file(),"M7_FROZEN_OR_DIAGNOSTIC_RECEIPT_REQUIRED")
     value=document(m["freeze"]);serial_exchange_receipt(m,value)
-    return receipt_scope(m,value,operation)
+    if value.get('version')==2 and m.get('prepared'):
+        from run_configuration import from_manifest
+        require(from_manifest(m)==m.get('runConfiguration'),'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    result=receipt_scope(m,value,operation)
+    if value.get('version')==2 and result['kind']=='diagnostic-discovery':
+        m['discoveryAuthorization']={k:v for k,v in result.items() if k!='kind'}
+    return result
 
 
 def experiment_host(d,m,phase):
@@ -564,6 +570,9 @@ def selected_resources_profile(args):
 
 
 def prepare(args):
+    if args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery' and getattr(args,'backend_subnet',None) and getattr(args,'edge_subnet',None):
+        from run_configuration import validate_prepare
+        validate_prepare(args)
     selected=getattr(args,'diagnostic_resource_profile',None)
     require(not selected or args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_DIAGNOSTIC_RESOURCE_DISCOVERY_ONLY')
     require(not selected or getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
@@ -589,7 +598,6 @@ def prepare(args):
     discovery_source_features(args.core_repo,args.core_commit)
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)==stream_topology.EXTERNAL:
         stream_topology.verify_source({'pgstreamTopology':args.pgstream_topology},json.loads(git(args.core_repo,'show',args.core_commit+':lib/server/serve/plan-contract/schema/evaluator.schema.json')))
-    args.dependency_qualification=qualified_dependencies(args)
     pinned = instrument()
     if getattr(args,'measurement_mode','accepted')=='unaccepted' or (args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery'):
         candidate={'profile':args.profile,'tenants':args.tenants,'replicas':args.replicas,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'instrument':pinned,
@@ -598,7 +606,14 @@ def prepare(args):
         selection=serial_exchange_selection(args)
         if selection is not None:candidate['serialExchangeDiagnostic']=selection
         serial_exchange_receipt(candidate,document(args.freeze))
+        if document(args.freeze).get('version')==2:
+            from run_configuration import from_args
+            candidate['runConfiguration']=from_args(args,pinned['sha256'])
         receipt_scope(candidate,document(args.freeze),'deploy')
+        if document(args.freeze).get('version')==2:
+            from run_configuration import namespace_preflight
+            args.namespace_preflight=namespace_preflight(args)
+    args.dependency_qualification=qualified_dependencies(args)
     args.image_input_preflight=prepare_image_inputs(args)
     target.mkdir(parents=True, mode=0o700)
     try:
@@ -619,6 +634,7 @@ def prepare_staged(args,target,pinned):
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
          "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":cadence_options(args),"completionContract":getattr(args,"completion_contract",None),"jwtSetupConcurrency":jwt_setup_concurrency(getattr(args,"jwt_setup_concurrency",1))}
+    if getattr(args,'namespace_preflight',None):m['namespacePreflight']=args.namespace_preflight
     if getattr(args,'vault_refusal_control',None):m['vaultRefusalControl']=args.vault_refusal_control
     if getattr(args,'dependency_qualification',None) is not None:m['dependencyReuse']=args.dependency_qualification
     selection=serial_exchange_selection(args)
@@ -633,6 +649,9 @@ def prepare_staged(args,target,pinned):
     m['measurementMode']=getattr(args,'measurement_mode','accepted')
     if args.profile=='pgstream-sample' and m.get('runPurpose')=='discovery':
         m['imageId']=getattr(args,'image_id',None) or args.image
+        if document(m['freeze']).get('version')==2:
+            from run_configuration import from_args
+            m['runConfiguration']=from_args(args,pinned['sha256'])
         frozen(m,'deploy')
     if m['measurementMode']=='unaccepted':
         m.update(runId=args.run_id,imageId=args.image_id,maximumRunMinutes=args.maximum_run_minutes)

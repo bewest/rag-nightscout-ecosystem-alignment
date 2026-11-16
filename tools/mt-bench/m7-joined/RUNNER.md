@@ -399,3 +399,88 @@ input/reservation rejection, real typed child overlap, partial failure/peer
 progress, uncertain-cleanup retention and affinity confined to a harmless child.
 They do not by themselves qualify native Vault overlap; that requires retained
 source-bound native actors, progress and independent exact cleanup evidence.
+
+### Resolve once for local and remote discovery
+
+The existing version-1 runner JSON remains the authoring source. `prepare` holds
+workload and source options; `workSeconds` and `cleanupSeconds` bound the finite
+window in seconds. `runner.py project` resolves adapter defaults and produces the
+configuration digest, receipt limits and a **draft** version-2 diagnostic receipt.
+The command creates no run and grants no execution or provider authority.
+
+```bash
+python3 -B tools/mt-bench/m7-joined/runner.py project /absolute/private/run.json
+python3 -B tools/mt-bench/m7-joined/runner.py project /absolute/private/run.json \
+  --source-acceptance /absolute/private/source-acceptance.json \
+  --remote-overlay /absolute/private/remote-overlay.json
+```
+
+The optional source-acceptance document is exactly `{"status":"PENDING"}` or
+`{"status":"PASS","reference":"/absolute/private/acceptance.json","sha256":"…"}`.
+PASS requires the referenced file's actual SHA-256 and a `joined-acceptance` PASS
+record matching the exact core/deploy pair and image. The evidence record must
+also identify its own instrument and evidence digest. The acceptance instrument
+can differ from the experiment helper. A missing, changed or mismatched record
+refuses. This validates the retained record, not a new application campaign.
+The resource owner issues genuine authorization from the draft only within
+existing authority; changing `DRAFT` to `AUTHORIZED_DIAGNOSTIC` is an attestation,
+not a permission bypass. Keep historical receipts and captures unchanged.
+
+Version 2 requires `purpose: BOUNDED_DISCOVERY`, the generated
+`configurationSha256`, `execution`, `limits`, `sourceAcceptance`, and matching
+`functionalAcceptanceAtAuthorization`. It binds source/image/helper,
+PostgreSQL image, tenants, cadence, viewers, concurrency, topology, selected
+resource profile, completion reader, k6 image and work/cleanup limits. The runner
+refuses altered mirrors before output creation or guard arming. Adapter admission
+checks source/image/receipt before dependency preparation, checks actual project
+and CIDR availability before staging, and rechecks prepared semantic input before
+deploy/run. Actual image labels, generated plans, dependency bytes, quotas,
+process births, ownership, free ports and runtime census remain independent
+readbacks. Namespace readback is an observation, not a reservation.
+
+Legacy version-1 discovery receipts retain their PENDING-only semantics and
+UNACCEPTED result attribution. Version-2 results record PENDING or PASS truthfully,
+with the source-acceptance reference and configuration digest. Every discovery
+result still carries `capacityAcceptance: NOT_GRANTED`; accepted-source diagnosis
+cannot promote capacity or release claims. The proof owner's recovery classifier
+retains failed correctness episodes and dependent UNMEASURED claims. Strict
+acceptance remains separate and failed correctness remains failed.
+
+| Independent option | Unit and supported bound |
+|---|---|
+| `tenants` | 1–10000; this discovery adapter keeps exactly one API replica |
+| `logical-polling-clients` | 0–80000 total viewers; otherwise tenants × sockets per tenant |
+| `sockets-per-tenant` | 1–8; explicit totals may differ |
+| `offered-rps` | finite 1–10000 scenario HTTP attempts/second; excludes setup and stock probes |
+| `warmup-seconds`, `idle-seconds`, `load-seconds` | integer 1–10800 seconds each, sum ≤10800 and less than work window |
+| `probe-every-ms` | integer 1–3600000 milliseconds |
+| `sampler-interval` | integer 1–60 seconds |
+| `accel`, `hot-factor` | integer 1–10800; existing workload semantics |
+| `primer-concurrency`, `jwt-setup-concurrency` | 1–32 and 1–64, respectively |
+| `diagnostic-resource-profile` | existing named allocations only; CPU in millicpus and memory in bytes derive from that profile |
+
+The remote overlay has exactly `binding`, `hostInventory`, and
+`resourceReference`. `binding` contains existing controller protocol identity,
+endpoint/transport authority, expiry and extension identity; it must omit source,
+image, workload, tenants, report mode, resource selection and k6 mirrors.
+`hostInventory` is the existing `sut`/`driver` planning inventory with provider ID,
+CPU cores and RAM bytes; it is not measured headroom. For the existing supported
+external topology, the binding also retains its exact `helperDependencies`
+receipt. The projection derives the other fields and runs existing remote
+protocol admission. Unsupported remote resource profiles/PostgreSQL images still
+refuse; this does not extend application topology.
+
+Use the returned `binding` and `remoteReceiptProjection` with the version-2
+receipt template in the authorized controller packet. `cell.py prepare` accepts
+`--run-config /absolute/private/run.json` instead of mirrored adapter flags. Only
+repository/dependency/receipt paths and output locations need environment-specific
+copies. Do not change workload to make a transport fit; incompatible projections
+refuse. Existing remote CLI flags and strict profiles remain available.
+
+The runner runs the paired source/plan preflight before deployment seeding.
+`rehearse` now executes its generated-program missing-URL control before deploy,
+then checks the actual tiny fixture through ordinary runtime preflight and
+traffic. A changed remote environment still needs its own small actual transport
+and probe qualification under separately authorized remote access. Offline CLI
+and protocol tests are not that qualification. An entered run stays on its
+original helper/configuration/receipt/clock and cleanup owner.

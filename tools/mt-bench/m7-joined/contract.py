@@ -159,14 +159,14 @@ def receipt_scope(manifest,receipt,operation):
     if manifest.get('profile')=='pgstream-sample' and manifest.get('runPurpose')=='discovery':
         require(operation in ('build','deploy','run'),'M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')
         require(receipt.get('kind')=='joined-diagnostic' and receipt.get('status')=='AUTHORIZED_DIAGNOSTIC'
-                and receipt.get('functionalAcceptanceAtAuthorization')=='PENDING','M7_DIAGNOSTIC_RECEIPT_REQUIRED')
+                and (receipt.get('version',1)==2 or receipt.get('functionalAcceptanceAtAuthorization')=='PENDING'),'M7_DIAGNOSTIC_RECEIPT_REQUIRED')
         require(re.fullmatch(r'[a-f0-9]{64}',receipt.get('instrument','')) and receipt['instrument']==manifest['instrument']['sha256']
                 and re.fullmatch(r'sha256:[a-f0-9]{64}',receipt.get('imageId','')) and receipt['imageId']==manifest.get('imageId'),'M7_DIAGNOSTIC_IDENTITY_MISMATCH')
         limits=receipt.get('limits',{})
         require(type(manifest.get('tenants')) is int and type(limits.get('tenants')) is int and 1<=manifest['tenants']<=limits['tenants']<=10000
                 and type(manifest.get('replicas')) is int and manifest['replicas']==1 and type(limits.get('apiReplicas')) is int and limits['apiReplicas']==1
                 and type(limits.get('trafficSeconds')) is int and 1<=limits['trafficSeconds']==manifest.get('cadence',CADENCE['pgstream-sample'])['loadSeconds']<=10800,'M7_DIAGNOSTIC_LIMIT_INVALID')
-        return {'kind':'diagnostic-discovery',**UNACCEPTED_SCOPE}
+        return {'kind':'diagnostic-discovery',**discovery_authorization(manifest,receipt)}
     measurement_request(manifest)
     if manifest.get("measurementMode")=="unaccepted":
         require(operation in ("build","deploy","run"),"M7_UNACCEPTED_OPERATION")
@@ -270,3 +270,67 @@ def unaccepted_check(document):
         require(row.get('kind')=='m7-joined-unaccepted-measurement-cell' and all(row.get(k)==v for k,v in UNACCEPTED_SCOPE.items())
                 and row.get('runId')==document['runId'] and row.get('maximumRunMinutes')==180 and row.get('collectionStatus')=='COMPLETE','M7_UNACCEPTED_CELL_SCOPE')
     return _pilot_check(document,'m7-joined-unaccepted-measurement')
+
+
+def discovery_authorization(manifest, receipt):
+    """Version 1 preserves the original PENDING contract; v2 binds projections."""
+    version=receipt.get('version',1)
+    require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
+    if version==1:return dict(UNACCEPTED_SCOPE)
+    from run_configuration import sha
+    resolved=manifest.get('runConfiguration')
+    require(isinstance(resolved,dict) and receipt.get('configurationSha256')==sha(resolved),
+            'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(all(resolved.get(k)==manifest.get(k) for k in ('pair','imageId','tenants','replicas','cadence'))
+            and resolved.get('instrument')==manifest['instrument']['sha256'], 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(receipt.get('purpose')=='BOUNDED_DISCOVERY' and resolved.get('runPurpose')=='discovery',
+            'M7_DIAGNOSTIC_PURPOSE_REQUIRED')
+    execution=receipt.get('execution')
+    require(isinstance(execution,dict) and set(execution)=={'workSeconds','cleanupSeconds','k6Image'}
+            and type(execution['workSeconds']) is int and 30<=execution['workSeconds']<=10800
+            and type(execution['cleanupSeconds']) is int and 30<=execution['cleanupSeconds']<=300
+            and re.fullmatch('sha256:[a-f0-9]{64}',execution.get('k6Image',''))
+            and sum(resolved.get('cadence',{}).get(k,10800) for k in ('warmupSeconds','idleSeconds','loadSeconds'))<execution['workSeconds'],
+            'M7_DIAGNOSTIC_EXECUTION_LIMIT')
+    acceptance=receipt.get('sourceAcceptance')
+    require(isinstance(acceptance,dict) and acceptance.get('status') in ('PENDING','PASS')
+            and receipt.get('functionalAcceptanceAtAuthorization')==acceptance['status'], 'M7_DIAGNOSTIC_ACCEPTANCE_STATUS')
+    if acceptance['status']=='PENDING':
+        require(set(acceptance)=={'status'},'M7_DIAGNOSTIC_PENDING_EVIDENCE')
+    else:
+        require(set(acceptance)=={'status','reference','sha256'} and isinstance(acceptance['reference'],str)
+                and Path(acceptance['reference']).is_absolute() and re.fullmatch('[a-f0-9]{64}',acceptance.get('sha256','')),
+                'M7_DIAGNOSTIC_ACCEPTANCE_EVIDENCE')
+        evidence=Path(acceptance['reference'])
+        require(evidence.is_file() and digest(evidence)==acceptance['sha256'],'M7_DIAGNOSTIC_ACCEPTANCE_EVIDENCE')
+        value=json.loads(evidence.read_text())
+        require(value.get('kind')=='joined-acceptance' and value.get('status')=='PASS'
+                and value.get('pair')==manifest['pair'] and value.get('imageId')==manifest['imageId']
+                and re.fullmatch('[a-f0-9]{64}',value.get('instrument',''))
+                and re.fullmatch('[a-f0-9]{64}',value.get('evidenceSha256','')), 'M7_DIAGNOSTIC_ACCEPTANCE_TUPLE')
+    return {'authorizationVersion':2,'measurementMode':'diagnostic','functionalAcceptance':acceptance['status'],
+            'functionalAcceptanceAtAuthorization':acceptance['status'],'sourceAcceptance':acceptance,
+            'configurationSha256':receipt['configurationSha256'],'capacityAcceptance':'NOT_GRANTED'}
+
+
+def discovery_scope(manifest):
+    return manifest.get('discoveryAuthorization',dict(UNACCEPTED_SCOPE))
+
+
+def check_discovery_scope(value):
+    if value.get('authorizationVersion')!=2:
+        require(all(value.get(k)==v for k,v in UNACCEPTED_SCOPE.items()),'M7_DISCOVERY_PENDING_SCOPE')
+        return
+    status=value.get('functionalAcceptanceAtAuthorization')
+    require(status in ('PENDING','PASS') and value.get('functionalAcceptance')==status
+            and value.get('sourceAcceptance',{}).get('status')==status and value.get('measurementMode')=='diagnostic'
+            and value.get('capacityAcceptance')=='NOT_GRANTED' and re.fullmatch('[a-f0-9]{64}',value.get('configurationSha256','')),
+            'M7_DISCOVERY_ACCEPTANCE_SCOPE')
+
+    acceptance=value['sourceAcceptance']
+    if status=='PENDING':
+        require(set(acceptance)=={'status'},'M7_DISCOVERY_ACCEPTANCE_SCOPE')
+    else:
+        require(set(acceptance)=={'status','reference','sha256'} and isinstance(acceptance['reference'],str)
+                and Path(acceptance['reference']).is_absolute() and re.fullmatch('[a-f0-9]{64}',acceptance.get('sha256','')),
+                'M7_DISCOVERY_ACCEPTANCE_SCOPE')

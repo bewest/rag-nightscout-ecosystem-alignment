@@ -259,7 +259,7 @@ def discovery_summary(d,m,b,probe,k6):
     import discovery
     out=d/'load'
     result={'version':1,'kind':'remote-pgstream-discovery-cell','status':'PARTIAL','verdict':'UNMEASURED',
-            'runPurpose':'discovery','capacityAcceptance':'NOT_GRANTED','binding':b,'pair':m['pair'],
+            'runPurpose':'discovery','capacityAcceptance':'NOT_GRANTED',**m.get('discoveryAuthorization',{}),'binding':b,'pair':m['pair'],
             'imageId':m['imageId'],'baseInstrument':m['instrument'],'externalInstrument':source_identity(HERE),
             'tenants':m['tenants'],'cadence':m['cadence'],'probe':probe,'metrics':k6.get('metrics',{}),
             'strictChecks':{},'optionalObservations':{},'crossHostClockSubtraction':False,
