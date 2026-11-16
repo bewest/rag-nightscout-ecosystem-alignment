@@ -1,0 +1,60 @@
+{
+  "capturedAtUTC": "2026-11-16T04:20:10Z",
+  "basis": "reproduced",
+  "kind": "focused-source-and-native-component-followups",
+  "applicationSource": "1ce665d326616be0ee683f75953f65dae150201b",
+  "sourceChecks": {
+    "selectedCredentialAndDeletionClaim": {
+      "passed": 75,
+      "failed": 0,
+      "sha256": "6247f9738d5fcdb9c1acb45d6dba0a2ad57f76d2dd64f4073980fdf529d8ea6a",
+      "log": "/tmp/transition-joined-recommission-session-focused.log"
+    },
+    "inventory": {
+      "files": 831,
+      "tiers": 8,
+      "status": "PASS",
+      "sha256": "a902406c69f728b90188eda54a26a21678eeb7ffe188632df58bb4f2054f26d3"
+    },
+    "remoteRootInstallation": {
+      "source": "ad004d0eea16546abdc74e89bc5e3567c386ca2a",
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/tmp/transition-integrated-root-install.log",
+      "sha256": "a7389f6e2a5d41c17f8bcac63385a58d884af8b8de9570e457d5992a223292ec",
+      "controls": "Original user/answer/context ablations RED; restored source passes. Actual native host message reader/provider ports remain uninstalled."
+    }
+  },
+  "nativeSqlComponent": {
+    "source": "4ae92ba6e150845088dc017f22419b772882824f",
+    "verdict": "PGSTREAM_POOL_MODE_GRANT_SQL_COMPONENT_NOT_RUNTIME_OR_CLINICAL",
+    "retainedEvidenceId": "partition-shared-native-03d-20261115",
+    "resultSha256": "a11fc6a2b632ac3c49a634056a69b423fb2654d1da9d88e8d6ba91fa157465f7",
+    "namedChecks": 26,
+    "elapsedMs": 2551,
+    "primaryFailure": null,
+    "coverage": [
+      "Fresh and explicit selected-v1-origin catalogue setup.",
+      "Actual effective worker/operator grants; omitted recommission grant RED and restored GREEN.",
+      "Off singleton, on3, on5, off1 SQL transitions and full checkpoint preservation.",
+      "Wrong mode/deferred COMMIT/live singleton refusal plus actual guard-omission mutant reaches COMMIT and makes oracle RED."
+    ],
+    "independentAbsence": {
+      "status": "PASS",
+      "checkedAt": "2026-11-16T04:02:02.210726+00:00",
+      "beforeOriginalDeadline": true,
+      "exactCidNameNonceAbsent": true,
+      "originalBirths": 3,
+      "liveOriginalGroups": 0,
+      "persistentVolumes": 0
+    }
+  },
+  "limitations": [
+    "Source checks overlap and are not summed.",
+    "Prior native03/03b/03c failures remain unchanged;03d instrument public-export correction is separate from grant-policy semantics.",
+    "Native SQL component does not qualify live evaluator processes, HOLD/drain, actual adoption command, private DATA or clinical output.",
+    "Selected legacy-session and deletion-claim source controls do not replace genuine Vault/RLS/recommission native proof.",
+    "No final full/browser/enabled/client/prcheck or capacity acceptance."
+  ]
+}

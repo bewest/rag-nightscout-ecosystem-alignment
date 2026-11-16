@@ -1,0 +1,83 @@
+{
+  "verdict": "PASS_FOCUSED_SUPPORTED_FIXED_V1_NATIVE_CLINICAL_RESTORE",
+  "source": "1ce665d326616be0ee683f75953f65dae150201b",
+  "deployment": "16133d9d33993b08fd81a318e8d30be123051ae7",
+  "execution": "HOST_NODE_SOURCE_FIXTURE_APPLICATION_IMAGE_NOT_USED",
+  "profile": "pgstream-intake-v1",
+  "completedAt": "2026-11-16T04:09:34.568Z",
+  "capabilities": {
+    "coldLocalJWTUnderActualProviderRefusal": true,
+    "oldProfileData": 401,
+    "oldProfileExplicitRenewal": 200,
+    "actualControllerState": "activated",
+    "sevenNonemptyDomains": [
+      "entries",
+      "treatments",
+      "devicestatus",
+      "profile",
+      "food",
+      "settings",
+      "activity"
+    ],
+    "heldA": {
+      "phase": "actual-held-A-drain",
+      "responsePending": true,
+      "participants": 5,
+      "runningOperations": 2,
+      "restoreBodyEntered": false,
+      "at": "2026-11-16T04:09:26.412Z"
+    },
+    "heldARefusal": 503,
+    "independentBSameStoredIDFrameAndSQL": true,
+    "freshARestFrameAndSQL": true,
+    "currentAuthorityAndKeysPreserved": true,
+    "currentClock": {
+      "phase": "actual-current-restore-clock",
+      "captured": "1794802165315",
+      "before": "1794802165436",
+      "restoreBefore": "1794802166309",
+      "restoreAfter": "1794802168856",
+      "after": "1794802168856",
+      "at": "2026-11-16T04:09:34.167Z"
+    },
+    "globalProfileAndCoordinationExcludedFromArtifact": true
+  },
+  "runtimeCustody": {
+    "rootAbsence": "ROOT_IMMEDIATE_AFTER_EXIT_ABSENCE_PASS",
+    "rootCheckedAt": "2026-11-16T04:09:35.507Z",
+    "independentAbsence": "INDEPENDENT_EXACT_ABSENCE_PASS",
+    "independentCheckedAt": "2026-11-16T04:11:03.704407+00:00",
+    "recordedActors": 13,
+    "ownedContainers": 2,
+    "cleanupErrors": [],
+    "sharedHost": true,
+    "nodeLimits": "HEAP_ONLY_NOT_RSS_OR_AGGREGATE"
+  },
+  "sourceControls": {
+    "packetScripts": 31,
+    "packetTests": 119,
+    "sourceMaintenanceLogicalProducerTests": 49,
+    "uncertainCommitAndInvalidation": "SOURCE_RECORDING_PASS_NOT_NATIVE_FAULT_CAMPAIGN"
+  },
+  "limits": [
+    "No desired-N/pool-v2 qualification",
+    "No Compose service restart/HA/cross-host qualification",
+    "No final coherent candidate/comprehensive/browser/enabled-corpus acceptance",
+    "No complete platform backup/deletion/recommission claim",
+    "Selected BG-now bucket mean/last is the clinical output oracle; remaining clinical output properties unassessed",
+    "Natural future-due is a separate criterion",
+    "Initial independent bare-bind EADDRINUSE had no absence receipt; later exact check passed before original deadline; earlier socket state not retained"
+  ],
+  "retainedEvidence": {
+    "results.json": "fbd2bf91477cfea6111cb3a1b9f15ff0dc36515e15aed927c56c2c507552cab1",
+    "source-seals.json": "2b423624fa1482787f2626b12a0825bbf489d1ac57dfb0b75f5778b5308d21ad",
+    "runtime-plan.json": "e5ad438d114215a8f613560feb739a52850036beaa2cafb30a2a9a3b57c2e52d",
+    "SOURCESTOP.json": "d9a5d3fa59ddd4ad8aab12ef8395041a2c13c233b31949ab977ce06d123149f2",
+    "root-independent-absence.json": "626a03c22ee338f3ee7cf47a54ebc6cbb26a49fcb1858d09e41c520f305a0794",
+    "app-independent-absence.json": "7c6e15a60d0ddc96b2474a9e5d811254730db97422d579eb2d30dc1c40d6a82d",
+    "independent-port-observation.json": "27e701241781924638e54d6856402bd05affdb8cdc2a3130a6dfd51e1419a487",
+    "capture/observations.json": "f947472badbd435d968443f7d46647b286976dab6472159b6c7cf950d756d214",
+    "focused-packet-controls.json": "1b255f99b32f81412386965e6eac5057a5d120a28c0b17fb5f0238d035424287",
+    "current-source-fixture-controls.log": "518e86b71d418e83d81b19865276c450ae8e0c8a8788441431c3c987fdcb0cd8"
+  }
+}

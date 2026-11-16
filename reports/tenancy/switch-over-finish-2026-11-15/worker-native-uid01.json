@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "kind": "actual-native-root-import-to-uid1000-reader-control",
+  "capturedAtUTC": "2026-11-16T04:10:27.761085+00:00",
+  "sourceCommit": "16133d9d33993b08fd81a318e8d30be123051ae7",
+  "image": "sha256:9e87977b867847e186d066f531ef783b006d582a985c341c269446088d90f2c4",
+  "containersCreated": 1,
+  "permissionCriterion": "PASS",
+  "unmodifiedTestsRun": 2,
+  "unmodifiedTestsSkipped": 0,
+  "negativeControl": {
+    "event": "OMITTED_FCHOWN_RED",
+    "manifestUid": 0,
+    "mode": "0600",
+    "reader": {
+      "canRead": false,
+      "errno": 13,
+      "gid": 1000,
+      "pid": 8,
+      "startTicks": "436203197",
+      "uid": 1000
+    },
+    "status": "EXPECTED_EACCES"
+  },
+  "restoredControl": {
+    "event": "RESTORED_UID_READ",
+    "manifestUid": 1000,
+    "mode": "0600",
+    "reader": {
+      "canRead": true,
+      "gid": 1000,
+      "pid": 9,
+      "sha256": "f3115c5e62bf6ad3de0ef8923712852a57c2384fc2f751fe765c7befe784c4ab",
+      "startTicks": "436203198",
+      "uid": 1000
+    },
+    "status": "PASS"
+  },
+  "originalExecutionResult": "FAILED_PARTIAL",
+  "originalCleanupVerifier": {
+    "status": "UNCONFIRMED_RETAINED",
+    "artifact": "cleanup.json",
+    "mechanism": "case-sensitive generic docker inspect NotFound classification rejected lowercase error: no such object",
+    "changedAfterCapture": false
+  },
+  "originalTiming": {
+    "startedAt": 1794801768.8709624,
+    "workBy": 1794801798.8709624,
+    "cleanupBy": 1794801808.8709624,
+    "exactCIDNotFoundObservedAt": 1794801771.5014474,
+    "exactCIDAbsenceBeforeCutoff": true,
+    "completeHostProcessGroupAbsenceByOriginalCutoff": "UNMEASURED"
+  },
+  "reconciliation": {
+    "status": "EXACT_CURRENT_ABSENCE_AND_OWNED_MARKER_RELEASE_PASS",
+    "freshIndependentReadbackAt": 1794801951.492214,
+    "freshReadbackBeforeOriginalCutoff": false,
+    "leaseReleasedAfterFreshExactAbsence": true,
+    "currentWholeGroupAbsence": "PASS",
+    "containerSpecificAbsenceArtifact": "container-specific-absence.json",
+    "currentGroupsAndLeaseArtifact": "final-groups-and-lease.json",
+    "originalFailurePreserved": true
+  },
+  "qualificationBoundary": "Closes actual native root\u2192UID1000 reader unit criterion. Does not qualify the cleanup verifier itself, original full-group deadline, application/capacity acceptance or paid remote batch execution.",
+  "capacityAcceptance": "NOT_GRANTED",
+  "retainedEvidenceId": "uid-reader-control-20261115-01",
+  "originalSummarySha256": "57358764bb01cd12a526904844b53d2ab760ae3dcef34eac552b3d3d8d588353"
+}
