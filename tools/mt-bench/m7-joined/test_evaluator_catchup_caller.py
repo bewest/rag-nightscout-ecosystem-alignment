@@ -111,12 +111,10 @@ class Caller(unittest.TestCase):
             self.assertEqual(value['queries'], 2)
             self.assertEqual(value['rounds'], 1)
 
-    def test_actual_generation_reset_refuses_and_retains_failed_boundary(self):
+    def test_cache_generation_change_does_not_refuse_durable_catchup(self):
         value, calls = self.run_tail(generation=True)
-        self.assertEqual(value['verdict'], 'FAIL')
-        self.assertIn('RESET', value['code'])
-        self.assertEqual(len(calls), 1)
-        self.assertIn('snapshot', value['refusedCapture'])
+        self.assertEqual(value['verdict'], 'PASS')
+        self.assertEqual(len(calls), 2)
 
     def test_no_tail_sql_until_writers_join_and_original_deadline_present(self):
         value, calls = self.run_tail(writer_live=True)

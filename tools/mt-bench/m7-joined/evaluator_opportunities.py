@@ -1,10 +1,10 @@
-"""NEXT-batch pure assessment. Existing Observer/assess and artifacts are unchanged.
+"""Source-bound accepted-input and durable due-completion assessment.
 
 Durable snapshots come from completed-oracle.progressSnapshot over the existing
 trusted SQL query, not public-driver SQL or a completed inspection checkpoint.
 Collect one snapshot before each of the three existing progress rounds. Retain
 the exact reader/source binding and original rows/commands in private evidence.
-The NEXT adapter selects this observer only through its explicit contract flag.
+The adapter selects this observer through its explicit idle/load contract flag.
 """
 import evaluator_progress as p
 import evaluator_idle as idle
@@ -35,7 +35,9 @@ def durable_rows(captures,ids,binding):
         p.need(isinstance(rows,list) and len(rows)==len(ids) and {r.get('tenant') for r in rows}==set(ids),'M7_OPPORTUNITY_COVERAGE')
         by_tenant={}
         for row in rows:
-            p.need(set(row)=={'tenant','writerClock','observed','completed','outputRevision','restoreGeneration'},'M7_OPPORTUNITY_CAPTURE')
+            p.need(set(row)-{'dueAt','completedAt'}=={'tenant','writerClock','observed','completed','outputRevision','restoreGeneration'},'M7_OPPORTUNITY_CAPTURE')
+            for key in ('dueAt','completedAt'):
+                if key in row:p.need(row[key] is None or p.integer(row[key]),'M7_OPPORTUNITY_TIME')
             revision(row['writerClock']);revision(row['outputRevision'])
             p.need(row['outputRevision']!='0' or row['completed']=={} and row['restoreGeneration'] is None,'M7_OPPORTUNITY_REVISION')
             if row['restoreGeneration'] is not None:p.need(revision(row['restoreGeneration'])>0,'M7_OPPORTUNITY_REVISION')
@@ -51,6 +53,7 @@ def durable_rows(captures,ids,binding):
             a,b=previous[tenant],current[tenant]
             p.need(a['restoreGeneration']==b['restoreGeneration'] or a['outputRevision']=='0' and a['restoreGeneration'] is None and revision(b['outputRevision'])>0,'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             p.need(revision(b['writerClock'])>=revision(a['writerClock']) and revision(b['outputRevision'])>=revision(a['outputRevision']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            if a.get('completedAt') is not None and 'completedAt' in b:p.need(b['completedAt'] is not None and b['completedAt']>=a['completedAt'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             for field in ('observed','completed'):
                 p.need(all(k in b[field] and revision(b[field][k])>=revision(v) for k,v in a[field].items()),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
     return decoded
@@ -58,7 +61,7 @@ def durable_rows(captures,ids,binding):
 
 def all_roster(rounds,ids,phase):
     # Re-decode to enforce every row's readiness/admission/health independently of
-    # eligibility. Then run the legacy stability/foreign/reset/hidden-error checks.
+    # eligibility. Then run process/counter/foreign/reset/hidden-error checks.
     p.need(bool(rounds),'M7_EVALUATOR_PROGRESS_ROUNDS')
     decoded,actual_ids=p.decode_rounds(p.pack({'rounds':rounds}),len(ids),list(rounds[0]['instances']))
     p.need(actual_ids==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
@@ -72,19 +75,26 @@ def all_roster(rounds,ids,phase):
         if str(error)!='M7_EVALUATOR_PROGRESS_NOT_OBSERVED':raise
 
 
-def timer_outcome(rounds,tenant):
-    # Reuse the existing clock/job/opportunity proof. No cross-host subtraction,
-    # no new due interpretation, and no acquisition load rebranded as quiet time.
-    selected=[{**r,'owners':{tenant:r['owners'][tenant]},
-               'allRows':{s:{tenant:rows[tenant]} for s,rows in r['allRows'].items()}} for r in rounds]
+def timer_outcome(rounds,tenant,captures=None):
+    """A due checkpoint is discharged by a later atomic clinical completion.
+
+    Cache generation, callback kind and output content revision are irrelevant.
+    A subsequent deadline remains owed; it need not disappear altogether.
+    """
     try:
-        value=idle.assess(selected,[tenant])
-        return 'COMPLETED' if value['classifications']['TIME_EXERCISED'] else 'NO_SAMPLED_TIMER_OPPORTUNITY'
-    except (p.Refused,KeyError) as error:
-        if str(error)=='M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED':
-            end=max(v['end']['wallUs'] for v in rounds[-1]['readWindows'].values())/1000
-            if any(r['owners'][tenant]['dueAt'] is not None and r['owners'][tenant]['dueAt']<=end for r in rounds[:2]):return 'PENDING'
-        return 'UNMEASURED'
+        idle.clock_windows(rounds)
+        end=max(v['end']['wallUs'] for v in rounds[-1]['readWindows'].values())/1000
+        inspected=[r['owners'][tenant] for r in rounds]
+        if captures is None or any(not {'dueAt','completedAt'}<=set(c[tenant]) for c in captures):
+            return 'UNMEASURED' if any(r['dueAt'] is not None and r['dueAt']<=end for r in inspected) else 'NO_SAMPLED_TIMER_OPPORTUNITY'
+        rows=[c[tenant] for c in captures];last=rows[-1]
+        opportunities=[r for r in rows[:2] if r['dueAt'] is not None and r['dueAt']<=end]
+        if not opportunities:
+            return 'UNMEASURED' if last['dueAt'] is not None and last['dueAt']<=end else 'NO_SAMPLED_TIMER_OPPORTUNITY'
+        return 'COMPLETED' if revision(last['outputRevision'])>0 and all(last['completedAt'] is not None and last['completedAt']>=r['dueAt'] and
+            (r['completedAt'] is None or last['completedAt']>r['completedAt']) and
+            (last['dueAt'] is None or last['dueAt']>r['dueAt']) for r in opportunities) else 'PENDING'
+    except (p.Refused,KeyError):return 'UNMEASURED'
 
 
 def assess(rounds,ids,phase,*,durable=None,binding=None):
@@ -106,7 +116,7 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
             if not no_clock_advance or 'clock' not in first['completed'] or revision(first['completed']['clock'])<revision(first['writerClock']):targets['clock']=last['writerClock']
             for key in targets:source_tenants[key].add(tenant)
             input_status=('COMPLETED' if all(key in last['completed'] and revision(last['completed'][key])>=revision(value) for key,value in targets.items()) else 'PENDING') if targets else 'NO_KNOWN_INPUT_OPPORTUNITY'
-        timer=timer_outcome(rounds,tenant)
+        timer=timer_outcome(rounds,tenant,captures)
         known=input_status in ('COMPLETED','PENDING') or timer in ('COMPLETED','PENDING')
         pending=input_status=='PENDING' or timer=='PENDING'
         no_known=input_status=='NO_KNOWN_INPUT_OPPORTUNITY' and timer=='NO_SAMPLED_TIMER_OPPORTUNITY'
@@ -116,7 +126,7 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
                           'noOrdinaryClockAdvanceProven':no_clock_advance if captures else None}
     counts={key:sum(v['classification']==key for v in outcomes.values()) for key in ('KNOWN_COMPLETED','KNOWN_PENDING','NO_KNOWN_OPPORTUNITY','UNMEASURED')}
     eligible=counts['KNOWN_COMPLETED']+counts['KNOWN_PENDING']
-    return {'kind':'evaluator-opportunity-assessment-v1','phase':phase,
+    return {'kind':'evaluator-opportunity-assessment-v1','assessmentVersion':2,'phase':phase,
             'verdict':'PASS' if eligible and not counts['KNOWN_PENDING'] and not counts['UNMEASURED'] else 'UNMEASURED',
             'allRosterHealth':'PASS','tenants':len(ids),'eligibleTenants':eligible,'classifications':counts,'byTenant':outcomes,
             'inputSourceTenantCoverage':{k:len(v) for k,v in source_tenants.items()},
@@ -152,10 +162,10 @@ def collection_cost(value,windows,tenants):
 
 
 class Observer(p.Observer):
-    """Explicit load-only caller. Three SQL-before-inspection captures, one clock."""
+    """Explicit idle/load caller. Three SQL-before-inspection captures, one clock."""
     def __init__(self,*args,durable_fetch,binding,preparation_cost,source_sha256,query_sha256):
         super().__init__(*args)
-        p.need(self.phase=='load','M7_OPPORTUNITY_PHASE')
+        p.need(self.phase in ('idle','load'),'M7_OPPORTUNITY_PHASE')
         self.durable_fetch,self.binding=durable_fetch,binding
         self.preparation_cost=preparation_cost;self.durable=[];self.windows=[];self.costs=[]
         self.source_sha256,self.query_sha256=source_sha256,query_sha256
@@ -217,6 +227,6 @@ def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None
         p.need(isinstance(value.get(key),str) and re.fullmatch('[a-f0-9]{64}',value[key]) and (expected is None or value[key]==expected),'M7_OPPORTUNITY_BINDING','FAIL')
     rounds,ids=idle._decode(value,tenants,services);capture_windows(value.get('captureWindows'),3)
     collection_cost(value.get('durableCollectorCost'),value['captureWindows'],tenants)
-    result=assess(rounds,sorted(ids),'load',durable=value.get('durable'),binding=binding)
+    result=assess(rounds,sorted(ids),value.get('phase'),durable=value.get('durable'),binding=binding)
     p.need(all(value.get(k)==v for k,v in result.items() if k not in ('kind','durableCollectorCost')),'M7_OPPORTUNITY_ASSESSMENT')
     return result

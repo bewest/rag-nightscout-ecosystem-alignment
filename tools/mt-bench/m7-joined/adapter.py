@@ -1201,7 +1201,7 @@ def enabled_idle(d,m,out,seconds):
                 raise
             try:phase_failure.afterSnapshotFailure=detail
             except Exception:pass
-    progress.complete_after_cost_window()
+    if isinstance(progress,evaluator_idle.Observer):progress.complete_after_cost_window()
     return progress
 
 
@@ -1334,7 +1334,7 @@ def observe_progress(d,m,out,phase):
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
     if 'evaluatorOpportunities' in m:
         opportunity_contract(m)
-        if phase=='load':
+        if phase in ('idle','load'):
             collector=opportunity_collector(d,m,ids)
             return evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256)
     return evaluator_idle.Observer(*args,tail_fetch=lambda *args:progress_fetch(d,*args)) if phase=='idle' else evaluator_progress.Observer(*args)
@@ -1730,7 +1730,7 @@ def parser():
     prep.add_argument('--pgstream-topology',choices=(stream_topology.COLOCATED,stream_topology.EXTERNAL),default=stream_topology.COLOCATED)
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
     prep.add_argument('--evaluator-catchup',choices=('fixed-target-v1',),help='Read-only post-write drain within existing work deadline; discovery without restart only')
-    prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='NEXT explicit trusted SQL opportunity observer; unselected pgstream v2 discovery load only')
+    prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='NEXT explicit trusted SQL opportunity observer; unselected pgstream v2 discovery idle/load')
     prep.add_argument('--fixture-project',help='Owner-selected new Compose project; existing containers, volumes or networks refuse')
     for knob in ('warmup-seconds','idle-seconds','load-seconds','accel','hot-factor','sampler-interval'):
         prep.add_argument('--'+knob,type=int,help='Explicit pgstream-sample workload knob; retained in manifest')

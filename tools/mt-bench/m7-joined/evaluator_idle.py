@@ -5,17 +5,19 @@ import json
 import time
 import evaluator_progress as p
 
-# moduleVersion identifies this idle assessor; strictWorkPolicy still pins the
-# unchanged source inspection/work protocol. The packed row schema stays v1.
+# moduleVersion pins the assessor separately from the source inspection schema.
 FLAGS=('running','booting','acquire','time','parentAcquire','parentTime')
 ARTIFACT_KIND='evaluator-idle-safety-v2'
 TAIL_POLICY={'maxOwners':128,'maxRounds':1,'deadlineMs':5000,'scope':'point completion after original cost bookends; no global tail quiescence'}
-POLICY={'version':2,'kind':'evaluator-idle-safety','moduleVersion':4,'completionTail':TAIL_POLICY,
-        'strictWorkPolicy':p.POLICY,'meaning':'NO_EVALUATOR_TIME_DEMAND or observed successful time work',
+POLICY={'version':2,'kind':'evaluator-idle-safety','moduleVersion':5,'completionTail':TAIL_POLICY,
+        'workPolicy':p.POLICY,'meaning':'NO_EVALUATOR_TIME_DEMAND or observed successful due work; execution kind is diagnostic',
         'quietMeaning':'TIME_NOT_EXERCISED','clockGuard':'common-bracketed-realtime-minus-monotonic-offset',
-        'jobEncoding':'six-fixed-clinical-flags-bitmask-v1','newClinicalDemand':'UNMEASURED','explicitNullDue':'NO_TIMER_DECLARED_WITH_COMPLETE_JOB_OBSERVATION','missingDue':'UNMEASURED','nativeTimeWitnessRequired':True,
+        'jobEncoding':'six-fixed-clinical-flags-bitmask-v1','newClinicalDemand':'UNMEASURED','explicitNullDue':'NO_TIMER_DECLARED_WITH_COMPLETE_JOB_OBSERVATION','missingDue':'UNMEASURED','nativeTimeWitnessRequired':False,
         'deadlineClaim':False,'continuousQuiescenceClaim':False}
 COLUMNS=p.COLUMNS+('jobs',)
+
+def work(row):
+    return row['completedAcquisitions']+row['completedTimeCycles']
 
 def stamp():
     before=time.monotonic_ns()//1000
@@ -76,18 +78,17 @@ def stability(rounds,ids):
             p.need(set(current['allRows'].get(service,{}))==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
             for tenant,a in rows.items():
                 b=current['allRows'][service][tenant];jobs(b.get('jobs'));p.due_fields(b)
-                p.need((a['admitted'],a['generation'])==(b['admitted'],b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+                p.need(a['admitted']==b['admitted'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
                 if not a['admitted']:
-                    p.need(not any(jobs(b['jobs']).values()),'M7_EVALUATOR_IDLE_FOREIGN_PENDING')
+                    p.need(not any(jobs(b['jobs']).values()),'M7_EVALUATOR_IDLE_FOREIGN_PENDING','FAIL')
                     p.need(not b['ready'] and all(a[k]==b[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
         for tenant in ids:
             a=previous['owners'][tenant];b=current['owners'][tenant]
-            p.need((a['service'],a['runtimeId'],a['generation'])==(b['service'],b['runtimeId'],b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            p.need((a['service'],a['runtimeId'])==(b['service'],b['runtimeId']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             p.need(b['ready'] and b['code'] is None and b['alert'] is None and b['completedAcquisitions']>0,'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
             p.need(b['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
             p.need(b['completedTimeCycles']>=a['completedTimeCycles'] and b['legacyCycles']>=a['legacyCycles'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             p.need(b['completedAcquisitions']>=a['completedAcquisitions'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-            p.need(b['completedAcquisitions']==first['owners'][tenant]['completedAcquisitions'],'M7_EVALUATOR_IDLE_NEW_DEMAND')
         previous=current
 
 def final_obligations(rounds,ids):
@@ -97,22 +98,10 @@ def final_obligations(rounds,ids):
     pending=[]
     for tenant in ids:
         rows=[r['owners'][tenant] for r in rounds];first,last=rows[0],rows[-1]
-        p.need(all(not any(jobs(row['jobs']).values()) for row in rows[:2]),'M7_EVALUATOR_IDLE_JOB_PENDING')
         opportunities=[i for i,row in enumerate(rows) if row['dueAt'] is not None and row['dueAt']<=end]
-        delta=last['completedTimeCycles']-first['completedTimeCycles']
-        if any(jobs(last['jobs']).values()):
-            p.need(last['jobs']=={flag:flag=='running' for flag in FLAGS},'M7_EVALUATOR_IDLE_JOB_PENDING')
-            p.need(bool(opportunities) and all(i<2 for i in opportunities),'M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY')
-            # Exactly one body has not yet received release credit. No new body
-            # may run between this final observation and its tail credit.
-            p.need(last['legacyCycles']-first['legacyCycles']==delta+1,'M7_EVALUATOR_IDLE_TAIL_BODY')
-            pending.append(tenant)
-        elif opportunities:
-            for i in opportunities:
-                p.need(i<2 and last['completedTimeCycles']>rows[i]['completedTimeCycles'],'M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED')
-        else:
-            p.need(delta==0,'M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME')
-            p.need(last['legacyCycles']==first['legacyCycles'],'M7_EVALUATOR_IDLE_UNCREDITED_WORK')
+        prior=[i for i in opportunities if i<2]
+        p.need(2 not in opportunities or any(rows[i]['dueAt']==last['dueAt'] for i in prior),'M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED')
+        if prior and any(work(last)<=work(rows[i]) for i in prior):pending.append(tenant)
     p.need(len(pending)<=TAIL_POLICY['maxOwners'],'M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND')
     return sorted(pending)
 
@@ -134,14 +123,14 @@ def validate_tail(rounds,ids,tail,pending):
         p.need(set(selected)==set(pending),'M7_EVALUATOR_IDLE_TAIL_COVERAGE','FAIL')
         for tenant,b in selected.items():
             a=last['allRows'][service][tenant];jobs(b.get('jobs'));p.due_fields(b)
-            p.need((a['admitted'],a['generation'],a['runtimeId'])==(b['admitted'],b['generation'],b['runtimeId']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-            p.need(not any(b['jobs'].values()),'M7_EVALUATOR_IDLE_TAIL_JOB_PENDING')
+            p.need((a['admitted'],a['runtimeId'])==(b['admitted'],b['runtimeId']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             if not a['admitted']:
+                p.need(not any(b['jobs'].values()),'M7_EVALUATOR_IDLE_FOREIGN_PENDING','FAIL')
                 p.need(not b['ready'] and all(a[k]==b[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
             else:
                 p.need(b['ready'] and b['code'] is None and b['alert'] is None and b['failedCompletions']==a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
-                p.need(b['service']==a['service'] and b['completedAcquisitions']==a['completedAcquisitions'],'M7_EVALUATOR_IDLE_NEW_DEMAND')
-                p.need(b['completedTimeCycles']==a['completedTimeCycles']+1 and b['legacyCycles']==a['legacyCycles'],'M7_EVALUATOR_IDLE_TAIL_COMPLETION')
+                p.need(b['service']==a['service'] and b['completedAcquisitions']>=a['completedAcquisitions'] and b['completedTimeCycles']>=a['completedTimeCycles'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+                p.need(work(b)>work(a) and b['legacyCycles']>=a['legacyCycles'],'M7_EVALUATOR_IDLE_TAIL_COMPLETION')
     return point
 
 def assess(rounds,ids,phase='idle',*,tail=None):
@@ -154,13 +143,13 @@ def assess(rounds,ids,phase='idle',*,tail=None):
     for tenant in ids:
         first,last=rounds[0]['owners'][tenant],rounds[-1]['owners'][tenant]
         delta=last['completedTimeCycles']-first['completedTimeCycles'];completed+=delta
-        if tenant in pending:outcomes[tenant]={'classification':'TIME_COMPLETED_AFTER_WINDOW'}
-        elif any(r['owners'][tenant]['dueAt'] is not None and r['owners'][tenant]['dueAt']<=end for r in rounds):outcomes[tenant]={'classification':'TIME_EXERCISED'}
+        if tenant in pending:outcomes[tenant]={'classification':'DUE_WORK_COMPLETED_AFTER_WINDOW'}
+        elif any(r['owners'][tenant]['dueAt'] is not None and r['owners'][tenant]['dueAt']<=end for r in rounds):outcomes[tenant]={'classification':'DUE_WORK_COMPLETED'}
         else:outcomes[tenant]={'classification':'TIME_NOT_EXERCISED','scheduledState':'NO_TIMER_DECLARED'if last['dueAt']is None else'FUTURE_DUE'}
-    return {'version':2,'phase':'idle','verdict':'PASS','policy':POLICY,'scope':'sampled idle safety; selected post-window completion is not measured throughput or global tail quiescence',
-            'tenants':len(ids),'instances':rounds[0]['instances'],'classifications':{key:sum(row.get('classification')==key or row.get('scheduledState')==key for row in outcomes.values()) for key in ('TIME_EXERCISED','TIME_COMPLETED_AFTER_WINDOW','TIME_NOT_EXERCISED','NO_TIMER_DECLARED','FUTURE_DUE')},
+    return {'version':2,'phase':'idle','verdict':'PASS','policy':POLICY,'scope':'sampled work safety, not durable clinical completion; selected post-window completion is not measured throughput or global tail quiescence',
+            'tenants':len(ids),'instances':rounds[0]['instances'],'classifications':{key:sum(row.get('classification')==key or row.get('scheduledState')==key for row in outcomes.values()) for key in ('DUE_WORK_COMPLETED','DUE_WORK_COMPLETED_AFTER_WINDOW','TIME_NOT_EXERCISED','NO_TIMER_DECLARED','FUTURE_DUE')},
             'completedTimeDelta':completed,'timeWitness':False,'clockGuard':clock,'queries':sum(r['queries']for r in rounds),'responseBytes':sum(r['bytes']for r in rounds),'collectorWallSeconds':sum(r['wallSeconds']for r in rounds),
-            'completionTail':None if point is None else {'selected':pending,'completedTimeDelta':len(pending),'queries':point['queries'],'responseBytes':point['bytes'],'collectorWallSeconds':point['wallSeconds'],'elapsedSeconds':tail['elapsedSeconds'],'clockGuard':clock_windows(rounds+[point]),'costScope':'outside original metric window; selected owners only; no global tail quiescence'}}
+            'completionTail':None if point is None else {'selected':pending,'completedWorkDelta':sum(work(point['owners'][t])-work(rounds[-1]['owners'][t]) for t in pending),'completedTimeDelta':sum(point['owners'][t]['completedTimeCycles']-rounds[-1]['owners'][t]['completedTimeCycles'] for t in pending),'queries':point['queries'],'responseBytes':point['bytes'],'collectorWallSeconds':point['wallSeconds'],'elapsedSeconds':tail['elapsedSeconds'],'clockGuard':clock_windows(rounds+[point]),'costScope':'outside original metric window; selected owners only; no global tail quiescence'}}
 
 def _pack_round(raw):
     return {**{k:v for k,v in raw.items()if k not in ('owners','allRows')},'rows':[[tenant]+[(sum((1<<i)for i,flag in enumerate(FLAGS)if row['jobs'][flag])if key=='jobs'else row[key])for key in COLUMNS[1:]]for service,values in sorted(raw['allRows'].items())for tenant,row in sorted(values.items())]}

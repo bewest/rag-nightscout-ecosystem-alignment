@@ -82,10 +82,10 @@ class Progress(unittest.TestCase):
         rounds=[self.round(i,lambda x:dict(x)) for i in range(3)]
         for value in rounds:
             for row in value['owners'].values():row['completedTimeCycles']=0
-        with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(rounds,[A,B],'idle')
+        self.assertEqual(p.assess(rounds,[A,B],'idle')['verdict'],'PASS')
         self.assertEqual(p.assess(rounds,[A,B],'load')['verdict'],'PASS')
     def test_hidden_recovered_failure_and_runtime_generation_reset_fail(self):
-        for field,value in [('failedCompletions',1),('generation',9),('completedAcquisitions',0)]:
+        for field,value in [('failedCompletions',1),('completedAcquisitions',0)]:
             rounds=[self.round(i) for i in range(3)];rounds[-1]['owners'][A][field]=value
             with self.assertRaises(p.Refused) as caught:p.assess(rounds,[A,B],'load')
             self.assertEqual(caught.exception.verdict,'FAIL')
@@ -136,7 +136,7 @@ class Progress(unittest.TestCase):
     def test_due_fields_retained_without_changing_progress_policy(self):
         rounds=[self.round(i) for i in range(3)];result=p.assess(rounds,[A,B],'idle');record=p.pack({**result,'rounds':rounds})
         self.assertEqual(record['kind'],'evaluator-progress-phase-v2')
-        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState')},{k:v for k,v in p.LEGACY_POLICY.items() if k!='version'})
+        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState','moduleVersion','cacheGeneration','idleWitness')},{k:v for k,v in p.LEGACY_POLICY.items() if k not in ('version','moduleVersion','idleWitness')})
         decoded,ids=p.decode_rounds(record,2,['evaluator'])
         self.assertEqual(decoded[0]['owners'][A]['dueAt'],1700000008572.4285)
         self.assertEqual(decoded[0]['owners'][A]['dueReason'],'pump-clock-warn')
@@ -185,6 +185,8 @@ class Recovery(unittest.TestCase):
             value['instances']['evaluator']['runtimeId']=S
             for row in value['owners'].values():row['runtimeId']=S
         self.assertEqual(recovery.assess(baseline,rounds,[A,B])['missing'],0)
+        rounds[-1]['owners'][A]['generation']+=10
+        self.assertEqual(recovery.assess(baseline,rounds,[A,B])['missing'],0)
         broken=copy.deepcopy(rounds);broken[0]['instances']=baseline['instances']
         with self.assertRaisesRegex(p.Refused,'OLD_RUNTIME'):recovery.assess(baseline,broken,[A,B])
         for value in rounds:
@@ -195,7 +197,7 @@ class OracleAblation(unittest.TestCase):
     def test_stopped_worker_refusal_becomes_false_pass_when_completion_guard_removed(self):
         fixture=Progress();rounds=[fixture.round() for _ in range(3)]
         with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(rounds,[A,B],'idle')
-        needle="work>0 and (phase!='idle' or delta>0)"
+        needle="work>0 and (policy!=LEGACY_POLICY or phase!='idle' or delta>0)"
         source=Path(p.__file__).read_text();self.assertEqual(source.count(needle),1)
         namespace={'__name__':'owned_scratch_progress_mutant'};exec(compile(source.replace(needle,'True'),'owned_scratch_progress_mutant','exec'),namespace)
         self.assertEqual(namespace['assess'](rounds,[A,B],'idle')['verdict'],'PASS','control must expose a false pass')

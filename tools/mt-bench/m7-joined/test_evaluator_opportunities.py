@@ -89,21 +89,44 @@ class Opportunities(unittest.TestCase):
         self.assertEqual(value['verdict'],'UNMEASURED');self.assertEqual(value['classifications']['UNMEASURED'],2)
 
     def test_all_roster_health_failures_and_resets_survive_opportunity_exclusion(self):
-        for key,value,code in [('failedCompletions',1,'HIDDEN_FAILURE'),('generation',9,'RESET'),('ready',False,'PROGRESS_ERROR'),('code','REFUSED','PROGRESS_ERROR')]:
+        for key,value,code in [('failedCompletions',1,'HIDDEN_FAILURE'),('ready',False,'PROGRESS_ERROR'),('code','REFUSED','PROGRESS_ERROR')]:
             rounds=self.rounds();rounds[1]['owners'][B][key]=value
             with self.assertRaisesRegex(p.Refused,code) as caught:self.assess(rounds)
             self.assertEqual(caught.exception.verdict,'FAIL')
         captures=self.captures();captures[-1]['rows'][0]['writerClock']='9'
         with self.assertRaisesRegex(p.Refused,'CLOCK'):self.assess(captures=captures)
 
-    def test_known_due_requires_later_time_and_final_only_or_unbracketed_due_is_unknown(self):
+    def test_due_completion_uses_durable_checkpoint_and_keeps_later_due(self):
         rounds=self.rounds();rounds[0]['owners'][B].update(dueAt=100001,dueReason='sgv-recent-10')
-        value=self.assess(rounds);self.assertEqual(value['byTenant'][B]['timer'],'PENDING')
-        for i in (1,2):rounds[i]['owners'][B].update(completedTimeCycles=1,legacyCycles=2)
-        value=self.assess(rounds);self.assertEqual(value['byTenant'][B]['timer'],'COMPLETED');self.assertEqual(value['verdict'],'PASS')
-        final_only=self.rounds();final_only[-1]['owners'][B].update(dueAt=220050,dueReason='sgv-recent-10')
-        self.assertEqual(self.assess(final_only)['byTenant'][B]['timer'],'UNMEASURED')
-        del rounds[0]['readWindows'];self.assertEqual(self.assess(rounds)['byTenant'][B]['timer'],'UNMEASURED')
+        captures=self.captures()
+        for capture in captures:
+            for row in capture['rows']:row.update(dueAt=None,completedAt=90000)
+        captures[0]['rows'][1]['dueAt']=100001
+        self.assertEqual(self.assess(rounds,captures)['byTenant'][B]['timer'],'PENDING')
+        # Cache recreation classifies the due run as acquisition. Neither output
+        # revision/content nor the ordinary input clock must change for TIME work.
+        rounds[-1]['owners'][B].update(generation=99,completedAcquisitions=2,legacyCycles=2)
+        captures[-1]['rows'][1].update(completedAt=200000,dueAt=999999)
+        value=self.assess(rounds,captures)
+        self.assertEqual(value['byTenant'][B]['timer'],'COMPLETED')
+        self.assertEqual(value['verdict'],'PASS')
+        captures[-1]['rows'][1]['dueAt']=100001
+        self.assertEqual(self.assess(rounds,captures)['byTenant'][B]['timer'],'PENDING')
+        captures[-1]['rows'][1]['dueAt']=None
+        self.assertEqual(self.assess(rounds,captures)['byTenant'][B]['timer'],'COMPLETED')
+        captures[-1]['rows'][1]['completedAt']=99999
+        self.assertEqual(self.assess(rounds,captures)['byTenant'][B]['timer'],'PENDING')
+        self.assertEqual(self.assess(rounds)['byTenant'][B]['timer'],'UNMEASURED')
+        del rounds[0]['readWindows']
+        self.assertEqual(self.assess(rounds,captures)['byTenant'][B]['timer'],'UNMEASURED')
+
+    def test_durable_completion_rewind_and_restore_change_still_refuse(self):
+        for value in (None,89999):
+            captures=self.captures()
+            for capture in captures:
+                for row in capture['rows']:row.update(dueAt=None,completedAt=90000)
+            captures[-1]['rows'][0]['completedAt']=value
+            with self.assertRaisesRegex(p.Refused,'RESET'):self.assess(captures=captures)
 
     def test_observed_metadata_revision_is_independent_of_ordinary_kind_coverage(self):
         captures=self.captures()

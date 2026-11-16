@@ -39,14 +39,18 @@ class Caller(unittest.TestCase):
                              'identity':'7'*64,'digest':'8'*64,'revision':str(revision),'generation':None,'enabled':True,'arrayBounds':True,'bodyMetadataAbsent':True}}
         return d,out,m,row
 
-    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False):
+    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False,phase="load",timing=False):
         d,out,m,row=self.fixture();sql_calls=[];rpc_calls=[]
+        m['cadence']['idleSeconds']=0
+        due=int(time.time()*1000)-1000
         def sql(directory,query,database,**kwargs):
             step=len(sql_calls);sql_calls.append((query,database,kwargs))
             self.assertEqual(directory,d);self.assertEqual(database,'synthetic_test');self.assertIn('SET LOCAL statement_timeout=',query)
             self.assertNotIn('jsonb_agg(e.doc)',query,'metadata collection must not read marker history')
             self.assertNotIn("THEN (c.projection->0->'output')",query,'metadata collection must not transport full clinical payload')
             rows=[row(A,step),row(B,step)]
+            if timing:
+                for r in rows:r['typed'].update(dueAt=str(due if step<2 else due+100000),completedAt=str(due-100 if step<2 else due+500))
             if initial:
                 for r in rows:
                     r['state'].update(observed={'bootstrap':'0'},completed={},output=None)
@@ -68,7 +72,7 @@ class Caller(unittest.TestCase):
         caught=None;observer=None
         with mock.patch.object(a,'progress_services',return_value=['evaluator']),mock.patch.object(a,'psql',side_effect=sql),mock.patch.object(a,'progress_fetch',side_effect=rpc):
             try:
-                observer=a.observe_progress(d,m,out,'load');observer.__enter__();observer.thread.join(timeout=5);observer.__exit__(None,None,None)
+                observer=a.observe_progress(d,m,out,phase);observer.__enter__();observer.thread.join(timeout=5);observer.__exit__(None,None,None)
             except Exception as error:caught=error
         return d,out,m,observer,caught,sql_calls,rpc_calls
 
@@ -92,6 +96,18 @@ class Caller(unittest.TestCase):
         with self.assertRaisesRegex(p.Refused,'ORDER'):o.verify(bad,2,['evaluator'],BINDING)
         with self.assertRaisesRegex(p.Refused,'BINDING'):o.verify(proof,2,['evaluator'],BINDING,source_sha256='0'*64)
         self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
+
+    def test_actual_idle_caller_reuses_typed_due_completion_without_an_extra_tail(self):
+        d,out,m,observer,error,sql,rpc=self.exercise(phase='idle',timing=True)
+        self.assertIsNone(error);self.assertEqual(len(sql),3);self.assertEqual(len(rpc),3)
+        proof=a.document(out/'evaluator-progress.json')
+        self.assertEqual(proof['phase'],'idle')
+        self.assertEqual(proof['byTenant'][B]['timer'],'COMPLETED')
+        self.assertEqual(proof['durable'][-1]['rows'][1]['outputRevision'],'1')
+        self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
+        self.assertIn('c.work_due_at::text',sql[0][0])
+        self.assertIn('c.work_completed_at::text',sql[0][0])
+        self.assertFalse(hasattr(observer,'complete_after_cost_window'))
 
     def test_actual_initial_reader_collects_three_rounds_but_remains_unmeasured_pending(self):
         _,out,_,_,error,sql,rpc=self.exercise(initial=True)
