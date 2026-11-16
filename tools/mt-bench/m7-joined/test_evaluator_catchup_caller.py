@@ -1,6 +1,7 @@
 """Existing typed SQL reader and discovery tail, with SQL/RPC ports injected."""
 import argparse
 import contextlib
+from concurrent.futures import ThreadPoolExecutor
 import discovery
 import test_discovery
 import evaluator_progress as progress
@@ -19,7 +20,7 @@ from test_evaluator_progress import A, B
 
 @unittest.skipUnless(fixtures.NODE.is_file(), 'qualified Node reader required')
 class Caller(unittest.TestCase):
-    def run_tail(self, *, writer_live=False, generation=False, deadline=True, invalid_ledger=False, boundary_complete=False):
+    def run_tail(self, *, writer_live=False, generation=False, deadline=True, invalid_ledger=False, boundary_complete=False, thread_rpc=False):
         owner = fixtures.Caller(); self.addCleanup(owner.doCleanups)
         directory, output, manifest, _, error, _, _ = owner.exercise()
         self.assertIsNone(error)
@@ -47,7 +48,16 @@ class Caller(unittest.TestCase):
                 values[0]['state']['observed']['clock'] = '10'; values[0]['state']['completed']['clock'] = '10'
                 values[0]['typed']['observed'][0] = '10'; values[0]['typed']['completed'][0] = '10'
             return '\n'.join(json.dumps(r) for r in values)
-        with mock.patch.object(a, 'progress_services', return_value=['evaluator']), mock.patch.object(a, 'psql', side_effect=sql), mock.patch.object(idle, 'round_view', return_value=frame), mock.patch.object(a, 'opportunity_collector', wraps=a.opportunity_collector) as collector:
+        self.rpc_calls = []
+        def rpc(*args, **kwargs):
+            self.rpc_calls.append({'deadlineContext': a._COMMAND_DEADLINE.get(), **kwargs})
+            return ''
+        def view(services, ids, fetch):
+            if thread_rpc:
+                with ThreadPoolExecutor(max_workers=1) as executor:
+                    executor.submit(fetch, 'evaluator', ids, 1, 1024).result()
+            return frame
+        with mock.patch.object(a, 'progress_services', return_value=['evaluator']), mock.patch.object(a, 'psql', side_effect=sql), mock.patch.object(idle, 'round_view', side_effect=view), mock.patch.object(a, 'progress_fetch', side_effect=rpc), mock.patch.object(a, 'opportunity_collector', wraps=a.opportunity_collector) as collector:
             with a.command_deadline(time.time()+5 if deadline else None):
                 value = c.run(a, directory, manifest, record)
             self.collector_calls = collector.call_count
@@ -66,6 +76,16 @@ class Caller(unittest.TestCase):
         self.assertIn('NO-INSTRUMENT', value['authorityScope'])
         self.assertLessEqual(value['endNs']-value['startNs'], 5e9)
         self.assertTrue(all(row['timeout'] <= 5 for row in calls))
+
+    def test_rpc_thread_gets_explicit_remaining_timeout_without_context_inheritance(self):
+        value, _ = self.run_tail(thread_rpc=True)
+        self.assertEqual(value['verdict'], 'PASS')
+        self.assertEqual(len(self.rpc_calls), 2)
+        for call in self.rpc_calls:
+            self.assertIsNone(call['deadlineContext'], 'ThreadPoolExecutor does not inherit the main ContextVar')
+            self.assertIn('timeout', call)
+            self.assertGreater(call['timeout'], 0)
+            self.assertLessEqual(call['timeout'], 5)
 
     def test_initial_reservation_refuses_before_collector_and_one_boundary_is_exact(self):
         for budgets, code in [({'maxQueries': 1}, 'M7_DRAIN_QUERY_BOUND'),

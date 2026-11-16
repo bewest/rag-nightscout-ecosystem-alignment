@@ -186,11 +186,17 @@ def run(a, directory, manifest, record):
             collector = a.opportunity_collector(directory, manifest, ids)
             value['preparationCost'] = collector.preparation_cost
             def fetch(timeout):
+                round_until = min(until, time.monotonic_ns() + int(timeout * 1e9))
+                def rpc(*args):
+                    # The existing roster reader uses worker threads, which do
+                    # not inherit the main command-deadline ContextVar.
+                    remaining = (round_until - time.monotonic_ns()) / 1e9
+                    p.need(remaining > 0, 'M7_DRAIN_DEADLINE')
+                    return a.progress_fetch(directory, *args, timeout=remaining)
                 with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + timeout)):
                     snapshot, cost = collector(timeout)
                     try:
-                        view = idle.round_view(a.progress_services(directory), ids,
-                                               lambda *args: a.progress_fetch(directory, *args))
+                        view = idle.round_view(a.progress_services(directory), ids, rpc)
                         cost['inspection'] = idle._pack_round(view)
                         o.all_roster([rounds[-1], rounds[-1], view], ids, 'load')
                     except p.Refused as error:
