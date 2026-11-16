@@ -1,0 +1,50 @@
+{
+  "kind": "immutable-platform-stream-recovery-summary",
+  "basis": "reproduced",
+  "source": "604f8640d1d530ae21856a69f74124aa3127aaac",
+  "deploy": "b728749354275e3ba8119a7190cf9489187ff685",
+  "retainedEvidenceId": "external-pgstream-platform-proof04-20261115",
+  "status": "PASS",
+  "execution": "Host Node actual evaluator source fixture plus independently managed Docker pgstream service; cached application image used for its verified Go binary only.",
+  "fault": "Pause/unpause the exact owned Go container, then TERM its in-container PID1. Docker unless-stopped replaces the process without an explicit docker restart.",
+  "criteria": {
+    "sameEvaluatorAlive": true,
+    "sameContainerImageAndNonce": true,
+    "dockerRestartCount": [
+      0,
+      1
+    ],
+    "newGoProcess": true,
+    "preRestartCompletedClockBelowTarget": true,
+    "postRestartObservedAndCompletedReachTarget": true,
+    "exactSyntheticFrameRecovered": true,
+    "noHiddenInputWrite": true,
+    "authorityAndRestoreStateUnchanged": true
+  },
+  "timingMs": {
+    "readinessWithdrawal": 4757,
+    "replacement": 318,
+    "durableCatchupAfterTerm": 959
+  },
+  "declaredBoundsMs": {
+    "withdrawal": 10500,
+    "recovery": 30000
+  },
+  "cleanup": {
+    "independentExactAbsence": "PASS",
+    "parentAfterExitAbsence": "PASS",
+    "volumes": [],
+    "beforeOriginalDeadline": true
+  },
+  "sha256": {
+    "witness-result.json": "7a553c58cc53ca2c9d6937407e78486f194a7e59caac6c34f2823e5596b6dd6a",
+    "pre-term-durable-observation.json": "374506c88324eaed8ead3be702ec92aa26961991ca8f6cf7179e1047ac886583",
+    "root-after-exit-absence.json": "93e6ed1a1bf7fd3befc662ef56f15e0ced81d6ac0b4bc6bd990ddb1a1367d37d"
+  },
+  "limits": [
+    "One synthetic service restart witness; no general recovery-time, HA or capacity guarantee.",
+    "Not application-image runtime or Kubernetes acceptance.",
+    "Worker-crash/due, hung delivery, schema and slot/WAL criteria retain their own evidence and remaining boundaries.",
+    "Original failed instrument packets remain unchanged; no test deadline was extended."
+  ]
+}

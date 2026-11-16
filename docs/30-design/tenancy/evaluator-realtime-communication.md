@@ -19,7 +19,7 @@ this guide does not promote M6.
 
 ## Event-driven target and first proof
 
-**Direction adopted 2026-11-13; deployment integration and autonomous recovery UNMEASURED.**
+**Direction adopted 2026-11-13; current local integration and recovery evidence retain their exact source and limits.**
 The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
 owns this priority. The ownership and placement model below is proposed for the
 proof; it is not implementation acceptance. Evaluate maintained pgstream CDC (change data capture) before
@@ -85,8 +85,8 @@ not enable a shipping role or establish production delivery guarantees.
 
 *Execution plan, 2026-11-13; read-derived from core prototype
 `aba583199e9ab8a4bb907adc46dc9262a3dcedf5` and deployment reference
-`84accb33c3daccebfdf886300c3ba6c638e003c6`. Criteria below are **UNMEASURED**
-for actual-role integration. The local proof retains its narrower scope.*
+`84accb33c3daccebfdf886300c3ba6c638e003c6`. Final joined acceptance remains open. Focused current-source results are recorded in
+the [switch-over release update](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--coherent-switch-over-candidate-2026-11-15); each criterion keeps its measured scope.*
 
 **Objective:** the actual multitenant evaluator and realtime roles process
 committed changes and due clinical work, recover after process loss, and refuse
@@ -114,6 +114,26 @@ completed versions, completed result/frame, content revision, next due instant
 and ownership/restore generation. Keep acquisition separate from clinical
 completion. Add only the schema necessary to make this recovery state durable.
 
+The [platform restart decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-platform-restart)
+places pgstream in an independently managed service. It sends webhooks to the
+evaluator's private receiver. The platform owns the pinned process and its restart
+policy; the evaluator owns durable receipt, clinical completion and application
+readiness. A stream outage withdraws readiness and recovery reconciles current
+state. Restarting pgstream does not itself require evaluator exit. Existing
+internal API and deployment trust conventions apply.
+
+Each replication slot has one active stream consumer. Delivery must reach the
+current receiver owner, or an ingress implementation that provides equivalent
+durable admission. The current selected binding targets its sole intake owner;
+ordinary load balancing across evaluator replicas is not qualified by the private
+Service address. Receiver availability and clinical readiness are separate so
+service discovery does not require clinical readiness before delivery can start.
+
+The [bounded platform witness](../../../reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json)
+measures a Docker-managed stream replacement with the same evaluator and exact
+durable catch-up. It does not qualify the new application image, Kubernetes,
+general failover or a capacity limit.
+
 Completion commits the result, processed versions and next due together under a
 current ownership/restore fence. A newer version remains pending when an older
 cycle finishes. Reuse current transactional write clocks, settings/activity
@@ -122,8 +142,9 @@ and CDC arrival order never stand in for commit versions.
 
 ```mermaid
 flowchart LR
-  PG[(Existing committed rows and versions)] --> PS[Pinned pgstream]
-  PS --> RX[One evaluator receiver]
+  PG[(Existing committed rows and versions)] --> PS[Pinned pgstream service]
+  Platform[Platform restart policy] -.-> PS
+  PS --> RX[Current evaluator receiver]
   RX --> P[(Durable observed vs completed work)]
   P --> E[Evaluator and due work]
   E --> O[(Completed result / frame / next due)]
@@ -148,7 +169,7 @@ its move-readiness contract in the same source cut where that behavior changes.
 | Criterion | Required behavior | Focused failing control |
 |---|---|---|
 | Actual role flow and durable acknowledgement | Launch the actual role entrypoints/configuration. A committed input/settings change produces a completed clinical result and frame, then updates an already-connected client. ACK follows durable observed work; clinical output, completed versions and due state commit coherently. Newer or reordered work cannot roll completion backward. | ACK before observed commit; drop output hint; hold an older cycle while a newer write/settings version commits. Require recovery from durable state and correct tenant/client result, rather than counting callback entry. |
-| Notifier health and recovery | Detect a live-but-stopped notifier, hung delivery, database/receiver outage and backlog using end-to-end heartbeat receipt plus pending/checkpoint progress. A fresh heartbeat cannot hide stuck clinical work. A targeted wrapper owns the pinned pgstream process and bounded restart/terminal refusal; its `/health` alone is insufficient. | Stop notifier while process stays alive; wedge webhook or partition its network. Health must change and recovery complete, or a named refusal occur, within deadlines declared before the run. Healthy idle with fixed heartbeat work must stay healthy. |
+| Notifier health and recovery | Detect a live-but-stopped notifier, hung delivery, database/receiver outage and backlog using end-to-end heartbeat receipt plus pending/checkpoint progress. A fresh heartbeat cannot hide stuck clinical work. The platform owns pgstream restart. The evaluator withdraws readiness, preserves durable work and reconciles after delivery returns; it does not own a pgstream child process. The producer's `/health` alone is insufficient. | Stop notifier while process stays alive; wedge webhook or partition its network. Health must change and recovery complete, or a named refusal occur, within deadlines declared before the run. Healthy idle with fixed heartbeat work must stay healthy. |
 | Schema/control routing | Classify DML, heartbeat, schema and lifecycle events. Relevant DDL invalidates affected admission and invokes revalidation; irrelevant supported DDL does not create clinical work. Unknown/malformed relevant events cannot be silently acknowledged as completed. | Deliver the observed `pgstream.ddl` action `M`, unrelated DDL and an unknown event. Confirm defined routing/refusal, unchanged tenant completion and no data/output feedback loop. |
 | Actual worker restart and stream coverage | Kill the evaluator OS process after durable receipt, during evaluation and after output commit; restart from persisted pending/completed/due state. An overdue/future clinical timer fires without a new input write. Establish stream coverage before the bootstrap reconciliation boundary, including writes during startup. Recover lost/invalidated slots through explicit rebootstrap, not silent recreation. | Kill at each durable boundary; write while boot/recovery enumerates tenants; invalidate the owned slot. Omit pending/due recovery to prove red. Test the process, not only cache clearing. |
 | Ownership and restore fencing | An old process cannot commit output or emit socket/alarm effects after its ownership/backend/assignment or restore generation is superseded. Fence at the effect boundary, not only during a later health probe. Preserve existing stable notification identities, suppression and retry semantics. | Hold an old cycle/send, replace its owner or ownership backend, then resume it; change restore generation before publication/dispatch. The old effect is refused, the current owner finishes, and another tenant continues. This is not an exactly-once provider-delivery claim. |
