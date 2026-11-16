@@ -917,3 +917,63 @@ future RT profile source preparation does not qualify its image or runtime.
 Local ownership and exact reproduction commands remain in
 `externals/work/HANDOFF-comparable-experiments-2026-11-15.md`. No push, operator
 release or capacity acceptance follows from this update.
+
+## Remote 100-tenant ordinary point — November 15, 2026
+
+The directly approved remote point produced useful load observations, then failed
+report finalization. This is a **reproduced partial diagnostic**, not capacity or
+application acceptance. It measures the earlier intermediate build, not the later
+independent-service platform candidate.
+
+| Input | Exact binding |
+|---|---|
+| Core / deployment | `8ddcc01208c11c18145c44c1076ae4c91f79ffa2` / `23e73da7ad8d57bb0a360c29b3ef2320ed229238` |
+| App image | `sha256:c05744f34b0657a32cc974498564a9669b5731f889712d399aca7ce76809ecde` |
+| Helper / controller | `2ae69048cdb263f9a14c3f4102a36961a09aa97a` / `81a3a7de56f29075a2f663189cfaed676e56cbe9` |
+| Workload | 100 tenants, 200 stock clients, 180 offered requests/s, 10-second warmup, 30-second idle, 310-second load; serial primer, ordinary cadence, restart disabled |
+| Rig | Two DigitalOcean `c-16` hosts in `sfo3`, each 16 vCPU / 32 GiB; SUT and driver separate |
+
+| Reproduced observation | Result and limit |
+|---|---|
+| HTTP | 55,903 requests at 179.654 requests/s, reported failure value zero; global p95 393.754 ms / p99 661.175 ms. Includes 100 JWT setup exchanges and 55,803 ordinary scenario iterations. |
+| Ordinary scenario counts | SGV reads 25,365; device-status, treatment and status reads 5,073 each; SGV, device-status and treatment writes 5,073 each. |
+| Ordinary writes | 15,219 accepted, reported uncertainty zero. **SQL stored-write reconciliation and the count control are UNMEASURED**; accepted does not establish stored. |
+| Clinical progress | Successful-work delta 5,601, minimum 51 per tenant, failed-completion delta zero. Final clinical output consistency and per-write evaluation latency remain UNMEASURED. |
+| Clients | All 200 primed and connected at window end. Two selected probe writes delivered 4/4 expected matched frames; first-frame observations 112.838–1,346.271 ms. This does not bound a general delivery tail. |
+| SUT resources | Nine-role bookends span 315.523 seconds: summed mean CPU 4.0455 cores; summed final `memory.current` 2,512,449,536 bytes. At least 73 discrete samples per role; no CPU counter reset. Evaluator process CPU: Node 171.58 seconds, pgstream 14.22 seconds. |
+| SQL work | 2,264,288 statement calls / 174,260.819 ms execution within those bookends. These are aggregate workload costs, not individual clinical execution times. |
+| Driver observations | 112 samples, 103 with k6 stats; sampled maximum k6 CPU 41.96% and container memory about 395.5 MB; maximum probe RSS 185,933,824 bytes. |
+
+SUT totals exclude host and separate-driver overhead. Container memory and RSS are
+not JavaScript heap. Sampling is discrete. The separately constrained local driver
+run uses a different budget and does not provide a causal comparison.
+
+The SUT traceback records `PermissionError` when its UID 1000 report process reads
+the imported `generator-result-manifest.json` during the first final-summary hash
+capture. The root worker's restrictive manifest ownership is the **read-derived
+mechanism**; the permission failure itself is reproduced. k6 and the probe both
+exited zero. The generator handshake EOF is secondary. The final SQL count oracle
+did not run. Future tooling owns the narrow manifest-ownership repair and focused
+permission controls; this point's source and captures remain unchanged.
+
+The guard verified deletion at `2026-11-16T02:18:11.101Z`; independent provider,
+local-key and same-birth guard absence passed at `2026-11-16T02:21:58.072832+00:00`.
+Current/reserved hourly cost is zero. The ledger retains this allocated run's
+USD 3.50 upper once: historical upper USD 10.50, uncommitted upper USD 5.50;
+invoice UNMEASURED. No retry or further allocation follows from this result.
+
+Retained evidence identifier: `externals/work/remote-capacity-review-20261115`.
+Original archives remain ignored; safe reductions exclude synthetic credential
+setup data. The later diagnosis record resolves the initial summary's uncertainty.
+
+| Retained artifact | SHA-256 |
+|---|---|
+| `result-summary.json` | `cf5e75b47366baf2d8801382b2f440220709b4fa3ae54eb5403fb2412fbd1969` |
+| `diagnosis-01.json` | `aa66e9322b81d21693b127f9f7757b06d4eacc6fe4e0ff3e3dc3383c0cf82343` |
+| `http-shape-reduction.json` | `e999fa3cd36e8050d140ad2eab804d9a1dd73e868d8d71f29368784e98e8d42b` |
+| `bundle/sut-evidence.tar.gz` | `0e7e62181b1838d793c3284971b8ec71f5a3514d673cdb6ada3f676663eb4a9c` |
+| `bundle/driver-evidence.tar.gz` | `a639812090de6ef1ba4641f2c513b395588c76f78f262dc94c955f49c5376ed0` |
+
+Resource reductions use the existing helper reducer and retain selected original
+input hashes in `resource-reduction-provenance.json`. Lane detail and next source
+boundary: `externals/work/HANDOFF-remote-capacity-preparation-2026-11-15.md` (local).
