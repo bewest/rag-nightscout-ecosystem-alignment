@@ -1,0 +1,72 @@
+{
+  "capturedAtUTC": "2026-11-16T03:36:58Z",
+  "basis": "reproduced",
+  "kind": "focused-joined-source-integration",
+  "applicationSource": "7e6b2cf77a66049bb0d88c1605ae7703789f070f",
+  "previousJoinedSource": "4a08c2a81732776207a90f1a80ae7592b59b6b36",
+  "deploymentSource": "16133d9d33993b08fd81a318e8d30be123051ae7",
+  "instrumentSource": "cad0f5293c13d4681934c9f366ec8d9433753b1c",
+  "joinedLeaves": {
+    "assignmentAndLifecycle": "c1ee23ccbb617e755b58dbc8f9294e1a5b8f0c20",
+    "realtime": "95ceba873c9085e861cc06abaec6eda07ab9d7c3",
+    "m4Observer": "dd25f9fda17ea15af207e7b2e2b47dbd46a0f6b5"
+  },
+  "checks": [
+    {
+      "name": "changed assignment/lifecycle tests",
+      "source": "4a08c2a81732776207a90f1a80ae7592b59b6b36",
+      "files": 33,
+      "passed": 225,
+      "failed": 0,
+      "log": "transition-joined-pool-lifecycle-focused02.log",
+      "sha256": "a337df6e2b88943b8fe37b059d75f549e83313591fbd83a575097fce50ad9185"
+    },
+    {
+      "name": "joined realtime focused source cohort",
+      "source": "7e6b2cf77a66049bb0d88c1605ae7703789f070f",
+      "passed": 88,
+      "failed": 0,
+      "log": "transition-joined-realtime-focused.log",
+      "sha256": "2ce53e296fd0bc65429abf96e8b9aea4e20ffb985fc1545ea4b69af2ea85426b"
+    },
+    {
+      "name": "joined inventory",
+      "files": 828,
+      "tiers": 8,
+      "status": "PASS",
+      "log": "transition-joined-rt-inventory.log",
+      "sha256": "ecc7f6457c300228bd8f31ee17f2ffe3004e185994553905464b5e31e37986f8"
+    },
+    {
+      "name": "integrated M4 instrument",
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "M4 classifier",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "name": "M4 integration queue-check",
+      "status": "PASS"
+    }
+  ],
+  "reviewControls": {
+    "assignmentOriginal": "109 passing, 1 failing; actual v2 physical reader refused. Separate actual ledger model refused missing predecessor provenance.",
+    "assignmentRepair": "168 passing; v1-only validator mutant refuses actual reader, omitted predecessor refuses and rolls back, restored paths pass.",
+    "realtimeOriginal": "5 passing, 13 failing with the new regression cases on original protocol.",
+    "realtimeRepair": "88 passing; early-settlement, cancellation and obsolete-storage-join ablations fail. Authorization/deadline constants remain unchanged."
+  },
+  "retainedEvidenceId": "transition-source-integration02-20261115",
+  "limitations": [
+    "Source checks overlap and are not summed.",
+    "Full DATA reconstruction, effective grants/RLS/COMMIT/provider/activation and other-tenant continuity require native measurement.",
+    "Actual admin/HOLD/mode transitions, empty-pool registry census and deployment routing remain open.",
+    "Old-session renewal barrier has a separate configuration-composition concern and is not joined by this record.",
+    "Realtime native long-idle initiating cause and actual transport replay remain unmeasured here.",
+    "No image/runtime/capacity acceptance, final full/browser/enabled-corpus campaign or prcheck.",
+    "First local focused invocation used a removed Mocha launcher; maintained mocha.js rerun passed. Sandbox inventory git-spawn EPERM was rerun through supported host execution."
+  ]
+}
