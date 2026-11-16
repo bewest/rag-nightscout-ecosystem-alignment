@@ -65,10 +65,15 @@ for (const [name, perCycle] of Object.entries(shapes)) {
   };
 }
 const thresholds = {};
-TENANTS.forEach(t => { thresholds[`writes_ok{tenant:${t.id}}`] = ['count>=0']; thresholds[`writes_uncertain{tenant:${t.id}}`] = ['count>=0']; });
-for (const k of ['entries', 'devicestatus', 'treatments']) thresholds[`writes_ok{kind:${k}}`] = ['count>=0'];
-for (const name of Object.keys(shapes)) thresholds[`http_req_duration{shape:${name}}`] = ['max>=0'];
-for (const name of Object.keys(shapes)) thresholds[`http_req_failed{shape:${name}}`] = ['rate>=0'];
+// k6 reads options in its initial context. Rebuilding the roster-sized threshold
+// map in every VU retains unused metadata and multiplies driver memory by VUs.
+// Undefined __VU supports the existing standalone payload fixtures.
+if (typeof __VU === 'undefined' || __VU === 0) {
+  TENANTS.forEach(t => { thresholds[`writes_ok{tenant:${t.id}}`] = ['count>=0']; thresholds[`writes_uncertain{tenant:${t.id}}`] = ['count>=0']; });
+  for (const k of ['entries', 'devicestatus', 'treatments']) thresholds[`writes_ok{kind:${k}}`] = ['count>=0'];
+  for (const name of Object.keys(shapes)) thresholds[`http_req_duration{shape:${name}}`] = ['max>=0'];
+  for (const name of Object.keys(shapes)) thresholds[`http_req_failed{shape:${name}}`] = ['rate>=0'];
+}
 
 export const options = {
   scenarios, thresholds, discardResponseBodies: true, noConnectionReuse: false,
