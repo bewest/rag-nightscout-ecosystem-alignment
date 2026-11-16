@@ -768,8 +768,14 @@ archive, go.mod and go.sum bytes stay unchanged. It instruments the actual
 notifier rather than introducing a proxy or substitute sender. It is disabled
 unless `NS_M7_CLINICAL_SENDER_TIMELINE=1`. That explicit mode reads two IDs and an explicit `clockSchema` at
 `/run/ns-intake-timeline/targets.json` and creates private, exclusive output under
-`/run/ns-ipc/clinical-sender-{timeline.jsonl,status.json}`. Deployment mounts and a
-replacement binary are **not** installed by the Node selector. Its sender target
+`/run/ns-ipc/clinical-sender-{timeline.jsonl,status.json}`. The raw Node selector alone installs no sender override. The additional explicit
+`--clinical-sender-binary` and `--clinical-sender-receipt` options stage only the
+reviewed instrumented CLI named in the source manifest; they accept no command
+override or alternative version. Preparation creates an owned exclusive 0555
+binary copy and 0444 build-receipt sidecar, a separate readonly sender-target
+mount and an isolated owned output directory. The original direct Go command,
+image, streaming wire mount, per-role quotas and application role mounts stay in
+use. Existing prepare/verify/publish/preflight/retain paths own these bindings. Its sender target
 file is a separate role mount: the next packet must bind `clockSchema` to the
 actual selected receiver route, with no default namespace fallback. Node target
 inspection uses the original receiver clock routes.
@@ -833,7 +839,43 @@ archive, patching only the instrumented tree. Build both with the same checked
 Go executable, unchanged module sums, environment and dependencies; for example
 `CGO_ENABLED=0 "$CLINICAL_GO" build -mod=readonly -trimpath -buildvcs=false -o "$CLINICAL_OUTPUT" .`
 in each tree. Retain source/patch/toolchain/build-command/binary digests and test
-both; do not infer equivalence to the shipping f9 binary. Only the notifier-focused
-package/test executable is qualified here. Twin CLI builds, private mounts,
-replacement binary deployment and native timing remain UNMEASURED and require the
-root coordinator's next finite boundary.
+both; do not infer equivalence to the shipping f9 binary. The notifier package, matched static CLI builds and version-only smoke are
+source qualified in the reviewed build receipt. Shipping-f9 equivalence, live
+replacement-binary deployment and native timing remain UNMEASURED and require
+the root coordinator's next finite boundary.
+
+
+The sender target file is published after the existing bootstrap/primer stages,
+before either instrumented role starts. Its two IDs match the Node selection;
+`clockSchema` must match the generated layout and actual receiver configuration
+under the existing `pgstream-sample` namespace contract. Every new lifecycle
+effect rechecks the staged bytes, receipt, exact mounts and target publication.
+Preexisting outputs, unsafe permissions, symlinks, unknown schemas, wrong roles,
+extra mounts and missing provenance refuse startup. Existing source, image,
+finite-window, owner and exact resource identity checks remain in place.
+
+Sender preflight reads the actual qualified primary Go process from the existing
+container/process snapshot, then hashes `/proc/<pid>/exe` with matching birth
+bookends. It requires the overridden digest, expected executable path, owner UID,
+container/image/command and exact readonly/output mounts. Docker PID 1 is not a
+substitute. This is a point observation; a native packet still needs lifetime and
+clock qualification through its full target interval. Image ID or a `development`
+version string alone never attests the executable. The original image f9 binary
+and privileged initializer remain separately qualified and unmodified. Both twin
+CLI builds report `development`; optional Go health payloads inherit that version
+when enabled. The existing external service has no Compose healthcheck, and the
+Node receiver/store health checks do not match the Go version string.
+
+This is an explicit diagnostic overlay. The product's one-volume streaming
+check and executable-overlay refusal in rebootstrap remain strict; the helper's
+selected diagnostic contract admits only the original wire mount plus these
+three exact mounts. It does not turn that overlay into canonical product
+configuration or authorize rebootstrap.
+
+Admission and cleanup are separate. Changed or missing sender material refuses
+new effects. Owned teardown still runs the original source/config/image/ownership
+and finite cleanup checks; a sender refusal is retained as UNMEASURED and cannot
+block stop/down. Available bounded sender files are copied before private-state
+wipe even after a partial failure. Their structural/target/connection assessment
+remains UNMEASURED; metadata capture never grants clinical acceptance. There is
+no public flag to bypass admission or resource ownership.

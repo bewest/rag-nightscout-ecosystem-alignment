@@ -22,6 +22,16 @@
       "instrumentedSha256": "ec782ab1d40eb8bfeaf05ff547d5f3a24a0cb2c0bca1ef37efee8e54217d27b5"
     }
   },
-  "scope": "actual retained notifier source; focused package build/tests only; no source-to-shipping-f9 binary equivalence or native qualification",
-  "activation": "NS_M7_CLINICAL_SENDER_TIMELINE=1; fixed readonly targets with explicit clockSchema and private output paths; not wired into any deployment"
+  "scope": "actual retained notifier source and matched static CLI source builds; no source-to-shipping-f9 binary equivalence or native qualification",
+  "activation": "explicit reviewed local external-service diagnostic only; fixed schema-bound readonly targets and isolated private output; no native actor until joined source and finite packet selected",
+  "reviewedBuild": {
+    "receiptSha256": "f5fceec733ddfae6b29d9c69b29bb4d3ade463376de6cdec65ca71290bac9a85",
+    "instrumentedSha256": "6e1928ebc79d39155d0007842df6336a98009c7ab8c466d08fc8729361caef36",
+    "instrumentedBytes": 147987160,
+    "baselineSha256": "3c27a52291a8931351f8b7da84a0574290f3629526360c174d851040439e05bb",
+    "toolchainSha256": "182d1dc98119d61a6241590e1aaca180d771dbcb1133b9846684aee82d457362",
+    "CGO_ENABLED": "0",
+    "CLIversion": "development",
+    "shippingImageBinarySha256": "f9da5d0c299139db5236b63bdbd5cc20f6e1267db989c51d6444f429150c158b"
+  }
 }

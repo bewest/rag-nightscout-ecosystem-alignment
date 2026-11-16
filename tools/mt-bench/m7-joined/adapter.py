@@ -266,6 +266,7 @@ def compose(d, *args, file=None, input=None, timeout=120):
             else:args[i+1:i+1]=['--pull','never']
     argv=orchestration_binding.fixture_argv(d,args)
     if orchestration_binding.mutation(args):
+        clinical_timeline.before_sender_effect(Path(d),args,document(Path(d)/'frozen.compose.json'),document(Path(d)/'owner.json'))
         orchestration_binding.fixture_mutation_preflight(d,argv,command)
     if diagnostic_resources._ACTIVE is not None:
         diagnostic_resources.before_compose(args, document(Path(d)/'frozen.compose.json'))
@@ -684,8 +685,9 @@ def prepare_staged(args,target,pinned):
                 require(Path(volume["source"]).resolve().is_relative_to(target / "state"), "M7_FOREIGN_STATE_MOUNT_REFUSED")
     required=("postgres","vault","admin","primer","api","realtime","evaluator","tenant-admin","ui","nginx")+(() if args.profile=="pgstream-sample" else ("feed-reader",))
     require(all(name in config["services"] for name in required),"M7_BINDING_CAPABILITY_MISSING")
-    # Runtime product source is always its paired image. Only preserve the
-    # binding's own existing private-state mounts. No bootstrap or lib overlay.
+    # Ordinary runtime source stays in its paired image. The explicit clinical
+    # diagnostic may later stage one separately attested sender executable;
+    # bootstrap and application libraries never receive source overlays.
     for name, spec in config["services"].items():
         spec.setdefault("labels", {})[OWNER] = nonce
     for kind in ("volumes", "networks"):
@@ -698,7 +700,7 @@ def prepare_staged(args,target,pinned):
     require(not any("shared_preload_libraries" in str(x) for x in pg["command"][:-6]), "M7_POSTGRES_PRELOAD_ALREADY_SELECTED")
     selected_resources=getattr(args,'diagnostic_resource_profile',None)
     config=diagnostic_resources.overlay(config,selected_resources)
-    clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'))
+    clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'),getattr(args,'clinical_sender_binary',None),getattr(args,'clinical_sender_receipt',None))
     if selected_resources is not None:config=seal_diagnostic_images(config,m)
     record=diagnostic_resources.selected_record(config,selected_resources)
     if record is not None:
@@ -717,14 +719,14 @@ def prepare_staged(args,target,pinned):
     print(json.dumps({"prepared": m["project"], "pair": m["pair"], "tenants": args.tenants, "replicas": args.replicas}))
 
 
-def verify(d, m):
+def verify(d, m, teardown=False):
     require(host_identity(fixture_inventory(m))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
     if m.get("environmentSha256"):
         require(digest(d/"env")==m["environmentSha256"] and digest(d/"core/deploy/multitenant/.env")==m["environmentSha256"],"M7_ENVIRONMENT_CHANGED")
     stream_topology.verify_config(m,document(d/"frozen.compose.json"))
-    clinical_timeline.verify(document(d/"frozen.compose.json"),d,m)
+    clinical_timeline.verify(document(d/"frozen.compose.json"),d,m,teardown=teardown)
     measurement_topology(m,document(d/"frozen.compose.json"))
     profile_provenance.verify_environment(document(d/"frozen.compose.json"),m["diagnostics"])
     profile_provenance.state_environment(d/"state",document(d/"frozen.compose.json"),m["diagnostics"])
@@ -1440,6 +1442,8 @@ def sample_preflight(d,m,k6_id,oneoff=None):
             sql_attribution.statements(attempt/'readability-pg-statements.tsv')
             snapshots=document(attempt/'readability-cgroups.json')['roles']
             stream_topology.readable_processes(snapshots,m)
+            sender=clinical_timeline.sender_runtime(d,m,diagnostic_resource_rows(m),snapshots.get('pgstream',{})) if m.get('clinicalSender') else None
+            if sender is not None:write(attempt/'clinical-sender-runtime.json',sender)
             version=(lambda argv,**kw:oneoff('k6-version',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'version']),timeout=30)
             require('k6' in version.lower(),'M7_SAMPLE_LOADGEN_CONTEXT')
             help_text=(lambda argv,**kw:oneoff('k6-help',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'run','--help']),timeout=30)
@@ -1635,8 +1639,10 @@ def _down(d, m):
     if m.get('attached'):
         write(d/'instrument-jobs-stopped.json',{'runtimeResources':'UNCHANGED','cleanupOwner':'runtime owner'});return
     if m.get("prepared"):
-        verify(d, m)
+        verify(d, m, teardown=True)
         config=document(d/"frozen.compose.json")
+        sender_cleanup=clinical_timeline.sender_cleanup_observation(config,d,m)
+        if sender_cleanup is not None:write(d/("clinical-sender-cleanup-observation-"+uuid.uuid4().hex+".json"),sender_cleanup)
         try:captured=profile_provenance.capture_logs(d/"role-logs",config,lambda role:["docker","compose","-p",m["project"],"--env-file",str(d/"env"),"-f",str(d/"frozen.compose.json"),"logs","--no-color","--no-log-prefix","--timestamps","--tail","1000",role],seconds=remaining_seconds(5*len(config['services']))/max(1,len(config['services'])))
         except Exception:captured={"version":1,"scope":"PRIVATE","error":"capture-failed","complete":False}
         write(d/"role-logs/manifest.json",captured)
@@ -1680,6 +1686,8 @@ def parser():
     prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
     prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
     prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
+    prep.add_argument('--clinical-sender-binary',help='Explicit reviewed sender binary staged only for the opt-in raw external diagnostic')
+    prep.add_argument('--clinical-sender-receipt',help='Immutable reviewed twin CLI build receipt; no command or version fallback')
     prep.add_argument('--clinical-intake-timeline',choices=('off',clinical_timeline.NAME,clinical_timeline.RAW_NAME),default='off')
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')
