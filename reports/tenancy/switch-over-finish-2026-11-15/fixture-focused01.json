@@ -1,0 +1,43 @@
+{
+  "kind": "immutable-focused-fixture-summary",
+  "basis": "reproduced",
+  "status": "FOCUSED_FIXTURE_CHECKS_PASS",
+  "capturedAtUTC": "2026-11-16T01:15:13.115701+00:00",
+  "sourceBase": "8ddcc01208c11c18145c44c1076ae4c91f79ffa2",
+  "fixtureCommit": "9580e5b1d5678b5b7d9485aad6b7364da96080b6",
+  "retainedEvidenceId": "switch-over-fixture-focused-01-20261115",
+  "selection": "Maintained corpus --only five existing files; stock MOCHA_OPTIONS selects inspection, settings-fence and cohort/epoch/minimum cases. Other cases in those files were not run in this point.",
+  "result": {
+    "status": 0,
+    "signal": null,
+    "passing": 69,
+    "pending": 1,
+    "failing": 0
+  },
+  "criteria": [
+    "Current local-data-key inspection, including missing-key refusal.",
+    "Existing product settings-validator writer grant; actual revoke preserves current state/history, then restoration passes.",
+    "Cohort, epoch and minimum native bodies execute with the prepared private receipt directory.",
+    "Artifact-write failure retains the error and exact owned cleanup; old ownership order fails the pure control, restored order passes."
+  ],
+  "cleanup": {
+    "status": "ROOT_INDEPENDENT_FOCUSED_ABSENCE_PASS",
+    "recordedContainers": 6,
+    "recordedVolumes": 6,
+    "recordedSourceGuardReaperBirths": 4,
+    "remainingGroups": [],
+    "corpusRemaining": []
+  },
+  "sha256": {
+    "private/corpus.json": "8e4150f818c151044592fdd36c470a97895894fe145c91c6cee857e0a33b7a68",
+    "root-independent-absence.json": "a1e4ecaa4ee13312a03a0ec0c251321df72757a7ece3a95414aaff9886ecd4e5",
+    "old-order-control.log": "fcb49ca927b9d01e3145e59f6e467ad4ce33248f8e61773b9376194382056f33",
+    "restored-control.log": "c4ee2bdfde92579bd3246ce1be9cd650521bc1abe59cec5b51726cc5e8017640"
+  },
+  "limits": [
+    "Fixture-only commit; no production runtime file changed.",
+    "One optional counter remains pending.",
+    "Per-container PostgreSQL 1 CPU/1 GiB and Vault 0.5 CPU/256 MiB; no aggregate host bound or performance claim.",
+    "This point does not replace coherent full/browser/enabled-corpus/native/image acceptance."
+  ]
+}

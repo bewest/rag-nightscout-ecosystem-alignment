@@ -1,0 +1,132 @@
+{
+  "kind": "immutable-source-campaign-summary",
+  "basis": "reproduced",
+  "status": "CORPUS_FAILED_NOT_ACCEPTED",
+  "capturedAtUTC": "2026-11-16T01:00:53.442567+00:00",
+  "source": "8ddcc01208c11c18145c44c1076ae4c91f79ffa2",
+  "deploy": "23e73da7ad8d57bb0a360c29b3ef2320ed229238",
+  "retainedEvidenceId": "switch-over-acceptance-prepare-03-20261115",
+  "tierCountsOverlap": true,
+  "tiers": {
+    "inventory": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [],
+      "pending": [],
+      "failing": []
+    },
+    "unit": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        4956
+      ],
+      "pending": [
+        2
+      ],
+      "failing": []
+    },
+    "dom": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        205
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "dependency": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        368
+      ],
+      "pending": [
+        2
+      ],
+      "failing": []
+    },
+    "core": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        319
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "harness": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        101
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "integration": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        3647
+      ],
+      "pending": [
+        938
+      ],
+      "failing": []
+    },
+    "stress": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        18
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "browser": {
+      "status": "PASS",
+      "exitCode": 0,
+      "passing": [
+        686
+      ],
+      "pending": [],
+      "failing": []
+    }
+  },
+  "enabledCorpus": {
+    "selectedSuites": 97,
+    "runnerExitCode": 1,
+    "mochaResult": {
+      "status": 26,
+      "signal": null,
+      "passing": 861,
+      "pending": 1,
+      "failing": 24
+    },
+    "remaining": []
+  },
+  "utcDateOnlyNativeCriterion": "PASS: existing HTTP parity/physical positive-zero/foreign-row case executed; overall corpus remains failed",
+  "cleanup": {
+    "status": "ROOT_INDEPENDENT_FULL_EXACT_ABSENCE_PASS",
+    "recordedContainerReferencesChecked": 39,
+    "recordedVolumesChecked": 50,
+    "recordedBirthsChecked": 14,
+    "remainingGroups": [],
+    "producerPortsBindFree": [
+      19963,
+      19964
+    ],
+    "minimumFixture": "Receipt-directory write failed before cleanup was armed; exact ended fixture removed independently, original failure retained."
+  },
+  "sha256": {
+    "results.json": "80604d698d0d671669f7fa849fdbd3b319cf954d879c6ec03c6bd93e9877fb5b",
+    "private/enabled-corpus.json": "c3e2423a9a7e76d1a9e3f3993a461e8a25f3de9d24c0f2ce3e9c8ba0a9def8ff",
+    "root-independent-absence.json": "7f2436ea853d2e120efc8eb0e2004e0b49f98da177e1e11e58425f61d7f49f16"
+  },
+  "limits": [
+    "No full acceptance, clinical restore, capacity or release promotion.",
+    "The retained outer Mongo recipe has no explicit CPU/memory cap; host was shared.",
+    "Later focused repairs do not rewrite this capture."
+  ]
+}
