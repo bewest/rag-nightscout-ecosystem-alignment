@@ -1666,6 +1666,7 @@ def parser():
     for cmd in ("verify", "build", "deploy", "run", "preflight", "diagnose", "control", "down", "host-identity", "vault-check", "source-preflight"):
         own = sub.add_parser(cmd);own.add_argument("directory")
         if cmd in ("run","preflight"):own.add_argument("--k6-image", required=True)
+        if cmd == "run":own.add_argument("--work-deadline",type=float,help="Existing runner absolute work cutoff; never starts a new window")
     check = sub.add_parser("check-campaign");check.add_argument("summary")
     check = sub.add_parser("check-pilot");check.add_argument("summary")
     check = sub.add_parser("check-discovery");check.add_argument("summary")
@@ -1707,7 +1708,11 @@ def main():
     elif args.command == "deploy":deploy(d, m)
     elif args.command == "preflight":
         preflight(d,m,args.k6_image);print('M7_SAMPLE_INSTRUMENTS_CHECKED_NOT_ACCEPTANCE')
-    elif args.command == "run":run(d,m,args.k6_image)
+    elif args.command == "run":
+        until = args.work_deadline
+        if m.get('evaluatorCatchup') is not None:require(until is not None,'M7_DRAIN_WORK_DEADLINE_REQUIRED')
+        if until is not None:require(math.isfinite(until) and until>time.time(),'M7_COMMAND_DEADLINE')
+        with command_deadline(until):run(d,m,args.k6_image)
     elif args.command == "diagnose":diagnose(d,m)
     elif args.command == "control":control(d, m)
     elif args.command == "vault-check":vault_control(d,m,"auth-check")

@@ -5,6 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 import discovery
 import test_discovery
 import evaluator_progress as progress
+import evaluator_opportunities as opportunities
+import test_evaluator_progress as progress_fixtures
 import copy
 import json
 import time
@@ -123,6 +125,27 @@ class Caller(unittest.TestCase):
         self.assertEqual(value['code'], 'M7_PROBE_COUNTS_METADATA'); self.assertEqual(calls, [])
         value, calls = self.run_tail(deadline=False)
         self.assertEqual(value['code'], 'M7_DRAIN_WORK_DEADLINE_REQUIRED'); self.assertEqual(calls, [])
+
+    def test_actual_failed_collection_projection_is_retained_and_omission_is_red(self):
+        def criterion():
+            owner = fixtures.Caller(); self.addCleanup(owner.doCleanups)
+            directory, output, manifest, row = owner.fixture()
+            frame = progress_fixtures.Progress().refused_frame()
+            with mock.patch.object(a, 'progress_services', return_value=['evaluator']), mock.patch.object(a, 'psql', return_value='\n'.join(json.dumps(row(t,0)) for t in (A,B))), mock.patch.object(a, 'progress_fetch', return_value=json.dumps(frame)):
+                with self.assertRaisesRegex(progress.Refused, 'M7_EVALUATOR_PROGRESS_ERROR'):
+                    a.observe_progress(directory,manifest,output,'load').__enter__()
+            value=a.document(output/'evaluator-progress.json')
+            failed=value.get('failedCollection') or {}
+            self.assertEqual(failed.get('diagnostic',{}).get('failedRow',{}).get('code'),'SYNTHETIC_READY_FALSE')
+            self.assertNotIn('clinicalOutput',str(failed))
+            self.assertEqual(value['verdict'],'FAIL')
+        criterion()
+        original = opportunities.Observer.payload
+        def omit(observer, value):
+            result=original(observer,value);result.pop('failedCollection',None);return result
+        with mock.patch.object(opportunities.Observer,'payload',omit):
+            with self.assertRaises(AssertionError):criterion()
+        criterion()
 
     def test_optional_hook_runs_after_original_bookends_and_both_writer_joins(self):
         owner = test_discovery.Discovery(); self.addCleanup(owner.doCleanups)
