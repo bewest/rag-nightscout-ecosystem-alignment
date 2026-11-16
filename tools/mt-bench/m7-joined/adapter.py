@@ -1500,9 +1500,7 @@ def run_cell(d, m, k6_image):
     runid = "m7-" + m["owner"][:12];(out / "runid").write_text(runid)
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
     probe_env = runtime_env({"M7_GENERATOR_ROOT": str(d / "dependencies"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "M7_EVALUATOR_SERVICES": json.dumps(progress_services(d)), "M7_PROGRESS_PYTHON": sys.executable, "M7_PROGRESS_ATTRIBUTION":json.dumps(progress_attribution(m)), "STOCK_MS": "300000", "RECOVERY_MS": "120000", **({"M7_COMPLETION_SOURCE":json.dumps(completion)} if completion else {})})
-    if m.get('clinicalTimeline'):
-        targets=m['clinicalTimeline']['targets'];require(isinstance(targets,dict),'M7_CLINICAL_TIMELINE_UNPUBLISHED')
-        probe_env['M7_CLINICAL_TIMELINE_IDS']=json.dumps([targets['hotA'],targets['comparisonB']])
+    probe_env.update(clinical_timeline.probe_environment(m))
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):

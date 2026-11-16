@@ -213,6 +213,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
     completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
     env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
+    env.update(a.clinical_timeline.probe_environment(m))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:

@@ -180,3 +180,12 @@ complete trace qualification. Cleanup retains bounded evaluator traces before
 removing private state, including partial traces after failure. Source hashes,
 argv, mount, overhead and limits are instrument deltas; clinical gates and the
 existing write-to-completion budget remain unchanged.
+
+The timeline preload observes canonical module loads after the paired entrypoint
+applies its ordinary private environment. It does not import core or PostgreSQL
+modules during preloading. Runtime wrapping retains static export descriptors
+and a consistent cached export on repeated imports. The selected discovery
+caller passes the same client-timeline selector as the ordinary caller. Controls
+exercise the actual paired entrypoint/private reader and actual discovery Popen
+environment; premature core import and omitted discovery selector are red.
+The earlier timeline leaf/packet remains unentered with those defects recorded.

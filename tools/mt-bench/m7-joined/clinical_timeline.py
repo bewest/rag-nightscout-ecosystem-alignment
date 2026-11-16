@@ -74,3 +74,8 @@ def retain(d,m):
         except Exception:pass
     (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     return manifest
+
+def probe_environment(m):
+    if not m.get('clinicalTimeline'):return {}
+    targets=m['clinicalTimeline'].get('targets');require(isinstance(targets,dict),'M7_CLINICAL_TIMELINE_UNPUBLISHED')
+    return {'M7_CLINICAL_TIMELINE_IDS':json.dumps([targets['hotA'],targets['comparisonB']])}
