@@ -496,6 +496,7 @@ def attach(args):
             if m['generator'].get('runtimeOwner'):
                 runtime=document(args.runtime_owner)
                 if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
+                if 'edgeWorkerBudget' in runtime:m['edgeWorkerBudget']=runtime['edgeWorkerBudget']
             require(from_manifest(m)==m['runConfiguration'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
             candidates=[file for file in (state/'primer/tenants.json',state/'ops/tenants.json') if file.exists()]
             projections=[tenant_projection(document(file),m['tenants']) for file in candidates]
