@@ -1220,3 +1220,110 @@ with native tool access. Existing captures and frozen remote clones are unchange
 51f6 owns integration and final acceptance; the remote owner owns all allocation,
 export, finite custody and cleanup. A later source-matched native point must
 measure larger-roster bootstrap, SQL, observer deadlines and actual delivery.
+
+## Updated-image 1,000-tenant partial point — 2026-11-15 Pacific
+
+The updated single-host point reaches real REST traffic, then closes `FAILED_PARTIAL`.
+It reproduces three distinct observations: evaluator clinical-pending refusals,
+k6 exit 137 before its final summary, and an accepted sparse write with no qualified
+durable-output or client-frame witness. These observations do not establish an
+application capacity ceiling or a performance gain over the historical image.
+The historical remote 1,000/64 point stopped before commissioning on configuration
+seal admission; it supplies no steady-load comparison.
+
+The frozen application is `0a609e58ae170aa1eda1ab41dbcd0a735f8eb2bd`, deployment
+`15ac2443a8f4836cbe118d5fc35ab4088e5a4f6e`, immutable image
+`sha256:b9dee0c20b382325b4645285c9dbc3d3461a0258372c1d3321a1f226d6037d0a`,
+helper `b50529e3cd20461004f3a5cbc6abfc96e719aa97` and instrument
+`ff01772f5ce16bcc3df5f0187a0d5d2a11be3503d887448063ffaa1493fd185a`.
+Image byte qualification is separate from runtime acceptance. This shared local
+host is an Intel Core i7-11800H with 16 logical CPUs and 65,683,804 KiB RAM.
+The existing external-service diagnostic profile bounds selected roles to an
+aggregate 4 CPU/8 GiB, plus 1024 MiB declared host V8 heaps. Evaluator and Go
+receive 125m CPU/256 MiB each; k6 receives 500m CPU/1 GiB. Its total workload is
+1,000 synthetic tenants, 64 total polling viewers, ordinary 60 offered REST
+requests/s, warmup 10s, idle 30s and load 180s. Primer concurrency is four and
+JWT setup remains serial. Original work and cleanup cutoffs include preparation;
+no source, quota, health predicate or deadline changed during the point.
+
+| Reproduced stage | Observation |
+|---|---|
+| Provisioning | All 1,000 custody rows; 328.122s |
+| Restore commissioning / API startup | 10.378s / 3.422s |
+| Data priming | All 1,000 tenants; 231.359s |
+| Remaining roles | 93.645s |
+| Viewer priming | 64/64, 3.375s |
+| Ordinary JWT setup | 1,000 exchanges, 25.821s; seven scenario shapes then start |
+| Evaluator readiness | Complete 1,000-row observation: 8 queries, 609,816 bytes, 4.374s; clinical-progress refusal |
+| Driver termination | Exit 137 before final k6 summary; consecutive samples reach 1023–1024 MiB of 1 GiB |
+| Sparse write | One accepted; durable witness missing and no matched frame within the retained observation budget |
+| Cleanup | Runner ABSENT; independent exact project containers/networks/volumes, seven job births/groups and heap marker absent |
+
+The failed readiness row is admitted, with one completed acquisition, no failed
+completions, a 70,997ms last-completion age and a future `sgv-recent-10` due time.
+The actual health predicate uses durable pending age, not last-completion age.
+A later addressed read-only SQL observation finds its observed and completed
+floors equal, `pendingAt` null and delivery revision acknowledged. This later
+catch-up cannot erase the earlier refusal or establish stale in-memory health.
+An attempted addressed RAM observation returned unavailable near cleanup and
+establishes no RAM/database comparison. Readiness, idle and load failures remain
+sticky. No health threshold was weakened. The original complete roster observation
+fits its 15s bound; this failure is not an observer paging timeout.
+
+The 165.409s mixed load bookend includes JWT setup, partial traffic, collectors
+and termination. Its CPU means are observations under quotas, not isolated
+application CPU or a stable throughput measurement.
+
+| Role | Container mean CPU, cores | Stable primary process CPU, seconds | End anonymous memory, MiB |
+|---|---:|---:|---:|
+| API | 0.13829 | 16.04 | 328.19 |
+| Evaluator | 0.12824 | 16.16 | 212.11 |
+| Realtime | 0.12835 | 14.00 | 132.87 |
+| Go bridge | 0.00438 | 0.70 | 25.35 |
+| PostgreSQL | 0.37846 | UNMEASURED | 173.62 |
+
+The evaluator container includes observers inside the same 125m CPU quota; its
+mean and throttling do not identify application saturation. A single addressed
+SQL diagnostic and attempted addressed evaluator observation are additional
+measurement overhead. SQL role/WAL deltas remain available, including collector
+traffic; they are not causal per-write costs or wire bytes. The existing pool
+reducer refuses `M7_POOL_DIAGNOSTICS_INCOMPLETE_COVERAGE`: retained API, evaluator
+and realtime counters each report 1,000 unknown stages. Source reading identifies
+`window.participation` at `operation-window.js:355` absent from the diagnostics
+stage catalogue. Pool and executor-duration tails remain UNMEASURED. Original
+logs retain their timestamps and truncation; normalized complete counter lines
+have separate hashes and exact container-incarnation bindings.
+
+No final k6 summary exists. Ordinary accepted/stored/uncertain totals, delivered
+RPS, per-shape tails and dropped-iteration totals remain UNMEASURED. Exit 137 and
+memory samples alone do not prove an OOM kill. The bounded Docker OOM event query
+is empty; it does not prove that none occurred. The driver owner is checking
+retained kernel/launch evidence. Remote driver resources differ from this local
+k6 quota and must be declared separately. These limits precede any 10,000-tenant
+serving-capacity claim.
+
+Retained evidence home:
+`externals/work/performance-enhancements-20261115/single-host/attribution-current`.
+Original point `n1000-v64-r60-point-02` and failed tool-provenance attempt01 remain
+unchanged outside Git. The first preparation refused ambient Node22; fresh02
+uses the receipt's exact Node24.22.1/npm11.19.1 paths and hashes.
+
+| Selected record | SHA-256 |
+|---|---|
+| `n1000-partial-attribution.json` | `6dfe30eb3dafd42c058b49e5a9798da1fde3c1b77944e2880c3b5df566fdbb8a` |
+| `n1000-pool-attribution.json` | `b2967e849afe53ad53f30b9158b2697c997e3de3af3691a0d848b305ff97cc59` |
+| Point `independent-absence.json` | `afb0f1f2dc56f2e1dd40a1be44a683f781975daa8ff2e0e9f83cca5ea2f11414` |
+| Point `result.json` | `a11c1889d15d59848efc2805239f9b9cfbaeaba4ec8d80282acf49f27c457657` |
+
+Existing runner/measurement controls complete 42 tests with one skip under native
+loopback access; sandbox listener refusal is retained separately. A planted SQL
+statistics-reset change is refused and restored retained bookends reduce normally.
+Queue-status reports 197 PASS, 67 FAIL and 147 UNMEASURED, with integration skipped;
+these repository claims are not capability acceptance. Documentation links pass
+(27 checked, zero failing); queue-check fails on missing ignored gate worktrees,
+including `externals/work/crm-m6b-join-20261110`. Source integration and final
+acceptance stay with 51f6. The driver owner diagnoses termination; the duration
+owner repairs future finite-window propagation. The next roster selection is
+10,000/64 at the same offered rate after those focused boundaries qualify, followed
+by independent viewer or REST-rate changes at a fixed roster. No new framework,
+paid allocation, image rebuild for count changes or release is implied.
