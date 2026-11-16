@@ -1293,15 +1293,17 @@ def opportunity_collector(d,m,ids):
     require('selection' not in config,'M7_OPPORTUNITY_SELECTED_PROFILE_UNSUPPORTED')
     until=_COMMAND_DEADLINE.get()
     database=application_database(d);node=m['generator']['tools']['node']['path']
-    script="try{const o=require(process.argv[1]),x=JSON.parse(require('fs').readFileSync(0)),c=o.prepare(x.config);console.log(JSON.stringify(x.mode==='queries'?x.batches.map(ids=>o.progressQuery(c,ids)):o.progressSnapshot(x.rows,c,x.ids)));}catch(e){console.log(JSON.stringify({refused:/^[A-Z][A-Z0-9_]{1,100}$/.test(e.message)?e.message:'M7_OPPORTUNITY_READER_REFUSED'}));}"
+    script="try{const o=require(process.argv[1]),x=JSON.parse(require('fs').readFileSync(0)),c=o.prepare(x.config);console.log(JSON.stringify(x.mode==='queries'?x.batches.map(ids=>o.progressQuery(c,ids)):o.progressSnapshot(x.rows,c,x.ids)));}catch(e){console.log(JSON.stringify({refused:/^[A-Z][A-Z0-9_]{1,100}$/.test(e.message)?e.message:'M7_OPPORTUNITY_READER_REFUSED',...(e.completionDiagnostic?{completionDiagnostic:e.completionDiagnostic}:{})}));}"
     def invoke(value,timeout):
         if until is not None:
             require(until>time.time(),'M7_COMMAND_DEADLINE');timeout=min(timeout,until-time.time())
         raw=command([node,*([] if diagnostic_resources._ACTIVE is not None else ['--max-old-space-size=256']),'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
         evaluator_progress.need(len(raw.encode())<=evaluator_opportunities.ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
         value=json.loads(raw)
-        if isinstance(value,dict) and set(value)=={'refused'}:
-            code=value['refused'];raise evaluator_progress.Refused(code,'UNMEASURED' if code=='M7_OPPORTUNITY_COVERAGE' else 'FAIL')
+        if isinstance(value,dict) and 'refused' in value:
+            code=value['refused'];error=evaluator_progress.Refused(code,'UNMEASURED' if code=='M7_OPPORTUNITY_COVERAGE' else 'FAIL')
+            if 'completionDiagnostic' in value:error.collection={'completionReader':value['completionDiagnostic']}
+            raise error
         return value
     batches=[ids[offset:offset+64] for offset in range(0,len(ids),64)]
     start=time.monotonic();cpu=time.process_time();queries=invoke({'mode':'queries','batches':batches},10)
@@ -1322,7 +1324,7 @@ def opportunity_collector(d,m,ids):
                 evaluator_progress.need(used<=evaluator_opportunities.ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
                 rows.extend(json.loads(line) for line in raw.splitlines() if line)
             remaining=deadline-time.monotonic();evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
-            snapshot=invoke({'mode':'snapshot','rows':rows,'ids':ids},remaining);cost['nodeCalls']=1
+            cost['nodeCalls']=1;snapshot=invoke({'mode':'snapshot','rows':rows,'ids':ids},remaining)
             evaluator_progress.need(time.monotonic()<=deadline,'M7_OPPORTUNITY_DEADLINE')
             return snapshot,{**cost,'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu}
         except Exception as error:

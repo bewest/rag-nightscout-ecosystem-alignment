@@ -49,6 +49,17 @@ class Catchup(unittest.TestCase):
         self.assertEqual(result['drainAfterWriterJoinMs'][A], {'lower': 2000.0, 'upper': 7200.0})
         self.assertEqual(result['byTenant'][A]['outputRevision'], self.boundary['rows'][0]['outputRevision'])
 
+    def test_initial_zero_target_without_completion_is_pending(self):
+        for row in self.boundary['rows']:
+            row.update(writerClock='0',observed={},completed={},outputRevision='0')
+        result=self.assess(self.boundary)
+        self.assertEqual(result['verdict'],'UNMEASURED')
+        self.assertEqual(result['byTenant'][A]['pending'],{'clock':'0'})
+        self.assertEqual(result['byTenant'][A]['awaitingObserved'],['clock'])
+        self.boundary['rows'][0]['observed']={'bootstrap':'0'}
+        result=self.assess(self.boundary)
+        self.assertEqual(result['byTenant'][A]['pending'],{'bootstrap':'0','clock':'0'})
+
     def test_new_writer_or_metadata_never_moves_goalpost(self):
         for field in ('writerClock', 'metadata'):
             value = self.completed()

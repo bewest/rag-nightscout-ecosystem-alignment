@@ -51,13 +51,14 @@ def _refusal_value(value,*,text=False,boolean=False):
 def _refusal_row(row,service,runtime_id):
     # One private failed-row projection, never the raw RPC or clinical output.
     # Fixed fields and capped strings bound even malformed response evidence.
-    progress=row.get('progress');evaluation=row.get('evaluation')
+    progress=row.get('progress');evaluation=row.get('evaluation');jobs=row.get('jobs')
     value={'tenant':_refusal_value(row.get('tenant',_MISSING),text=True),
            'service':_refusal_value(service,text=True),'runtimeId':_refusal_value(runtime_id,text=True),
            **{k:_refusal_value(row.get(k,_MISSING),boolean=True) for k in ('admitted','ready')},
            'code':_refusal_value(row.get('code',_MISSING),text=True),
            'alert':_refusal_value(evaluation.get('alert',_MISSING) if isinstance(evaluation,dict) else _MISSING,text=True),
            'progress':{k:_refusal_value(progress.get(k,_MISSING)) for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs')} if isinstance(progress,dict) else {'type':type(progress).__name__},
+           'jobs':{k:_refusal_value(jobs.get(k,_MISSING),boolean=True) for k in ('running','booting','acquire','time','parentAcquire','parentTime')} if isinstance(jobs,dict) else {'type':type(jobs).__name__},
            'dueAt':_refusal_value(row.get('dueAt',_MISSING)),
            'dueReason':_refusal_value(row.get('dueReason',_MISSING),text=True)}
     # Defensive fail-closed evidence fallback must not replace the refusal.

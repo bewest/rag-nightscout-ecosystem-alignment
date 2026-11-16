@@ -34,6 +34,31 @@ class Opportunities(unittest.TestCase):
         self.assertEqual(value['workRate'].split(';')[0],'UNMEASURED')
         with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess(self.rounds(),[A,B],'load')
 
+    def test_initial_partial_and_zero_targets_remain_pending_without_fabricated_floors(self):
+        for observed in ({},{'clock':'0'},{'bootstrap':'0'}):
+            captures=self.captures()
+            for capture in captures:
+                capture['rows'][0].update(writerClock='0',observed=dict(observed),completed={},outputRevision='0')
+            result=self.assess(captures=captures)
+            self.assertEqual(result['verdict'],'UNMEASURED')
+            self.assertEqual(result['byTenant'][A]['receivedInput'],'PENDING')
+            self.assertEqual(result['byTenant'][A]['inputTargets']['clock'],'0')
+            self.assertEqual(captures[-1]['rows'][0]['completed'],{})
+        captures=self.captures()
+        for capture in captures:capture['rows'][0]['completed']={'settings':'0'};capture['rows'][0]['observed']['settings']='0'
+        self.assertEqual(self.assess(captures=captures)['byTenant'][A]['receivedInput'],'PENDING')
+
+    def test_first_completion_can_install_generation_but_subsequent_changes_still_fail(self):
+        captures=self.captures()
+        captures[0]['rows'][0].update(completed={},outputRevision='0')
+        for capture in captures[1:]:capture['rows'][0]['restoreGeneration']='7'
+        self.assertEqual(self.assess(captures=captures)['verdict'],'PASS')
+        captures[-1]['rows'][0]['restoreGeneration']='8'
+        with self.assertRaisesRegex(p.Refused,'RESET'):self.assess(captures=captures)
+        for changes in ({'completed':{'clock':'10'}},{'restoreGeneration':'7'}):
+            captures=self.captures();captures[0]['rows'][0].update(completed={},outputRevision='0');captures[0]['rows'][0].update(changes)
+            with self.assertRaisesRegex(p.Refused,'REVISION'):self.assess(captures=captures)
+
     def test_stale_completion_is_not_credit_even_when_unrelated_counter_work_increases(self):
         captures=self.captures()
         captures[-1]['rows'][0]['completed']['clock']='11'

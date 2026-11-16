@@ -38,9 +38,9 @@ def assess(boundary, previous, current, ids, binding):
                    any(k not in targets or o.revision(v) > o.revision(targets[k])
                        for k, v in b['observed'].items()))
         pending = {k: v for k, v in targets.items()
-                   if o.revision(b['completed'].get(k, '0')) < o.revision(v)}
+                   if k not in b['completed'] or o.revision(b['completed'][k]) < o.revision(v)}
         intake = [k for k, v in pending.items()
-                  if o.revision(b['observed'].get(k, '0')) < o.revision(v)]
+                  if k not in b['observed'] or o.revision(b['observed'][k]) < o.revision(v)]
         outcomes[tenant] = {'status': 'INPUT_CHANGED' if changed else 'PENDING' if pending else 'COMPLETED',
                             'targets': targets, 'pending': pending, 'awaitingObserved': intake,
                             'awaitingCompleted': [k for k in pending if k not in intake],

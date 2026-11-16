@@ -68,7 +68,7 @@ function query(config,ids,marker,progress=false){
  if(config.kind==='evaluator-work-v2'){
   const body=progress?"jsonb_build_object('tenant',c.projection->0->'output'->'tenant')":"(c.projection->0->'output')";
   state=`jsonb_build_object('kind',c.projection->0->>'kind','observed',${vector('work_observed')},'completed',${vector('work_completed')},'output',CASE WHEN jsonb_typeof(c.projection->0->'output')='object' THEN ${body} || jsonb_build_object('identity',c.output_identity,'contentDigest',c.output_digest,'outputRevision',c.output_revision,'restoreGeneration',c.output_restore_generation::text) ELSE NULL END)`;
-  typed=`jsonb_build_object('version',c.work_version,'contractDigest',c.contract_digest,'observed',c.work_observed::text[],'completed',c.work_completed::text[],'identity',c.output_identity,'digest',c.output_digest,'revision',c.output_revision::text,'generation',c.output_restore_generation::text,'enabled',c.work_enabled,'arrayBounds',array_lower(c.work_observed,1)=1 AND array_lower(c.work_completed,1)=1,'bodyMetadataAbsent',NOT ((c.projection->0->'output') ?| ARRAY['identity','contentDigest','outputRevision','restoreGeneration','runtimeId'])${profileFields})`;
+  typed=`jsonb_build_object('version',c.work_version,'contractDigest',c.contract_digest,'observed',c.work_observed::text[],'completed',c.work_completed::text[],'identity',c.output_identity,'digest',c.output_digest,'revision',c.output_revision::text,'generation',c.output_restore_generation::text,'enabled',c.work_enabled,'arrayBounds',array_lower(c.work_observed,1)=1 AND array_lower(c.work_completed,1)=1,'bodyMetadataAbsent',(jsonb_typeof(c.projection->0->'output') IN ('object','null') AND NOT ((c.projection->0->'output') ?| ARRAY['identity','contentDigest','outputRevision','restoreGeneration','runtimeId']))${profileFields})`;
  }
  // One SELECT snapshot: JSON clinical body and typed metadata cannot straddle a completion.
  const stored=progress?"'[]'::jsonb":`coalesce((SELECT jsonb_agg(e.doc) FROM "${config.entries}".entries e WHERE e.tenant_id=w.tenant_id AND e.doc->>'device'='${marker}-probe'),'[]'::jsonb)`;
@@ -77,18 +77,22 @@ function query(config,ids,marker,progress=false){
 }
 const version=value=>typeof value==='string'&&/^(0|[1-9][0-9]*)$/.test(value);
 const exact=value=>version(value)&&value.length<=19&&BigInt(value)<=9223372036854775807n;
-function typedState(row,config,chosen){
+function typedState(row,config,chosen,progress=false){
  const t=row.typed,s=row.state,o=s?.output;
  const digest=chosen?chosen.contractDigest:createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex');
  if(chosen){const installed=t?.installedProfile,ordinal=chosen.binding.tenants.includes(row.tenant)?Number(createHash('sha256').update(row.tenant,'utf8').digest().readBigUInt64BE(0)%BigInt(chosen.binding.members)):-1;if(!installed||installed.consumer!==config.consumer||canonical(installed.binding)!==canonical(chosen.binding)||installed.digest!==chosen.digest||installed.contractDigest!==chosen.contractDigest||t.ownerOrdinal!==ordinal||ordinal<0||t.assignmentRevision!==chosen.binding.revision||!exact(t.generation)||BigInt(t.generation)<1n||BigInt(t.generation)>4611686018427387902n)return false;}
- if(!t||t.version!==2||t.contractDigest!==digest||t.enabled!==true||t.arrayBounds!==true||t.bodyMetadataAbsent!==true||!o||!/^[a-f0-9]{64}$/.test(t.identity)||!/^[a-f0-9]{64}$/.test(t.digest)||!exact(t.revision)||BigInt(t.revision)<1n||BigInt(t.revision)>BigInt(Number.MAX_SAFE_INTEGER)||!(t.generation===null||exact(t.generation)&&BigInt(t.generation)>0n))return false;
- if(o.identity!==t.identity||o.contentDigest!==t.digest||String(o.outputRevision)!==t.revision||o.restoreGeneration!==t.generation)return false;
+ if(!t||t.version!==2||t.contractDigest!==digest||t.enabled!==true||t.arrayBounds!==true||t.bodyMetadataAbsent!==true)return false;
  for(const [field,name]of [['observed','observed'],['completed','completed']]){
   const values=t[field],map=s?.[name];
-  if(!Array.isArray(values)||values.length!==SOURCES.length||!map||Object.keys(map).some(k=>!SOURCES.includes(k)))return false;
+  if(!Array.isArray(values)||values.length!==SOURCES.length||!map||typeof map!=='object'||Array.isArray(map)||Object.keys(map).some(k=>!SOURCES.includes(k)))return false;
   for(let i=0;i<SOURCES.length;i++)if(values[i]===null?Object.hasOwn(map,SOURCES[i]):!exact(values[i])||map[SOURCES[i]]!==values[i])return false;
  }
  for(const key of SOURCES)if(s.completed[key]!==undefined&&(s.observed[key]===undefined||BigInt(s.completed[key])>BigInt(s.observed[key])))return false;
+ // Admission has no completed output yet. Only the metadata accessor may
+ // carry this exact empty completion, never the clinical completion assessor.
+ if(progress&&o===null&&t.identity===null&&t.digest===null&&t.revision==='0'&&t.generation===null&&t.completed.every(v=>v===null))return true;
+ if(!o||!/^[a-f0-9]{64}$/.test(t.identity)||!/^[a-f0-9]{64}$/.test(t.digest)||!exact(t.revision)||BigInt(t.revision)<1n||BigInt(t.revision)>BigInt(Number.MAX_SAFE_INTEGER)||!(t.generation===null||exact(t.generation)&&BigInt(t.generation)>0n))return false;
+ if(o.identity!==t.identity||o.contentDigest!==t.digest||String(o.outputRevision)!==t.revision||o.restoreGeneration!==t.generation)return false;
  return true;
 }
 function assess(row,witness,clients,expected,config){
@@ -119,7 +123,8 @@ function assess(row,witness,clients,expected,config){
  return {ready:true,tenant:row.tenant,storedId:doc._id,completedClock:state.completed.clock,observedClock:state.observed.clock,outputRevision:output.outputRevision,contentDigest:output.contentDigest,clients:clients.length,bgNowMean:bg.mean,clinicalScope:'BG-now selected-bucket mean/last consistency; remaining clinical properties unassessed'};
 }
 // Read-only work metadata for the NEXT opportunity assessor. Reuse the exact
-// typed-state validator; this is neither a clinical nor a client-frame verdict.
+// typed vector/output fences, with an exact admission-only empty output case.
+// This is neither a clinical nor a client-frame verdict.
 function progressSnapshot(rows,config,ids){
  binding(config?.binding);const chosen=selection(config);
  if(config.kind!=='evaluator-work-v2'||config.binding.kind!==config.kind||!Array.isArray(ids)||!ids.length||ids.length>10000||!ids.every(id=>UUID.test(id))||new Set(ids).size!==ids.length||!Array.isArray(rows)||rows.length!==ids.length||new Set(rows.map(r=>r?.tenant)).size!==ids.length)fail('M7_OPPORTUNITY_COVERAGE');
@@ -127,9 +132,22 @@ function progressSnapshot(rows,config,ids){
  const values=ids.map(tenant=>{
   const row=byTenant.get(tenant);
   if(!row||canonical(row.reader)!==canonical(config.binding)||row.state?.kind!==config.kind)fail('M7_COMPLETION_READER_MISMATCH');
-  if(!typedState(row,config,chosen))fail('M7_COMPLETION_TYPED_STATE');
-  if(row.state.output.tenant!==tenant)fail('M7_COMPLETION_TYPED_STATE');
-  if(!exact(row.stamp)||!exact(row.state.observed.clock)||!exact(row.state.completed.clock)||BigInt(row.state.observed.clock)>BigInt(row.stamp))fail('M7_OPPORTUNITY_CLOCK');
+  if(!typedState(row,config,chosen,true)||row.state.output!==null&&row.state.output?.tenant!==tenant){
+   const t=row.typed,error=Error('M7_COMPLETION_TYPED_STATE');
+   // Fixed-size predicates only: never retain a clinical body, identifiers,
+   // arbitrary row keys or error text through this private failure receipt.
+   error.completionDiagnostic={rowIndex:ids.indexOf(tenant),predicates:{
+    outputNull:row.state.output===null,outputObject:!!row.state.output&&typeof row.state.output==='object',
+    outputTenantMatches:row.state.output?.tenant===tenant,
+    revisionZero:t?.revision==='0',identityNull:t?.identity===null,digestNull:t?.digest===null,
+    completedEmpty:Array.isArray(t?.completed)&&t.completed.length===6&&t.completed.every(v=>v===null),
+    versionTwo:t?.version===2,enabled:t?.enabled===true,arrayBounds:t?.arrayBounds===true,bodyMetadataAbsent:t?.bodyMetadataAbsent===true,
+    contractDigestMatches:t?.contractDigest===(chosen?.contractDigest||createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex')),
+    observedSixSlots:Array.isArray(t?.observed)&&t.observed.length===6,
+    completedSixSlots:Array.isArray(t?.completed)&&t.completed.length===6}};
+   throw error;
+  }
+  if(!exact(row.stamp)||(row.state.observed.clock!==undefined&&(!exact(row.state.observed.clock)||BigInt(row.state.observed.clock)>BigInt(row.stamp))))fail('M7_OPPORTUNITY_CLOCK');
   return {tenant,writerClock:row.stamp,observed:{...row.state.observed},completed:{...row.state.completed},outputRevision:row.typed.revision,restoreGeneration:row.typed.generation};
  });
  return {kind:'evaluator-durable-progress-v1',reader:plain(config.binding),rows:values};

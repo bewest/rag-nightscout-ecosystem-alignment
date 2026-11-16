@@ -36,19 +36,20 @@ def durable_rows(captures,ids,binding):
         by_tenant={}
         for row in rows:
             p.need(set(row)=={'tenant','writerClock','observed','completed','outputRevision','restoreGeneration'},'M7_OPPORTUNITY_CAPTURE')
-            revision(row['writerClock']);p.need(revision(row['outputRevision'])>0,'M7_OPPORTUNITY_REVISION')
+            revision(row['writerClock']);revision(row['outputRevision'])
+            p.need(row['outputRevision']!='0' or row['completed']=={} and row['restoreGeneration'] is None,'M7_OPPORTUNITY_REVISION')
             if row['restoreGeneration'] is not None:p.need(revision(row['restoreGeneration'])>0,'M7_OPPORTUNITY_REVISION')
             for key in ('observed','completed'):
-                p.need(isinstance(row[key],dict) and set(row[key])<=set(SOURCES) and 'clock' in row[key],'M7_OPPORTUNITY_VECTOR')
+                p.need(isinstance(row[key],dict) and set(row[key])<=set(SOURCES),'M7_OPPORTUNITY_VECTOR')
                 for value in row[key].values():revision(value)
             p.need(all(k in row['observed'] and revision(v)<=revision(row['observed'][k]) for k,v in row['completed'].items()),'M7_OPPORTUNITY_VECTOR')
-            p.need(revision(row['observed']['clock'])<=revision(row['writerClock']),'M7_OPPORTUNITY_CLOCK')
+            p.need('clock' not in row['observed'] or revision(row['observed']['clock'])<=revision(row['writerClock']),'M7_OPPORTUNITY_CLOCK')
             by_tenant[row['tenant']]=row
         decoded.append(by_tenant)
     for previous,current in zip(decoded,decoded[1:]):
         for tenant in ids:
             a,b=previous[tenant],current[tenant]
-            p.need(a['restoreGeneration']==b['restoreGeneration'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            p.need(a['restoreGeneration']==b['restoreGeneration'] or a['outputRevision']=='0' and a['restoreGeneration'] is None and revision(b['outputRevision'])>0,'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             p.need(revision(b['writerClock'])>=revision(a['writerClock']) and revision(b['outputRevision'])>=revision(a['outputRevision']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             for field in ('observed','completed'):
                 p.need(all(k in b[field] and revision(b[field][k])>=revision(v) for k,v in a[field].items()),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
@@ -101,10 +102,10 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
             no_clock_advance=last['writerClock']==first['writerClock']
             for key,value in last['observed'].items():
                 prior=first['observed'].get(key)
-                if prior is None or revision(value)>revision(prior) or revision(first['completed'].get(key,'0'))<revision(prior):targets[key]=value
-            if not no_clock_advance or revision(first['completed']['clock'])<revision(first['writerClock']):targets['clock']=last['writerClock']
+                if prior is None or revision(value)>revision(prior) or key not in first['completed'] or revision(first['completed'][key])<revision(prior):targets[key]=value
+            if not no_clock_advance or 'clock' not in first['completed'] or revision(first['completed']['clock'])<revision(first['writerClock']):targets['clock']=last['writerClock']
             for key in targets:source_tenants[key].add(tenant)
-            input_status=('COMPLETED' if all(revision(last['completed'].get(key,'0'))>=revision(value) for key,value in targets.items()) else 'PENDING') if targets else 'NO_KNOWN_INPUT_OPPORTUNITY'
+            input_status=('COMPLETED' if all(key in last['completed'] and revision(last['completed'][key])>=revision(value) for key,value in targets.items()) else 'PENDING') if targets else 'NO_KNOWN_INPUT_OPPORTUNITY'
         timer=timer_outcome(rounds,tenant)
         known=input_status in ('COMPLETED','PENDING') or timer in ('COMPLETED','PENDING')
         pending=input_status=='PENDING' or timer=='PENDING'

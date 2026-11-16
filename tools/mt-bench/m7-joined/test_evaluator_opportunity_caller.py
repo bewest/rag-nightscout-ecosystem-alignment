@@ -39,7 +39,7 @@ class Caller(unittest.TestCase):
                              'identity':'7'*64,'digest':'8'*64,'revision':str(revision),'generation':None,'enabled':True,'arrayBounds':True,'bodyMetadataAbsent':True}}
         return d,out,m,row
 
-    def exercise(self,*,stale=False,missing=False,health=False):
+    def exercise(self,*,stale=False,missing=False,health=False,initial=False,malformed=False):
         d,out,m,row=self.fixture();sql_calls=[];rpc_calls=[]
         def sql(directory,query,database,**kwargs):
             step=len(sql_calls);sql_calls.append((query,database,kwargs))
@@ -47,6 +47,13 @@ class Caller(unittest.TestCase):
             self.assertNotIn('jsonb_agg(e.doc)',query,'metadata collection must not read marker history')
             self.assertNotIn("THEN (c.projection->0->'output')",query,'metadata collection must not transport full clinical payload')
             rows=[row(A,step),row(B,step)]
+            if initial:
+                for r in rows:
+                    r['state'].update(observed={'bootstrap':'0'},completed={},output=None)
+                    r['typed'].update(observed=[None,None,None,None,None,'0'],completed=[None]*6,identity=None,digest=None,revision='0',generation=None)
+            if malformed:
+                rows[0]['typed']['contractDigest']='invalid-sensitive-sentinel'
+                rows[0]['state']['output']['result']={'sensitive':'must-not-be-retained'}
             if stale and step==2:rows[0]['typed']['completed'][0]='11';rows[0]['state']['completed']['clock']='11'
             if missing and step==1:rows.pop(0)
             return '\n'.join(json.dumps(r) for r in rows)+'\n'
@@ -85,6 +92,43 @@ class Caller(unittest.TestCase):
         with self.assertRaisesRegex(p.Refused,'ORDER'):o.verify(bad,2,['evaluator'],BINDING)
         with self.assertRaisesRegex(p.Refused,'BINDING'):o.verify(proof,2,['evaluator'],BINDING,source_sha256='0'*64)
         self.assertEqual(o.verify(proof,2,['evaluator'],BINDING)['verdict'],'PASS')
+
+    def test_actual_initial_reader_collects_three_rounds_but_remains_unmeasured_pending(self):
+        _,out,_,_,error,sql,rpc=self.exercise(initial=True)
+        self.assertEqual(str(error),'M7_OPPORTUNITY_NOT_OBSERVED')
+        self.assertEqual(len(sql),3);self.assertEqual(len(rpc),3)
+        proof=a.document(out/'evaluator-progress.json')
+        self.assertEqual(proof['verdict'],'UNMEASURED')
+        self.assertEqual(proof['classifications']['KNOWN_PENDING'],2)
+        self.assertEqual(proof['durable'][0]['rows'][0]['completed'],{})
+
+    def test_actual_typed_failure_retains_only_bounded_predicates_in_existing_receipt(self):
+        _,out,_,_,error,_,_=self.exercise(malformed=True)
+        self.assertEqual(str(error),'M7_COMPLETION_TYPED_STATE');self.assertEqual(error.verdict,'FAIL')
+        proof=a.document(out/'evaluator-progress.json')
+        diagnostic=proof['failedCollection']['completionReader']
+        self.assertEqual(set(diagnostic),{'rowIndex','predicates'})
+        self.assertEqual(diagnostic['rowIndex'],0)
+        self.assertFalse(diagnostic['predicates']['contractDigestMatches'])
+        self.assertTrue(all(type(v) is bool for v in diagnostic['predicates'].values()))
+        raw=json.dumps(proof)
+        for secret in ('invalid-sensitive-sentinel','must-not-be-retained','sensitive'):
+            self.assertNotIn(secret,raw)
+        self.assertLess(len(json.dumps(diagnostic)),1024)
+        self.assertEqual(proof['durableCollectorCost']['rounds'][0]['nodeCalls'],1,'FAILED_NODE_INVOCATION_IS_WORK')
+
+    def test_removing_actual_node_failure_projection_is_red_then_restored(self):
+        def criterion():
+            _,out,_,_,_,_,_=self.exercise(malformed=True)
+            self.assertIn('completionReader',a.document(out/'evaluator-progress.json')['failedCollection'])
+        criterion();real=a.command
+        def drop_projection(*args,**kwargs):
+            raw=real(*args,**kwargs);value=json.loads(raw)
+            if isinstance(value,dict):value.pop('completionDiagnostic',None)
+            return json.dumps(value)
+        with mock.patch.object(a,'command',side_effect=drop_projection):
+            with self.assertRaises(TypeError):criterion()
+        criterion()
 
     def test_removing_actual_observer_sql_capture_is_red_then_restored(self):
         def criterion():
