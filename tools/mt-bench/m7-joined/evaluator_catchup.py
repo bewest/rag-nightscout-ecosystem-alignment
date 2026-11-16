@@ -175,11 +175,15 @@ def run(a, directory, manifest, record):
         # deadline. The local observation budget includes preparation/boundary.
         seconds = min(60, a.remaining_seconds(60)); until = time.monotonic_ns() + int(seconds * 1e9)
         with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + seconds)):
-            collector = a.opportunity_collector(directory, manifest, ids)
             services = a.progress_services(directory)
             rpc_queries = len(services) * math.ceil(len(ids) / 128)
             round_queries = math.ceil(len(ids) / 64) + rpc_queries
             round_bytes = o.ROUND_BYTES + rpc_queries * (p.POLICY['responseMaxBytes'] + 8192)
+            # Reserve the first read before constructing/calling its collector,
+            # exactly as observe reserves each later read. Refusal spends no SQL.
+            p.need(POLICY['maxRounds'] >= 1 and round_queries <= POLICY['maxQueries'], 'M7_DRAIN_QUERY_BOUND')
+            p.need(round_bytes <= POLICY['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
+            collector = a.opportunity_collector(directory, manifest, ids)
             value['preparationCost'] = collector.preparation_cost
             def fetch(timeout):
                 with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + timeout)):
