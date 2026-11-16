@@ -14,7 +14,7 @@ for(const [name,mutate] of [
  ['pending completion',x=>x.state.completed.clock='9007199254740992'],
  ['wrong tenant',x=>x.state.output.tenant='22222222-2222-4222-8222-222222222222'],
  ['missing stored write',x=>x.stored=[]],
- ['missing encoded output',x=>x.state.output.rows=[]],
+ ['missing clinical frame',x=>delete x.state.output.frame],
  ['wrong durable glucose',x=>x.state.output.frame.sgvs[0].mgdl=124],
  ['wrong clinical BG-now mean',x=>x.state.output.result.properties.bgnow.mean=124],
  ['missing durable output',x=>x.state.output=null]]){
