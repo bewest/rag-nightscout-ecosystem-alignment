@@ -68,9 +68,11 @@ class Discovery(unittest.TestCase):
         for code in ('M7_EVALUATOR_PROGRESS_FOREIGN','M7_EVALUATOR_PROGRESS_RESET','M7_EXPLICIT_UNSAFE_CLINICAL_OUTPUT'):
             result,calls,_=self.run_recording(p.Refused(code,'FAIL'));self.assertEqual(calls,[]);self.assertEqual(result['hardFailures'][0]['code'],code)
             with self.assertRaisesRegex(RuntimeError,'HARD_FAILURE'):d.check_discovery(result)
-    def test_failed_completion_counter_is_preserved_but_not_unsafe_output_claim(self):
-        result,calls,_=self.run_recording(p.Refused('M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL'))
-        self.assertEqual(calls,['load']);self.assertEqual(result['strictChecks']['idle']['verdict'],'FAIL');self.assertFalse(result['strictChecks']['idle']['hardFailure']);d.check_discovery(result)
+    def test_actual_current_error_is_hard_after_counter_ambiguity_moves_to_fields(self):
+        for code in ('M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE'):
+            result,calls,_=self.run_recording(p.Refused(code,'FAIL'))
+            self.assertEqual(calls,[]);self.assertTrue(result['strictChecks']['idle']['hardFailure'])
+            with self.assertRaisesRegex(RuntimeError,'HARD_FAILURE'):d.check_discovery(result)
 
     def test_count_bounds_preserve_ambiguous_writes_but_reject_corruption(self):
         metrics={'writes_ok':{'count':1},'writes_ok{tenant:a}':{'count':1},'writes_uncertain{tenant:a}':{'count':1},'writes_ok{kind:entries}':{'count':1}}

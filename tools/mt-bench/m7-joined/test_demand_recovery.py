@@ -77,8 +77,8 @@ class DemandRecovery(unittest.TestCase):
   return error
  def test_baseline_discriminator_retains_real_semantic_failures(self):
   self.assertTrue(r.observational_baseline(self.baseline_error()))
-  for kind in ('failed','foreign'):
-   with self.assertRaisesRegex(RuntimeError,'HIDDEN_FAILURE|FOREIGN'):r.observational_baseline(self.baseline_error(kind))
+  self.assertTrue(r.observational_baseline(self.baseline_error('failed')))
+  with self.assertRaisesRegex(RuntimeError,'FOREIGN'):r.observational_baseline(self.baseline_error('foreign'))
   self.assertFalse(r.observational_baseline(self.baseline_error('clinical')))
   for code in ('M7_EVALUATOR_PROGRESS_RESET','M7_COMPLETION_TYPED_STATE','M7_EVALUATOR_PROGRESS_COVERAGE'):
    self.assertFalse(r.observational_baseline(r.p.Refused(code,'UNMEASURED')))
@@ -110,13 +110,14 @@ class DemandRecovery(unittest.TestCase):
    def work():
     events.append('load');self.marker(out/'k6.log','jwt-setup-start' if broken=='setup' else 'scenario-first-iteration')
     if broken=='setup':return
-    if broken=='baseline-unmeasured':finished.wait(1.4)
+    if broken in ('baseline-unmeasured','baseline-failed'):finished.wait(1.4)
     elif not finished.wait(5):raise RuntimeError('TEST_LOAD_JOIN_TIMEOUT')
     events.append('load-ended')
    def proof(*args):events.append('recovery');return {'verdict':'PASS'}
    auth=self.auth();after=copy.deepcopy(auth)
    if broken=='authority':after[0]['generation']='2'
-   stack.enter_context(patch.object(r,'authority',side_effect=[auth,after]));baseline=stack.enter_context(patch.object(r.p,'round_view',return_value={'instances':{},'owners':{A:{'failedCompletions':0},B:{'failedCompletions':0}}}))
+   stack.enter_context(patch.object(r,'authority',side_effect=[auth,auth,after]));from test_evaluator_progress import Progress
+   baseline=stack.enter_context(patch.object(r.p,'round_view',return_value=Progress().round(1)))
    if broken and broken.startswith('baseline-'):
     kind={'baseline-unmeasured':'warming','baseline-failed':'failed','baseline-foreign':'foreign','baseline-clinical':'clinical'}[broken]
     baseline.side_effect=self.baseline_error(kind)
@@ -124,7 +125,7 @@ class DemandRecovery(unittest.TestCase):
    stack.enter_context(patch.object(r.recovery.subprocess,'run',side_effect=AssertionError('NATIVE_SUBPROCESS_FORBIDDEN_IN_FIXTURE')))
    record=SimpleNamespace(value={},save=Mock());stop=Mock(side_effect=finished.set)
    with a.command_deadline(time.time()+20):
-    if broken and broken!='baseline-unmeasured':
+    if broken and broken not in ('baseline-unmeasured','baseline-failed'):
      with self.assertRaises(RuntimeError):r.run(fake,d,m,out,work,record,stop)
     else:r.run(fake,d,m,out,work,record,stop)
    result=a.document(out/'demand-recovery.json')
@@ -132,7 +133,7 @@ class DemandRecovery(unittest.TestCase):
    if broken=='no-change':self.assertNotIn('recovery',events)
    if not broken:
     self.assertEqual(result['verdict'],'PASS');self.assertLess(events.index('restart'),events.index('load-ended'));self.assertLess(events.index('recovery'),events.index('load-ended'))
-   elif broken=='baseline-unmeasured':
+   elif broken in ('baseline-unmeasured','baseline-failed'):
     self.assertEqual(result['verdict'],'UNMEASURED');self.assertFalse(result['faultExercised']);stop.assert_not_called();self.assertIn('load-ended',events)
     self.assertEqual(result['baselineObservation']['collection']['queries'],1);self.assertTrue(baseline.call_args.kwargs['warming'])
    else:self.assertEqual(result['verdict'],'FAIL')
@@ -142,7 +143,7 @@ class DemandRecovery(unittest.TestCase):
  def test_no_actual_role_change_refuses_recovery(self):self.caller('no-change')
  def test_changed_authority_refuses(self):self.caller('authority')
  def test_observational_baseline_does_not_cancel_ordinary_work(self):self.caller('baseline-unmeasured')
- def test_actual_failed_completion_baseline_still_stops(self):self.caller('baseline-failed')
+ def test_warming_unknown_uncredited_attempts_skip_fault_and_keep_traffic(self):self.caller('baseline-failed')
  def test_actual_foreign_baseline_still_stops(self):self.caller('baseline-foreign')
  def test_actual_clinical_stall_baseline_still_stops(self):self.caller('baseline-clinical')
 

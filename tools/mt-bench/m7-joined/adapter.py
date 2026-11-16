@@ -496,6 +496,7 @@ def attach(args):
             if m['generator'].get('runtimeOwner'):
                 runtime=document(args.runtime_owner)
                 if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
+                if 'edgeWorkerBudget' in runtime:m['edgeWorkerBudget']=runtime['edgeWorkerBudget']
             require(from_manifest(m)==m['runConfiguration'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
             candidates=[file for file in (state/'primer/tenants.json',state/'ops/tenants.json') if file.exists()]
             projections=[tenant_projection(document(file),m['tenants']) for file in candidates]
@@ -1416,6 +1417,8 @@ def opportunity_contract(m):
 
 def select_opportunities(args,m):
     selected=getattr(args,'evaluator_opportunities',None)
+    if selected is None and m.get('runPurpose')=='discovery' and m.get('profile')=='pgstream-sample' and m.get('completionContract')=='evaluator-work-v2':
+        selected='received-input-v1'
     if selected is not None:m['evaluatorOpportunities']=selected;opportunity_contract(m)
 
 
@@ -1482,7 +1485,16 @@ def readiness(d, m):
             queries+=value['queries'];bytes_seen+=value['bytes']
             evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
             evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
-            evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
+            if m.get('runPurpose')=='discovery':
+                time.sleep(.25)
+                confirmed=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args))
+                queries+=confirmed['queries'];bytes_seen+=confirmed['bytes']
+                evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
+                admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids)
+                write(d/'readiness-stable-baseline.private.json',evaluator_progress.pack({'rounds':[value,confirmed]}))
+                observations.append({'verdict':'PASS',**admission})
+            else:
+                evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
             write(d/'runtime-readiness.json',{'verdict':'PASS','policy':evaluator_progress.POLICY,'observations':observations,'meaning':'completed fresh-window acquisitions; legacy cycles alone are insufficient'})
             return

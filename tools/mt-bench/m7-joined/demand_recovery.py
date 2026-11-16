@@ -130,11 +130,10 @@ def observational_baseline(error):
     if isinstance(diagnostic,dict):
         row=diagnostic.get('failedRow',{})
         failed=row.get('progress',{}).get('failedCompletions') if isinstance(row.get('progress'),dict) else None
-        if type(failed) is int and failed>0:raise p.Refused('M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         if row.get('admitted') is False:raise p.Refused('M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
         if str(error)=='M7_EVALUATOR_PROGRESS_ERROR':
             # Only the decoder's existing explicit warming shape is ambiguous.
-            return (diagnostic.get('warming') is True and failed==0 and row.get('admitted') is True
+            return (diagnostic.get('warming') is True and type(failed) is int and failed>=0 and row.get('admitted') is True
                     and row.get('code') in ('EVALUATOR_STARTING','EVALUATOR_ACQUISITION_REQUIRED')
                     and row.get('alert') is None)
     return str(error)=='M7_EVALUATOR_PROGRESS_UNAVAILABLE'
@@ -196,8 +195,14 @@ def run(a,d,m,out,work,record,stop_load):
                 return result
             a.write(out/'demand-recovery-baseline.private.json',baseline)
             result['baselineArtifact']='demand-recovery-baseline.private.json'
-            require(all(row.get('failedCompletions')==0 for row in baseline.get('owners',{}).values()),
-                    'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE')
+            # A cumulative historical count cannot identify its cause. Admit only
+            # a healthy same-runtime bracket; uncredited attempts retain unknown cause.
+            time.sleep(.25);live(future);bound()
+            confirmed=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b))
+            baseline_admission=p.stable_discovery_baseline(baseline,confirmed,ids)
+            require(auth_before==authority(a,d,ids),'M7_DEMAND_RECOVERY_AUTHORITY_CHANGED')
+            result['rejectedWorkBaseline']=baseline_admission
+            a.write(out/'demand-recovery-confirmed-baseline.private.json',confirmed)
             # All rendered evaluator services, and no API/realtime/foreign role.
             require(services==a.progress_services(d),'M7_DEMAND_RECOVERY_ROLE_CHANGED')
             live(future);a.assert_owned(m)
@@ -211,7 +216,7 @@ def run(a,d,m,out,work,record,stop_load):
             result['restart']=json.loads(response);result['restartEndedAtMs']=int(time.time()*1000)
             require(set(result['restart'].get('starts',{}))==set(services),'M7_DEMAND_RECOVERY_ROLE_CHANGED')
             live(future);bound()
-            proof=recovery.main({'mode':'recovery','ids':ids,'services':services,'composeArgs':compose_args,
+            proof=recovery.main({'discoveryUnclassifiedRejections':True,'mode':'recovery','ids':ids,'services':services,'composeArgs':compose_args,
                                  'baseline':str(out/'demand-recovery-baseline.private.json'),
                                  'path':str(out/'demand-recovery-runtime.private.json'),
                                  'deadlineMs':min(int(until*1000)-5000,result['restartEndedAtMs']+120000),

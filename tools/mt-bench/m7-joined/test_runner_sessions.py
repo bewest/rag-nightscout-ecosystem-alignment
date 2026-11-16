@@ -178,7 +178,9 @@ class ActualAttachment(unittest.TestCase):
             (runtime/'state/seed').write_text('unchanged')
             (runtime/'env').write_text('synthetic');(runtime/'compose.json').write_text('{}')
             profile={'profile':a.diagnostic_resources.EXTERNAL_NAME,'synthetic':'exact ceiling'}
-            a.write(runtime/'owner.json',{'diagnosticResources':profile,'directory':str(runtime),'prepared':True,
+            edge_budget={'workerProcesses':1,'workerConnections':16384,'nginxMillicpus':125,
+                'configurationSha256':'a'*64}
+            a.write(runtime/'owner.json',{'edgeWorkerBudget':edge_budget,'diagnosticResources':profile,'directory':str(runtime),'prepared':True,
                 'project':'synthetic','pair':{'core':'core','deploy':'deploy'},'imageId':'sha256:'+'e'*64})
             config={'services':{'nginx':{'ports':[{'host_ip':'127.0.0.1','published':12345}]},
                 'vault':{'command':['vault','server']},'pgstream':{'command':a.stream_topology.EXTERNAL_COMMAND},'evaluator':{'command':['evaluator']}}}
@@ -193,10 +195,14 @@ class ActualAttachment(unittest.TestCase):
             with ExitStack() as stack:
                 for name,value in {'instrument':{'sha256':'d'*64},'git':'core','resources':[row],
                     'fixture_inventory':{},'host_identity':{},'generate':{},'generate_workload':{},
-                    'attachment_generator':{'runtimeOwner':{'owner':'original'}},'tenant_projection':[]}.items():
+                    'tenant_projection':[]}.items():
                     stack.enter_context(patch.object(a,name,return_value=value))
                 stack.enter_context(patch.object(a,'commit',side_effect=lambda repo,head:head))
                 stack.enter_context(patch.object(a.diagnostic_resources,'configure'))
+                def bind(d,source,dependencies,m,owner_file):
+                    self.assertNotIn('edgeWorkerBudget',m)
+                    return {'runtimeOwner':{'owner':'original'}}
+                stack.enter_context(patch.object(a,'attachment_generator',side_effect=bind))
                 actual_frozen=a.frozen
                 def admission(m,operation):
                     import run_configuration as rc
@@ -213,6 +219,9 @@ class ActualAttachment(unittest.TestCase):
                 stack.enter_context(patch.object(a,'command',side_effect=lambda argv,**kw:json.dumps(config if 'config' in argv else dict(schema='synthetic',sha256='synthetic',sourceCommit='core',sourceBlobs={}))))
                 def verify(d,m):
                     self.assertEqual(m['diagnosticResources'],profile)
+                    owner=a.document(runtime/'owner.json')
+                    if 'edgeWorkerBudget' in owner:self.assertEqual(m.get('edgeWorkerBudget'),edge_budget)
+                    else:self.assertNotIn('edgeWorkerBudget',m)
                     self.assertEqual(a.stream_topology.verify_config(m,config),a.stream_topology.EXTERNAL)
                 stack.enter_context(patch.object(a,'verify',side_effect=verify))
                 for name in ('one','two'):
@@ -224,6 +233,8 @@ class ActualAttachment(unittest.TestCase):
                     receipt=a.document(root/'receipt.json');receipt['configurationSha256']='0'*64
                     a.write(root/'receipt.json',receipt)
                     with self.assertRaisesRegex(RuntimeError,'CONFIGURATION_MISMATCH'):actual_frozen(m,'run')
+                    owner=a.document(runtime/'owner.json');owner.pop('edgeWorkerBudget',None)
+                    a.write(runtime/'owner.json',owner)
             self.assertEqual((runtime/'state/seed').read_text(),'unchanged')
 
 if __name__=='__main__':unittest.main()

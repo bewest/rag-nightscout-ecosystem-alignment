@@ -93,6 +93,14 @@ class DiscoverySource(unittest.TestCase):
                     cell.main();parsed=prepare.call_args.args[0]
                     self.assertEqual(app.a.cadence_options(parsed),protocol.prepared_cadence(b));self.assertEqual(parsed.tenants,tenants)
                     self.assertEqual(parsed.core_commit,b['pair']['core']);self.assertEqual(parsed.image,b['imageId'])
+                    # Actual canonical worker omits the optional knob. The shared
+                    # prepare selection must still choose discovery's durable observer.
+                    self.assertIsNone(parsed.evaluator_opportunities)
+                    manifest={'runPurpose':'discovery','profile':parsed.profile,'completionContract':parsed.completion_contract}
+                    app.a.select_opportunities(parsed,manifest)
+                    self.assertEqual(manifest['evaluatorOpportunities'],'received-input-v1')
+                    strict={**manifest,'runPurpose':'acceptance'};strict.pop('evaluatorOpportunities')
+                    app.a.select_opportunities(parsed,strict);self.assertNotIn('evaluatorOpportunities',strict)
 
     def test_independent_totals_and_local_explicit_zero_admission(self):
         for total in (0,2,53,80000):
@@ -105,6 +113,41 @@ class DiscoverySource(unittest.TestCase):
         for total in (-1,80001,True,1.5):
             b=self.request();b['workload']['resourcePlan']['logicalPollingClients']=total
             with self.assertRaises(RuntimeError):protocol.binding(b)
+
+    def test_actual_remote_idle_typed_opportunity_omission_continues_but_errors_stop(self):
+        import contextlib
+        from types import SimpleNamespace
+        from test_discovery import Discovery
+        import discovery
+        import evaluator_progress as progress
+        for code,verdict in [('M7_OPPORTUNITY_NOT_OBSERVED','UNMEASURED'),('M7_EVALUATOR_PROGRESS_ERROR','FAIL'),('M7_DEMAND_RECOVERY_AUTHORITY_CHANGED','FAIL'),('M7_DEMAND_RECOVERY_RESTORE_CHANGED','FAIL')]:
+            fixture=Discovery();fixture.setUp();d,m=fixture.setup();m['cadence'].setdefault('warmupSeconds',1)
+            try:
+                record=discovery.Record(app.a,d,m)
+                with contextlib.ExitStack() as stack:
+                    for name in ('frozen','quiet','verify','readiness','psql','phase_snapshot'):
+                        stack.enter_context(patch.object(app.a,name))
+                    stack.enter_context(patch.object(app.time,'sleep'))
+                    stack.enter_context(patch.object(app.a,'enabled_idle',side_effect=progress.Refused(code,verdict)))
+                    if verdict=='UNMEASURED':
+                        record.observe('idle',lambda:app.idle(d,m))
+                        self.assertFalse(record.value['hardFailures'])
+                        self.assertEqual(record.value['strictChecks']['idle']['verdict'],'UNMEASURED')
+                        record.observe('next-load',lambda:'ordinary-load-entered')
+                        self.assertEqual(record.value['strictChecks']['next-load']['verdict'],'PASS')
+                    else:
+                        with self.assertRaises(RuntimeError):record.observe('idle',lambda:app.idle(d,m))
+                        self.assertTrue(record.value['hardFailures'])
+            finally:fixture.doCleanups()
+        fixture=Discovery();fixture.setUp();d,m=fixture.setup();m['cadence'].setdefault('warmupSeconds',1)
+        try:
+            with contextlib.ExitStack() as stack:
+                for name in ('frozen','quiet','verify','readiness','psql','phase_snapshot'):
+                    stack.enter_context(patch.object(app.a,name))
+                stack.enter_context(patch.object(app.time,'sleep'))
+                stack.enter_context(patch.object(app.a,'enabled_idle',return_value=SimpleNamespace(result={'verdict':'UNMEASURED'})))
+                with self.assertRaisesRegex(RuntimeError,'EXTERNAL_IDLE_FAILED'):app.idle(d,{**m,'runPurpose':'acceptance'})
+        finally:fixture.doCleanups()
 
     def test_admission_failure_blocks_ingress_and_export_before_effects(self):
         # Exercise actual app.load ordering, keeping all host ports synthetic.

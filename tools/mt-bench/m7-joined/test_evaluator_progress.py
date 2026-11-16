@@ -54,6 +54,20 @@ class Progress(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'None !='):
                 self.assert_failed_row_evidence()
         self.assert_failed_row_evidence()
+    def test_actual_readiness_discovery_keeps_unknown_history_and_strict_stays_red(self):
+        import adapter as a
+        frame=self.frame(ids=[A]);frame['view']['tenants'][0]['progress']['failedCompletions']=2
+        for discovery in (False,True):
+            with tempfile.TemporaryDirectory() as name:
+                d=Path(name);(d/'tenants.private.json').write_text(json.dumps([{'id':A}]))
+                with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)):
+                    if discovery:a.readiness(d,{'runPurpose':'discovery'})
+                    else:
+                        with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):a.readiness(d,{})
+                saved=json.loads((d/'runtime-readiness.json').read_text())
+                self.assertEqual(saved['verdict'],'PASS' if discovery else 'FAIL')
+                if discovery:self.assertEqual(saved['observations'][0]['causeAttribution'],'UNMEASURED')
+
     def test_refusal_evidence_bounds_malformed_fields_without_losing_refusal(self):
         frame=self.refused_frame();row=frame['view']['tenants'][0]
         row['code']='C'*100000;row['evaluation']['alert']='\u2603'*100000
@@ -91,6 +105,31 @@ class Progress(unittest.TestCase):
             self.assertEqual(caught.exception.verdict,'FAIL')
         rounds=[self.round(i) for i in range(3)];rounds[-1]['instances']['evaluator']['runtimeId']=S
         with self.assertRaisesRegex(p.Refused,'RESET'):p.assess(rounds,[A,B],'load')
+    def test_discovery_historical_uncredited_attempts_are_unknown_not_clinical_failures(self):
+        rounds=[self.round(i) for i in range(3)]
+        for index,value in enumerate(rounds):
+            value['owners'][A]['failedCompletions']=3+index
+        admission=p.stable_discovery_baseline(rounds[0],rounds[-1],[A,B])
+        self.assertEqual(admission['baselineUncreditedAttempts'],3)
+        self.assertEqual(admission['uncreditedAttemptDelta'],2)
+        self.assertEqual(admission['causeAttribution'],'UNMEASURED')
+        with self.assertRaisesRegex(p.Refused,'HIDDEN_FAILURE'):p.assess(rounds,[A,B],'load')
+        broken=copy.deepcopy(rounds);broken[-1]['owners'][A]['failedCompletions']=0
+        with self.assertRaisesRegex(p.Refused,'RESET'):p.stable_discovery_baseline(broken[0],broken[-1],[A,B])
+        broken=copy.deepcopy(rounds);broken[-1]['owners'][A]['code']='EVALUATOR_WINDOW_REFUSED'
+        with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):p.stable_discovery_baseline(broken[0],broken[-1],[A,B])
+
+    def test_default_discovery_selection_control_and_restore(self):
+        import adapter as a
+        from types import SimpleNamespace
+        def criterion(select):
+            m={'runPurpose':'discovery','profile':'pgstream-sample','completionContract':'evaluator-work-v2'}
+            select(SimpleNamespace(evaluator_opportunities=None),m)
+            self.assertEqual(m.get('evaluatorOpportunities'),'received-input-v1')
+        criterion(a.select_opportunities)
+        with self.assertRaises(AssertionError):criterion(lambda args,m:None)
+        criterion(a.select_opportunities)
+
     def test_closed_window_state_and_wrong_self_coverage_fail(self):
         def broken(frame):frame['view']['tenants'][0]['code']='EVALUATOR_WINDOW_REFUSED';return frame
         with self.assertRaises(p.Refused) as caught:self.round(transform=broken)
