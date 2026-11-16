@@ -109,3 +109,36 @@ HTTP refusal after one stock socket connects with no frames; failure exits with
 its original diagnostic code rather than waiting for the traffic deadline. Python
 retains that safe terminal code and reports process termination or exit timeout
 separately. This does not force process exit or change the traffic budget.
+
+## Explicit independent pgstream topology
+
+Fresh `pgstream-sample` discovery configurations for a separately managed Go
+service select `--pgstream-topology external-service-v1` and
+`--diagnostic-resource-profile local-diagnostic-external-pgstream-4cpu-8g-v1`.
+The default remains `colocated-v1`; a standalone Compose service under that
+selection refuses. The new selection validates the exact pinned core schema,
+canonical frozen service command, source/image identity and separate process
+instrumentation. The existing paired producer and core CLI source-contract check
+still applies. It does not imply image or runtime acceptance.
+
+The new resource profile explicitly divides the former evaluator allocation:
+
+| Role | CPU limit | Memory limit |
+|---|---:|---:|
+| Evaluator Node | 125 millicpus | 256 MiB |
+| Independent pgstream Go | 125 millicpus | 256 MiB |
+
+All other role, driver, oneoff and host-heap limits remain the existing policy.
+The complete one-replica roster reserves 3875 millicpus, 8192 MiB container memory
+and 1024 MiB host V8 heaps. This is a bounded diagnostic policy; whether these
+quotas are adequate for a workload is UNMEASURED. A constrained generator or
+service is a finding, not capacity acceptance. The old profile retains its
+250 millicpu/512 MiB evaluator allocation and refuses the new Go role.
+
+Deployment includes the independent service in the maintained role roster.
+Preflight requires Node counters in the evaluator container and Go counters in
+the pgstream container, with exact image/command and running-container birth
+checks. Reduction requires both roles and stable process births across each
+window. Go logs use the existing bounded collector; Node diagnostics environment
+flags are validated only for Node roles. Raw log, source and runtime receipts
+retain their existing homes. Old captures remain on their original helper.

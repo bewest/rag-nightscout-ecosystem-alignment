@@ -1,4 +1,4 @@
-"""Existing SQL calls only; honest request bounds instead of nominal QPS."""
+"""Legacy SQL rows remain unchanged; new companion reads have separate brackets."""
 import copy
 import json
 from pathlib import Path
@@ -8,11 +8,11 @@ from unittest.mock import patch
 import adapter as a
 
 class Timing(unittest.TestCase):
-    def test_original_two_queries_and_failure_metadata_without_extra_reads(self):
-        expected=["SELECT r.rolname,sum(s.calls),sum(s.total_exec_time) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid GROUP BY 1 ORDER BY 1;", "SELECT r.rolname,s.calls,s.total_exec_time,left(regexp_replace(s.query,'\\s+',' ','g'),500) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY total_exec_time DESC LIMIT 50;"]
+    def test_original_two_queries_unchanged_then_new_companion_capture(self):
+        expected=["SELECT r.rolname,sum(s.calls),sum(s.total_exec_time) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid GROUP BY 1 ORDER BY 1;", "SELECT r.rolname,s.calls,s.total_exec_time,s.queryid,s.dbid,encode(convert_to(s.query,'UTF8'),'hex') FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY r.rolname,s.queryid;"]
         for failure in (False,True):
             with self.subTest(failure=failure),tempfile.TemporaryDirectory()as scratch:
-                d=Path(scratch);a.write(d/'owner.json',{});queries=[]
+                d=Path(scratch);a.write(d/'owner.json',{});a.write(d/'frozen.compose.json',{'services':{}});queries=[]
                 def sql(_,text):
                     queries.append(text)
                     if failure and len(queries)==2:raise RuntimeError('PRIVATE_SQL_DETAILS')
@@ -21,7 +21,11 @@ class Timing(unittest.TestCase):
                     if failure:
                         with self.assertRaisesRegex(RuntimeError,'PRIVATE_SQL_DETAILS'):a.phase_snapshot(d,d,'before')
                     else:a.phase_snapshot(d,d,'before')
-                self.assertEqual(queries,expected)
+                self.assertEqual(queries[:2],expected)
+                self.assertEqual(len(queries),2 if failure else 3)
+                if not failure:
+                    self.assertEqual(queries[2],a.cost_companion.SQL)
+                    self.assertEqual(a.document(d/'before-pg-costs.json')['status'],'NO-INSTRUMENT')
                 meta=a.document(d/'before-sql-snapshot-timing.json');self.assertEqual(set(meta['reads']),{'pg-role','pg-statements'})
                 for key,row in meta['reads'].items():
                     self.assertEqual(row['status'],'FAILED'if failure and key=='pg-statements'else'PASS')

@@ -30,7 +30,7 @@ const A='11111111-1111-4111-8111-111111111111';
     Date,Buffer,Error,Promise,setTimeout,clearTimeout,
     process:{stdout:{write:line=>{lines.push(line);return true;}},stderr:{write:line=>{throw Error(line);}},exit:()=>{throw Error('HELPER_EXIT');}},
     require:name=>{
-     if(name==='./deploy/multitenant/load-env')return {};
+     if(name==='./deploy/multitenant/service-environment')return {read:()=>({})};
      if(name==='./lib/server/serve/evaluator-config')return{partitionFor:()=>({partitioned:false})};
      if(name==='./lib/server/internal-api/listener-config')return{resolve:()=>({peer:(_name,limits)=>{assert.equal(limits.maxBytes,1048576);return limits;}})};
      if(name==='./lib/server/internal-api/clients')return{evaluatorInspection:()=>({inspectEvaluator:inspect})};

@@ -3,9 +3,10 @@ import json
 import re
 import subprocess
 import time
-from contract import require, SHA, OWNER
+from contract import require, SHA, OWNER, UNACCEPTED_SCOPE
 
 INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
+INCOMPLETE=INCOMPLETE|frozenset(('M7_OPPORTUNITY_NOT_OBSERVED','M7_OPPORTUNITY_DEADLINE','M7_OPPORTUNITY_BYTE_BOUND','M7_OPPORTUNITY_COVERAGE','M7_OPPORTUNITY_CAPTURE','M7_OPPORTUNITY_QUERY_BOUND'))
 
 def safe_code(error):
     text=str(error)
@@ -47,6 +48,10 @@ def check_discovery(value):
             for row in rows:
                 require(all(type(row.get(k)) in (int,float) and row[k]>=0 for k in ('accepted','stored','uncertain')) and row['accepted']<=row['stored']<=row['accepted']+row['uncertain'] and row.get('match') is True,'M7_DISCOVERY_WRONG_DATA')
                 require(all(type(row.get(k)) is int and row[k]>=0 for k in ('probeAccepted','probeStored','probeUncertain','probeRefused','probePending')) and row['probePending']==0 and row['probeAccepted']<=row['probeStored']<=row['probeAccepted']+row['probeUncertain'],'M7_DISCOVERY_WRONG_DATA')
+    if value.get('profile')=='pgstream-sample':
+        require(all(value.get(key)==expected for key,expected in UNACCEPTED_SCOPE.items()),'M7_DISCOVERY_PENDING_SCOPE')
+        if value['status']=='MEASURED':
+            require(value.get('completedOutput',{}).get('verdict')=='PASS' and value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'} and value.get('sqlAttribution'),'M7_DISCOVERY_SAMPLE_PROOF')
     probe=value.get('probe') or {};require(not probe.get('hardFailure') and not hard_recovery(probe.get('restart',{}).get('runtimeAcquisitionObservation',{})),'M7_DISCOVERY_HARD_FAILURE')
     for row in value['strictChecks'].values():
         require(isinstance(row,dict) and row.get('verdict') in ('PASS','FAIL','UNMEASURED'),'M7_DISCOVERY_CHECK_SHAPE')
@@ -57,7 +62,7 @@ def check_discovery(value):
 class Record:
     def __init__(self,a,d,m):
         self.a,self.d,self.m=a,d,m
-        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
+        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(UNACCEPTED_SCOPE if m['profile']=='pgstream-sample' else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
         self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json') if (file:=self.d/folder/name).is_file()}
         self.a.write(self.d/'summary.json',self.value)
@@ -87,7 +92,7 @@ class Record:
             self.value['strictChecks'][stage]={'verdict':'UNMEASURED','code':'M7_DISCOVERY_PROCESS_INCOMPLETE'}
         finally:self.save()
 
-def run_discovery(a,d,m,k6_image):
+def run_discovery(a,d,m,k6_image,oneoff=None):
     record=Record(a,d,m);record.save()
     try:
         require(m.get('profile')!='fresh-image-diagnostic','M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')
@@ -96,12 +101,18 @@ def run_discovery(a,d,m,k6_image):
         require((d/'deploy-before-host.json').is_file(),'M7_DEPLOY_QUIET_RECORD_REQUIRED')
         a.verify_generator(d,m);record.observe('readiness',lambda:a.readiness(d,m))
         k6_id=json.loads(a.command(['docker','image','inspect',k6_image]))[0]['Id'];a.write(d/'loadgen-image.json',{'k6':k6_id,'generator':m['generator']})
+        if m['profile']=='pgstream-sample':completion,sql_roles=a.sample_preflight(d,m,k6_id,**({'oneoff':oneoff}if oneoff else{}))
         out=d/'idle-disabled';out.mkdir();a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before')
-        try:a.time.sleep(60)
+        try:a.time.sleep(m['cadence'].get('warmupSeconds',60))
         finally:a.phase_snapshot(d,out,'after')
         out=d/'idle';out.mkdir();a.quiet(d,m,'idle-before',check_load=False);a.psql(d,'SELECT pg_stat_statements_reset();')
         record.observe('idle',lambda:a.enabled_idle(d,m,out,m['cadence']['idleSeconds']))
-        try:discovery_load(a,d,m,k6_id,record)
+        if m.get('serialExchangeDiagnostic') is not None:
+            serial_exchange_diagnostic(a,d,m,record)
+            record.value.update(status='PARTIAL',diagnosticOnly=True,ordinaryTraffic='NOT_RUN',
+                measurements={'complete':False,'code':'M7_SERIAL_EXCHANGE_DIAGNOSTIC_ONLY'})
+            record.save();check_discovery(record.value);return record.value
+        try:discovery_load(a,d,m,k6_id,record,**({'oneoff':oneoff}if oneoff else{}))
         except Exception as error:
             if hasattr(error,'oracleFindings'):
                 # File-only reducer: no extra SQL or work after a hard count
@@ -111,6 +122,15 @@ def run_discovery(a,d,m,k6_image):
                 except Exception as missing:record.value['measurements']={'complete':False,'code':safe_code(missing)}
                 record.save()
             raise
+        if m['profile']=='pgstream-sample':
+            probe=record.value.get('probe')
+            if probe:
+                record.value['sqlAttribution']=a.sample_results(d,probe,sql_roles)
+                record.value['completedOutput']=probe['completedOutput']
+            counts=record.value.get('oracle')
+            if counts and counts.get('rows') and all(row.get('accepted',0)>0 and row.get('uncertain',0)==0 for row in counts['rows']):
+                a.control(d,m);record.value['oracleControl']=a.document(d/'load/oracle-control.json')
+            else:record.value['strictChecks']['oracleControl']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
         for phase in ('idle','load'):
             if (d/phase/'evaluator-progress.json').is_file():record.value.setdefault('evaluatorProgress',{})[phase]=a.progress_summary(d/phase)
         from reduce import measurements
@@ -120,21 +140,80 @@ def run_discovery(a,d,m,k6_image):
         # before classifying the already recorded fingerprint finding.
         record.save()
         require(record.value.get('settingsFingerprintObservation',{}).get('verdict')!='FAIL','M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
-        if record.value.get('settingsFingerprintObservation',{}).get('verdict')=='PASS' and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and record.value['probe'].get('restart') is not None and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
+        if record.value.get('settingsFingerprintObservation',{}).get('verdict')=='PASS' and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and (record.value['probe'].get('restart') is not None or m['profile']=='pgstream-sample' and record.value.get('completedOutput',{}).get('verdict')=='PASS' and record.value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'}) and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
         record.save();check_discovery(record.value);return record.value
     except Exception as error:
         if not record.value['hardFailures']:record.failure('collection',error,True)
         record.save();raise
 
-def discovery_load(a,d,m,k6_id,record):
+def serial_exchange_diagnostic(a,d,m,record):
+    """Existing stock probe, selected paired exchange hooks, no ordinary load."""
+    require(m.get('serialExchangeDiagnostic')==a.SERIAL_EXCHANGE_DIAGNOSTIC,'M7_SERIAL_EXCHANGE_DIAGNOSTIC_SCOPE')
+    a.frozen(m,'run');a.verify(d,m);a.image(m);a.verify_generator(d,m);a.assert_owned(m)
+    out=d/'load';out.mkdir();runid='m7-'+m['owner'][:12]
+    spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
+    completion=a.document(d/'completion-source.json')
+    node=m['generator']['tools']['node']
+    binding={'version':1,'kind':'pgstream-serial-exchange-pair-v1','selection':m['serialExchangeDiagnostic'],
+             'owner':m['owner'],'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256'],
+             'ownerFile':str(d/'owner.json'),'ownerSha256':a.digest(d/'owner.json'),
+             'tenantsFile':str(d/'tenants.private.json'),'tenantsSha256':a.digest(d/'tenants.private.json'),
+             'actorSha256':a.digest(d/'serial-exchange-pair.cjs'),'nodeExecutable':node['path'],'nodeSha256':node['sha256'],
+             'baseUrl':'http://127.0.0.1:'+str(m['port']),'outputDirectory':str(out/'exchange-phases')}
+    binding_path=out/'binding.private.json';a.write(binding_path,binding)
+    env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),'M7_COMPLETION_SOURCE':json.dumps(completion),
+        'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),
+        'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,
+        'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
+    argv=[node['path'],str(d/'probe.js'),'--base',binding['baseUrl'],'--tenants',str(d/'tenants.private.json'),
+          '--compose',spec,'--runid',runid,'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),
+          '--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','0','--evalTimeout','900',
+          '--out',str(out/'probe.json'),'--signal',str(out/'.window'),
+          '--serialExchangeBinding',str(binding_path),'--serialExchangeBindingSha256',a.digest(binding_path)]
+    a.write(out/'launch.json',{'argv':argv,'diagnosticOnly':True,'serialExchangeDiagnostic':m['serialExchangeDiagnostic'],
+            'bindingSha256':a.digest(binding_path),'ordinaryTraffic':'NOT_RUN','capacityAcceptance':'NOT_GRANTED'})
+    process=None;monitor=None
+    with (out/'probe.log').open('wb')as probe_log,a.sampling(d,out):
+        a.phase_snapshot(d,out,'before')
+        try:
+            process=a.diagnostic_resources.popen(a.subprocess.Popen, argv,env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            a.job_record(out/'probe-job.json',process,m['owner'],group=True)
+            monitor=a.loadgen_process(d,process);monitor.__enter__()
+            rc=process.wait(timeout=900)
+            record.value['processes']['probe']={'returncode':rc,'diagnosticOnly':True};record.save()
+            require(rc==0,'M7_SERIAL_EXCHANGE_DIAGNOSTIC_PROCESS_FAILED')
+        finally:
+            if process is not None:
+                a.stop_job(out/'probe-job.json',m['owner']);process.wait(timeout=10)
+            if monitor:monitor.__exit__(None,None,None)
+            a.phase_snapshot(d,out,'after')
+    require(not(out/'.window').exists() and not(out/'k6-summary.json').exists(),'M7_SERIAL_EXCHANGE_ORDINARY_TRAFFIC_RELEASED')
+    probe=a.document(out/'probe.json')
+    require(probe.get('diagnosticOnly') is True and isinstance(probe.get('serialExchangeDiagnostic'),dict),
+            'M7_SERIAL_EXCHANGE_DIAGNOSTIC_RESULT')
+    require(not probe.get('hardFailure') and not probe.get('failure'),'M7_SERIAL_EXCHANGE_DIAGNOSTIC_HARNESS_FAILURE')
+    observed=probe['serialExchangeDiagnostic'];before=observed.get('before');after=observed.get('after')
+    statuses=('COMPLETED_64','HTTP_REFUSED','TRANSPORT_FAILURE','PHASE_DEADLINE')
+    require(isinstance(before,dict) and before.get('status') in statuses and
+            (isinstance(after,dict) and after.get('status') in statuses if before['status']=='COMPLETED_64' else after is None),
+            'M7_SERIAL_EXCHANGE_DIAGNOSTIC_PHASES')
+    record.value['probe']=probe
+    record.value['serialExchangeDiagnostic']={'selection':m['serialExchangeDiagnostic'],'before':before,'after':after,
+         'priming':probe.get('prime'),'bindingSha256':a.digest(binding_path),'ordinaryTraffic':'NOT_RUN',
+         'scope':'Matched Node64serial exchange phases around original stock-client setup; no full k6 setup or ordinary310second result'}
+    record.value['strictChecks']['serialExchangeDiagnostic']={'verdict':'UNMEASURED','code':'M7_SERIAL_EXCHANGE_DIAGNOSTIC_ONLY','hardFailure':False}
+    record.save()
+
+def discovery_load(a,d,m,k6_id,record,oneoff=None):
     out=d/'load';out.mkdir();runid='m7-'+m['owner'][:12];(out/'runid').write_text(runid)
     spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
-    env=a.runtime_env({'NODE_PATH':str(d/'dependencies/node_modules'),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
+    completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
+    env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
-            process=a.subprocess.Popen([m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--per','2','--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery','3000','--restart','1','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
             a.job_record(out/'probe-job.json',process,m['owner'],group=True);deadline=a.time.monotonic()+600
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
             primed=(out/'.window').is_file()
@@ -149,8 +228,8 @@ def discovery_load(a,d,m,k6_id,record):
             monitor=a.loadgen_process(d,process);monitor.__enter__()
             try:
                 def work():
-                    with (out/'k6.log').open('wb') as output:record.process('k6',lambda:a.command(k6_command(a,d,m,k6_id,runid),file=output,timeout=m['cadence']['loadSeconds']+600))
-                    if record.value['processes']['k6'].get('timeout'):stop_k6(a,m,record)
+                    with (out/'k6.log').open('wb') as output:record.process('k6',lambda:(lambda argv,**kw:oneoff('k6-load',argv,**kw)if oneoff else a.command(argv,**kw))(k6_command(a,d,m,k6_id,runid),file=output,timeout=m['cadence']['loadSeconds']+600))
+                    if record.value['processes']['k6'].get('timeout'):stop_k6(a,m,record,oneoff=oneoff)
                 record.observe('load',lambda:observed_load(a,d,m,out,work))
             finally:a.phase_snapshot(d,out,'after')
             # Recheck owned custody before the existing bounded restart protocol.
@@ -178,7 +257,8 @@ def discovery_load(a,d,m,k6_id,record):
         require(not hard_recovery(recovery),'M7_DISCOVERY_CLINICAL_FAILURE')
         if recovery:record.value['strictChecks']['recovery']={**{k:recovery[k] for k in ('verdict','code') if k in recovery},'hardFailure':False}
     if (out/'k6-summary.json').is_file():
-        metrics=a.document(out/'k6-summary.json')['metrics'];record.value['metrics']={key:metrics[key] for key in ('http_reqs','http_req_failed','dropped_iterations','writes_ok','writes_refused','writes_uncertain','responses_refused') if key in metrics}
+        metrics=a.document(out/'k6-summary.json')['metrics'];record.value['metrics']={key:metrics[key] for key in ('http_reqs','http_req_failed','iterations','dropped_iterations','scenario_request_attempts','scenario_http_responses','scenario_transport_failures','writes_ok','writes_refused','writes_uncertain','responses_refused') if key in metrics}
+        record.value['rateOffer']=a.rate_offer(m)
         fingerprint=a.profile_provenance.fingerprint_check(metrics);record.value['settingsFingerprintObservation']=fingerprint;record.save()
         try:result,known=count_observation(a,d,out,runid,metrics)
         except Exception as error:
@@ -208,16 +288,17 @@ def observed_load(a,d,m,out,work):
         else:observer.__exit__(None,None,None)
 
 def k6_command(a,d,m,image,runid):
-    return ['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','SETTINGS_FINGERPRINT='+m['settingsFingerprint']['sha256'],'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL=1','-e','HOT_FACTOR=10','-e','SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status',image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js']
-
+    return a.bounded_k6_argv(['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','SETTINGS_FINGERPRINT='+m['settingsFingerprint']['sha256'],'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status',image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
 
 def count_observation(a,d,out,runid,metrics):
     from discovery_counts import observe
     return observe(a,d,out,runid,metrics)
 
 
-def stop_k6(a,m,record):
+def stop_k6(a,m,record,oneoff=None):
     """A timed-out Docker CLI is not proof its owned container stopped."""
+    if oneoff is not None:
+        oneoff.stop();record.value['processes']['k6']['ownedContainerStopCompleted']=True;record.save();return
     a.assert_owned(m)
     rows=[row for row in a.resources(m) if (row.get('Config',{}).get('Labels') or {}).get('com.docker.compose.service')=='k6']
     require(len(rows)<=1,'M7_DISCOVERY_LOADGEN_CUSTODY')

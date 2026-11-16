@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "id": "example-local-batch",
+  "payload": {
+    "source": {
+      "core": "8aeefaefc88c79c3d548f7683d5651bec9cf5c01",
+      "deploy": "df5362745a1b2d1b02b9186daedef3faccc14e58"
+    },
+    "image": "sha256:382e44696c4415e710698ee6135c499ae2d480d9f39a2fb85c59675fdd8d2150",
+    "helper": "REPLACE_WITH_COMMITTED_HELPER_INSTRUMENT",
+    "files": [
+      {
+        "path": "diagnostic-receipt.json",
+        "sha256": "REPLACE_WITH_RETAINED_RECEIPT_SHA256"
+      }
+    ]
+  },
+  "envelope": {
+    "maxConcurrent": 2,
+    "millicpus": 4000,
+    "memoryBytes": 8589934592,
+    "heapMiB": 1024,
+    "hourlyMicrousd": 0,
+    "totalMicrousd": 0,
+    "maxLiveResources": 64,
+    "maxOfferedRps": 180,
+    "cleanupAt": 0,
+    "workload": {
+      "tenants": [
+        2,
+        1000
+      ],
+      "offeredRps": [
+        1,
+        180
+      ],
+      "durationSeconds": [
+        30,
+        310
+      ],
+      "probeEveryMs": [
+        1000,
+        1000
+      ],
+      "hotFactor": [
+        1,
+        10
+      ],
+      "faultCases": []
+    }
+  },
+  "cells": [
+    {
+      "id": "cell-0",
+      "namespace": "ns-batch-example-0",
+      "ports": [],
+      "subnets": [
+        "10.247.232.0/24",
+        "10.247.233.0/24"
+      ],
+      "target": {
+        "kind": "local"
+      },
+      "resources": {
+        "millicpus": 4000,
+        "memoryBytes": 8589934592,
+        "heapMiB": 1024,
+        "hourlyMicrousd": 0,
+        "totalMicrousd": 0,
+        "liveResources": 64
+      },
+      "offeredRps": 1,
+      "workSeconds": 720,
+      "cleanupSeconds": 120,
+      "config": {
+        "version": 1,
+        "k6Image": "sha256:eeb0db19cd8d263aa57346cdbc7ea18e6fcfb2ba9497746a7ae82ceefc8c9fa5",
+        "workSeconds": 720,
+        "cleanupSeconds": 120,
+        "prepare": {
+          "core-repo": "/absolute/cgm-remote-monitor",
+          "core-commit": "8aeefaefc88c79c3d548f7683d5651bec9cf5c01",
+          "deploy-repo": "/absolute/nightscout-deploy",
+          "deploy-commit": "df5362745a1b2d1b02b9186daedef3faccc14e58",
+          "image": "sha256:382e44696c4415e710698ee6135c499ae2d480d9f39a2fb85c59675fdd8d2150",
+          "image-id": "sha256:382e44696c4415e710698ee6135c499ae2d480d9f39a2fb85c59675fdd8d2150",
+          "postgres-image": "sha256:21e7e1665c3dd2fdd80ebd9ce6d36fb160d6a4129683b315b6492a71d87bfda7",
+          "receipt": "/absolute/private/diagnostic-receipt.json",
+          "profile": "pgstream-sample",
+          "run-purpose": "discovery",
+          "diagnostics": "on",
+          "completion-contract": "evaluator-work-v2",
+          "tenants": 2,
+          "replicas": 1,
+          "warmup-seconds": 2,
+          "idle-seconds": 6,
+          "load-seconds": 30,
+          "accel": 1,
+          "hot-factor": 1,
+          "sampler-interval": 2,
+          "offered-rps": 1,
+          "primer-concurrency": 1,
+          "fixture-project": "ns-batch-example-0",
+          "maximum-run-minutes": 12,
+          "backend-subnet": "10.247.232.0/24",
+          "edge-subnet": "10.247.233.0/24",
+          "quiet-load": 3,
+          "diagnostic-resource-profile": "local-diagnostic-4cpu-8g-v1"
+        },
+        "helperInstrument": "REPLACE_WITH_COMMITTED_HELPER_INSTRUMENT"
+      }
+    },
+    {
+      "id": "cell-1",
+      "namespace": "ns-batch-example-1",
+      "ports": [],
+      "subnets": [
+        "10.247.234.0/24",
+        "10.247.235.0/24"
+      ],
+      "target": {
+        "kind": "local"
+      },
+      "resources": {
+        "millicpus": 4000,
+        "memoryBytes": 8589934592,
+        "heapMiB": 1024,
+        "hourlyMicrousd": 0,
+        "totalMicrousd": 0,
+        "liveResources": 64
+      },
+      "offeredRps": 1,
+      "workSeconds": 720,
+      "cleanupSeconds": 120,
+      "config": {
+        "version": 1,
+        "k6Image": "sha256:eeb0db19cd8d263aa57346cdbc7ea18e6fcfb2ba9497746a7ae82ceefc8c9fa5",
+        "workSeconds": 720,
+        "cleanupSeconds": 120,
+        "prepare": {
+          "core-repo": "/absolute/cgm-remote-monitor",
+          "core-commit": "8aeefaefc88c79c3d548f7683d5651bec9cf5c01",
+          "deploy-repo": "/absolute/nightscout-deploy",
+          "deploy-commit": "df5362745a1b2d1b02b9186daedef3faccc14e58",
+          "image": "sha256:382e44696c4415e710698ee6135c499ae2d480d9f39a2fb85c59675fdd8d2150",
+          "image-id": "sha256:382e44696c4415e710698ee6135c499ae2d480d9f39a2fb85c59675fdd8d2150",
+          "postgres-image": "sha256:21e7e1665c3dd2fdd80ebd9ce6d36fb160d6a4129683b315b6492a71d87bfda7",
+          "receipt": "/absolute/private/diagnostic-receipt.json",
+          "profile": "pgstream-sample",
+          "run-purpose": "discovery",
+          "diagnostics": "on",
+          "completion-contract": "evaluator-work-v2",
+          "tenants": 2,
+          "replicas": 1,
+          "warmup-seconds": 2,
+          "idle-seconds": 6,
+          "load-seconds": 30,
+          "accel": 1,
+          "hot-factor": 1,
+          "sampler-interval": 2,
+          "offered-rps": 1,
+          "primer-concurrency": 1,
+          "fixture-project": "ns-batch-example-1",
+          "maximum-run-minutes": 12,
+          "backend-subnet": "10.247.234.0/24",
+          "edge-subnet": "10.247.235.0/24",
+          "quiet-load": 3,
+          "diagnostic-resource-profile": "local-diagnostic-4cpu-8g-v1"
+        },
+        "helperInstrument": "REPLACE_WITH_COMMITTED_HELPER_INSTRUMENT"
+      }
+    }
+  ]
+}

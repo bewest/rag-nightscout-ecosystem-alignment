@@ -9,7 +9,7 @@ import time
 from contract import require, metric
 
 FLAGS = ('NS_M7_DIAGNOSTICS', 'NS_M7_DIAGNOSTICS_INTERVAL_MS')
-LOG_ROLES = ('api','api-2','api-3','api-4','realtime','realtime-2','evaluator','admin','feed-reader','tenant-admin','postgres','vault','nginx')
+LOG_ROLES = ('api','api-2','api-3','api-4','realtime','realtime-2','evaluator','pgstream','admin','feed-reader','tenant-admin','postgres','vault','nginx')
 
 def selection(mode='off', interval=5000):
     require(mode in ('off','on') and type(interval) is int and 1000 <= interval <= 60000, 'M7_DIAGNOSTICS_SELECTION_INVALID')
@@ -18,7 +18,7 @@ def selection(mode='off', interval=5000):
 def select_environment(config, chosen):
     require(not any(re.fullmatch(r'(?:api|realtime|evaluator)-\d+', role) and role not in LOG_ROLES for role in config['services']),'M7_PROFILE_ROLE_UNSUPPORTED')
     for role, spec in config['services'].items():
-        if role in LOG_ROLES and role not in ('postgres','vault','nginx'):
+        if role in LOG_ROLES and role not in ('postgres','vault','nginx','pgstream'):
             environment = spec.setdefault('environment',{})
             require(isinstance(environment,dict),'M7_DIAGNOSTICS_ENV_INVALID')
             require(not any(k.startswith('NS_M7_DIAGNOSTICS') and k not in FLAGS for k in environment),'M7_DIAGNOSTICS_ENV_INVALID')
@@ -28,7 +28,7 @@ def select_environment(config, chosen):
 def verify_environment(config, chosen):
     seen = 0
     for role,spec in config['services'].items():
-        if role in LOG_ROLES and role not in ('postgres','vault','nginx'):
+        if role in LOG_ROLES and role not in ('postgres','vault','nginx','pgstream'):
             seen += 1
             require(all(spec.get('environment',{}).get(k)==v for k,v in chosen['environment'].items()),'M7_DIAGNOSTICS_ENV_MISMATCH')
     require(seen > 0,'M7_DIAGNOSTICS_ENV_UNMEASURED')
@@ -44,52 +44,86 @@ def fingerprint_check(metrics):
     return {'observations':observed,'invalid':invalid,'mismatch':mismatch,
             'verdict':'FAIL' if invalid or mismatch else 'PASS' if observed > 0 else 'UNMEASURED'}
 
-def capture_logs(directory, config, argv, *, seconds=5, per_role=65536, total=524288):
-    """Kill bounded producers on timeout/limit; never buffer unbounded logs.
+def _log_times(data):
+    # Docker --timestamps prefixes are UTC. Partial retained lines are ignored.
+    values=re.findall(rb'(?m)^(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+Z) ',data)
+    return {'first':values[0].decode() if values else None,'last':values[-1].decode() if values else None}
 
-    argv(role) is the already-owned fixed Compose command. No user supplied
-    service names, extra environment or public output. A failure is evidence
-    incompleteness and must not prevent the existing teardown operation.
+def capture_logs(directory, config, argv, *, seconds=5, per_role=65536, total=524288):
+    """Keep recent bytes and existing disconnect summaries, within fixed budgets.
+
+    The finite producer supplies a fixed Docker tail. Read it to EOF (or the
+    time/scan bound), rather than killing it after the first output budget.
+    Incomplete streams explicitly describe the most recent OBSERVED bytes,
+    not the true source tail. No capture failure prevents owned teardown.
     """
     directory=Path(directory);directory.mkdir(mode=0o700,parents=True,exist_ok=True);directory.chmod(0o700)
     rows=[];remaining=total
     for role in LOG_ROLES:
         if role not in config['services']:continue
-        row={'role':role,'bytes':0,'truncated':False,'timeout':False,'returncode':None}
+        row={'role':role,'bytes':0,'truncated':False,'timeout':False,'returncode':None,
+             'retention':'recent-observed-tail','observedBytes':0,'omittedBytes':0,'streamComplete':False,
+             'captureStartedAtNs':time.time_ns()}
         budget=min(per_role,remaining)
         if not budget:
-            row.update(truncated=True,reason='global-byte-cap');rows.append(row);continue
-        process=None;selector=selectors.DefaultSelector()
+            row.update(truncated=True,reason='global-byte-cap',captureFinishedAtNs=time.time_ns());rows.append(row);continue
+        cause_budget=min(8192,budget//4) if role.startswith('realtime') else 0
+        tail_budget=budget-cause_budget
+        tail=bytearray();causes=bytearray();pending=bytearray();cause_seen=0
+        process=None;selector=selectors.DefaultSelector();scan_limit=max(4194304,budget*64)
+        row['scanLimitBytes']=scan_limit
+        def cause_line(line):
+            nonlocal cause_seen
+            if cause_budget and re.match(rb'^(?:\d{4}-\d\d-\d\dT[^ ]+ )?realtime server disconnects in the last \d+ s: ',line):
+                cause_seen+=1;causes.extend(line+b'\n')
+                if len(causes)>cause_budget:del causes[:-cause_budget]
         try:
             process=subprocess.Popen(argv(role),stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,start_new_session=True)
             selector.register(process.stdout,selectors.EVENT_READ)
             deadline=time.monotonic()+seconds
-            target=directory/(role+'.log')
-            with target.open('wb') as output:
-                target.chmod(0o600)
-                while selector.get_map():
-                    wait=deadline-time.monotonic()
-                    if wait <= 0:row['timeout']=True;row['truncated']=True;break
-                    for key,_ in selector.select(min(wait,.1)):
-                        data=os.read(key.fileobj.fileno(),min(8192,budget-row['bytes']+1))
-                        if not data:selector.unregister(key.fileobj);continue
-                        kept=data[:budget-row['bytes']];output.write(kept);row['bytes']+=len(kept)
-                        if len(data)>len(kept) or row['bytes']==budget:row['truncated']=True;break
-                    if row['truncated']:break
-            remaining-=row['bytes']
+            while selector.get_map():
+                wait=deadline-time.monotonic()
+                if wait <= 0:row['timeout']=True;row['truncated']=True;break
+                for key,_ in selector.select(min(wait,.1)):
+                    data=os.read(key.fileobj.fileno(),min(8192,scan_limit-row['observedBytes']+1))
+                    if not data:selector.unregister(key.fileobj);row['streamComplete']=True;continue
+                    row['observedBytes']+=len(data);tail.extend(data)
+                    if len(tail)>tail_budget:del tail[:-tail_budget]
+                    if cause_budget:
+                        pending.extend(data)
+                        while b'\n' in pending:
+                            line,_,rest=pending.partition(b'\n');pending[:]=rest;cause_line(bytes(line))
+                        # Diagnostic lines are bounded; don't retain huge partial lines.
+                        if len(pending)>8192:pending[:]=pending[-8192:]
+                    if row['observedBytes']>scan_limit:
+                        row.update(truncated=True,reason='scan-byte-cap');break
+                if row.get('reason')=='scan-byte-cap':break
+            if pending:cause_line(bytes(pending))
         except Exception:
-            row['error']='capture-failed';row['truncated']=True
+            row.update(error='capture-failed',truncated=True)
         finally:
             selector.close()
             if process:
+                if row['streamComplete'] and process.poll() is None:
+                    try:process.wait(timeout=.1)
+                    except subprocess.TimeoutExpired:pass
                 if process.poll() is None:
                     import signal
                     try:os.killpg(process.pid,signal.SIGKILL)
                     except ProcessLookupError:pass
-                row['returncode']=process.wait(timeout=2)
-                process.stdout.close()
+                row['returncode']=process.wait(timeout=2);process.stdout.close()
+            target=directory/(role+'.log');target.write_bytes(tail);target.chmod(0o600)
+            if cause_budget:
+                target=directory/(role+'.disconnects.log');target.write_bytes(causes);target.chmod(0o600)
+            row.update(bytes=len(tail)+len(causes),tailBytes=len(tail),causeBytes=len(causes),
+                       omittedBytes=max(0,row['observedBytes']-len(tail)),
+                       sourceTimes=_log_times(tail),causeSourceTimes=_log_times(causes),
+                       causeLinesObserved=cause_seen,causeLinesRetained=len(re.findall(rb'(?m)^(?:\d{4}-\d\d-\d\dT[^ ]+ )?realtime server disconnects in the last ',causes)),captureFinishedAtNs=time.time_ns())
+            row['truncated']=row['truncated'] or row['omittedBytes']>0
+            remaining-=row['bytes']
         rows.append(row)
-    return {'version':1,'scope':'PRIVATE fixed role tails; truncation/failure never proves absence','secondsPerRole':seconds,'perRoleBytes':per_role,'globalBytes':total,'roles':rows}
+    return {'version':1,'scope':'PRIVATE recent observed tails and bounded disconnect summaries; incomplete streams never prove absence',
+            'secondsPerRole':seconds,'perRoleBytes':per_role,'globalBytes':total,'roles':rows}
 
 def state_environment(state, config, chosen):
     for role in LOG_ROLES:
@@ -99,17 +133,17 @@ def state_environment(state, config, chosen):
             require(all(k not in values or values[k]==v for k,v in chosen['environment'].items()),'M7_DIAGNOSTICS_STATE_OVERRIDE')
             require(not any(k.startswith('NS_M7_DIAGNOSTICS') and k not in FLAGS for k in values),'M7_DIAGNOSTICS_ENV_INVALID')
 
-def runtime_environment(containers, chosen, config=None):
+def runtime_environment(containers, chosen, config=None,pgstream=False):
     seen=set()
     for row in containers:
         role=row['Config']['Labels'].get('com.docker.compose.service')
-        if role in LOG_ROLES and role not in ('postgres','vault','nginx') and row.get('State',{}).get('Running'):
+        if role in LOG_ROLES and role not in ('postgres','vault','nginx','pgstream') and row.get('State',{}).get('Running'):
             seen.add(role)
             env=dict(value.split('=',1) for value in row['Config'].get('Env',[]) if '=' in value)
             require(all(env.get(k)==v for k,v in chosen['environment'].items()),'M7_DIAGNOSTICS_RUNTIME_MISMATCH')
     require(bool(seen),'M7_DIAGNOSTICS_RUNTIME_UNMEASURED')
     if config is not None:
-        expected={role for role in config['services'] if role in LOG_ROLES and role not in ('postgres','vault','nginx')}
+        expected={role for role in config['services'] if role in LOG_ROLES and role not in ('postgres','vault','nginx','pgstream') and not(pgstream and role=='feed-reader')}
         require(seen==expected,'M7_DIAGNOSTICS_RUNTIME_ROSTER_MISMATCH')
 
 def identity(fingerprint, diagnostics, config):

@@ -35,21 +35,23 @@ class Warming(unittest.TestCase):
         for change in ({'ready':False},{'code':'EVALUATOR_WINDOW_REFUSED'},{'evaluation':{'alert':'synthetic'}}):
             frame=self.frame();frame['view']['tenants'][0].update(change)
             with self.assertRaisesRegex(p.Refused,'ERROR'):self.collect(frame)
-    def test_diagnostics_are_bounded_field_predicate_indices_without_values(self):
+    def test_diagnostics_retain_bounded_whitelist_and_exclude_arbitrary_values(self):
         frame=self.frame();del frame['view']['tenants'][0]['progress']['lastCompletedAgeMs']
         frame['view']['tenants'][0]['privateSyntheticMarker']='must-not-publish'
         with self.assertRaises(p.Refused) as caught:self.collect(frame)
         cost=caught.exception.collection
         self.assertEqual(cost['queries'],1);self.assertTrue(cost['completeResponses'])
-        self.assertEqual(cost['diagnostic'],{'predicate':'FIELD_REQUIRED','field':'lastCompletedAgeMs','instanceIndex':0,'pageIndex':0,'rowIndex':0,'warming':True})
-        self.assertLess(len(json.dumps(cost)),512)
-        self.assertNotIn('must-not-publish',json.dumps(cost));self.assertNotIn(A,json.dumps(cost))
-    def test_remaining_contract_and_error_diagnostics_name_only_fixed_fields(self):
+        self.assertEqual({k:v for k,v in cost['diagnostic'].items() if k!='failedRow'},{'predicate':'FIELD_REQUIRED','field':'lastCompletedAgeMs','instanceIndex':0,'pageIndex':0,'rowIndex':0,'warming':True})
+        row=cost['diagnostic']['failedRow'];self.assertEqual(row['tenant'],A)
+        self.assertEqual(row['progress']['lastCompletedAgeMs'],{'type':'missing'})
+        self.assertLessEqual(len(json.dumps(row).encode()),p.REFUSAL_ROW_MAX_BYTES)
+        self.assertNotIn('must-not-publish',json.dumps(cost))
+    def test_remaining_contract_diagnostics_keep_predicate_and_actual_bounded_row(self):
         for field,value in [('cycles',False),('admitted','true'),('ready',0)]:
             frame=self.frame();frame['view']['tenants'][0][field]=value
             with self.assertRaisesRegex(p.Refused,'CONTRACT') as caught:self.collect(frame)
             self.assertEqual(caught.exception.collection['diagnostic']['field'],field)
-            self.assertNotIn(A,json.dumps(caught.exception.collection))
+            self.assertEqual(caught.exception.collection['diagnostic']['failedRow']['tenant'],A)
         for warming in (False,True):
             for field,change,predicate in [('ready',{'ready':False},'OWNER_READY_REQUIRED'),('code',{'code':'PRIVATE_SYNTHETIC_MARKER'},'OWNER_CODE_NULL_REQUIRED'),('evaluation.alert',{'evaluation':{'alert':'PRIVATE_SYNTHETIC_MARKER'}},'OWNER_ALERT_NULL_REQUIRED')]:
                 frame=self.frame();frame['view']['tenants'][0].update(change)
@@ -57,7 +59,11 @@ class Warming(unittest.TestCase):
                 self.assertEqual(caught.exception.verdict,'FAIL')
                 self.assertEqual(caught.exception.collection['diagnostic']['field'],field)
                 self.assertEqual(caught.exception.collection['diagnostic']['predicate'],predicate)
-                self.assertNotIn('PRIVATE_SYNTHETIC_MARKER',json.dumps(caught.exception.collection))
+                row=caught.exception.collection['diagnostic']['failedRow']
+                self.assertEqual(row['tenant'],A)
+                if field=='code':self.assertEqual(row['code'],'PRIVATE_SYNTHETIC_MARKER')
+                if field=='evaluation.alert':self.assertEqual(row['alert'],'PRIVATE_SYNTHETIC_MARKER')
+                self.assertLessEqual(len(json.dumps(row).encode()),p.REFUSAL_ROW_MAX_BYTES)
     def test_actual_readiness_waits_held_release_and_keeps_failure_fatal(self):
         held=self.frame();released=copy.deepcopy(held);released['view']['tenants'][0]['progress'].update(completedAcquisitions=1,lastCompletedAgeMs=0)
         records=[];frames=iter([held,released])
@@ -70,7 +76,7 @@ class Warming(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory,patch.object(adapter,'document',return_value=[{'id':A}]),patch.object(adapter,'progress_services',return_value=['evaluator']),patch.object(adapter,'progress_fetch',return_value=json.dumps(released).encode()),patch.object(adapter,'write'),patch.object(adapter.time,'sleep') as sleep:
             with self.assertRaises(p.Refused) as caught:adapter.readiness(Path(directory),{})
             self.assertEqual(caught.exception.verdict,'FAIL');sleep.assert_not_called()
-    @unittest.skipUnless(os.environ.get('M7_PROGRESS_CORE'),'exact source recording fixture not selected')
+    @unittest.skipUnless(os.environ.get('M7_PROGRESS_CORE') and os.environ.get('M7_PROGRESS_COMMIT'),'exact source recording fixture not selected')
     def test_actual_runtime_window_release_old_new_restore(self):
         result=subprocess.run(['node',str(Path(__file__).with_name('evaluator-readiness-fixture.cjs'))],capture_output=True,check=True,timeout=20)
         value=json.loads(result.stdout);held,released=value['before'],value['after']

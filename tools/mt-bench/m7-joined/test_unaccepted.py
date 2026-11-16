@@ -54,8 +54,11 @@ class Unaccepted(unittest.TestCase):
    with self.assertRaises(RuntimeError):c.unaccepted_check(bad)
  def test_run_failure_retains_unaccepted_scope_and_original_correctness(self):
   with tempfile.TemporaryDirectory(prefix='m7-unaccepted-failure-') as root:
-   d=Path(root);adapter.write(d/'summary.json',{'verdict':'FAIL','oracle':{'verdict':'RED'}})
-   with patch.object(adapter,'run_cell',side_effect=RuntimeError('M7_ORACLE_TEST_FAILURE')):
+   d=Path(root)
+   def failed_run(*args):
+    adapter.write(d/'summary.json',{'verdict':'FAIL','oracle':{'verdict':'RED'}})
+    raise RuntimeError('M7_ORACLE_TEST_FAILURE')
+   with patch.object(adapter,'run_cell',side_effect=failed_run):
     with self.assertRaisesRegex(RuntimeError,'ORACLE'):adapter.run(d,manifest(),'not-run')
    failure=adapter.document(d/'unaccepted-collection-failure.json');self.assertEqual(failure['collectionStatus'],'FAILED');self.assertEqual(failure['correctnessVerdict'],'FAIL');self.assertEqual(failure['functionalAcceptance'],'UNACCEPTED');self.assertEqual(adapter.document(d/'summary.json')['oracle']['verdict'],'RED')
  def test_source_cli_explicit_flags(self):

@@ -21,8 +21,9 @@ class Discovery(unittest.TestCase):
     def test_purpose_defaults_and_strict_path_do_not_route_discovery(self):
         args=a.parser().parse_args(['prepare','--directory','/tmp/new','--core-repo','/tmp/core','--core-commit','a'*40,'--deploy-repo','/tmp/deploy','--deploy-commit','b'*40,'--image','image','--freeze','/tmp/freeze','--tenants','500','--replicas','1'])
         self.assertEqual(args.run_purpose,'acceptance')
+        folder,m=self.setup()
         with patch.object(a,'run_cell',side_effect=p.Refused('M7_EVALUATOR_IDLE_JOB_PENDING')) as strict,patch.object(d,'run_discovery') as discovery:
-            with self.assertRaisesRegex(p.Refused,'JOB_PENDING'):a.run(Path('/tmp/synthetic'),{},'k6')
+            with self.assertRaisesRegex(p.Refused,'JOB_PENDING'):a.run(folder,m,'k6')
             strict.assert_called_once();discovery.assert_not_called()
     def run_recording(self,error):
         folder,m=self.setup();(folder/'deploy-before-host.json').write_text('{}');calls=[]

@@ -6,11 +6,13 @@
   const deadline=Date.now()+15000;
   const watchdog=setTimeout(()=>process.exit(1),16000);
   try {
-    require('./deploy/multitenant/load-env');
-    const partition=require('./lib/server/serve/evaluator-config').partitionFor(process.env);
+    const values=require('./deploy/multitenant/service-environment').read();
+    const partition=require('./lib/server/serve/evaluator-config').partitionFor(values);
+    const keys=['NS_SERVE_INTERNAL_HOST','NS_SERVE_INTERNAL_PORT','NS_SERVE_INTERNAL_SOCKET','NS_SERVE_INTERNAL_SHUTDOWN_TIMEOUT_MS','XDG_RUNTIME_DIR'];
+    const environment=Object.fromEntries(keys.filter(key=>Object.hasOwn(values,key)).map(key=>[key,values[key]]));
     const selfOrdinal=partition.partitioned?partition.ordinal:0;
     const selfMode=partition.partitioned?'partitioned':'standalone';
-    const own=require('./lib/server/internal-api/listener-config').resolve(['evaluator'],process.env);
+    const own=require('./lib/server/internal-api/listener-config').resolve(['evaluator'],environment);
     const client=require('./lib/server/internal-api/clients').evaluatorInspection(own.peer('evaluator',{maxBytes:1048576,timeoutMs:5000}));
     for(let offset=0;offset<M7_PROGRESS_IDS.length;offset+=128){
       if(Date.now()>=deadline||++queries>M7_PROGRESS_QUERY_BUDGET)throw Error('M7_EVALUATOR_PROGRESS_BUDGET');

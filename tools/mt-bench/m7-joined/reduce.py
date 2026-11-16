@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 from contract import require, metric
 import json
+import stream_topology
 
 
 def memory(text):
@@ -18,6 +19,17 @@ def pg(path):
     for line in path.read_text().splitlines():
         name, calls, ms = line.split("\t");result[name] = {"calls": int(calls), "executionMs": float(ms)}
     return result
+
+
+def process_deltas(initial,final,seconds):
+    processes={}
+    for pid,b in final.items():
+        a=initial.get(pid)
+        if not a or a.get('unavailable') or b.get('unavailable') or a.get('startTicks')!=b.get('startTicks') or a.get('executable')!=b.get('executable') or a.get('clockTicksPerSecond')!=b.get('clockTicksPerSecond'):
+            processes[pid]={'name':b['name'],'cpu':'UNMEASURED','reason':'missing-or-changed-process'};continue
+        ticks=b['cpuTicks']-a['cpuTicks'];require(ticks>=0,'M7_PROCESS_CPU_COUNTER_RESET')
+        processes[pid]={'name':b['name'],'component':b.get('component',b['name']),'cpuSeconds':ticks/b['clockTicksPerSecond'],'cpuCoresMean':ticks/b['clockTicksPerSecond']/seconds,'rssKiBAfter':b['rssKiB']}
+    return processes
 
 
 def measurements(directory, manifest):
@@ -53,6 +65,17 @@ def measurements(directory, manifest):
             complete = complete and delta >= 0
             rows[role] = {"cpuUsecDelta": delta if delta >= 0 else None, "cpuCoresMean": delta / 1e6 / seconds if delta >= 0 else None,
                           "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
+        # Container totals include both evaluator Node and its pgstream child.
+        # Keep process identity/start time when subtracting their own counters.
+        for role,value in rows.items():
+            initial=before['roles'].get(role,{}).get('hostProcesses',{})
+            final=after['roles'].get(role,{}).get('hostProcesses',{})
+            processes=process_deltas(initial,final,seconds)
+            if initial or final:value['processes']=processes
+        if manifest.get('profile')=='pgstream-sample':
+            for role,components in stream_topology.expected_processes(manifest).items():
+                processes=rows.get(role,{}).get('processes',{})
+                complete=complete and all(any(p.get('component',p['name'])==component and 'cpuSeconds' in p for p in processes.values()) for component in components)
         if name != "idle-disabled":
             with (folder / "docker-stats.tsv").open() as source:
                 samples = [r for r in csv.DictReader(source, delimiter="\t") if before["at"] <= float(r["t"]) <= after["at"]]
@@ -100,6 +123,10 @@ def measurements(directory, manifest):
         if match:
             data=value.get("values",value)
             shapes[match[1]] = {"p50":data.get("med"),"p95":data.get("p(95)"),"p99":data.get("p(99)"),"count":data.get("count")}
+    for name,row in shapes.items():
+        failure=raw.get('http_req_failed{shape:'+name+'}',{});failure=failure.get('values',failure)
+        row['failureRate']=failure.get('rate',failure.get('value'))
+        row['failureMetricRaw']=failure or None
     complete = complete and len(shapes)==7 and all(value["count"] and all(value[k] is not None for k in ("p50","p95","p99")) for value in shapes.values())
     return {"complete":bool(complete),"windows":windows,"httpShapes":shapes,
             "loadgen": "k6 container in docker-stats; host probe process PID/CPU/RSS captured separately in loadgen.jsonl",

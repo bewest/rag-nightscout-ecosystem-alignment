@@ -54,6 +54,31 @@ class Profile(unittest.TestCase):
             self.assertEqual((Path(d)/'api.log').stat().st_mode & 0o777,0o600)
             value=profile.capture_logs(d,{'services':{'api':{}}},lambda role:[sys.executable,'-c','import time;time.sleep(2)'],seconds=.05)
             self.assertTrue(value['roles'][0]['timeout']);self.assertEqual(value['roles'][0]['bytes'],0)
+    def test_private_logs_keep_recent_tail_and_earlier_disconnect_causes(self):
+        with tempfile.TemporaryDirectory() as d:
+            cause=b'2026-11-15T19:20:00.000Z realtime server disconnects in the last 60 s: {"REALTIME_FANOUT_SEND_FAILED":3}\n'
+            recent=b'2026-11-15T19:24:00.000Z LATEST_LOAD_EVIDENCE\n'
+            payload=b'EARLY_STARTUP\n'+cause+b'noisy diagnostic\n'*10000+recent
+            code='import os;os.write(1,b\'EARLY_STARTUP\\n\'+'+repr(cause)+"+b'noisy diagnostic\\n'*10000+"+repr(recent)+')'
+            value=profile.capture_logs(d,{'services':{'realtime':{}}},lambda role:[sys.executable,'-c',code],seconds=2,per_role=512,total=512)
+            row=value['roles'][0];tail=(Path(d)/'realtime.log').read_bytes();causes=(Path(d)/'realtime.disconnects.log').read_bytes()
+            self.assertTrue(row['streamComplete']);self.assertEqual(row['returncode'],0)
+            self.assertTrue(row['truncated']);self.assertEqual(row['observedBytes'],len(payload))
+            self.assertLessEqual(len(tail)+len(causes),512);self.assertEqual(row['bytes'],len(tail)+len(causes))
+            self.assertIn(recent,tail);self.assertNotIn(b'EARLY_STARTUP',tail);self.assertIn(cause,causes)
+            self.assertEqual(row['sourceTimes']['last'],'2026-11-15T19:24:00.000Z')
+            self.assertEqual(row['causeSourceTimes']['last'],'2026-11-15T19:20:00.000Z')
+            self.assertEqual(row['causeLinesObserved'],1);self.assertEqual(row['causeLinesRetained'],1)
+            self.assertLess(row['captureStartedAtNs'],row['captureFinishedAtNs'])
+            self.assertEqual((Path(d)/'realtime.disconnects.log').stat().st_mode & 0o777,0o600)
+
+    def test_private_logs_surface_scan_limit_instead_of_claiming_source_end(self):
+        with tempfile.TemporaryDirectory() as d:
+            code="import os;[os.write(1,b'x'*8192) for _ in range(600)]"
+            row=profile.capture_logs(d,{'services':{'api':{}}},lambda role:[sys.executable,'-c',code],seconds=2,per_role=128,total=128)['roles'][0]
+            self.assertEqual(row['reason'],'scan-byte-cap');self.assertFalse(row['streamComplete']);self.assertTrue(row['truncated'])
+            self.assertEqual(row['bytes'],128);self.assertLessEqual(row['observedBytes'],row['scanLimitBytes']+1)
+
     def test_topology_diagnostics_and_settings_are_comparison_identity(self):
         f={'schema':1,'sha256':'a'*64,'sourceCommit':'b'*40,'sourceBlobs':{'file':'c'*40}}
         config={'services':{'api':{},'realtime':{},'evaluator':{},'vault':{'command':['vault','server']}}}

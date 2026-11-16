@@ -19,6 +19,8 @@ PROGRESS_FOREIGN PROGRESS_GATE PROGRESS_INSTANCE PROGRESS_INSTANCE_BOUND
 PROGRESS_OVERHEAD PROGRESS_PROOF PROGRESS_QUERY_BOUND PROGRESS_RESET
 PROGRESS_RESPONSE PROGRESS_RESPONSE_BOUND PROGRESS_SELECTOR PROGRESS_TENANTS'''.split())
 HARD={'M7_EVALUATOR_'+code for code in HARD}
+# Bound refusal rows are structural evidence failures, never partial observations.
+HARD.add('M7_REFUSAL_ROW_BOUND')
 
 class Classification(unittest.TestCase):
     def error(self,fn):

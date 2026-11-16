@@ -6,6 +6,8 @@ import os
 import subprocess
 import evaluator_recovery as recovery
 import unittest
+import tempfile
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import evaluator_progress as p
 
@@ -14,6 +16,57 @@ B='22222222-2222-4222-8222-222222222222'
 R='33333333-3333-4333-8333-333333333333'
 S='44444444-4444-4444-8444-444444444444'
 class Progress(unittest.TestCase):
+    def refused_frame(self):
+        value=self.frame(ids=[A]);row=value['view']['tenants'][0]
+        row.update(ready=False,code='SYNTHETIC_READY_FALSE')
+        row['evaluation']['alert']='synthetic-alert'
+        row['progress'].update(generation=17,completedAcquisitions=5,lastCompletedAgeMs=123)
+        row['clinicalOutput']={'excluded':'not refusal evidence'}
+        return value
+    def refused(self,frame=None,verdict='FAIL'):
+        raw=json.dumps(frame or self.refused_frame()).encode()
+        with self.assertRaises(p.Refused) as caught:p.round_view(['evaluator'],[A],lambda *_:raw,warming=True)
+        self.assertEqual(caught.exception.verdict,verdict)
+        return caught.exception
+    def assert_failed_row_evidence(self):
+        error=self.refused();e=error.diagnostic.get('failedRow',{})
+        self.assertEqual(e.get('tenant'),A)
+        self.assertEqual((e['service'],e['runtimeId'],e['ready'],e['code'],e['alert']),('evaluator',R,False,'SYNTHETIC_READY_FALSE','synthetic-alert'))
+        self.assertEqual(e['progress']['generation'],17)
+        self.assertEqual(e['progress']['completedAcquisitions'],5)
+        self.assertEqual(e['dueReason'],'pump-clock-warn')
+        self.assertNotIn('clinicalOutput',e)
+        self.assertEqual(error.diagnostic['predicate'],'OWNER_READY_REQUIRED')
+        return error
+    def test_readiness_refusal_persists_actual_bounded_failed_row(self):
+        import adapter as a
+        expected=self.assert_failed_row_evidence().diagnostic
+        with tempfile.TemporaryDirectory() as name:
+            d=Path(name);(d/'tenants.private.json').write_text(json.dumps([{'id':A}]))
+            with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(self.refused_frame())):
+                with self.assertRaises(p.Refused):a.readiness(d,{})
+            saved=json.loads((d/'runtime-readiness.json').read_text())
+            self.assertEqual(saved['verdict'],'FAIL')
+            self.assertEqual(saved['observations'][0]['diagnostic'],expected)
+    def test_failed_row_evidence_removal_ablation_red_and_restore_green(self):
+        self.assert_failed_row_evidence()
+        with patch.object(p,'_refusal_row',return_value={}):
+            with self.assertRaisesRegex(AssertionError,'None !='):
+                self.assert_failed_row_evidence()
+        self.assert_failed_row_evidence()
+    def test_refusal_evidence_bounds_malformed_fields_without_losing_refusal(self):
+        frame=self.refused_frame();row=frame['view']['tenants'][0]
+        row['code']='C'*100000;row['evaluation']['alert']='\u2603'*100000
+        row['progress']['generation']=10**1000
+        error=self.refused(frame,verdict='UNMEASURED');e=error.diagnostic['failedRow']
+        self.assertLessEqual(len(json.dumps(e).encode()),p.REFUSAL_ROW_MAX_BYTES)
+        self.assertTrue(e['code']['truncated']);self.assertEqual(e['code']['length'],100000)
+        self.assertTrue(e['alert']['truncated']);self.assertEqual(e['progress']['generation'],{'type':'int'})
+        row['evaluation']['alert']={'malformed':['x'*100000]}
+        e=self.refused(frame,verdict='UNMEASURED').diagnostic['failedRow']
+        self.assertEqual(e['alert'],{'type':'dict'})
+        self.assertLessEqual(len(json.dumps(e).encode()),p.REFUSAL_ROW_MAX_BYTES)
+
     def frame(self,ids=None,ordinal=0,runtime=R,increment=0):
         ids=ids or [A,B]
         return {'selected':ids,'selfOrdinal':ordinal,'selfMode':'partitioned','view':{'kind':'evaluator','runtimeId':runtime,'configured':{'ordinal':ordinal,'mode':'partitioned'},'gate':{'eligible':True,'reason':None},'tenants':[{'tenant':tenant,'admitted':True,'ready':True,'cycles':1+increment,'dueAt':1700000008572.4285,'dueReason':'pump-clock-warn','code':None,'evaluation':{'alert':None},'progress':{'generation':i+1,'completedAcquisitions':1+increment,'completedTimeCycles':increment,'failedCompletions':0,'lastCompletedAgeMs':0}} for i,tenant in enumerate(ids)]}}

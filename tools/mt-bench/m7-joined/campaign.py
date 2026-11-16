@@ -89,6 +89,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('mode',choices=('all','ladder','pilot'))
     for name in ('work','core-repo','core-commit','deploy-repo','deploy-commit','image','freeze','k6-image'):p.add_argument('--'+name,required=True)
+    p.add_argument('--jwt-setup-concurrency',type=int,choices=range(1,65),default=1)
     p.add_argument('--quiet-load',type=float,default=3);p.add_argument('--replicas',type=int,choices=REPLICAS);p.add_argument('--ceiling-receipt')
     p.add_argument('--diagnostics',choices=('off','on'),default='off');p.add_argument('--diagnostics-interval-ms',type=int,default=5000)
     p.add_argument('--measurement-mode',choices=('accepted','unaccepted'),default='accepted');p.add_argument('--run-id');p.add_argument('--image-id');p.add_argument('--maximum-run-minutes',type=int,default=180)
@@ -107,11 +108,11 @@ def main():
         require((root/'campaign.json').is_file(),'M7_CAMPAIGN_DIRECTORY_NOT_OWNED')
         master=adapter.document(root/'campaign.json')
         require(master.get('directory')==str(root) and master.get('kind')==kind and master.get('pair')==pair and master.get('instrument')==instrument
-                and master.get('hostIdentity')==identity and master.get('diagnostics')==chosen and master.get('measurementMode','accepted')==args.measurement_mode
+                and master.get('jwtSetupConcurrency',1)==args.jwt_setup_concurrency and master.get('hostIdentity')==identity and master.get('diagnostics')==chosen and master.get('measurementMode','accepted')==args.measurement_mode
                 and (args.measurement_mode!='unaccepted' or master.get('runId')==args.run_id and master.get('imageId')==args.image_id),'M7_CAMPAIGN_IDENTITY_CHANGED')
     else:
         root.mkdir(mode=0o700,parents=True)
-        master={'version':1,'kind':kind,'directory':str(root),'pair':pair,'instrument':instrument,'hostIdentity':identity,'diagnostics':chosen,'cells':[]}
+        master={'version':1,'kind':kind,'directory':str(root),'pair':pair,'instrument':instrument,'hostIdentity':identity,'diagnostics':chosen,'jwtSetupConcurrency':args.jwt_setup_concurrency,'cells':[]}
         if args.measurement_mode=='unaccepted':master.update(measurement_output(candidate,aggregate=True,complete=False),imageId=args.image_id)
         adapter.write(root/'campaign.json',master)
     selected=args.replicas or 1

@@ -12,13 +12,95 @@ The coordinator must finish the coherent candidate and its full acceptance, then
 hand over a quiet host. This lane does not stop foreign containers, including a
 peer's `nsauthz-base-n1000`, or start a capacity campaign during other work.
 
+## First pgstream sample
+
+Use the same prepare/deploy/run/down CLI below with `--profile pgstream-sample`,
+`--tenants 2` (existing global bound 1–10000), `--replicas 1`, and
+`--postgres-image sha256:EXACT_EXISTING_WAL2JSON_IMAGE_ID` on `prepare`.
+Pass `--backend-subnet` and `--edge-subnet` together for owner-selected private
+CIDRs when Docker default address pools are exhausted. The binding validates
+syntax/overlap; the owner checks host availability.
+For the first diagnostic, use `--run-purpose discovery` and an existing
+`joined-diagnostic` / `AUTHORIZED_DIAGNOSTIC` receipt with exact pair/image/
+instrument, `functionalAcceptanceAtAuthorization: PENDING`, and limits matching
+tenants, one API and selected load seconds. This route records UNACCEPTED metrics
+and cannot pass capacity/pilot/campaign acceptance. Accepted mode still requires
+the existing acceptance receipt. The owner supplies the exact pair and image.
+Discovery preparation checks both existing image IDs and the app's core/deploy
+labels before creating the cell or installing dependencies. A mismatch leaves the
+target absent; retain the command refusal separately. Successful preparation records
+`imageInputPreflight` in owner.json. Runtime/config/collector preflight still follows
+deployment. Baseline and candidate use separate directories, receipts and exact
+source/image arguments; neither substitutes for the other's attribution.
+Use `--fixture-project ns-rest-joined-baseline` (and a distinct candidate name)
+when preparing a new fixture for the REST helper. The selected name is passed
+to the existing source binding and retained in owner.json; defaults still use a
+unique generated name. Existing containers or orphaned volumes/networks under
+that project refuse before source staging. This option creates a new fixture;
+`attach --project` continues to bind an existing owner's fixture without changes.
+After source-driven deploy and preflight, pass the prepared cell directly as the
+REST attachment and its `state` directory as `--state`, with the same project and
+exact expected source/image. REST retains its own source allowlist and traffic
+authorization; selecting a fixture does not authorize a workload window.
+This selects `NS_PGSTREAM=1`, a 60-second sampler-disabled
+baseline, 120-second idle and 600-second ordinary load (`ACCEL=1`, `HOT_FACTOR=1`).
+A separate synthetic correctness uploader writes every 300 seconds. Its stored
+ID/glucose, durable completed versions/rows/frame and already-connected stock
+clients must agree. All workload writes also pass the independent count oracle
+and row-mutation control. No worker restart campaign runs in this sample. The selected startup and runtime
+roster omit the retired legacy feed-reader; pgstream runs inside evaluator.
+
+Source helpers resolve only the cell-owned lockfile dependency tree; evaluator
+and realtime image processes independently check `/opt/app` pg resolution before
+load. Per-process CPU-counter bookends and RSS distinguish evaluator Node from its
+pgstream child; process replacement/missing data is UNMEASURED.
+`sql-attribution.json` separates the configured pgstream role from adapter
+roles using full private statement bookends. The frozen PostgreSQL command preloads pg_stat_statements, enables top-level
+statement capture and I/O timing. Deploy creates the extension only in maintenance
+database postgres after infrastructure startup; an already-running server without
+the preload requires owner-controlled restart/recreation. Statement execution time is not
+PostgreSQL CPU or WAL-decoding CPU. A measured diagnostic cell establishes that sample;
+it grants no capacity acceptance or ceiling. Live sample behavior remains UNMEASURED until run.
+
+`--warmup-seconds`, `--idle-seconds`, `--load-seconds`, `--accel`, `--hot-factor`
+and `--sampler-interval` retain the selected values in the manifest. Short windows
+record incomplete nominal-cycle/timer coverage. No automatic sweep runs.
+`attach` accepts the prepare provenance arguments plus existing `--project`,
+`--source-root`, `--state`, `--env-file` and repeated `--compose` inputs. It binds
+metadata to exact existing container IDs/images/birth times without deployment or
+installation. `--dependencies-root` selects an explicit runtime-owned lockfile
+installation when the source links `node_modules` to a separate install; the
+historical default is the source root. Both package files must match the exact
+source commit, and stock-client and source module resolution remain confined to
+that installation. `--runtime-owner /absolute/fixture/owner.json` also binds a
+canonical prepared fixture's project/owner labels, source and dependency paths,
+image, lockfile and recorded generator provenance. Invocation working directories
+are retained separately from installed module identity; module bytes and tools
+must still match. Neither option installs dependencies or guesses a sibling root.
+For an attached fixture, `down` stops instrument jobs only; runtime
+cleanup remains with its owner. `preflight CELL --k6-image ID` checks the existing
+production modules/private config, SQL/roles, process/cgroup/sampler readability
+and k6 export interface before timed phases. Setup failures have separate retained
+attempts and preserve the deployment. Repair/rebind source or resource changes;
+never reuse old counters or resume into existing timed phase folders.
+
+`run`, direct readiness collection and each sampler window claim their output
+once with an exclusive attempt marker. Reusing a metadata directory refuses
+before overwriting its summary, bookend or collector files and writes a unique
+`attempt-refusals/<id>/refusal.json`. Use a new metadata-only attachment for a
+retry on the same owned runtime; preserve the original attempt and its provenance.
+Host commands default to this instrument's absolute root, and sampler commands
+use the absolute fixture directory. Explicit source-command working directories
+remain explicit. The sampler resolves its input paths before entering the first
+Compose file's accessible directory; an unavailable context refuses.
+
 ## Source and ownership
 
 `adapter.py prepare` creates a unique detached core worktree from a **full commit**,
 archives the deployment's committed Compose tree over its deployment directory,
 and writes the product build overlay marker. Every remaining core input must pass
 the shipping build's two-source admission. There is no borrowed node_modules:
-probe dependencies use a separate owned install of the exact committed core package.json
+probe and source-helper dependencies use a separate owned install during preparation of the exact committed core package.json
 and lockfile with npm ci --include=dev --omit=optional --ignore-scripts --force.
 The serving image still prunes development dependencies. generator-provenance.json
 pins host Node/npm paths, hashes and versions, manifests, client entry/version/hash;
@@ -55,6 +137,77 @@ Host inventories include container IDs/labels, image IDs, load, RAM, Docker/cont
 kernel and process names/CPU/RSS, never command arguments/environments. Only local
 Unix-socket Docker contexts are supported: host metrics must describe that daemon.
 
+### Shared Compose namespace and epoch custody
+
+`orchestration_binding.py` is the shared command boundary for existing-fixture
+upgrades and resumes. It does not schedule a run or replace the existing finite
+GO, host ownership, PID/birth checks or guard. Artifact stages import this source
+module instead of copying a `COMPOSE` shell array. The tracked instrument inventory
+requires this module. Remote source packs must retain the complete tracked
+`tools/mt-bench/m7-joined/` prefix, including this module; a prefix import and
+manifest digest check belong before any provider allocation.
+
+The command factory requires the immutable project, raw frozen Compose `name`,
+`NS_DEMO_PROJECT` and current owner record to agree. `adapter.compose` uses this
+cheap check and the frozen file hashes on every call. It renders actual Compose
+configuration only for container lifecycle mutations; private SQL and inspector
+polls do not acquire a new Docker-config measurement cost. Missing anchors refuse;
+there is no fallback to the owner record alone.
+
+Before the first effect, the integration owner:
+
+1. Uses `stamp_candidate` to add the single `org.nightscout.m7.attempt` nonce to
+   **new** candidate declarations only. Historical fixture declarations and owner
+   labels remain unchanged. A later resume can retain a prior attempt's labels
+   as its recorded original epoch; it does not recreate resources to retag them.
+2. Uses read-only `image_metadata` and `make_binding` to freeze original and
+   candidate epochs, exact source/image identities, state roots, environment and
+   Compose hashes. An absent/null Compose command is resolved from the exact
+   pinned image's OCI command, not inferred from a running container. Preserve
+   historical `configFiles` when original containers used another frozen path.
+3. Writes a unique `begin_journal` with actual full inspected original IDs. Bind
+   `binding['sha256']` and its attempt nonce into the existing root GO. The
+   supplied `authorize` callback must revalidate that authority before effects.
+4. Calls `checked_run` for Compose creation/replacement. It builds the only
+   project/env/config prefix, checks actual expanded configuration, writes intent
+   before effect, and records created IDs even when the command fails. No shell
+   namespace override is accepted. Calls `checked_ids` for exact existing
+   container start/restart/stop; these retain the recorded epoch's declaration.
+5. Calls `cleanup_recorded` from the existing guard/finally path. It inspects
+   recorded full IDs directly and validates each against its **own** epoch.
+   Discovery admits only the current attempt label plus owner, project, source,
+   config-file, creation and exact command/mount/environment proofs. Foreign or
+   unknown IDs are refused while proven owned IDs still stop. A declaration,
+   capture, log or journal-write failure is never authority for a broad project
+   stop. Cleanup preserves volumes and does not read mutable project/env/config
+   files; a metadata failure remains explicit even when owned stopping succeeds.
+
+Use the new journal API for an upgrade/resume integration; do not fall back to a
+project-wide `down` or reinterpret old containers using new candidate declarations.
+The focused `test_orchestration_binding.py` controls exercise wrong project,
+source, owner, state mount, missing/swapped attempt, original/candidate epoch,
+failed capture/stdout/journal persistence and foreign-ID refusal before effects.
+All mutation calls in those controls are injected. Actual stopped-fixture
+qualification uses only `ps`, `inspect`, image inspection and `compose config`.
+
+## JWT setup concurrency
+
+Local preparation, attachment and campaign commands accept
+`--jwt-setup-concurrency 1..64`, with serial default 1. The cell owner manifest
+and campaign record retain `jwtSetupConcurrency`; campaign resume refuses a
+changed selection. Both local k6 launch paths forward that value explicitly.
+The generated M7 workload preserves offered arrival rates, current nominal
+arrival timestamps, scenario attempt/response/transport counters, status
+fingerprinting and bounded setup-refusal evidence.
+
+Setup uses one response hook for serial requests and bounded batches. Refusal
+`tenantIndex` and `requestOrdinal` follow tenant roster order; they do not assert
+network dispatch order within a batch. Start and finish timestamps bound the
+chunk dispatch and subsequent response processing. Serial default retains a
+single-request bound. Batched refusal discovery can follow other exchanges in
+the same chunk. These observations do not measure per-response wire latency.
+Select a changed concurrency only when preparing a new coordinator-adopted run.
+
 ## Commands after the handoff
 
 Run from the alignment checkout containing the committed instrument:
@@ -74,7 +227,7 @@ python3 tools/mt-bench/m7-joined/adapter.py down /absolute/private/m7-cell
 
 `build` is unnecessary when the matching image already exists. Docker's resolved
 k6 image ID is recorded and used for execution. No floating tag runs after pinning.
-`prepare` only stages local source/TLS/config; it sends no performance traffic.
+`prepare` stages local source/TLS/config and installs the owned lockfile dependencies before source helpers execute; it sends no performance traffic.
 It accepts explicit diagnostic seed counts1..10000; campaign ladders constrain
 the performance steps. Binding preparation must expose committed
 `primer provision`/`primer prime`, and either private `primer/tenants.json` or
@@ -136,6 +289,21 @@ samples remain separate raw observations. Cgroup usage/anon and process RSS are
 named separately; no figure is described as JavaScript heap or hard process bound.
 `pg_stat_statements` lives only in the maintenance database to preserve application
 operation-window admission. No diagnostic extension enters the application DB.
+
+The same sampler also records `host-io-metadata.json` and `host-io.jsonl` without
+additional SQL. The small host observer samples at the selected interval (2s by
+default), independently of blocking Docker stats, with wall and monotonic read
+brackets. It retains aggregate CPU/iowait ticks, IO PSI some/full averages and
+totals, and raw disk counters for sysfs-identified physical leaves. Metadata gives
+device names/major-minor/sysfs paths, units and source documentation. Missing or
+changed sources are `NO-INSTRUMENT`, never zero. Match these timestamped samples
+to the actual cost-window bookends; do not claim simultaneous reads.
+
+These are shared host/device counters. Kernel disk request-time sums are not
+application or PostgreSQL latency, and device activity does not identify its
+cause. Guest-visible leaves do not establish backing physical media. No counter
+deltas, IO cause or capacity threshold is inferred by the collector. Counter
+reset, iowait decrease and hotplug limitations remain explicit in its metadata.
 
 ## Oracle and controls
 
@@ -293,9 +461,16 @@ a valid admitted, ready, error-free owner with all successful and failed
 completion counters zero may have an explicitly present null completion age
 while its first operation-window release is pending. This remains WARMING with
 no credited acquisition. Nonwarming collection, missing age, nonzero counters
-with null age, errors and progress requirements remain strict. Refused field
-checks retain fixed predicate/field names and bounded positional indices, never
-raw rows, tenant IDs or runtime values. Readiness deadlines, polling cadence,
+with null age, errors and progress requirements remain strict. Per-row contract
+refusals also retain one private `failedRow` projection in the existing diagnostic:
+tenant/service/runtime identity, admitted/ready/code/alert, whitelisted progress
+counters and due fields. It is capped at4096 bytes; strings over64 characters are
+explicitly truncated. Bounded scalar values stay visible; unsupported structures
+and nonfinite or oversized numbers use type tags. Clinical output and arbitrary
+RPC fields are excluded. This adds no request, retry or
+acceptance change; the original failed predicate remains a refusal. Fixed
+predicate/field names and bounded positional indices accompany the projection.
+Readiness deadlines, polling cadence,
 workload and native TIME proof requirements are unchanged.
 
 Idle assessor module3 accepts already observed successful TIME work after each
@@ -408,3 +583,146 @@ become zero. Present malformed, boolean, negative, fractional or nonfinite
 counts refuse before the existing count query. Finite integral numeric counts
 within JavaScript's safe integer range are preserved. The acceptance metric
 helper is unchanged.
+
+
+### Source-bound completion readers
+
+New `pgstream-sample` preparations and attachments select
+`--completion-contract evaluator-work-v1` for the legacy JSON work state or
+`--completion-contract evaluator-work-v2` for typed work state. The selection
+is stored in the owner manifest. Sample preflight binds it to the exact core,
+deploy, image and instrument identities. It does not infer a version from a
+missing column or fall back after a query failure. Existing captures remain
+unchanged and require their original instrument to resume.
+
+The v2 witness reads work arrays and output metadata columns with the clinical
+JSON body in one SELECT snapshot. Versions are decimal strings, including array
+elements. NULL means a source version is missing. The fixed array order is
+clock, settings, policy, activity, lifecycle, bootstrap. Its assessor checks row
+kind, work version, contract digest, array bounds/order, exact bigint range,
+output revision precision and metadata ownership before the existing stored
+write, BG-now and stock-client frame checks. It performs no duplicate writes.
+
+Focused offline controls (no SQL/runtime execution):
+
+```bash
+node tools/mt-bench/m7-joined/completed-oracle-control.cjs
+node tools/mt-bench/m7-joined/completed-oracle-v2-control.cjs
+cd tools/mt-bench/m7-joined
+python3 -B -m unittest test_cost_companion test_realtime_costs test_pgstream_sample
+```
+
+SQL shape controls and synthetic rows do not qualify the generated SELECT on
+PostgreSQL. The runtime owner must qualify it against each paired fresh fixture
+before timing. Missing source-specific realtime counters remain NO-INSTRUMENT.
+The legacy statement TSV query and clinical witness scope are unchanged.
+
+### Bounded commissioning on a fresh capacity point
+
+`prepare --primer-concurrency N` records a worker bound from 1 to 32. Default 1
+keeps the serial primer command. A larger bound adds `--concurrency N` only to
+the commissioning phase; stage timeouts, API sequence and worker startup order
+stay the same. The selected deployment and qualified image must contain the
+bounded primer. Never copy a newer primer into an accepted image or change the
+instrument of an existing attachment.
+
+Use a fresh point with its full selected seed. Extending `provisioned.json` and
+`tenants.json` alone does not revise the seed, settings fingerprint or published
+operator roster. A resumed fixture and a cold commissioning run have different
+setup costs.
+
+For concurrent commissioning, deployment records `primer-start.json` and reads
+`primer-counts.private.json` before starting the remaining roles. The latter
+checks the exact seed, provisioned and accepted custody rosters, completion and
+uncertainty state, then independently counts synthetic commissioning entries in
+PostgreSQL. Each selected tenant must have exactly one entry. Accepted custody
+means a successful HTTP response saved by the primer, not an HTTP attempt count.
+The count query and raw per-tenant output stay in the private run workspace.
+Call `adapter.primer_counts(fixture, owner)` after the prime phase when using the
+existing canonical command packet instead of `adapter deploy`.
+
+Focused file/SQL-shape controls run without a database:
+
+```bash
+cd tools/mt-bench/m7-joined
+python3 -B -m unittest test_primer_adoption test_contract
+```
+
+These controls cover count assessment and command wiring. Live database execution
+and speedup at bounds 2 or 4 remain measurements for the next qualified point.
+
+For a rate curve on one qualified cohort, `prepare` or a new `attach` may select
+`--offered-rps 120` in `pgstream-sample` discovery mode. This changes the shared
+arrival cycle for the same seven request shapes and tenant weighting; it does
+not change stock-client count, payloads, credentials, authority or write oracles.
+Write timestamps follow the selected arrival cycle. Ordinary cadence remains
+the default. The owner and discovery result retain the requested rate and the
+effective rate after millisecond rounding.
+
+`scenario_request_attempts` counts entry into the load HTTP call;
+`scenario_http_responses` counts returned HTTP responses;
+`scenario_transport_failures` counts calls returning without an HTTP status.
+An attempt does not establish a server receipt or a successful write. Credential
+exchanges in setup and stock-client probes remain separate from this scenario
+target. Keep accepted/persisted writes and evaluator/client witnesses separate.
+Raw k6 `iterations` and `dropped_iterations` remain distinct; a metric absent
+from the capture stays unmeasured.
+
+
+### Receipt-selected serial exchange diagnostic
+
+`prepare` and `attach` accept `--serial-exchange-diagnostic` only for a3000-tenant
+`pgstream-sample` discovery. The genuine `AUTHORIZED_DIAGNOSTIC` receipt and owner
+manifest must both contain exactly:
+
+```json
+{"serialExchangeDiagnostic":{"tenants":64,"phaseSeconds":120,"requestSeconds":60}}
+```
+
+The existing `run` entry point keeps canonical readiness, warmup and strict idle.
+It then uses one Node actor and one fixed HTTP-agent configuration to exchange the
+same first64 ordered tenant records before and after the original16-worker JWT
+setup and two-per-tenant stock polling priming. Each phase has a120second budget,
+each request a60second maximum, and the first non200 stops that phase without
+retry. A BEFORE refusal skips stock setup. An AFTER refusal retains the priming
+result. Stock setup retains safe aggregate attempt, retry, HTTP-status and transport
+counts while keeping its original16 workers and retry behavior. Both serial phases
+return diagnostic evidence and close every stock socket and agent.
+
+This route never releases `.window`, sends a probe write, starts k6 or records an
+ordinary310second measurement. The summary remains `PARTIAL`, with
+`diagnosticOnly:true` and `ordinaryTraffic:NOT_RUN`. The ordinary route and its
+default generated probe bytes are unchanged when the flag is absent.
+
+`load/binding.private.json` binds the actual owner/source/image/instrument,
+ordered credential file, actor bytes and Node executable hashes. Both phases
+recheck those inputs. `load/exchange-phases/{before,after}.json` contains bounded
+status, allowlisted error class, tenant index/hash, clock and elapsed observations;
+it contains no returned JWT, credential, raw response body or request URL. Existing
+owned-process/job sampling stays at `load/probe-job.json` and `load/loadgen.jsonl`.
+The selected probe wait is bounded900seconds and remains subject to integration's
+shorter finite deadline; a600second external sampler does not prove coverage of a
+longer diagnostic. No PostgreSQL statistics reset is added between the paired phases.
+The unchanged clinical, source, image, ownership and process guards remain in force.
+
+Bound oneoff launches use `make_binding(..., oneoff_root=..., oneoff_images={'k6': pinned_id})`
+and `checked_oneoff(binding, kind, argv, scope, runner, authorize, journal_file)`.
+The only kinds are `k6-version`, `k6-help` and `k6-load`. `argv` is the existing
+source-generated Docker command. `scope` contains `directory`, attachment `owner`
+and pinned `imageId`. The helper verifies the attachment/project, binds the exact
+command, image defaults, mount and environment layout, prewrites intent, then adds
+the attempt label and exclusive CID file. The optional `oneoff` callback passed to
+`sample_preflight` or `run` covers only these explicit launch sites; it does not
+intercept reads or change generated scripts. Its `stop()` uses `checked_ids` for
+recorded oneoff IDs. Journal cleanup also recovers attempt-qualified live IDs when
+CLI output or capture failed; completed `--rm` absence is allowed.
+
+Remote producer command suffixes use immutable named stages:
+`make_binding(..., run_stages={name: {'epoch': epoch, 'argv': source_tail,
+'sourceFile': producer_path}})`. The source tail starts with
+`--profile ops run`, includes one declared role, and uses the existing bounded run
+options. The producer file hash, exact suffix and semantic command layout are
+sealed. Pass `stage=name`, matching `epoch`, `roles` and `options` to
+`compose_argv` or `checked_run`. Unknown stages, changed source/options/roles and
+namespace overrides refuse before effects. A default service command has no
+suffix. These APIs retain the caller's finite authorization and PID guard.

@@ -7,7 +7,8 @@ from pathlib import Path
 COUNTS = (1000, 3000, 5000, 10000)
 REPLICAS = (1, 2, 4)
 PILOT_COUNTS = (500, 750, 1000)
-CADENCE = {"capacity":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":600,"loadSeconds":900},
+CADENCE = {"pgstream-sample":{"accel":1,"hotFactor":1,"socketsPerTenant":2,"idleSeconds":120,"loadSeconds":600,"probeEveryMs":300000,"restart":False},
+           "capacity":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":600,"loadSeconds":900},
            "fresh-image-diagnostic":{"trafficSeconds":180,"idleSeconds":0,"loadSeconds":0},
            "remote-pilot":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":120,"loadSeconds":300}}
 UUID = re.compile(r"^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$")
@@ -155,6 +156,17 @@ def host_identity(host):
 
 def receipt_scope(manifest,receipt,operation):
     require(receipt.get("pair")==manifest["pair"],"M7_RECEIPT_SOURCE_MISMATCH")
+    if manifest.get('profile')=='pgstream-sample' and manifest.get('runPurpose')=='discovery':
+        require(operation in ('build','deploy','run'),'M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')
+        require(receipt.get('kind')=='joined-diagnostic' and receipt.get('status')=='AUTHORIZED_DIAGNOSTIC'
+                and receipt.get('functionalAcceptanceAtAuthorization')=='PENDING','M7_DIAGNOSTIC_RECEIPT_REQUIRED')
+        require(re.fullmatch(r'[a-f0-9]{64}',receipt.get('instrument','')) and receipt['instrument']==manifest['instrument']['sha256']
+                and re.fullmatch(r'sha256:[a-f0-9]{64}',receipt.get('imageId','')) and receipt['imageId']==manifest.get('imageId'),'M7_DIAGNOSTIC_IDENTITY_MISMATCH')
+        limits=receipt.get('limits',{})
+        require(type(manifest.get('tenants')) is int and type(limits.get('tenants')) is int and 1<=manifest['tenants']<=limits['tenants']<=10000
+                and type(manifest.get('replicas')) is int and manifest['replicas']==1 and type(limits.get('apiReplicas')) is int and limits['apiReplicas']==1
+                and type(limits.get('trafficSeconds')) is int and 1<=limits['trafficSeconds']==manifest.get('cadence',CADENCE['pgstream-sample'])['loadSeconds']<=10800,'M7_DIAGNOSTIC_LIMIT_INVALID')
+        return {'kind':'diagnostic-discovery',**UNACCEPTED_SCOPE}
     measurement_request(manifest)
     if manifest.get("measurementMode")=="unaccepted":
         require(operation in ("build","deploy","run"),"M7_UNACCEPTED_OPERATION")

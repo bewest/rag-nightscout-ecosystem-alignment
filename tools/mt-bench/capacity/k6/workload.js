@@ -20,13 +20,21 @@
 import http from 'k6/http';
 import exec from 'k6/execution';
 import { Counter } from 'k6/metrics';
+import { SharedArray } from 'k6/data';
 
 const BASE = __ENV.BASE_URL;
 const RUN_ID = __ENV.RUN_ID;
 const DURATION = Number(__ENV.DURATION || 120);
 const ACCEL = Number(__ENV.ACCEL || 60);
 const HOT = Number(__ENV.HOT_FACTOR || 10);
-const TENANTS = JSON.parse(open(__ENV.TENANTS_FILE));
+// Only static input is shared. JWTs returned by setup remain ordinary k6 setup data.
+const TENANTS = new SharedArray('baseline tenants', () => JSON.parse(open(__ENV.TENANTS_FILE)));
+// Opt in with JWT_SETUP_CONCURRENCY=16 (range 1..64); default keeps serial setup.
+const setupConcurrency = __ENV.JWT_SETUP_CONCURRENCY || '1';
+if (!/^[1-9][0-9]*$/.test(setupConcurrency) || Number(setupConcurrency) > 64) {
+  throw new Error('JWT_SETUP_CONCURRENCY must be an integer from 1 to 64');
+}
+const SETUP_CONCURRENCY = Number(setupConcurrency);
 const CYCLE = 300 / ACCEL; // seconds per compressed 5-minute cycle
 // One fixed origin for the whole run (every VU evaluates init code separately, so Date.now() here would
 // differ per VU and let two VUs' timestamps collide, which the server's dedup then merges).
@@ -66,9 +74,13 @@ export const options = {
   scenarios, thresholds, discardResponseBodies: true, noConnectionReuse: false,
   summaryTrendStats: ['avg', 'min', 'med', 'p(90)', 'p(95)', 'p(99)', 'max', 'count'],
   setupTimeout: '300s',
+  batch: SETUP_CONCURRENCY, batchPerHost: SETUP_CONCURRENCY,
 };
 
 function pick () {
+  if (exec.scenario.iterationInTest === 0) {
+    console.log(JSON.stringify({ event: 'scenario-first-iteration', shape: exec.scenario.name, atMs: Date.now() }));
+  }
   const i = wheel[exec.scenario.iterationInTest % weight];
   return { i, t: TENANTS[i] };
 }
@@ -89,15 +101,48 @@ function write (t, kind, url, body, headers, okStatuses, name) {
 
 // JWT per tenant for the v3 shape: exchanged once in setup (the stock browser and AAPS-style clients
 // exchange, then reuse until expiry).
+function exchangeRequest (t) {
+  return { method: 'GET', url: BASE + '/api/v2/authorization/request/' + encodeURIComponent(t.token),
+    params: { headers: { Host: t.host, Accept: 'application/json' }, tags: { name: 'exchange' }, responseType: 'text', timeout: '60s' } };
+}
+
+// Shared response hook for serial and batched setup; tenantIndex is roster order.
+function exchangeResponse (res, tenantIndex, startedAtMs) {
+  if (res.status !== 200) throw new Error('exchange refused ' + res.status);
+  const exchange = JSON.parse(res.body);
+  const token = exchange && exchange.token;
+  if (typeof token !== 'string' || token.length === 0) throw new Error('exchange missing JWT');
+  return token;
+}
+
 export function setup () {
-  if (!shapes.w_treatments_v3) return { jwts: [] };
-  const jwts = TENANTS.map(t => {
-    const res = http.get(BASE + '/api/v2/authorization/request/' + encodeURIComponent(t.token),
-      { headers: { Host: t.host, Accept: 'application/json' }, tags: { name: 'exchange' }, responseType: 'text', timeout: '60s' });
-    if (res.status !== 200) throw new Error('exchange refused ' + res.status);
-    return JSON.parse(res.body).token;
-  });
+  const startedAtMs = Date.now();
+  console.log(JSON.stringify({ event: 'jwt-setup-start', atMs: startedAtMs, tenants: TENANTS.length, concurrency: SETUP_CONCURRENCY }));
+  if (!shapes.w_treatments_v3) {
+    console.log(JSON.stringify({ event: 'jwt-setup-end', atMs: Date.now(), startedAtMs, tenants: TENANTS.length, exchanges: 0, concurrency: SETUP_CONCURRENCY }));
+    return { jwts: [] };
+  }
+  const jwts = new Array(TENANTS.length);
+  for (let offset = 0; offset < TENANTS.length; offset += SETUP_CONCURRENCY) {
+    const requests = [];
+    for (let i = offset; i < Math.min(offset + SETUP_CONCURRENCY, TENANTS.length); i++) {
+      requests.push(exchangeRequest(TENANTS[i]));
+    }
+    // Keep the historical serial path by default; batches preserve roster order.
+    // Batch timing bounds dispatch through response processing, not each wire response.
+    const exchangeStartedAtMs = Date.now();
+    const responses = SETUP_CONCURRENCY === 1
+      ? [http.get(requests[0].url, requests[0].params)] : http.batch(requests);
+    for (let j = 0; j < requests.length; j++) {
+      jwts[offset + j] = exchangeResponse(responses[j], offset + j, exchangeStartedAtMs);
+    }
+  }
+  console.log(JSON.stringify({ event: 'jwt-setup-end', atMs: Date.now(), startedAtMs, tenants: TENANTS.length, concurrency: SETUP_CONCURRENCY }));
   return { jwts };
+}
+
+export function teardown () {
+  console.log(JSON.stringify({ event: 'scenario-phase-end', atMs: Date.now() }));
 }
 
 const stamp = () => START + exec.scenario.iterationInTest; // unique per scenario

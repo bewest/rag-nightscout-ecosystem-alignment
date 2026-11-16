@@ -35,6 +35,36 @@ def due_fields(row):
 def validate_ids(ids):
     need(isinstance(ids,list) and 1<=len(ids)<=POLICY['maxTenants'] and len(set(ids))==len(ids) and all(isinstance(v,str) and UUID.fullmatch(v) for v in ids),'M7_EVALUATOR_PROGRESS_TENANTS')
 
+REFUSAL_ROW_MAX_BYTES=4096
+_MISSING=object()
+
+def _refusal_value(value,*,text=False,boolean=False):
+    if value is _MISSING:return {'type':'missing'}
+    if value is None:return None
+    if boolean and type(value) is bool:return value
+    if type(value) is int and abs(value)<=9007199254740991:return value
+    if type(value) is float and math.isfinite(value) and abs(value)<=9007199254740991:return value
+    if text and isinstance(value,str):
+        return value if len(value)<=64 else {'value':value[:64],'truncated':True,'length':len(value)}
+    return {'type':type(value).__name__}
+
+def _refusal_row(row,service,runtime_id):
+    # One private failed-row projection, never the raw RPC or clinical output.
+    # Fixed fields and capped strings bound even malformed response evidence.
+    progress=row.get('progress');evaluation=row.get('evaluation')
+    value={'tenant':_refusal_value(row.get('tenant',_MISSING),text=True),
+           'service':_refusal_value(service,text=True),'runtimeId':_refusal_value(runtime_id,text=True),
+           **{k:_refusal_value(row.get(k,_MISSING),boolean=True) for k in ('admitted','ready')},
+           'code':_refusal_value(row.get('code',_MISSING),text=True),
+           'alert':_refusal_value(evaluation.get('alert',_MISSING) if isinstance(evaluation,dict) else _MISSING,text=True),
+           'progress':{k:_refusal_value(progress.get(k,_MISSING)) for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs')} if isinstance(progress,dict) else {'type':type(progress).__name__},
+           'dueAt':_refusal_value(row.get('dueAt',_MISSING)),
+           'dueReason':_refusal_value(row.get('dueReason',_MISSING),text=True)}
+    # Defensive fail-closed evidence fallback must not replace the refusal.
+    if len(json.dumps(value,allow_nan=False).encode())>REFUSAL_ROW_MAX_BYTES:
+        return {'evidence':'UNMEASURED','code':'M7_REFUSAL_ROW_BOUND'}
+    return value
+
 def _round_view(services,ids,fetch,warming=False):
     """fetch(service,ids,query_budget,byte_budget) returns private JSONL bytes.
 
@@ -72,7 +102,8 @@ def _round_view(services,ids,fetch,warming=False):
                 def contract(valid,field,predicate,code='M7_EVALUATOR_PROGRESS_CONTRACT',verdict='UNMEASURED'):
                     if not valid:
                         error=Refused(code,verdict)
-                        error.diagnostic={'predicate':predicate,'field':field,'instanceIndex':instance_index,'pageIndex':page_index,'rowIndex':row_index,'warming':warming}
+                        error.diagnostic={'predicate':predicate,'field':field,'instanceIndex':instance_index,'pageIndex':page_index,'rowIndex':row_index,'warming':warming,
+                                          'failedRow':_refusal_row(row,service,runtime_id)}
                         raise error
                 tenant=row['tenant'];progress=row.get('progress',{})
                 contract(isinstance(progress,dict),'progress','OBJECT_REQUIRED')

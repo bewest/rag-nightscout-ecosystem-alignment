@@ -13,6 +13,9 @@ class Bookends(unittest.TestCase):
     def exercise(self,phase_error=None,after_error=None,publication_error=False):
         root=tempfile.TemporaryDirectory();self.addCleanup(root.cleanup);d=Path(root.name);out=d/'idle';out.mkdir()
         a.write(d/'owner.json',{'synthetic':True});calls=[];query_count=0
+        # phase_snapshot now reads the frozen service roster for optional RT
+        # instrumentation. This recording fixture has one evaluator and no RT.
+        a.write(d/'frozen.compose.json',{'services':{'evaluator':{'command':['node','evaluator']}}})
         raw={'kind':'synthetic-idle-observation','verdict':'UNMEASURED' if phase_error else 'PASS','code':str(phase_error) if phase_error else None}
         @contextlib.contextmanager
         def sampling(*args):
@@ -28,7 +31,9 @@ class Bookends(unittest.TestCase):
         def sql(*args):
             nonlocal query_count
             query_count+=1
-            if query_count==3 and after_error:raise after_error
+            # Before: role/statements plus the newer cost-companion read. Fault
+            # the actual AFTER role read rather than swallowing a BEFORE metric.
+            if query_count==4 and after_error:raise after_error
             return 'synthetic-role\t1\t1\n'
         original_write=a.write
         def write(file,value):
@@ -42,20 +47,20 @@ class Bookends(unittest.TestCase):
             except BaseException as error:caught=error;result=None
         self.assertEqual(sleep.call_args.args,(120,),'originalphase duration only')
         return out,caught,result,query_count,calls,raw
-    def test_pass_has_only_original_two_bookends_and_four_sql_queries(self):
+    def test_pass_has_original_two_bookends_and_six_sql_queries_including_cost_companion(self):
         out,error,result,queries,calls,_=self.exercise()
-        self.assertIsNone(error);self.assertEqual(result.result['verdict'],'PASS');self.assertEqual(queries,4);self.assertEqual(len(calls),4)
+        self.assertIsNone(error);self.assertEqual(result.result['verdict'],'PASS');self.assertEqual(queries,6);self.assertEqual(len(calls),4)
         self.assertTrue((out/'before-cgroups.json').is_file());self.assertTrue((out/'after-pg-statements.tsv').is_file());self.assertFalse((out/'after-snapshot-failure.json').exists())
     def test_observer_refusal_still_captures_existing_after_bookend(self):
         failure=p.Refused('M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED')
         out,error,_,queries,_,raw=self.exercise(phase_error=failure)
-        self.assertIs(error,failure);self.assertEqual(queries,4)
+        self.assertIs(error,failure);self.assertEqual(queries,6)
         self.assertEqual(a.document(out/'evaluator-progress.json'),raw)
         self.assertTrue((out/'sampler.json').is_file());self.assertTrue((out/'after-pg-statements.tsv').is_file())
     def test_after_failure_keeps_primary_and_reports_actual_partial_files(self):
         failure=p.Refused('M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED');secondary=RuntimeError('PRIVATE_SYNTHETIC_SQL_OR_URL')
         out,error,_,queries,_,raw=self.exercise(phase_error=failure,after_error=secondary)
-        self.assertIs(error,failure);self.assertEqual(queries,3)
+        self.assertIs(error,failure);self.assertEqual(queries,4)
         self.assertEqual(a.document(out/'evaluator-progress.json'),raw)
         for name in ['before-cgroups.json','before-pg-role.tsv','before-pg-statements.tsv','sampler.json']:self.assertTrue((out/name).is_file())
         diagnostic=a.document(out/'after-snapshot-failure.json');self.assertTrue(diagnostic['originalPhaseFailurePreserved']);self.assertEqual(diagnostic['partialFiles'],{'after-cgroups.json':True,'after-pg-role.tsv':False,'after-pg-statements.tsv':False})

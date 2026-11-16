@@ -1,0 +1,81 @@
+"""Bounded oneoff flags stay inside existing source/owner/epoch authority."""
+import copy
+import json
+from pathlib import Path
+import unittest
+import adapter
+import diagnostic_resources as r
+import discovery
+import orchestration_binding as b
+import test_orchestration_binding as fixtures
+
+
+class DiagnosticOneoffs(unittest.TestCase):
+    def setUp(self):
+        self.fixture=fixtures.Tests('test_oneoff_wrong_image_owner_project_attempt_options_before_effect')
+        self.fixture.setUp();self.addCleanup(self.fixture.tearDown)
+        self.binding,self.d,self.scope,self.argv=self.fixture.oneoff()
+        self.root=Path(self.scope['directory'])
+        self.addCleanup(r.configure)
+
+    def meta(self,argv):
+        self.assertEqual(argv[:3],['docker','image','inspect'])
+        return json.dumps([{'Id':self.scope['imageId'],'Config':{'Entrypoint':['k6'],'Env':[]}}])
+
+    def selected(self):
+        config=r.overlay({'services':{'api':{}}},r.NAME)
+        budget=r.plan(config)
+        owner=b.load(self.root/'owner.json');owner['diagnosticResources']=budget.record()
+        (self.root/'owner.json').write_text(json.dumps(owner))
+        (self.root/'frozen.compose.json').write_text(json.dumps(config))
+        r.configure(r.NAME,config,budget.record(),observe=lambda:[])
+        return adapter.bounded_k6_argv(self.argv)
+
+    def test_selected_limits_required_and_native_readback_detects_missing_quota(self):
+        argv=self.selected()
+        with self.assertRaisesRegex(RuntimeError,'RESOURCE_LIMITS_CHANGED'):
+            b._oneoff_intent(self.binding,'k6-version',self.argv,self.scope,self.meta,self.root/'cid')
+        intent=b._oneoff_intent(self.binding,'k6-version',argv,self.scope,self.meta,self.root/'cid')
+        layout=intent['layout']
+        row={'Id':'e'*64,'Image':self.scope['imageId'],'Config':{'Image':self.scope['imageId'],'Cmd':['version'],'Entrypoint':['k6'],'Env':[],'User':'','Labels':layout['labels']},'HostConfig':{'NetworkMode':'none','Tmpfs':{},'Privileged':False,**layout['resourceLimits']},'Mounts':[]}
+        b.qualify_oneoff(self.binding,row,intent)
+        for field in ('NanoCpus','Memory','MemorySwap'):
+            broken=copy.deepcopy(row);broken['HostConfig'][field]=0
+            with self.assertRaisesRegex(RuntimeError,'RESOURCE_LIMITS_CHANGED'):
+                b.qualify_oneoff(self.binding,broken,intent)
+        owner=b.load(self.root/'owner.json');owner['diagnosticResources']['aggregate']['millicpus']=0
+        (self.root/'owner.json').write_text(json.dumps(owner))
+        with self.assertRaisesRegex(RuntimeError,'RESOURCE_RECORD_CHANGED'):
+            b._oneoff_intent(self.binding,'k6-version',argv,self.scope,self.meta,self.root/'cid')
+
+    def test_checked_custody_labels_do_not_break_resource_command_guard(self):
+        argv=self.selected();effects=[]
+        def runner(args):
+            if args[:3]==['docker','image','inspect']:return self.meta(args)
+            if args[:2]==['docker','run']:
+                with r.command(args,{}) as (actual,env):
+                    self.assertEqual(actual[3:9],argv[3:9]);self.assertIn('--cidfile',actual)
+                    self.assertIn(b.ATTEMPT+'='+self.binding['attempt'],actual);effects.append(actual)
+                return ''
+            return self.d(args)
+        b.checked_oneoff(self.binding,'k6-version',argv,self.scope,runner,lambda:True,self.fixture.f.journal)
+        self.assertEqual(len(effects),1)
+
+    def test_actual_generator_jwt_option_is_bound_to_recorded_selection(self):
+        m={'project':self.binding['project'],'owner':self.scope['owner'],'port':12345,'settingsFingerprint':{'sha256':'f'*64},'cadence':{'loadSeconds':2},'jwtSetupConcurrency':16}
+        owner=b.load(self.root/'owner.json');owner['jwtSetupConcurrency']=16
+        (self.root/'owner.json').write_text(json.dumps(owner))
+        argv=discovery.k6_command(adapter,self.root,m,self.scope['imageId'],'synthetic')
+        b._oneoff_intent(self.binding,'k6-load',argv,self.scope,self.meta,self.root/'cid')
+        for replacement in ('JWT_SETUP_CONCURRENCY=1','JWT_SETUP_CONCURRENCY=65'):
+            broken=[replacement if x=='JWT_SETUP_CONCURRENCY=16' else x for x in argv]
+            with self.assertRaisesRegex(RuntimeError,'JWT_SETUP_CHANGED'):
+                b._oneoff_intent(self.binding,'k6-load',broken,self.scope,self.meta,self.root/'cid')
+        legacy=list(argv);i=legacy.index('JWT_SETUP_CONCURRENCY=16');del legacy[i-1:i+1]
+        with self.assertRaisesRegex(RuntimeError,'JWT_SETUP_CHANGED'):
+            b._oneoff_intent(self.binding,'k6-load',legacy,self.scope,self.meta,self.root/'cid')
+        owner.pop('jwtSetupConcurrency');(self.root/'owner.json').write_text(json.dumps(owner))
+        b._oneoff_intent(self.binding,'k6-load',legacy,self.scope,self.meta,self.root/'cid')
+
+
+if __name__=='__main__':unittest.main()
