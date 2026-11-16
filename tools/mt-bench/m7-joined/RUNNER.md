@@ -81,14 +81,11 @@ rewrite: actual preparation refused `M7_WORKLOAD_SETUP_ANCHOR_CHANGED` before
 runtime. Keep that source failure distinct from an application admission failure.
 This joined helper adopts the supported single-commit compatibility repair; its default remains serial 1. Explicit batching changes setup and must be recorded in comparisons.
 
-Existing `adapter.py attach` can bind fresh collector metadata to a compatible
-prepared and seeded fixture. Its source, config, dependencies, resource IDs and
-runtime owner stay explicit; it does not acquire cleanup custody. This runner
-cleans up at the end of each point, so it cannot retain a fixture for a collector
-repair. The next minimal reuse boundary is a runtime owner retaining its fixture
-within its existing finite deadline while a new attachment collects. Record its
-existing history and do not label a reused fixture as fresh history. No snapshot
-or checkpoint system is introduced here.
+Existing `adapter.py attach` binds fresh collector metadata to a compatible
+prepared and seeded fixture. Source, config, dependency installation, resource
+IDs and runtime owner stay explicit. Attachment does not acquire cleanup custody.
+The default `prepare` / `execute` path still cleans at the end of each point.
+Opt-in bounded sessions below retain the fixture for subsequent observations.
 
 The remote trusted supervisor and `nsload` environment are not qualified by this
 local exercise. Existing remote adapters keep their separate source binding and
@@ -484,3 +481,115 @@ traffic. A changed remote environment still needs its own small actual transport
 and probe qualification under separately authorized remote access. Offline CLI
 and protocol tests are not that qualification. An entered run stays on its
 original helper/configuration/receipt/clock and cleanup owner.
+
+Phase role snapshots retain an optional separate `memoryObservation` from
+cgroup-v2 `memory.peak` and `memory.events`. Peak bytes cover the container
+cgroup lifetime since birth or an external reset, not the measured phase. The
+reducer requires matching container identities and nondecreasing peaks/events;
+missing files or malformed reads remain UNMEASURED. It never subtracts peaks or
+sums independent role peaks as a concurrent total. Existing raw cgroup counters,
+current memory and configured-limit checks keep their separate meanings.
+
+## Planned evaluator restart during local discovery demand
+
+For a **new local capture**, `restart-during-load-after-seconds` selects a planned
+restart of the complete rendered evaluator roster while ordinary k6 traffic and
+the stock-client probe continue. This mode requires discovery, completion contract
+`evaluator-work-v2`, a version-2 configuration-bound receipt, probe cadence at most
+1000ms, and at least 60 seconds between selected delay and the end of offered
+load. Example preparation fields are `restart-during-load-after-seconds: 60`,
+`load-seconds: 310`, and `probe-every-ms: 1000`. The default remains unchanged.
+A one-second probe adds one global clinical witness write per second, separately
+from ordinary offered scenario RPS. It does not write once per tenant per second.
+
+The delay begins after the actual first ordinary scenario marker, following JWT
+setup. Existing exact-owned mutation checks and `restart.cjs` verify evaluator
+container replacement. The existing recovery oracle requires a changed runtime
+and successful fresh owned acquisition. Separate typed durable bookends require
+unchanged sampled registry/lifecycle authority and restore generation, monotone
+accepted/completed positions, and clinical completion of the pre-restart targets.
+This planned bracket retains the unplanned-runtime-reset hard stop in the default
+load observer. It does not claim observation of every instant between bookends.
+
+The probe keeps uploading and keeps stock sockets open during the evaluator
+restart. Final qualification requires actual later viewer-bound requests, their
+completed output and matching stock frames. Missing witnesses refuse the result.
+Stored ordinary writes, clinical probe writes, completion floors and client frames
+remain separate denominators. The receipt records partial captures and the fixed
+finite runner guard continues to own exact cleanup. Source/image acceptance is
+separate; this helper capability does not require another application campaign.
+
+The remote supervisor has a different load route. Remote projection explicitly
+refuses this selection as `REMOTE_DEMAND_RECOVERY_LOCAL_ONLY`; a coordinated
+controller/deployment implementation is required before a remote capture can use
+it. Offline mocked scheduling and controls qualify helper behavior; native
+restart-under-demand remains UNMEASURED until an actual selected capture runs.
+
+Memory observations bind each read to Docker inspect `State.StartedAt` from
+the owned container census and matching post-read inspect. A changed start
+timestamp with the same container ID separates the two cgroup lifetimes. Their
+peaks remain separate observations and the phase gap/events delta are UNMEASURED.
+Same-lifetime counter rewinds still refuse. Captures without verified birth
+metadata retain unknown continuity; this does not repair old captures.
+
+### Reuse a bounded local fixture
+
+`session-start` uses the existing runner configuration, explicit diagnostic
+resource profile, prepare and deploy paths. It seeds once and prints the session
+owner token and original cutoffs. Preparation consumes the same `workSeconds`.
+The original independent guard remains responsible for cleanup; retain its helper
+worktree unchanged until exact absence. An existing point, foreign fixture or
+sealed run cannot be adopted into a session.
+
+```bash
+python3 -B tools/mt-bench/m7-joined/runner.py session-start CONFIG.json /tmp/OWNED-SESSION
+python3 -B tools/mt-bench/m7-joined/runner.py session-observe /tmp/OWNED-SESSION \
+  --owner OWNER_FROM_SESSION_START --name first --config CONFIG.json --history HISTORY.json
+# A second named observation uses the same seeded physical fixture.
+python3 -B tools/mt-bench/m7-joined/runner.py session-observe /tmp/OWNED-SESSION \
+  --owner OWNER_FROM_SESSION_START --name repaired-collector --config COLLECTOR-CONFIG.json --history HISTORY.json
+python3 -B tools/mt-bench/m7-joined/runner.py session-close /tmp/OWNED-SESSION --owner OWNER_FROM_SESSION_START
+```
+
+Each history input is a JSON object describing `warmCache`, `seedHistory`,
+`previousWrites`, `restarts`, `activeViewers` and `elapsedAges`. Use explicit
+`UNMEASURED` descriptions where unknown. The runner adds elapsed session time,
+prior observation names, actual pre-observation resource identities, original
+runtime-owner digest and collector identity. Inputs, errors, logs and partial
+results remain separate under `observations/NAME/`; names cannot be reused.
+No counters, clocks, caches, clinical state, leases or slots are reset or copied.
+If the question needs fresh history, use a separate default point or session.
+
+A later observation can select an explicitly pinned newer collector and receipt,
+workload timing/rate, viewer count or existing TIME/recovery observation options.
+All other preparation options, the application image, source/deployment pair,
+dependency roots, topology, configuration and resource ceiling must stay compatible.
+The existing attach and preflight paths check the physical resources and current
+runtime/authority contracts. The original guard can stop later collector jobs and
+exact-owned oneoffs without adopting their helper version. Cleanup of the runtime
+always uses the original helper and owner. Observations are serialized on this
+fixture, using the existing diagnostic driver lock without a bypass.
+
+Collector or phase failure retains partial observations and the runtime until its
+owner closes it or the original guard expires. A new name is a new observation,
+not an automatic retry of uncertain writes. Inspect the original result and
+account for previous effects before choosing another scenario. Compatibility or
+authority refusal stops that observation; it does not license source or state
+replacement. Missing optional metrics remain scoped gaps. Interrupting a collecting
+command invokes original cleanup. Losing the coordinator leaves the independent
+finite guard responsible at the original cutoff. Close is idempotent; resources
+remain reserved until cleanup and independent absence are confirmed. No command
+extends a deadline, paid budget or resource allocation.
+
+Focused local tests exercise the actual attach function with synthetic filesystem
+and resource readbacks, two named runner observations, retained collector failure,
+compatibility refusals, default cleanup and real finite child termination. Docker,
+application clinical execution and remote transport reuse are UNMEASURED here;
+this helper change grants no application acceptance or paid-resource authority.
+Diagnostic resource profiles derive nginx worker processes from the role's CPU
+quota (ceiling of millicpus / 1000). Preparation passes the explicit count to
+the deployment producer and records the generated config digest. The existing
+connection budget remains 16384 per worker. Preflight reads exact-owned nginx
+`-T` output and refuses an omitted, automatic or changed worker count before
+traffic. This qualifies the fixture configuration; it does not measure edge or
+application capacity. Default deployments retain their existing automatic count.

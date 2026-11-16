@@ -81,6 +81,13 @@ def cpu_ceiling(profile):
     return 6000 if profile == QUALIFICATION_NAME else MAX_CPU
 
 
+def edge_worker_budget(profile):
+    if profile is None:return None
+    selection(profile)
+    cpu=role_limit('nginx',profile).cpu
+    return {'workerProcesses':(cpu+999)//1000,'workerConnections':16384,'nginxMillicpus':cpu,'source':'diagnostic-resource-profile-v1'}
+
+
 def role_limit(role, profile=NAME):
     selection(profile)
     if profile == QUALIFICATION_NAME:

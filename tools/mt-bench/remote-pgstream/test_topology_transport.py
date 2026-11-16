@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[3]
 class TopologyTransport(unittest.TestCase):
  def selected(self):
   b=reporting.DiscoveryReporting().selected(2)
-  b.update(pair={'core':os.environ.get('PGCAL_TOPOLOGY_CORE_COMMIT','a'*40),'deploy':os.environ.get('PGCAL_TOPOLOGY_DEPLOY_COMMIT','b'*40)},imageId=os.environ.get('PGCAL_TOPOLOGY_IMAGE','sha256:'+'c'*64),pgstreamTopology='external-service-v1',diagnosticResourceProfile='local-diagnostic-external-pgstream-4cpu-8g-v1')
+  b.update(pair={'core':os.environ.get('PGCAL_TOPOLOGY_CORE_COMMIT','a'*40),'deploy':os.environ.get('PGCAL_TOPOLOGY_DEPLOY_COMMIT','b'*40)},imageId=os.environ.get('PGCAL_TOPOLOGY_IMAGE','sha256:'+'c'*64),pgstreamTopology='external-service-v1',diagnosticResourceProfile=os.environ.get('PGCAL_TOPOLOGY_RESOURCE_PROFILE','local-diagnostic-external-pgstream-4cpu-8g-v1'))
   # Fixtures describe the actual committed helper. Production still requires
   # an explicit selector and rejects an omitted transitive dependency.
   names=['tools/mt-bench/m7-joined/stream_topology.py','tools/mt-bench/m7-joined/diagnostic_resources.py']
@@ -26,6 +26,19 @@ class TopologyTransport(unittest.TestCase):
    with self.assertRaises(RuntimeError):protocol.binding(broken)
   broken=copy.deepcopy(b);broken['helperDependencies']['files']['tools/mt-bench/m7-joined/stream_topology.py']='0'*64
   with self.assertRaisesRegex(RuntimeError,'DEPENDENCY_BYTES'):protocol.topology_dependencies(broken,ROOT)
+ def test_qualification_profile_binding_census_and_effective_limits(self):
+  b=self.selected();b['diagnosticResourceProfile']='local-qualification-external-pgstream-6cpu-10g-v1'
+  protocol.binding(b)
+  resource_file=ROOT/'tools/mt-bench/m7-joined/diagnostic_resources.py'
+  sys.path.insert(0,str(resource_file.parent))
+  import diagnostic_resources as r
+  profile=b['diagnosticResourceProfile']
+  self.assertEqual(r.cpu_ceiling(profile),6000);self.assertEqual(r.memory_ceiling(profile),10*1024**3)
+  self.assertEqual(r.verify_evaluator_cgroup(profile,'100000 100000',str(1024**3),'0')['millicpus'],1000)
+  for cpu,memory in [('25000 100000',str(1024**3)),('100000 100000',str(512*1024**2))]:
+   with self.assertRaisesRegex(RuntimeError,'EFFECTIVE_'):r.verify_evaluator_cgroup(profile,cpu,memory,'0')
+  wrong=copy.deepcopy(b);wrong['diagnosticResourceProfile']='local-qualification-external-pgstream-600cpu-10g-v1'
+  with self.assertRaisesRegex(RuntimeError,'EXPLICIT_TOPOLOGY'):protocol.binding(wrong)
  def test_wrong_transitive_dependency_profile_refuses(self):
   b=self.selected();deps=b['helperDependencies']
   if deps['profile']=='external-service-batch-v1':

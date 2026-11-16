@@ -50,7 +50,7 @@ def workload(value):
         return dict(cadence=dict(CADENCE), primerConcurrency=1, resourcePlan=None)
     need(isinstance(selected, dict) and set(selected) in ({'cadence', 'primerConcurrency', 'resourcePlan'}, {'cadence', 'primerConcurrency', 'resourcePlan', 'jwtSetupConcurrency'}), 'REMOTE_WORKLOAD_SHAPE')
     cadence = selected['cadence']
-    need(isinstance(cadence, dict) and set(CADENCE) <= set(cadence) and set(cadence)-set(CADENCE) <= ({'offeredRps','logicalPollingClients'} if exploratory else {'offeredRps'}), 'REMOTE_CADENCE_SHAPE')
+    need(isinstance(cadence, dict) and set(CADENCE) <= set(cadence) and set(cadence)-set(CADENCE) <= ({'offeredRps','logicalPollingClients','restartDuringLoadAfterSeconds'} if exploratory else {'offeredRps'}), 'REMOTE_CADENCE_SHAPE')
     for key, default in CADENCE.items():
         if exploratory and key in ('warmupSeconds','idleSeconds','loadSeconds','accel','hotFactor','samplerIntervalSeconds','probeEveryMs','socketsPerTenant'):
             maximum={'samplerIntervalSeconds':60,'socketsPerTenant':8}.get(key,10800 if key!='probeEveryMs' else 3600000)
@@ -61,6 +61,7 @@ def workload(value):
             need(type(cadence[key]) is type(default) and cadence[key] == default, 'REMOTE_FIXED_WORKLOAD_CHANGED')
     need(sum(cadence[k] for k in ('warmupSeconds','idleSeconds','loadSeconds'))<=10800,'REMOTE_DURATION_RANGE')
     need(cadence['restart'] is False,'REMOTE_NO_RESTART')
+    need('restartDuringLoadAfterSeconds' not in cadence,'REMOTE_DEMAND_RECOVERY_LOCAL_ONLY')
     if 'offeredRps' in cadence:
         rate = cadence['offeredRps']
         need(type(rate) in (int, float) and math.isfinite(rate) and 1 <= rate <= 10000, 'REMOTE_OFFERED_RATE_RANGE')
@@ -103,7 +104,7 @@ def prepared_cadence(b):
 def topology(value):
     selected='pgstreamTopology' in value or 'diagnosticResourceProfile' in value or 'helperDependencies' in value
     if not selected:return None
-    need(discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1' and value.get('diagnosticResourceProfile')=='local-diagnostic-external-pgstream-4cpu-8g-v1','REMOTE_EXPLICIT_TOPOLOGY')
+    need(discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1' and value.get('diagnosticResourceProfile') in ('local-diagnostic-external-pgstream-4cpu-8g-v1','local-qualification-external-pgstream-6cpu-10g-v1'),'REMOTE_EXPLICIT_TOPOLOGY')
     deps=value.get('helperDependencies')
     need(isinstance(deps,dict) and set(deps)=={'version','profile','files'} and deps['version']==1 and deps['profile'] in ('external-service-v1','external-service-batch-v1'),'REMOTE_TOPOLOGY_DEPENDENCIES')
     names={'tools/mt-bench/m7-joined/stream_topology.py','tools/mt-bench/m7-joined/diagnostic_resources.py'}

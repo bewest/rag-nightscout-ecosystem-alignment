@@ -409,6 +409,12 @@ def cadence_options(args):
         require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_VIEWER_DISCOVERY_ONLY')
         require(type(clients) is int and 0<=clients<=80000,'M7_VIEWER_TOTAL_RANGE')
         value['logicalPollingClients']=clients
+    restart=getattr(args,'restart_during_load_after_seconds',None)
+    if restart is not None:
+        value['restartDuringLoadAfterSeconds']=restart
+        import demand_recovery
+        demand_recovery.validate({'profile':args.profile,'runPurpose':getattr(args,'run_purpose',None),
+                                  'completionContract':getattr(args,'completion_contract',None),'cadence':value})
     return value
 
 
@@ -437,11 +443,27 @@ def attach(args):
     require(not target.exists() and source.is_dir() and state.is_dir(),'M7_ATTACH_PATH')
     require(git(source,'rev-parse','HEAD')==pair['core'],'M7_OWN_CORE_HEAD_CHANGED')
     m={'version':1,'directory':str(target),'owner':uuid.uuid4().hex,'project':args.project,'pair':pair,'instrument':pinned,'image':args.image,'imageId':args.image_id or args.image,'profile':'pgstream-sample','runPurpose':'discovery','measurementMode':'accepted','cadence':cadence_options(args),'tenants':args.tenants,'replicas':1,'freeze':str(Path(args.freeze).resolve()),'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),'coreRepository':str(Path(args.core_repo).resolve()),'attached':True,'completionContract':getattr(args,'completion_contract',None),'jwtSetupConcurrency':jwt_setup_concurrency(getattr(args,'jwt_setup_concurrency',1))}
+    if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     selection=serial_exchange_selection(args)
     if selection is not None:m['serialExchangeDiagnostic']=selection
     select_opportunities(args,m)
     evaluator_catchup.select(args,m)
     require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and 1<=args.tenants<=10000 and args.replicas==1,'M7_ATTACH_SCOPE')
+    # Current receipts bind semantic configuration before attachment admission.
+    # This is provisional read-only metadata; canonical owner/dependency/resource
+    # validation below remains mandatory before a usable attachment is written.
+    m['postgresImageId']=getattr(args,'postgres_image',None)
+    m['primerConcurrency']=primer_concurrency(getattr(args,'primer_concurrency',1))
+    if getattr(args,'runtime_owner',None):
+        runtime=document(args.runtime_owner)
+        owner_path=Path(args.runtime_owner).resolve()
+        runtime_directory=Path(runtime.get('directory','')).resolve()
+        require(owner_path==runtime_directory/'owner.json' and runtime.get('prepared') is True
+                and runtime.get('project')==m['project'] and runtime.get('pair')==m['pair']
+                and runtime.get('imageId')==m['imageId'], 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
+        if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
+    from run_configuration import from_manifest
+    m['runConfiguration']=from_manifest(m)
     frozen(m,'deploy');image(m)
     target.mkdir(parents=True,mode=0o700)
     try:
@@ -471,6 +493,10 @@ def attach(args):
             shutil.copyfile(HERE/'restart.cjs',target/'restart.cjs');m['restartHelperSha256']=digest(target/'restart.cjs')
             m['probe']=generate(ROOT,target/'probe.js',serial_exchange=bool(m.get('serialExchangeDiagnostic')));m['workload']=generate_workload(ROOT,target/'k6/workload.js')
             m['generator']=attachment_generator(target,source,dependencies,m,getattr(args,'runtime_owner',None))
+            if m['generator'].get('runtimeOwner'):
+                runtime=document(args.runtime_owner)
+                if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
+            require(from_manifest(m)==m['runConfiguration'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
             candidates=[file for file in (state/'primer/tenants.json',state/'ops/tenants.json') if file.exists()]
             projections=[tenant_projection(document(file),m['tenants']) for file in candidates]
             require(projections and all(value==projections[0] for value in projections),'M7_PRIMER_OUTPUT_CONFLICT');write(target/'tenants.private.json',projections[0])
@@ -676,8 +702,14 @@ def prepare_staged(args,target,pinned):
     # the owned lockfile context before invoking it, not after bootstrap.
     setup_generator(target,m)
     env = runtime_env({"NS_API_REPLICAS": str(args.replicas),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
+    edge_budget=diagnostic_resources.edge_worker_budget(selected_resources_profile(args))
+    if edge_budget is not None:env['NS_EDGE_WORKER_PROCESSES']=str(edge_budget['workerProcesses'])
     networks=["--backend-subnet",args.backend_subnet,"--edge-subnet",args.edge_subnet] if getattr(args,"backend_subnet",None) else []
     command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"]), "--project", m["project"],*networks], cwd=overlay,env=env,phase="product-prepare")
+    if edge_budget is not None:
+        edge_file=target/'state/edge/nginx.conf'
+        verify_edge_workers(edge_file.read_text(),edge_budget)
+        m['edgeWorkerBudget']={**edge_budget,'configurationSha256':digest(edge_file)}
     # Keep the source binding path stable: guards and optional controller digests
     # refer to this exact .env. Compose also reads the private cell copy.
     shutil.copyfile(overlay / ".env", target / "env")
@@ -744,6 +776,10 @@ def verify(d, m, teardown=False):
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
     if m.get("environmentSha256"):
         require(digest(d/"env")==m["environmentSha256"] and digest(d/"core/deploy/multitenant/.env")==m["environmentSha256"],"M7_ENVIRONMENT_CHANGED")
+    if m.get('edgeWorkerBudget'):
+        edge_file=d/'state/edge/nginx.conf'
+        require(digest(edge_file)==m['edgeWorkerBudget']['configurationSha256'],'M7_EDGE_CONFIGURATION_CHANGED')
+        verify_edge_workers(edge_file.read_text(),m['edgeWorkerBudget'])
     stream_topology.verify_config(m,document(d/"frozen.compose.json"))
     clinical_timeline.verify(document(d/"frozen.compose.json"),d,m,teardown=teardown)
     measurement_topology(m,document(d/"frozen.compose.json"))
@@ -893,6 +929,10 @@ def attachment_generator(d,source,root,m,owner_file=None):
                 'M7_ATTACH_RUNTIME_GENERATOR_CHANGED')
         binding={'ownerFile':str(owner_file.resolve()),'ownerFileSha256':digest(owner_file),'owner':runtime['owner'],
                  'instrument':runtime['instrument'],'generatorProvenanceSha256':digest(provenance)}
+    if runtime and runtime.get('diagnosticResources'):
+        require(m.get('diagnosticResources')==runtime['diagnosticResources'],'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+        diagnostic_resources.configure(runtime['diagnosticResources']['profile'],document(d/'frozen.compose.json'),
+            runtime['diagnosticResources'],observe=lambda:diagnostic_resource_rows(m))
     tools=generator_tools();client=generator_client(d,tools)
     contexts={'generator':dependency_context(root,root/'node_modules',['socket.io-client','pg','js-yaml']),
               'source':dependency_context(source,root/'node_modules',['pg','js-yaml'])}
@@ -1081,6 +1121,36 @@ def process_counters(text):
     return result
 
 
+def memory_observation(container_id, started_at=None):
+    # Separate reads preserve the legacy concatenated cgroup parser exactly.
+    result={'status':'UNMEASURED','scope':'container-cgroup lifetime since birth or last external reset; not phase peak'}
+    try:
+        raw=command(['docker','exec',container_id,'cat','/sys/fs/cgroup/memory.peak']).strip()
+        if re.fullmatch(r'[0-9]+',raw):result.update(status='MEASURED',memoryPeakBytes=int(raw))
+        else:result['reason']='invalid-memory-peak'
+    except RuntimeError:result['reason']='memory-peak-unavailable'
+    try:
+        raw=command(['docker','exec',container_id,'cat','/sys/fs/cgroup/memory.events'])
+        events={}
+        for line in raw.splitlines():
+            key,value=line.split()
+            require(key not in events and re.fullmatch(r'[a-z_]+',key) and re.fullmatch(r'[0-9]+',value),'M7_MEMORY_EVENTS_INVALID')
+            events[key]=int(value)
+        require(bool(events),'M7_MEMORY_EVENTS_INVALID')
+        result['memoryEvents']=events
+    except (RuntimeError,ValueError):result['memoryEvents']='UNMEASURED'
+    if isinstance(started_at,str) and re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z',started_at):
+        try:
+            inspected=json.loads(command(['docker','inspect','--format','{{json .}}',container_id]))
+            require(inspected.get('Id')==container_id and inspected.get('State',{}).get('StartedAt')==started_at,'M7_MEMORY_BIRTH_CHANGED_DURING_READ')
+            result['birth']={'containerId':container_id,'startedAt':started_at,'source':'docker-inspect-state-started-at-v1','stableRead':True}
+        except (ValueError,RuntimeError):
+            # An optional counter cannot describe a lifetime that changed while
+            # it was read. Preserve other phase observations without continuity.
+            result.update(status='UNMEASURED',reason='container-birth-unverified');result.pop('memoryPeakBytes',None)
+    return result
+
+
 def phase_snapshot(d, out, name):
     snapshot_owner=document(d/"owner.json")
     rows = resources(snapshot_owner, False)
@@ -1090,7 +1160,7 @@ def phase_snapshot(d, out, name):
         try:
             raw = command(["docker", "exec", row["Id"], "cat", "/sys/fs/cgroup/cpu.stat", "/sys/fs/cgroup/memory.current", "/sys/fs/cgroup/memory.stat"])
             processes = command(["docker", "top", row["Id"], "-eo", "pid,comm,rss"])
-            result[role] = {"id": row["Id"], "cgroup": raw, "processRssKiB": processes,"hostProcesses":process_counters(processes)}
+            result[role] = {"id": row["Id"], "cgroup": raw, "processRssKiB": processes,"hostProcesses":process_counters(processes),"containerStartedAt":row.get("State",{}).get("StartedAt"),"memoryObservation":memory_observation(row["Id"],row.get("State",{}).get("StartedAt"))}
         except RuntimeError:
             result[role] = {"id": row["Id"], "unavailable": True}
     write(out / (name + "-cgroups.json"), {"at": time.time(), "roles": result})
@@ -1486,6 +1556,25 @@ def preflight(d,m,k6_image,oneoff=None):
     return sample_preflight(d,m,k6_id,**({'oneoff':oneoff}if oneoff else{}))
 
 
+def verify_edge_workers(text, budget):
+    workers=re.findall(r'^\s*worker_processes\s+([^;]+);',text,re.M)
+    connections=re.findall(r'worker_connections\s+([^;]+);',text)
+    require(workers==[str(budget['workerProcesses'])] and connections==[str(budget['workerConnections'])],'M7_EDGE_WORKER_CONFIGURATION')
+    return {'workerProcesses':int(workers[0]),'workerConnections':int(connections[0])}
+
+
+def edge_runtime(d,m):
+    budget=m.get('edgeWorkerBudget')
+    if budget is None:return None
+    require({key:budget[key] for key in ('workerProcesses','workerConnections','nginxMillicpus','source')}==diagnostic_resources.edge_worker_budget(m['diagnosticResources']['profile']),'M7_EDGE_WORKER_BUDGET_CHANGED')
+    rows=[row for row in resources(m,False) if row['Config']['Labels'].get('com.docker.compose.service')=='nginx']
+    require(len(rows)==1,'M7_EDGE_RUNTIME_ROSTER')
+    row=rows[0]
+    text=command(['docker','exec',row['Id'],'nginx','-T'])
+    observed=verify_edge_workers(text,budget)
+    return {'status':'PASS','containerId':row['Id'],'source':'exact-owned-nginx-T','configurationSha256':hashlib.sha256(text.encode()).hexdigest(),**observed}
+
+
 def sample_preflight(d,m,k6_id,oneoff=None):
     # New setup attempts preserve deployment and all failed collector artifacts.
     # No timed phase or counter reset exists until these reads succeed.
@@ -1493,6 +1582,8 @@ def sample_preflight(d,m,k6_id,oneoff=None):
     status={'status':'UNMEASURED','scope':'instrument setup only; no capacity acceptance'}
     with private_commands(attempt/'commands'):
         try:
+            edge=edge_runtime(d,m)
+            if edge is not None:write(attempt/'edge-worker-runtime.json',edge)
             if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
                 stream_topology.verify_config(m,document(d/'frozen.compose.json'))
                 stream_topology.external_runtime(diagnostic_resource_rows(m),m)
@@ -1759,6 +1850,7 @@ def parser():
     prep.add_argument('--sockets-per-tenant',type=int)
     prep.add_argument('--logical-polling-clients',type=int)
     prep.add_argument('--probe-every-ms',type=int)
+    prep.add_argument("--restart-during-load-after-seconds",type=int,help="Discovery-only planned evaluator restart after actual ordinary scenario demand begins; requires v2 receipt")
     prep.add_argument("--offered-rps",type=float,help="Explicit scenario HTTP arrival rate for pgstream discovery only; preserves mix")
     prep.add_argument("--jwt-setup-concurrency",type=int,choices=range(1,65),default=1)
     prep.add_argument("--primer-concurrency",type=int,choices=range(1,33),default=1,help="Bounded commissioning workers on a qualified NEXT image; default serial")

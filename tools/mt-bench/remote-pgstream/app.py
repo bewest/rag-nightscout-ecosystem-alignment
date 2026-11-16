@@ -300,6 +300,8 @@ def discovery_summary(d,m,b,probe,k6):
         for name,collect in (('measurements',lambda:measurements(d,m)),('generatorMetrics',lambda:a.document(out/'generator-metrics.json'))):
             try:result['optionalObservations'][name]=collect()
             except Exception:result['optionalObservations'][name]={'verdict':'UNMEASURED','code':'REMOTE_OPTIONAL_OBSERVATION_UNAVAILABLE'}
+        # A completed discovery cell is PARTIAL; missing observations keep their own verdicts.
+        result['verdict']='PARTIAL'
         save();return result
     except Exception as error:
         result['verdict']='FAIL';result['failure']={'code':str(error) if re.fullmatch(r'(?:M7|REMOTE|EXTERNAL)_[A-Z_]+',str(error)) else 'REMOTE_DISCOVERY_INSTRUMENT_ERROR'}
