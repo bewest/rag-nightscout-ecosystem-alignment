@@ -1,0 +1,25 @@
+# REST admission/allocation batch — functional capture, 2026-11-13
+
+**Reproduced:** the complete REST batch preserves the focused current-authority, storage and request-state checks while removing repeated admission/configuration and unused raw allocation work. Fixed on clean local core branch `codex/rest-admission-batch-20261113`, head `8f2a1b5bf95ab45277cc5ad20d5d38161f89d627`, parent `3c6e5a016c7aa0665b4a5fcc6a3ece4f7632b6a0`. This capture has no throughput/latency claim. Root joins the batch with pgstream work for one final image, local pair and 1000-tenant run.
+
+The [intermediate pair](local-raw-ab.md) measured the preceding raw-route batch. This change adds one fresh combined named-subject permissions/attribution read per operation, reuses fresh legacy verifier metadata within its cryptographic operation, reuses unchanged typed metadata configuration/router construction after a fresh settings read, and removes unconsumed raw clinical processing. Raw reads use the same loader window definitions; derived reads retain full acquisition. Noncacheable handlers retain an immutable empty cache and a request-private lazy normalizer. Actor, clinical data, cache, bus and purifier remain private; authority/configuration reads still occur on the next request. Durable audit receipts still precede cryptographic effects and plaintext release.
+
+PostgreSQL savepoint names now belong to their physical transaction. A slot is reusable only after confirmed release; uncertain removal quarantines it, and overlapping/nested savepoints still refuse. Complete sorted entry reads check every returned row directly; pages retain the whole-matching-set window guard so malformed values beyond the page still refuse. No new index, runtime flag, cross-request actor cache or public trusted-worker capability was added.
+
+## Focused evidence
+
+The frozen batch passes **96 focused tests**, with five existing opt-in tests skipped, plus **four native PostgreSQL tests**. Focused selection covers authorization snapshots, connection failure cleanup, private acquisition, actual preview routes, serving status, REST authority/review, legacy credentials, secrets/audit batching, metadata settings and data-loader behavior. The native command is `NS_REST_ACQUISITION_NATIVE=1 ./node_modules/.bin/mocha tests/preview-entries-acquisition.integration.test.js`.
+
+Controls prove bounded savepoint reuse, quarantined uncertain cleanup, nested-scope refusal, actual PostgreSQL rollback, same-name explicit role override for claims versus anonymous permission union for decisions, fresh subject name and next-request revocation, generic decrypt without a metadata hint, fresh metadata reads/failure propagation, private derived contexts, and array/object sort refusal both in full reads and outside a returned page. Existing durable-audit refusal and bypass controls remain green/red as prescribed.
+
+Native HTTP writes initially reproduced a regression: removing the private data normalizer caused HTTP500. A lazy request-private normalizer repairs it; the repeated native write/read differential passes. Filtered treatment/devicestatus reads also reproduced HTTP500 before the empty-cache sentinel repair; the actual one-query handler paths now pass. Failed logs are retained. A query-plan control construction initially included the document expression inside `bool_or`, producing a PostgreSQL function-signature error; correcting the test expression restored the intended old-query comparison. No production SQL workaround was used.
+
+## Actual entry query plan
+
+The native fixture captures SQL and parameters from actual HTTP `/api/v1/entries/sgv?count=1`, executes `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` under the tenant-bound nonsuperuser role, and compares the old window guard with the new row guard. Returned rows and refusal behavior match. Both plans return 578 rows and use sequential scan plus sort; only the old plan has `WindowAgg`. Existing tenant/date/type indexes are inventoried. The generic JSONB compatibility predicates and ordering remain; no index usage or index-speed improvement is claimed.
+
+One-shot execution times are **4.862 ms old and 5.304 ms new**. This reproduces the structural removal, not a latency improvement. The synthetic bounded fixture has 1500 added entries and is not a production distribution or saturation test. Root's matched run measures the combined result.
+
+## Retained evidence and boundary
+
+Private originals: `/mnt/data/nightscout-workspace/artifacts/rest-admission-batch-20261113`, with `manifest.json`, final focused/native logs, failure logs and `actual-entry-http-explain.json`. Query-plan SHA-256 `ee5a9614cbcdb9c67dc4e30d58e5cb14a392bf05617542147b109d041532ea42`; focused log `285e187e5a7160995dd81628b0484fcfd704a8dca35e538752c7c0ea4ac14c9f`; native log `bcc9ff859482fbe170afa4a24f0f746dd3b8689381263483b2f33d2015349145`. Every disposable fixture was exact owner/image checked and removed. The native restore gate is a refusal adapter, not full platform lifecycle acceptance. Root owns joined full/browser/corpus acceptance; skipped checks and final performance remain unmeasured here.
