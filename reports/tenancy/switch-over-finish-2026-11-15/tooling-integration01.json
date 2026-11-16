@@ -1,0 +1,50 @@
+{
+  "capturedAtUTC": "2026-11-16T03:22:33Z",
+  "kind": "focused-source-integration",
+  "basis": "reproduced",
+  "alignmentSource": "aefc5e7a77b021936a59c54a180d169e14599a4c",
+  "deploymentSource": "16133d9d33993b08fd81a318e8d30be123051ae7",
+  "helperCapsule": "ba4a2463a9f43600060e859fa66b0aa2f414821b",
+  "controllerCapsule": "86470348408dc3c732f57f07c7e33092317ca784",
+  "manifestVerification": {
+    "helperFiles": 155,
+    "controllerFiles": 35,
+    "hashMismatches": 0,
+    "outsideManifestPaths": 0
+  },
+  "checks": {
+    "controller": {
+      "tests": 81,
+      "passed": 81,
+      "failed": 0,
+      "skipped": 0
+    },
+    "localBatch": {
+      "tests": 14,
+      "passed": 14,
+      "failed": 0
+    },
+    "queueCheck": "PASS"
+  },
+  "retainedEvidenceId": "transition-tool-integration-20261115",
+  "limitations": [
+    "Provider trusted gateways are not installed or live-qualified by this source check.",
+    "Actual root-to-UID1000 result import remains unmeasured.",
+    "No new resources, remote allocation, capacity acceptance or application campaign.",
+    "Original sandbox controller attempt was interrupted after hanging; supported host execution passed."
+  ],
+  "logs": {
+    "controller": {
+      "file": "transition-integrated-controller-enabled.log",
+      "sha256": "a64e9595d316296226b2753cdf3d54c8fef75ac74b3a95277c42dbb1d1b517df"
+    },
+    "localBatch": {
+      "file": "transition-integrated-helper-batch.log",
+      "sha256": "b22f67c8f2f27c8ed956d3440265d2cf5ae23dec7aaf3c108c821782f6deafec"
+    },
+    "queueCheck": {
+      "file": "transition-integrated-tools-queue-check.log",
+      "sha256": "25d9f8fdb1f53f64109f22de0c673c8578806a9b0b0390a09d11cc6ba1ce53ec"
+    }
+  }
+}
