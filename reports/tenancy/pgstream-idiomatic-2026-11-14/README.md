@@ -2585,3 +2585,47 @@ remain separate from this candidate's measured checks.
 | acceptance03/root-independent-absence.json | `921ac9d17fb1e861ba28fb74854122e766851f21c02eefb9454cd67b186547e6` |
 | selected-image/image-qualification.json | `4d3b444529e3c23ca5e9b53c04e1dfaa516447db4f67345a1d0a43091a9813de` |
 | final-prcheck.log | `597b715c9e4c2c9b8b425e27c4b5260a9d17fafc6ea48142d5b5cba25ee13e46` |
+
+#### Joined downstream recovery and experiment helpers
+
+**Reproduced:** deployment `124877ea7f7fd7c5a5218831fe459f0e5923a415`
+adds the offline ordinary-profile revision command and the one-shot planned
+slot transition. It retains exact stopped project/container/image identity,
+source admissions, backend identity, cold-backup digests and durable no-retry
+markers. Ordinary default project names are admitted; another valid project
+cannot adopt the same container cohort. Root checks pass: 33 installed helper
+checks and six command/oracle checks. Initial missing-dependency and restricted
+sandbox attempts are retained separately; they are not passes.
+
+The actual synthetic two-tenant rehearsal upgrades d7a7ff4/467c804/imagec4a0
+into 5e112/460666/imagefd19. Preserved pre-FULL WAL first fails the current raw
+identity decoder; the original failure stays recorded. The reviewed, sealed
+replace-revision action then reconstructs current source through accepted and
+completed state, restore generations and actual due work, followed by new API
+writes and authorized stock frames. A separate paired PostgreSQL/Vault/state
+cold restore proves predecessor backup content and expected loss of the
+post-backup write. Domain rollback uses fresh admitted namespaces; it does not
+restore global serving authority alone. Both exact projects have no remaining
+containers, networks or volumes. This is one admitted revision pair, not an
+online/HA/version-matrix claim. Source543808 admission remains refused; registry
+DDL and historical migration validation were not broadened.
+
+The procedure lives in deployment
+[interrupted-upgrade.md](https://github.com/nightscout/nightscout-deploy/blob/124877ea7f7fd7c5a5218831fe459f0e5923a415/operator/runbooks/interrupted-upgrade.md).
+Ignored originals remain at `/tmp/ns-revision-transition-20261116/`; the evolving
+local evidence/custody record is `externals/work/HANDOFF-revision-transition-2026-11-16.md`.
+Root integrated the original capability and the narrow project-identity follow-up.
+Its byte-qualified image is
+`sha256:9d9d9bebb646b924d07da9b119876191d66012263c2f0a9f689ac19e09f154fe`,
+matching 1,258 files and exact core5e112/deploy124877 labels. Altering the expected
+helper hash fails; restoration passes and exact builder/verifier absence is
+confirmed. These helper changes do not repeat application acceptance or repin
+any entered operating point; the original 460/fd19 functional campaign and
+optional d71/955 capacity interface retain their attribution.
+
+Experiment helper bundle `06c5ae86fe9d2f67048875df4754ab985bb105ea` is joined
+in records merge `13a8f1d1cea761d4e6b00ba7a7d5c03b89b4e37e`. Root reran the
+joined helper corpus: 537 tests, four skipped and no failures; the remote helper corpus
+has 99 tests, five skipped and no failures. These are instrument checks, not additional
+application acceptance or capacity. The performance owner retains all entered
+experiments, their immutable inputs, budget and cleanup custody.
