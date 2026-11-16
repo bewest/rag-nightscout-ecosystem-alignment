@@ -77,8 +77,8 @@ class DemandRecovery(unittest.TestCase):
   return error
  def test_baseline_discriminator_retains_real_semantic_failures(self):
   self.assertTrue(r.observational_baseline(self.baseline_error()))
-  for kind in ('failed','foreign'):
-   with self.assertRaisesRegex(RuntimeError,'HIDDEN_FAILURE|FOREIGN'):r.observational_baseline(self.baseline_error(kind))
+  self.assertFalse(r.observational_baseline(self.baseline_error('failed')))
+  with self.assertRaisesRegex(RuntimeError,'FOREIGN'):r.observational_baseline(self.baseline_error('foreign'))
   self.assertFalse(r.observational_baseline(self.baseline_error('clinical')))
   for code in ('M7_EVALUATOR_PROGRESS_RESET','M7_COMPLETION_TYPED_STATE','M7_EVALUATOR_PROGRESS_COVERAGE'):
    self.assertFalse(r.observational_baseline(r.p.Refused(code,'UNMEASURED')))
@@ -116,7 +116,8 @@ class DemandRecovery(unittest.TestCase):
    def proof(*args):events.append('recovery');return {'verdict':'PASS'}
    auth=self.auth();after=copy.deepcopy(auth)
    if broken=='authority':after[0]['generation']='2'
-   stack.enter_context(patch.object(r,'authority',side_effect=[auth,after]));baseline=stack.enter_context(patch.object(r.p,'round_view',return_value={'instances':{},'owners':{A:{'failedCompletions':0},B:{'failedCompletions':0}}}))
+   stack.enter_context(patch.object(r,'authority',side_effect=[auth,auth,after]));from test_evaluator_progress import Progress
+   baseline=stack.enter_context(patch.object(r.p,'round_view',return_value=Progress().round(1)))
    if broken and broken.startswith('baseline-'):
     kind={'baseline-unmeasured':'warming','baseline-failed':'failed','baseline-foreign':'foreign','baseline-clinical':'clinical'}[broken]
     baseline.side_effect=self.baseline_error(kind)

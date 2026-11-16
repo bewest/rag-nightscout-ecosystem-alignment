@@ -89,12 +89,25 @@ class Opportunities(unittest.TestCase):
         self.assertEqual(value['verdict'],'UNMEASURED');self.assertEqual(value['classifications']['UNMEASURED'],2)
 
     def test_all_roster_health_failures_and_resets_survive_opportunity_exclusion(self):
-        for key,value,code in [('failedCompletions',1,'HIDDEN_FAILURE'),('ready',False,'PROGRESS_ERROR'),('code','REFUSED','PROGRESS_ERROR')]:
+        for key,value,code in [('failedCompletions',1,'RESET'),('ready',False,'PROGRESS_ERROR'),('code','REFUSED','PROGRESS_ERROR')]:
             rounds=self.rounds();rounds[1]['owners'][B][key]=value
             with self.assertRaisesRegex(p.Refused,code) as caught:self.assess(rounds)
             self.assertEqual(caught.exception.verdict,'FAIL')
         captures=self.captures();captures[-1]['rows'][0]['writerClock']='9'
         with self.assertRaisesRegex(p.Refused,'CLOCK'):self.assess(captures=captures)
+
+    def test_discovery_uncredited_attempts_do_not_replace_durable_output_checks(self):
+        rounds=self.rounds()
+        for step,round_ in enumerate(rounds):
+            round_['owners'][A]['failedCompletions']=2+step
+        value=self.assess(rounds)
+        self.assertEqual(value['uncreditedAttempts']['baselineUncreditedAttempts'],2)
+        self.assertEqual(value['uncreditedAttempts']['uncreditedAttemptDelta'],2)
+        self.assertEqual(value['uncreditedAttempts']['causeAttribution'],'UNMEASURED')
+        captures=self.captures();captures[-1]['rows'][0]['completed']['clock']='0'
+        with self.assertRaisesRegex(p.Refused,'RESET'):self.assess(rounds,captures=captures)
+        rounds[-1]['owners'][A]['ready']=False
+        with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):self.assess(rounds)
 
     def test_due_completion_uses_durable_checkpoint_and_keeps_later_due(self):
         rounds=self.rounds();rounds[0]['owners'][B].update(dueAt=100001,dueReason='sgv-recent-10')

@@ -13,7 +13,7 @@ LEGACY_POLICY={'version':1,'moduleVersion':2,'selectorRows':128,'maxTenants':100
         'responseMaxBytes':1048576,'rpcTimeoutMs':5000,'roundDeadlineMs':15000,
         'idleWitness':'successful-time-only-completion','loadWitness':'successful-work-progression',
         'recoveryCadenceMs':15000,'recoveryTimeoutMs':900000,'recoveryMaxRounds':60,'readinessMaxQueries':25600,'readinessMaxBytes':268435456,'readinessMaxRounds':80,'deadlineClaim':False,'workloadCohortChanged':False}
-POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':3,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
+POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':4,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
 
 class Refused(RuntimeError):
     def __init__(self,code,verdict='UNMEASURED'):
@@ -153,7 +153,7 @@ def round_view(services,ids,fetch,warming=False):
         raise
 
 
-def assess(rounds,ids,phase,*,policy=POLICY):
+def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=False):
     need(phase in ('idle','load') and len(rounds)==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
     need(sum(r['queries'] for r in rounds)<=POLICY['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=POLICY['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     first=rounds[0];minimum=None;time_tenants=0;failure_delta=0;work_delta=0;time_delta=0
@@ -165,7 +165,7 @@ def assess(rounds,ids,phase,*,policy=POLICY):
             a=previous['owners'][tenant];b=current['owners'][tenant]
             need((a['service'],a['runtimeId'])==(b['service'],b['runtimeId']) and (policy!=LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             need(all(b[k]>=a[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-            need(b['failedCompletions']==a['failedCompletions'],'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
+            if not discovery_unclassified_rejections:need(b['failedCompletions']==a['failedCompletions'],'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         for service,rows in previous['allRows'].items():
             need(set(current['allRows'].get(service,{}))==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
             for tenant,a in rows.items():
@@ -176,11 +176,12 @@ def assess(rounds,ids,phase,*,policy=POLICY):
         previous=current
     for tenant in ids:
         a=first['owners'][tenant];b=rounds[-1]['owners'][tenant]
-        need(a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
+        if not discovery_unclassified_rejections or policy==LEGACY_POLICY:need(a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
+        failure_delta+=b['failedCompletions']-a['failedCompletions']
         work=b['completedAcquisitions']-a['completedAcquisitions']+b['completedTimeCycles']-a['completedTimeCycles'];delta=b['completedTimeCycles']-a['completedTimeCycles']
         need(work>0 and (policy!=LEGACY_POLICY or phase!='idle' or delta>0),'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
         minimum=work if minimum is None else min(minimum,work);work_delta+=work;time_delta+=delta;time_tenants+=delta>0
-    return {'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
+    return {'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; failedCompletionDelta counts unclassified rejected attempts, including superseded windows, not clinical failures; no strict deadline or true cold load cohort claim' if discovery_unclassified_rejections else 'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
 
 class Observer:
     def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY):
@@ -277,3 +278,16 @@ def decode_rounds(value,tenants,services):
         need(raw['queries']==math.ceil(tenants/128)*len(services),'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
         decoded.append({**raw,'owners':owners,'allRows':all_rows})
     return decoded,ids
+
+
+def stable_discovery_baseline(first,last,ids):
+    """Historical uncredited attempts may predate this healthy stable bracket."""
+    decoded,actual=decode_rounds(pack({'rounds':[first,last,last]}),len(ids),list(first['instances']))
+    need(actual==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
+    try:assess(decoded,ids,'load',discovery_unclassified_rejections=True)
+    except Refused as error:
+        if str(error)!='M7_EVALUATOR_PROGRESS_NOT_OBSERVED':raise
+    return {'baselineUncreditedAttempts':sum(row['failedCompletions'] for row in first['owners'].values()),
+            'uncreditedAttemptDelta':sum(last['owners'][tenant]['failedCompletions']-first['owners'][tenant]['failedCompletions'] for tenant in ids),
+            'dependentRejectionCauseClaim':'UNMEASURED',
+            'causeAttribution':'UNMEASURED','scope':'stable healthy same-runtime bracket; historical count does not establish a clinical failure or globally error-free execution'}

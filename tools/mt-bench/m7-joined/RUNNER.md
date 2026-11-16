@@ -502,6 +502,15 @@ load. Example preparation fields are `restart-during-load-after-seconds: 60`,
 A one-second probe adds one global clinical witness write per second, separately
 from ordinary offered scenario RPS. It does not write once per tenant per second.
 
+[The local recovery example](examples/local-under-demand-recovery.json) selects
+37 tenants, 16 logical viewers, 20 offered scenario RPS and a restart after
+30 seconds of a 90-second load. Replace every source, image, dependency and
+receipt placeholder, then use `project` to generate the configuration-bound
+receipt template for authorization. Use the exact Node executable recorded by
+the dependency receipt.
+The external pgstream resource profile derives one nginx worker from its
+125-millicpu quota; native preflight verifies the rendered running configuration.
+
 The delay begins after the actual first ordinary scenario marker, following JWT
 setup. Existing exact-owned mutation checks and `restart.cjs` verify evaluator
 container replacement. The existing recovery oracle requires a changed runtime
@@ -518,6 +527,17 @@ Stored ordinary writes, clinical probe writes, completion floors and client fram
 remain separate denominators. The receipt records partial captures and the fixed
 finite runner guard continues to own exact cleanup. Source/image acceptance is
 separate; this helper capability does not require another application campaign.
+
+Discovery interprets `failedCompletions` as uncredited evaluator attempts. The
+runtime also increments this counter when a configuration change fences a stale
+operation window; the counter alone does not identify a clinical failure. A
+second healthy observation binds readiness and fault admission to the same
+runtime. Discovery retains baseline and delta counts with cause attribution
+`UNMEASURED`; unrelated traffic continues when this counter increases. Current
+errors, counter rewinds, foreign work and unexpected runtime changes still
+refuse the observation. Durable accepted targets, restore and authority fences,
+completion coverage and matching client frames keep their separate checks.
+The strict progress and recovery modes retain their original counter rules.
 
 The remote supervisor has a different load route. Remote projection explicitly
 refuses this selection as `REMOTE_DEMAND_RECOVERY_LOCAL_ONLY`; a coordinated

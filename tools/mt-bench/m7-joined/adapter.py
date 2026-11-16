@@ -1483,7 +1483,16 @@ def readiness(d, m):
             queries+=value['queries'];bytes_seen+=value['bytes']
             evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
             evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
-            evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
+            if m.get('runPurpose')=='discovery':
+                time.sleep(.25)
+                confirmed=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args))
+                queries+=confirmed['queries'];bytes_seen+=confirmed['bytes']
+                evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
+                admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids)
+                write(d/'readiness-stable-baseline.private.json',evaluator_progress.pack({'rounds':[value,confirmed]}))
+                observations.append({'verdict':'PASS',**admission})
+            else:
+                evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
             write(d/'runtime-readiness.json',{'verdict':'PASS','policy':evaluator_progress.POLICY,'observations':observations,'meaning':'completed fresh-window acquisitions; legacy cycles alone are insufficient'})
             return

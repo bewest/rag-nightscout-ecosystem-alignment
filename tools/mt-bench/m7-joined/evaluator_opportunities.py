@@ -70,7 +70,7 @@ def all_roster(rounds,ids,phase):
             normalized=current['owners'][tenant]
             p.need(all(owner.get(k)==v for k,v in normalized.items()),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     p.need(set(rounds[0]['owners'])==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-    try:p.assess(rounds,ids,phase)
+    try:p.assess(rounds,ids,phase,discovery_unclassified_rejections=True)
     except p.Refused as error:
         if str(error)!='M7_EVALUATOR_PROGRESS_NOT_OBSERVED':raise
 
@@ -128,7 +128,7 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
     eligible=counts['KNOWN_COMPLETED']+counts['KNOWN_PENDING']
     return {'kind':'evaluator-opportunity-assessment-v1','assessmentVersion':2,'phase':phase,
             'verdict':'PASS' if eligible and not counts['KNOWN_PENDING'] and not counts['UNMEASURED'] else 'UNMEASURED',
-            'allRosterHealth':'PASS','tenants':len(ids),'eligibleTenants':eligible,'classifications':counts,'byTenant':outcomes,
+            'allRosterHealth':'PASS','uncreditedAttempts':p.stable_discovery_baseline(rounds[0],rounds[-1],ids),'tenants':len(ids),'eligibleTenants':eligible,'classifications':counts,'byTenant':outcomes,
             'inputSourceTenantCoverage':{k:len(v) for k,v in source_tenants.items()},
             'revisionCoverage':'exact final target revision per tenant/source in byTenant; intermediate revisions not continuously observed',
             'ordinaryWriteKindCoverage':'UNMEASURED; writer clock does not identify entries/treatments/devicestatus',
