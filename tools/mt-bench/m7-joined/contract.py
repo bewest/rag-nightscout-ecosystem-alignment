@@ -162,6 +162,8 @@ def receipt_scope(manifest,receipt,operation):
                 and (receipt.get('version',1)==2 or receipt.get('functionalAcceptanceAtAuthorization')=='PENDING'),'M7_DIAGNOSTIC_RECEIPT_REQUIRED')
         require(re.fullmatch(r'[a-f0-9]{64}',receipt.get('instrument','')) and receipt['instrument']==manifest['instrument']['sha256']
                 and re.fullmatch(r'sha256:[a-f0-9]{64}',receipt.get('imageId','')) and receipt['imageId']==manifest.get('imageId'),'M7_DIAGNOSTIC_IDENTITY_MISMATCH')
+        if manifest.get('cadence',{}).get('restartDuringLoadAfterSeconds') is not None:
+            require(receipt.get('version')==2,'M7_DEMAND_RECOVERY_V2_RECEIPT_REQUIRED')
         limits=receipt.get('limits',{})
         require(type(manifest.get('tenants')) is int and type(limits.get('tenants')) is int and 1<=manifest['tenants']<=limits['tenants']<=10000
                 and type(manifest.get('replicas')) is int and manifest['replicas']==1 and type(limits.get('apiReplicas')) is int and limits['apiReplicas']==1

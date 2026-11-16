@@ -106,7 +106,7 @@ class Record:
         self.a,self.d,self.m=a,d,m
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json') if (file:=self.d/folder/name).is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
         row={'verdict':getattr(error,'verdict','UNMEASURED'),'code':safe_code(error),'hardFailure':hard};self.value['strictChecks'][stage]=row
@@ -290,7 +290,10 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                 def work():
                     with (out/'k6.log').open('wb') as output:record.process('k6',lambda:(lambda argv,**kw:oneoff('k6-load',argv,**kw)if oneoff else a.command(argv,**kw))(k6_command(a,d,m,k6_id,runid),file=output,timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)))
                     if record.value['processes']['k6'].get('timeout'):stop_k6(a,m,record,oneoff=oneoff)
-                record.observe('load',lambda:observed_load(a,d,m,out,work))
+                if m.get('cadence',{}).get('restartDuringLoadAfterSeconds') is None:
+                    record.observe('load',lambda:observed_load(a,d,m,out,work))
+                else:
+                    record.observe('load',lambda:observed_load(a,d,m,out,work,record=record,oneoff=oneoff))
             finally:a.phase_snapshot(d,out,'after')
             # Recheck owned custody before the existing bounded restart protocol.
             a.assert_owned(m)
@@ -313,6 +316,13 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     if (out/'probe.json').is_file():
         record.value['probe']=a.document(out/'probe.json');record.save()
         require(not record.value['probe'].get('hardFailure'),'M7_DISCOVERY_PROBE_HARD_FAILURE')
+        if m.get('cadence',{}).get('restartDuringLoadAfterSeconds') is not None:
+            import demand_recovery
+            receipt=a.document(out/'demand-recovery.json')
+            result=demand_recovery.verify_probe(record.value['probe'],receipt)
+            receipt['postRestartOutput']=result;a.write(out/'demand-recovery.json',receipt)
+            record.value['demandRecovery']=receipt
+            record.value['strictChecks']['demandRecovery']=result
         recovery=record.value['probe'].get('restart',{}).get('runtimeAcquisitionObservation',{})
         require(not hard_recovery(recovery),'M7_DISCOVERY_CLINICAL_FAILURE')
         if recovery:record.value['strictChecks']['recovery']={**{k:recovery[k] for k in ('verdict','code') if k in recovery},'hardFailure':False}
@@ -341,7 +351,11 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
 
     record.save()
 
-def observed_load(a,d,m,out,work):
+def observed_load(a,d,m,out,work,record=None,oneoff=None):
+    import demand_recovery
+    if demand_recovery.selected(m) is not None:
+        require(record is not None,'M7_DEMAND_RECOVERY_RECORD_REQUIRED')
+        return demand_recovery.run(a,d,m,out,work,record,lambda:stop_k6(a,m,record,oneoff))
     observer=a.observe_progress(d,m,out,'load')
     try:observer.__enter__()
     except Exception as error:

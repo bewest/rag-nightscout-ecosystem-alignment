@@ -492,3 +492,38 @@ reducer requires matching container identities and nondecreasing peaks/events;
 missing files or malformed reads remain UNMEASURED. It never subtracts peaks or
 sums independent role peaks as a concurrent total. Existing raw cgroup counters,
 current memory and configured-limit checks keep their separate meanings.
+
+## Planned evaluator restart during local discovery demand
+
+For a **new local capture**, `restart-during-load-after-seconds` selects a planned
+restart of the complete rendered evaluator roster while ordinary k6 traffic and
+the stock-client probe continue. This mode requires discovery, completion contract
+`evaluator-work-v2`, a version-2 configuration-bound receipt, probe cadence at most
+1000ms, and at least 60 seconds between selected delay and the end of offered
+load. Example preparation fields are `restart-during-load-after-seconds: 60`,
+`load-seconds: 310`, and `probe-every-ms: 1000`. The default remains unchanged.
+A one-second probe adds one global clinical witness write per second, separately
+from ordinary offered scenario RPS. It does not write once per tenant per second.
+
+The delay begins after the actual first ordinary scenario marker, following JWT
+setup. Existing exact-owned mutation checks and `restart.cjs` verify evaluator
+container replacement. The existing recovery oracle requires a changed runtime
+and successful fresh owned acquisition. Separate typed durable bookends require
+unchanged sampled registry/lifecycle authority and restore generation, monotone
+accepted/completed positions, and clinical completion of the pre-restart targets.
+This planned bracket retains the unplanned-runtime-reset hard stop in the default
+load observer. It does not claim observation of every instant between bookends.
+
+The probe keeps uploading and keeps stock sockets open during the evaluator
+restart. Final qualification requires actual later viewer-bound requests, their
+completed output and matching stock frames. Missing witnesses refuse the result.
+Stored ordinary writes, clinical probe writes, completion floors and client frames
+remain separate denominators. The receipt records partial captures and the fixed
+finite runner guard continues to own exact cleanup. Source/image acceptance is
+separate; this helper capability does not require another application campaign.
+
+The remote supervisor has a different load route. Remote projection explicitly
+refuses this selection as `REMOTE_DEMAND_RECOVERY_LOCAL_ONLY`; a coordinated
+controller/deployment implementation is required before a remote capture can use
+it. Offline mocked scheduling and controls qualify helper behavior; native
+restart-under-demand remains UNMEASURED until an actual selected capture runs.

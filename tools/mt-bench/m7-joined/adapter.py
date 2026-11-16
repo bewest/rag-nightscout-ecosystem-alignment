@@ -409,6 +409,12 @@ def cadence_options(args):
         require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_VIEWER_DISCOVERY_ONLY')
         require(type(clients) is int and 0<=clients<=80000,'M7_VIEWER_TOTAL_RANGE')
         value['logicalPollingClients']=clients
+    restart=getattr(args,'restart_during_load_after_seconds',None)
+    if restart is not None:
+        value['restartDuringLoadAfterSeconds']=restart
+        import demand_recovery
+        demand_recovery.validate({'profile':args.profile,'runPurpose':getattr(args,'run_purpose',None),
+                                  'completionContract':getattr(args,'completion_contract',None),'cadence':value})
     return value
 
 
@@ -1780,6 +1786,7 @@ def parser():
     prep.add_argument('--sockets-per-tenant',type=int)
     prep.add_argument('--logical-polling-clients',type=int)
     prep.add_argument('--probe-every-ms',type=int)
+    prep.add_argument("--restart-during-load-after-seconds",type=int,help="Discovery-only planned evaluator restart after actual ordinary scenario demand begins; requires v2 receipt")
     prep.add_argument("--offered-rps",type=float,help="Explicit scenario HTTP arrival rate for pgstream discovery only; preserves mix")
     prep.add_argument("--jwt-setup-concurrency",type=int,choices=range(1,65),default=1)
     prep.add_argument("--primer-concurrency",type=int,choices=range(1,33),default=1,help="Bounded commissioning workers on a qualified NEXT image; default serial")
