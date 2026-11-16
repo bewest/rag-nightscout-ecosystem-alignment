@@ -1369,3 +1369,112 @@ Retained home: `externals/work/k6-driver-termination-20261115`.
 The owner confirms its control containers absent and driver lock available.
 This lane independently reads the retained inspection, reduction and absence;
 it does not claim a new application runtime measurement.
+
+## Remote 1,000-tenant load-only attribution — 2026-11-15 Pacific
+
+The remote point completes its driver processes and remains application `PARTIAL`:
+clinical progress fails and the one expected stored-ID client frame does not arrive.
+This is the same historical app `0a609e58ae170aa1eda1ab41dbcd0a735f8eb2bd`, deploy
+`15ac2443a8f4836cbe118d5fc35ab4088e5a4f6e` and immutable `b9dee` image identified
+above, without the subsequent clinical-ordering repair. Helper
+`36f792025a5332c429fc916384b1cf16593dd9c0`, instrument
+`a4616c911a04c79adc368cea5fa67d1130294a04f4b903669147cfbfa80678bb` and controller
+`7f9c85c0163106ba1e42c239988b46a74d110d1a` remain the executed pins. The workload
+has 1,000 tenants, 64 total viewers, 60 offered REST requests/s, ordinary cadence,
+10s warmup, 30s idle, 180s configured load, primer concurrency four and serial JWT
+setup. The evaluator dispatch field `selectedIntake` is actually absent in the
+remote config, selecting the unselected preview. A pool-initialization stage or
+an absent field named `selection` does not establish evaluator mode. Local mode
+cannot be inferred retrospectively from that earlier wrong-field observation.
+
+The retained full reducer refuses missing `idle-disabled/before-cgroups.json`.
+No idle capture is substituted. The following reduction qualifies only existing
+LOAD bookends and each host's own clock. Idle is UNMEASURED; no cross-host clock
+subtraction or complete-window claim is made.
+
+| Reproduced work/driver observation | Result and scope |
+|---|---|
+| Ordinary writes | 1,762 accepted and 1,762 stored at capture; **1,057 uncertain** remain. All 1,000 rows satisfy conservative bounds; this does not prove no loss or resolve uncertain outcomes. |
+| Actual ordinary write activity | 945 tenants have accepted or uncertain attempts; roster size is not an all-roster ordinary-write claim. |
+| Probe/client witness | One accepted and stored probe; zero delivered of one expected frame. All 64 clients prime and are connected at end; 49 ping-timeout and three transport-error reasons remain alongside server-disconnect counter zero. |
+| HTTP | 11,379 requests include 1,000 JWT setup exchanges; 10,379 ordinary iterations and 423 dropped iterations. Global failure rate 28.6229% includes setup. |
+| Clinical/completion | Load `M7_EVALUATOR_PROGRESS_ERROR`; idle `M7_EVALUATOR_PROGRESS_UNAVAILABLE`; completed-output check NOT_RUN after frame refusal. |
+| Driver | k6/probe exit zero; 91 driver samples, 74 Docker k6 samples; sampled k6 memory maximum 2.480GB and CPU maximum 281.7%. These are samples, not continuous peaks or application CPU. |
+| Cleanup | Independent provider absence verified `2026-11-16T06:51:03.150133Z`; owned VMs/firewalls/keys/tags and guard/key material absent. |
+
+Per-shape HTTP tails exclude setup and include responses that fail the expected
+status criterion. They do not establish successful throughput or pure evaluator
+latency.
+
+| Shape | Responses | p95, ms | p99, ms | Failure rate |
+|---|---:|---:|---:|---:|
+| SGV read | 4,738 | 9,313.742 | 11,722.851 | 24.7151% |
+| Device-status read | 945 | 12,615.568 | 14,293.532 | 51.1111% |
+| Treatment read | 939 | 12,948.350 | 15,735.883 | 29.1800% |
+| Status read | 938 | 13,244.858 | 15,446.394 | 28.9979% |
+| SGV write | 943 | 12,555.024 | 13,312.505 | 33.9343% |
+| Device-status write | 945 | 12,549.669 | 13,240.098 | 40.1058% |
+| v3 treatment write | 931 | 15,830.616 | 16,547.373 | 38.4533% |
+
+The SUT's 235.590s mixed LOAD bookend includes setup, traffic, retries and
+collectors. Its observed total is 1.31165 mean cores within the existing aggregate
+4CPU/8GiB profile. Individual role quotas still apply; aggregate spare CPU cannot
+be treated as spare CPU inside a constrained role.
+
+| Role | Container mean CPU / quota, cores | Stable primary process mean CPU, cores | End anonymous memory, MiB |
+|---|---|---:|---:|
+| PostgreSQL | 0.47266 / 0.5 | UNMEASURED | 235.45 |
+| Evaluator | 0.12839 / 0.125 | 0.09317 | 194.21 |
+| API | 0.33654 / 0.5 | 0.27977 | 374.07 |
+| Realtime | 0.14487 / 0.5 | 0.08515 | 136.71 |
+| Go bridge | 0.00370 / 0.125 | 0.00357 | 21.53 |
+
+Evaluator observations execute inside its quota. Its container mean and throttle
+counters do not establish pure application saturation. PostgreSQL and evaluator
+means approach their respective quotas; clinical refusal and retries coexist,
+so the causal split is not isolated. Same-incarnation realtime counters record
+1,300 received/1,004 completed deliveries, 109,458 retries, 5,310 work queries,
+4,512 metadata updates and 111,741 metadata rows. The watched gauge changes
+64→57; it is not the connected-client count or continuous viewer coverage.
+Statement bookends contain 448,711 calls and 147,833.593ms summed execution time;
+statement-attributed WAL sums 75,803,381 bytes. These include collector/control
+work and are not physical WAL-device volume, wall time, wire bytes or causal
+per-write costs. Pool/executor-duration tails remain unqualified. Forty-seven
+lock samples show at most one ungranted lock; they do not prove continuous absence.
+
+The SUT whole-VM I/O reduction covers 118 samples over 234.019s on its own
+monotonic clock: aggregate I/O wait 0.0563%, steal 0.00483%, full I/O pressure
+0.0448%, guest disk busy 1.266% and 330.920MB written. These counters provide
+little evidence of sustained whole-VM I/O pressure in this window; they do not
+establish backing-device capacity or app-causal I/O latency.
+
+The dedicated driver's actual name/CID/nonce-bound inspection has memory and CPU
+limits unset (`memory.max=max`, `cpu.max=max 100000`), unlike the local 1GiB/500m
+control. Its host MemTotal is 33,652,002,816 bytes. The sampled instant has zero
+OOM/throttle events; full-run cgroup peak, OOM/PID census after auto-removal remain
+UNMEASURED. Driver network counters add 20,554,590 receive-plus-transmit bytes,
+including SSH/control; FD peak, NIC drops/backlog and HTTP wire bytes remain
+UNMEASURED. Probe event-loop lag maximum is 3.621ms; it is not the k6 or SUT event
+loop. Greater driver headroom permits a completed driver result but does not
+repair application correctness or qualify a whole-system capacity comparison.
+
+Retained originals remain under `externals/work/remote-heartbeatfree-1000-64-20261116`.
+Compact LOAD-only reduction and resource qualification use the existing
+`performance-enhancements-20261115/single-host/attribution-current` evidence home:
+
+| Record | SHA-256 |
+|---|---|
+| `remote1000-load-attribution.json` | `6a580adce0c714901aa89e28eb79bbd6c85f9dbe41c43c8b86ed6abc0338d2a3` |
+| `remote1000-resource-qualification.json` | `56a592d37f959a406aa4454b0b0adee508cf90916e2b2163548c36d8a0a9b397` |
+| `remote1000-reducer-controls.json` | `597d967662ec6734f12a2967f43a2e21b854c053b8ae5929cca770fb363e80a7` |
+
+A planted statistics reset refuses `M7_COST_RESET_OR_EVICTION`; a changed
+realtime incarnation refuses `M7_REALTIME_COST_PROCESS_CHANGED`; restored inputs
+reduce normally. No raw capture, absent phase or historical result was rewritten.
+The next useful application discriminator is the repaired-image local 1,000/64
+point at lower offered rate with existing opportunity/fixed-target observers.
+The source/image barrier belongs to 51f6; 4d9 retains all paid custody and chooses
+any later quieter 10,000-tenant remote point within its remaining budget. Local
+10,000-tenant execution under the 1GiB driver remains unqualified. This evidence
+identifies role-quota pressure and unresolved clinical/frame failures, not a
+10,000-tenant application ceiling or a production/clinical-scale pass.
