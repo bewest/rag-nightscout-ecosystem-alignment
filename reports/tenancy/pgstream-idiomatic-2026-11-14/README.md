@@ -1,6 +1,6 @@
 # Coherent pgstream worker repair and first diagnostic — 2026-11-14
 
-Later source tuples and their limits are recorded in the [November 15 comparable experiments](#comparable-experiments-and-final-image-tiny--2026-11-15-pacific). Earlier captures retain their original attribution.
+Later source tuples and their limits are recorded in the [November 15 comparable experiments](#comparable-experiments-and-final-image-tiny--2026-11-15-pacific) and [local operating-envelope diagnostics](#local-operating-envelope-diagnostics--2026-11-15-pacific). Earlier captures retain their original attribution.
 
 The coherent worker repair passes source acceptance, canonical image qualification and the first completed local 1,000-tenant/2,000-client discovery window. The window measures demand below an unknown capacity ceiling. Nothing in this record claims a merge to application `dev`, a release or capacity acceptance.
 
@@ -977,3 +977,147 @@ setup data. The later diagnosis record resolves the initial summary's uncertaint
 Resource reductions use the existing helper reducer and retain selected original
 input hashes in `resource-reduction-provenance.json`. Lane detail and next source
 boundary: `externals/work/HANDOFF-remote-capacity-preparation-2026-11-15.md` (local).
+
+## Local operating-envelope diagnostics — 2026-11-15 Pacific
+
+The local packet measures count, rate, skew, startup and idle behavior on two image-qualified branches, including the updated independent-streaming source. Stored counts match accepted writes where final accounting exists. Some load cells retain drops or pending final clinical opportunities; the higher-rate point has incomplete accounting, and the long-idle updated point exposes a separate client authorization failure. These observations do not qualify capacity, the enabled corpus or final application acceptance. The integration owner owns the final coherent source and campaign.
+
+The earlier-image cells below use application `8ddcc01208c11c18145c44c1076ae4c91f79ffa2`, deployment `23e73da7ad8d57bb0a360c29b3ef2320ed229238`, image `sha256:c05744f34b0657a32cc974498564a9669b5731f889712d399aca7ce76809ecde`, and the unchanged instrument `0f6940bff36aef0b61b3da7d5fb6c745cb8215b78d9dca08c87980c9b30002d2` from helper commit `2ae69048cdb263f9a14c3f4102a36961a09aa97a`. Native image labels, actual Git-archive producer/core loaders, PostgreSQL identity and qualified owned dependencies pass separately for each cell. Each has fresh synthetic history and namespace, serial primer/JWT setup, two stock clients per tenant, ordinary five-minute probe cadence, hot factor one and one API replica. No install, build or pull occurs.
+
+The shared-host upper envelope remains 4 CPU / 8 GiB for declared containers plus 1 GiB admitted host V8 heaps; native RSS and page cache are separate observations. Preparation starts the original 1,500-second work clock; 300 seconds remain for cleanup. The existing canonical runner, native snapshots, host-process observer and independent absence checker are reused. Quota/image admission and explicit snapshots are separate from the observer, which samples owned host-process heap arguments/RSS rather than continuously censusing containers. Peer services remain active and owned elsewhere. The ambient queue-status check overlaps the first tiny setup; later points do not overlap that check.
+
+### Low-rate count axis — reproduced
+
+| Cell | Tenants / requested clients | Offered requests/s; load seconds | Ordinary attempts / responses | Accepted = stored; uncertain | Actual socket prime | Clinical observation | Runner outcome |
+|---|---:|---|---:|---|---|---|---|
+| `n2-a01` | 2 / 4 | 7; 30 | 216 / 216 | 60 = 60; 0 | 4/4 in 277 ms | Readiness/idle/load pass; two known completed input opportunities | COMPLETED / MEASURED |
+| `n32-r7-a02` | 32 / 64 | 7; 60 | 425 / 425 | 117 = 117; 0 | 64/64 in 1,130 ms | All-roster health pass; 32 known completed opportunities | COMPLETED / MEASURED |
+| `n128-r7-a03` | 128 / 256 | 7; 60 | 425 / 425 | 117 = 117; 0 | 256/256 in 3,264 ms | All-roster health pass; 39 known completed opportunities and 89 with no known opportunity | COMPLETED_PARTIAL / PARTIAL |
+
+All three have zero observed HTTP failures, transport failures and dropped iterations. The 128-tenant cell writes to 39 tenants; zero ordinary writes for the other tenants do not prove workload progress there. Its native strict count control is correctly UNMEASURED because quiet rows lack accepted writes. A separate file-only control runs the actual discovery count reducer on copied native count/ACK/ledger captures, using the retained oracle roster after credential cleanup. Removing one persisted-entry count produces `M7_DISCOVERY_WRONG_DATA` with workload/domain count-bound failures; restoration returns GREEN. This validates the reducer on that capture, not a native SQL mutation. The two smaller cells retain native count controls GREEN → RED → GREEN. No original capture or source was changed for the file-only control.
+
+| Cell | Deployment stage total seconds | Provision / prime / remaining-role seconds | Probe JWT setup ms | Global HTTP p95 / p99 ms, including JWT exchanges | Selected exact stored-ID first callbacks ms |
+|---|---:|---|---:|---|---|
+| `n2-a01` | 47.980 | 4.297 / 2.755 / 11.731 | 234 | 80.189 / 185.828 | 51.754–52.117, two callbacks |
+| `n32-r7-a02` | 96.241 | 19.731 / 19.539 / 16.357 | 902 | 68.397 / 207.379 | 282.398–282.673, two callbacks |
+| `n128-r7-a03` | 180.503 | 47.622 / 70.325 / 23.769 | 2,186 | 90.817 / 191.455 | 77.650–78.979, two callbacks |
+
+Global HTTP timings include the per-tenant JWT setup population; per-shape ordinary REST timings remain separate in canonical summaries. Selected callbacks cover one written tenant in each cell, not all configured clients or an all-client percentile. Their variation is not an optimization result. The short idle windows classify all tenants as future due with no observed time cycle; they do not exercise sustained clinical time demand.
+
+### Earlier large-run refusal — reproduced capture, cause unresolved
+
+The retained earlier 1,000-tenant cell uses different application/image inputs (`86c000e9` / `67f982`), so it is not a causal comparison with these cells. Its idle capture fails `OWNER_READY_REQUIRED` on an admitted `EVALUATOR_STARTING` row with zero completed acquisitions. Its readiness capture separately fails on an admitted `EVALUATOR_CLINICAL_PROGRESS_STALLED` row with zero completed acquisitions/time cycles and null completion age. The helper's explicit discovery route retains such progress failures and continues collecting other observations; later socket setup does not imply readiness passed. Socket prime retains 20 of 2,000 clients and no ordinary throughput window starts. Empty evaluator output and truncated API/realtime tails do not establish cause. No source repair is prescribed from those captures.
+
+Original synthetic inputs/results and exact reproduction commands remain under retained evidence identifier `externals/work/local-operating-envelope-20261115`; local custody and next actions are in `externals/work/HANDOFF-local-operating-envelope-2026-11-15.md`. Every completed cell above passes independent project-label/namespace/process-birth/group/host-heap absence. Further rate, hot-tenant, sustained-idle and matched remote-workload observations will be added at the same report boundary.
+
+### Higher-rate driver refusal — reproduced
+
+Cell `n32-r180-a04` keeps 32 tenants, 64 clients and the same image/helper/resource profile, with 180 offered requests/s for a requested 60-second window. Readiness and short-idle checks pass; all 64 clients prime in 1,636 ms. The generated workload logs its JWT setup boundary and first ordinary iteration for each of seven request shapes. The generator then accumulates request timeouts and produces no final k6 JSON summary. Offered rate is not achieved throughput. Ordinary completed/dropped requests, accepted writes and uncertainty remain UNMEASURED.
+
+An exact-owned native observation finds k6 at 1,073,692,672 bytes of its 1,073,741,824-byte memory limit, with 422,751 memory-max events. Its 500-millicpu quota is throttled in 2,264 of 2,621 observed periods. At that observation OOM/kill counters are zero and Docker OOMKilled is false. A graceful SIGINT is sent only to that generator. It subsequently exits 137 without a summary; retained Docker-event output is empty, so the exit is not attributed to OOM. A later bounded stop attempt finds the container already absent.
+
+The probe process exits zero, but its completed-output proof fails: the first selected witness passes and the second reports `M7_COMPLETION_CLIENT`. Four eventual matching callbacks do not repair the failed bounded output/client observation. The canonical runner closes FAILED_PARTIAL with `M7_COMPLETED_OUTPUT_ORACLE`; independent absence passes. Canonical collection has already removed the fixture before a subsequent SQL read attempt, which refuses at its owned-source check. No fallback query or retrospective accepted-count claim follows.
+
+This point measures a constrained driver and an unsatisfied selected output/client proof, not application capacity or an application-only tail. The causal ordering between application backlog, additional generator work and driver memory pressure is UNMEASURED. A file-only reduction of retained native samples preserves the first requested 60 seconds separately from the later incomplete interval; it supplies no missing request/ACK accounting. It also shows why setup, generator execution, clinical/output checks and final accounting require separate records. The proposed 600-request/s point and local matched 180-request/s remote workload are NOT RUN under this known constrained driver profile. The next independent steps use 60 requests/s and the same finite quotas, with hot factor one and ten as separate cells. Original failure, cgroup sample, intervention record and exact cleanup remain in the same retained evidence packet.
+
+### Smaller rate step — reproduced
+
+Cell `n32-r60-a05` uses the same 32-tenant, 64-client ordinary workload with 60 offered requests/s for 60 seconds. It records 3,601 attempts and HTTP responses, zero transport/HTTP failures, four dropped iterations, and 981 accepted = stored writes with zero uncertainty. Native count control is GREEN → RED → GREEN. Readiness and short-idle safety pass. The runner records COMPLETED / MEASURED, which describes captured observations, not capacity acceptance.
+
+Final clinical opportunity assessment is UNMEASURED (`M7_OPPORTUNITY_NOT_OBSERVED`): all-roster health passes and 430 work completions progress during the observed interval, but all 32 final target revisions remain KNOWN_PENDING. Progress does not prove completion of the final received revision. No oracle is weakened, no original clock extended and no missing completion is credited. The sparse selected stored-ID callbacks are 82.283–82.525 ms for two callbacks; they do not represent all 64 clients or every ordinary write.
+
+| Ordinary request shape | Responses | p95 ms | p99 ms |
+|---|---:|---:|---:|
+| SGV read | 1,637 | 1,467.004 | 1,665.935 |
+| Device-status read | 328 | 2,593.250 | 2,827.731 |
+| Treatments read | 328 | 2,485.824 | 2,811.775 |
+| Status read | 327 | 2,815.775 | 3,054.775 |
+| SGV write | 328 | 2,554.658 | 2,896.066 |
+| Device-status write | 328 | 2,614.965 | 2,877.024 |
+| v3 treatment write | 325 | 3,592.351 | 3,956.052 |
+
+The global HTTP p95/p99, including 32 JWT exchanges, are 2,163.727 / 2,983.285 ms. The instrument's scenario response rate is 59.011/s over its run clock; response count divided by the nominal 60-second scenario duration is a different denominator. These measurements retain the four drops and incomplete final clinical opportunities. Independent absence passes after canonical cleanup.
+
+### Hot-tenant distribution at the smaller rate — reproduced
+
+Cell `n32-r60-hot10-a06` changes only hot factor from one to ten relative to the 32-tenant 60-request/s cell. The same fixed offered rate is distributed over a weighted tenant wheel. It records 3,605 ordinary attempts/responses, 984 accepted = stored writes, zero uncertainty, zero observed HTTP/transport failures and zero drops. The first tenant accounts for 240 accepted writes; every other tenant has at least 24. Native count control is GREEN → RED → GREEN.
+
+All 64 clients prime in 1,143 ms and remain connected at the end observation. Readiness, short-idle safety, all-roster health and known-opportunity completion pass: 32 known completed final opportunities, zero pending, with 356 observed work completions. The global HTTP p95/p99, including JWT setup, are 381.890 / 596.955 ms; ordinary per-shape p95 ranges from 293.171 to 607.827 ms and p99 from 496.442 to 801.599 ms. Two selected exact stored-ID first callbacks are 262.136–262.395 ms. Independent cleanup/absence passes.
+
+These are single ordered cells on a shared host with different tenant distributions and resulting work. The lower observed tails do not establish a general hot-tenant advantage, an optimization gain or a safe universal offered rate. Each tenant still has one realtime owner. Connection coverage at prime/end is separate from the sparse one-tenant frame witness and does not prove continuously complete connection coverage.
+
+### Sustained idle window and its opportunity limit — reproduced
+
+Cell `n32-idle310-a07` preserves 32 tenants, seven offered requests/s and a 60-second load window, extending only idle from 30 to 310 seconds. It completes with 425 ordinary responses, 117 accepted = stored writes, zero uncertainty, zero HTTP failures/drops and native count control GREEN → RED → GREEN. Readiness, idle safety and known received-input opportunity checks pass; the load observation records 32 known completed final opportunities and 82 work completions. All 64 clients prime in 1,130 ms. Independent absence passes.
+
+The idle result remains TIME_NOT_EXERCISED for all 32 tenants, with zero completed time cycles and no native time witness. Actual inspection declares `sgv-recent-10`: due times are 525.442–542.344 seconds after the first idle observation and still 212.837–229.739 seconds after the final observation. Thus a five-minute idle window does not cross this fixture's measured timer horizon. This is a valid observed quiet/future-due interval, not a passing due-time-work claim. A separate fresh updated-source window is configured for 650 seconds within the unchanged preparation-inclusive deadline; no capture or clock is extended.
+
+### Updated independent-streaming source — separate qualification
+
+The integration owner supplies a genuine intermediate branch image for app `58ddc1274359af9c393c098026f1e25a828dcc41`, deploy `b728749354275e3ba8119a7190cf9489187ff685`, image `sha256:04ae9570987ac13bdc8ca58b3865b10d19fbbbf226b05ecbb1135171dccf0a15`. Its canonical build/check and actual native image labels match; this is not final application or capacity acceptance. Exact source archives, paired producer/published core loaders and qualified dependency custody pass again in each fresh point.
+
+The earlier helper cannot admit this topology: it omits the independent Go startup role, refuses its resource allocation and requires the Go process inside the evaluator. A locally committed compatibility leaf and rehearsal followup produce helper `3b8a47abbc9e9dfd04fdaa8bdc021ef880403e27`, instrument `d7bf0cce183b420adbdf95e039987ccf87e77c6eb09c72465adfcabd4520dd05`. This lane executes it from its own immutable checkout; no running point changes helper. Source capability and experiments remain separate from future batch-runner work.
+
+Fresh configurations explicitly select `external-service-v1` and `local-diagnostic-external-pgstream-4cpu-8g-v1`. Evaluator Node at 125 millicpus / 256 MiB plus Go at 125 millicpus / 256 MiB replace the earlier combined 250 millicpus / 512 MiB. The conservative whole-roster limit remains 3,875 millicpus / 8 GiB containers plus 1 GiB host V8 heaps; no additional resource is omitted or granted. Actual native startup checks prove separate source/image-bound containers at the declared quotas. Workload adequacy is measured, not implied by fitting that envelope. The topology and per-process allocation differ from the earlier image, so cross-image latency differences are not a causal optimization comparison.
+
+Updated tiny `updated-n2-a09` completes with 216 ordinary responses, zero HTTP/transport failures/drops, 60 accepted = stored writes and zero uncertainty. Native count control is GREEN → RED → GREEN. The supported rehearsal's generated-program missing-base control produces `ERR_INVALID_URL` before network I/O, then the unchanged generated program runs. Four clients prime in 526 ms and remain connected at the end; selected completed-output proof passes and two exact stored-ID first callbacks are 59.243–59.591 ms.
+
+Readiness and short-idle safety pass. The final known-opportunity verdict remains UNMEASURED: one tenant completes its final target and one remains pending, despite 41 observed work completions and all-roster health PASS. This is distinct from no completed acquisition or stalled startup. The canonical resource reduction is complete across ten services including separate evaluator Node and Go process counters. Independent exact absence passes. These are supported tiny observations, not broad clinical equivalence or accepted capacity.
+
+The updated 32-tenant cell `updated-n32-r60-a10` completes its 60-second window at 60 offered requests/s with 3,605 ordinary attempts/responses, 984 accepted = stored writes, zero uncertainty, zero HTTP/transport failures and zero drops. Native count control is GREEN → RED → GREEN. All 64 clients prime in 1,387 ms and remain connected at the end; selected completed output passes, with two same-ID first callbacks at 368.054–368.333 ms. Global HTTP p95/p99 including JWT setup are 988.196 / 1,373.167 ms; ordinary per-shape p95 ranges from 844.674 to 1,303.262 ms and p99 ranges from 1,105.020 to 1,596.726 ms. Independent absence passes.
+
+All-roster health passes, but final known-opportunity completion is UNMEASURED: all 32 final targets are KNOWN_PENDING despite 246 observed work completions. The pending final revision is not equated with no-work startup failure or promoted to completion. The separate time-demand experiment observes a quiet interval instead of continuing writes; it retains its own source and original deadline.
+
+Resource attribution includes observer cost. In this updated 32-tenant load cost window, evaluator container CPU averages 0.12289096 cores, while the stable primary Node process averages 0.07235652 cores. An additional MainThread lacks a matched process bookend, so its CPU is UNMEASURED. Inspection collector wall time is 30.266193 seconds; it is neither process CPU nor a number to subtract from container CPU. The container total remains valid but cannot alone identify an application-code bottleneck or quantify the observer's CPU share.
+
+### Updated due-time observation and separate client refusal — reproduced
+
+Fresh `updated-n32-idle650-a11` uses the same updated tuple and resource profile, with a requested 650-second idle followed by seven offered requests/s for 60 seconds. The captured idle cost window is 661.102 seconds. All 32 tenants classify as TIME_EXERCISED with 32 completed time cycles and idle-safety PASS. The canonical `timeWitness` flag remains false: the current assessor assigns false even when time work is observed. This record preserves that flag and the assessor's sampled-idle-safety scope; it does not convert the counter observation into broader native or clinical qualification.
+
+After that quiet interval, only 16 of 64 requested clients prime; 48 remain dark and are disconnected by the server. Priming takes 60,691 ms. The retained bounded server summary records 48 `REALTIME_UNAUTHORIZED_DEADLINE` disconnects. End connection coverage is also 16/64. The realtime capture retains the exact cause line but truncates the general tail: 730,346 observed bytes and 57,459 retained, including 115 cause bytes. It cannot prove absence of another earlier cause.
+
+Read-derived source meaning at this exact app commit, `lib/server/realtime/protocol.js:443–447`: the deadline closes a socket with no authorization answer and no authorization request marked pending; pending authorization re-arms the timer. The generated probe's HTTP agent has unlimited maxSockets and emits authorization on connect. Why an authorization answer is absent remains UNMEASURED. Client behavior, scheduling, data age and lifecycle state remain hypotheses for the existing realtime/performance owner, not explanations or proposed fixes. This observation does not explain the earlier different-image 1,000-tenant failure.
+
+Other observations remain valid: 425 ordinary attempts/responses, 117 accepted = stored writes, zero uncertainty, zero HTTP/transport failures/drops, and native count control GREEN → RED → GREEN. All-roster health and all 32 final known opportunities pass, with 76 observed work completions in the load interval. Selected output proof passes for the exercised tenant, with two same-ID callbacks at 388.330–389.675 ms; those callbacks do not qualify the other clients. Global HTTP p95/p99 including JWT setup are 107.075 / 387.584 ms. Discovery records COMPLETED / MEASURED while retaining incomplete connection coverage. Exact independent absence passes.
+
+### Selected service and SQL costs — reproduced
+
+Each service cell below is **mean cgroup CPU cores / end cgroup memory.current MiB**. These are resource bookends over the listed cost window, which includes observation work and differs from nominal request duration. Memory is charged cgroup memory, not process RSS, JavaScript heap or a peak. Earlier evaluator cgroups contain Node and Go; updated rows separate them. Container totals include inspection processes; stable primary-process counters and missing process births remain separate in the retained packet.
+
+| Cell / phase | Cost window s | API | Evaluator | Go service | Realtime | PostgreSQL |
+|---|---:|---:|---:|---|---:|---:|
+| `n2-a01` / load | 36.521 | 0.0840 / 103.57 | 0.1072 / 86.57 | inside evaluator | 0.0514 / 83.53 | 0.1014 / 250.73 |
+| `n32-r7-a02` / load | 67.490 | 0.0833 / 113.62 | 0.0905 / 97.33 | inside evaluator | 0.0485 / 91.03 | 0.1135 / 310.82 |
+| `n128-r7-a03` / load | 70.607 | 0.1057 / 133.97 | 0.0980 / 114.77 | inside evaluator | 0.0570 / 115.67 | 0.1467 / 310.67 |
+| `n32-r60-a05` / load | 73.571 | 0.2582 / 133.54 | 0.1957 / 119.39 | inside evaluator | 0.0829 / 99.77 | 0.3865 / 342.17 |
+| `n32-r60-hot10-a06` / load | 70.205 | 0.2691 / 127.47 | 0.1798 / 129.39 | inside evaluator | 0.0748 / 99.59 | 0.3750 / 350.11 |
+| `n32-idle310-a07` / load | 69.082 | 0.0868 / 105.80 | 0.0891 / 105.27 | inside evaluator | 0.0492 / 70.12 | 0.1150 / 329.70 |
+| `updated-n2-a09` / load | 42.815 | 0.0827 / 104.52 | 0.0965 / 66.43 | 0.0025 / 22.62 | 0.0520 / 58.29 | 0.0996 / 246.27 |
+| `updated-n32-r60-a10` / load | 84.305 | 0.2493 / 120.89 | 0.1229 / 89.30 | 0.0056 / 34.41 | 0.0665 / 93.97 | 0.3282 / 297.73 |
+| `updated-n32-idle650-a11` / idle | 661.102 | 0.0398 / 73.88 | 0.0511 / 82.44 | 0.0009 / 17.59 | 0.0410 / 59.57 | 0.0601 / 218.56 |
+| `updated-n32-idle650-a11` / load | 77.091 | 0.0798 / 108.62 | 0.0854 / 71.73 | 0.0036 / 19.95 | 0.0770 / 90.89 | 0.1523 / 245.41 |
+
+SQL calls and execution time below use the canonical role-counter bookends. Statement-attributed WAL uses its separate bounded counter snapshot; it is a sum of per-statement WAL fields, not physical WAL-device volume. The statement sum does not establish physical WAL volume. Collector traffic is included; SQL execution time is not CPU time. Exact bookend bounds, per-role values, sampled waits and missing instruments remain in the packet.
+
+| Cell / phase | SQL calls | SQL execution ms | Sum of statement WAL bytes |
+|---|---:|---:|---:|
+| `n2-a01` / load | 10,943 | 949.115 | 548,624 |
+| `n32-r7-a02` / load | 26,706 | 2,671.221 | 997,641 |
+| `n128-r7-a03` / load | 40,591 | 4,368.711 | 1,659,664 |
+| `n32-r60-a05` / load | 151,599 | 27,710.876 | 7,686,121 |
+| `n32-r60-hot10-a06` / load | 148,333 | 19,913.767 | 7,423,586 |
+| `n32-idle310-a07` / load | 26,771 | 2,660.257 | 1,118,796 |
+| `updated-n2-a09` / load | 10,817 | 947.764 | 507,966 |
+| `updated-n32-r60-a10` / load | 141,495 | 17,839.162 | 6,311,082 |
+| `updated-n32-idle650-a11` / idle | 44,141 | 4,138.066 | 280,763 |
+| `updated-n32-idle650-a11` / load | 39,894 | 3,506.125 | 1,828,455 |
+
+The interrupted 180-request/s point has no complete canonical cost reduction or final HTTP accounting. Its separately retained pressure receipt and partial native-sample readback remain observations, not zeros. Wire-byte costs and pure evaluator execution lag remain unqualified where the existing instruments do not measure them.
+
+### Packet closure and next owner
+
+Ten fresh local points are closed: eight runner COMPLETED, one COMPLETED_PARTIAL and one FAILED_PARTIAL. Those status counts do not count clinical or capacity passes. Every point has independent project-label/namespace/process-birth/group/host-heap absence PASS; this lane owns no live actor, guard, lease or paid resource. Original inputs/results remain unchanged and ignored.
+
+Retained evidence identifier: `externals/work/local-operating-envelope-20261115`. Its immutable selected readback/index is `local-envelope-packet.json`, SHA-256 `161ac7181015219fcfe4b285f7a034dc656e67239e6c8468585ae365ecc0f044`; it binds selected canonical artifact checksums, exact source/helper/cadence, original clocks, controls, costs, unknowns and independent absence. The evolving local handoff remains `externals/work/HANDOFF-local-operating-envelope-2026-11-15.md`. No raw output is committed.
+
+The existing realtime/performance owner accepts the focused read-only diagnosis of the long-idle authorization-deadline gap. Integration owns the final source, any focused repair and the one coherent final acceptance campaign. A separately discovered future notifier-configuration correction is outside these frozen tuples and does not rewrite their observations. The existing batch-tooling owner owns future bounded experiment reuse. No additional point, source fallback, deadline extension, capacity promotion or comprehensive application campaign is claimed here.
