@@ -1,0 +1,77 @@
+{
+  "capturedAtUTC": "2026-11-16T03:58:30Z",
+  "basis": "reproduced",
+  "status": "PASS",
+  "source": "306824d60addb725cae72746f7bd4d08fd1301c8",
+  "protocolSha256": "f8353c7bdb84d77835b09c25694199ff7c23d369266544c9e3af0f453e321350",
+  "scope": "Actual Socket.IO polling, protocol, credential normalization, EdDSA data-token codec, legacy verifier and socket authority with synthetic current-state/config/runtime ports.",
+  "sourceChecks": {
+    "passed": 89,
+    "failed": 0,
+    "log": "/tmp/transition-joined-realtime-close-focused.log",
+    "sha256": "7873dee534969e894edc771df410221fc3034fc0b5d2f62232c6ef839b6a77ad"
+  },
+  "resourceLimits": {
+    "containers": 1,
+    "cpuMillicpus": 250,
+    "memoryBytes": 268435456,
+    "v8HeapMiB": 128,
+    "pids": 64,
+    "network": "none",
+    "readOnlyRootfs": true,
+    "hostPorts": 0,
+    "workMaximumSeconds": 90,
+    "cleanupMaximumSeconds": 10,
+    "imagePullsOrBuilds": 0,
+    "remoteOrPaidEffects": 0
+  },
+  "observations": {
+    "mainPollingClients": 4,
+    "syntheticTenants": 2,
+    "neverAuthorizedStorageControls": 1,
+    "heldAtMs": 65655,
+    "queuedAtHold": 4,
+    "watchedTenantsAtHold": 2,
+    "deadlineDeferrals": 4,
+    "neverAuthorizedDeadlineDisconnects": 1,
+    "recoveredAtMs": 65678,
+    "framesAfterRelease": 4,
+    "callbacksAfterRelease": 4,
+    "reconnections": 0,
+    "cleanup": {
+      "listenerClosed": true,
+      "tcpConnections": 0,
+      "queuedRequests": 0,
+      "watchedTenants": 0
+    }
+  },
+  "independentSupervisor": {
+    "armedBeforeListener": true,
+    "sourceNonceCidBirthAndLimitsBound": true,
+    "status": "PASS",
+    "elapsedSeconds": 71.51827158313245,
+    "killDispatched": false,
+    "cidAbsent": true,
+    "sameProcessBirthPresent": false,
+    "recordedGroupMembersRemaining": 0,
+    "rootExactCidLookup": "No such container",
+    "specSha256": "490589d969da2f45ab33baf781471c3c6894876cf45594b46cb0c1e49430ad81",
+    "resultSha256": "e952d29c2a7e8eb0cb75ba18cccdf10efd86deddcd300e2f82b161f0af46977c"
+  },
+  "retainedEvidenceId": "transition-realtime-native02-20261115",
+  "originalEvidenceId": "performance-enhancements-20261115/rt-disconnect-diagnosis/repair/native-source-attempt02",
+  "runtimeLogSha256": "95d3d88640d93a5b15dcf7fe3ce6da350438ca3e32840beadf29e57ad2b24bea",
+  "priorAttempt": {
+    "source": "7e6b2cf77a66049bb0d88c1605ae7703789f070f",
+    "status": "PARTIAL",
+    "functionalPrimingAndRecovery": "PASS",
+    "finalWatchedTenants": 2,
+    "independentHardWatchdog": "NOT_ARMED_BEFORE_ACTOR",
+    "preservation": "Original runtime log/CID/late-watchdog receipt remain unchanged."
+  },
+  "limitations": [
+    "The original 650-second load/idle initiating trigger is not established by this controlled cold/fresh replay.",
+    "No real DB-backed authority, API IPC, clinical/output equivalence, throughput, capacity, shipping-image or deployment qualification.",
+    "The final coherent full/browser/enabled/native/client campaign remains open."
+  ]
+}
