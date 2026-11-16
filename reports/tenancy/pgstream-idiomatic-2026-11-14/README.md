@@ -1588,3 +1588,102 @@ point is entered. The next local discriminator measures Vault memory growth
 with the tenant roster under the original cap and an explicitly changed cap,
 after the current local point releases its resources. The original source,
 quota, failed provisioning result and cleanup evidence remain unchanged.
+
+## Repaired-reader low-rate point: HTTP success, clinical and frame failure
+
+The fresh local 1,000-tenant/64-viewer point at seven offered REST requests/s
+ends `FAILED_PARTIAL`. Reproduced HTTP and stored-write checks succeed, while
+readiness, idle/load clinical progress and the final viewer-frame check fail.
+No capacity or clinical-scale pass follows from the HTTP result. The run uses
+app `1646f00437cb207cb5acf0da0f3474b68f78bc04`, deploy
+`8ddfab1e46e3fd577f1e96e738ab5207f9925abf` and the same `e3cd3820…`
+image identified above. Helper join `4a62f506b1a9208b64e1c4a117428fa681eb678e`
+matches all 121 executed inputs in selected helper
+`6449f36da00972559acddf69254f867f3c884a34`; instrument
+`6497182f9f0844fd189d4e538e2711e2023af7f8936cff813ecec87fcd9ad4ea`
+includes the reader's initial-state handling and fixed-target correction.
+This point crosses the previous typed-state abort without changing its capture.
+The generated configuration retains no top-level `selectedIntake`: actual
+runtime dispatch is unselected, independently of plan stages.
+
+All 1,000 tenants provision and prime. Provisioning takes 383.380s, priming
+277.894s and remaining-role startup 116.922s. Primer concurrency is four and JWT
+setup remains serial. The existing four-CPU/eight-GiB diagnostic role profile,
+64 total viewers and received-input/fixed-target observers remain selected.
+The host is shared. These observations do not isolate a performance gain across
+changed source, instruments, offered rates and startup conditions.
+
+| Reproduced check | Result |
+|---|---|
+| Driver | Exit zero; 1,263 ordinary requests and responses; zero transport/HTTP failures or dropped iterations |
+| Ordinary writes | 345 accepted = 345 stored; zero uncertain; 115 each for entries, device status and treatments |
+| Probe write | One accepted and stored; durable-output witness remains missing |
+| Viewers | 64 prime in 3.887s; 64 connected at end; zero server disconnects; zero of one expected final frames |
+| Clinical progress | Readiness, idle and load fail; fixed-target drain is UNMEASURED (`M7_DRAIN_COLLECTION_REFUSED`) |
+
+JWT setup contributes another 1,000 HTTP requests. The driver's reported rate
+includes setup time; it is not the ordinary-phase delivered rate. Shape tails
+exclude setup and all seven shapes have zero HTTP failures:
+
+| REST shape | Requests | p95 ms | p99 ms |
+|---|---:|---:|---:|
+| SGV write | 115 | 506.0 | 737.5 |
+| Device-status write | 115 | 513.2 | 1,107.9 |
+| v3 treatment write | 115 | 528.1 | 1,039.5 |
+| SGV read | 573 | 243.7 | 643.9 |
+| Device-status read | 115 | 402.0 | 955.4 |
+| Treatment read | 115 | 387.8 | 933.3 |
+| Status read | 115 | 810.7 | 1,369.7 |
+
+The first readiness failure reports an owner still starting. The next reports
+`EVALUATOR_CLINICAL_PROGRESS_STALLED` during its first acquisition, with running
+and booting flags true. A finite, read-only SQL→RAM→SQL bracket catches the same
+runtime and generation later ready, with one completed acquisition and no failed
+completion. Both SQL reads show the matching completed floor, no pending input
+and output revision one. SQL follows the trigger: it cannot establish database
+state at the trigger instant. This is temporal recovery without intervention,
+not simultaneous stalled RAM and completed database evidence, and it does not
+erase the independent clinical failures. Idle later reports a stalled owner
+with one completed acquisition; load reports another owner still starting.
+The probe's stored write lacks its sampled durable output and client frame
+within its observation budget. Stored equality alone proves neither completion.
+
+Existing retained reducers cover all three cost windows. The short idle
+windows (12.898s disabled and 8.300s enabled) occur during startup/failure and
+do not establish steady-state idle behavior. The mixed load bookends span
+240.508s, including setup, ordinary traffic and collectors:
+
+| Role | Mean cgroup CPU cores | Declared CPU quota |
+|---|---:|---:|
+| PostgreSQL | 0.352 | 0.500 |
+| Evaluator | 0.129 | 0.125 |
+| Realtime | 0.131 | 0.500 |
+| API | 0.114 | 0.500 |
+| Independent pgstream | 0.0038 | 0.125 |
+
+Cgroup readings include observers and auxiliary work. Matched main-process
+counters account for 23.51 CPU-seconds in the evaluator, 22.13 in realtime and
+18.29 in the API; unmatched and short-lived process attribution remains
+UNMEASURED. The aggregate 0.932 CPU cores does not demonstrate role headroom.
+Realtime's same-process counters record 882 received/879 completed deliveries,
+99,549 retries, 7,465 work queries, 4,914 metadata updates and 101,295 metadata
+rows. These internal completions are separate from the failed client-frame
+witness. A planted statistics reset refuses `M7_COST_RESET_OR_EVICTION`; a
+well-formed changed realtime incarnation refuses
+`M7_REALTIME_COST_PROCESS_CHANGED`; restored inputs reduce normally. Malformed
+incarnation text instead refuses `M7_REALTIME_COST_IDENTITY`.
+
+The original work stop is `2026-11-16T09:27:58.673321Z`, with cleanup cutoff
+`09:32:58.673321Z`. The failed point cleans up at `09:12:16.914859Z` without a
+clock extension. Independent verification confirms zero owned containers,
+networks, volumes, eight recorded process births/groups (including the one-shot
+bracket watcher) and heap markers. Full retained measurement availability does
+not override the application failures.
+
+Retained point: `attribution-current/n1000-v64-r7-point-02` under the existing
+`performance-enhancements-20261115/single-host` evidence home. Immutable
+`repaired1000-r7-02-outcome.json` SHA-256
+`7f09c7a40b74baebeca0ae930f2349f0bbdcdd9995d4294807fe25f76fdd0dcc`
+binds the original outcome, source, dispatch, bracket, cost and absence records.
+The companion LOAD reduction `repaired1000-r7-02-attribution.json` has SHA-256
+`c887aca8346dcfe1c00cf9cd6c0765ee17b86128174dfea50bcd19487fabcb6b`.
