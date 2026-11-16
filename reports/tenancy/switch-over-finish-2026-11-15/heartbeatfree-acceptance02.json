@@ -1,0 +1,156 @@
+{
+  "status": "IMAGE_QUALIFIED_APPLICATION_TIERS_PASS_NATIVE_ACCEPTANCE_FAILED",
+  "basis": "reproduced",
+  "runtimeApplicationSource": "0a609e58ae170aa1eda1ab41dbcd0a735f8eb2bd",
+  "testInstrumentHead": "95389589dc4df13b1633e0aa3c4786697da2f691",
+  "deploymentSource": "15ac2443a8f4836cbe118d5fc35ab4088e5a4f6e",
+  "imageId": "sha256:b9dee0c20b382325b4645285c9dbc3d3461a0258372c1d3321a1f226d6037d0a",
+  "imageQualification": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-qualification-20261115/image-qualification.json",
+    "sha256": "674a08d391ae37a49ef4f6ba271a6ea3e2c46dc9516d5189b8dec5fa2c8494d5"
+  },
+  "sourceQualificationBinding": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-qualification-20261115/source-qualification-binding.json",
+    "sha256": "eb9ee75ec02613ff4df056b3a86621c858144694fc1fba8879c740c862e80f1c"
+  },
+  "testRuntimeEquivalence": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-02-20261115/equivalence.json",
+    "sha256": "45f31716cfe4417401138e73cf0f288ee0f99aa9945d9d41c3a421ae75e83883"
+  },
+  "applicationTiers": {
+    "inventory": {
+      "exitCode": 0,
+      "passing": [],
+      "pending": [],
+      "failing": []
+    },
+    "unit": {
+      "exitCode": 0,
+      "passing": [
+        5238
+      ],
+      "pending": [
+        2
+      ],
+      "failing": []
+    },
+    "dom": {
+      "exitCode": 0,
+      "passing": [
+        205
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "dependency": {
+      "exitCode": 0,
+      "passing": [
+        368
+      ],
+      "pending": [
+        2
+      ],
+      "failing": []
+    },
+    "core": {
+      "exitCode": 0,
+      "passing": [
+        319
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "harness": {
+      "exitCode": 0,
+      "passing": [
+        102
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "integration": {
+      "exitCode": 0,
+      "passing": [
+        3647
+      ],
+      "pending": [
+        946
+      ],
+      "failing": []
+    },
+    "stress": {
+      "exitCode": 0,
+      "passing": [
+        18
+      ],
+      "pending": [],
+      "failing": []
+    },
+    "browser": {
+      "exitCode": 0,
+      "passing": [
+        686
+      ],
+      "pending": [],
+      "failing": []
+    }
+  },
+  "countsOverlap": true,
+  "native": {
+    "selectedSuites": 98,
+    "excluded": {
+      "tests/tenant-recommission.integration.test.js": "Optional deletion/recommission capability explicitly excluded by frozen baseline scope; source-bound opt-in not enabled."
+    },
+    "result": {
+      "status": 6,
+      "signal": null,
+      "passing": 942,
+      "pending": 2,
+      "failing": 6
+    },
+    "outerExitCode": 1,
+    "remaining": [],
+    "failureSummary": {
+      "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-02-20261115/native-failure-summary.txt",
+      "sha256": "07cd3940ea7d642619f406739b4251d0402530b3ce23bc25d4036400253f6429"
+    },
+    "pendingIsNotPass": true
+  },
+  "cleanup": {
+    "status": "INDEPENDENT_RECORDED_RESOURCE_ABSENCE_PASS",
+    "containerReferences": 42,
+    "volumes": 50,
+    "recordedActors": 18,
+    "beforeOriginalDeadline": true,
+    "coverage": "Exact references/volumes/process births emitted by corpus record, native custody receipts and native structured logs, plus outerMongo nonce/name and source/guard/tier groups. Unrecorded per-suite resources rely on retained suite finalizers; no peer resource was stopped.",
+    "proof": {
+      "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-02-20261115/root-independent-absence.json",
+      "sha256": "277d84466e7b5888f81066fe90432c061c32f625313c8585ad5b93a5d11c1d14"
+    }
+  },
+  "originalFailedCampaign": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-20261115",
+  "queueCheck": {
+    "exitCode": 0,
+    "log": {
+      "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-qualification-20261115/queue-check.log",
+      "sha256": "25d9f8fdb1f53f64109f22de0c673c8578806a9b0b0390a09d11cc6ba1ce53ec"
+    }
+  },
+  "finalPrcheck": "HELD_SOURCE_COORDINATOR_AFTER_REPAIRED_NATIVE_ACCEPTANCE; NOT_PR_READY",
+  "retainedResults": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-02-20261115/results.json",
+    "sha256": "7c89908816f5382642b390074a3056de3c5a48c0ad54ea87736758481b697031"
+  },
+  "nativeRecord": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-02-20261115/private/enabled-corpus.json",
+    "sha256": "892ef06bc039785e5520a34628cea613fcea57ca399f4b02608c7ef661389543"
+  },
+  "nativeLog": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-02-20261115/private/enabled-corpus.log",
+    "sha256": "c2dd121d450d085ca6127789714e9b557e92acd6eaec4442b2e6c4a21c7bcf49"
+  },
+  "nextOwner": "51f6 sole source integrator: diagnose six native failures and combine required shipping fixes before selecting another coherent candidate; no per-leaf image or full campaign",
+  "resources": "ALL_RECORDED_OWNED_ACTORS_CLOSED_PORTS19963_19964_RELEASED",
+  "performance": "NOT_A_CAPACITY_OR_PERFORMANCE_RESULT",
+  "publication": "LOCAL_ONLY_NO_PUSH"
+}
