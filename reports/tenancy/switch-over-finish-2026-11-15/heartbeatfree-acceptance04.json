@@ -1,0 +1,260 @@
+{
+  "status": "IMAGE_SOURCE_QUALIFIED_AND_COHERENT_APPLICATION_ACCEPTANCE_PASS",
+  "basis": "reproduced",
+  "applicationSource": "1646f00437cb207cb5acf0da0f3474b68f78bc04",
+  "testInstrumentHead": "58fb8444910559ee86c7a1970971090ade7ae67f",
+  "deploy": "8ddfab1e46e3fd577f1e96e738ab5207f9925abf",
+  "imageId": "sha256:e3cd382058af98c8aa0fe2a71451f2a539066b087e6ed059e8d7c8124f73a126",
+  "qualificationBinding": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-qualification-03-20261115/source-qualification-binding.json",
+    "sha256": "dcbea0d04cd7eb316998bb3dd5bba199f8a26c7d1a43e62e3c3c7e7758c9c686"
+  },
+  "sourceInstrumentEquivalence": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/equivalence.json",
+    "sha256": "bf378b181cbcb94ffe92315e3b243b9ff4d2d57b788dab17cd28d3e6ce8958a7"
+  },
+  "results": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/results.json",
+    "sha256": "b0011a45bd86edfc2a7ee718ab4edfa8a00dc1e61402e192b7faec11de7eb8ad"
+  },
+  "corpusRecord": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/enabled-corpus.json",
+    "sha256": "c90a48944ce290cbad2e84113b53c55139e409d9cb29dd1bfcbaaf2e7dca2082"
+  },
+  "corpusLog": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/enabled-corpus.log",
+    "sha256": "0a20861eff65de40016301f7ab3a8c65598ec339e79f8ad3fb7297acaa786959"
+  },
+  "plan": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/plan.json",
+    "sha256": "e4e230fb30d19886276c6eb32817abafc167d07dfad778a873931f2d32b21335"
+  },
+  "finiteGrant": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/root-source-go.json",
+    "sha256": "d855b2d834b5b3ef9cfb3471d78f7565feb2cb5302633396a6d299396e953c3b"
+  },
+  "independentAbsence": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/root-independent-absence.json",
+    "sha256": "7fd6a3a8b8228a6ba9c86bf9a9813c7e904fb2a8ac6b119cd2ae91a4bf73393e"
+  },
+  "cleanup": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/cleanup.json",
+    "sha256": "71507dc3cfa47afd8a182b7e030d45ab803437a2d7154fc42450615cb613a2bf"
+  },
+  "tiers": {
+    "inventory": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [],
+        "pending": [],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/inventory.log",
+        "sha256": "a902406c69f728b90188eda54a26a21678eeb7ffe188632df58bb4f2054f26d3"
+      }
+    },
+    "unit": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          5260
+        ],
+        "pending": [
+          2
+        ],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/unit.log",
+        "sha256": "ef1ac053f0b54a3dba3373ef66734809dcfa8e7ef5cc9ce4d31f92fe64241e93"
+      }
+    },
+    "dom": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          205
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/dom.log",
+        "sha256": "8bc5fbc1a3f8217fbdbfb5a7baeceab8f2bb5c2a5b7a5d675db059527fe48d54"
+      }
+    },
+    "dependency": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          368
+        ],
+        "pending": [
+          2
+        ],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/dependency.log",
+        "sha256": "d101645519076ca02ef2934da255f1e27227ade5dfb301e147646790f2e3be4b"
+      }
+    },
+    "core": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          319
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/core.log",
+        "sha256": "22b28cb5934c64166b2054cafe89994417dc1b72d79b56a43b960d2c45712cec"
+      }
+    },
+    "harness": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          102
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/harness.log",
+        "sha256": "33e50268aaa3bfdf4915bd38e8dfe61cd86599651d7e0677519045b417bb8d5b"
+      }
+    },
+    "integration": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          3647
+        ],
+        "pending": [
+          946
+        ],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/integration.log",
+        "sha256": "a770d793069c282ea090f6d3858efbf889aa352b0d054d6da590b81845ead48a"
+      }
+    },
+    "stress": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          18
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/stress.log",
+        "sha256": "54f9665e789b53a5aece232cdeddeab4acea8a8eacb305dc1c29c0060f1082a2"
+      }
+    },
+    "browser": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          686
+        ],
+        "pending": [],
+        "failing": []
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/browser.log",
+        "sha256": "6cffa79eff309579a439a21704a6e4de3f143d88ea734e7ed943a60c16077cf0"
+      }
+    },
+    "enabled-corpus": {
+      "status": "PASS",
+      "exitCode": 0,
+      "reportedTotals": {
+        "passing": [
+          948,
+          948
+        ],
+        "pending": [
+          2,
+          2
+        ],
+        "failing": [
+          0
+        ]
+      },
+      "log": {
+        "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-acceptance-prepare-04-20261115/private/enabled-corpus.log",
+        "sha256": "0a20861eff65de40016301f7ab3a8c65598ec339e79f8ad3fb7297acaa786959"
+      }
+    }
+  },
+  "scope": {
+    "allEightApplicationTiers": "UNFILTERED_PASS",
+    "selectedNativeSuites": 98,
+    "nativeResult": {
+      "status": 0,
+      "signal": null,
+      "passing": 948,
+      "pending": 2,
+      "failing": 0
+    },
+    "excluded": "Optional tenant-recommission explicitly deferred as prior baseline; no selected-v2/HOLD/HA expansion claimed",
+    "pending": "Retained pending cases remain pending, never counted as passes",
+    "counts": "Overlapping tier counts are not summed",
+    "host": "SHARED",
+    "capacity": "NOT_ESTABLISHED_BY_ACCEPTANCE",
+    "finalPrcheck": "HELD_FOR_ROOT_AS_LAST_STEP",
+    "publication": "NO_PUSH_NO_PR_READY_VERDICT_BY_THIS_LANE"
+  },
+  "closure": {
+    "containerReferences": 41,
+    "volumes": 50,
+    "exactProcessBirths": 18,
+    "ports": [
+      19963,
+      19964
+    ],
+    "remaining": [],
+    "beforeOriginalDeadline": true,
+    "coverage": "Exact references/volumes/process births emitted by corpus record, native custody receipts and structured logs plus outerMongo nonce/name and source/guard/tier groups. Unrecorded suite resources rely on retained finalizers; no peer stopped."
+  },
+  "priorFailedCampaign": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-qualification-03-20261115/acceptance-summary.json",
+    "sha256": "fbee6ca67e2a0132aadb072361bc52028bdf9de91b35c83eeb74d8863a9124d7"
+  },
+  "fixtureRepair": {
+    "head": "58fb8444910559ee86c7a1970971090ade7ae67f",
+    "branch": "codex/heartbeatfree-startup-isolation-20261115",
+    "worktree": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/cgm-heartbeatfree-startup-isolation-20261115",
+    "onlyPath": "tests/evaluator-startup-order.test.js",
+    "change": "Two scoped prior-mode save/restore hooks; original assertions/product unchanged",
+    "focusedOriginal": {
+      "passing": 83,
+      "failing": 44
+    },
+    "focusedRepaired": {
+      "passing": 127,
+      "failing": 0
+    }
+  },
+  "queueCheck": {
+    "path": "/home/bewest/src/rag-nightscout-ecosystem-alignment/externals/work/heartbeatfree-qualification-03-20261115/queue-check-host.log",
+    "sha256": "25d9f8fdb1f53f64109f22de0c673c8578806a9b0b0390a09d11cc6ba1ce53ec"
+  },
+  "nextOwner": "Root coordinator01a1e1f0-51f6-7912-a667-497abe071218 owns final upstream sync/prcheck, public programme records and publication verdict"
+}
