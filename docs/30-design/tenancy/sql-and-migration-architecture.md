@@ -23,7 +23,7 @@ sections are pinned to `16a1fc2d`; the other sections keep their `151de024`
 reading. The refresh is read-derived from source; acceptance of that head lives
 in the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).*
 
-## Clinical stream storage extension — branch work, 2026-11-16
+## Clinical stream storage extension — selected branch, 2026-11-16
 
 The [adopted materializer contract](evaluator-realtime-communication.md#stream-fed-clinical-materializer--adopted-target-2026-11-16)
 uses the existing evaluator input consumer checkpoint for bounded accepted rows
@@ -33,7 +33,8 @@ completion are separate commits. No new durable inbox table is introduced.
 The default trusted receiver needs checkpoint-only metadata rights on its input
 consumer as well as its completed consumer; clinical source tables remain read-only.
 
-Read-derived from application branch `1dc7a74576b5d77f99cc4a42d900e1692d94a393`:
+The extension is joined in selected core `5e112547b31252ec428747c821d3cd1b3684ce2b`.
+The migration reading below retains precursor `1dc7a74576b5d77f99cc4a42d900e1692d94a393`:
 append-only typed migrations add `storage_bytes` to each clinical table. An
 invoker-rights AFTER INSERT / UPDATE OF doc trigger measures the stored datum
 with PostgreSQL `pg_column_size`, then updates only that projection. A generated
@@ -47,7 +48,7 @@ trigger. An INSERT-only writer also needs the narrow `UPDATE(storage_bytes)` rig
 for this invoker trigger; it does not need document UPDATE solely for accounting.
 Existing clinical-table
 restore/delete census includes these columns. Final qualification lives in the
-[existing evidence report](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-fed-clinical-materializer--2026-11-16).
+[selected integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16).
 
 The exact reviewed `0099_<domain>_storage_bytes` migration is common to standard
 and optional ordered variants. Its SQL does not depend on insertion ordinals, so
@@ -172,7 +173,7 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.
 |---|---|---|
 | Clinical documents, public write outcomes and history stamps | API executes canonical writes, including a writer's current authority. Socket/connector/other component commands enter the same application write boundary. Document, clock and insertion changes retain their transaction coupling. | API clinical writes and D23 socket forwarding exist. Additional internal command producers must use the admitted path; their implementation/acceptance remains separately scoped. |
 | Alarm acknowledgement / snooze | Realtime forwards the original client authorization and event to API; API persists suppression through its acknowledgement admission. Evaluator reads current suppression. | Existing [private authorization and mutation protocol](evaluator-realtime-communication.md#browser-authorization-and-mutations); realtime must not edit suppression rows as a substitute. |
-| Clinical acquisition and consumer recovery state | Evaluator and realtime each read through tenant-bound storage interfaces and own separate projection/checkpoint namespaces. | Existing bounded snapshot acquisition. Direct admitted reads and atomic projection/checkpoint persistence remain appropriate; sending every read through API would add dependency and transport cost without establishing stronger semantics. |
+| Accepted input, clinical completion and raw delivery recovery | Evaluator owns durable accepted clinical state and atomically completed result/checkpoint/next due. Realtime consumes completed output and the independent raw storage tail, with its own delivery receipts and live cursors. | The [current stream contract](evaluator-realtime-communication.md) replaces independent warm snapshot acquisition. Cold/GAP/missing-history recovery may read consistent source state. Admitted component-owned storage remains direct; cross-component commands use their owned APIs. |
 | Notification intent, attempts and handoff | Evaluator's notification component owns durable producer/request/attempt state; realtime owns connected-browser fanout. Deliver an application handoff with stable request identity and durable retry outcome. | Existing [notification handoff](evaluator-realtime-communication.md#notification-intents-retries-and-alarm-handoff). Other components should not insert producer requests or edit attempt rows to impersonate its protocol. |
 | Credentials, owner configuration and current policy | Management/authority components own mutation checks, audit and invalidation. Consumers use their admitted authority/settings interfaces; data-plane requests retain their own current authorization. | Separate management audience and component interfaces exist. Cross-process consumers should invoke owned commands rather than edit these tables; this is not a claim that every authority operation has a new network endpoint. |
 | Maintenance exclusion, restore, deletion and activation | Private operator lifecycle controller coordinates each actual participant through its control API and owns controlled maintenance transactions. Explicit migration/provisioning tools own their separate catalogues and grants. | Existing fixed-cohort restore protocol. A table update or clinical API write alone cannot drain in-flight responses, clear another process's cache or authorize a deletion ceremony. |
@@ -190,19 +191,38 @@ flowchart LR
   RT -->|"authorize / mutate / ack"| API["Unified REST/API<br/>v1 / v2 / v3 adapters"]
 ```
 
+### Stream state and delivery ownership
+
+**Read-derived selected stream diagram.** The input and completed checkpoints
+have different commit boundaries. Raw storage events remain independent of the
+clinical window. The [communication contract](evaluator-realtime-communication.md)
+owns recovery, authority and compatibility; this view introduces no new table.
+
+```mermaid
+flowchart TB
+  PG["Committed source + WAL"] --> PS["Platform pgstream service"]
+  PS --> Input["Durable input checkpoint<br/>clinical state + raw tail + observed work"]
+  Input --> Eval["Bounded clinical evaluator + due work"]
+  Eval --> Done["Atomic completed output<br/>covered versions + result + next due"]
+  Done --> RT["Realtime: completed frames and delivery receipts"]
+  Input -->|"independent raw storage mutations"| RT
+  RT --> Clients["Currently authorized clients"]
+```
+
 ### Component storage ownership
 
 **Read-derived ownership matrix.** Each row is an admitted component's storage
 responsibility, not a mandatory process or a separate physical database. The two
 REST/API rows are responsibilities within one logical component, retaining their
-separate authority/listener contracts. Realtime and evaluator read the same clinical tables, but own distinct checkpoint namespaces. Privilege checks
+separate authority/listener contracts. The selected stream evaluator and realtime have distinct input/completion/delivery responsibilities,
+read-derived at core `5e112547b31252ec428747c821d3cd1b3684ce2b`. Privilege checks
 remain specific to the selected catalogue and operation.
 
 | Component | Admitted reads | Owned persistence / controlled writes |
 |---|---|---|
 | Logical REST/API — v1/v2/v3 data adapters | Clinical records; current authority and configuration | Canonical clinical documents, insertion counters and history clock in one transaction; admitted alarm suppression |
-| Realtime | Clinical records; current configuration and admitted authority | Realtime projection and checkpoint namespace |
-| Evaluator / notification component | Clinical records; current configuration and suppression | Evaluator projection and checkpoint namespace; notification producer state, requests and attempts |
+| Realtime | Completed evaluator output; bounded raw mutation tail; current configuration and admitted authority | Delivery receipts and live cursor/connection state, without a second raw clinical projection |
+| Evaluator / notification component | Accepted streamed clinical state; consistent source recovery when required; current configuration and suppression | Input/observed work and completed result/checkpoint/next due; independent raw tail; notification producer state, requests and attempts |
 | Logical REST/API — owner/authority modules | Current authority, policy, owner configuration and secret references | Admitted credential, session, policy, owner-settings and secret mutations with audit |
 | Private operator lifecycle worker | Current authority, durable operations and pinned participant identities | Lifecycle windows, claims and audit; controlled clinical restore and forward history |
 
@@ -273,7 +293,7 @@ new client record identity. See the [entries candidate][entries-schema] and
 | Clinical/document domains | `entries`, `treatments`, `devicestatus`, `profile`, `food`, `activity`, `settings` in their selected namespaces. | Tenant-bound documents. The first five have insertion counters. `settings` is the existing document collection, distinct from owner presentation `tenant_settings`. Logical restore reconciles these selected domains. |
 | Insertion state | `tenant_insertion_ordinal(tenant_id,last_ordinal)` in each ordered domain namespace. | One row per tenant/collection; allocation trigger and unique tenant/ordinal index. The document relation and counter share a binding, not a declared foreign key. |
 | History state | `tenant_write_clock(tenant_id,last_stamp)`. | Tenant-wide history floor across admitted stamped writes; current floor is retained and advanced during logical restore. |
-| Projection state | `tenant_consumer_checkpoint(tenant_id,consumer,checkpoint,projection,contract_digest)`. | Per-consumer recovery position/materialization. Preview realtime and evaluator select separate checkpoint namespaces. Retained current during logical clinical restore; actual invalidation and fresh acquisition reconcile output. |
+| Projection state | `tenant_consumer_checkpoint(tenant_id,consumer,checkpoint,projection,contract_digest)`. | Named input/completed/delivery recovery state. Selected stream input retains the bounded clinical envelope and independent raw tail; completed state retains covered versions, result and next due. Restore invalidation preserves current fences and reconciles derived state through the admitted recovery path. |
 | Authentication / authorization | `tenant_authorization_*`, owner policy/actor tables and audit; `access_tenants`, `access_credentials`, `access_sessions`, `access_keys`; `legacy_credential_*`; `secret_records`, `secret_audit`. | Current authority, credential generations, sessions and encryption/signing references remain current during clinical restore. Access credentials/keys reference tenant rows; sessions reference their credential/subject tuple. Provider key material is outside tenant artifact handling. |
 | Owner / operator policy | `subject_policy`, `subject_policy_audit`, `tenant_operator_policy`, `tenant_settings`, `tenant_settings_history`, `tenant_owner_configuration_authority`, when selected. | Policy and management state, not a clinical snapshot to rewind. The owner settings history is independent of the clinical `settings` collection. |
 | Notification delivery | `tenant_notification_state`, `tenant_notification_heads`, `tenant_notification_requests`. | Durable producer state, deduplication heads and attempts/receipts. Retained current; invalidation retires retained output/intents through the actual consumer protocol. No general exactly-once external effect follows from these tables. |
