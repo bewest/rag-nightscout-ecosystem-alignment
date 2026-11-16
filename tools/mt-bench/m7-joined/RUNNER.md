@@ -586,3 +586,10 @@ and resource readbacks, two named runner observations, retained collector failur
 compatibility refusals, default cleanup and real finite child termination. Docker,
 application clinical execution and remote transport reuse are UNMEASURED here;
 this helper change grants no application acceptance or paid-resource authority.
+Diagnostic resource profiles derive nginx worker processes from the role's CPU
+quota (ceiling of millicpus / 1000). Preparation passes the explicit count to
+the deployment producer and records the generated config digest. The existing
+connection budget remains 16384 per worker. Preflight reads exact-owned nginx
+`-T` output and refuses an omitted, automatic or changed worker count before
+traffic. This qualifies the fixture configuration; it does not measure edge or
+application capacity. Default deployments retain their existing automatic count.

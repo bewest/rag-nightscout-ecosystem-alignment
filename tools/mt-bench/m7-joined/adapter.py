@@ -702,8 +702,14 @@ def prepare_staged(args,target,pinned):
     # the owned lockfile context before invoking it, not after bootstrap.
     setup_generator(target,m)
     env = runtime_env({"NS_API_REPLICAS": str(args.replicas),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
+    edge_budget=diagnostic_resources.edge_worker_budget(selected_resources_profile(args))
+    if edge_budget is not None:env['NS_EDGE_WORKER_PROCESSES']=str(edge_budget['workerProcesses'])
     networks=["--backend-subnet",args.backend_subnet,"--edge-subnet",args.edge_subnet] if getattr(args,"backend_subnet",None) else []
     command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"]), "--project", m["project"],*networks], cwd=overlay,env=env,phase="product-prepare")
+    if edge_budget is not None:
+        edge_file=target/'state/edge/nginx.conf'
+        verify_edge_workers(edge_file.read_text(),edge_budget)
+        m['edgeWorkerBudget']={**edge_budget,'configurationSha256':digest(edge_file)}
     # Keep the source binding path stable: guards and optional controller digests
     # refer to this exact .env. Compose also reads the private cell copy.
     shutil.copyfile(overlay / ".env", target / "env")
@@ -770,6 +776,10 @@ def verify(d, m, teardown=False):
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
     if m.get("environmentSha256"):
         require(digest(d/"env")==m["environmentSha256"] and digest(d/"core/deploy/multitenant/.env")==m["environmentSha256"],"M7_ENVIRONMENT_CHANGED")
+    if m.get('edgeWorkerBudget'):
+        edge_file=d/'state/edge/nginx.conf'
+        require(digest(edge_file)==m['edgeWorkerBudget']['configurationSha256'],'M7_EDGE_CONFIGURATION_CHANGED')
+        verify_edge_workers(edge_file.read_text(),m['edgeWorkerBudget'])
     stream_topology.verify_config(m,document(d/"frozen.compose.json"))
     clinical_timeline.verify(document(d/"frozen.compose.json"),d,m,teardown=teardown)
     measurement_topology(m,document(d/"frozen.compose.json"))
@@ -1546,6 +1556,25 @@ def preflight(d,m,k6_image,oneoff=None):
     return sample_preflight(d,m,k6_id,**({'oneoff':oneoff}if oneoff else{}))
 
 
+def verify_edge_workers(text, budget):
+    workers=re.findall(r'^\s*worker_processes\s+([^;]+);',text,re.M)
+    connections=re.findall(r'worker_connections\s+([^;]+);',text)
+    require(workers==[str(budget['workerProcesses'])] and connections==[str(budget['workerConnections'])],'M7_EDGE_WORKER_CONFIGURATION')
+    return {'workerProcesses':int(workers[0]),'workerConnections':int(connections[0])}
+
+
+def edge_runtime(d,m):
+    budget=m.get('edgeWorkerBudget')
+    if budget is None:return None
+    require({key:budget[key] for key in ('workerProcesses','workerConnections','nginxMillicpus','source')}==diagnostic_resources.edge_worker_budget(m['diagnosticResources']['profile']),'M7_EDGE_WORKER_BUDGET_CHANGED')
+    rows=[row for row in resources(m,False) if row['Config']['Labels'].get('com.docker.compose.service')=='nginx']
+    require(len(rows)==1,'M7_EDGE_RUNTIME_ROSTER')
+    row=rows[0]
+    text=command(['docker','exec',row['Id'],'nginx','-T'])
+    observed=verify_edge_workers(text,budget)
+    return {'status':'PASS','containerId':row['Id'],'source':'exact-owned-nginx-T','configurationSha256':hashlib.sha256(text.encode()).hexdigest(),**observed}
+
+
 def sample_preflight(d,m,k6_id,oneoff=None):
     # New setup attempts preserve deployment and all failed collector artifacts.
     # No timed phase or counter reset exists until these reads succeed.
@@ -1553,6 +1582,8 @@ def sample_preflight(d,m,k6_id,oneoff=None):
     status={'status':'UNMEASURED','scope':'instrument setup only; no capacity acceptance'}
     with private_commands(attempt/'commands'):
         try:
+            edge=edge_runtime(d,m)
+            if edge is not None:write(attempt/'edge-worker-runtime.json',edge)
             if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
                 stream_topology.verify_config(m,document(d/'frozen.compose.json'))
                 stream_topology.external_runtime(diagnostic_resource_rows(m),m)
