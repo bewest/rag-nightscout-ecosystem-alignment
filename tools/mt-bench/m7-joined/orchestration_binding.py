@@ -193,7 +193,9 @@ def check_expanded(binding,argv,runner,epoch=None):
  require(not any(x in('-p','--project-name','--env-file','-f','--file','--project-directory')or x.startswith(('--project-name=','--env-file=','--file='))for x in argv[len(expected):]),'M7_BINDING_ACTUAL_ARGV_OVERRIDE')
  _action(argv[len(expected):],binding['epochs'][epoch]['layouts'])
  actual=json.loads(runner(expected+['--profile','ops','config','--format','json']));require(actual.get('name')==binding['project'],'M7_BINDING_EXPANDED_PROJECT_CHANGED')
- require(actual==binding['epochs'][epoch]['config'],'M7_BINDING_EXPANDED_CONFIG_CHANGED');return actual
+ frozen=binding['epochs'][epoch]['config']
+ same=_memory_representation(actual)==_memory_representation(frozen) if 'diagnosticResources'in load(binding['ownerFile']) else actual==frozen
+ require(same,'M7_BINDING_EXPANDED_CONFIG_CHANGED');return actual
 
 def _actual_layout(row):
  cfg=row['Config'];mounts=[]

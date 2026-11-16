@@ -43,6 +43,23 @@ class Docker:
 class Tests(unittest.TestCase):
  def setUp(self):self.tmp=tempfile.TemporaryDirectory();self.f=Fixture(self.tmp.name)
  def tearDown(self):self.tmp.cleanup()
+ def test_diagnostic_exact_memory_bytes_only(self):
+  for service in self.f.new['services'].values():service.update(mem_limit=134217728,memswap_limit=134217728)
+  self.f.newfile.write_text(json.dumps(self.f.new));owner=json.loads(self.f.owner_file.read_text());owner['diagnosticResources']={'selected':True};self.f.owner_file.write_text(json.dumps(owner));self.f.binding=self.f.bind()
+  argv=b.compose_argv(self.f.binding,'up',['api'],['-d']);expanded=copy.deepcopy(self.f.new)
+  for service in expanded['services'].values():service.update(mem_limit='134217728',memswap_limit='134217728')
+  runner=lambda args:json.dumps(expanded)
+  self.assertEqual(b.check_expanded(self.f.binding,argv,runner),expanded)
+  for wrong in ('134217729','128m',True,134217728.0):
+   broken=copy.deepcopy(expanded);broken['services']['api']['mem_limit']=wrong
+   with self.assertRaisesRegex(RuntimeError,'EXPANDED_CONFIG_CHANGED'):b.check_expanded(self.f.binding,argv,lambda args:json.dumps(broken))
+  for field,value in [('command',['node','changed']),('image','sha256:'+'8'*64),('environment',{'SECRET':'changed'})]:
+   broken=copy.deepcopy(expanded);broken['services']['api'][field]=value
+   with self.assertRaisesRegex(RuntimeError,'EXPANDED_CONFIG_CHANGED'):b.check_expanded(self.f.binding,argv,lambda args:json.dumps(broken))
+  self.assertEqual(b.check_expanded(self.f.binding,argv,runner),expanded)
+  del owner['diagnosticResources'];self.f.owner_file.write_text(json.dumps(owner));self.f.binding=self.f.bind();argv=b.compose_argv(self.f.binding,'up',['api'],['-d'])
+  with self.assertRaisesRegex(RuntimeError,'EXPANDED_CONFIG_CHANGED'):b.check_expanded(self.f.binding,argv,runner)
+
  def mutate(self,d,**kw):return b.checked_run(self.f.binding,'up',['api'],d,lambda:None,self.f.journal,options=['-d','--no-build','--pull','never'],**kw)
  def test_named_source_run_stage_exact_suffix_and_profile(self):
   source=self.f.root/'producer.py';source.write_text('synthetic canonical producer')
