@@ -111,7 +111,8 @@ function assess(row,witness,clients,expected,config){
  const stored=row.stored?.filter(doc=>doc.date===witness.date);
  if(stored?.length!==1||typeof stored[0]._id!=='string')return no('M7_COMPLETION_STORED');
  const doc=stored[0],same=sgv=>String(sgv?._id)===doc._id&&sgv.mills===doc.date&&sgv.mgdl===doc.sgv;
- if(!output.rows?.some(value=>value.domain==='entries'&&value.doc?._id===doc._id&&value.doc.sgv===doc.sgv)||!output.frame?.sgvs?.some(same))return no('M7_COMPLETION_FRAME');
+ // The bounded materializer publishes completed frames, without duplicating raw rows.
+ if(!output.frame?.sgvs?.some(same))return no('M7_COMPLETION_FRAME');
  // Source bgnow.analyzeBucket averages valid mg/dl SGVs (>39). Check that
  // completed clinical value against its actual output bucket and frame. This
  // is a selected property witness, not equivalence for every clinical plugin.

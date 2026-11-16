@@ -11,6 +11,10 @@ const row={tenant,stamp:witness.stamp,reader:selected,stored:[doc],typed:{versio
 const clients=[{socket:0,connects:1,sgv},{socket:1,connects:1,sgv}];
 const assess=value=>o.assess(value,witness,clients,2,config),green=()=>assert.equal(assess(row).ready,true);
 green();
+// Completed output carries the client frame, not a second raw clinical projection.
+const noRawRows=structuredClone(row);delete noRawRows.state.output.rows;
+assert.equal(assess(noRawRows).ready,true,'correct frame and durable coverage need no raw rows');
+assert.equal(o.assessDurable(noRawRows,witness,config).ready,true);
 assert.equal(o.assess(row,witness,[],2,config).code,'M7_COMPLETION_CLIENT');
 assert.equal(o.assessDurable(row,witness,config).ready,true);
 const missingStored=structuredClone(row);missingStored.stored=[];
@@ -36,9 +40,14 @@ for(const [name,mutate,code]of [
  ['noncanonical array lower bound',r=>r.typed.arrayBounds=false,'TYPED_STATE'],
  ['disabled work',r=>r.typed.enabled=false,'TYPED_STATE'],
  ['missing body',r=>r.state.output=null,'TYPED_STATE'],
+ ['missing clinical frame',r=>delete r.state.output.frame,'FRAME'],
+ ['missing frame SGVs',r=>r.state.output.frame.sgvs=[],'FRAME'],
+ ['wrong frame identity',r=>r.state.output.frame.sgvs[0]._id='wrong-synthetic-id','FRAME'],
+ ['wrong frame time',r=>r.state.output.frame.sgvs[0].mills+=1,'FRAME'],
+ ['wrong frame value',r=>r.state.output.frame.sgvs[0].mgdl+=1,'FRAME'],
  ['wrong clinical mean',r=>r.state.output.result.properties.bgnow.mean=124,'BG_NOW'],
  ['missing persisted write',r=>r.stored=[],'STORED']]){
- const broken=structuredClone(row);mutate(broken);const result=assess(broken);assert.equal(result.ready,false,name);assert.equal(result.code,'M7_COMPLETION_'+code,name);console.log('EXPECTED_RED',name,result.code);green();
+ const broken=structuredClone(noRawRows);mutate(broken);const result=assess(broken);assert.equal(result.ready,false,name);assert.equal(result.code,'M7_COMPLETION_'+code,name);console.log('EXPECTED_RED',name,result.code);green();
 }
 const restored=structuredClone(row);restored.typed.generation='9223372036854775807';restored.state.output.restoreGeneration=restored.typed.generation;assert.equal(assess(restored).ready,true);
 const query=o.query(config,[tenant],'synthetic-run');
