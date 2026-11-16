@@ -609,6 +609,7 @@ def prepare(args):
         if document(args.freeze).get('version')==2:
             from run_configuration import from_args
             candidate['runConfiguration']=from_args(args,pinned['sha256'])
+            args.resolved_configuration=candidate['runConfiguration']
         receipt_scope(candidate,document(args.freeze),'deploy')
         if document(args.freeze).get('version')==2:
             from run_configuration import namespace_preflight
@@ -649,9 +650,8 @@ def prepare_staged(args,target,pinned):
     m['measurementMode']=getattr(args,'measurement_mode','accepted')
     if args.profile=='pgstream-sample' and m.get('runPurpose')=='discovery':
         m['imageId']=getattr(args,'image_id',None) or args.image
-        if document(m['freeze']).get('version')==2:
-            from run_configuration import from_args
-            m['runConfiguration']=from_args(args,pinned['sha256'])
+        if getattr(args,'resolved_configuration',None) is not None:
+            m['runConfiguration']=args.resolved_configuration
         frozen(m,'deploy')
     if m['measurementMode']=='unaccepted':
         m.update(runId=args.run_id,imageId=args.image_id,maximumRunMinutes=args.maximum_run_minutes)

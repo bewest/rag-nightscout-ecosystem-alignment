@@ -15,10 +15,14 @@ import run_configuration as rc
 import runner
 
 REMOTE=Path(__file__).resolve().parent.parent/'remote-pgstream'
-sys.path.insert(0,str(REMOTE))
-import protocol
-import cell
-import transport
+previous_path=list(sys.path)
+try:
+    sys.path.insert(0,str(REMOTE))
+    import protocol
+    import cell
+    import transport
+finally:
+    sys.path[:]=previous_path
 
 
 def config():
@@ -117,7 +121,8 @@ class Configuration(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'WORK_WINDOW'):runner.validate_config(cfg)
 
     def test_remote_projection_equivalence_and_actual_consumer(self):
-        cfg=config();o=overlay();p=rc.remote_projection(cfg,o);b=p['binding']
+        cfg=config();o=overlay();before=list(sys.path);p=rc.remote_projection(cfg,o);b=p['binding']
+        self.assertEqual(sys.path,before)
         self.assertEqual(p,rc.remote_projection(cfg,o))
         self.assertEqual(protocol.prepared_cadence(b),rc.resolve(cfg)['configuration']['cadence'])
         self.assertEqual(protocol.viewer_total(b),4)

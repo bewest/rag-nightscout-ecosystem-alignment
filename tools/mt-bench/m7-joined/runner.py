@@ -75,8 +75,7 @@ def validate_config(config):
     return config, argv
 
 
-def prepare(config_file, directory):
-    config, argv = load_config(config_file)
+def preflight_receipt(config, argv):
     # Validate receipt/config mirrors before creating output or arming a guard.
     parsed=a.parser().parse_args(['prepare','--directory','/tmp/m7-runner-validation',*argv])
     receipt=a.document(parsed.freeze)
@@ -85,6 +84,11 @@ def prepare(config_file, directory):
         validate_execution(config,receipt)
         resolved=from_args(parsed,a.instrument()['sha256'])
         a.receipt_scope({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},receipt,'deploy')
+
+
+def prepare(config_file, directory):
+    config, argv = load_config(config_file)
+    preflight_receipt(config,argv)
     root = Path(directory).resolve()
     require(not root.exists(), 'M7_RUNNER_OUTPUT_EXISTS')
     root.mkdir(mode=0o700, parents=True)

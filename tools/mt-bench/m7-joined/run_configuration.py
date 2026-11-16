@@ -95,10 +95,14 @@ def remote_projection(config, overlay, source_acceptance=None):
     import sys
     from pathlib import Path
     remote = Path(__file__).resolve().parent.parent/'remote-pgstream'
-    sys.path.insert(0,str(remote))
-    import protocol
+    previous=list(sys.path)
+    try:
+        sys.path.insert(0,str(remote))
+        import protocol
+        import transport
+    finally:
+        sys.path[:]=previous
     result = resolve(config,source_acceptance); r = result['configuration']
-    import transport
     require(r['postgresImageId']==transport.POSTGRES,'M7_CONFIG_REMOTE_POSTGRES_UNSUPPORTED')
     require(isinstance(overlay,dict) and set(overlay)=={'binding','hostInventory','resourceReference'}, 'M7_CONFIG_REMOTE_OVERLAY_FIELDS')
     b = copy.deepcopy(overlay['binding'])

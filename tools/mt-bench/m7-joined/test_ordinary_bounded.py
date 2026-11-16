@@ -86,9 +86,11 @@ class OrdinaryBounded(unittest.TestCase):
             def stage(directory,name,args):
                 self.assertTrue((directory/'execution.json').exists())
                 events.append(name)
-            with patch.object(runner,'load_config',return_value=({'workSeconds':1500},[])),patch.object(runner,'arm_window',side_effect=arm),patch.object(runner,'stage',side_effect=stage):
+            with patch.object(runner,'load_config',return_value=({'workSeconds':1500},[])),patch.object(runner,'preflight_receipt'),patch.object(runner,'arm_window',side_effect=arm),patch.object(runner,'stage',side_effect=stage):
                 runner.prepare('/synthetic/config',root)
-            self.assertEqual(events,['guard','prepare'])
+            # Source/plan admission now runs before seeding for ordinary runners too.
+            # This fixture isolates guard ordering after receipt admission.
+            self.assertEqual(events,['guard','prepare','source-preflight'])
             self.assertEqual(a.document(root/'execution.json')['startedAt'],100)
 
     def test_execution_uses_preparation_deadline_and_refuses_expiration(self):
