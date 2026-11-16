@@ -80,6 +80,38 @@ async function receipt(core,data,receiver,failCommit=false){
   assert.equal(released,true,'RECEIPT_CONNECTION_LEAK');assert.equal(clinicalCalls,0,'RAW_RECEIPT_RAN_CLINICAL_IO');
  }finally{commit();await pending.catch(()=>{});}
 }
+async function dueCoverage(core,start){
+ start=start||require(path.join(core,'lib/server/serve/evaluator-runtime.js'));
+ const tenant='11111111-1111-4111-8111-111111111111',identity='a'.repeat(64);let input=1,retained=0,revision=0;const commits=[];
+ const value=()=>({checkpoint:retained,properties:{synthetic:retained},emitted:[],requested:[],signature:{stamp:retained,deleted:0}});
+ const service=await start({tenants:[tenant],readCurrent:async()=>({tenant,identity}),create:async()=>({evaluate:async()=>{retained=input;return value();},evaluateTime:async()=>value(),close(){}}),durable:{begin:async()=>({clock:String(input)}),complete:async(tenant,current)=>{
+  commits.push({observed:current.observed.clock,computed:current.result.checkpoint});return {pendingAt:Number(current.observed.clock)<input?1:null,changed:true,output:{tenant,identity,outputRevision:++revision,contentDigest:'b'.repeat(64),inputCheckpoint:current.result.checkpoint,result:current.result}};
+ }},recoveryIntervalMs:1000,timeIntervalMs:1000,schedule:()=>({}),cancel(){},setTimer:()=>({}),clearTimer(){}});
+ try{
+  await service.acquire(tenant);input=2;await service.tick(tenant);
+  for(const c of commits)assert(Number(c.observed)<=c.computed,'TIME_COMPLETED_UNCOMPUTED_INPUT');
+  await service.acquire(tenant);assert.equal(commits.at(-1).observed,'2');assert.equal(commits.at(-1).computed,2);
+ }finally{await service.close();}
+}
+async function invalidBootstrap(core,factory){
+ const scope=require(path.join(core,'lib/storage/tenant-scope.js')),mode=scope.getTenancyMode();factory=factory||require(path.join(core,'lib/storage/postgres-durable-replay.js'));let pages=0,saved;
+ const row={domain:'entries',id_kind:'string',doc:{_id:'synthetic-invalid',isValid:false,extension:{preserve:true}},stamp:null,ordinal:null,storage_bytes:123};
+ const connection={snapshotTransaction:fn=>fn(),async query(text,values){
+  if(text.includes('FOR UPDATE'))return {rows:[{checkpoint:'0',projection:null,contract_digest:null}]};
+  if(text.includes('evaluator-change-signature'))return {rows:[{stamp:'0',deleted:'0'}]};
+  if(text.includes('SELECT count(*)'))return {rows:[{row_count:'1',document_bytes:'100'}]};
+  if(text.includes('information_schema.columns'))return {rows:[]};
+  if(text.startsWith('UPDATE ')){saved=JSON.parse(values[3])[0];return {rowCount:1};}
+  if(text.startsWith('SELECT domain,id_kind'))return {rows:pages++?[]:[restore(row)]};throw Error('UNEXPECTED_BOOTSTRAP_SQL');
+ }};
+ const replay=factory({connection,checkpointTable:'synthetic_checkpoint.tenant_consumer_checkpoint',clockTable:'synthetic_clock.tenant_write_clock',domains:{entries:'synthetic_entries.entries'},consumer:'evaluator-test',projectionVersion:'synthetic-v1',pageSize:2,maxRows:10,stream:true});
+ scope.setTenancyMode('multi');
+ try{await scope.withTenant('11111111-1111-4111-8111-111111111111',async()=>{
+  const output=await replay.reconcile({maxRows:10,maxBytes:1048576,signature:true});
+  assert.equal(output.stats.dataSize,123,'BOOTSTRAP_INVALID_STORAGE_BYTES_LOST');assert.equal(output.rows.length,0,'INVALID_ROW_VISIBLE');
+  assert.deepEqual(saved.rows[0].doc.extension,{preserve:true},'BOOTSTRAP_INVALID_HISTORY_LOST');
+ });}finally{scope.setTenancyMode(mode);}
+}
 async function run(core,capture){
  const file=path.join(core,'lib/storage/clinical-stream-state.js'),source=fs.readFileSync(file,'utf8'),events=fs.readFileSync(capture,'utf8').trim().split('\n').map(JSON.parse);
  const api=require(file),result=exercise(api,events),controls=[];
@@ -94,6 +126,16 @@ async function run(core,capture){
   assert.throws(()=>exercise(module.exports,events),symptom,'ABLATION_DID_NOT_DETECT:'+name);
   exercise(api,events);controls.push(name);
  }
+ await invalidBootstrap(core);
+ const replayFile=path.join(core,'lib/storage/postgres-durable-replay.js'),replaySource=fs.readFileSync(replayFile,'utf8');
+ const filter='if (stream || row.doc.isValid !== false)';assert.equal(replaySource.split(filter).length,2,'BOOTSTRAP_ABLATION_SOURCE_MISMATCH');
+ const filtered={exports:{}};vm.runInThisContext('(function(require,module,exports){'+replaySource.replace(filter,'if (row.doc.isValid !== false)')+'\n})',{filename:replayFile})(createRequire(replayFile),filtered,filtered.exports);
+ await assert.rejects(invalidBootstrap(core,filtered.exports),/BOOTSTRAP_INVALID_STORAGE_BYTES_LOST/);await invalidBootstrap(core);controls.push('bootstrap-drops-invalid-history');
+ await dueCoverage(core);
+ const runtimeFile=path.join(core,'lib/server/serve/evaluator-runtime.js'),runtimeSource=fs.readFileSync(runtimeFile,'utf8');
+ const guard='if (!acquisition && canonical(observed) !== canonical(state.covered)) acquisition = true;';assert.equal(runtimeSource.split(guard).length,2,'TIME_ABLATION_SOURCE_MISMATCH');
+ const staleTime={exports:{}};vm.runInThisContext('(function(require,module,exports){'+runtimeSource.replace(guard,'/* omitted coverage guard */')+'\n})',{filename:runtimeFile})(createRequire(runtimeFile),staleTime,staleTime.exports);
+ await assert.rejects(dueCoverage(core,staleTime.exports),/TIME_COMPLETED_UNCOMPUTED_INPUT/);await dueCoverage(core);controls.push('TIME-completes-uncomputed-input');
  const receiverFile=path.join(core,'lib/pgstream/receiver.js'),receiverSource=fs.readFileSync(receiverFile,'utf8'),receiver=require(receiverFile);
  await receipt(core,events[0],receiver);await receipt(core,events[0],receiver,true);
  const from='await clinical.accept(row.tenant_id,data,route.domain,store);';assert.equal(receiverSource.split(from).length,2,'RECEIPT_ABLATION_SOURCE_MISMATCH');
@@ -101,5 +143,5 @@ async function run(core,capture){
  await assert.rejects(receipt(core,events[0],broken.exports),/RAW_ACK_BEFORE_COMMIT/);await receipt(core,events[0],receiver);controls.push('raw-ACK-before-commit');
  return {verdict:'PASS',scope:'actual-module state/native payloads and mocked SQL commit boundary; deployed recovery unmeasured',...result,controls};
 }
-module.exports={run,exercise};
+module.exports={run,exercise,dueCoverage};
 if(require.main===module){(async()=>{if(process.argv.length!==4)throw Error('Usage: node materializer-row-control.cjs APP_WORKTREE DECODER_JSONL');console.log(JSON.stringify(await run(path.resolve(process.argv[2]),path.resolve(process.argv[3]))));})().catch(error=>{console.error(error.stack);process.exitCode=1;});}

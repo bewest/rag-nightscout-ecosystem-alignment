@@ -907,8 +907,12 @@ contract. It checks coherent XID sealing, serialization/cache-loss boundaries,
 future cohorts across bootstrap, extensions, storage-size propagation and exact
 row coverage. A mocked SQL commit boundary exercises the actual receiver and
 clinical receipt module: raw ACK waits for COMMIT, a failed COMMIT refuses the
-receipt, and raw intake does not execute clinical I/O. Actual-source mutations drop same-LSN rows, deletes or XID
-isolation, or remove the raw receipt await; each must fail for its named symptom before restoration passes.
+receipt, and raw intake does not execute clinical I/O. Actual replay bootstrap
+must retain invalid-row storage bytes and history while excluding those rows
+from clinical output. An actual-runtime timer cycle must acquire newly observed
+input before marking that version completed. Actual-source mutations drop same-LSN rows, deletes or XID
+isolation, restore the invalid-row bootstrap filter, remove the timer coverage
+guard, or remove the raw receipt await; each must fail for its named symptom before restoration passes.
 
 Capture originals stay outside Git. Retain the executed probe, schema/source
 identity and checksum beside the capture. These controls preserve source-level
