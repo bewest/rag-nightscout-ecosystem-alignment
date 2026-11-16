@@ -170,6 +170,12 @@ def validate_message(value, b, node, sequence, kind):
     need(value['kind'] == kind and kind in KINDS and isinstance(value['payload'], dict), 'EXTERNAL_MESSAGE_ORDER')
     return value['payload']
 
+def work_seconds(b, legacy, now=None):
+    # Binding admission owns the finite maximum; recompute its original remainder.
+    remaining=b['expiresAt']-(time.time() if now is None else now)-RESERVE
+    need(math.isfinite(remaining) and remaining>0,'EXTERNAL_DEADLINE')
+    return remaining if discovery_mode(b) else min(legacy,remaining)
+
 class Channel:
     def __init__(self, b, node, incoming=None, outgoing=None, clock=time.time):
         self.binding = binding(b, clock())

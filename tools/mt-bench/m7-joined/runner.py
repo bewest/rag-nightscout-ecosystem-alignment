@@ -242,7 +242,7 @@ def stage(root, name, args):
         write(root / 'phase.json', {'phase': name, 'startedAt': time.time()})
         with (root / (name + '.private.log')).open('xb') as output:
             child_args = [*args]
-            if child_args[:1] == ['run']:
+            if child_args[:1] in (['deploy'],['preflight'],['run']):
                 child_args += ['--work-deadline', str(state['stopWorkAt'])]
             child = subprocess.Popen([sys.executable, '-B', str(HERE / 'adapter.py'), *child_args], stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
         a.job_record(root / 'stage-job.json', child, state['owner'], group=True)

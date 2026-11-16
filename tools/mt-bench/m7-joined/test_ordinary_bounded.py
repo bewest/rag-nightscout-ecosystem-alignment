@@ -13,6 +13,15 @@ import diagnostic_resources as r
 
 
 class OrdinaryBounded(unittest.TestCase):
+    def setUp(self):
+        # These controls exercise real flock in scratch, never a live lane's lock.
+        scratch=tempfile.TemporaryDirectory();self.addCleanup(scratch.cleanup)
+        original=r.Runtime.acquire
+        lock=Path(scratch.name)/'driver.lock'
+        def acquire(runtime,lock_file=None):return original(runtime,lock_file or lock)
+        self.patch_lock=patch.object(r.Runtime,'acquire',acquire)
+        self.patch_lock.start();self.addCleanup(self.patch_lock.stop)
+
     def tearDown(self):
         r.configure()
 

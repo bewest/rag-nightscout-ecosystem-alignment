@@ -12,7 +12,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from protocol import viewer_total, Channel, binding, need, source_identity, traffic_verdict, server_verdict, TRAFFIC_FILES, write, discovery_mode, topology_dependencies
+from protocol import viewer_total, Channel, binding, need, source_identity, traffic_verdict, server_verdict, TRAFFIC_FILES, write, discovery_mode, topology_dependencies, work_seconds, RESERVE
 import traffic_probe
 sys.path.insert(0, str(HERE.parent / 'm7-joined'))
 import adapter as a
@@ -308,6 +308,10 @@ def discovery_summary(d,m,b,probe,k6):
 
 def session(cell, spec):
     d, m, b = load(cell, spec)
+    with a.command_deadline(b['expiresAt']-RESERVE if discovery_mode(b) else None):
+        return _session(d,m,b)
+
+def _session(d,m,b):
     if b.get('componentCases') is not None:
         from component_sessions import app_session
         return app_session(d,m,b,sys.modules[__name__])
@@ -320,7 +324,7 @@ def session(cell, spec):
         record.observe('idle',lambda:idle(d,m))
     else:idle(d, m)
     channel.send('app-ready')
-    primed = channel.receive('client-primed', 1800)
+    primed = channel.receive('client-primed', work_seconds(b,1800))
     need(set(primed)=={'primed'} and type(primed['primed']) is int and 0<=primed['primed']<=viewer_total(b),'EXTERNAL_PRIME_INVALID')
     need(discovery_mode(b) or primed == {'primed': viewer_total(b)}, 'EXTERNAL_PRIME_FAILED')
     out = d / 'load'
@@ -334,7 +338,7 @@ def session(cell, spec):
         try:
             def work():
                 channel.send('load-ready')
-                channel.receive('load-complete', m['cadence']['loadSeconds'] + 600)
+                channel.receive('load-complete', work_seconds(b,m['cadence']['loadSeconds'] + 600))
             if discovery_mode(b):record.observe('load',lambda:discovery.observed_load(a,d,m,out,work))
             else:
                 with a.observe_progress(d,m,out,'load') as load_progress:work()
@@ -344,7 +348,7 @@ def session(cell, spec):
         channel.send('server-recovery-complete', {'measurement': 'NOT_RUN'})
         ready, restarted = {}, {'measurement': 'NOT_RUN'}
         recovered = {'measurement': 'NOT_RUN', 'reason': 'noRestart diagnostic profile'}
-        channel.receive('finish', 600)
+        channel.receive('finish', work_seconds(b,600))
     a.phase_snapshot(d, out, 'after-load')
     idle_result = {} if discovery_mode(b) else a.progress_summary(d / 'idle')
     result = summarize(d, m, b, idle_result, {} if discovery_mode(b) else a.progress_summary(out), recovered, ready, restarted)

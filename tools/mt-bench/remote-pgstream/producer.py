@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'm7-joined'))
 import adapter as a
 from transport import cell_contract
+from protocol import binding, discovery_mode, RESERVE
 
 def deployment_plan(config, pgstream=False, primer_concurrency=1):
     a.require(pgstream, 'REMOTE_PGSTREAM_REQUIRED')
@@ -22,6 +23,12 @@ def deployment_plan(config, pgstream=False, primer_concurrency=1):
 def deploy(d, m):
     from host_binding import preflight
     preflight(d)
+    raw=m.get('externalBinding') or m.get('preparedExternalBinding')
+    b=binding(raw)
+    with a.command_deadline(b['expiresAt']-RESERVE if discovery_mode(b) else None):
+        return _deploy(d,m)
+
+def _deploy(d, m):
     cell_contract(m)
     a.frozen(m, 'deploy')
     a.experiment_host(d, m, 'deploy-before')
@@ -51,7 +58,7 @@ def deploy(d, m):
                 existing(d);authorize(d)
                 a.command(['node', d / 'core/deploy/multitenant' / args[0], d / 'state'], file=output)
             else:
-                run_stage(d,name,args,file=output,timeout=1800)
+                run_stage(d,name,args,file=output,timeout=a.discovery_seconds(m,1800))
         stages.append({'name': name, 'seconds': a.time.monotonic() - before})
         a.write(d / 'deployment-stages.json', stages)
         if name == 'infrastructure':
