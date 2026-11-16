@@ -359,7 +359,7 @@ def serial_exchange_receipt(m, value):
 def frozen(m,operation):
     require(Path(m["freeze"]).is_file(),"M7_FROZEN_OR_DIAGNOSTIC_RECEIPT_REQUIRED")
     value=document(m["freeze"]);serial_exchange_receipt(m,value)
-    if value.get('version')==2 and m.get('prepared'):
+    if value.get('version')==2 and value.get('kind')=='joined-diagnostic' and m.get('profile')=='pgstream-sample' and m.get('runPurpose')=='discovery' and m.get('prepared'):
         from run_configuration import from_manifest
         require(from_manifest(m)==m.get('runConfiguration'),'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     result=receipt_scope(m,value,operation)

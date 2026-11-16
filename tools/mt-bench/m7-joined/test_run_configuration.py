@@ -67,6 +67,9 @@ class Configuration(unittest.TestCase):
             c.receipt_scope(m,{**r,'functionalAcceptanceAtAuthorization':'PASS'},'run')
         strict={'pair':m['pair'],'kind':'joined-acceptance','status':'PASS','evidenceSha256':'a'*64}
         self.assertEqual(c.receipt_scope({**m,'runPurpose':'acceptance'},strict,'run')['kind'],'accepted-capacity')
+        with tempfile.TemporaryDirectory() as tmp:
+            file=Path(tmp)/'strict.json';a.write(file,{**strict,'version':2})
+            self.assertEqual(a.frozen({**m,'runPurpose':'acceptance','prepared':True,'freeze':str(file)},'run')['kind'],'accepted-capacity')
 
     def test_v2_pending_and_pass_evidence_and_no_promotion(self):
         m,r=packet(config())
