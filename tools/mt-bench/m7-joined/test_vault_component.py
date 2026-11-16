@@ -67,6 +67,13 @@ class Vault(unittest.TestCase):
                 file=Path(tmp)/'source'/next(iter(source));file.write_text('BROKEN_SOURCE')
                 with self.assertRaisesRegex(RuntimeError,'SOURCE_BYTES'):v.plan(cell,spec,tmp,allowed)
                 file.write_bytes(next(iter(source)).encode());v.plan(cell,spec,tmp,allowed)
+                capsule=b.read(Path(tmp)/'capsule.json');original=copy.deepcopy(capsule);capsule['version']=True;b.write(Path(tmp)/'capsule.json',capsule)
+                with self.assertRaisesRegex(RuntimeError,'CAPSULE_VERSION'):v.plan(cell,spec,tmp,allowed)
+                b.write(Path(tmp)/'capsule.json',original);v.plan(cell,spec,tmp,allowed)
+                worker=Path(tmp)/'changed-worker.cjs';worker.write_bytes(b'CHANGED_WORKER')
+                with patch.object(v,'WORKER',worker):
+                    with self.assertRaisesRegex(RuntimeError,'WORKER_CHANGED'):v.plan(cell,spec,tmp,allowed)
+                    worker.write_bytes(Path(__file__).with_name('vault-component-worker.cjs').read_bytes());v.plan(cell,spec,tmp,allowed)
                 capsule=b.read(Path(tmp)/'capsule.json');capsule['source']['core']='0'*40;b.write(Path(tmp)/'capsule.json',capsule)
                 with self.assertRaisesRegex(RuntimeError,'SOURCE_PIN'):v.plan(cell,spec,tmp,allowed)
 
@@ -101,6 +108,11 @@ class Vault(unittest.TestCase):
                 bad=copy.deepcopy(row);bad['limits'][field]+=1
                 with self.assertRaisesRegex(RuntimeError,'QUOTA_CHANGED'):v.checked(bad,inv)
             v.checked(row,inv)
+            volume={'Name':'owned-data','CreatedAt':'born','Labels':{'org.nightscout.vault-component':state['owner']}}
+            v.checked_volume(volume,'owned-data',state['owner'],'born')
+            for bad in [{**volume,'Name':'foreign'},{**volume,'CreatedAt':'changed'},{**volume,'CreatedAt':None},{**volume,'Labels':{}}]:
+                with self.assertRaisesRegex(RuntimeError,'VOLUME_CHANGED'):v.checked_volume(bad,'owned-data',state['owner'],'born')
+            with self.assertRaisesRegex(RuntimeError,'VOLUME_CHANGED'):v.checked_volume(volume,'owned-data',state['owner'],None)
             def census(tools,*args,**kwargs):return 'owned'if args[:2]==('ps','-aq')else''
             with patch.object(v,'file_sha',return_value='safe'),patch.object(v,'command',side_effect=census),patch.object(v,'inspect',return_value={**row,'created':'foreign'}):
                 with self.assertRaisesRegex(RuntimeError,'INCARNATION_CHANGED'):runner.cleanup(root,'TEST')

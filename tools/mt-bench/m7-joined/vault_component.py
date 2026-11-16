@@ -68,7 +68,7 @@ def capsule(config,payload,root,allowlist):
     need(file.stat().st_size<=65536,'CAPSULE_SIZE')
     value=batch.read(file)
     need(set(value)=={'version','producer','source','image','imageId','helper','files','workerSha256','tools'},'CAPSULE_FIELDS')
-    need(value['version']==1 and value['producer']==PRODUCER,'CAPSULE_VERSION')
+    need(type(value['version'])is int and value['version']==1 and value['producer']==PRODUCER,'CAPSULE_VERSION')
     need(value['source']==payload['source'] and value['source']['core']==CORE,'SOURCE_PIN')
     need(value['image']==IMAGE and value['imageId']==payload['image']==IMAGE_ID,'IMAGE_PIN')
     need(value['helper']==config['helperInstrument']==payload['helper'],'HELPER_CHANGED')
@@ -147,6 +147,14 @@ def checked(row,inventory):
     need(row['limits']=={'Memory':inventory['memoryBytes'],'MemorySwap':inventory['memoryBytes'],'NanoCpus':125000000},'QUOTA_CHANGED')
 
 
+_UNBOUND_VOLUME=object()
+
+
+def checked_volume(row,name,owner,created=_UNBOUND_VOLUME):
+    need(type(row.get('CreatedAt'))is str and bool(row['CreatedAt']) and row['Name']==name and row.get('Labels',{}).get('org.nightscout.vault-component')==owner and
+         (created is _UNBOUND_VOLUME or type(created)is str and row['CreatedAt']==created),'VOLUME_CHANGED')
+
+
 def server_identity(tools,cid):
     matches=[]
     for line in command(tools,'top',cid,'-eo','pid,ppid,comm,args').splitlines()[1:]:
@@ -188,7 +196,7 @@ def cleanup_resources(root):
         bound=inventory['volume'];name=bound['name']
         if name in command(tools,'volume','ls','-q','--filter','name=^'+name+'$').split():
             v=json.loads(command(tools,'volume','inspect',name))[0]
-            need(v['Name']==name and v.get('CreatedAt')==bound['created'] and v.get('Labels',{}).get('org.nightscout.vault-component')==state['owner'],'VOLUME_CHANGED')
+            checked_volume(v,name,state['owner'],bound['created'])
             command(tools,'volume','rm',name,timeout=15)
     containers=command(tools,'ps','-aq','--no-trunc','--filter','label=org.nightscout.vault-component='+state['owner']).split()
     volumes=command(tools,'volume','ls','-q','--filter','label=org.nightscout.vault-component='+state['owner']).split()
@@ -236,7 +244,7 @@ def execute(config,root):
                 need(not command(tools,'ps','-aq','--filter','name=^/'+name+'$').strip(),'NAME_CONFLICT')
                 need(not command(tools,'volume','ls','-q','--filter','name=^'+volume+'$').strip(),'VOLUME_CONFLICT')
                 command(tools,'volume','create','--label','org.nightscout.vault-component='+state['owner'],volume)
-                v=json.loads(command(tools,'volume','inspect',volume))[0];inventory['volume']={'name':volume,'created':v.get('CreatedAt')};batch.write(root/'vault-inventory.json',inventory)
+                v=json.loads(command(tools,'volume','inspect',volume))[0];checked_volume(v,volume,state['owner']);inventory['volume']={'name':volume,'created':v.get('CreatedAt')};batch.write(root/'vault-inventory.json',inventory)
                 (root/'vault.hcl').write_text('disable_mlock = true\nui = false\napi_addr = "http://127.0.0.1:8200"\nstorage "file" { path = "/vault/file" }\nlistener "tcp" { address = "0.0.0.0:8200" tls_disable = 1 }\n');(root/'vault.hcl').chmod(0o644)
                 cid=command(tools,'create','--pull','never','--name',name,'--label','org.nightscout.vault-component='+state['owner'],'--cpus','.125','--memory',str(inventory['memoryBytes']),'--memory-swap',str(inventory['memoryBytes']),'-p','127.0.0.1:'+str(cell['ports'][0])+':8200','-v',volume+':/vault/file','-v',str(root/'vault.hcl')+':/vault/config/probe.hcl:ro',IMAGE,'vault','server','-config=/vault/config/probe.hcl').strip()
                 row=inspect(tools,cid);inventory['container']={k:row[k]for k in ['id','name','created']};checked(row,inventory);batch.write(root/'vault-inventory.json',inventory)
@@ -264,6 +272,7 @@ def execute(config,root):
             with lease.host_lease('helper'):
                 with runner.custody(root):
                     runner.execution_window(root,config)
+                    need(file_sha(WORKER)==frozen['workerSha256'],'WORKER_CHANGED')
                     worker=subprocess.Popen([tools['node']['path'],'--max-heap-size=128',str(WORKER)],env=ENV,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True,start_new_session=True,preexec_fn=limits(NODE_VM))
                     runner.a.job_record(root/'stage-job.json',worker,state['owner'],group=True)
                     mask=sorted(os.sched_getaffinity(worker.pid));need(mask==affinity['selected'],'AFFINITY_INHERITANCE')
