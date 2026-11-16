@@ -3,6 +3,7 @@ import json
 import re
 import subprocess
 import time
+import evaluator_catchup
 from contract import require, SHA, OWNER, UNACCEPTED_SCOPE
 
 INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
@@ -84,13 +85,15 @@ class Record:
                 self.value['strictChecks'][stage]['partialObservation']=partial;self.save()
             if not allowed:raise
     def process(self,stage,fn):
-        start=time.time()
+        start=time.time();start_mono=time.monotonic_ns()
         try:
             result=fn();self.value['processes'][stage]={'returncode':0,'startedAt':start,'endedAt':time.time()};return result
         except (RuntimeError,subprocess.TimeoutExpired) as error:
             self.value['processes'][stage]={'returncode':getattr(error,'returncode',None),'startedAt':start,'endedAt':time.time(),'timeout':isinstance(error,subprocess.TimeoutExpired),'code':safe_code(error)}
             self.value['strictChecks'][stage]={'verdict':'UNMEASURED','code':'M7_DISCOVERY_PROCESS_INCOMPLETE'}
-        finally:self.save()
+        finally:
+            if stage in self.value['processes']:self.value['processes'][stage].update(startMonoNs=start_mono,endMonoNs=time.monotonic_ns())
+            self.save()
 
 def run_discovery(a,d,m,k6_image,oneoff=None):
     record=Record(a,d,m);record.save()
@@ -238,7 +241,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                 (out/'.restart').touch();start=time.time()
                 try:rc=process.wait(timeout=1500)
                 except a.subprocess.TimeoutExpired:rc=None
-                record.value['processes']['probe']={'returncode':rc,'startedRecoveryAt':start,'endedAt':time.time(),'timeout':rc is None};record.save()
+                record.value['processes']['probe']={'returncode':rc,'startedRecoveryAt':start,'endedAt':time.time(),'timeout':rc is None,'endMonoNs':time.monotonic_ns()};record.save()
             else:
                 record.value['strictChecks']['recovery']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_RECOVERY_NOT_STARTED'};record.save()
     finally:
@@ -256,6 +259,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         recovery=record.value['probe'].get('restart',{}).get('runtimeAcquisitionObservation',{})
         require(not hard_recovery(recovery),'M7_DISCOVERY_CLINICAL_FAILURE')
         if recovery:record.value['strictChecks']['recovery']={**{k:recovery[k] for k in ('verdict','code') if k in recovery},'hardFailure':False}
+    if m.get('evaluatorCatchup') is not None:evaluator_catchup.run(a,d,m,record)
     if (out/'k6-summary.json').is_file():
         metrics=a.document(out/'k6-summary.json')['metrics'];record.value['metrics']={key:metrics[key] for key in ('http_reqs','http_req_failed','iterations','dropped_iterations','scenario_request_attempts','scenario_http_responses','scenario_transport_failures','writes_ok','writes_refused','writes_uncertain','responses_refused') if key in metrics}
         record.value['rateOffer']=a.rate_offer(m)

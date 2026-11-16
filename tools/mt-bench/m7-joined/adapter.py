@@ -32,6 +32,7 @@ import orchestration_binding
 import evaluator_progress
 import evaluator_idle
 import evaluator_opportunities
+import evaluator_catchup
 import sql_attribution
 import cost_companion
 import realtime_costs
@@ -416,6 +417,7 @@ def attach(args):
     selection=serial_exchange_selection(args)
     if selection is not None:m['serialExchangeDiagnostic']=selection
     select_opportunities(args,m)
+    evaluator_catchup.select(args,m)
     require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and 1<=args.tenants<=10000 and args.replicas==1,'M7_ATTACH_SCOPE')
     frozen(m,'deploy');image(m)
     target.mkdir(parents=True,mode=0o700)
@@ -609,6 +611,7 @@ def prepare_staged(args,target,pinned):
     if getattr(args,'image_input_preflight',None):m['imageInputPreflight']=args.image_input_preflight
     if getattr(args,"run_purpose","acceptance")=="discovery":m["runPurpose"]="discovery"
     select_opportunities(args,m)
+    evaluator_catchup.select(args,m)
     m["diagnostics"]=profile_provenance.selection(getattr(args,"diagnostics","off"),getattr(args,"diagnostics_interval_ms",5000))
     m['measurementMode']=getattr(args,'measurement_mode','accepted')
     if args.profile=='pgstream-sample' and m.get('runPurpose')=='discovery':
@@ -1282,9 +1285,11 @@ def opportunity_collector(d,m,ids):
     start=time.monotonic();cpu=time.process_time();queries=invoke({'mode':'queries','batches':batches},10)
     evaluator_progress.need(isinstance(queries,list) and len(queries)==len(batches) and all(isinstance(q,str) and q.startswith('SELECT ') for q in queries),'M7_OPPORTUNITY_QUERY_BINDING')
     preparation={'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu,'nodeCalls':1,'sqlQueries':0}
-    def capture():
+    def capture(timeout=None):
+        if timeout is None:timeout=evaluator_opportunities.ROUND_SECONDS
+        evaluator_progress.need(type(timeout) in (int,float) and math.isfinite(timeout) and timeout>0,'M7_OPPORTUNITY_DEADLINE')
         require(digest(config_path)==source_sha,'M7_OPPORTUNITY_SOURCE_CHANGED')
-        start=time.monotonic();cpu=time.process_time();deadline=start+evaluator_opportunities.ROUND_SECONDS;rows=[];used=0;count=0
+        start=time.monotonic();cpu=time.process_time();deadline=start+min(timeout,evaluator_opportunities.ROUND_SECONDS);rows=[];used=0;count=0
         cost={'sqlQueries':0,'rawSqlBytes':0,'nodeCalls':0}
         try:
             for query in queries:
@@ -1623,6 +1628,7 @@ def parser():
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image"):prep.add_argument("--"+name, required=True)
     prep.add_argument('--pgstream-topology',choices=(stream_topology.COLOCATED,stream_topology.EXTERNAL),default=stream_topology.COLOCATED)
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
+    prep.add_argument('--evaluator-catchup',choices=('fixed-target-v1',),help='Read-only post-write drain within existing work deadline; discovery without restart only')
     prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='NEXT explicit trusted SQL opportunity observer; unselected pgstream v2 discovery load only')
     prep.add_argument('--fixture-project',help='Owner-selected new Compose project; existing containers, volumes or networks refuse')
     for knob in ('warmup-seconds','idle-seconds','load-seconds','accel','hot-factor','sampler-interval'):
