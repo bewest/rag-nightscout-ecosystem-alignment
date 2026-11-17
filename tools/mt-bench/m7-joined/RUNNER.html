@@ -2249,6 +2249,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#prospective-http-and-revision-witnesses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prospective HTTP and revision witnesses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explicit-finite-allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit finite allocation
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4233,6 +4255,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#prospective-http-and-revision-witnesses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prospective HTTP and revision witnesses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explicit-finite-allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit finite allocation
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4256,7 +4300,7 @@
 
 
 <h1 id="reuse-the-canonical-local-runner">Reuse the canonical local runner<a class="headerlink" href="#reuse-the-canonical-local-runner" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>cd850286a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>c75b769f2</code>.</em></p>
 <p><code>runner.py</code> replaces copied per-attempt preparation and execution scripts with
 one configuration and the existing <code>adapter.py</code> entrypoints. It does not build
 an image, allocate a remote host or grant capacity acceptance.</p>
@@ -4267,7 +4311,7 @@ an image, allocate a remote host or grant capacity acceptance.</p>
 below are explicit storage choices, not automatic runner defaults. A missing or
 unwritable <code>/mnt/data</code> is a storage error; do not fall back to the home drive.
 Existing runs and their original guards keep their current paths.</p>
-<p>Copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/examples/local-rehearsal.json">the small rehearsal profile</a> to private
+<p>Copy <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/examples/local-rehearsal.json">the small rehearsal profile</a> to private
 storage. Set its verified helper head, repository paths, existing diagnostic
 receipt, new project and unused explicit CIDRs. The receipt still binds the
 source pair, image, instrument and traffic duration through the adapter's
@@ -4343,7 +4387,7 @@ prepare/caller path on an already available qualified private driver; this tool
 has no paid-resource authority. Do not infer remote environment qualification
 from local source tests or from execution of the generated public probe alone.</p>
 <h2 id="joined-candidate-and-metric-meanings">Joined candidate and metric meanings<a class="headerlink" href="#joined-candidate-and-metric-meanings" title="Permanent link">&para;</a></h2>
-<p>The paired <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/examples/joined-1000.json">1k</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/examples/joined-3000.json">3k</a>
+<p>The paired <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/examples/joined-1000.json">1k</a> and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/examples/joined-3000.json">3k</a>
 profiles hold ordinary cadence, hot factor 1, two clients per tenant, offered
 scenario rate 180/s and load duration 310 seconds constant. Primer concurrency
 is explicitly four and JWT setup is serial one. Client population and nominal
@@ -4439,13 +4483,13 @@ prints a deterministic review plan without starting services. <code>batch-run
 executes that same admitted specification. <code>batch-result &lt;private-output&gt;</code> reads
 completed and partial per-cell results, including after an interrupted batch.
 The ordinary single-point commands and their defaults stay available.</p>
-<p>Start from <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/examples/local-batch.json">the local batch template</a>. Replace its
+<p>Start from <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/examples/local-batch.json">the local batch template</a>. Replace its
 source/helper/receipt paths and hashes, project/CIDRs and zero cleanup cutoff
 with the reviewed inputs and original absolute cutoff; the template is inert.
 Both cells reuse the same immutable source/image/helper. The template declares
 room for two whole cells. Set its aggregate envelope to the resources allocated
 to your lane; a smaller envelope queues cells without reducing their quotas.</p>
-<p>Batch digests use the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/examples/batch-digest-vectors.json">shared canonical vectors</a>.
+<p>Batch digests use the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/examples/batch-digest-vectors.json">shared canonical vectors</a>.
 Numbers must be finite; integral numbers must fit the exact shared range
 −9007199254740991 through 9007199254740991. Negative zero becomes zero,
 and <code>1.0</code> and <code>1</code> have one identity. Payload bytes are never transformed.</p>
@@ -4566,7 +4610,7 @@ message lookup/provider installation remains UNMEASURED here and belongs to the
 remote custodian; source adapters do not grant tool permissions.</p>
 <h3 id="typed-local-vault-component-cells">Typed local Vault component cells<a class="headerlink" href="#typed-local-vault-component-cells" title="Permanent link">&para;</a></h3>
 <p><code>cell.config.producer: "vault-component-v1"</code> selects the fixed Vault component
-executor in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/vault_component.py">vault_component.py</a>, through the same
+executor in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/vault_component.py">vault_component.py</a>, through the same
 <code>batch-plan</code>, <code>batch-run</code>, private <code>_batch-cell</code> and result gateway. It runs the
 six actual key purposes and synthetic 48-byte root-secret encryption from the
 pinned source capsule. It does not provision SQL tenants or qualify application
@@ -4658,7 +4702,7 @@ measurements with exact cleanup let independent cells continue; uncertain
 cleanup keeps the reservation and global custody marker. Private raw output and
 safe first-failure projection remain per cell. Every result retains
 <code>capacityAcceptance: NOT_GRANTED</code>.</p>
-<p>Focused checks in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/test_vault_component.py">test_vault_component.py</a> cover exact
+<p>Focused checks in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/test_vault_component.py">test_vault_component.py</a> cover exact
 input/reservation rejection, real typed child overlap, partial failure/peer
 progress, uncertain-cleanup retention and affinity confined to a harmless child.
 They do not by themselves qualify native Vault overlap; that requires retained
@@ -4792,7 +4836,7 @@ load. Example preparation fields are <code>restart-during-load-after-seconds: 60
 <code>load-seconds: 310</code>, and <code>probe-every-ms: 1000</code>. The default remains unchanged.
 A one-second probe adds one global clinical witness write per second, separately
 from ordinary offered scenario RPS. It does not write once per tenant per second.</p>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/mt-bench/m7-joined/examples/local-under-demand-recovery.json">The local recovery example</a> selects
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/m7-joined/examples/local-under-demand-recovery.json">The local recovery example</a> selects
 37 tenants, 16 logical viewers, 20 offered scenario RPS and a restart after
 30 seconds of a 90-second load. Replace every source, image, dependency and
 receipt placeholder, then use <code>project</code> to generate the configuration-bound
@@ -4824,8 +4868,19 @@ runtime. Discovery retains baseline and delta counts with cause attribution
 errors, counter rewinds, foreign work and unexpected runtime changes still
 refuse the observation. Durable accepted targets, restore and authority fences,
 completion coverage and matching client frames keep their separate checks.
-The strict progress and recovery modes retain their original counter rules.
-New pgstream discovery fixtures using <code>evaluator-work-v2</code> select the existing
+The strict progress and recovery modes retain their original counter rules.</p>
+<p>Discovery also retains evaluator <code>ready: false</code> as availability <code>UNMEASURED</code>
+when the admitted row has no current code or alert and carries all six typed
+job flags. <code>BUSY</code>, <code>BOOTING</code> and <code>COLD_OR_UNOBSERVED</code> describe those flags; they
+do not prove a benign cause. The private proof keeps the original readiness
+boolean and job state through packing and decoding. Such availability does not
+stop unrelated REST traffic. Typed durable targets and actual client output
+still establish completion separately. Current errors, malformed job state,
+foreign work, unexpected runtime changes and counter rewinds keep their guards.
+A planned fault is skipped while baseline availability is unknown; an unknown
+recovery observation does not cancel the finite REST workload. Strict readiness
+and strict progress retain their original readiness requirement.</p>
+<p>New pgstream discovery fixtures using <code>evaluator-work-v2</code> select the existing
 <code>received-input-v1</code> observer when the caller omits that option. The generated
 manifest records the selection. This also covers the canonical remote worker;
 its omitted CLI option does not fall back to the strict idle/load assessor.</p>
@@ -4894,6 +4949,123 @@ connection budget remains 16384 per worker. Preflight reads exact-owned nginx
 <code>-T</code> output and refuses an omitted, automatic or changed worker count before
 traffic. This qualifies the fixture configuration; it does not measure edge or
 application capacity. Default deployments retain their existing automatic count.</p>
+<p>Discovery <code>pgstream-sample</code> observations now declare a prospective standalone k6
+driver allocation of 2 CPU cores and 4 GiB in <code>loadgen-resource-allocation.json</code>.
+The original session resource record and server limits remain unchanged; the
+sidecar records the replaced 0.5-CPU/1-GiB standalone reservation and the effective
+combined ceiling. Native launch, container census and oneoff custody validate the
+new allocation together. Strict observations retain the original driver limits.
+A driver reaching its quota is not evidence of a backend throughput ceiling.</p>
+<h3 id="prospective-http-and-revision-witnesses">Prospective HTTP and revision witnesses<a class="headerlink" href="#prospective-http-and-revision-witnesses" title="Permanent link">&para;</a></h3>
+<p>New generated workloads retain exact HTTP status distributions for each selected
+shape and JWT setup separately. <code>load/http-accounting.json</code> reconciles request
+attempts, completed responses, no-response outcomes and dropped offered work.
+<code>timeout</code> means k6 observed timeout code 1050. Other status-zero outcomes remain
+transport failures with cause unknown. A 5xx or unexpected mutation response
+remains uncertain until a storage oracle settles it. No mutation is retried.
+HTTP, storage, clinical completion, client frames and capacity remain separate
+verdicts. Historical captures receive no new fields or revised verdict.</p>
+<p>The histogram uses 501 fixed status bins per shape, including status zero, with
+main-context-only threshold metadata. This adds no request or per-request log.
+The retained native k6 control verifies export and reconciliation, not overhead
+at capacity. Its two-second traffic window and process/export wall time are
+separate measurements; the fixture records both. Preserve that distinction when
+choosing a driver allocation.</p>
+<p>For a new <strong>discovery</strong> sample, the existing adapter <code>prepare</code> command accepts
+<code>--revision-witness-targets /absolute/private/targets.json</code>. The file is a JSON
+list of one or two synthetic identities, for example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">[{</span><span class="nt">"tenant"</span><span class="p">:</span><span class="s2">"11111111-1111-4111-8111-111111111111"</span><span class="p">,</span><span class="nt">"storedId"</span><span class="p">:</span><span class="s2">"synthetic-row-a"</span><span class="p">}]</span>
+</code></pre></div>
+<p>The target must identify an actual synthetic stored SGV that can appear in the
+selected client's frame. A timestamp alone is insufficient. Prepare copies the
+private preload, records helper/config/source hashes and installs it on the
+canonical evaluator and realtime entrypoints. Run uses the existing probe and
+stock callback; the source files and public wire payload receive no new fields.
+This option is incompatible with another preload that changes those entrypoint
+arguments. Use a fresh fixture; changing a frozen fixture is refused.</p>
+<p>Each process writes a separate private capture incarnation under <code>state/ipc/</code>
+or <code>load/</code>. The witness permits 64 events and 65,536 event bytes per process.
+Saturation, publication failure, missing correlation, duplicate identity or a
+wrong source/owner/socket/clock domain yields <code>UNMEASURED</code>. The collector reduces
+at most eight capture files; originals remain unchanged. <code>load/revision-witness-assessment.json</code>
+joins an acquired <strong>output revision</strong> to the actual authorized Socket.IO adapter
+broadcast, Engine.IO arrival and existing stock callback using payload digest,
+socket identity, incarnation and FIFO ordinal. Its fixed input checkpoint is
+reported separately from typed input coverage. A delivery revision and raw-tail
+head are distinct identities and remain <code>UNMEASURED</code> when no exact bridge exists.
+The optional complete/send/confirmed-receipt hooks retain their own revision types;
+tenant/time proximity never supplies a missing bridge.</p>
+<p>Only durations within one process clock domain are subtracted. The emitted
+payload's transit to the receiving process is <code>UNMEASURED_CROSS_PROCESS</code>; polling,
+transport scheduling and observer publication must not be inferred from unrelated
+percentiles. Per-process <code>overheadNs</code> includes synchronous event publication;
+the last event file can omit its own final publication cost until the exit seal.
+The native control uses real shipping projection/runtime/protocol and stock
+Socket.IO HTTP polling with synthetic storage and authority ports. It does not
+qualify database completion, clinical equivalence, recovery or capacity.</p>
+<p>Focused reproduction commands (choose new absolute output directories):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/m7-joined<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_http_accounting.py'</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/m7-joined<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_collection_segments.py'</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/mt-bench/m7-joined<span class="w"> </span>-p<span class="w"> </span><span class="s1">'test_revision_witness.py'</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/revision-witness.test.cjs
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/revision-witness-hooks.test.cjs
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>python3<span class="w"> </span>-B<span class="w"> </span>tools/mt-bench/m7-joined/http-accounting-native.py<span class="w"> </span>/absolute/new/http-control<span class="w"> </span>grafana/k6:1.3.0
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/revision-witness-smoke.cjs<span class="w"> </span>/absolute/pinned/core<span class="w"> </span>/absolute/new/polling-control
+</code></pre></div>
+<p>Completed SQL, cgroup, HTTP and probe files receive immediate collection receipts
+with source/owner/time attribution. A later optional collector refusal preserves
+those files and its own typed failure. Missing observations never grant capacity.
+Preflight checks the actual JSON fixture, companion/dependency files, actor bound
+and output write before collector actors start. Cleanup checks exact owned
+container/network/volume inventories; a Docker error string is never proof of
+absence.</p>
+<h3 id="explicit-finite-allocation">Explicit finite allocation<a class="headerlink" href="#explicit-finite-allocation" title="Permanent link">&para;</a></h3>
+<p>A new discovery fixture can use <code>--diagnostic-resource-allocation '&lt;JSON&gt;'</code>
+instead of <code>--diagnostic-resource-profile</code>. Runner preparation configuration uses
+the same <code>diagnostic-resource-allocation</code> key with the JSON string as its value.
+The object contains exactly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">"services"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"every-selected-compose-role"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"millicpus"</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="nt">"memoryBytes"</span><span class="p">:</span><span class="w"> </span><span class="mi">1073741824</span><span class="p">}},</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">"driver"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"millicpus"</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span><span class="p">,</span><span class="w"> </span><span class="nt">"memoryBytes"</span><span class="p">:</span><span class="w"> </span><span class="mi">4294967296</span><span class="p">},</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="nt">"ceiling"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"millicpus"</span><span class="p">:</span><span class="w"> </span><span class="mi">16000</span><span class="p">,</span><span class="w"> </span><span class="nt">"memoryBytes"</span><span class="p">:</span><span class="w"> </span><span class="mi">34359738368</span><span class="p">},</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nt">"edge"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"workerProcesses"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">"workerConnections"</span><span class="p">:</span><span class="w"> </span><span class="mi">16384</span><span class="p">}</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">}</span>
+</code></pre></div>
+<p>This illustrates the shape, not a runnable role roster or sizing recommendation.
+Supply every selected role by its actual name. Admission rejects missing roles,
+unknown roles, nonpositive limits, overlapping named/explicit selections and an
+aggregate above the authored ceiling. Bootstrap and primer each reserve two
+concurrent instances. The explicit driver allocation stays authoritative;
+discovery does not replace it with its historical driver default. Runtime checks
+continue to compare actual CPU, memory, no-swap limits and one-worker nginx
+configuration against the authored allocation.</p>
+<p>Remote preparation requires the paired controller/worker allocation support.
+Its packet carries <code>diagnosticResourceAllocation</code>; its receipt mirrors the exact
+object as <code>remoteDiagnosticResourceAllocation</code>. Both boundaries check finite
+limits against the sealed SUT and driver host inventories. Generate a fresh
+prospective packet/receipt and helper binding. An explicit ceiling grants no
+spending, host, fixture or cleanup authority. Named configurations keep their
+existing behavior. This extension does not establish which allocation meets an
+operating latency or throughput objective.</p>
+<p>A prospective discovery sample using the durable received-input observer can
+continue independent REST collection when the complete roster records exactly
+<code>EVALUATOR_CLINICAL_PROGRESS_STALLED</code> on an admitted, running owner with prior
+completion. Readiness and idle/load retain clinical <code>FAIL</code>, and capacity remains
+<code>NOT_GRANTED</code>. This is not a general error allowlist. Unknown codes, alerts,
+malformed state, foreign work, changed ownership/runtime, restore rewinds, clock
+failures, durable reader/source mismatches and collection bounds still refuse.
+The three existing durable-before-inspection captures and their cost bounds stay
+in place. Original failed runs are unchanged.</p>
+<p>For explicit remote allocations, the trusted DRIVER supervisor now inserts the
+authored driver CPU/memory/no-swap flags, binds them into its existing creation
+intent, and verifies exact native Docker HostConfig before qualifying the run.
+Missing, duplicated or conflicting flags are refused before launch; a missing
+readback is UNMEASURED. Native mismatches remain failures. Exact owner/image/
+creation/mount/security qualification still permits cleanup of our actor with a
+wrong limit, while preserving that refusal and the primary error. The fixed
+readback file is beside the existing captured-CID record. Historical requests
+without an explicit allocation keep their launch and qualification behavior.</p>
 
 
 

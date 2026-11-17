@@ -2306,7 +2306,7 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>dd9621403</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
@@ -2457,6 +2457,12 @@ The <a href="../30-design/tenancy/evaluator-realtime-communication.html">communi
 owns the current architecture: durable stream acceptance, bounded clinical state,
 completed output and independent raw storage delivery. Earlier R72/R73 and
 operation-window records retain their original source and scope.</p>
+<p>The current execution priority is <a href="../30-design/tenancy/evaluator-realtime-communication.html#single-evaluator-efficiency-plan">single-evaluator efficiency</a>,
+with horizontal execution preserved as a future seam. The incremental handover
+lane owns snapshot/stream correctness; the separate profiling continuation owns
+CPU, allocation, encoding, statistics and SQL attribution. The coalesced snapshot
+alternative remains unqualified. Neither this priority nor a primitive cost
+reduction establishes operating capacity.</p>
 <p>Remaining work has distinct boundaries. The existing operating report owns load,
 resource and recovery observations, including partial and failed points. The <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">follow-on source qualification</a>
 closes bounded stream amplification and executable retirement; matched operating

@@ -12835,6 +12835,111 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#realtime-receipt-write-and-planning-cost--2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Realtime receipt write and planning cost — 2026-11-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-operating-envelope-and-recovery--2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote operating envelope and recovery — 2026-11-16
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote operating envelope and recovery — 2026-11-16">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#source-workload-and-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source, workload and evidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#current-candidate-and-focused-repair-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current candidate and focused repair boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanup-and-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup and limits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coalesced-snapshot-alternative-qualification-disposition--2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coalesced snapshot alternative: qualification disposition — 2026-11-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#single-evaluator-accepted-input-profile--2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-evaluator accepted-input profile — 2026-11-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-matched-rates-and-recovery--2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local matched rates and recovery — 2026-11-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remote-comparison-stopped-by-maintainer--2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote comparison stopped by maintainer — 2026-11-16
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -12853,7 +12958,7 @@
 
 
 <h1 id="coherent-pgstream-worker-repair-and-first-diagnostic--2026-11-14">Coherent pgstream worker repair and first diagnostic — 2026-11-14<a class="headerlink" href="#coherent-pgstream-worker-repair-and-first-diagnostic--2026-11-14" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>e9f9430e4</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>6db84dfce</code>.</em></p>
 <p>Later source tuples and their limits are recorded in the <a href="#comparable-experiments-and-final-image-tiny--2026-11-15-pacific">November 15 comparable experiments</a> and <a href="#local-operating-envelope-diagnostics--2026-11-15-pacific">local operating-envelope diagnostics</a>. The <a href="#stream-fed-clinical-materializer--2026-11-16">stream-fed materializer batch</a> records the November 16 source and operating qualification. Earlier captures retain their original attribution.</p>
 <p>The coherent worker repair passes source acceptance, canonical image qualification and the first completed local 1,000-tenant/2,000-client discovery window. The window measures demand below an unknown capacity ceiling. Nothing in this record claims a merge to application <code>dev</code>, a release or capacity acceptance.</p>
 <h2 id="frozen-inputs-and-retained-evidence">Frozen inputs and retained evidence<a class="headerlink" href="#frozen-inputs-and-retained-evidence" title="Permanent link">&para;</a></h2>
@@ -17541,6 +17646,256 @@ cost remain <strong>UNMEASURED by this source qualification</strong>. Capacity's
 fresh adoption/comparison and existing run cleanup; no entered run is repinned or
 relabeled. Source qualification does not admit HA, fleet, provider delivery or a
 production workload, and these records require no new application campaign.</p>
+<h2 id="realtime-receipt-write-and-planning-cost--2026-11-16">Realtime receipt write and planning cost — 2026-11-16<a class="headerlink" href="#realtime-receipt-write-and-planning-cost--2026-11-16" title="Permanent link">&para;</a></h2>
+<p><strong>Reproduced, source-scoped qualification; local and unpushed.</strong> Core
+<code>c1173eab7c4fea1270eb585aff5961142849d048</code>, unchanged deployment
+<code>92227d9d4853ed75c5f1ea10c0ba00f03bd2dac5</code>, image
+<code>sha256:89e829cb4086d01c602f49a8730394772e64b88f38640f448c0f1569e6a3bd4f</code>
+qualify a bounded receipt-storage change. Same-owner duplicate/older hints confirm
+the durable row under lock without a physical tuple rewrite. Unique revisions
+and changed owners retain the UPDATE path. Metadata policy, confirmed COMMIT,
+concurrent-owner refusal and retry deadlines remain. Four fixed statements per
+configured namespace/mode reuse plans on each pool connection; names are not
+allocated per tenant or revision.</p>
+<p>Exact c31/c117 module hashes in the retained measurement match the git objects.
+Synthetic PostgreSQL 16.16/Node 24.22.1 measurements use 32 direct receipt calls
+per scenario on a shared host:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th style="text-align: right;">Physical rewrites, c31 → c117</th>
+<th style="text-align: right;">WAL bytes, c31 → c117</th>
+<th style="text-align: right;">Observed SQL planning events, c31 → c117</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duplicate pending hints</td>
+<td style="text-align: right;">32 → 0</td>
+<td style="text-align: right;">3,976 → 3,072</td>
+<td style="text-align: right;">32 → 0 after plan warmup</td>
+</tr>
+<tr>
+<td>Unique hints</td>
+<td style="text-align: right;">32 → 32</td>
+<td style="text-align: right;">10,800 → 10,800</td>
+<td style="text-align: right;">32 → 5 on the initial unique scenario</td>
+</tr>
+</tbody>
+</table>
+<p>Each of those scenarios retains 32 transactions, 96 statements and 4,384 input
+parameter bytes on both sides. The first lock-first prototype was rejected after
+its unique-write WAL overhead was measured. These final primitive results establish
+neither the operating duplicate fraction nor throughput or frame-latency gain.
+The historical same-stored-ID observation lacks an exact output/delivery revision;
+its latency cause remains UNKNOWN.</p>
+<p>All eight regular/browser tiers pass on c117. The initial native launch refused a
+missing fixture configuration companion before execution; those failed originals
+remain, and completed regular/browser tiers were preserved. The resumed six-suite
+affected-native selection passes 35 checks, zero pending/failures; duplicate
+formatted totals are counted once. Unchanged native capabilities retain their
+original c31 qualification through its immutable receipt, not a fresh full-native
+pass on c117. Final prcheck passes with <code>official/dev</code>
+<code>4a482627bfdafb1fef8dcbe0ac6c484811cae563</code> contained and source unchanged.</p>
+<p>Independent exact recorded-resource absence and an actual active-listener
+red/restored availability control pass. Original bind-only refusal and brittle
+case-sensitive cleanup assertion remain with their narrow limits. All 1,258
+source files, labels and immutable image binding match; altering the expected
+<code>realtime-receipt-sql.js</code> hash fails, restoration passes, and recorded builders and
+qualifiers are absent. Image serving was not started by this source qualification.</p>
+<p>Ignored retained identifier: <code>realtime-delivery-efficiency-20261116/</code> under
+<code>externals/work/</code>. Its <code>selected-qualification.json</code>, SHA-256
+<code>d21954be621e478807914cede9cb1f7de7363c717319cba337c0402315d217e5</code>, binds the
+campaign, affected-native/reused-c31 scope, source-bound measurements, controls,
+image and cleanup artifacts; these hashes were verified at records integration.
+The existing local handoff is
+<code>externals/work/HANDOFF-realtime-delivery-efficiency-2026-11-16.md</code>.
+All unentered stream-framing work belongs to the separate stream-native capability;
+no framing experiment or stream-native replacement is included here. Operating owners retain all
+current pins, runs, helpers, report outcomes and cleanup custody. No push, dev
+merge, release, capacity promotion or additional application campaign follows
+from this records update.</p>
+<h2 id="remote-operating-envelope-and-recovery--2026-11-16">Remote operating envelope and recovery — 2026-11-16<a class="headerlink" href="#remote-operating-envelope-and-recovery--2026-11-16" title="Permanent link">&para;</a></h2>
+<p>The completed old-source remote baseline sustained its offered 40 scenario requests/second with exact ordinary accepted/stored counts and selected completed-output/client witnesses. Its status-response p95 missed the provisional one-second experiment threshold. The 180-request/second point failed during repeated nginx worker out-of-memory kills. These observations bound the tested configurations; they do not establish the clinical backend ceiling or a matched rate curve. The selected current-source, one-worker remote measurements remain UNMEASURED until their captures close.</p>
+<h3 id="source-workload-and-evidence">Source, workload and evidence<a class="headerlink" href="#source-workload-and-evidence" title="Permanent link">&para;</a></h3>
+<p>Baseline A/B use core <code>d7a7ff4d513abf364622582f5f2a9147936a6d48</code>, deployment <code>467c804fd459a382bdb0133f552a6d8827614760</code>, image <code>sha256:c4a0c2432cb0f4a1030992cfc9696645aac2e4bb2c8b4c0d03c308e4d7ac5eff</code>, helper <code>9bca8d70fa947dc24bea98bd02e65383ad445606</code> and controller <code>185ccbf54265e7bd8ac7de1fb6605d0e6d219f41</code>. Both have 1,000 tenants, 64 logical viewers, primer concurrency 16, JWT setup concurrency 8 and 310 seconds configured load. Each remote pair has a separate SUT and generator, each advertised 16 vCPU/32 GiB, in the existing SFO3 VPC. The application allocation uses <code>local-qualification-external-pgstream-6cpu-10g-v1</code>. Physical CPU models differ between the two pairs; dedicated vCPUs do not establish exclusive physical hosts.</p>
+<p>The retained evidence identifier is <code>capacity-2026-11-16-operating-envelope</code>. Its ignored manifest is <code>data/capacity/2026-11-16-operating-envelope/retained-evidence.json</code>, SHA-256 <code>f605bc8b1a2fde96b03cb931c6747b768189d94064f7b14ecd54f4777f0813cb</code>. Original summaries, source/configuration, raw SUT/generator archives and exact cleanup receipts remain unchanged outside Git. All 18 referenced files were independently hash-verified during completion intake.</p>
+<table>
+<thead>
+<tr>
+<th>Observation, reproduced</th>
+<th style="text-align: right;">A: 40 RPS, hot1, idle 630s</th>
+<th style="text-align: right;">B: 180 RPS, hot4, idle 30s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scenario attempts / responses</td>
+<td style="text-align: right;">12,405 /12,405</td>
+<td style="text-align: right;">55,345 /5,174</td>
+</tr>
+<tr>
+<td>Transport failures / dropped iterations</td>
+<td style="text-align: right;">0 /0</td>
+<td style="text-align: right;">50,171 /457</td>
+</tr>
+<tr>
+<td>Ordinary accepted writes</td>
+<td style="text-align: right;">3,384</td>
+<td style="text-align: right;">596</td>
+</tr>
+<tr>
+<td>Ordinary write uncertainty</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">14,525</td>
+</tr>
+<tr>
+<td>Stored ordinary counts</td>
+<td style="text-align: right;">1,128 each entries/treatments/devicestatus; exact match</td>
+<td style="text-align: right;">217/230/230; bounded compatibility only</td>
+</tr>
+<tr>
+<td>Selected durable-output/BG-now witnesses</td>
+<td style="text-align: right;">109 pass</td>
+<td style="text-align: right;">UNMEASURED under failing point</td>
+</tr>
+<tr>
+<td>Matching selected client frames</td>
+<td style="text-align: right;">9/9</td>
+<td style="text-align: right;">2/10</td>
+</tr>
+<tr>
+<td>nginx cgroup OOM-kill delta</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">739 within this one point</td>
+</tr>
+</tbody>
+</table>
+<p>A completed the ordinary and sampled clinical checks. Its original controller result remains <code>FAIL_PGCAL_CELL_NONPASS</code>: the discovery summarizer left an initial <code>UNMEASURED</code> verdict on its successful path. A corrected pure-classifier replay yields <code>PARTIAL</code>, with capacity acceptance <code>NOT_GRANTED</code>; it does not relabel the original campaign. B retained its <code>M7_VIEWER_WRITE_COUNTS</code> failure. Its bounded count verdict permits uncertain requests and therefore does not prove accepted equals stored.</p>
+<p>A's selected maximum write-to-frame latency is 312.84 ms. HTTP p95 is 674.26 ms for SGV reads,760.19 ms for SGV writes and 1,068.94 ms for status reads; all shape p99 values are below 2 seconds. The 1-second p95/2-second p99 cutoffs are provisional experiment thresholds, not agreed service objectives. Sampled idle TIME counters increase for all 1,000 tenants, with 1,024 total increments and 1–2 per tenant; this does not prove continuous deadline compliance or all-roster post-writer drain. Load mean CPU is 1.373 cores across roles, including PostgreSQL 0.467/API 0.323/evaluator 0.232/realtime 0.102/pgstream 0.021. Low means alone do not establish latency headroom. Evaluator/PostgreSQL/API cgroup lifetime peaks are 389,472,256/511,942,656/397,840,384 bytes; they are not phase peaks, concurrent summed memory or JavaScript heap.</p>
+<p>B's same nginx container reached 134,483,968 bytes against a 128 MiB limit, with 16 auto workers plus the master and 16,384 connections per worker. The measured OOM-kill counter increased 739 times during one operating point. The excess-worker explanation is read-derived; actual ingress memory failure is reproduced. A/B also differ in hot skew, idle history and hardware, so their rates do not isolate one cause or quantify a worker-count speedup.</p>
+<h3 id="current-candidate-and-focused-repair-boundary">Current candidate and focused repair boundary<a class="headerlink" href="#current-candidate-and-focused-repair-boundary" title="Permanent link">&para;</a></h3>
+<p>Initial selected-source packet preparation used core <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code>, deployment <code>d71c8f3c680b99b0eb937742f24f7d8f9674acee</code>, image <code>sha256:95545b0a13fa5ae0ca507e8c43176b07471e6e30ff329fc4a5275e48624487d7</code> and helper <code>5984279f8c205ccd5f5304411aad31780f23bc04</code>. Existing core functional qualification is reused. Optional <code>NS_EDGE_WORKER_PROCESSES=1</code> preserves the default <code>auto</code> behavior when unset and retains 16,384 connections per worker. Focused changed/restored controls, default-render byte compatibility and pinned native nginx syntax/readback qualify this configuration interface. Actual per-run config, process and quota readback plus a short smoke precede load; a configuration/helper change does not require another application qualification campaign.</p>
+<p>Setup failures retain their actual scope. C refused a relative cleanup-guard path before allocation. C02 allocated then refused the canonical caller's unsupported 2,700-second lifecycle before remote application export; application behavior was UNMEASURED. The actual canonical packet and execution-scope functions now accept the complete 7,200-second plan and reject 2,700 seconds with <code>PGCAL_EXPLICIT_LIFECYCLE</code>. D's allocation was rejected by automatic review before process creation or provider effects; its guard and keys subsequently closed. These records are preserved and do not invalidate A/B's observations.</p>
+<h3 id="cleanup-and-limits">Cleanup and limits<a class="headerlink" href="#cleanup-and-limits" title="Permanent link">&para;</a></h3>
+<p>A/B/C02 and unallocated C/D are independently absent, including their exact provider resources, guards and local keys. Their retained conservative exposure upper bound is USD3.6178394444444444, including ancillary reserves; the invoice is UNMEASURED. The single campaign ledger remains under the original USD16 additional ceiling and USD2/hour aggregate limit, with independent cleanup due by 20:00 Pacific November 16. Future points have separate reservations and cleanup receipts; allowance is not measured spend.</p>
+<p>The selected-source local recovery attempt retained a useful partial window before its planned fault. It used 37 tenants/16 viewers/20 scenario RPS on the shared local host. Actual native nginx syntax passed with 1 worker, 16,384 connections, 125,000,000 NanoCPUs and 134,217,728 memory bytes. Before any restart, the helper refused <code>M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE</code> because one of 37 ready/admitted evaluator owners had cumulative <code>failedCompletions=1</code>, alongside 9 completed acquisitions and no current error code. It had already captured 616 scenario attempts,44 selected stored/completed-output probes across 37 tenants and 23/23 matching stock-client frames. Original <code>FAILED_PARTIAL</code>, counter cause UNMEASURED and no injected fault remain unchanged. Exact local project resources and same-birth guards were independently absent at 22:45:35 UTC. Originals and their hashes are retained under <code>/tmp/capacity-local-completion-20261116/</code>, including <code>failure-diagnostic.json</code>.</p>
+<p>An existing real operation-window test on the exact 5e source reproduces the counter-semantic mismatch: changing configuration identity fences a stale completion correctly, grants no completed-time credit, and increments <code>failedCompletions</code>. The counter combines uncredited attempts and caught errors; current ready/null-code state cannot reconstruct a past cause. Future discovery collection therefore records cumulative and interval rejected attempts with cause attribution UNMEASURED while actual current errors, authority/restore, typed clinical output, durable coverage, pending/due obligations, counter rewinds and client frames retain their checks. Legacy strict policy and original results retain their attribution. This measurement repair does not require an application rebuild or another functional campaign.</p>
+<p>A separate prospective local capture completed the planned evaluator restart under ordinary REST demand. It used the same qualified5e/d71/image955, helper <code>b6c5ba0b5749ad088b2c559d30091a2fd1a7f248</code>, instrument <code>968b10584b77ab0da2db9e02f8fe092cb65aec52c6d9c9234118bcf63bedd51b</code>,37tenants/16viewers/20RPS and90seconds of configured load on the shared host. The REST generator stayed active through the restart and after recovery; no pause or cancellation was issued. Across the window,1,803scenario requests received responses with zero HTTP/transport failures or drops. All492ordinary accepted writes were stored,164per collection, with zero uncertainty.</p>
+<p>The evaluator restart command took528ms. Two observations at15second cadence confirmed fresh acquisition for37/37tenants in the changed runtime. The sampled authority/restore bracket and pre-restart accepted targets passed. Selected clinical proof contains103stored/completed-BGnow witnesses across37tenants,48/48matching frames and27post-restart viewed witnesses. Frame p95/max is452/2,492ms; request-to-evaluation p95/max is1,214/3,485ms. These selected distributions include the restart case and are not all-write latency distributions.32probe requests occurred between restart start and the confirming recovery observation; exact ordinary per-request timestamps within the outage remain UNMEASURED.</p>
+<p>The capture remains <code>COMPLETED_PARTIAL</code>, with scoped recoveryPASS and capacity acceptance <code>NOT_GRANTED</code>. Its one-second idle did not exercise nominal TIME demand. Final all-roster drain remained <code>UNMEASURED/M7_DRAIN_COLLECTION_REFUSED</code>: that optional wrapper expected <code>load/evaluator-progress.json</code>, while declared recovery emits a separate durable bracket. The useful completed acquisition, accepted/stored and client observations remain valid within their scope. Exact project containers/networks/volumes and same-birth guard were independently absent, then parent-reverified at23:07:52UTC. Retained identifier <code>capacity-local-completion-20261116</code> has compact copies under <code>data/capacity/2026-11-16-operating-envelope/local-recovery03/</code>; summary SHA-256 <code>b5f4cef3598dd880b9c6002829cc0848d7d74cb1a3d38b9bd8c09dd3e4380d1c</code>, manifest SHA-256 <code>072ff2fc2cff0ad71b42073da46d1ac678688e8fcfadc892b4202466b7563c5c</code>. All20raw primary artifacts were independently hash-verified; originals remain unchanged in <code>/tmp/capacity-local-completion-20261116/</code>.</p>
+<p>Full clinical equivalence, remote restart/recovery, a matched passing/failing rate bracket and the clinical backend maximum remain UNMEASURED. Accepted/stored writes, selected completed-output witnesses and transport frames remain separate claims. No result here grants capacity acceptance or a 10,000-tenant operating guarantee.</p>
+<h2 id="coalesced-snapshot-alternative-qualification-disposition--2026-11-16">Coalesced snapshot alternative: qualification disposition — 2026-11-16<a class="headerlink" href="#coalesced-snapshot-alternative-qualification-disposition--2026-11-16" title="Permanent link">&para;</a></h2>
+<p><strong>Reproduced: not qualified and not adopted.</strong> Core <code>269851284f78d2ce5322915cb86963feda13b430</code> with deployment <code>92227d9d4853ed75c5f1ea10c0ba00f03bd2dac5</code> passed eight regular/browser tiers; the registered native campaign recorded 970 passing, three pending and eight failing. Read-derived failure classification includes retired staging/clock assertions and a migration setup failure; behavior beyond those failures remains UNMEASURED. Separate core <code>4e438da730a646766c50fd456abe6818ca4af5f6</code> fixes raw-delivery recovery after an uncertain receipt COMMIT while the clinical snapshot refuses: 39 focused source checks and one native check pass, with no full campaign on that repair head. Both final prchecks pass on unchanged clean heads; recorded cleanup confirms original tier processes and native resources absent. No image qualification or operating repin occurred. The retained disposition is <code>/mnt/data/nightscout-workspace/artifacts/stream-transactions-20261116/selected-qualification.json</code>, SHA-256 <code>59e0d112a41d049d5fa6c800fcb19f9015511446c9dc2e34dd9105b302b6b6cf</code>; all pinned artifacts were independently rehashed. Exact incremental snapshot-to-stream handover without routine dirty-window rereads remains unimplemented with the dedicated handover owner. Existing qualified incremental sources retain their original scope; later semantic assertions require qualification on the coherent replacement.</p>
+<h2 id="single-evaluator-accepted-input-profile--2026-11-16">Single-evaluator accepted-input profile — 2026-11-16<a class="headerlink" href="#single-evaluator-accepted-input-profile--2026-11-16" title="Permanent link">&para;</a></h2>
+<p><strong>Reproduced disposition: retain qualified core <code>c1173eab7c4fea1270eb585aff5961142849d048</code>; reject experimental <code>10eebc005bfd11e65104d84de729a4b480e4f687</code>.</strong> A faster isolated capture primitive did not reduce evaluator cost consistently and regressed quiet work. Actual evaluator, views, in-memory projection readers and digest ran on synthetic 24/48-hour histories, with three matched repetitions of 120 cycles per work kind, Node 22.23.4 and a 512 MiB V8 heap bound on a shared host. Plain comparisons exclude stage/CPU/allocation profilers; they retain GC observation and per-cycle memory sampling. Time-only work calls the evaluator directly and bypasses scheduling.</p>
+<table>
+<thead>
+<tr>
+<th>Work kind</th>
+<th style="text-align: right;">c117 CPU ms/cycle, 24h</th>
+<th style="text-align: right;">Candidate, 24h</th>
+<th style="text-align: right;">c117, 48h</th>
+<th style="text-align: right;">Candidate, 48h</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Time-only, no new input</td>
+<td style="text-align: right;">8.419</td>
+<td style="text-align: right;">9.999</td>
+<td style="text-align: right;">9.701</td>
+<td style="text-align: right;">10.419</td>
+</tr>
+<tr>
+<td>Unchanged accepted input</td>
+<td style="text-align: right;">7.333</td>
+<td style="text-align: right;">8.030</td>
+<td style="text-align: right;">8.462</td>
+<td style="text-align: right;">8.896</td>
+</tr>
+<tr>
+<td>Changed accepted input</td>
+<td style="text-align: right;">31.602</td>
+<td style="text-align: right;">32.184</td>
+<td style="text-align: right;">44.647</td>
+<td style="text-align: right;">43.686</td>
+</tr>
+</tbody>
+</table>
+<p>These are medians independently recomputed from source-bound captures. Full clinical/frame/due result traces match for every tested work kind and both histories. The focused source suite passes 33 tests; shallow-copy and whole-output-reuse controls fail, then pass after restoration. No full/native/browser campaign was run for the rejected candidate. SQL, whole-history statistics scans, scheduling, pool/lock waits and end-to-end capacity remain UNMEASURED; the component harness supplies synthetic statistics and rejects SQL. Initial retention-edge stress captures remain separate from ordinary quiet-copy measurements.</p>
+<p>Retained evidence: <code>/mnt/data/nightscout-workspace/artifacts/single-evaluator-efficiency/manifest.json</code>, SHA-256 <code>26cbc49be4391691445a6a9fc0acf8d0800a94929da8ea35e29d1a11b1743428</code>, covering 160 unchanged artifacts. All hashes and matched source-module identities were independently verified. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/tenancy/perf-evaluator/accepted-input-profile.cjs">finite source-bound discriminator</a> separates component cost from operating acceptance; its controls reject shared-frame reuse and verify odd/even cycle counts. Any further optimization needs a distinct measured hypothesis that preserves cheap quiet copies. Operating measurements and exact incremental handover remain with their existing owners; no application change or live pin is adopted.</p>
+<h2 id="local-matched-rates-and-recovery--2026-11-16">Local matched rates and recovery — 2026-11-16<a class="headerlink" href="#local-matched-rates-and-recovery--2026-11-16" title="Permanent link">&para;</a></h2>
+<p><strong>Reproduced bounded observations; no capacity acceptance.</strong> The qualified 5e baseline and c31 amplification candidate each ran a fresh authored seed, then 120 and 180 offered requests/s on one retained fixture. Each point used 1,000 tenants, 64 logical viewers, hot factor 1, seven REST shapes and 310 seconds of load. Frozen helper <code>7d5487038530042c97b76be5913338a2cf445b35</code> used a 2-CPU/4-GiB driver. PostgreSQL remained limited to 1 CPU, API to 0.5 CPU, evaluator to 1 CPU and realtime to 0.5 CPU; ingress used one worker. These are experimental allocations, not application sizing requirements.</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th style="text-align: right;">Offered requests/s</th>
+<th style="text-align: right;">HTTP failures / requests including setup</th>
+<th style="text-align: right;">Dropped iterations</th>
+<th style="text-align: right;">Ordinary acknowledged = stored</th>
+<th style="text-align: right;">Uncertain writes</th>
+<th style="text-align: right;">Selected frames</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5e baseline</td>
+<td style="text-align: right;">120.0</td>
+<td style="text-align: right;">8,625 / 36,862</td>
+<td style="text-align: right;">1,339</td>
+<td style="text-align: right;">6,716</td>
+<td style="text-align: right;">3,001</td>
+<td style="text-align: right;">7/10</td>
+</tr>
+<tr>
+<td>5e baseline</td>
+<td style="text-align: right;">180.0</td>
+<td style="text-align: right;">27,523 / 55,238</td>
+<td style="text-align: right;">1,564</td>
+<td style="text-align: right;">6,359</td>
+<td style="text-align: right;">8,415</td>
+<td style="text-align: right;">7/10</td>
+</tr>
+<tr>
+<td>c31 candidate</td>
+<td style="text-align: right;">120.0</td>
+<td style="text-align: right;">9,541 / 36,893</td>
+<td style="text-align: right;">1,309</td>
+<td style="text-align: right;">6,404</td>
+<td style="text-align: right;">3,321</td>
+<td style="text-align: right;">8/10</td>
+</tr>
+<tr>
+<td>c31 candidate</td>
+<td style="text-align: right;">180.0</td>
+<td style="text-align: right;">28,454 / 55,294</td>
+<td style="text-align: right;">1,508</td>
+<td style="text-align: right;">5,822</td>
+<td style="text-align: right;">8,960</td>
+<td style="text-align: right;">7/10</td>
+</tr>
+<tr>
+<td>c31 candidate</td>
+<td style="text-align: right;">40.0</td>
+<td style="text-align: right;">0 / 13,405</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3,384</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10/10</td>
+</tr>
+</tbody>
+</table>
+<p>The four high-rate points retain <code>FAILED_PARTIAL</code> and <code>M7_VIEWER_WRITE_COUNTS</code>. They show no successful throughput gain for c31 at these limits. All five post-writer fixed targets completed for 1,000/1,000 tenants with no pending target; this proves eventual captured-input coverage, not a clinical deadline or all-write frame latency. The later c31 40-RPS point on accumulated history is <code>OBSERVED</code>/native <code>MEASURED</code>: zero HTTP/transport failures or drops, 3,384 acknowledged and stored writes, 114 selected durable clinical witnesses and 10/10 selected frames (native frame p95/max about 98 ms). It is a useful bounded lower-load witness, not a fresh matched rate curve or a capacity promotion.</p>
+<p>Local role captures show substantial API/PostgreSQL quota throttling without an OOM delta in the captured stable-container brackets. This supports resource sensitivity, not a proven individual cause of each HTTP error. Exact status/error classes were not retained by this helper. Some sampled enabled persisted due deadlines lagged PostgreSQL wall time even when captured writes had completed; current admission/clock qualification and cause remain incomplete. Shared-host activity, run order, different startup offsets and differing accepted/refused history limit causal comparisons.</p>
+<p>A separate c31 recovery case used 37 tenants, 16 viewers, 20 requests/s for 90 seconds and a planned evaluator restart. Ordinary REST remained active through the restart and observed recovery: 1,803 attempts/responses, zero HTTP/transport failures or drops, 492 acknowledged/stored writes and no uncertain ordinary writes. Fresh owned acquisition was observed for 37/37 tenants; 104 selected clinical witnesses and 48/48 frames include 25 post-restart viewed witnesses. The restart command took 577 ms; recovery sampling is not a precise service recovery latency. The pipeline retains <code>COMPLETED_PARTIAL</code>: idle opportunity and final all-roster drain remain <code>UNMEASURED</code> (<code>M7_DRAIN_COLLECTION_REFUSED</code>).</p>
+<p>Remote R01 (5e) and R02 (c31), both 1,000 tenants/64 viewers/120 offered requests/s at the original small allocations, stopped before timed REST. Both retained explicit <code>EVALUATOR_CLINICAL_PROGRESS_STALLED</code>, with successful one-worker ingress and authenticated API reads before the stop. These are failed clinical/pretraffic observations, not timed capacity results or proof that REST failed. The cause remains unknown. Parent checks independently verify both exact provider namespaces, keys, original guards and observer/controller births absent. Local baseline, c31 comparison and c31 recovery resources are independently absent too.</p>
+<p>Retained evidence: <code>capacity-streaming-completion-20261116</code>, under <code>/mnt/data/nightscout-workspace/artifacts/streaming-finish-20261116/</code>. The closed local summary is <code>closed-operating-batch/summary.json</code>, SHA-256 <code>2e87b0b54ea640f156a4fc528a4b34415b834ceb8144890fe63eadb6eb3b2ed9</code>; its manifest binds 57 selected originals. Remote closeout is <code>/mnt/data/nightscout-workspace/artifacts/capacity-scaling-successor-20261116/first-wave-closeout.json</code>, SHA-256 <code>df5ee3ed0c3f74cc661e4eb325f21434009bd0c127b3fb27c756f5cc5ccc276d</code>. Full logs, configurations, per-tenant oracles and archives remain private and unchanged. The existing local lane handoff remains <code>externals/work/HANDOFF-capacity-2026-11-16.md</code>.</p>
+<h2 id="remote-comparison-stopped-by-maintainer--2026-11-16">Remote comparison stopped by maintainer — 2026-11-16<a class="headerlink" href="#remote-comparison-stopped-by-maintainer--2026-11-16" title="Permanent link">&para;</a></h2>
+<p>R03 (5e baseline) and R04 (c31 candidate), the matched 1,000-tenant/64-viewer/180-offered-requests/s points with larger finite allocations, entered their original detached lifecycles. Source/image transfer and preparation completed; both controllers reached application deployment. The maintainer then stopped remote testing. The original cleanup guards deleted both exact provider namespaces at 03:14 UTC on 2026-11-17. Fresh parent inventories and host checks independently confirm all owned droplets, firewalls, provider/local keys, tags and recorded process births absent. No further remote tests are authorized.</p>
+<p>These stopped points supply no timed REST comparison. Effective API/PostgreSQL/driver container limits, clinical/frame outcomes, sustained throttling/OOM and capacity remain <strong>UNMEASURED</strong>. Declared allocations and actual dedicated-host hardware are preparation evidence only. Existing failed/partial observations above keep their verdicts. Retained originals remain under <code>/mnt/data/nightscout-workspace/artifacts/capacity-scaling-successor-20261116/proposed-R03</code> and <code>proposed-R04</code>; independent final absence receipts are under <code>/mnt/data/nightscout-workspace/artifacts/streaming-finish-20261116/provider-closeout-wave2/</code>. The private budget ledger records zero paid resources and zero reservations; charges remain unmeasured.</p>
 
 
 

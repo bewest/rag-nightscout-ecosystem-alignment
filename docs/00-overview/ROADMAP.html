@@ -2416,7 +2416,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>dd9621403</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2753,9 +2753,15 @@ including bounded clinical state and independent raw delivery. The
 owns these mechanisms; the same operating report owns separately attributed
 capacity observations. Current tests may proceed independently of optional
 multihost/platform work under the <a href="../30-design/tenancy/production-critical-path.html">production sequencing</a>.
-The next work is to establish useful workload/resource and recovery limits on
-qualified sources, compare the <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">qualified amplification/retirement candidate</a>,
-and close the chosen deployment's trust and admission criteria. Performance
+The current priority is <a href="../30-design/tenancy/evaluator-realtime-communication.html#single-evaluator-efficiency-plan">single-evaluator efficiency</a>:
+complete exact incremental snapshot-to-stream handover and attribute remaining
+CPU, allocation, encoding, statistics and SQL cost in independently owned lanes.
+The plan owns their order and integration boundaries. Preserve the horizontal
+execution seam; additional workers follow measured need and qualification.
+The coalesced snapshot alternative remains unqualified and is not adopted by
+this priority. The operating owner then establishes useful workload/resource
+and recovery limits on the selected coherent source. Deployment trust and
+admission criteria retain their own acceptance gates. Performance
 experiments and source work can proceed concurrently without repinning entered
 runs. The generated table retains queue dependencies; each state remains a claim
 until its gate measures it. This documentation change promotes no milestone. Multi-host

@@ -2806,6 +2806,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#single-worker-priority-and-component-regrouping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-worker priority and component regrouping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#scale-envelopes-and-fleet-planning" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5703,6 +5714,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#single-worker-priority-and-component-regrouping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single-worker priority and component regrouping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#scale-envelopes-and-fleet-planning" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5758,11 +5780,11 @@
 
 
 <h1 id="runtime-topology-zones-components-and-private-apis">Runtime topology: zones, components and private APIs<a class="headerlink" href="#runtime-topology-zones-components-and-private-apis" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>6816f433f</code>.</em></p>
 <p><em>Living contributor-facing architecture guide, reconciled 2026-11-16. Structure is
 </em><em>read-derived</em><em>; measured acceptance retains its exact source in the linked
 records. The <a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API work plan</a> owns remaining
-implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/queue/work-queue.yaml">queue</a>
+implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/queue/work-queue.yaml">queue</a>
 owns claimed work state. A diagram is not deployment or capacity acceptance.</em></p>
 <h2 id="reuse-the-components-across-profiles">Reuse the components across profiles<a class="headerlink" href="#reuse-the-components-across-profiles" title="Permanent link">&para;</a></h2>
 <p>A deployment profile selects where the same roles run and how they share work.
@@ -5941,7 +5963,7 @@ has separate functional qualification; matched operating evidence remains separa
 <h3 id="historical-accepted-one-host-reference">Historical accepted one-host reference<a class="headerlink" href="#historical-accepted-one-host-reference" title="Permanent link">&para;</a></h3>
 <p><img alt="Historical accepted one-host reference" src="diagrams/accepted-one-host-topology.svg" /></p>
 <p><a href="diagrams/accepted-one-host-topology.png">PNG preview</a> · <a href="diagrams/accepted-one-host-topology.svg">SVG source</a></p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
 measures synthetic UI/socket/ordinary restore; the
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a>
 retains its separate-role restore and restart scope. The reference publishes lab
@@ -5953,7 +5975,7 @@ OIDC, network transport, scaling or production measurements.</p>
 <p>The plate illustrates the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">adopted listener composition</a>.
 In this composition, each process that serves private contracts has one private listener.
 Explicit contract modules select its operations. The <a href="../../../reports/tenancy/internal-listener-2026-11-10/index.html">listener evidence</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">shared-transport acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">shared-transport acceptance</a>
 retain their executed heads and controls. Their source-scoped passes do not qualify
 every network, topology or later candidate. Current integration/publication belongs
 in <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>, not
@@ -6086,6 +6108,21 @@ credential-renewal system or mandatory gateway is implied by these diagrams.</p>
 </tr>
 </tbody>
 </table>
+<h3 id="single-worker-priority-and-component-regrouping">Single-worker priority and component regrouping<a class="headerlink" href="#single-worker-priority-and-component-regrouping" title="Permanent link">&para;</a></h3>
+<p>The maintainer's 2026-11-16 execution priority is single-evaluator efficiency,
+while preserving future tenant-partitioned execution. The
+<a href="evaluator-realtime-communication.html#single-evaluator-efficiency-plan">single-evaluator efficiency plan</a>
+owns keep/replace/regroup choices, ongoing-lane boundaries and ordered
+measurements. It reconciles REST's canonical storage service, evaluator clinical
+completion and realtime authorized delivery. Process placement does not change
+those responsibilities.</p>
+<p>The plan retains pgstream and compares the qualified incremental input path with
+the source lane's unqualified coalesced snapshot alternative. It adopts neither
+a performance winner nor a new production profile. Intake, clinical execution
+and delivery need separate bounded work budgets even when co-located. Current
+membership/assignment semantics remain in the <a href="#evaluator-inspection-and-workload-ownership">ownership inventory</a>;
+additional evaluator replicas and fleet machinery follow measured need and their
+own qualification, not this documentation change.</p>
 <h3 id="scale-envelopes-and-fleet-planning">Scale envelopes and fleet planning<a class="headerlink" href="#scale-envelopes-and-fleet-planning" title="Permanent link">&para;</a></h3>
 <p><em>Post-baseline planning clarification, 2026-11-12; evidence below is UNMEASURED.
 Cell/fleet arrangement is </em><em>PROPOSED</em><em>, requiring explicit maintainer adoption.
@@ -6182,7 +6219,7 @@ The <a href="deployment-bindings-and-public-names.html#configurable-transports-a
 owns binding responsibilities. The <a href="production-critical-path.html">production guide</a> explains admission order.
 The queue and release records own current state.</p>
 <p>Figures are generated by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
 Use <code>--png</code> to render previews and <code>--check</code> to detect stale vector outputs. Review
 the figures with contract/listener or deployment changes. Rendering checks
 freshness and layout, not application runtime acceptance.</p>
