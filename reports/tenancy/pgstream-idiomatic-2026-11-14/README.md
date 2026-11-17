@@ -2716,3 +2716,62 @@ cost remain **UNMEASURED by this source qualification**. Capacity's owner contro
 fresh adoption/comparison and existing run cleanup; no entered run is repinned or
 relabeled. Source qualification does not admit HA, fleet, provider delivery or a
 production workload, and these records require no new application campaign.
+
+
+## Realtime receipt write and planning cost — 2026-11-16
+
+**Reproduced, source-scoped qualification; local and unpushed.** Core
+`c1173eab7c4fea1270eb585aff5961142849d048`, unchanged deployment
+`92227d9d4853ed75c5f1ea10c0ba00f03bd2dac5`, image
+`sha256:89e829cb4086d01c602f49a8730394772e64b88f38640f448c0f1569e6a3bd4f`
+qualify a bounded receipt-storage change. Same-owner duplicate/older hints confirm
+the durable row under lock without a physical tuple rewrite. Unique revisions
+and changed owners retain the UPDATE path. Metadata policy, confirmed COMMIT,
+concurrent-owner refusal and retry deadlines remain. Four fixed statements per
+configured namespace/mode reuse plans on each pool connection; names are not
+allocated per tenant or revision.
+
+Exact c31/c117 module hashes in the retained measurement match the git objects.
+Synthetic PostgreSQL 16.16/Node 24.22.1 measurements use 32 direct receipt calls
+per scenario on a shared host:
+
+| Scenario | Physical rewrites, c31 → c117 | WAL bytes, c31 → c117 | Observed SQL planning events, c31 → c117 |
+|---|---:|---:|---:|
+| Duplicate pending hints | 32 → 0 | 3,976 → 3,072 | 32 → 0 after plan warmup |
+| Unique hints | 32 → 32 | 10,800 → 10,800 | 32 → 5 on the initial unique scenario |
+
+Each of those scenarios retains 32 transactions, 96 statements and 4,384 input
+parameter bytes on both sides. The first lock-first prototype was rejected after
+its unique-write WAL overhead was measured. These final primitive results establish
+neither the operating duplicate fraction nor throughput or frame-latency gain.
+The historical same-stored-ID observation lacks an exact output/delivery revision;
+its latency cause remains UNKNOWN.
+
+All eight regular/browser tiers pass on c117. The initial native launch refused a
+missing fixture configuration companion before execution; those failed originals
+remain, and completed regular/browser tiers were preserved. The resumed six-suite
+affected-native selection passes 35 checks, zero pending/failures; duplicate
+formatted totals are counted once. Unchanged native capabilities retain their
+original c31 qualification through its immutable receipt, not a fresh full-native
+pass on c117. Final prcheck passes with `official/dev`
+`4a482627bfdafb1fef8dcbe0ac6c484811cae563` contained and source unchanged.
+
+Independent exact recorded-resource absence and an actual active-listener
+red/restored availability control pass. Original bind-only refusal and brittle
+case-sensitive cleanup assertion remain with their narrow limits. All 1,258
+source files, labels and immutable image binding match; altering the expected
+`realtime-receipt-sql.js` hash fails, restoration passes, and recorded builders and
+qualifiers are absent. Image serving was not started by this source qualification.
+
+Ignored retained identifier: `realtime-delivery-efficiency-20261116/` under
+`externals/work/`. Its `selected-qualification.json`, SHA-256
+`d21954be621e478807914cede9cb1f7de7363c717319cba337c0402315d217e5`, binds the
+campaign, affected-native/reused-c31 scope, source-bound measurements, controls,
+image and cleanup artifacts; these hashes were verified at records integration.
+The existing local handoff is
+`externals/work/HANDOFF-realtime-delivery-efficiency-2026-11-16.md`.
+All unentered stream-framing work belongs to the separate stream-native capability;
+no framing experiment or stream-native replacement is included here. Operating owners retain all
+current pins, runs, helpers, report outcomes and cleanup custody. No push, dev
+merge, release, capacity promotion or additional application campaign follows
+from this records update.
