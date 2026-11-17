@@ -53,6 +53,134 @@ Healthy idle has no hot full-roster polling or per-event catalogue screening.
 | Optional path | The separate selected-intake materializer remains unqualified and is explicitly refused before effects by the public evaluator configuration. It is not the default path or a prerequisite. |
 | Qualification | Focused default native tests include coherent corrections/deletes, process recovery, due work without a write, held-neighbor progress and unchanged warm snapshot/statistics query counts. Source-scoped controls are in the [existing discriminator harness](../../../tools/mt-bench/m7-joined/README.md#stream-materializer-discriminators). The [current integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16) owns selected-source qualification; operating measurements retain separate attribution. |
 
+## Single-evaluator efficiency plan
+
+*Execution priority requested by the maintainer, 2026-11-16: improve one evaluator
+before expanding evaluator replication, while preserving a path to the
+[100,000-plus-tenant fleet](runtime-topology.md#scale-envelopes-and-fleet-planning).
+This is a plan, not a capacity qualification. Mechanism assessments are
+**read-derived** from qualified core `c31c6e0b69a2a2f2a5320b9e4d32195f1b3e1878`
+and receipt follow-on `c1173eab7c4fea1270eb585aff5961142849d048`, with deployment
+`92227d9d4853ed75c5f1ea10c0ba00f03bd2dac5`. Linked records own reproduced results.
+Proposed alternatives below are not selected by this plan.*
+
+The objective is more correct clinical completions per unit of evaluator CPU,
+memory and database work, within declared input-to-output freshness, clinical
+clock deadlines and recovery bounds. Count source writes, accepted input,
+completed clinical opportunities, connected viewers and delivered frames
+separately. An unchanged frame can still cover new input; a due cycle can be
+required without a source write. Fleet population is not a claim that one
+process or database serves that population.
+
+### Keep, replace and regroup
+
+| Responsibility or mechanism | Disposition and boundary |
+|---|---|
+| Shared committed-change detection | **Keep pgstream** as the selected transport. Discover work once rather than restore per-worker/per-tenant polling. One receiver and one replication slot do not distribute clinical execution by themselves. |
+| Durable acceptance, completed coverage and pending work | **Keep the distinct outcomes.** Acknowledge only recoverable input; completion covers only the input/configuration actually evaluated. Newer input remains pending. Reuse existing durable stores rather than add a broker or general event log. |
+| Clinically sufficient input and source truth | **Keep explicit row/byte bounds and consistent recovery.** Clinical windows, historical exceptions, typed identity, ordering and extension fields remain required. Source history is authoritative; a clinical cache is replaceable. Incremental windows versus coalesced snapshot rebuilds are a measured design comparison, not a reason to narrow clinical inputs. |
+| Clinical scheduling | **Regroup under the existing bounded scheduler:** startup, accepted pending work, recovery and actual due deadlines. Keep serial work within a tenant, progress for healthy neighbors, tenant-local retry backoff and bounded concurrency. Do not add an independent retry owner for the same obligation. |
+| Clinical result and browser frame | **Keep one clinical interpretation.** Evaluator produces both using shared engine primitives. Realtime consumes completed output and does not reacquire clinical history or run a second clinical projection. Remove redundant copies only with equivalent clinical/client output and recovery controls. |
+| Transaction completeness and internal progress | **Evaluate replacing clock-event sealing** using the exact connector contract or a coherent invalidation/snapshot alternative. See [transaction coverage](#transaction-coverage-and-mechanism-retirement). Native WAL semantics alone do not qualify the webhook boundary. Public history and insertion ordering retain their separate contracts. |
+| Receipt SQL, JSONB envelopes and encoding | **Optimize physical work, preserve semantics.** A mandatory row rewrite, SQL shape, RAM generation or acquisition/TIME label is not a product obligation. Retire displaced executable code and mechanism-only assertions together, with semantic controls. Acknowledged input must never exist only in RAM. |
+| Authority, activity, ownership, schema and restore checks | **Keep their guarantees; consolidate equivalent reads.** Batch addressed trusted metadata work and keep current effect/completion fences. Do not replace current authorization with a cached prior allow decision, or run expensive catalogue admission for every event without a demonstrated requirement. |
+| Completed frames, raw mutations and alarms | **Keep different delivery contracts.** Current display frames may supersede older frames; raw subscriptions preserve required operation order or explicitly lose continuity; alarms retain stable intents, suppression, attempts and retry deadlines. Shared helpers must not erase these distinctions. |
+| Optional membership, placement and process topology | **Keep outside the unpartitioned hot path.** A standalone evaluator owns its configured eligible tenants without fabricated membership leases. Existing optional partitioning remains available. Additional workers, threads, services and pool connections need a measured reason. |
+
+The selected design already separates input acceptance, clinical completion and
+external effects. Co-locating code may remove a network hop; it does not remove
+these durable boundaries. Conversely, different logical responsibilities do not
+require different processes. Bound intake, clinical and delivery work so a slow
+provider, viewer burst or expensive tenant cannot exhaust the whole worker.
+
+### Reconcile evaluator, realtime and REST
+
+| Component | Owns | Efficiency and compatibility rule |
+|---|---|---|
+| REST API | Canonical storage reads/writes, request authorization and versioned adapters | Ordinary authorized storage operations remain independent of clinical readiness while storage/backlog policy permits them. Writes do not wait for evaluation or viewer delivery. Preserve truthful write uncertainty and supported history. |
+| Evaluator | Background clinical interpretation, covered input, completed frame and next due | Viewer count does not multiply clinical calculation. A source write, settings change or clinical deadline can create work without a viewer. |
+| Realtime | Connections, subscriptions, currently authorized frame/raw delivery and socket forwarding | Use evaluator output for the current clinical display. Forward original mutation/acknowledgement authority to the canonical API handler. No parallel clinical source acquisition. |
+| Notification producer and delivery | Durable alarm identity, suppression, attempt state and retries | Keep external I/O outside stream acknowledgement and clinical execution slots. One retry responsibility per obligation; provider/browser handoff is not proof of human receipt. |
+
+Reuse input-selection, normalization and calculation primitives for REST derived
+endpoints. Each endpoint retains its stated consistency/freshness contract; do
+not silently substitute a retained evaluator frame. Reuse mathematical credential
+proofs where qualified, while checking current claims and database authority as
+required. API replicas and realtime placement keep their existing independent
+ownership and maintenance contracts.
+
+### Existing work and integration boundaries
+
+The canonical [runtime qualification](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16),
+[amplification retirement](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16)
+and [receipt efficiency](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#realtime-receipt-write-and-planning-cost--2026-11-16)
+retain their exact source/image and test scope. They do not establish a matched
+operating improvement on later sources.
+
+| Work | Already covered or currently owned | Next boundary |
+|---|---|---|
+| Qualified runtime and bounded state | Incremental warm input, consistent recovery, one clinical scheduler, atomic completion, independent bounded raw tail, output-only realtime and stock-client qualification | Preserve and reuse unchanged source-scoped qualification. Do not rebuild a second clinical cache in realtime. |
+| Qualified amplification and receipt changes | Subscription caching, normalized replay without redundant updates, addressed output delivery with lost-wake recovery, executable untyped-runtime retirement, duplicate realtime receipt rewrite avoidance and bounded prepared statements | Measure residual unique-event work and the actual operating duplicate fraction; primitive savings are not a frame-latency gain. |
+| Incremental snapshot-to-stream handover | The dedicated handover source owner owns exact snapshot/stream overlap, connector integration and internal progress while preserving incremental warm processing without routine window rereads. The predecessor keeps its frozen coalesced dirty/snapshot qualification and bounded lost-wake repair. | Handover owner completes its coherent correctness capability. The fallback remains an unqualified comparison, not the selected replacement. The profiling continuation does not repeat connector/handover proof or implement another intake path. |
+| Operating and HTTP/delivery diagnostics | Existing operating owner retains runs, helpers, pins, budget and cleanup. Existing diagnostics work provides bounded HTTP classification, partial captures and revision-correlation facilities. | Reuse released instruments and inspect their remaining coverage. Exact cross-process/raw-delivery correlation and sustained instrument overhead require evidence; do not create a competing telemetry framework. |
+| Single-evaluator efficiency continuation | Fresh-context owner owns the matched local CPU/allocation/serialization/statistics/SQL profile and an evidence-backed bottleneck or retain decision; any subsequent independent repair needs an explicit source boundary | Reuse the operating owner's existing evidence and close an uncovered profiling gap. Own isolated synthetic resources; do not duplicate operating campaigns or connector/intake/handover implementation, or adopt another lane's entered experiment. Records integration remains with the current documentation owner. |
+
+The predecessor's unqualified snapshot candidate is a deliberate trade: less internal staging
+and clock coupling, but source rereads on dirty acquisitions. A dirty burst may
+coalesce many receipts into one snapshot; steady writes or large required windows
+may make those reads expensive. The selected incremental contract above remains
+the qualified reference. The active handover lane aims to preserve incremental
+warm work; adoption of any alternative still needs source acceptance and an
+explicit decision.
+
+### Measurements and implementation order
+
+Use the existing runner and bounded diagnostics. Freeze source/deployment/image,
+instrument, workload, CPU/memory limits and database history for each comparison.
+Retain originals outside Git and report shared-host interference. Start with the
+smallest discriminator that can select a design; a broad capacity sweep is not
+the prerequisite for isolated synthetic profiling. An independently owned branch
+experiment may start before final source acceptance; label its unqualified source
+and scope. Source-owner release means permission to use the named checkpoint, not
+a requirement to wait for every acceptance tier before collecting evidence.
+
+| Priority / owner | Measurement and decision | Required discriminator and exit criterion |
+|---|---|---|
+| **1 — efficiency continuation, using released diagnostic helpers** | Attribute source commit → durable acceptance → queue wait → input acquisition → clinical calculation → output commit → realtime selection/send → client callback. Record process-local durations; use exact revisions and process incarnations for joins. Separately record intake backlog, accepted-versus-completed lag and overdue clinical work. | A delayed stage must appear in that stage; missing/corrupt revision links remain UNMEASURED. Reconcile accepted writes to independent storage and completed opportunities to output. Select the dominant supported cost, rather than infer it from HTTP success or a late frame alone. |
+| **2 — efficiency continuation; connector changes remain with source owner** | Compare unique and replayed input: receipt transactions, statements, tuple rewrites, parameter/result bytes, lock wait, WAL and recovery. Compare the released coalesced snapshot candidate with incremental input at equal clinical output. Vary burst/coalescing, transaction size and required history size. | Preserve complete clinical transactions, same-LSN distinct rows, receipt-before-ACK, uncertain-COMMIT replay, input arriving during evaluation/snapshot and recovery. Report snapshot queries/WAL as well as intake savings. Choose a mechanism only when total cost and freshness justify it; batching is conditional on a real bounded transport/ACK contract. |
+| **3 — efficiency continuation** | Profile CPU and allocation/GC across cache application, decoding/encoding/freezing, view materialization, engine execution, digest and frame creation. Measure resident/peak memory, cache rebuild frequency and authoritative whole-history statistics queries. | Hold output and clinical windows equal. First reuse existing data and calculation paths; change representation or statistics maintenance only for a measured cost. Deletes/corrections, settings expansion, historical fallback, expiry, restore and byte accounting remain correct. A cached-window byte sum is not whole-history storage size. |
+| **4 — efficiency continuation; operating owner consumes result** | Tune bounded concurrency, resident input limits and intake/clinical/delivery pool budgets together. Inspect real pending/due query plans, lock/pool waits and event-loop delay under busy-tenant plus due-only-neighbor load. | Healthy neighbors and actual deadlines progress under one held/failed tenant; memory and backlog stay bounded. More promises overlap I/O, not synchronous JavaScript CPU. Threads/processes or new indexes follow a demonstrated bottleneck, not a tenant-count assumption. |
+| **5 — operating owner after source release** | Run a matched sustained operating comparison on the coherent selected candidate, including startup, steady traffic, quiet due work, burst, restart and backlog drain. Include evaluator, PostgreSQL, pgstream, API, realtime and provider-adapter costs. | Report freshness tails and correct completed opportunities per CPU time, peak/RSS/GC, database work/WAL and recovery bounds. Preserve original failures. Accept workload/resource limits explicitly; do not extrapolate a primitive or one operating point into fleet capacity. |
+
+An optimization closes when a meaningful break fails the retained behavior,
+restoration passes, and the matched measurement supports its intended benefit
+without moving unreported work into PostgreSQL, API or realtime. If evidence
+refutes a prescribed fix, retain the measured result and choose the simpler
+supported mechanism. Missing optional metrics narrow that claim rather than
+invalidate independent observations. Join planned repairs before one coherent
+applicable final campaign and final prcheck; leaf changes do not each trigger a
+new comprehensive campaign.
+
+### Preserve the horizontal execution seam
+
+Keep intake ownership separate from permission to execute clinical work. The
+unpartitioned evaluator owns all its eligible tenants; future selected workers
+own subsets through the existing assignment contract. Pending input, completed
+coverage, output and due obligations survive process replacement. Completion and
+effects reject stale authority/ownership/restore state; assignment alone does
+not prove those checks or duplicate-effect safety.
+
+A future worker must select only its assigned pending/due work, without replaying
+all tenants' input or performing full-roster screening. Qualify membership change,
+cache transfer/rebuild, old-worker exclusion or the admitted overlap policy,
+duplicate alarm prevention and recovery before claiming horizontal execution.
+Equal tenant counts need not mean equal CPU or memory. A single intake owner can
+feed several execution workers only with a qualified work-distribution boundary;
+a load-balanced receiver address is not that boundary. Keep this seam explicit
+now; defer new fleet/placement machinery until single-worker measurements justify
+it. The [topology ownership inventory](runtime-topology.md#evaluator-inspection-and-workload-ownership)
+owns the other roles' scaling semantics.
+
 ## Transaction coverage and mechanism retirement
 
 **Direction for evaluation, 2026-11-16; replacement proposed, unimplemented and

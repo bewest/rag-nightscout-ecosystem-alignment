@@ -242,6 +242,24 @@ credential-renewal system or mandatory gateway is implied by these diagrams.
 | Backing resources | Follow the [component ownership map](sql-and-migration-architecture.md#component-ownership-and-internal-application-apis): scoped reads and component-owned state can use storage; cross-component commands use admitted APIs. UI/nginx receive no blanket database/Vault authority. |
 | Workload ownership | Size replicas for measured load/availability, and define ownership separately. API replicas do not require evaluator partition leases. The selected evaluator partition work has its own membership/conflict criteria. |
 
+### Single-worker priority and component regrouping
+
+The maintainer's 2026-11-16 execution priority is single-evaluator efficiency,
+while preserving future tenant-partitioned execution. The
+[single-evaluator efficiency plan](evaluator-realtime-communication.md#single-evaluator-efficiency-plan)
+owns keep/replace/regroup choices, ongoing-lane boundaries and ordered
+measurements. It reconciles REST's canonical storage service, evaluator clinical
+completion and realtime authorized delivery. Process placement does not change
+those responsibilities.
+
+The plan retains pgstream and compares the qualified incremental input path with
+the source lane's unqualified coalesced snapshot alternative. It adopts neither
+a performance winner nor a new production profile. Intake, clinical execution
+and delivery need separate bounded work budgets even when co-located. Current
+membership/assignment semantics remain in the [ownership inventory](#evaluator-inspection-and-workload-ownership);
+additional evaluator replicas and fleet machinery follow measured need and their
+own qualification, not this documentation change.
+
 ### Scale envelopes and fleet planning
 
 *Post-baseline planning clarification, 2026-11-12; evidence below is UNMEASURED.
