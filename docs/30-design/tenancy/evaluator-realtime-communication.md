@@ -46,12 +46,62 @@ Healthy idle has no hot full-roster polling or per-event catalogue screening.
 
 | Boundary | Implemented branch behavior and qualification boundary |
 |---|---|
-| Clinical CDC and durable acceptance | Six clinical routes retain typed identity, extension fields, physical storage size and insertion order. Raw rows commit to the existing input checkpoint before transport ACK. An XID (transaction identifier) cohort seals with its matching final clock, atomically with the typed observed-work receipt. Same-LSN COPY rows remain distinct. |
+| Clinical CDC and durable acceptance | Six clinical routes retain typed identity, extension fields, physical storage size and insertion order. Raw rows commit to the existing input checkpoint before transport ACK. In the inspected implementation, an XID (transaction identifier) cohort seals with its matching clock-table event, atomically with the typed observed-work receipt. That current dependency is evaluated under the [transaction-coverage direction](#transaction-coverage-and-mechanism-retirement). Same-LSN COPY rows remain distinct. |
 | Working set and recovery | Warm evaluation reads the accepted clinical window, without full clinical source reacquisition. Consistent bootstrap uses the engine's historical exceptions and settings; whole-history storage statistics stay authoritative outside the clinical cache. A known row/byte overflow durably marks a non-ready gap, evicts the input cache and preserves the sealed clinical floor and completed output; bounded successful bootstrap is required before evaluation resumes. Malformed data is refused. |
 | Scheduling and completion | One bounded scheduler owns startup, pending, due and recovery. A held tenant leaves free slots and later recovery pages available to neighbors. Retry backoff belongs to the failed tenant. Concurrent earliest-due reads coalesce, with a fresh lookup after changed work and safe ownership release before settlement. TIME acquires newly observed input before completion; input arriving during evaluation remains owed. Result/frame/revision, covered versions and next due commit under existing ownership/current-authority/restore fences before RAM completion. |
 | Realtime | The completed-output path distinguishes upstream pending, unwatched/deferred and ineligible work from actual failed delivery. Durable receipts own owed-delivery retries. Realtime does not build a raw clinical projection. |
 | Optional path | The separate selected-intake materializer remains unqualified and is explicitly refused before effects by the public evaluator configuration. It is not the default path or a prerequisite. |
 | Qualification | Focused default native tests include coherent corrections/deletes, process recovery, due work without a write, held-neighbor progress and unchanged warm snapshot/statistics query counts. Source-scoped controls are in the [existing discriminator harness](../../../tools/mt-bench/m7-joined/README.md#stream-materializer-discriminators). The [current integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16) owns selected-source qualification; operating measurements retain separate attribution. |
+
+## Transaction coverage and mechanism retirement
+
+**Direction for evaluation, 2026-11-16; replacement proposed, unimplemented and
+unqualified.** The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#stream-native-coverage-direction)
+directs internal ordering and coverage toward the PostgreSQL committed stream.
+Evaluator still owns recoverable accepted versus completed work, clinically
+sufficient bounded state and actual due obligations. Realtime consumes completed
+output under current authority. These outcomes do not require one particular
+application clock, cache generation, counter label or physical write pattern.
+
+| Boundary | Status and requirement |
+|---|---|
+| Clinical, isolation, authorization, restore, durable acceptance and supported-client outcomes | Adopted obligations. Preserve correct output, coherent committed input, no early acknowledgement, recovery and current-effect fences. |
+| Current clock-event sealing | Read-derived at qualified c31 `lib/storage/clinical-stream-sql.js:30–41`: a clock-table event seals the staged XID cohort, and its floor becomes observed work. Existing qualification remains valid for that source. This coupling is an implementation dependency to evaluate, not an enduring product requirement. |
+| Connector-framed internal coverage | Proposed replacement. PostgreSQL native commit semantics alone do not prove that the selected pgstream webhook interface preserves transaction completeness. No stream-native replacement is implemented or accepted by this direction. |
+| Public history and insertion ordering | Separate supported contracts. The [ordering guide](counter-and-restore-options.md) distinguishes clinical time, legacy history stamps/cursors, already-present tenant/collection insertion ordinals and internal transport/processing positions. Do not substitute one for another. |
+
+The first discriminator uses the exact pinned connector and its actual
+transaction framing, replay and acknowledgement behavior. It must distinguish
+multiple rows sharing an LSN, a complete commit from a partial cohort, rollback,
+consistent snapshot/replay overlap, and source/restore-generation changes.
+Only evidence that this interface preserves the required boundary can qualify a
+replacement. Reuse the selected transport and durable stores; this direction
+introduces no new CDC engine, general event log, per-tenant replication slots or
+opaque-cursor subsystem.
+
+Tests are evidence of adopted behavior, not independent authority to preserve an
+implementation. In the same capability change, retire or replace assertions that
+demand a mechanism being removed. Name the old assertion, retained user-visible
+invariant and replacement semantic control; show the meaningful break fail and
+restored behavior pass. Preserve public history no-missed-write checks while that
+client contract is supported. Do not restore an obsolete path just to satisfy a
+source regex, and do not delete correctness because its old test mentions clocks.
+
+Potential retirement candidates include stable RAM generation, acquisition/TIME
+labels, unexplained absolute failed-attempt counts, blanket evaluator-ready
+admission for otherwise authorized REST load, exact private ordinal values,
+mandatory physical row rewrites and clock-specific internal seals. Each depends
+on its actual outcome contract; none authorizes ignoring wrong output, lost
+committed input, authority/restore changes or durable progress rewinds. Authorized
+REST durability remains independently observable during evaluator recovery;
+explicit storage/backlog bounds can still refuse writes.
+
+Completion requires one owner for each responsibility, obsolete executable paths
+and their mechanism-specific assertions retired together, focused semantic
+controls, compatible recovery/client behavior, then one coherent applicable final
+acceptance on the changed source. Existing pinned-source qualification and entered
+experiments remain unchanged. The source/operating lane owns the proposed proof;
+release contents and the canonical report own any later measured acceptance.
 
 ## Internal trust and state ownership
 

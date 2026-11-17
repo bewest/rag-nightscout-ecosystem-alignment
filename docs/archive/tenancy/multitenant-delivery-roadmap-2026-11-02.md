@@ -199,7 +199,7 @@ New-head profile38/controls/full/browser/prcheck are **UNMEASURED**, pending a
 separate slot. It is not joined into REST and changes no subscriber/notification
 or production runtime admission. A step is finished; D/clock lower PG proof and
 controls are active, HTTP/full/bench acceptance pending, C queued. The adopted
-[clock proof direction](../../30-design/tenancy/postgres-tenant-clock-proof.md) has no production clock fix
+[clock proof direction](postgres-tenant-clock-proof-2026-11-06.md) has no production clock fix
 or accepted contention/fresh-ingestion latency result yet.
 
 Exact native commands/counts/limits are in [R52](../../30-design/remedial/rc-16.0.0-integration-record.md#r52---native-private-acquisition-extraction-on-e5fe0b5e-2026-11-06).
@@ -249,7 +249,7 @@ D `714f6c8b` remains unaccepted and its [measured history gap](../../../reports/
 at `2a6eaf73` is unfixed. C `3106f14d` has static preparation only, with new
 DB/full/browser/prcheck pending. Existing accepted R48 is retained.
 
-The maintainer adopted the [transactional tenant-clock proof direction](../../30-design/tenancy/postgres-tenant-clock-proof.md).
+The maintainer adopted the [transactional tenant-clock proof direction](postgres-tenant-clock-proof-2026-11-06.md).
 Separate source prototypes, independent HTTP proof and contention/fresh-ingestion
 latency measurements are unmeasured; no clock implementation is production enabled.
 Root owns joins and final cumulative acceptance. R51 and its bounded ST-PG gate

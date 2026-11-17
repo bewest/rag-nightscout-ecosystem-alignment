@@ -16,7 +16,11 @@ owns row intake, recoverable acceptance, cohorts, scheduling and output delivery
 The historical provider/backstop/snapshot sections below retain their original
 source and evidence; they do not authorize restoring those paths as defaults.
 Consistent snapshots remain bootstrap/recovery/history tools. Clinical, identity,
-isolation, authority and restore obligations remain required.
+isolation, authority and restore obligations remain required. The
+[transaction-coverage direction](evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement)
+distinguishes current clock-event sealing from a proposed connector-framed
+replacement. Historical clock-specific assertions do not require retaining that
+internal mechanism after a qualified semantic replacement exists.
 
 | Anchor | Read from tool output at the time of writing |
 |---|---|
@@ -468,7 +472,7 @@ choices remain revisitable when experiments refute their assumptions.
 - [decisions.md](../../../releases/cgm-remote-monitor-16.0.0/decisions.md), D-EVENT rows (2026-10-31) and Q9 release-2 row
 - [write-intent guide](../platform/guides/write-intent.md) "What the step does not do"; [wc-step design note](../platform/wc-step-design-note-2026-10-27.md) Q-B, Q-C, Q-F and the D-EVENT bench reference
 - [execution plan](multitenancy-decisions.md) D4, D6, D15, D22, §7b and Phase 4 T4.1; [storage seam interface](nightscout-storage-seam-interface-2026-09-14.md) §9 and §11
-- [clock proof plan](postgres-tenant-clock-proof.md); [lower-port proof](../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.md); [HTTP fixed recovery](../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md); [backend-abort diagnostic](../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.md)
+- [clock proof plan](../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.md); [lower-port proof](../../../reports/tenancy/tenant-commit-clock-lower-proof-2026-11-06.md); [HTTP fixed recovery](../../../reports/tenancy/tenant-clock-http-fixed-recovery-2026-11-06.md); [backend-abort diagnostic](../../../reports/tenancy/tenant-clock-http-backend-abort-diagnostic-2026-11-06.md)
 - [integration record](../remedial/rc-16.0.0-integration-record.md) R48, R49, R50, R51, R55
 - [seams plan](architecture-seams-execution-plan-2026-11-05.md) "Shared frame join and multitenant recovery", "Shared-frame inventory", "Reproduced frame acquisition and concurrent reads"
 - [roadmap](multitenant-delivery-roadmap.md) §4 and the MT-RUNTIME-PLAN packet; [batching plan](multitenant-integration-batching-plan-2026-11-06.md) B2 and B7

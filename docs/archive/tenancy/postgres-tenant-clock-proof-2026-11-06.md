@@ -1,6 +1,19 @@
+# Transactional history clock — retained proof plan
+
+*Contributor-facing historical design/proof plan, retained 2026-11-16 from
+alignment `e9f9430e4ada20f35163253a6179c2dae3b1ffb6`. Original source scopes,
+proposals, pending statements and dispatch instructions below belong to their
+capture; they are not current implementation status or resource reservations.
+The [current ordering guide](../../30-design/tenancy/counter-and-restore-options.md)
+owns the distinctions and compatibility obligations; the
+[communication guide](../../30-design/tenancy/evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement)
+owns current stream dependencies and proposed replacement proof. Original text
+is retained with relative links rebased. Existing history no-missed-write and
+clinical/isolation/authority/durability obligations remain required.*
+
 # Transactional PostgreSQL tenant clock: proof plan
 
-*Current-use guide, 2026-11-06: R60 accepts the joined clock with bounded correctness evidence. [R65 descriptive HTTP workload](../remedial/rc-16.0.0-integration-record.md#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06) adds four small fresh cohorts; no performance budget or acceptance follows. Earlier corpus benchmark-pending captures remain unchanged. This page retains the original proof plan and invariants. Use the [current dashboard](multitenant-delivery-dashboard.md) and [R60 disposition](../../archive/tenancy/multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06) for implementation acceptance.*
+*Current-use guide, 2026-11-06: R60 accepts the joined clock with bounded correctness evidence. [R65 descriptive HTTP workload](../../30-design/remedial/rc-16.0.0-integration-record.md#r65---bounded-tenant-clock-http-descriptive-workload-2026-11-06) adds four small fresh cohorts; no performance budget or acceptance follows. Earlier corpus benchmark-pending captures remain unchanged. This page retains the original proof plan and invariants. Use the [current dashboard](../../30-design/tenancy/multitenant-delivery-dashboard.md) and [R60 disposition](multitenant-delivery-roadmap-2026-11-02.md#accepted-coherent-ci-client-batch-and-m0-foundations-2026-11-06) for implementation acceptance.*
 
 *Contributor-facing design/proof plan, 2026-11-06. The maintainer selects this
 proof direction; implementation and performance acceptance remain UNMEASURED.

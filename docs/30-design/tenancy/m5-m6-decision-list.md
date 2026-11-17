@@ -100,10 +100,10 @@ open-decision note](../../archive/tenancy/multitenant-open-decisions-2026-11-06.
 answered A questions, not the current backlog.
 
 The [counter and restore options analysis](counter-and-restore-options.md)
-separates the tenant-local history clock from internal insertion order. The
-tenant-local insertion prototype removes cross-tenant allocation state while
-preserving supported per-tenant order; exact physical and logical backup fidelity
-retain their separate contracts.
+separates the tenant-local history clock from internal insertion order. The admitted tenant-local insertion allocator already preserves supported
+per-tenant/collection order. It does not replace public update/delete history or
+internal transaction coverage. Physical and logical backup fidelity retain their
+separate contracts.
 
 ## From preview to production
 

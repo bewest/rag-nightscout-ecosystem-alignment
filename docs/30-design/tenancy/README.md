@@ -55,8 +55,8 @@ guide below.
 | [Realtime sharding plan](realtime-sharding-plan.md) | Implemented fixed-roster tenant placement and controlled moves, their source-scoped qualification, and remaining topology/capacity boundaries. |
 | [Evaluator/realtime communication](evaluator-realtime-communication.md) | Stream acceptance and clinical completion, bounded working state, independent raw storage delivery, notification handoff and recovery. |
 | [SQL and migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, migrations and restore inclusion. |
-| [Counter and restore options](counter-and-restore-options.md) | History clock versus insertion order, restore alternatives and the census counter-writer rule. |
-| [Clock proof plan](postgres-tenant-clock-proof.md) | Tenant clock invariants and experiment design; acceptance records keep their own scope. |
+| [Counter and restore options](counter-and-restore-options.md) | Clinical time, public history, implemented insertion order and internal stream progress; current recovery obligations and retained alternatives. |
+| [Retained legacy history proof plan](../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.md) | Original public-history no-missed-write controls and source-scoped experiment design; not current internal CDC sequencing or dispatch. |
 
 ## Deployment
 

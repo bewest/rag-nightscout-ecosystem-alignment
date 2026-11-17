@@ -1,165 +1,79 @@
-# Counters, compatibility and tenant restore options
+# Ordering, history and restore responsibilities
 
-*Living contributor-facing design analysis, 2026-11-07. Read-derived from the
-published f0fac99a application unless a linked experiment says reproduced.
-[Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#allocator-preserving-restore-first)
-own the adopted experiment direction and conditional preview pause allowance.
-This analysis adopts no schema, new cursor format or runtime admission.*
+*Contributor-facing living architecture guide, reconciled 2026-11-16.
+Current implementation is **read-derived** from qualified core
+`c31c6e0b69a2a2f2a5320b9e4d32195f1b3e1878`; reproduced evidence retains the source
+named in each linked record. The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#stream-native-coverage-direction)
+owns the direction to evaluate stream-native internal coverage. A replacement
+for current clock-event sealing is **proposed, unimplemented and unqualified**.
+No new cursor, CDC engine, event log or replication-slot topology is adopted.*
 
-*2026-11-10: the restore census now also [refuses a connected non-participant
-whose identity can write the insertion-order or write-clock tables](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-counter-writers);
-read-only identities stay exempt, and only the restore of the tenant being
-restored refuses. In the current design only `api` writes those counters.*
+## Four separate meanings
 
-## Two independent mechanisms
-
-The transactional tenant history clock has one `tenant_write_clock` row per
-tenant. It coordinates admitted writes through commit so a reader cannot advance
-past a still-uncommitted earlier history watermark. Existing numeric timestamp
-cursors remain compatible. Cross-tenant total ordering is not required.
-
-`insertion_ordinal` is a separate PostgreSQL table identity used to emulate
-existing natural-order reads. A shared table's sequence supplies values for all
-its tenants, although readers remain tenant-bound. It is not the history clock,
-public record `_id`, or a clinical timestamp. Source anchors on f0fac99a:
-`migrations/candidates/postgres-write-clock-v1.json:8`,
-`migrations/candidates/postgres-entries-v1.json:38`,
-`lib/storage/postgres-entries-read.js:105`.
-
-The engineering concern is giving implicit storage ordering application meaning.
-[MongoDB defines natural order](https://www.mongodb.com/docs/manual/reference/glossary/#std-term-natural-order)
-as physical RecordId order, with replica/sharding qualifications. Existing client
-compatibility must be measured before changing this inherited behavior; matching
-historical behavior must not silently invent a stronger universal guarantee.
-
-## Comparison with other systems
-
-[Kubernetes resource versions](https://kubernetes.io/docs/reference/using-api/api-concepts/#resource-versions)
-support change tracking, consistent list/watch and optimistic update concurrency.
-[etcd revisions](https://etcd.io/docs/v3.6/learning/api_guarantees/)
-order modifying operations/transactions. This is a useful analogy for the tenant
-history clock, not a reason to require cross-tenant ordering or add etcd here.
-Unique sequence allocation alone cannot establish commit-order visibility.
-
-Restore has similar problems in etcd: an old snapshot can move revisions backward
-relative to clients' caches. Its documented [revision bump/compaction procedure](https://etcd.io/docs/v3.6/op-guide/recovery/#restoring-with-revision-bump)
-forces stale watches to rebuild. Our restore must likewise address stored
-checkpoints, history floors and derived caches; inserting rows is only one step.
-
-[MongoDB change-stream resume tokens](https://www.mongodb.com/docs/manual/changestreams/)
-and [PostgreSQL WAL/logical decoding](https://www.postgresql.org/docs/16/logicaldecoding-explanation.html)
-provide other durable positions, with retention/replay/failover obligations.
-These move ordering into a database/feed protocol; they do not eliminate the
-need for an ordering/recovery contract or automatically preserve legacy cursors.
-
-## Options before a shared pause
-
-| Option | Benefit | Cost / explicit limitation |
+| State | Owner and purpose | Current dependency and compatibility boundary |
 |---|---|---|
-| Preserve the live allocator | Smallest first experiment: restore original A ordinals without resetting shared state; B may continue. | Must prove future allocations cover the artifact, source/sequence identity and supported cache state; A still needs exclusive restore authority. Higher-floor artifacts refuse. |
-| Recreate internal ordinals in original relative order | Potentially avoids sequence-floor maintenance using normal allocation; public IDs remain stable. | Proposal only. Requires a consumer census proving exact ordinal values have no external/checkpoint meaning, faithful relative ordering across all relevant domains, and review of artifact-fidelity changes. |
-| Tenant-local insertion allocation | Removes cross-tenant insertion-counter maintenance; can reuse the existing tenant transaction fence while keeping ordinal and history meanings distinct. | Schema/migration/write-path work; same-tenant contention and all-writer coverage need proof. |
-| New tenant data generation plus atomic routing switch | Stage/verify A separately and retain old generation for rollback; B remains current. | Requires routing-generation support, cache/session fencing and stale-writer refusal. Current global namespace mapping does not provide this automatically. |
-| Explicit domain sorting plus stable tie-breaker | Can remove insertion-order state where no consumer actually requires it. | Client-visible ordering, ties, retries and replacement behavior require measured compatibility and an explicit change contract. |
-| Narrow A suspension with ordinary transaction rollback | Limits interruption to the tenant being restored. | Must exclude every admitted A writer and stale serving/cache state; a clock-row lock alone misses lower-port callers. |
+| Clinical time | The clinical engine interprets measurement dates and computes time-dependent answers and due work. | It does not establish transaction coverage or a history cursor. A future-clamped write stamp must not define clinical expiry. |
+| Public legacy history | The supported API/history contract exposes server modification/delete stamps and numeric cursors. | The existing tenant write-clock fence prevents a later visible cursor from missing an earlier still-committable write. Preserve no-missed-write tests and client shapes until a compatible replacement is actually qualified. |
+| Insertion order | A per-tenant, per-collection allocator supports natural-order and first-match reads. | Already implemented in the admitted ordered catalogue. It is neither update/delete history nor commit order, public identity or a universal revision counter. Its ordinary transaction still locks the tenant counter row; a lower cost is UNMEASURED. |
+| Internal stream progress | PostgreSQL commits source data; the selected connector transports it; evaluator owns durable accepted versus clinically completed work. Realtime consumes completed output under current authority. | Current c31 seals an XID cohort using a clock-table event and records the clock floor as observed work. Replacing that dependency is a design/proof task, not an implemented stream-native guarantee. Transport position, acceptance and completion remain distinct. |
 
-The read-derived f0fac99a consumer census finds the physical value used for
-`ORDER BY insertion_ordinal ASC` while queries return only `id_kind, doc`
-(`lib/storage/postgres-entries-read.js:102-113`). The common natural-order path
-also serves selected entries/food and socket treatments/devicestatus/profile.
-No ordinal foreign-key or checkpoint consumer was found in `lib/`/`migrations/`.
-Generic lifecycle artifacts do retain and hash the original physical ordinal.
-Consequently, regenerating it is a proposed **logical tenant restore** contract,
-not a repair to the existing exact physical backup oracle. Whole-deployment
-physical restore keeps its separate fidelity contract.
+```mermaid
+flowchart LR
+  Clinical[Clinical dates and engine time] --> Due[Clinical result and due work]
+  History[Legacy history stamps] --> Clients[Supported client history cursors]
+  Ordinal[Tenant and collection insertion order] --> Match[Natural order and first match]
+  Commit[PostgreSQL committed source] --> Connector[Selected connector delivery]
+  Connector --> Accepted[Durable accepted input]
+  Accepted --> Completed[Clinical completion and next due]
+  Completed --> Realtime[Currently authorized realtime effects]
+```
 
-A logical prototype must sort captured rows explicitly by BigInt ordinal;
-export array order is not an ordering contract. Preserve public IDs and typed
-clinical values. The later adopted [forward history correction policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
-supersedes exact history-timestamp copying for same-ID logical restore: retain
-the live issued floor, advertise changed/restored values and deletions above it,
-and publish effects only after the actual restore commit. Exact raw metadata
-remains the physical-backup contract.
-Admit exact positive noncycling CACHE 1 behavior first; larger allocator caches
-and stale writer sessions require independent ordering proof.
+The diagram separates responsibilities; it does not claim the selected webhook
+transport already proves native transaction framing. The
+[communication contract](evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement)
+owns the proposed replacement's proof and recovery boundary.
 
-These alternatives reduce shared interruption, not the need to coordinate writes
-to the very state being replaced. A transparent online restore would additionally
-need a declared merge/replay/conflict policy for writes arriving during restore.
+## Insertion ordering already exists
 
-## Conditional pause and safe recovery
+At c31, `migrations/candidates/postgres-entries-v1.json:52–62` creates and seeds
+`tenant_insertion_ordinal`, applies forced tenant RLS, removes the old identity
+allocator and installs the transactional tenant-local allocator. Ordinary inserts
+allocate within their tenant/collection. Updates preserve identity and ordinal;
+explicit restore has separate rights. The [SQL guide](sql-and-migration-architecture.md#history-clock-and-insertion-counter-serve-different-contracts)
+owns catalogue, trigger, grant and restore details.
 
-A preview shared write pause is allowed only if needed and explicitly bounded.
-Define admission/exclusion, drain, transaction boundaries, interruption recovery,
-verification and reopening. A watchdog deadline cannot make partial recovery safe
-or promise a deterministic completion time. Failure must retain a known safe
-state; reopening requires positive verification. Restoring A must not roll B's
-committed state back. A service restart and a rollback of durable data are
-different operations.
+The [consumer proof](../../../reports/tenancy/insertion-order-consumers-2026-11-07/README.md)
+reproduces selected real server reads on its f0 source: renumbering while preserving
+relative order preserves the selected full profile; reversing order changes the
+first match. Exact private ordinal values are not an observed client requirement
+in that proof. This is not an all-client qualification or permission to change
+public history cursors. Do not promote the ordinal into a universal progress counter.
 
-Keep the tenant-local history clock while measuring allocator-preserving restore.
-Investigate concrete natural-order consumers before adding another counter or
-requiring a shared pause. Future versioned cursors and restore generations are
-incremental architecture options, not prerequisites silently added to the preview.
+## Current recovery and compatibility obligations
 
+Restore must preserve current authority, exclude stale effects and establish
+consistent accepted/completed/pending/due state before reopening. Logical restore
+and whole-deployment physical backup retain their distinct fidelity contracts.
+The [forward history policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
+preserves supported history continuity; independent tenant progress and bounded
+failure recovery remain required. The existing implementation is qualified only
+for the source and scenarios in the
+[canonical integration report](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md).
 
-## Fault isolation and the selected next step
+Authorized REST durability remains independently measurable during evaluator
+recovery. Missing evaluator readiness alone is not a universal REST load gate;
+actual authority, storage admission and explicit backlog/resource bounds can
+refuse writes. New connector/progress work preserves all clinical, isolation,
+authorization, restore, durability and supported-client outcomes.
 
-The maintainer [selected per-tenant insertion semantics and a tenant-local state prototype](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics). Cross-tenant ordering is not required; same-deployment restore must preserve other tenants' current state. The global
-counter concern is shared mutable state under faulty or malicious behavior, not
-an observed requirement for cross-tenant ordinal values.
+## Retained alternatives and proof
 
-Ordinary atomic sequence allocation and privileged sequence maintenance have
-different authority. PostgreSQL `nextval` requires USAGE or UPDATE; `setval`
-requires UPDATE. Aborted transactions can leave gaps, which do not by themselves
-break relative order. The [sequence contract](https://www.postgresql.org/docs/16/functions-sequence.html)
-does not turn the allocator into a global application transaction lock held
-until every writer commits. Avoid all-tenant read/modify/write counter code.
-
-A faulty actor with privileged sequence mutation can affect tenants sharing that
-sequence. Per-tenant allocation reduces this state coupling, but does not protect
-against a compromised database administrator or a worker authorized across tenants,
-or isolate shared CPU/pools. Complete admission must verify actual privileges;
-table RLS alone does not bound sequence setters. The f0 serving-readiness survey
-has not established a complete sequence-privilege check across all roles. The
-new planner's own role check does not fill that broader boundary.
-
-The narrower compatibility finding is in the [native consumer proof](../../../reports/tenancy/insertion-order-consumers-2026-11-07/README.md):
-renumbering while preserving order retains the selected full profile; reversing
-order selects a different duplicate-match profile. Explicit date-sorted entries
-are unchanged. Source tracing reaches the released AndroidAPS NSClient v1 profile
-upload/ack path, but no Android binary was executed. No observed client requires
-cross-tenant ordinal numbers or exact private ordinal values.
-
-
-## Minimal tenant-local state prototype
-
-Use a counter row per tenant in each existing ordered collection namespace,
-with forced RLS and an invoker INSERT trigger. Keep history timestamps separate.
-Migration preserves existing ordinal values and seeds each tenant floor; ordinary
-inserts increment only their tenant's row transactionally. Explicit operator
-restoration preserves original ordinal values while advancing only the restored
-tenant floor. Updates cannot change ordinal/tenant identity. Serving column
-INSERT excludes the private ordinal; operator restore has separate rights.
-
-This trades an extra small relation/trigger and per-tenant transaction lock for
-removing cross-tenant allocator state and restore counter-maintenance machinery.
-It is an operational simplification, not a claim of fewer SQL statements or of
-Byzantine tolerance against a trusted all-tenant worker/DBA. Shared pools/CPU remain.
-No new service, per-tenant native sequence or SECURITY DEFINER is needed.
-
-The first prototype is explicit standalone SQL, not a runnable catalogue/default
-selection. Current migration validation rejects LOCK, SET and DO statement forms;
-runner-compatible transaction/precondition integration remains explicit work.
-Do not hide those controls in an unreviewed migration function to make validation
-pass. Lifecycle inventories, role grants, read-only trigger/counter readiness,
-old/new upgrade/rollback and final client/cursor/cache acceptance also remain.
-A normal one-time schema DDL lock is distinct from a recurring shared restore pause.
-
-
-The [native tenant-local proof](../../../reports/tenancy/tenant-local-insertion-2026-11-07/README.md)
-now establishes all-five populated conversion and A restore/B preservation under
-restricted roles, entries A-lock/B-progress and the real profile first-match result.
-It also demonstrates that direct own-floor corruption can damage A ordering while
-B remains exact; it is not Byzantine tolerance of privileged multi-tenant workers.
-Migration-runner, readiness and lifecycle integration remain open.
+The [November 7 counter/restore analysis](../../archive/tenancy/counter-and-restore-options-2026-11-07.md)
+retains the global-allocator baseline, prototype alternatives, database analogies
+and original source surveys. Its prototype and pending statements are historical.
+The [November 6 history-clock proof plan](../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.md)
+retains the original concurrency, rollback, restart and public-history controls.
+Those compatibility outcomes remain required; its clock-specific implementation
+choices and old dispatch/serial-slot instructions do not mandate current internal
+stream architecture. Git retains intermediate revisions; the
+[archive index](../../archive/tenancy/README.md) owns retention scope.

@@ -84,7 +84,7 @@ own admitted port behavior.
 | [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md) | **Reproduced:** separate-role restore and fresh shared-role restarts with B progress while A remained unavailable in the recorded failure cases; unsafe-clock API startup refused; independent physical closure. | Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound. |
 | [ed2 cold Compose measurement](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json) | **Reproduced:** packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure. | Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate. |
 | [Application startup source guide][cohort-guide] and [startup controls][startup-controls] | The `151de024` source defers genuinely suspended tenants while retaining shared readiness failures and later full initialization. | Source/protocol reading; actual runtime measurements retain their c23 attribution above. |
-| [Counter analysis](counter-and-restore-options.md) and [clock proof plan](postgres-tenant-clock-proof.md) | Rationale, alternatives and invariants, with individually scoped experiments. | Their earlier source anchors and feasibility results do not replace current catalogue/readiness verification. |
+| [Counter analysis](counter-and-restore-options.md) and [clock proof plan](../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.md) | Rationale, alternatives and invariants, with individually scoped experiments. | Their earlier source anchors and feasibility results do not replace current catalogue/readiness verification. |
 
 ## Supported database ownership contract
 
@@ -400,6 +400,7 @@ source/protocol scope. [Consumer startup source][consumer-startup]
 |---|---|---|
 | `last_stamp` | The [clock decorator][clock-writes] locks the tenant row through the outer data transaction, allocates strictly increasing numeric server stamps and updates the durable floor. | Preserves the existing `srvModified` / history cursor protocol. Clinical timestamps and public IDs retain their own meanings. Serialization is tenant-local; a sequence value alone would not prevent a reader advancing past an earlier uncommitted write. |
 | `last_ordinal` | The [insertion trigger][insertion-sql] allocates within one tenant/collection in the same transaction as the row. Missing/invalid state refuses; updates cannot change tenant/ordinal identity. | Reproduces supported natural/first-match ordering. The [read path][natural-read] selects `id_kind,doc` and orders by the private ordinal; the ordinal is not a public ID or history cursor. |
+| Internal accepted/completed progress | At qualified c31, `clinical-stream-sql.js:30–41` seals an XID cohort on a clock-table event and observes that clock floor. Evaluator retains separate durable accepted/completed/pending/due state. | This dependency is an implementation constraint to evaluate, not a public-history or insertion-order requirement. A [connector-framed replacement](evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement) is proposed and must prove actual transport transaction completeness/recovery before acceptance. |
 
 There is no required cross-tenant total order. Separate insertion state also
 works without opting into the history-clock decorator. Counter-row contention
@@ -409,7 +410,8 @@ CPU and DDL locks remain shared resources. The adopted
 [insertion semantics](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics)
 and [history-forward restore policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
 own compatibility decisions; the [counter analysis](counter-and-restore-options.md)
-retains alternatives and comparisons with database revision/change-stream designs.
+owns current distinctions and links retained alternatives; the connector-framed
+internal replacement remains proposed.
 
 ## Upgrade and readiness sequence
 
