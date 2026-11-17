@@ -176,9 +176,15 @@ including bounded clinical state and independent raw delivery. The
 owns these mechanisms; the same operating report owns separately attributed
 capacity observations. Current tests may proceed independently of optional
 multihost/platform work under the [production sequencing](../30-design/tenancy/production-critical-path.md).
-The next work is to establish useful workload/resource and recovery limits on
-qualified sources, compare the [qualified amplification/retirement candidate](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16),
-and close the chosen deployment's trust and admission criteria. Performance
+The current priority is [single-evaluator efficiency](../30-design/tenancy/evaluator-realtime-communication.md#single-evaluator-efficiency-plan):
+complete exact incremental snapshot-to-stream handover and attribute remaining
+CPU, allocation, encoding, statistics and SQL cost in independently owned lanes.
+The plan owns their order and integration boundaries. Preserve the horizontal
+execution seam; additional workers follow measured need and qualification.
+The coalesced snapshot alternative remains unqualified and is not adopted by
+this priority. The operating owner then establishes useful workload/resource
+and recovery limits on the selected coherent source. Deployment trust and
+admission criteria retain their own acceptance gates. Performance
 experiments and source work can proceed concurrently without repinning entered
 runs. The generated table retains queue dependencies; each state remains a claim
 until its gate measures it. This documentation change promotes no milestone. Multi-host
