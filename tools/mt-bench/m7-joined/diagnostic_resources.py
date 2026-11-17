@@ -62,6 +62,8 @@ LIMITS = MappingProxyType({
         ('nginx', 125, 128), ('placement-operator', 125, 128),
         ('demo', 125, 256), ('feed-reader', 125, 256),
         ('k6', 500, 1024))})
+DISCOVERY_K6 = Limit(2000, 4096 * MIB)
+
 HOST = MappingProxyType({'probe': (512, 1), 'generator': (256, 1), 'helper': (128, 2)})
 
 
@@ -174,14 +176,50 @@ def overlay(config, selected):
              'ALTERNATE_LIMITS')
         need(not spec.get('deploy', {}).get('resources'), 'ALTERNATE_LIMITS')
         for key, value in (('cpus', float(limit.cpus)), ('mem_limit', limit.memory), ('memswap_limit', limit.memory)):
-            need(key not in spec or str(spec[key]) == str(value), 'EXISTING_LIMIT_CONFLICT')
-            spec[key] = value
+            same=key not in spec or str(spec[key])==str(value) or key=='cpus' and type(spec[key]) in (int,float) and spec[key]==value
+            need(same, 'EXISTING_LIMIT_CONFLICT')
+            # Compose JSON preserves byte limits as strings and normalizes 1.0
+            # CPU to integer 1. Preserve equivalent existing representations.
+            if key not in spec:spec[key] = value
     return result
 
 
 def verify_config(config, budget):
     need(plan(config) == budget, 'PLAN_CHANGED')
     need(overlay(config, budget.profile) == config, 'CONFIG_LIMITS_CHANGED')
+
+
+def standalone_limit():
+    return getattr(_ACTIVE, 'driver_limit', LIMITS['k6']) if _ACTIVE is not None else LIMITS['k6']
+
+
+def discovery_driver_record(owner):
+    if owner.get('runPurpose') != 'discovery' or owner.get('profile') != 'pgstream-sample' or 'diagnosticResources' not in owner:
+        return None
+    original=owner['diagnosticResources']
+    return {'kind':'discovery-k6-allocation-v1','owner':owner['owner'],'pair':owner['pair'],
+            'imageId':owner['imageId'],'instrument':owner['instrument']['sha256'],
+            'serverProfile':original['profile'],'serverResourceRecordUnchanged':True,
+            'replacesStandaloneReservation':original['standalone']['k6'],
+            'k6':{'millicpus':DISCOVERY_K6.cpu,'memoryBytes':DISCOVERY_K6.memory,'maximumConcurrent':1},
+            'effectiveAggregate':{**original['aggregate'],
+                'millicpus':original['aggregate']['millicpus']-LIMITS['k6'].cpu+DISCOVERY_K6.cpu,
+                'memoryBytes':original['aggregate']['memoryBytes']-LIMITS['k6'].memory+DISCOVERY_K6.memory},
+            'scope':'prospective standalone load driver only; original runtime resource declaration unchanged; no backend capacity acceptance'}
+
+
+@contextmanager
+def discovery_driver(owner):
+    record=discovery_driver_record(owner)
+    if record is None:
+        yield None
+        return
+    need(_ACTIVE is not None and _ACTIVE.budget is not None,'DRIVER_SELECTION_NOT_ACTIVE')
+    need(_ACTIVE.budget.record()==owner['diagnosticResources'],'DRIVER_RUNTIME_RECORD_CHANGED')
+    previous=_ACTIVE.driver_limit
+    _ACTIVE.driver_limit=DISCOVERY_K6
+    try:yield record
+    finally:_ACTIVE.driver_limit=previous
 
 
 def standalone(argv, budget):
@@ -191,7 +229,7 @@ def standalone(argv, budget):
     # This seam only accepts the runner's already-qualified k6 oneoffs. Callers
     # must bind image/owner and exact argv using existing orchestration custody.
     need(argv[2:3] == ['--rm'], 'STANDALONE_SHAPE')
-    limit = LIMITS['k6']
+    limit = standalone_limit()
     flags = ['--cpus', limit.cpus, '--memory', str(limit.memory), '--memory-swap', str(limit.memory)]
     # Existing custody inserts attempt labels/cidfile after --rm. Accept the
     # exact selected flags once at their resulting position, without reordering
@@ -225,6 +263,7 @@ class Runtime:
             need(self.budget is not None and record == self.budget.record(), 'RECORD_CHANGED')
             verify_config(config, self.budget)
         self.observe = observe
+        self.driver_limit = LIMITS['k6']
         self.lock = threading.RLock()
         self.host = Counter()
         self.driver_fd = None
@@ -292,7 +331,7 @@ class Runtime:
     def containers(self, additions=None):
         need(self.budget is not None and callable(self.observe), 'CENSUS_REQUIRED')
         allowances = {r: (l, n) for r, l, n in self.budget.services}
-        allowances['k6'] = (LIMITS['k6'], 1)
+        allowances['k6'] = (self.driver_limit, 1)
         counts = Counter()
         cpu = memory = 0
         rows = self.observe()
@@ -319,7 +358,7 @@ class Runtime:
             need(count <= maximum, 'CONTAINER_CONCURRENCY_EXCEEDED')
             cpu += limit.cpu * count
             memory += limit.memory * count
-        need(cpu <= cpu_ceiling(self.budget.profile) and memory <= memory_ceiling(self.budget.profile), 'RUNTIME_AGGREGATE_EXCEEDED')
+        need(cpu <= cpu_ceiling(self.budget.profile)+self.driver_limit.cpu-LIMITS['k6'].cpu and memory <= memory_ceiling(self.budget.profile)+self.driver_limit.memory-LIMITS['k6'].memory, 'RUNTIME_AGGREGATE_EXCEEDED')
         return counts
 
     def compose(self, args, config):

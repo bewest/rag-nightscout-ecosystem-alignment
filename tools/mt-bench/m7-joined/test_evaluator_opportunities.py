@@ -89,7 +89,7 @@ class Opportunities(unittest.TestCase):
         self.assertEqual(value['verdict'],'UNMEASURED');self.assertEqual(value['classifications']['UNMEASURED'],2)
 
     def test_all_roster_health_failures_and_resets_survive_opportunity_exclusion(self):
-        for key,value,code in [('failedCompletions',1,'RESET'),('ready',False,'PROGRESS_ERROR'),('code','REFUSED','PROGRESS_ERROR')]:
+        for key,value,code in [('failedCompletions',1,'RESET'),('ready',False,'PROGRESS_CONTRACT'),('code','REFUSED','PROGRESS_ERROR')]:
             rounds=self.rounds();rounds[1]['owners'][B][key]=value
             with self.assertRaisesRegex(p.Refused,code) as caught:self.assess(rounds)
             self.assertEqual(caught.exception.verdict,'FAIL')
@@ -106,7 +106,7 @@ class Opportunities(unittest.TestCase):
         self.assertEqual(value['uncreditedAttempts']['causeAttribution'],'UNMEASURED')
         captures=self.captures();captures[-1]['rows'][0]['completed']['clock']='0'
         with self.assertRaisesRegex(p.Refused,'RESET'):self.assess(rounds,captures=captures)
-        rounds[-1]['owners'][A]['ready']=False
+        rounds[-1]['owners'][A]['code']='EVALUATOR_WINDOW_REFUSED'
         with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):self.assess(rounds)
 
     def test_due_completion_uses_durable_checkpoint_and_keeps_later_due(self):

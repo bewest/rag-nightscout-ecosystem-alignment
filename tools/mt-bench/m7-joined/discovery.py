@@ -115,7 +115,7 @@ class Record:
         self.save()
     def observe(self,stage,fn):
         try:
-            result=fn();self.value['strictChecks'][stage]={'verdict':'PASS'};self.save();return result
+            result=fn();self.value['strictChecks'][stage]={'verdict':'UNMEASURED','code':'M7_EVALUATOR_AVAILABILITY_UNMEASURED','hardFailure':False} if stage=='readiness' and isinstance(result,dict) and result.get('verdict')=='UNMEASURED' else {'verdict':'PASS'};self.save();return result
         except Exception as error:
             allowed=incomplete(error);partial=None
             episode=None
@@ -151,6 +151,14 @@ class Record:
             self.save()
 
 def run_discovery(a,d,m,k6_image,oneoff=None):
+    # The standalone driver has its own prospective declaration. Do not mutate
+    # the original session's server profile or resource/cleanup ownership.
+    with a.diagnostic_resources.discovery_driver(m) as allocation:
+        if allocation is not None:a.write(d/'loadgen-resource-allocation.json',allocation)
+        return _run_discovery(a,d,m,k6_image,oneoff)
+
+
+def _run_discovery(a,d,m,k6_image,oneoff=None):
     record=Record(a,d,m);record.save()
     try:
         require(m.get('profile')!='fresh-image-diagnostic','M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')

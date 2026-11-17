@@ -323,7 +323,11 @@ def _oneoff_intent(binding,kind,argv,scope,runner,cidfile):
  if 'diagnosticResources'in owner:
   import diagnostic_resources as resource
   config=load(Path(directory)/'frozen.compose.json');budget=resource.plan(config);resource.verify_config(config,budget);require(owner['diagnosticResources']==budget.record(),'M7_BINDING_ONEOFF_RESOURCE_RECORD_CHANGED')
-  limit=resource.LIMITS['k6'];require(argv[3:9]==['--cpus',limit.cpus,'--memory',str(limit.memory),'--memory-swap',str(limit.memory)],'M7_BINDING_ONEOFF_RESOURCE_LIMITS_CHANGED');i=9
+  allocation_file=Path(directory)/'loadgen-resource-allocation.json'
+  if allocation_file.is_file():
+   allocation=load(allocation_file);require(allocation==resource.discovery_driver_record(owner)and allocation is not None,'M7_BINDING_ONEOFF_DRIVER_ALLOCATION_CHANGED');limit=resource.DISCOVERY_K6
+  else:limit=resource.LIMITS['k6']
+  require(argv[3:9]==['--cpus',limit.cpus,'--memory',str(limit.memory),'--memory-swap',str(limit.memory)],'M7_BINDING_ONEOFF_RESOURCE_LIMITS_CHANGED');i=9
   resource_limits={'NanoCpus':limit.cpu*1000000,'Memory':limit.memory,'MemorySwap':limit.memory}
  while i<len(argv)and argv[i]!=scope['imageId']:
   key=argv[i];require(key in('--label','--network','--name','-u','-v','-e','--pull')and i+1<len(argv),'M7_BINDING_ONEOFF_OPTION_REFUSED');value=argv[i+1];i+=2

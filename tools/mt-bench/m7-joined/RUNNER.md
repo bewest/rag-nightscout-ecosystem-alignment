@@ -546,6 +546,19 @@ errors, counter rewinds, foreign work and unexpected runtime changes still
 refuse the observation. Durable accepted targets, restore and authority fences,
 completion coverage and matching client frames keep their separate checks.
 The strict progress and recovery modes retain their original counter rules.
+
+Discovery also retains evaluator `ready: false` as availability `UNMEASURED`
+when the admitted row has no current code or alert and carries all six typed
+job flags. `BUSY`, `BOOTING` and `COLD_OR_UNOBSERVED` describe those flags; they
+do not prove a benign cause. The private proof keeps the original readiness
+boolean and job state through packing and decoding. Such availability does not
+stop unrelated REST traffic. Typed durable targets and actual client output
+still establish completion separately. Current errors, malformed job state,
+foreign work, unexpected runtime changes and counter rewinds keep their guards.
+A planned fault is skipped while baseline availability is unknown; an unknown
+recovery observation does not cancel the finite REST workload. Strict readiness
+and strict progress retain their original readiness requirement.
+
 New pgstream discovery fixtures using `evaluator-work-v2` select the existing
 `received-input-v1` observer when the caller omits that option. The generated
 manifest records the selection. This also covers the canonical remote worker;
@@ -625,3 +638,12 @@ connection budget remains 16384 per worker. Preflight reads exact-owned nginx
 `-T` output and refuses an omitted, automatic or changed worker count before
 traffic. This qualifies the fixture configuration; it does not measure edge or
 application capacity. Default deployments retain their existing automatic count.
+
+
+Discovery `pgstream-sample` observations now declare a prospective standalone k6
+driver allocation of 2 CPU cores and 4 GiB in `loadgen-resource-allocation.json`.
+The original session resource record and server limits remain unchanged; the
+sidecar records the replaced 0.5-CPU/1-GiB standalone reservation and the effective
+combined ceiling. Native launch, container census and oneoff custody validate the
+new allocation together. Strict observations retain the original driver limits.
+A driver reaching its quota is not evidence of a backend throughput ceiling.

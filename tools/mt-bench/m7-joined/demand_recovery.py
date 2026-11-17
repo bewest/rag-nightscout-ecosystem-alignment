@@ -95,7 +95,7 @@ def verify_probe(probe,receipt):
     require(post and all(w.get('ready') is True for w in post),'M7_DEMAND_RECOVERY_POST_OUTPUT_NOT_OBSERVED')
     require(probe.get('window',{}).get('deliveredFrames')==probe.get('window',{}).get('expectedFrames')
             and probe['window']['expectedFrames']>0,'M7_DEMAND_RECOVERY_POST_FRAME_NOT_OBSERVED')
-    return {'verdict':'PASS','postRestartViewedWitnesses':len(post),'scope':'actual post-restart request/output/client witnesses; sparse subset only'}
+    return {'verdict':'UNMEASURED' if receipt.get('verdict')=='UNMEASURED' else 'PASS','postOutputVerdict':'PASS','postRestartViewedWitnesses':len(post),'scope':'actual post-restart request/output/client witnesses; runtime recovery availability is separate and may remain UNMEASURED'}
 
 
 
@@ -179,7 +179,13 @@ def run(a,d,m,out,work,record,stop_load):
             result['captures']={'before':before,'authorityBefore':auth_before,'costBefore':cost_before}
             a.write(out/'demand-recovery.json',result)
             try:
-                baseline=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),warming=True)
+                baseline=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),warming=True,allow_unavailable=True)
+                if any(not row['ready'] for row in baseline['owners'].values()):
+                    error=p.Refused('M7_EVALUATOR_PROGRESS_UNAVAILABLE');error.diagnostic={'availability':p.availability([baseline],ids)};raise error
+                time.sleep(.25);live(future);bound()
+                confirmed=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),allow_unavailable=True)
+                if any(not row['ready'] for row in confirmed['owners'].values()):
+                    error=p.Refused('M7_EVALUATOR_PROGRESS_UNAVAILABLE');error.diagnostic={'availability':p.availability([confirmed],ids)};raise error
             except p.Refused as error:
                 result['baselineObservation']=refusal_evidence(error)
                 if not observational_baseline(error):raise
@@ -197,8 +203,6 @@ def run(a,d,m,out,work,record,stop_load):
             result['baselineArtifact']='demand-recovery-baseline.private.json'
             # A cumulative historical count cannot identify its cause. Admit only
             # a healthy same-runtime bracket; uncredited attempts retain unknown cause.
-            time.sleep(.25);live(future);bound()
-            confirmed=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b))
             baseline_admission=p.stable_discovery_baseline(baseline,confirmed,ids)
             require(auth_before==authority(a,d,ids),'M7_DEMAND_RECOVERY_AUTHORITY_CHANGED')
             result['rejectedWorkBaseline']=baseline_admission
@@ -222,6 +226,15 @@ def run(a,d,m,out,work,record,stop_load):
                                  'deadlineMs':min(int(until*1000)-5000,result['restartEndedAtMs']+120000),
                                  'attribution':a.progress_attribution(m)})
             result['runtimeRecovery']=proof
+            if proof.get('verdict')=='UNMEASURED' and proof.get('code') in ('M7_EVALUATOR_RECOVERY_NOT_OBSERVED','M7_EVALUATOR_PROGRESS_UNAVAILABLE'):
+                # Unknown evaluator availability limits recovery claims, not the
+                # unrelated finite REST workload. Keep durable fences enforced.
+                future.result(timeout=a.remaining_seconds(max(1,until-time.time()-3)))
+                after,cost_after=collector();auth_after=authority(a,d,ids)
+                result['continuedDurable']=continued_durable(before,after,ids,collector.binding,auth_before,auth_after)
+                result['captures'].update(after=after,authorityAfter=auth_after,costAfter=cost_after)
+                result.update(verdict='UNMEASURED',code=proof['code'],ordinaryWindow='ordinary load finished; evaluator recovery availability remains UNMEASURED')
+                record.value['demandRecovery']=result;record.save();return result
             if proof.get('verdict')!='PASS':raise p.Refused(proof.get('code','M7_DEMAND_RECOVERY_RUNTIME_NOT_OBSERVED'),proof.get('verdict','UNMEASURED'))
             live(future);bound()
             after,cost_after=collector();auth_after=authority(a,d,ids)

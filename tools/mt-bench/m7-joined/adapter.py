@@ -924,10 +924,16 @@ def attachment_generator(d,source,root,m,owner_file=None):
                 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
         require(source==(directory/'core').resolve() and root==(directory/'dependencies').resolve(),'M7_ATTACH_RUNTIME_DEPENDENCY_ROOT')
         prior=runtime.get('generator',{});provenance=directory/'generator-provenance.json'
-        require(prior.get('kind')=='owned-lockfile-install' and provenance.is_file() and document(provenance)==prior
+        require(prior.get('kind') in ('owned-lockfile-install','owned-qualified-dependency-copy') and provenance.is_file() and document(provenance)==prior
                 and prior.get('pair')==m['pair'] and prior.get('servingImageId')==m['imageId']
                 and prior.get('packageSha256')==hashes['package.json'] and prior.get('lockSha256')==hashes['package-lock.json'],
                 'M7_ATTACH_RUNTIME_GENERATOR_CHANGED')
+        if prior['kind']=='owned-qualified-dependency-copy':
+            qualification=runtime.get('dependencyReuse');ready=root/'dependency-reuse-ready.json'
+            require(isinstance(qualification,dict) and prior.get('reuseProvenance',{}).get('qualification')==qualification
+                    and ready.is_file() and not ready.is_symlink() and document(ready)==prior['reuseProvenance']
+                    and dependency_reuse.tree(root/'node_modules')==qualification.get('tree'),
+                    'M7_ATTACH_RUNTIME_DEPENDENCY_COPY_CHANGED')
         binding={'ownerFile':str(owner_file.resolve()),'ownerFileSha256':digest(owner_file),'owner':runtime['owner'],
                  'instrument':runtime['instrument'],'generatorProvenanceSha256':digest(provenance)}
     if runtime and runtime.get('diagnosticResources'):
@@ -1481,23 +1487,24 @@ def readiness(d, m):
     while time.monotonic()<deadline and len(observations)<evaluator_progress.POLICY['readinessMaxRounds']:
         value=None
         try:
-            value=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True)
+            value=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True,allow_unavailable=m.get('runPurpose')=='discovery')
             queries+=value['queries'];bytes_seen+=value['bytes']
             evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
-            evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
+            if m.get('runPurpose')!='discovery':evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
             if m.get('runPurpose')=='discovery':
                 time.sleep(.25)
-                confirmed=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args))
+                confirmed=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True,allow_unavailable=True)
                 queries+=confirmed['queries'];bytes_seen+=confirmed['bytes']
                 evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
                 admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids)
                 write(d/'readiness-stable-baseline.private.json',evaluator_progress.pack({'rounds':[value,confirmed]}))
-                observations.append({'verdict':'PASS',**admission})
+                observations.append({'verdict':admission['availability']['verdict'],**admission})
             else:
                 evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
-            write(d/'runtime-readiness.json',{'verdict':'PASS','policy':evaluator_progress.POLICY,'observations':observations,'meaning':'completed fresh-window acquisitions; legacy cycles alone are insufficient'})
-            return
+            result={'verdict':admission['availability']['verdict'] if m.get('runPurpose')=='discovery' else 'PASS','policy':evaluator_progress.POLICY,'observations':observations,'meaning':'sampled evaluator availability; UNMEASURED availability does not stop discovery REST; durable completion is separate'}
+            write(d/'runtime-readiness.json',result)
+            return result
         except evaluator_progress.Refused as error:
             cost=getattr(error,'collection',{})
             if value is None:queries+=cost.get('queries',0);bytes_seen+=cost.get('bytes',0)

@@ -110,10 +110,10 @@ class DemandRecovery(unittest.TestCase):
    def work():
     events.append('load');self.marker(out/'k6.log','jwt-setup-start' if broken=='setup' else 'scenario-first-iteration')
     if broken=='setup':return
-    if broken in ('baseline-unmeasured','baseline-failed'):finished.wait(1.4)
+    if broken in ('baseline-unmeasured','baseline-failed','unknown-recovery'):finished.wait(1.4)
     elif not finished.wait(5):raise RuntimeError('TEST_LOAD_JOIN_TIMEOUT')
     events.append('load-ended')
-   def proof(*args):events.append('recovery');return {'verdict':'PASS'}
+   def proof(*args):events.append('recovery');return {'verdict':'UNMEASURED','code':'M7_EVALUATOR_RECOVERY_NOT_OBSERVED'} if broken=='unknown-recovery' else {'verdict':'PASS'}
    auth=self.auth();after=copy.deepcopy(auth)
    if broken=='authority':after[0]['generation']='2'
    stack.enter_context(patch.object(r,'authority',side_effect=[auth,auth,after]));from test_evaluator_progress import Progress
@@ -125,7 +125,7 @@ class DemandRecovery(unittest.TestCase):
    stack.enter_context(patch.object(r.recovery.subprocess,'run',side_effect=AssertionError('NATIVE_SUBPROCESS_FORBIDDEN_IN_FIXTURE')))
    record=SimpleNamespace(value={},save=Mock());stop=Mock(side_effect=finished.set)
    with a.command_deadline(time.time()+20):
-    if broken and broken not in ('baseline-unmeasured','baseline-failed'):
+    if broken and broken not in ('baseline-unmeasured','baseline-failed','unknown-recovery'):
      with self.assertRaises(RuntimeError):r.run(fake,d,m,out,work,record,stop)
     else:r.run(fake,d,m,out,work,record,stop)
    result=a.document(out/'demand-recovery.json')
@@ -133,11 +133,14 @@ class DemandRecovery(unittest.TestCase):
    if broken=='no-change':self.assertNotIn('recovery',events)
    if not broken:
     self.assertEqual(result['verdict'],'PASS');self.assertLess(events.index('restart'),events.index('load-ended'));self.assertLess(events.index('recovery'),events.index('load-ended'))
+   elif broken=='unknown-recovery':
+    self.assertEqual(result['verdict'],'UNMEASURED');self.assertTrue(result['faultExercised']);stop.assert_not_called();self.assertIn('load-ended',events)
    elif broken in ('baseline-unmeasured','baseline-failed'):
     self.assertEqual(result['verdict'],'UNMEASURED');self.assertFalse(result['faultExercised']);stop.assert_not_called();self.assertIn('load-ended',events)
     self.assertEqual(result['baselineObservation']['collection']['queries'],1);self.assertTrue(baseline.call_args.kwargs['warming'])
    else:self.assertEqual(result['verdict'],'FAIL')
  def test_actual_caller_recovers_while_load_is_live(self):self.caller()
+ def test_unknown_runtime_recovery_keeps_ordinary_rest_running(self):self.caller('unknown-recovery')
  def test_restart_before_scenario_refuses(self):self.caller('setup')
  def test_changed_role_roster_refuses_before_effect(self):self.caller('roles')
  def test_no_actual_role_change_refuses_recovery(self):self.caller('no-change')

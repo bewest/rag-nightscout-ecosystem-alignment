@@ -76,6 +76,25 @@ class AttachmentDependencies(unittest.TestCase):
         self.m['runtimeOwnerLabels']=['0'*32]
         with self.assertRaisesRegex(RuntimeError,'RUNTIME_OWNER_MISMATCH'):self.run_binding()
         self.m['runtimeOwnerLabels']=['d'*32];self.run_binding()
+    def test_qualified_copy_retains_ready_receipt_full_tree_and_context_checks(self):
+        qualification={'tree':{'sha256':'1'*64,'entries':3,'files':2}}
+        self.owner['dependencyReuse']=qualification
+        self.owner['generator'].update(kind='owned-qualified-dependency-copy',reuseProvenance={'qualification':qualification})
+        self.save();ready=self.root/'dependency-reuse-ready.json';ready.write_text(json.dumps(self.owner['generator']['reuseProvenance']))
+        with patch.object(a.dependency_reuse,'tree',return_value=qualification['tree']) as tree:
+            self.run_binding();tree.assert_called_with(self.root/'node_modules')
+            ready.write_text('{}')
+            with self.assertRaisesRegex(RuntimeError,'DEPENDENCY_COPY_CHANGED'):self.run_binding()
+            ready.write_text(json.dumps(self.owner['generator']['reuseProvenance']))
+            tree.return_value={**qualification['tree'],'sha256':'0'*64}
+            with self.assertRaisesRegex(RuntimeError,'DEPENDENCY_COPY_CHANGED'):self.run_binding()
+            tree.return_value=qualification['tree'];self.run_binding()
+            self.client_mock.return_value={**self.client,'entrySha256':'0'*64}
+            with self.assertRaisesRegex(RuntimeError,'DEPENDENCY_CONTEXT_CHANGED'):self.run_binding()
+            self.client_mock.return_value=self.client;self.run_binding()
+            self.tools['node']['path']='/synthetic/changed-node'
+            with self.assertRaisesRegex(RuntimeError,'DEPENDENCY_CONTEXT_CHANGED'):self.run_binding()
+
     def test_owner_provenance_and_actual_client_context_drift_refuse(self):
         original=self.provenance.read_bytes();self.provenance.write_text('{}')
         with self.assertRaisesRegex(RuntimeError,'RUNTIME_GENERATOR_CHANGED'):self.run_binding()

@@ -27,6 +27,7 @@ def assess(baseline, rounds, ids,*,policy=p.POLICY,discovery_unclassified_reject
         p.need(b['failedCompletions']>=a['failedCompletions'] and b['legacyCycles']>=a['legacyCycles'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
         if not discovery_unclassified_rejections:p.need(a['failedCompletions']==b['failedCompletions'],'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         if not discovery_unclassified_rejections:p.need(a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
+        if discovery_unclassified_rejections:p.need(a['ready'] and b['ready'],'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
         p.need(a['completedAcquisitions']>0 and b['completedAcquisitions']>=a['completedAcquisitions'] and b['completedTimeCycles']>=a['completedTimeCycles'],'M7_EVALUATOR_RECOVERY_NOT_OBSERVED')
     for service,rows in first['allRows'].items():
         for tenant,a in rows.items():
@@ -43,8 +44,8 @@ def verify(value,tenants,services):
     legacy=value.get('kind')=='evaluator-recovery-v1';policy=p.LEGACY_POLICY if legacy else p.POLICY
     columns=p.LEGACY_COLUMNS if legacy else p.COLUMNS
     p.need(value.get('kind')==('evaluator-recovery-v1' if legacy else 'evaluator-recovery-v2') and value.get('policy')==policy and value.get('columns')==list(columns),'M7_EVALUATOR_RECOVERY_PROOF')
-    baseline,ids=p.decode_rounds({'rounds':value.get('baseline'),'columns':value.get('columns')},tenants,services)
-    rounds,other=p.decode_rounds({'rounds':value.get('rounds'),'columns':value.get('columns')},tenants,services)
+    baseline,ids=p.decode_rounds({'rounds':value.get('baseline'),'columns':value.get('columns')},tenants,services,allow_unavailable=value.get('discoveryUnclassifiedRejections') is True)
+    rounds,other=p.decode_rounds({'rounds':value.get('rounds'),'columns':value.get('columns')},tenants,services,allow_unavailable=value.get('discoveryUnclassifiedRejections') is True)
     p.need(len(baseline)==1 and ids==other,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     result=assess(baseline[0],rounds,sorted(ids),policy=policy,discovery_unclassified_rejections=value.get('discoveryUnclassifiedRejections') is True);recorded=value.get('result',{})
     p.need({k:v for k,v in recorded.items() if k!='sampling'}==result,'M7_EVALUATOR_RECOVERY_ASSESSMENT')
@@ -65,14 +66,14 @@ def main(spec):
         p.need(result.returncode==0,'M7_EVALUATOR_PROGRESS_UNAVAILABLE');return result.stdout
     path=Path(spec['path']);path.parent.mkdir(parents=True,exist_ok=True)
     if spec['mode']=='baseline':
-        value=p.round_view(services,ids,fetch);path.write_text(json.dumps(value,separators=(',',':')));os.chmod(path,0o600)
+        value=p.round_view(services,ids,fetch,allow_unavailable=spec.get('discoveryUnclassifiedRejections') is True);path.write_text(json.dumps(value,separators=(',',':')));os.chmod(path,0o600)
         return {'version':p.POLICY['version'],'instances':value['instances'],'queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']}
     baseline=json.loads(Path(spec['baseline']).read_text());rounds=[];errors=[];queries=0;bytes_seen=0;wall=0;result=None;started=time.monotonic()
     try:
         for attempt in range(60):
             if time.time()*1000>=spec['deadlineMs']:break
             try:
-                value=p.round_view(services,ids,fetch,warming=True)
+                value=p.round_view(services,ids,fetch,warming=True,allow_unavailable=spec.get('discoveryUnclassifiedRejections') is True)
                 rounds=(rounds+[value])[-2:];queries+=value['queries'];bytes_seen+=value['bytes'];wall+=value['wallSeconds']
                 p.need(queries<=p.POLICY['readinessMaxQueries'] and bytes_seen<=p.POLICY['readinessMaxBytes'],'M7_EVALUATOR_RECOVERY_BUDGET')
                 if len(rounds)==2:

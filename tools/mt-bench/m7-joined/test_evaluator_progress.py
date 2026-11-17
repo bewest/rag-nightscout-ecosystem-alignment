@@ -130,6 +130,35 @@ class Progress(unittest.TestCase):
         with self.assertRaises(AssertionError):criterion(lambda args,m:None)
         criterion(a.select_opportunities)
 
+    def test_discovery_unavailable_preserves_actual_ready_and_job_state(self):
+        for changed,reason in [({'running':True},'BUSY'),({'booting':True},'BOOTING'),({},'COLD_OR_UNOBSERVED')]:
+            frame=self.frame(ids=[A]);raw=frame['view']['tenants'][0];raw.update(ready=False,jobs={**dict.fromkeys(p.JOB_FLAGS,False),**changed})
+            fetch=lambda *_:json.dumps(frame).encode()
+            point=p.round_view(['evaluator'],[A],fetch,allow_unavailable=True)
+            self.assertFalse(point['owners'][A]['ready'])
+            result=p.availability([point],[A]);self.assertEqual(result['verdict'],'UNMEASURED');self.assertEqual(result['classifications'][reason],1)
+            packed=p.pack({'rounds':[point]})
+            decoded,_=p.decode_rounds(packed,1,['evaluator'],allow_unavailable=True)
+            self.assertEqual(decoded[0]['owners'][A]['jobState'],raw['jobs'])
+            with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):p.decode_rounds(packed,1,['evaluator'])
+            with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):p.round_view(['evaluator'],[A],fetch)
+            for key,value in [('code','EVALUATOR_WINDOW_REFUSED'),('evaluation',{'alert':'CURRENT_ERROR'})]:
+                bad=copy.deepcopy(frame);bad['view']['tenants'][0][key]=value
+                with self.assertRaisesRegex(p.Refused,'PROGRESS_ERROR'):p.round_view(['evaluator'],[A],lambda *_:json.dumps(bad),allow_unavailable=True)
+            packed['rounds'][0]['rows'][0][p.COLUMNS.index('jobState')]=None
+            with self.assertRaisesRegex(p.Refused,'PROGRESS_CONTRACT'):p.decode_rounds(packed,1,['evaluator'],allow_unavailable=True)
+
+    def test_actual_readiness_discovery_unavailability_is_unmeasured(self):
+        import adapter as a
+        frame=self.frame(ids=[A]);frame['view']['tenants'][0].update(ready=False,jobs=dict.fromkeys(p.JOB_FLAGS,False))
+        with tempfile.TemporaryDirectory() as name:
+            d=Path(name);(d/'tenants.private.json').write_text(json.dumps([{'id':A}]))
+            with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)):
+                result=a.readiness(d,{'runPurpose':'discovery'})
+            self.assertEqual(result['verdict'],'UNMEASURED')
+            saved=json.loads((d/'readiness-stable-baseline.private.json').read_text())
+            self.assertFalse(saved['rounds'][0]['rows'][0][p.COLUMNS.index('ready')])
+
     def test_closed_window_state_and_wrong_self_coverage_fail(self):
         def broken(frame):frame['view']['tenants'][0]['code']='EVALUATOR_WINDOW_REFUSED';return frame
         with self.assertRaises(p.Refused) as caught:self.round(transform=broken)

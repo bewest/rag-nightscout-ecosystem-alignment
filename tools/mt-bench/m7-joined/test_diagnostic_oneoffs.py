@@ -65,6 +65,36 @@ class DiagnosticOneoffs(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'RESOURCE_RECORD_CHANGED'):
             b._oneoff_intent(self.binding,'k6-version',argv,self.scope,self.meta,self.root/'cid')
 
+    def test_prospective_discovery_driver_preserves_runtime_and_native_guards(self):
+        self.selected()
+        owner=b.load(self.root/'owner.json')
+        owner.update(runPurpose='discovery',profile='pgstream-sample',pair={'core':'a'*40,'deploy':'b'*40},
+                     imageId=self.scope['imageId'],instrument={'sha256':'c'*64})
+        (self.root/'owner.json').write_text(json.dumps(owner))
+        original=copy.deepcopy(owner['diagnosticResources'])
+        with r.discovery_driver(owner) as record:
+            (self.root/'loadgen-resource-allocation.json').write_text(json.dumps(record))
+            argv=adapter.bounded_k6_argv(self.argv)
+            self.assertEqual(argv[3:9],['--cpus','2','--memory',str(4096*r.MIB),'--memory-swap',str(4096*r.MIB)])
+            intent=b._oneoff_intent(self.binding,'k6-version',argv,self.scope,self.meta,self.root/'cid')
+            self.assertEqual(owner['diagnosticResources'],original)
+            limits=intent['layout']['resourceLimits']
+            row={'State':{'Status':'running'},'Config':{'Labels':{'com.docker.compose.service':'k6'}},'HostConfig':limits}
+            r._ACTIVE.observe=lambda:[row]
+            self.assertEqual(r._ACTIVE.containers()['k6'],1)
+            row['HostConfig']['Memory']=1024*r.MIB
+            with self.assertRaisesRegex(RuntimeError,'NATIVE_LIMITS_CHANGED'):r._ACTIVE.containers()
+            row['HostConfig']['Memory']=4096*r.MIB
+            for field,value in [('owner','d'*32),('k6',{'millicpus':4000,'memoryBytes':4096*r.MIB,'maximumConcurrent':1})]:
+                changed=copy.deepcopy(record);changed[field]=value
+                (self.root/'loadgen-resource-allocation.json').write_text(json.dumps(changed))
+                with self.assertRaisesRegex(RuntimeError,'DRIVER_ALLOCATION_CHANGED'):
+                    b._oneoff_intent(self.binding,'k6-version',argv,self.scope,self.meta,self.root/'cid')
+            (self.root/'loadgen-resource-allocation.json').write_text(json.dumps(record))
+            b._oneoff_intent(self.binding,'k6-version',argv,self.scope,self.meta,self.root/'cid')
+        self.assertEqual(r.standalone_limit(),r.LIMITS['k6'])
+        self.assertIsNone(r.discovery_driver_record({**owner,'runPurpose':'acceptance'}))
+
     def test_checked_custody_labels_do_not_break_resource_command_guard(self):
         argv=self.selected();effects=[]
         def runner(args):

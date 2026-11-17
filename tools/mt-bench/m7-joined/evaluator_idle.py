@@ -52,13 +52,13 @@ def clock_windows(rounds):
     p.need(lower is not None and lower<=upper,'M7_EVALUATOR_IDLE_CLOCK')
     return {'offsetLowerUs':lower,'offsetUpperUs':upper}
 
-def round_view(services,ids,fetch):
+def round_view(services,ids,fetch,*,allow_unavailable=False):
     captured={};windows={};started=time.monotonic()
     def measured(service,*args):
         a=stamp();raw=fetch(service,*args);b=stamp()
         raw=raw.encode() if isinstance(raw,str) else raw;captured[service]=raw
         windows[service]={'start':a,'end':b,'observedAt':[]};return raw
-    value=p.round_view(services,ids,measured)
+    value=p.round_view(services,ids,measured,allow_unavailable=allow_unavailable)
     for service,raw in captured.items():
         for line in raw.splitlines():
             page=json.loads(line);windows[service]['observedAt'].append(page.get('observedAt'))
@@ -152,22 +152,24 @@ def assess(rounds,ids,phase='idle',*,tail=None):
             'completionTail':None if point is None else {'selected':pending,'completedWorkDelta':sum(work(point['owners'][t])-work(rounds[-1]['owners'][t]) for t in pending),'completedTimeDelta':sum(point['owners'][t]['completedTimeCycles']-rounds[-1]['owners'][t]['completedTimeCycles'] for t in pending),'queries':point['queries'],'responseBytes':point['bytes'],'collectorWallSeconds':point['wallSeconds'],'elapsedSeconds':tail['elapsedSeconds'],'clockGuard':clock_windows(rounds+[point]),'costScope':'outside original metric window; selected owners only; no global tail quiescence'}}
 
 def _pack_round(raw):
-    return {**{k:v for k,v in raw.items()if k not in ('owners','allRows')},'rows':[[tenant]+[(sum((1<<i)for i,flag in enumerate(FLAGS)if row['jobs'][flag])if key=='jobs'else row[key])for key in COLUMNS[1:]]for service,values in sorted(raw['allRows'].items())for tenant,row in sorted(values.items())]}
+    return {**{k:v for k,v in raw.items()if k not in ('owners','allRows')},'rows':[[tenant]+[(sum((1<<i)for i,flag in enumerate(FLAGS)if row['jobs'][flag])if key=='jobs'else row.get(key) if key=='jobState' else row[key])for key in COLUMNS[1:]]for service,values in sorted(raw['allRows'].items())for tenant,row in sorted(values.items())]}
 
 def pack(value):
     result={**value,'kind':ARTIFACT_KIND,'columns':list(COLUMNS),'rounds':[_pack_round(r)for r in value.get('rounds',[])]}
     if value.get('tailRound')is not None:result['tailRound']={**value['tailRound'],'round':_pack_round(value['tailRound']['round'])}
     return result
 
-def _decode(value,tenants,services):
+def _decode(value,tenants,services,*,allow_unavailable=False):
     p.need(isinstance(value,dict) and isinstance(value.get('rounds'),list) and all(isinstance(r,dict) and isinstance(r.get('rows'),list) and all(isinstance(row,list) and len(row)==len(COLUMNS)for row in r['rows'])for r in value['rounds']),'M7_EVALUATOR_IDLE_TAIL_COVERAGE')
     base=copy.deepcopy(value);base['kind']='evaluator-progress-phase-v2';base['columns']=list(p.COLUMNS)
     for raw in base['rounds']:raw['rows']=[row[:-1]for row in raw['rows']]
-    rounds,ids=p.decode_rounds(base,tenants,services)
+    rounds,ids=p.decode_rounds(base,tenants,services,allow_unavailable=allow_unavailable)
     for source,current in zip(value['rounds'],rounds):
         for row in source['rows']:
             flags=row[-1];p.need(type(flags)is int and 0<=flags<1<<len(FLAGS),'M7_EVALUATOR_IDLE_JOBS')
             current['allRows'][row[1]][row[0]]['jobs']={flag:bool(flags&(1<<i))for i,flag in enumerate(FLAGS)}
+            job_state=current['allRows'][row[1]][row[0]].get('jobState')
+            p.need(job_state is None or job_state==current['allRows'][row[1]][row[0]]['jobs'],'M7_EVALUATOR_IDLE_JOBS','FAIL')
     return rounds,ids
 
 def verify(value,tenants,services,phase='idle'):

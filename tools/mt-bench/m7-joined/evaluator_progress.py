@@ -13,7 +13,7 @@ LEGACY_POLICY={'version':1,'moduleVersion':2,'selectorRows':128,'maxTenants':100
         'responseMaxBytes':1048576,'rpcTimeoutMs':5000,'roundDeadlineMs':15000,
         'idleWitness':'successful-time-only-completion','loadWitness':'successful-work-progression',
         'recoveryCadenceMs':15000,'recoveryTimeoutMs':900000,'recoveryMaxRounds':60,'readinessMaxQueries':25600,'readinessMaxBytes':268435456,'readinessMaxRounds':80,'deadlineClaim':False,'workloadCohortChanged':False}
-POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':4,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
+POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':5,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
 
 class Refused(RuntimeError):
     def __init__(self,code,verdict='UNMEASURED'):
@@ -66,7 +66,7 @@ def _refusal_row(row,service,runtime_id):
         return {'evidence':'UNMEASURED','code':'M7_REFUSAL_ROW_BOUND'}
     return value
 
-def _round_view(services,ids,fetch,warming=False):
+def _round_view(services,ids,fetch,warming=False,allow_unavailable=False):
     """fetch(service,ids,query_budget,byte_budget) returns private JSONL bytes.
 
     At most four actual instance execs run concurrently. The source helper
@@ -117,19 +117,20 @@ def _round_view(services,ids,fetch,warming=False):
                 contract(integer(value['legacyCycles']),'cycles','NONNEGATIVE_SAFE_INTEGER_REQUIRED')
                 for field in ('admitted','ready'):
                     contract(type(value[field]) is bool,field,'BOOLEAN_REQUIRED')
-                value.update(due_fields(row))
+                value.update(due_fields(row));value['jobState']=row.get('jobs')
+                if value['jobState'] is not None:job_state(value['jobState'])
                 all_rows[service][tenant]=value
                 if not value['admitted']:
                     need(not value['ready'],'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL');continue
                 need(tenant not in owners,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
                 warm_code=warming and value['code'] in ('EVALUATOR_STARTING','EVALUATOR_ACQUISITION_REQUIRED')
-                for field,valid,predicate in (('ready',value['ready'],'OWNER_READY_REQUIRED'),('code',value['code'] is None,'OWNER_CODE_NULL_REQUIRED'),('evaluation.alert',value['alert'] is None,'OWNER_ALERT_NULL_REQUIRED')):
+                for field,valid,predicate in (('ready',value['ready'] or allow_unavailable and value['code'] is None and value['alert'] is None and job_state(value['jobState']),'OWNER_READY_REQUIRED'),('code',value['code'] is None,'OWNER_CODE_NULL_REQUIRED'),('evaluation.alert',value['alert'] is None,'OWNER_ALERT_NULL_REQUIRED')):
                     contract(valid,field,predicate,'M7_EVALUATOR_PROGRESS_ERROR','UNMEASURED' if warm_code else 'FAIL')
                 # A first admitted cycle can be ready before its operation-window
                 # release has completed. It earns no credit yet; readiness must
                 # still wait for completedAcquisitions > 0. Only that complete
                 # zero-credit shape may have null age, and only during warming.
-                first_release=warming and all(value[k]==0 for k in ('completedAcquisitions','completedTimeCycles','failedCompletions'))
+                first_release=(warming or allow_unavailable and value['jobState'] is not None) and all(value[k]==0 for k in ('completedAcquisitions','completedTimeCycles'))
                 contract(age is not None or first_release,'lastCompletedAgeMs','COMPLETION_AGE_OR_FIRST_RELEASE_REQUIRED')
                 owners[tenant]=value
         need(seen==known,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
@@ -139,12 +140,12 @@ def _round_view(services,ids,fetch,warming=False):
     need(queries==max_queries*len(services),'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
     return {'instances':identities,'owners':owners,'allRows':all_rows,'queries':queries,'bytes':bytes_seen,'wallSeconds':time.monotonic()-started}
 
-def round_view(services,ids,fetch,warming=False):
+def round_view(services,ids,fetch,warming=False,allow_unavailable=False):
     captured={};started=time.monotonic()
     def measured(service,*args):
         value=fetch(service,*args);captured[service]=value.encode() if isinstance(value,str) else value
         return value
-    try:return _round_view(services,ids,measured,warming)
+    try:return _round_view(services,ids,measured,warming,allow_unavailable)
     except Refused as error:
         error.collection={'queries':sum(len(v.splitlines()) for v in captured.values() if isinstance(v,bytes)),
                           'bytes':sum(len(v) for v in captured.values() if isinstance(v,bytes)),
@@ -225,12 +226,12 @@ class Observer:
 
 
 LEGACY_COLUMNS=('tenant','service','generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs','legacyCycles','admitted','ready','code','alert')
-COLUMNS=LEGACY_COLUMNS+('dueAt','dueReason')
+COLUMNS=LEGACY_COLUMNS+('dueAt','dueReason','jobState')
 
 def pack(value):
     result={**value,'kind':'evaluator-progress-phase-v2','columns':list(COLUMNS),'rounds':[]}
     for raw in value.get('rounds',[]):
-        result['rounds'].append({**{k:v for k,v in raw.items() if k not in ('owners','allRows')},'rows':[[tenant]+[row[key] for key in COLUMNS[1:]] for service,values in sorted(raw['allRows'].items()) for tenant,row in sorted(values.items())]})
+        result['rounds'].append({**{k:v for k,v in raw.items() if k not in ('owners','allRows')},'rows':[[tenant]+[row.get(key) if key=='jobState' else row[key] for key in COLUMNS[1:]] for service,values in sorted(raw['allRows'].items()) for tenant,row in sorted(values.items())]})
     return result
 
 
@@ -247,7 +248,7 @@ def verify(value,tenants,services,phase):
     return result
 
 
-def decode_rounds(value,tenants,services):
+def decode_rounds(value,tenants,services,*,allow_unavailable=False):
     columns=value.get('columns')
     need(columns in (list(LEGACY_COLUMNS),list(COLUMNS)),'M7_EVALUATOR_PROGRESS_COLUMNS')
     legacy=columns==list(LEGACY_COLUMNS)
@@ -267,10 +268,12 @@ def decode_rounds(value,tenants,services):
             age=row['lastCompletedAgeMs']
             need(all(integer(row[k]) for k in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions')) and (age is None or type(age) in (int,float) and math.isfinite(age) and age>=0),'M7_EVALUATOR_PROGRESS_CONTRACT')
             need(integer(row['legacyCycles']) and type(row['admitted']) is bool and type(row['ready']) is bool,'M7_EVALUATOR_PROGRESS_CONTRACT')
-            if not legacy:due_fields(row)
+            if not legacy:
+                due_fields(row)
+                if row.get('jobState') is not None:job_state(row['jobState'])
             row['runtimeId']=raw['instances'][service]['runtimeId'];all_rows[service][tenant]=row
             if row['admitted']:
-                need(tenant not in owners and row['ready'] and row['code'] is None and row['alert'] is None and age is not None,'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
+                need(tenant not in owners and (row['ready'] or allow_unavailable and job_state(row.get('jobState'))) and row['code'] is None and row['alert'] is None and (age is not None or allow_unavailable and row.get('jobState') is not None and row['completedAcquisitions']==row['completedTimeCycles']==0),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
                 owners[tenant]=row
             else:need(not row['ready'],'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
         need(len(owners)==tenants and all(set(values)==set(owners) for values in all_rows.values()),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
@@ -282,12 +285,31 @@ def decode_rounds(value,tenants,services):
 
 def stable_discovery_baseline(first,last,ids):
     """Historical uncredited attempts may predate this healthy stable bracket."""
-    decoded,actual=decode_rounds(pack({'rounds':[first,last,last]}),len(ids),list(first['instances']))
+    decoded,actual=decode_rounds(pack({'rounds':[first,last,last]}),len(ids),list(first['instances']),allow_unavailable=True)
     need(actual==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     try:assess(decoded,ids,'load',discovery_unclassified_rejections=True)
     except Refused as error:
         if str(error)!='M7_EVALUATOR_PROGRESS_NOT_OBSERVED':raise
     return {'baselineUncreditedAttempts':sum(row['failedCompletions'] for row in first['owners'].values()),
             'uncreditedAttemptDelta':sum(last['owners'][tenant]['failedCompletions']-first['owners'][tenant]['failedCompletions'] for tenant in ids),
+            'availability':availability([first,last],ids),
             'dependentRejectionCauseClaim':'UNMEASURED',
             'causeAttribution':'UNMEASURED','scope':'stable healthy same-runtime bracket; historical count does not establish a clinical failure or globally error-free execution'}
+
+
+JOB_FLAGS=('running','booting','acquire','time','parentAcquire','parentTime')
+def job_state(value):
+    need(isinstance(value,dict) and set(value)==set(JOB_FLAGS) and all(type(v)is bool for v in value.values()),'M7_EVALUATOR_PROGRESS_CONTRACT','FAIL')
+    return True
+
+def availability(rounds,ids):
+    counts={'READY':0,'BUSY':0,'BOOTING':0,'COLD_OR_UNOBSERVED':0,'FIRST_WINDOW_UNCONFIRMED':0}
+    for point in rounds:
+        for tenant in ids:
+            row=point['owners'][tenant]
+            if row['ready'] and row['completedAcquisitions']>0 and row['lastCompletedAgeMs'] is not None:reason='READY'
+            else:
+                job_state(row.get('jobState'));jobs=row['jobState']
+                reason='BUSY' if jobs['running'] else 'BOOTING' if jobs['booting'] else 'COLD_OR_UNOBSERVED' if not row['ready'] else 'FIRST_WINDOW_UNCONFIRMED'
+            counts[reason]+=1
+    return {'verdict':'PASS' if sum(counts.values())==counts['READY'] else 'UNMEASURED','sampledRows':sum(counts.values()),'classifications':counts,'scope':'availability only; busy/booting/cold causes are not proven benign; durable completion and client correctness are separate'}

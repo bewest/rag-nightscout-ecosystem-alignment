@@ -110,6 +110,17 @@ class Resources(unittest.TestCase):
         broken=config(); broken['services']['api']['deploy']={'resources':{'limits':{'cpus':'9'}}}
         with self.assertRaisesRegex(RuntimeError,'ALTERNATE_LIMITS'): r.overlay(broken,r.NAME)
 
+    def test_compose_json_equivalent_scalar_types_preserve_exact_limits(self):
+        rendered=r.overlay(config(),r.NAME)
+        for spec in rendered['services'].values():
+            if spec['cpus']==int(spec['cpus']):spec['cpus']=int(spec['cpus'])
+            for key in ('mem_limit','memswap_limit'):spec[key]=str(spec[key])
+        self.assertEqual(r.overlay(rendered,r.NAME),rendered)
+        r.verify_config(rendered,r.plan(rendered))
+        for key,value in [('cpus',2),('mem_limit','1g'),('memswap_limit','1'),('cpus',True)]:
+            broken=copy.deepcopy(rendered);broken['services']['api'][key]=value
+            with self.assertRaisesRegex(RuntimeError,'EXISTING_LIMIT_CONFLICT'):r.verify_config(broken,r.plan(broken))
+
     def test_actual_adapter_node_argv_and_red_restored_stripped_cap(self):
         a=self.a; recorded=[]
         def run(argv,**kw):

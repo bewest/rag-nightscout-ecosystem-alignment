@@ -63,7 +63,7 @@ def all_roster(rounds,ids,phase):
     # Re-decode to enforce every row's readiness/admission/health independently of
     # eligibility. Then run process/counter/foreign/reset/hidden-error checks.
     p.need(bool(rounds),'M7_EVALUATOR_PROGRESS_ROUNDS')
-    decoded,actual_ids=p.decode_rounds(p.pack({'rounds':rounds}),len(ids),list(rounds[0]['instances']))
+    decoded,actual_ids=p.decode_rounds(p.pack({'rounds':rounds}),len(ids),list(rounds[0]['instances']),allow_unavailable=True)
     p.need(actual_ids==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     for raw,current in zip(rounds,decoded):
         for tenant,owner in raw['owners'].items():
@@ -128,7 +128,7 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
     eligible=counts['KNOWN_COMPLETED']+counts['KNOWN_PENDING']
     return {'kind':'evaluator-opportunity-assessment-v1','assessmentVersion':2,'phase':phase,
             'verdict':'PASS' if eligible and not counts['KNOWN_PENDING'] and not counts['UNMEASURED'] else 'UNMEASURED',
-            'allRosterHealth':'PASS','uncreditedAttempts':p.stable_discovery_baseline(rounds[0],rounds[-1],ids),'tenants':len(ids),'eligibleTenants':eligible,'classifications':counts,'byTenant':outcomes,
+            'allRosterHealth':p.availability(rounds,ids)['verdict'],'availability':p.availability(rounds,ids),'uncreditedAttempts':p.stable_discovery_baseline(rounds[0],rounds[-1],ids),'tenants':len(ids),'eligibleTenants':eligible,'classifications':counts,'byTenant':outcomes,
             'inputSourceTenantCoverage':{k:len(v) for k,v in source_tenants.items()},
             'revisionCoverage':'exact final target revision per tenant/source in byTenant; intermediate revisions not continuously observed',
             'ordinaryWriteKindCoverage':'UNMEASURED; writer clock does not identify entries/treatments/devicestatus',
@@ -174,7 +174,7 @@ class Observer(p.Observer):
         try:
             start=time.monotonic_ns();snapshot,cost=self.durable_fetch();end=time.monotonic_ns()
             self.durable.append(snapshot);self.costs.append(cost)
-            row=idle.round_view(self.services,self.ids,self.fetch)
+            row=idle.round_view(self.services,self.ids,self.fetch,allow_unavailable=True)
             self.rounds.append(row);self.windows.append({'startNs':start,'durableEndNs':end,'inspectionEndNs':time.monotonic_ns()})
         except Exception as error:
             self.failure=error
@@ -225,7 +225,7 @@ def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None
     p.need(value.get('durableBinding')==binding,'M7_OPPORTUNITY_BINDING','FAIL')
     for key,expected in [('durableSourceSha256',source_sha256),('durableQuerySha256',query_sha256)]:
         p.need(isinstance(value.get(key),str) and re.fullmatch('[a-f0-9]{64}',value[key]) and (expected is None or value[key]==expected),'M7_OPPORTUNITY_BINDING','FAIL')
-    rounds,ids=idle._decode(value,tenants,services);capture_windows(value.get('captureWindows'),3)
+    rounds,ids=idle._decode(value,tenants,services,allow_unavailable=True);capture_windows(value.get('captureWindows'),3)
     collection_cost(value.get('durableCollectorCost'),value['captureWindows'],tenants)
     result=assess(rounds,sorted(ids),value.get('phase'),durable=value.get('durable'),binding=binding)
     p.need(all(value.get(k)==v for k,v in result.items() if k not in ('kind','durableCollectorCost')),'M7_OPPORTUNITY_ASSESSMENT')

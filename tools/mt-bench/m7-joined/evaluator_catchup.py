@@ -164,7 +164,7 @@ def run(a, directory, manifest, record):
                    for k in ('k6', 'probe')), 'M7_DRAIN_WRITERS_NOT_JOINED')
         stopped = max(processes[k]['endMonoNs'] for k in ('k6', 'probe'))
         original = a.document(directory / 'load/evaluator-progress.json')
-        rounds, ids = idle._decode(original, manifest['tenants'], a.progress_services(directory))
+        rounds, ids = idle._decode(original, manifest['tenants'], a.progress_services(directory),allow_unavailable=True)
         ids = sorted(ids)
         from discovery_counts import probe_metadata
         accounting, _ = probe_metadata(a, directory / 'load',
@@ -196,7 +196,7 @@ def run(a, directory, manifest, record):
                 with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + timeout)):
                     snapshot, cost = collector(timeout)
                     try:
-                        view = idle.round_view(a.progress_services(directory), ids, rpc)
+                        view = idle.round_view(a.progress_services(directory), ids, rpc,allow_unavailable=True)
                         cost['inspection'] = idle._pack_round(view)
                         o.all_roster([rounds[-1], rounds[-1], view], ids, 'load')
                     except p.Refused as error:
