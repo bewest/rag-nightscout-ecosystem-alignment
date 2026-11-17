@@ -2664,3 +2664,10 @@ This is one evolving local batch, not pushed or fully accepted. Full/browser/ena
 |---|---|
 | Released operating evidence retained | The [operating checkpoint](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#remote-operating-envelope-and-recovery--2026-11-16) preserves old-source remote baseline, ingress failure and selected local restart observations. Sources and original partial/failing verdicts remain explicit; the checkpoint establishes no matched current-source rate curve or capacity acceptance. Later operating work remains with its existing owner. |
 | Snapshot alternative closed without adoption | The [qualification disposition](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#coalesced-snapshot-alternative-qualification-disposition--2026-11-16) separates the failed full-source native campaign from a passing focused raw-delivery repair. Cleanup and final prchecks are recorded. Exact incremental handover remains open with its dedicated owner; this record promotes no source, queue item or milestone. |
+
+
+## Update — single-evaluator profile retain decision (2026-11-16)
+
+| Outcome | Evidence and remaining work |
+|---|---|
+| Finite accepted-input profile closed; current source retained | The [matched profile](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#single-evaluator-accepted-input-profile--2026-11-16) rejects the experimental working-set construction change: quiet cycles regress and changed-input cost has no consistent benefit. Clinical/frame/due traces match and focused semantic controls pass. Qualified c117 remains the reference. SQL/statistics, real scheduling and operating capacity are unmeasured by this component profile; further optimization needs a distinct hypothesis. No application change, milestone promotion or operating repin follows. |
