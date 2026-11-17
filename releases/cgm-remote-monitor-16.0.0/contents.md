@@ -2685,3 +2685,11 @@ This is one evolving local batch, not pushed or fully accepted. Full/browser/ena
 | Outcome | Evidence and remaining limits |
 |---|---|
 | Maintainer stopped R03/R04; exact cleanup independently verified | The [operating disposition](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#remote-comparison-stopped-by-maintainer--2026-11-16) retains preparation and deployment captures. No timed comparison or effective container-quota result was obtained. All owned provider resources, keys and recorded processes are absent; paid resources and reservations are zero. Existing partial/failing results stand. No further remote testing follows. |
+
+## Update — efficient single-host streaming decisions and dispatch brief (2026-11-17)
+
+| Outcome | Evidence and next owner |
+|---|---|
+| Five maintainer decisions recorded | [serial-machinery-retirement](decisions.md#serial-machinery-retirement), [performance-signals-not-gates](decisions.md#performance-signals-not-gates), [write-clock-history-arms](decisions.md#write-clock-history-arms), [restore-fence-generation](decisions.md#restore-fence-generation) and [authority-recheck-deferred](decisions.md#authority-recheck-deferred). Basis: the 1,000-tenant baseline and candidate comparison on the measurement branch `claude/mt-efficiency-measure-20261117` (`4c4791f0`, not yet joined to `main`). The candidate `7aab0694` cuts SQL execution time by 62% at 120 req/s. At 180 req/s it still leaves 338 tenants pending with every role below its CPU quota. |
+| Integration state read 2026-11-17 | Codex joined candidate core `1449eb23`, deploy `89ee1bbb` contains the Claude efficiency batch, the exact-handover line `05c78d53` and the clinical/API simplification leaves. Diagnostic continuation: inventory, dom, dependency, core, stress and browser tiers pass; harness fails 2 and integration fails 1; unit fails 5 in the entered attempt; native corpus NOT_RUN. No operating run exists on `1449eb23`. Nothing is pushed. |
+| Dispatch | The Codex coordinator reviews and dispatches from the local brief `/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-mt-efficient-streaming-brief-2026-11-17.md`. Existing lane handoffs in that directory keep their custody. |
