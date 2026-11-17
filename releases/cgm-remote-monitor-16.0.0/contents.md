@@ -2672,3 +2672,10 @@ This is one evolving local batch, not pushed or fully accepted. Full/browser/ena
 | Outcome | Evidence and remaining work |
 |---|---|
 | Finite accepted-input profile closed; current source retained | The [matched profile](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#single-evaluator-accepted-input-profile--2026-11-16) rejects the experimental working-set construction change: quiet cycles regress and changed-input cost has no consistent benefit. Clinical/frame/due traces match and focused semantic controls pass. Qualified c117 remains the reference. SQL/statistics, real scheduling and operating capacity are unmeasured by this component profile; further optimization needs a distinct hypothesis. No application change, milestone promotion or operating repin follows. |
+
+
+## Update — bounded streaming comparison and recovery (2026-11-16)
+
+| Outcome | Evidence and remaining work |
+|---|---|
+| Local comparison and scoped recovery closed; high-rate capacity remains unproved | The [operating evidence](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#local-matched-rates-and-recovery--2026-11-16) retains failed 5e/c31 high-rate points, a bounded lower-load c31 witness, scoped restart recovery and two remote pretraffic failures. Exact owned resources are absent. Tiny role quotas are experimental settings; no throughput gain, production capacity, dev merge or release follows. Future adequate-allocation observations require actual runtime/readback evidence. |
