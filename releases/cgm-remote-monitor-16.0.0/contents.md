@@ -2679,3 +2679,9 @@ This is one evolving local batch, not pushed or fully accepted. Full/browser/ena
 | Outcome | Evidence and remaining work |
 |---|---|
 | Local comparison and scoped recovery closed; high-rate capacity remains unproved | The [operating evidence](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#local-matched-rates-and-recovery--2026-11-16) retains failed 5e/c31 high-rate points, a bounded lower-load c31 witness, scoped restart recovery and two remote pretraffic failures. Exact owned resources are absent. Tiny role quotas are experimental settings; no throughput gain, production capacity, dev merge or release follows. Future adequate-allocation observations require actual runtime/readback evidence. |
+
+## Update — remote testing stopped and resources closed (2026-11-16)
+
+| Outcome | Evidence and remaining limits |
+|---|---|
+| Maintainer stopped R03/R04; exact cleanup independently verified | The [operating disposition](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#remote-comparison-stopped-by-maintainer--2026-11-16) retains preparation and deployment captures. No timed comparison or effective container-quota result was obtained. All owned provider resources, keys and recorded processes are absent; paid resources and reservations are zero. Existing partial/failing results stand. No further remote testing follows. |
