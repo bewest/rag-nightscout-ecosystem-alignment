@@ -2682,6 +2682,35 @@ integration. The evolving local source handoff is
 `externals/work/HANDOFF-stream-amplification-retirement-2026-11-16.md`; raw logs,
 source archives, failed attempts and draft maintainer packets remain outside Git.
 
+Two additional synthetic intake witnesses bind clean baseline 5e and candidate
+c31 heads, the loaded module hashes, Node 24.22.1 and PostgreSQL 16.16. Those module
+hashes match the named git objects. A 20-row SQL writer transaction, with the
+actual stored-size AFTER trigger and final clock, produces 41 decoded events.
+These are intake measurements, not HTTP, evaluator or frame latency.
+
+| Witness | Intake calls / transactions, each side | Statements, baseline → candidate | UPDATEs, baseline → candidate | Intake WAL bytes, baseline → candidate |
+|---|---:|---:|---:|---:|
+| Each clinical event redelivered once | 81 / 81 | 347 → 306 | 102 → 62 | 173,232 → 84,432 |
+| Unique delivery | 41 / 41 | 187 → 186 | 62 → 62 | 80,224 → 80,248 |
+
+Both sides retain 20 sealed clinical rows and raw head 20. Unique delivery retains
+the per-event durable transaction/update floor; these observations establish no
+unique-delivery WAL reduction. Local elapsed times are not a serving speedup claim.
+The replay witness completed before its wrapper's later unique database attempt
+refused a reused global replication-slot name. A separate fresh unique witness
+then completed. Initial fixture refusal and wrapper failure remain retained;
+neither partial wrapper is relabeled as an all-green campaign. Both exact owned
+measurement containers are absent.
+
+Retained artifacts under `stream-amplification-20261116/measurements/`:
+`attempt02/replay.json`, SHA-256
+`bc0fd9b73c314ef58a7776417c9ff5fe1dacfcb6d566bb5b36ab62af3f916fd0`;
+`unique-final/unique.json`, SHA-256
+`e09933302773ba4e6e1a5f62151a56d5a556c20773a70d587df98772f72b4995`.
+Scripts, source/module bindings and exact cleanup receipts are retained beside
+the results. Earlier unbound precursor figures are not assigned to final c31.
+The sealed source/image qualification receipt above remains unchanged.
+
 Matched HTTP, clinical/frame latency, operating capacity and backlog/query-plan
 cost remain **UNMEASURED by this source qualification**. Capacity's owner controls
 fresh adoption/comparison and existing run cleanup; no entered run is repinned or
