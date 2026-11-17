@@ -59,11 +59,11 @@ def durable_rows(captures,ids,binding):
     return decoded
 
 
-def all_roster(rounds,ids,phase):
+def all_roster(rounds,ids,phase,*,allow_clinical_stall=False):
     # Re-decode to enforce every row's readiness/admission/health independently of
     # eligibility. Then run process/counter/foreign/reset/hidden-error checks.
     p.need(bool(rounds),'M7_EVALUATOR_PROGRESS_ROUNDS')
-    decoded,actual_ids=p.decode_rounds(p.pack({'rounds':rounds}),len(ids),list(rounds[0]['instances']),allow_unavailable=True)
+    decoded,actual_ids=p.decode_rounds(p.pack({'rounds':rounds}),len(ids),list(rounds[0]['instances']),allow_unavailable=True,allow_clinical_stall=allow_clinical_stall)
     p.need(actual_ids==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     for raw,current in zip(rounds,decoded):
         for tenant,owner in raw['owners'].items():
@@ -174,7 +174,7 @@ class Observer(p.Observer):
         try:
             start=time.monotonic_ns();snapshot,cost=self.durable_fetch();end=time.monotonic_ns()
             self.durable.append(snapshot);self.costs.append(cost)
-            row=idle.round_view(self.services,self.ids,self.fetch,allow_unavailable=True)
+            row=idle.round_view(self.services,self.ids,self.fetch,allow_unavailable=True,allow_clinical_stall=getattr(self,'rest_only',False))
             self.rounds.append(row);self.windows.append({'startNs':start,'durableEndNs':end,'inspectionEndNs':time.monotonic_ns()})
         except Exception as error:
             self.failure=error
@@ -197,11 +197,14 @@ class Observer(p.Observer):
             capture_windows(self.windows,3)
             p.need(sum(c['sqlQueries'] for c in self.costs)==3*((len(self.ids)+63)//64),'M7_OPPORTUNITY_QUERY_BOUND')
             p.need(sum(c['rawSqlBytes'] for c in self.costs)<=3*ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
-            result=assess(self.rounds,self.ids,self.phase,durable=self.durable,binding=self.binding)
+            if getattr(self,'rest_only',False):
+                from discovery_rest import assess_rest
+                result=assess_rest(self.rounds,self.ids,self.phase,self.durable,self.binding)
+            else:result=assess(self.rounds,self.ids,self.phase,durable=self.durable,binding=self.binding)
             collection_cost(self.payload(result)['durableCollectorCost'],self.windows,len(self.ids))
         except Exception as error:self.failed(error);raise
         self.result=self.payload(result);self.write(self.result)
-        if result['verdict']!='PASS':raise p.Refused('M7_OPPORTUNITY_NOT_OBSERVED')
+        if result['verdict']!='PASS' and not getattr(self,'rest_only',False):raise p.Refused('M7_OPPORTUNITY_NOT_OBSERVED')
 
     def __exit__(self,kind,value,traceback):
         self.stop.set();self.thread.join(timeout=ROUND_SECONDS+25)
@@ -225,8 +228,11 @@ def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None
     p.need(value.get('durableBinding')==binding,'M7_OPPORTUNITY_BINDING','FAIL')
     for key,expected in [('durableSourceSha256',source_sha256),('durableQuerySha256',query_sha256)]:
         p.need(isinstance(value.get(key),str) and re.fullmatch('[a-f0-9]{64}',value[key]) and (expected is None or value[key]==expected),'M7_OPPORTUNITY_BINDING','FAIL')
-    rounds,ids=idle._decode(value,tenants,services,allow_unavailable=True);capture_windows(value.get('captureWindows'),3)
+    rounds,ids=idle._decode(value,tenants,services,allow_unavailable=True,allow_clinical_stall=value.get('restCollectionPermitted') is True);capture_windows(value.get('captureWindows'),3)
     collection_cost(value.get('durableCollectorCost'),value['captureWindows'],tenants)
-    result=assess(rounds,sorted(ids),value.get('phase'),durable=value.get('durable'),binding=binding)
+    if value.get('restCollectionPermitted') is True:
+        from discovery_rest import assess_rest
+        result=assess_rest(rounds,sorted(ids),value.get('phase'),value.get('durable'),binding)
+    else:result=assess(rounds,sorted(ids),value.get('phase'),durable=value.get('durable'),binding=binding)
     p.need(all(value.get(k)==v for k,v in result.items() if k not in ('kind','durableCollectorCost')),'M7_OPPORTUNITY_ASSESSMENT')
     return result

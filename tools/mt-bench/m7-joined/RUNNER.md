@@ -758,3 +758,13 @@ prospective packet/receipt and helper binding. An explicit ceiling grants no
 spending, host, fixture or cleanup authority. Named configurations keep their
 existing behavior. This extension does not establish which allocation meets an
 operating latency or throughput objective.
+
+A prospective discovery sample using the durable received-input observer can
+continue independent REST collection when the complete roster records exactly
+`EVALUATOR_CLINICAL_PROGRESS_STALLED` on an admitted, running owner with prior
+completion. Readiness and idle/load retain clinical `FAIL`, and capacity remains
+`NOT_GRANTED`. This is not a general error allowlist. Unknown codes, alerts,
+malformed state, foreign work, changed ownership/runtime, restore rewinds, clock
+failures, durable reader/source mismatches and collection bounds still refuse.
+The three existing durable-before-inspection captures and their cost bounds stay
+in place. Original failed runs are unchanged.

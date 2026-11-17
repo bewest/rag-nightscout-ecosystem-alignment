@@ -25,9 +25,15 @@ class Warming(unittest.TestCase):
         with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess([value]*3,[A],'idle')
         with self.assertRaisesRegex(p.Refused,'CONTRACT'):self.collect(self.frame(),warming=False)
     def test_nonzero_counters_or_invalid_age_are_not_first_admission(self):
-        for key,value in [('completedAcquisitions',1),('completedTimeCycles',1),('failedCompletions',1),('lastCompletedAgeMs',False),('lastCompletedAgeMs',-1),('lastCompletedAgeMs','0'),('lastCompletedAgeMs',float('nan'))]:
+        for key,value in [('completedAcquisitions',1),('completedTimeCycles',1),('lastCompletedAgeMs',False),('lastCompletedAgeMs',-1),('lastCompletedAgeMs','0'),('lastCompletedAgeMs',float('nan'))]:
             frame=self.frame();frame['view']['tenants'][0]['progress'][key]=value
             with self.subTest(key=key,valueType=type(value).__name__),self.assertRaisesRegex(p.Refused,'CONTRACT'):self.collect(frame)
+    def test_uncredited_attempt_is_observed_but_earns_no_healthy_progress(self):
+        # c621 separates historical uncredited attempts from earned work.
+        frame=self.frame();frame['view']['tenants'][0]['progress']['failedCompletions']=1
+        observed=self.collect(frame);self.assertEqual(observed['owners'][A]['failedCompletions'],1)
+        with self.assertRaisesRegex(p.Refused,'HIDDEN_FAILURE'):p.assess([observed]*3,[A],'load')
+
     def test_missing_fields_and_bad_status_still_refuse(self):
         for field in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs'):
             frame=self.frame();del frame['view']['tenants'][0]['progress'][field]
@@ -52,7 +58,9 @@ class Warming(unittest.TestCase):
         flags=dict.fromkeys(('running','booting','acquire','time','parentAcquire','parentTime'),False)
         flags.update(running=True,parentAcquire=True)
         row['jobs']={**flags,'privateSyntheticMarker':'must-not-retain'}
-        with self.assertRaisesRegex(p.Refused,'ERROR') as caught:self.collect(frame)
+        # c621 validates the fixed job schema before health; arbitrary job keys
+        # are a contract refusal, while the bounded diagnostic retains six flags.
+        with self.assertRaisesRegex(p.Refused,'CONTRACT') as caught:self.collect(frame)
         self.assertEqual(caught.exception.verdict,'FAIL')
         diagnostic=caught.exception.collection['diagnostic']['failedRow']
         self.assertEqual(diagnostic['jobs'],flags)

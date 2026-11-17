@@ -182,18 +182,19 @@ def idle(d, m):
     a.frozen(m, 'run')
     a.quiet(d, m, 'run-before', check_load=False)
     a.verify(d, m)
-    a.readiness(d, m)
+    readiness=a.readiness(d, m)
     for name, seconds in (('idle-disabled', m['cadence']['warmupSeconds']), ('idle', m['cadence']['idleSeconds'])):
         out = d / name
         out.mkdir()
         a.psql(d, 'SELECT pg_stat_statements_reset();')
         if name == 'idle':
             observed = a.enabled_idle(d, m, out, seconds)
-            need(observed.result['verdict'] == 'PASS', 'EXTERNAL_IDLE_FAILED')
+            need(observed.result['verdict'] == 'PASS' or a.discovery_rest.selected(m) and a.discovery_rest.result(observed.result), 'EXTERNAL_IDLE_FAILED')
         else:
             a.phase_snapshot(d, out, 'before')
             time.sleep(seconds)
             a.phase_snapshot(d, out, 'after')
+    return readiness
 
 
 def health(d, m, deadline):
@@ -278,7 +279,11 @@ def discovery_summary(d,m,b,probe,k6):
         for stage in ('idle','load'):
             file=d/stage/'evaluator-progress.json'
             observed=a.document(file) if file.is_file() else {'verdict':'UNMEASURED','code':'M7_EVALUATOR_PROGRESS_UNAVAILABLE'}
-            need(not discovery.hard_recovery(observed),'REMOTE_DISCOVERY_CLINICAL_FAILURE')
+            if a.discovery_rest.result(observed):
+                need(a.discovery_rest.selected(m),'REMOTE_DISCOVERY_CLINICAL_CONTINUATION_SCOPE')
+                a.evaluator_opportunities.verify(observed,m['tenants'],a.progress_services(d),{'kind':'evaluator-work-v2','pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']})
+                result['clinicalVerdict']='FAIL'
+            else:need(not discovery.hard_recovery(observed),'REMOTE_DISCOVERY_CLINICAL_FAILURE')
             result['strictChecks'][stage]={k:observed[k] for k in ('verdict','code') if k in observed}
         metrics=k6.get('metrics',{})
         result['settingsFingerprintObservation']=a.profile_provenance.fingerprint_check(metrics)

@@ -33,6 +33,7 @@ import orchestration_binding
 import evaluator_progress
 import clinical_timeline
 import revision_witness
+import discovery_rest
 import evaluator_idle
 import evaluator_opportunities
 import evaluator_catchup
@@ -1439,7 +1440,9 @@ def observe_progress(d,m,out,phase):
         opportunity_contract(m)
         if phase in ('idle','load'):
             collector=opportunity_collector(d,m,ids)
-            return evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256)
+            observer=evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256)
+            observer.rest_only=discovery_rest.permitted(sys.modules[__name__],d,m)
+            return observer
     return evaluator_idle.Observer(*args,tail_fetch=lambda *args:progress_fetch(d,*args)) if phase=='idle' else evaluator_progress.Observer(*args)
 
 
@@ -1513,22 +1516,24 @@ def readiness(d, m):
     while time.monotonic()<deadline and len(observations)<evaluator_progress.POLICY['readinessMaxRounds']:
         value=None
         try:
-            value=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True,allow_unavailable=m.get('runPurpose')=='discovery')
+            value=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True,allow_unavailable=m.get('runPurpose')=='discovery',allow_clinical_stall=discovery_rest.selected(m))
             queries+=value['queries'];bytes_seen+=value['bytes']
             evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
             if m.get('runPurpose')!='discovery':evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
             if m.get('runPurpose')=='discovery':
                 time.sleep(.25)
-                confirmed=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True,allow_unavailable=True)
+                confirmed=evaluator_progress.round_view(services,ids,lambda *args:progress_fetch(d,*args),warming=True,allow_unavailable=True,allow_clinical_stall=discovery_rest.selected(m))
                 queries+=confirmed['queries'];bytes_seen+=confirmed['bytes']
                 evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
-                admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids)
+                admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids,allow_clinical_stall=discovery_rest.selected(m))
                 write(d/'readiness-stable-baseline.private.json',evaluator_progress.pack({'rounds':[value,confirmed]}))
                 observations.append({'verdict':admission['availability']['verdict'],**admission})
             else:
                 evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
             result={'verdict':admission['availability']['verdict'] if m.get('runPurpose')=='discovery' else 'PASS','policy':evaluator_progress.POLICY,'observations':observations,'meaning':'sampled evaluator availability; UNMEASURED availability does not stop discovery REST; durable completion is separate'}
+            if result['verdict']=='FAIL' and discovery_rest.selected(m):
+                result.update(clinicalVerdict='FAIL',clinicalCode=discovery_rest.CODE,restCollectionPermitted=True,capacityAcceptance='NOT_GRANTED',sourceBinding=discovery_rest.binding(m))
             write(d/'runtime-readiness.json',result)
             return result
         except evaluator_progress.Refused as error:

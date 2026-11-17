@@ -52,13 +52,13 @@ def clock_windows(rounds):
     p.need(lower is not None and lower<=upper,'M7_EVALUATOR_IDLE_CLOCK')
     return {'offsetLowerUs':lower,'offsetUpperUs':upper}
 
-def round_view(services,ids,fetch,*,allow_unavailable=False):
+def round_view(services,ids,fetch,*,allow_unavailable=False,allow_clinical_stall=False):
     captured={};windows={};started=time.monotonic()
     def measured(service,*args):
         a=stamp();raw=fetch(service,*args);b=stamp()
         raw=raw.encode() if isinstance(raw,str) else raw;captured[service]=raw
         windows[service]={'start':a,'end':b,'observedAt':[]};return raw
-    value=p.round_view(services,ids,measured,allow_unavailable=allow_unavailable)
+    value=p.round_view(services,ids,measured,allow_unavailable=allow_unavailable,allow_clinical_stall=allow_clinical_stall)
     for service,raw in captured.items():
         for line in raw.splitlines():
             page=json.loads(line);windows[service]['observedAt'].append(page.get('observedAt'))
@@ -159,11 +159,11 @@ def pack(value):
     if value.get('tailRound')is not None:result['tailRound']={**value['tailRound'],'round':_pack_round(value['tailRound']['round'])}
     return result
 
-def _decode(value,tenants,services,*,allow_unavailable=False):
+def _decode(value,tenants,services,*,allow_unavailable=False,allow_clinical_stall=False):
     p.need(isinstance(value,dict) and isinstance(value.get('rounds'),list) and all(isinstance(r,dict) and isinstance(r.get('rows'),list) and all(isinstance(row,list) and len(row)==len(COLUMNS)for row in r['rows'])for r in value['rounds']),'M7_EVALUATOR_IDLE_TAIL_COVERAGE')
     base=copy.deepcopy(value);base['kind']='evaluator-progress-phase-v2';base['columns']=list(p.COLUMNS)
     for raw in base['rounds']:raw['rows']=[row[:-1]for row in raw['rows']]
-    rounds,ids=p.decode_rounds(base,tenants,services,allow_unavailable=allow_unavailable)
+    rounds,ids=p.decode_rounds(base,tenants,services,allow_unavailable=allow_unavailable,allow_clinical_stall=allow_clinical_stall)
     for source,current in zip(value['rounds'],rounds):
         for row in source['rows']:
             flags=row[-1];p.need(type(flags)is int and 0<=flags<1<<len(FLAGS),'M7_EVALUATOR_IDLE_JOBS')

@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import time
+import discovery_rest
 import evaluator_catchup
 from contract import require, SHA, OWNER, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope
 
@@ -117,7 +118,12 @@ class Record:
         self.save()
     def observe(self,stage,fn):
         try:
-            result=fn();self.value['strictChecks'][stage]={'verdict':'UNMEASURED','code':'M7_EVALUATOR_AVAILABILITY_UNMEASURED','hardFailure':False} if stage=='readiness' and isinstance(result,dict) and result.get('verdict')=='UNMEASURED' else {'verdict':'PASS'};self.save();return result
+            result=fn();finding=getattr(result,'result',result)
+            if discovery_rest.result(finding):
+                require(discovery_rest.selected(self.m),'M7_DISCOVERY_CLINICAL_CONTINUATION_SCOPE')
+                self.value['strictChecks'][stage]={**{k:finding[k] for k in ('verdict','clinicalVerdict','clinicalCode','restCollectionPermitted')},'hardFailure':False}
+                self.value['clinicalVerdict']='FAIL';self.value['capacityAcceptance']='NOT_GRANTED';self.save();return result
+            self.value['strictChecks'][stage]={'verdict':'UNMEASURED','code':'M7_EVALUATOR_AVAILABILITY_UNMEASURED','hardFailure':False} if stage=='readiness' and isinstance(result,dict) and result.get('verdict')=='UNMEASURED' else {'verdict':'PASS'};self.save();return result
         except Exception as error:
             allowed=incomplete(error);partial=None
             episode=None
@@ -210,7 +216,7 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
         record.save()
         require(record.value.get('settingsFingerprintObservation',{}).get('verdict')!='FAIL','M7_FUNCTIONAL_SETTINGS_FINGERPRINT')
         if not any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) and record.value.get('settingsFingerprintObservation',{}).get('verdict')=='PASS' and record.value['measurements'].get('complete') and record.value['oracle'] is not None and record.value['probe'] is not None and (record.value['probe'].get('restart') is not None or m['profile']=='pgstream-sample' and record.value.get('completedOutput',{}).get('verdict')=='PASS' and record.value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'}) and all(record.value['processes'].get(k,{}).get('returncode')==0 for k in ('k6','probe')):record.value['status']='MEASURED'
-        if any('recoveryEpisode' in row for row in record.value['strictChecks'].values()):record.value['status']='PARTIAL'
+        if any('recoveryEpisode' in row for row in record.value['strictChecks'].values()) or record.value.get('clinicalVerdict')=='FAIL':record.value['status']='PARTIAL'
         record.save();check_discovery(record.value);return record.value
     except Exception as error:
         if not any(row['code']==safe_code(error) for row in record.value['hardFailures']):record.failure('collection',error,True)
@@ -419,6 +425,7 @@ def observed_load(a,d,m,out,work,record=None,oneoff=None):
         except BaseException as error:
             observer.__exit__(type(error),error,error.__traceback__);raise
         else:observer.__exit__(None,None,None)
+    return getattr(observer,'result',None)
 
 def k6_command(a,d,m,image,runid):
     return a.bounded_k6_argv(['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','SETTINGS_FINGERPRINT='+m['settingsFingerprint']['sha256'],'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status',image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])

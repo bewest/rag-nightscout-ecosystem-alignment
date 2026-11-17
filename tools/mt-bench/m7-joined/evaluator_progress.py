@@ -66,7 +66,7 @@ def _refusal_row(row,service,runtime_id):
         return {'evidence':'UNMEASURED','code':'M7_REFUSAL_ROW_BOUND'}
     return value
 
-def _round_view(services,ids,fetch,warming=False,allow_unavailable=False):
+def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False):
     """fetch(service,ids,query_budget,byte_budget) returns private JSONL bytes.
 
     At most four actual instance execs run concurrently. The source helper
@@ -118,13 +118,18 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False):
                 for field in ('admitted','ready'):
                     contract(type(value[field]) is bool,field,'BOOLEAN_REQUIRED')
                 value.update(due_fields(row));value['jobState']=row.get('jobs')
-                if value['jobState'] is not None:job_state(value['jobState'])
+                if value['jobState'] is not None:
+                    try:job_state(value['jobState'])
+                    except Refused as error:
+                        error.diagnostic={'field':'jobs','predicate':'SIX_FIXED_BOOLEAN_FLAGS_REQUIRED','failedRow':_refusal_row(row,service,runtime_id)}
+                        raise
                 all_rows[service][tenant]=value
                 if not value['admitted']:
                     need(not value['ready'],'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL');continue
                 need(tenant not in owners,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
                 warm_code=warming and value['code'] in ('EVALUATOR_STARTING','EVALUATOR_ACQUISITION_REQUIRED')
-                for field,valid,predicate in (('ready',value['ready'] or allow_unavailable and value['code'] is None and value['alert'] is None and job_state(value['jobState']),'OWNER_READY_REQUIRED'),('code',value['code'] is None,'OWNER_CODE_NULL_REQUIRED'),('evaluation.alert',value['alert'] is None,'OWNER_ALERT_NULL_REQUIRED')):
+                stall=allow_clinical_stall and clinical_stall(value)
+                for field,valid,predicate in (('ready',stall or value['ready'] or allow_unavailable and value['code'] is None and value['alert'] is None and job_state(value['jobState']),'OWNER_READY_REQUIRED'),('code',value['code'] is None or stall,'OWNER_CODE_NULL_REQUIRED'),('evaluation.alert',value['alert'] is None,'OWNER_ALERT_NULL_REQUIRED')):
                     contract(valid,field,predicate,'M7_EVALUATOR_PROGRESS_ERROR','UNMEASURED' if warm_code else 'FAIL')
                 # A first admitted cycle can be ready before its operation-window
                 # release has completed. It earns no credit yet; readiness must
@@ -140,12 +145,12 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False):
     need(queries==max_queries*len(services),'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
     return {'instances':identities,'owners':owners,'allRows':all_rows,'queries':queries,'bytes':bytes_seen,'wallSeconds':time.monotonic()-started}
 
-def round_view(services,ids,fetch,warming=False,allow_unavailable=False):
+def round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False):
     captured={};started=time.monotonic()
     def measured(service,*args):
         value=fetch(service,*args);captured[service]=value.encode() if isinstance(value,str) else value
         return value
-    try:return _round_view(services,ids,measured,warming,allow_unavailable)
+    try:return _round_view(services,ids,measured,warming,allow_unavailable,allow_clinical_stall)
     except Refused as error:
         error.collection={'queries':sum(len(v.splitlines()) for v in captured.values() if isinstance(v,bytes)),
                           'bytes':sum(len(v) for v in captured.values() if isinstance(v,bytes)),
@@ -248,7 +253,7 @@ def verify(value,tenants,services,phase):
     return result
 
 
-def decode_rounds(value,tenants,services,*,allow_unavailable=False):
+def decode_rounds(value,tenants,services,*,allow_unavailable=False,allow_clinical_stall=False):
     columns=value.get('columns')
     need(columns in (list(LEGACY_COLUMNS),list(COLUMNS)),'M7_EVALUATOR_PROGRESS_COLUMNS')
     legacy=columns==list(LEGACY_COLUMNS)
@@ -273,7 +278,8 @@ def decode_rounds(value,tenants,services,*,allow_unavailable=False):
                 if row.get('jobState') is not None:job_state(row['jobState'])
             row['runtimeId']=raw['instances'][service]['runtimeId'];all_rows[service][tenant]=row
             if row['admitted']:
-                need(tenant not in owners and (row['ready'] or allow_unavailable and job_state(row.get('jobState'))) and row['code'] is None and row['alert'] is None and (age is not None or allow_unavailable and row.get('jobState') is not None and row['completedAcquisitions']==row['completedTimeCycles']==0),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
+                stall=allow_clinical_stall and clinical_stall(row)
+                need(tenant not in owners and (stall or row['ready'] or allow_unavailable and job_state(row.get('jobState'))) and (row['code'] is None or stall) and row['alert'] is None and (age is not None or allow_unavailable and row.get('jobState') is not None and row['completedAcquisitions']==row['completedTimeCycles']==0),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
                 owners[tenant]=row
             else:need(not row['ready'],'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
         need(len(owners)==tenants and all(set(values)==set(owners) for values in all_rows.values()),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
@@ -283,9 +289,9 @@ def decode_rounds(value,tenants,services,*,allow_unavailable=False):
     return decoded,ids
 
 
-def stable_discovery_baseline(first,last,ids):
+def stable_discovery_baseline(first,last,ids,*,allow_clinical_stall=False):
     """Historical uncredited attempts may predate this healthy stable bracket."""
-    decoded,actual=decode_rounds(pack({'rounds':[first,last,last]}),len(ids),list(first['instances']),allow_unavailable=True)
+    decoded,actual=decode_rounds(pack({'rounds':[first,last,last]}),len(ids),list(first['instances']),allow_unavailable=True,allow_clinical_stall=allow_clinical_stall)
     need(actual==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     try:assess(decoded,ids,'load',discovery_unclassified_rejections=True)
     except Refused as error:
@@ -294,7 +300,7 @@ def stable_discovery_baseline(first,last,ids):
             'uncreditedAttemptDelta':sum(last['owners'][tenant]['failedCompletions']-first['owners'][tenant]['failedCompletions'] for tenant in ids),
             'availability':availability([first,last],ids),
             'dependentRejectionCauseClaim':'UNMEASURED',
-            'causeAttribution':'UNMEASURED','scope':'stable healthy same-runtime bracket; historical count does not establish a clinical failure or globally error-free execution'}
+            'causeAttribution':'UNMEASURED','scope':'stable same-runtime bracket; explicit clinical stall remains FAIL alongside independent REST' if allow_clinical_stall else 'stable healthy same-runtime bracket; historical count does not establish a clinical failure or globally error-free execution'}
 
 
 JOB_FLAGS=('running','booting','acquire','time','parentAcquire','parentTime')
@@ -307,9 +313,15 @@ def availability(rounds,ids):
     for point in rounds:
         for tenant in ids:
             row=point['owners'][tenant]
-            if row['ready'] and row['completedAcquisitions']>0 and row['lastCompletedAgeMs'] is not None:reason='READY'
+            if clinical_stall(row):reason='CLINICAL_STALL';counts.setdefault(reason,0)
+            elif row['ready'] and row['completedAcquisitions']>0 and row['lastCompletedAgeMs'] is not None:reason='READY'
             else:
                 job_state(row.get('jobState'));jobs=row['jobState']
                 reason='BUSY' if jobs['running'] else 'BOOTING' if jobs['booting'] else 'COLD_OR_UNOBSERVED' if not row['ready'] else 'FIRST_WINDOW_UNCONFIRMED'
             counts[reason]+=1
-    return {'verdict':'PASS' if sum(counts.values())==counts['READY'] else 'UNMEASURED','sampledRows':sum(counts.values()),'classifications':counts,'scope':'availability only; busy/booting/cold causes are not proven benign; durable completion and client correctness are separate'}
+    return {'verdict':'FAIL' if counts.get('CLINICAL_STALL') else 'PASS' if sum(counts.values())==counts['READY'] else 'UNMEASURED','sampledRows':sum(counts.values()),'classifications':counts,'scope':'availability only; busy/booting/cold causes are not proven benign; durable completion and client correctness are separate'}
+
+
+def clinical_stall(row):
+    """One observed clinical failure shape; never a clinical pass or generic error allowlist."""
+    return row.get('admitted') is True and row.get('ready') is False and row.get('code')=='EVALUATOR_CLINICAL_PROGRESS_STALLED' and row.get('alert') is None and job_state(row.get('jobState')) and row['jobState']['running'] and row.get('completedAcquisitions',0)>0 and row.get('lastCompletedAgeMs') is not None
