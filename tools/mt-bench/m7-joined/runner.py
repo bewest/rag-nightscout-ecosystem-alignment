@@ -374,7 +374,7 @@ SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'id
     'logical-polling-clients', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
     'evaluator-catchup', 'evaluator-opportunities', 'restart-during-load-after-seconds'))
 SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet',
-    'diagnostic-resource-profile', 'generator-dependencies', 'generator-dependency-receipt',
+    'diagnostic-resource-profile', 'diagnostic-resource-allocation', 'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
     'generator-dependency-preparation-sha256', 'generator-dependency-preparation-head'))
 
@@ -383,7 +383,9 @@ def session_start(config_file, directory):
     root = prepare(config_file, directory)
     config = a.document(root/'config.json')
     try:
-        require(config['prepare'].get('diagnostic-resource-profile') in a.diagnostic_resources.PROFILES,
+        selected=config['prepare'].get('diagnostic-resource-profile')
+        if config['prepare'].get('diagnostic-resource-allocation') is not None:selected=json.loads(config['prepare']['diagnostic-resource-allocation'])
+        require(a.diagnostic_resources.selection(selected) is not None,
                 'M7_SESSION_RESOURCE_CEILING_REQUIRED')
         stage(root, 'deploy', ['deploy', str(root/'fixture')])
         d, m = a.load(root/'fixture', resource_limits=False)

@@ -55,7 +55,7 @@ def pins(b):
 def cell_contract(m, b=None):
     bound=b or m.get('preparedExternalBinding') or m.get('externalBinding') or {'tenants':m.get('tenants')}
     exploratory=discovery_mode(bound)
-    need(m.get('pgstreamTopology','colocated-v1')==bound.get('pgstreamTopology','colocated-v1') and m.get('diagnosticResources',{}).get('profile')==bound.get('diagnosticResourceProfile'),'REMOTE_TOPOLOGY_CELL_CHANGED')
+    need(m.get('pgstreamTopology','colocated-v1')==bound.get('pgstreamTopology','colocated-v1') and m.get('diagnosticResources',{}).get('profile')==bound.get('diagnosticResourceAllocation',bound.get('diagnosticResourceProfile')),'REMOTE_TOPOLOGY_CELL_CHANGED')
     selected=workload(bound)
     if not exploratory:qualified_source(m.get('pair'),m.get('imageId'))
     performance_profile({**m,'reportMode':bound.get('reportMode','strict')},selected)

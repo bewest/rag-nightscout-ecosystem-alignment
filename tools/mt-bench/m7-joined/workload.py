@@ -59,6 +59,20 @@ def generate(root, target):
       status:res.status,errorCode,bodyObservation,retryAfterSeconds,startedAtMs,finishedAtMs,elapsedMs:finishedAtMs-startedAtMs}));
     throw new Error('exchange refused ' + res.status);
   }""")
+    accounting=(Path(__file__).parent/'http-accounting.cjs').read_text().split('// BEGIN_K6_HTTP_ACCOUNTING\n',1)[1].split('// END_K6_HTTP_ACCOUNTING',1)[0]
+    source += "\n" + accounting + "\nconst httpAttempts = new Counter('m7_http_attempts'), httpCompleted = new Counter('m7_http_completed'), httpWriteOutcome = new Counter('m7_http_write_outcome');\n"
+    def account(old,new):
+        nonlocal source
+        require(source.count(old)==1,'M7_WORKLOAD_HTTP_ACCOUNTING_ANCHOR_CHANGED')
+        source=source.replace(old,new)
+    account("  TENANTS.forEach(t => { thresholds[", "  httpAccountingThresholds(thresholds, Object.keys(shapes));\n  TENANTS.forEach(t => { thresholds[")
+    account("  scenarioAttempts.add(1);\n  const response = http.get(BASE + path", "  const httpShape = ({'GET v1 sgv count=1':'r_sgv','GET v1 devicestatus count=1':'r_devicestatus','GET v1 treatments count=10':'r_treatments','GET v1 status':'r_status'})[name];\n  httpAttempts.add(1,{http_shape:httpShape});\n  scenarioAttempts.add(1);\n  const response = http.get(BASE + path")
+    account("  (response.status > 0 ? scenarioResponses : scenarioTransport).add(1);", "  recordHttp(httpShape,response,[200],false);\n  (response.status > 0 ? scenarioResponses : scenarioTransport).add(1);")
+    account("  scenarioAttempts.add(1);\n  const res = http.post(url,", "  const httpShape = ({entries:'w_sgv',devicestatus:'w_devicestatus',treatments:'w_treatments_v3'})[kind];\n  httpAttempts.add(1,{http_shape:httpShape});\n  scenarioAttempts.add(1);\n  const res = http.post(url,")
+    account("  (res.status > 0 ? scenarioResponses : scenarioTransport).add(1);", "  recordHttp(httpShape,res,okStatuses,true);\n  (res.status > 0 ? scenarioResponses : scenarioTransport).add(1);")
+    account("else if (res.status === 0 || res.status >= 500) writesUncertain.add(1, tags);", "else if (!(res.status >= 400 && res.status < 500)) writesUncertain.add(1, tags);")
+    account("function exchangeRequest (t) {", "function exchangeRequest (t) {\n  httpAttempts.add(1,{http_shape:'jwt_setup'});")
+    account("    for (let j = 0; j < requests.length; j++) {", "    // Settle the whole dispatched batch before the first JWT refusal aborts.\n    for (const response of responses) recordHttp('jwt_setup',response,[200],false);\n    for (let j = 0; j < requests.length; j++) {")
     helper=(Path(__file__).parent/'fingerprint.cjs').read_text()
     projection=helper[helper.index('function projection('):helper.index("const fs = require(")]
     source="import { sha256 } from 'k6/crypto';\n"+source
@@ -79,4 +93,4 @@ def generate(root, target):
     target=Path(target);target.parent.mkdir(parents=True,exist_ok=True);target.write_text(source)
     return {'baseline':'tools/mt-bench/capacity/k6/workload.js','baselineSha256':hashlib.sha256(baseline.read_bytes()).hexdigest(),
             'adaptedSha256':hashlib.sha256(target.read_bytes()).hexdigest(),
-            'changes':['explicit optional scenario arrival rate with current-clock stamps and separate request-attempt/HTTP-response/transport counters','current nominal arrival timestamps with deterministic uniqueness','explicit read 4xx counter blocks functional advancement','bounded allowlisted JWT setup refusal provenance without credentials, raw URL or response body; first refusal still aborts without retry','existing status GET retains text body for fixed whitelist fingerprint under global discard; no extra request']}
+            'changes':['exact bounded per-shape HTTP status and outcome counters, JWT setup separate, main-context-only histogram metadata; unexpected mutation responses remain uncertain','explicit optional scenario arrival rate with current-clock stamps and separate request-attempt/HTTP-response/transport counters','current nominal arrival timestamps with deterministic uniqueness','explicit read 4xx counter blocks functional advancement','bounded allowlisted JWT setup refusal provenance without credentials, raw URL or response body; first refusal still aborts without retry','existing status GET retains text body for fixed whitelist fingerprint under global discard; no extra request']}

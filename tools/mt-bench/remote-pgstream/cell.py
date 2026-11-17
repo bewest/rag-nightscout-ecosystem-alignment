@@ -40,7 +40,7 @@ def main():
              prep.primer_concurrency == selected['primerConcurrency'] and
              prep.jwt_setup_concurrency == jwt_setup_concurrency(b) and
              prep.pgstream_topology == b.get('pgstreamTopology','colocated-v1') and
-             prep.diagnostic_resource_profile == b.get('diagnosticResourceProfile'),
+             app.a.selected_resources_profile(prep) == b.get('diagnosticResourceAllocation',b.get('diagnosticResourceProfile')),
              'REMOTE_PREPARE_PROFILE_REQUIRED')
         if discovery_mode(b) or b['pair']['core'] in (REPAIRED_CORE, MINIMUM_CORE, PERFORMANCE_CORE):
             need(prep.completion_contract == 'evaluator-work-v2', 'REMOTE_REPAIRED_COMPLETION_V2_REQUIRED')
@@ -51,7 +51,7 @@ def main():
             validate_execution(run_config,receipt)
         need(receipt.get('remoteReportMode','strict') == b.get('reportMode','strict') and receipt.get('status') == 'AUTHORIZED_DIAGNOSTIC' and receipt.get('remoteProfile') == b['profile'] and
              receipt.get('remoteTransport') == b['transport'] and receipt.get('remoteExtensionSha256') == b['sourceSha256'] and
-             receipt.get('remotePgstreamTopology') == b.get('pgstreamTopology') and receipt.get('remoteDiagnosticResourceProfile') == b.get('diagnosticResourceProfile') and receipt.get('remoteHelperDependencies') == b.get('helperDependencies') and
+             receipt.get('remotePgstreamTopology') == b.get('pgstreamTopology') and receipt.get('remoteDiagnosticResourceProfile') == b.get('diagnosticResourceProfile') and receipt.get('remoteDiagnosticResourceAllocation') == b.get('diagnosticResourceAllocation') and receipt.get('remoteHelperDependencies') == b.get('helperDependencies') and
              receipt.get('remoteWorkload') == b.get('workload') and receipt.get('remoteComponentCases') == b.get('componentCases') and
              receipt.get('completionContract') == prep.completion_contract and prep.completion_contract in ('evaluator-work-v1', 'evaluator-work-v2'),
              'REMOTE_EXTENSION_AUTHORIZATION_REQUIRED')

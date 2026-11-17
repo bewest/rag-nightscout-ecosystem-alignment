@@ -101,10 +101,37 @@ def prepared_cadence(b):
     return cadence
 
 
+
+def resource_selection(value):
+    named=value.get('diagnosticResourceProfile');explicit=value.get('diagnosticResourceAllocation')
+    need(named is None or explicit is None,'REMOTE_RESOURCE_SELECTION_AMBIGUOUS')
+    return explicit if explicit is not None else named
+
+
+def allocation_boundary(value,hosts=None):
+    """Transport admission; canonical SUT verifier independently binds native quotas."""
+    need(isinstance(value,dict) and set(value)=={'version','services','driver','ceiling','edge'} and type(value['version']) is int and value['version']==1,'REMOTE_ALLOCATION_SHAPE')
+    need(isinstance(value['services'],dict) and 1<=len(value['services'])<=32 and {'evaluator','pgstream','nginx'}<=set(value['services']),'REMOTE_ALLOCATION_ROSTER')
+    for role in value['services']:
+        need(isinstance(role,str) and re.fullmatch(r'(postgres|vault|bootstrap|admin|primer|api|realtime|evaluator|tenant-admin|ui|nginx|placement-operator|demo|feed-reader|pgstream|(?:api|realtime|evaluator)-(?:[2-9]|1[0-6]))',role),'REMOTE_ALLOCATION_ROLE')
+    for limit in [*value['services'].values(),value['driver']]:
+        need(isinstance(limit,dict) and set(limit)=={'millicpus','memoryBytes'} and type(limit['millicpus']) is int and 1<=limit['millicpus']<=64000 and type(limit['memoryBytes']) is int and 1048576<=limit['memoryBytes']<=128*1024*1048576,'REMOTE_ALLOCATION_LIMIT')
+    ceiling=value['ceiling']
+    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and 1<=ceiling['millicpus']<=64000 and type(ceiling['memoryBytes']) is int and 1048576<=ceiling['memoryBytes']<=128*1024*1048576,'REMOTE_ALLOCATION_CEILING')
+    need(value['edge']=={'workerProcesses':1,'workerConnections':16384} and all(type(x) is int for x in value['edge'].values()),'REMOTE_ALLOCATION_EDGE')
+    totals={key:sum(v[key]*(2 if role in ('bootstrap','primer') else 1) for role,v in value['services'].items()) for key in ('millicpus','memoryBytes')}
+    need(all(totals[k]+value['driver'][k]<=ceiling[k] for k in totals),'REMOTE_ALLOCATION_AGGREGATE')
+    if hosts is not None:
+        need(all(totals[k]<=hosts['sut']['cpuCores']*1000 if k=='millicpus' else totals[k]<=hosts['sut']['ramBytes'] for k in totals) and value['driver']['millicpus']<=hosts['driver']['cpuCores']*1000 and value['driver']['memoryBytes']<=hosts['driver']['ramBytes'],'REMOTE_ALLOCATION_HOST_CAPACITY')
+    return value
+
+
 def topology(value):
-    selected='pgstreamTopology' in value or 'diagnosticResourceProfile' in value or 'helperDependencies' in value
+    selected='pgstreamTopology' in value or 'diagnosticResourceProfile' in value or 'diagnosticResourceAllocation' in value or 'helperDependencies' in value
     if not selected:return None
-    need(discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1' and value.get('diagnosticResourceProfile') in ('local-diagnostic-external-pgstream-4cpu-8g-v1','local-qualification-external-pgstream-6cpu-10g-v1'),'REMOTE_EXPLICIT_TOPOLOGY')
+    selection=resource_selection(value)
+    need(discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1' and (isinstance(selection,dict) or selection in ('local-diagnostic-external-pgstream-4cpu-8g-v1','local-qualification-external-pgstream-6cpu-10g-v1')),'REMOTE_EXPLICIT_TOPOLOGY')
+    if isinstance(selection,dict):allocation_boundary(selection,workload(value)['resourcePlan']['hosts'])
     deps=value.get('helperDependencies')
     need(isinstance(deps,dict) and set(deps)=={'version','profile','files'} and deps['version']==1 and deps['profile'] in ('external-service-v1','external-service-batch-v1'),'REMOTE_TOPOLOGY_DEPENDENCIES')
     names={'tools/mt-bench/m7-joined/stream_topology.py','tools/mt-bench/m7-joined/diagnostic_resources.py'}
@@ -128,7 +155,7 @@ def topology_dependencies(value,root):
 
 def binding(value, now=None):
     now = time.time() if now is None else now
-    need(isinstance(value, dict) and FIELDS <= set(value) and set(value)-FIELDS <= {'workload','componentCases','reportMode','pgstreamTopology','diagnosticResourceProfile','helperDependencies'}, 'EXTERNAL_BINDING_SHAPE')
+    need(isinstance(value, dict) and FIELDS <= set(value) and set(value)-FIELDS <= {'workload','componentCases','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','helperDependencies'}, 'EXTERNAL_BINDING_SHAPE')
     if 'componentCases' in value:
         from component_cases import plan
         plan(value['componentCases'],value['tenants'])

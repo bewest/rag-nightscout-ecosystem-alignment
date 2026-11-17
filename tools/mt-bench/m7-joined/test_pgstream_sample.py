@@ -107,7 +107,9 @@ class Sample(unittest.TestCase):
     def test_setup_failure_preserves_deployment_and_new_success_attempt(self):
         with tempfile.TemporaryDirectory() as temp:
             d=Path(temp);(d/'deployment.json').write_text('retained');m={'owner':'a'*32,'project':'synthetic','cadence':{'samplerIntervalSeconds':1}}
-            with patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=RuntimeError('M7_SQL_SETUP')):
+            # This test isolates setup retry retention; real companion-format admission
+            # is exercised in test_collection_segments against actual files.
+            with patch.object(a.collection_segments,'preflight',return_value={'status':'CHECKED'}),patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=RuntimeError('M7_SQL_SETUP')):
                 with self.assertRaisesRegex(RuntimeError,'SQL_SETUP'):a.sample_preflight(d,m,'sha256:synthetic')
             failed=next((d/'setup-attempts').iterdir());self.assertEqual(a.document(failed/'setup.json')['status'],'FAILED')
             def snapshot(_,out,name):
@@ -115,7 +117,7 @@ class Sample(unittest.TestCase):
             @contextlib.contextmanager
             def sampler(_,out):
                 (out/'docker-stats.tsv').write_text('t\tcontainer\tcpu_pct\tmem\n1\tsynthetic-evaluator-1\t0%\t1MiB / 2MiB\n');yield
-            with patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=snapshot),patch.object(a,'sampling',sampler),patch.object(a,'command',return_value='k6 synthetic --summary-export'),patch.object(a.time,'sleep'):
+            with patch.object(a.collection_segments,'preflight',return_value={'status':'CHECKED'}),patch.object(a,'sample_context',return_value=({},{})),patch.object(a,'phase_snapshot',side_effect=snapshot),patch.object(a,'sampling',sampler),patch.object(a,'command',return_value='k6 synthetic --summary-export'),patch.object(a.time,'sleep'):
                 a.sample_preflight(d,m,'sha256:synthetic')
             self.assertEqual(len(list((d/'setup-attempts').iterdir())),2)
             self.assertEqual(a.document(failed/'setup.json')['status'],'FAILED');self.assertEqual((d/'deployment.json').read_text(),'retained')

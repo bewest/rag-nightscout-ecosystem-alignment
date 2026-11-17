@@ -27,4 +27,6 @@ def adapt(source):
     change("const discovery=process.env.M7_RUN_PURPOSE==='discovery';", "const discovery=process.env.M7_RUN_PURPOSE==='discovery';\nconst clinicalTimeline=discovery&&process.env.M7_CLINICAL_TIMELINE_IDS?require('./clinical-timeline-client.cjs').create({directory:signalDir,ids:JSON.parse(process.env.M7_CLINICAL_TIMELINE_IDS)}):null;if(clinicalTimeline)process.once('exit',()=>clinicalTimeline.seal());")
     change("e.acked = Date.now();", "e.acked = Date.now();clinicalTimeline?.record('writer-ack',t.id,{date:e.date,sent:e.sent,acked:e.acked});")
     change("p.latencies.push(at - p.sent);", "p.latencies.push(at - p.sent);if(p.seen.size===1)clinicalTimeline?.record('first-matching-frame',t.id,{date:sgv.mills,sent:p.sent,received:at});")
+    change("  s.socket.on('connect', () =>", "  const revisionClient=process.env.M7_REVISION_WITNESS_CONFIG?require('./revision-witness-preload.cjs').attachClient(s.socket,t.id):null;\n  s.socket.on('connect', () =>")
+    change("    const at = Date.now(); s.frames.push(at);", "    revisionClient?.callback(frame);\n    const at = Date.now(); s.frames.push(at);")
     return source

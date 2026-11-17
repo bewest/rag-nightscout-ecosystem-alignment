@@ -28,9 +28,9 @@ def validate_prepare(args):
     private=[ipaddress.ip_network(c) for c in ('10.0.0.0/8','172.16.0.0/12','192.168.0.0/16')]
     require(all(n.version==4 and any(n.subnet_of(p) for p in private) for n in networks) and not networks[0].overlaps(networks[1]),
             'M7_CONFIG_SUBNET_OVERLAP_OR_PUBLIC')
-    selected = a.diagnostic_resources.selection(args.diagnostic_resource_profile)
+    selected = a.selected_resources_profile(args)
     external = args.pgstream_topology == a.stream_topology.EXTERNAL
-    require(not selected or external == (selected in a.diagnostic_resources.EXTERNAL_PROFILES),
+    require(not selected or external == a.diagnostic_resources.external_selection(selected),
             'M7_CONFIG_RESOURCE_TOPOLOGY')
     require(not selected or args.generator_dependencies, 'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
     return cadence
@@ -40,7 +40,7 @@ def from_args(args, instrument):
     import adapter as a
     # This is semantic input, independent of transport paths and observed limits.
     cadence = validate_prepare(args)
-    profile = args.diagnostic_resource_profile
+    profile = a.selected_resources_profile(args)
     resources = None if profile is None else {
         'profile': profile, 'millicpus': a.diagnostic_resources.cpu_ceiling(profile),
         'memoryBytes': a.diagnostic_resources.memory_ceiling(profile)}
@@ -107,7 +107,7 @@ def remote_projection(config, overlay, source_acceptance=None):
     require(isinstance(overlay,dict) and set(overlay)=={'binding','hostInventory','resourceReference'}, 'M7_CONFIG_REMOTE_OVERLAY_FIELDS')
     b = copy.deepcopy(overlay['binding'])
     # Caller owns transport/authority; semantic mirrors are generated exclusively.
-    require(not set(b).intersection({'tenants','pair','imageId','k6Image','workload','reportMode','pgstreamTopology','diagnosticResourceProfile'}),
+    require(not set(b).intersection({'tenants','pair','imageId','k6Image','workload','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation'}),
             'M7_CONFIG_REMOTE_MIRROR_REFUSED')
     cadence = dict(r['cadence']); viewers = cadence.get('logicalPollingClients',r['tenants']*cadence['socketsPerTenant'])
     b.update(tenants=r['tenants'], pair=r['pair'], imageId=r['imageId'], reportMode='discovery',
@@ -116,13 +116,15 @@ def remote_projection(config, overlay, source_acceptance=None):
                  'resourcePlan':{'reference':overlay['resourceReference'], 'tenants':r['tenants'],
                                  'logicalPollingClients':viewers, 'hosts':overlay['hostInventory']}})
     if r['pgstreamTopology']!='colocated-v1':
-        b.update(pgstreamTopology=r['pgstreamTopology'],diagnosticResourceProfile=r['resources']['profile'] if r['resources'] else None)
+        selected=r['resources']['profile'] if r['resources'] else None
+        b.update(pgstreamTopology=r['pgstreamTopology'],**({'diagnosticResourceAllocation':selected} if isinstance(selected,dict) else {'diagnosticResourceProfile':selected}))
     protocol.binding(b)
     require(protocol.prepared_cadence(b)==r['cadence'], 'M7_CONFIG_REMOTE_CADENCE_DRIFT')
     return {**result, 'binding':b, 'remoteReceiptProjection':{
         'remoteProfile':b['profile'], 'remoteTransport':b['transport'], 'remoteExtensionSha256':b['sourceSha256'],
         'remoteReportMode':b['reportMode'], 'remoteWorkload':b['workload'],
         'remotePgstreamTopology':b.get('pgstreamTopology'), 'remoteDiagnosticResourceProfile':b.get('diagnosticResourceProfile'),
+        'remoteDiagnosticResourceAllocation':b.get('diagnosticResourceAllocation'),
         'remoteHelperDependencies':b.get('helperDependencies'), 'completionContract':r['completionContract']}}
 
 

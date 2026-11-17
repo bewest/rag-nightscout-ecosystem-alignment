@@ -647,3 +647,114 @@ sidecar records the replaced 0.5-CPU/1-GiB standalone reservation and the effect
 combined ceiling. Native launch, container census and oneoff custody validate the
 new allocation together. Strict observations retain the original driver limits.
 A driver reaching its quota is not evidence of a backend throughput ceiling.
+
+### Prospective HTTP and revision witnesses
+
+New generated workloads retain exact HTTP status distributions for each selected
+shape and JWT setup separately. `load/http-accounting.json` reconciles request
+attempts, completed responses, no-response outcomes and dropped offered work.
+`timeout` means k6 observed timeout code 1050. Other status-zero outcomes remain
+transport failures with cause unknown. A 5xx or unexpected mutation response
+remains uncertain until a storage oracle settles it. No mutation is retried.
+HTTP, storage, clinical completion, client frames and capacity remain separate
+verdicts. Historical captures receive no new fields or revised verdict.
+
+The histogram uses 501 fixed status bins per shape, including status zero, with
+main-context-only threshold metadata. This adds no request or per-request log.
+The retained native k6 control verifies export and reconciliation, not overhead
+at capacity. Its two-second traffic window and process/export wall time are
+separate measurements; the fixture records both. Preserve that distinction when
+choosing a driver allocation.
+
+For a new **discovery** sample, the existing adapter `prepare` command accepts
+`--revision-witness-targets /absolute/private/targets.json`. The file is a JSON
+list of one or two synthetic identities, for example:
+
+```json
+[{"tenant":"11111111-1111-4111-8111-111111111111","storedId":"synthetic-row-a"}]
+```
+
+The target must identify an actual synthetic stored SGV that can appear in the
+selected client's frame. A timestamp alone is insufficient. Prepare copies the
+private preload, records helper/config/source hashes and installs it on the
+canonical evaluator and realtime entrypoints. Run uses the existing probe and
+stock callback; the source files and public wire payload receive no new fields.
+This option is incompatible with another preload that changes those entrypoint
+arguments. Use a fresh fixture; changing a frozen fixture is refused.
+
+Each process writes a separate private capture incarnation under `state/ipc/`
+or `load/`. The witness permits 64 events and 65,536 event bytes per process.
+Saturation, publication failure, missing correlation, duplicate identity or a
+wrong source/owner/socket/clock domain yields `UNMEASURED`. The collector reduces
+at most eight capture files; originals remain unchanged. `load/revision-witness-assessment.json`
+joins an acquired **output revision** to the actual authorized Socket.IO adapter
+broadcast, Engine.IO arrival and existing stock callback using payload digest,
+socket identity, incarnation and FIFO ordinal. Its fixed input checkpoint is
+reported separately from typed input coverage. A delivery revision and raw-tail
+head are distinct identities and remain `UNMEASURED` when no exact bridge exists.
+The optional complete/send/confirmed-receipt hooks retain their own revision types;
+tenant/time proximity never supplies a missing bridge.
+
+Only durations within one process clock domain are subtracted. The emitted
+payload's transit to the receiving process is `UNMEASURED_CROSS_PROCESS`; polling,
+transport scheduling and observer publication must not be inferred from unrelated
+percentiles. Per-process `overheadNs` includes synchronous event publication;
+the last event file can omit its own final publication cost until the exit seal.
+The native control uses real shipping projection/runtime/protocol and stock
+Socket.IO HTTP polling with synthetic storage and authority ports. It does not
+qualify database completion, clinical equivalence, recovery or capacity.
+
+Focused reproduction commands (choose new absolute output directories):
+
+```bash
+python3 -B -m unittest discover -s tools/mt-bench/m7-joined -p 'test_http_accounting.py'
+python3 -B -m unittest discover -s tools/mt-bench/m7-joined -p 'test_collection_segments.py'
+python3 -B -m unittest discover -s tools/mt-bench/m7-joined -p 'test_revision_witness.py'
+node tools/mt-bench/m7-joined/revision-witness.test.cjs
+node tools/mt-bench/m7-joined/revision-witness-hooks.test.cjs
+python3 -B tools/mt-bench/m7-joined/http-accounting-native.py /absolute/new/http-control grafana/k6:1.3.0
+node tools/mt-bench/m7-joined/revision-witness-smoke.cjs /absolute/pinned/core /absolute/new/polling-control
+```
+
+Completed SQL, cgroup, HTTP and probe files receive immediate collection receipts
+with source/owner/time attribution. A later optional collector refusal preserves
+those files and its own typed failure. Missing observations never grant capacity.
+Preflight checks the actual JSON fixture, companion/dependency files, actor bound
+and output write before collector actors start. Cleanup checks exact owned
+container/network/volume inventories; a Docker error string is never proof of
+absence.
+
+### Explicit finite allocation
+
+A new discovery fixture can use `--diagnostic-resource-allocation '<JSON>'`
+instead of `--diagnostic-resource-profile`. Runner preparation configuration uses
+the same `diagnostic-resource-allocation` key with the JSON string as its value.
+The object contains exactly:
+
+```json
+{
+  "version": 1,
+  "services": {"every-selected-compose-role": {"millicpus": 1000, "memoryBytes": 1073741824}},
+  "driver": {"millicpus": 2000, "memoryBytes": 4294967296},
+  "ceiling": {"millicpus": 16000, "memoryBytes": 34359738368},
+  "edge": {"workerProcesses": 1, "workerConnections": 16384}
+}
+```
+
+This illustrates the shape, not a runnable role roster or sizing recommendation.
+Supply every selected role by its actual name. Admission rejects missing roles,
+unknown roles, nonpositive limits, overlapping named/explicit selections and an
+aggregate above the authored ceiling. Bootstrap and primer each reserve two
+concurrent instances. The explicit driver allocation stays authoritative;
+discovery does not replace it with its historical driver default. Runtime checks
+continue to compare actual CPU, memory, no-swap limits and one-worker nginx
+configuration against the authored allocation.
+
+Remote preparation requires the paired controller/worker allocation support.
+Its packet carries `diagnosticResourceAllocation`; its receipt mirrors the exact
+object as `remoteDiagnosticResourceAllocation`. Both boundaries check finite
+limits against the sealed SUT and driver host inventories. Generate a fresh
+prospective packet/receipt and helper binding. An explicit ceiling grants no
+spending, host, fixture or cleanup authority. Named configurations keep their
+existing behavior. This extension does not establish which allocation meets an
+operating latency or throughput objective.

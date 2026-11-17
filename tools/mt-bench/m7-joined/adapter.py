@@ -32,6 +32,7 @@ import profile_provenance
 import orchestration_binding
 import evaluator_progress
 import clinical_timeline
+import revision_witness
 import evaluator_idle
 import evaluator_opportunities
 import evaluator_catchup
@@ -41,6 +42,7 @@ import realtime_costs
 import diagnostic_resources
 import stream_topology
 import dependency_reuse
+import collection_segments
 import vault_refusal
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
@@ -244,7 +246,7 @@ def load(directory, *, resource_limits=True):
     if resource_limits:
         if 'dependencyReuse' in m:require(isinstance(m['dependencyReuse'],dict),'M7_DEPENDENCY_REUSE_RECORD_REQUIRED')
         record=m.get('diagnosticResources')
-        if 'diagnosticResources' in m:require(isinstance(record,dict) and record.get('profile') in diagnostic_resources.PROFILES,'M7_DIAGNOSTIC_RESOURCE_RECORD_REQUIRED')
+        if 'diagnosticResources' in m:require(isinstance(record,dict) and diagnostic_resources.selection(record.get('profile')) is not None,'M7_DIAGNOSTIC_RESOURCE_RECORD_REQUIRED')
         diagnostic_resources.configure(record.get('profile') if record is not None else None,
             document(d/'frozen.compose.json') if record is not None else None,record,
             observe=lambda:diagnostic_resource_rows(m))
@@ -277,6 +279,16 @@ def resources(m, all_containers=True):
     flag = "-aq" if all_containers else "-q"
     ids = command(["docker", "ps", flag, "--filter", "label=com.docker.compose.project=" + m["project"]]).split()
     return json.loads(command(["docker", "inspect", *ids])) if ids else []
+
+
+
+def assert_absent(m):
+    """Exact project inventories; stderr wording never counts as absence."""
+    require(not resources(m),'M7_CLEANUP_CONTAINER_REMAINS')
+    for kind in ('network','volume'):
+        ids=command(['docker',kind,'ls','-q','--filter','label=com.docker.compose.project='+m['project']]).split()
+        require(not ids,'M7_CLEANUP_'+kind.upper()+'_REMAINS')
+    return {'status':'ABSENT','scope':'exact compose-project container/network/volume inventories'}
 
 
 def attached_identity(row):
@@ -431,7 +443,7 @@ def rate_offer(m):
 
 
 def attach(args):
-    require(not getattr(args,'diagnostic_resource_profile',None) and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
+    require(not selected_resources_profile(args) and not getattr(args,'revision_witness_targets',None) and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
     # Bind only instrumentation metadata to the runtime owner's exact existing
     # fixture. Never deploy, restart, install, relabel or assume cleanup custody.
@@ -593,14 +605,17 @@ def unused_project_namespace(project):
 
 
 def selected_resources_profile(args):
-    return getattr(args,'diagnostic_resource_profile',None)
+    named=getattr(args,'diagnostic_resource_profile',None)
+    explicit=getattr(args,'diagnostic_resource_allocation',None)
+    require(named is None or explicit is None,'M7_DIAGNOSTIC_RESOURCE_SELECTION_AMBIGUOUS')
+    return diagnostic_resources.selection(explicit if explicit is not None else named)
 
 
 def prepare(args):
     if args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery' and getattr(args,'backend_subnet',None) and getattr(args,'edge_subnet',None):
         from run_configuration import validate_prepare
         validate_prepare(args)
-    selected=getattr(args,'diagnostic_resource_profile',None)
+    selected=selected_resources_profile(args)
     require(not selected or args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_DIAGNOSTIC_RESOURCE_DISCOVERY_ONLY')
     require(not selected or getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
     require(not getattr(args,'vault_refusal_control',None) or selected,'M7_VAULT_CONTROL_RESOURCE_PROFILE_REQUIRED')
@@ -728,7 +743,7 @@ def prepare_staged(args,target,pinned):
     serving_mounts(config)
     stream_topology.verify_config(m,config)
     if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
-        require(selected_resources_profile(args) in diagnostic_resources.EXTERNAL_PROFILES,'M7_PGSTREAM_EXTERNAL_RESOURCE_PROFILE_REQUIRED')
+        require(diagnostic_resources.external_selection(selected_resources_profile(args)),'M7_PGSTREAM_EXTERNAL_RESOURCE_PROFILE_REQUIRED')
     measurement_topology(m,config)
     profile_provenance.select_environment(config,m["diagnostics"])
     for spec in config["services"].values():
@@ -750,9 +765,10 @@ def prepare_staged(args,target,pinned):
     require(isinstance(pg.get("command"), list) and pg["command"][0] == "postgres", "M7_POSTGRES_COMMAND_SHAPE_CHANGED")
     pg["command"].extend(["-c", "shared_preload_libraries=pg_stat_statements", "-c", "pg_stat_statements.track=top", "-c", "track_io_timing=on"])
     require(not any("shared_preload_libraries" in str(x) for x in pg["command"][:-6]), "M7_POSTGRES_PRELOAD_ALREADY_SELECTED")
-    selected_resources=getattr(args,'diagnostic_resource_profile',None)
+    selected_resources=selected_resources_profile(args)
     config=diagnostic_resources.overlay(config,selected_resources)
     clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'),getattr(args,'clinical_sender_binary',None),getattr(args,'clinical_sender_receipt',None))
+    revision_witness.install(config,target,m,getattr(args,'revision_witness_targets',None))
     if selected_resources is not None:config=seal_diagnostic_images(config,m)
     record=diagnostic_resources.selected_record(config,selected_resources)
     if record is not None:
@@ -783,6 +799,7 @@ def verify(d, m, teardown=False):
         verify_edge_workers(edge_file.read_text(),m['edgeWorkerBudget'])
     stream_topology.verify_config(m,document(d/"frozen.compose.json"))
     clinical_timeline.verify(document(d/"frozen.compose.json"),d,m,teardown=teardown)
+    revision_witness.verify(document(d/"frozen.compose.json"),d,m)
     measurement_topology(m,document(d/"frozen.compose.json"))
     profile_provenance.verify_environment(document(d/"frozen.compose.json"),m["diagnostics"])
     profile_provenance.state_environment(d/"state",document(d/"frozen.compose.json"),m["diagnostics"])
@@ -1160,6 +1177,7 @@ def memory_observation(container_id, started_at=None):
 
 def phase_snapshot(d, out, name):
     snapshot_owner=document(d/"owner.json")
+    segments=collection_segments.Segments(out,name,snapshot_owner)
     rows = resources(snapshot_owner, False)
     result = {}
     for row in rows:
@@ -1170,14 +1188,16 @@ def phase_snapshot(d, out, name):
             result[role] = {"id": row["Id"], "cgroup": raw, "processRssKiB": processes,"hostProcesses":process_counters(processes),"containerStartedAt":row.get("State",{}).get("StartedAt"),"memoryObservation":memory_observation(row["Id"],row.get("State",{}).get("StartedAt"))}
         except RuntimeError:
             result[role] = {"id": row["Id"], "unavailable": True}
-    write(out / (name + "-cgroups.json"), {"at": time.time(), "roles": result})
+    with segments.capture("cgroups",[name+"-cgroups.json"]):
+        write(out / (name + "-cgroups.json"), {"at": time.time(), "roles": result})
     timings={'version':1,'collectorOwner':snapshot_owner.get('owner'),'hostIdentity':snapshot_owner.get('hostIdentity'),'clockDomain':'collector-host-monotonic-v1','scope':'existing SQL snapshot request bounds; not exact query instants or database-role CPU','reads':{}}
     sql="SELECT r.rolname,sum(s.calls),sum(s.total_exec_time) FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid GROUP BY 1 ORDER BY 1;"
     statements="SELECT r.rolname,s.calls,s.total_exec_time,s.queryid,s.dbid,encode(convert_to(s.query,'UTF8'),'hex') FROM pg_stat_statements s JOIN pg_roles r ON r.oid=s.userid ORDER BY r.rolname,s.queryid;"
     for kind,query in [('pg-role',sql),('pg-statements',statements)]:
         row={'wallStartedAtNs':time.time_ns(),'monotonicStartedAtNs':time.monotonic_ns()};timings['reads'][kind]=row
         try:
-            (out/(name+'-'+kind+'.tsv')).write_text(psql(d,query));row['status']='PASS'
+            with segments.capture(kind,[name+'-'+kind+'.tsv']):
+                (out/(name+'-'+kind+'.tsv')).write_text(psql(d,query));row['status']='PASS'
         except BaseException:
             row['status']='FAILED';raise
         finally:
@@ -1187,9 +1207,15 @@ def phase_snapshot(d, out, name):
             except Exception:
                 if row['status']=='PASS':raise
 
-    cost_companion.capture(out,name,snapshot_owner,lambda query:psql(d,query))
-    rt_services=sorted(role for role,spec in document(d/'frozen.compose.json')['services'].items() if isinstance(spec.get('command'),list) and spec['command'][-1:]==['realtime'])
-    realtime_costs.capture(out,name,snapshot_owner,rt_services,lambda service:compose(d,'exec','-T',service,'node','-',input=(HERE/'realtime-costs.cjs').read_bytes(),timeout=7))
+    # Optional stages retain their refusal without erasing mandatory SQL/cgroups.
+    for kind,collect in [('pg-costs',lambda:cost_companion.capture(out,name,snapshot_owner,lambda query:psql(d,query))),
+        ('realtime-costs',lambda:realtime_costs.capture(out,name,snapshot_owner,
+            sorted(role for role,spec in document(d/'frozen.compose.json')['services'].items() if isinstance(spec.get('command'),list) and spec['command'][-1:]==['realtime']),
+            lambda service:compose(d,'exec','-T',service,'node','-',input=(HERE/'realtime-costs.cjs').read_bytes(),timeout=7)))]:
+        try:
+            with segments.capture(kind,[name+'-'+kind+'.json']):collect()
+        except Exception as error:
+            write(out/(name+'-'+kind+'-failure.json'),{'status':'UNMEASURED','code':collection_segments.code(error),'failureType':type(error).__name__})
 
 
 def sql_counter_rate_bounds(before,after,delta,kind='pg-role'):
@@ -1601,6 +1627,7 @@ def sample_preflight(d,m,k6_id,oneoff=None):
     status={'status':'UNMEASURED','scope':'instrument setup only; no capacity acceptance'}
     with private_commands(attempt/'commands'):
         try:
+            status['collectorFiles']=collection_segments.preflight(d,m)
             edge=edge_runtime(d,m)
             if edge is not None:write(attempt/'edge-worker-runtime.json',edge)
             if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
@@ -1674,6 +1701,7 @@ def run_cell(d, m, k6_image):
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
     probe_env = runtime_env({"M7_GENERATOR_ROOT": str(d / "dependencies"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "M7_EVALUATOR_SERVICES": json.dumps(progress_services(d)), "M7_PROGRESS_PYTHON": sys.executable, "M7_PROGRESS_ATTRIBUTION":json.dumps(progress_attribution(m)), "STOCK_MS": "300000", "RECOVERY_MS": "120000", **({"M7_COMPLETION_SOURCE":json.dumps(completion)} if completion else {})})
     probe_env.update(clinical_timeline.probe_environment(m))
+    probe_env.update(revision_witness.probe_environment(d,m))
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
@@ -1820,6 +1848,7 @@ def _down(d, m):
             owned(row,m["owner"]);command(["docker","rm","--force","--volumes",row["Id"]])
     else:
         require(not resources(m), "M7_PARTIAL_PREPARE_HAS_RESOURCES")
+    write(d/'cleanup-absence.json',assert_absent(m))
     if m.get('clinicalTimeline'):
         try:clinical_timeline.retain(d,m)
         except Exception as error:write(d/'clinical-timeline-retain-refusal.json',{'status':'UNMEASURED','type':type(error).__name__,'code':'M7_CLINICAL_TIMELINE_RETAIN_REFUSED'})
@@ -1855,8 +1884,10 @@ def parser():
     prep.add_argument('--run-id');prep.add_argument('--image-id');prep.add_argument('--maximum-run-minutes',type=int,default=180)
     prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
     prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
+    prep.add_argument('--diagnostic-resource-allocation',type=json.loads,help='Explicit finite JSON service/driver allocation and ceiling; exclusive with named profile')
     prep.add_argument('--clinical-sender-binary',help='Explicit reviewed sender binary staged only for the opt-in raw external diagnostic')
     prep.add_argument('--clinical-sender-receipt',help='Immutable reviewed twin CLI build receipt; no command or version fallback')
+    prep.add_argument('--revision-witness-targets',help='Private JSON list of one or two synthetic tenant/storedId targets; discovery sample only')
     prep.add_argument('--clinical-intake-timeline',choices=('off',clinical_timeline.NAME,clinical_timeline.RAW_NAME),default='off')
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')

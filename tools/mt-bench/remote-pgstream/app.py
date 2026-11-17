@@ -34,7 +34,7 @@ def load(cell, spec, now=None):
     a.frozen(m, 'deploy')
     receipt = a.document(m['freeze'])
     need(receipt.get('remoteReportMode','strict') == b.get('reportMode','strict'), 'REMOTE_REPORT_AUTHORIZATION_REQUIRED')
-    need(receipt.get('remotePgstreamTopology') == b.get('pgstreamTopology') and receipt.get('remoteDiagnosticResourceProfile') == b.get('diagnosticResourceProfile') and receipt.get('remoteHelperDependencies') == b.get('helperDependencies'),'REMOTE_TOPOLOGY_AUTHORIZATION_REQUIRED')
+    need(receipt.get('remotePgstreamTopology') == b.get('pgstreamTopology') and receipt.get('remoteDiagnosticResourceProfile') == b.get('diagnosticResourceProfile') and receipt.get('remoteDiagnosticResourceAllocation') == b.get('diagnosticResourceAllocation') and receipt.get('remoteHelperDependencies') == b.get('helperDependencies'),'REMOTE_TOPOLOGY_AUTHORIZATION_REQUIRED')
     need(receipt.get('remoteWorkload') == b.get('workload'), 'REMOTE_WORKLOAD_AUTHORIZATION_REQUIRED')
     need(receipt.get('remoteComponentCases') == b.get('componentCases'), 'REMOTE_COMPONENT_RECEIPT_REQUIRED')
     need(receipt.get('remoteProfile') == b['profile'] and receipt.get('remoteTransport') == b['transport'] and receipt.get('remoteExtensionSha256') == b['sourceSha256'], 'REMOTE_EXTENSION_AUTHORIZATION_REQUIRED')

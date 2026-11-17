@@ -3,6 +3,7 @@ import json
 import viewer_plan
 import re
 import subprocess
+import sys
 import time
 import evaluator_catchup
 from contract import require, SHA, OWNER, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope
@@ -107,7 +108,8 @@ class Record:
         self.a,self.d,self.m=a,d,m
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json') if (file:=self.d/folder/name).is_file()}
+        self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle-disabled','idle','load') for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
         row={'verdict':getattr(error,'verdict','UNMEASURED'),'code':safe_code(error),'hardFailure':hard};self.value['strictChecks'][stage]=row
@@ -211,7 +213,7 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
         if any('recoveryEpisode' in row for row in record.value['strictChecks'].values()):record.value['status']='PARTIAL'
         record.save();check_discovery(record.value);return record.value
     except Exception as error:
-        if not record.value['hardFailures']:record.failure('collection',error,True)
+        if not any(row['code']==safe_code(error) for row in record.value['hardFailures']):record.failure('collection',error,True)
         record.save();raise
 
 def serial_exchange_diagnostic(a,d,m,record):
@@ -278,6 +280,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
     env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
     env.update(a.clinical_timeline.probe_environment(m))
+    env.update(a.revision_witness.probe_environment(d,m))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
@@ -303,7 +306,13 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                     record.observe('load',lambda:observed_load(a,d,m,out,work))
                 else:
                     record.observe('load',lambda:observed_load(a,d,m,out,work,record=record,oneoff=oneoff))
-            finally:a.phase_snapshot(d,out,'after')
+            finally:
+                primary=sys.exc_info()[1]
+                retain_load(a,d,m,record)
+                try:a.phase_snapshot(d,out,'after')
+                except Exception as secondary:
+                    record.failure('after-snapshot',secondary,True)
+                    if primary is None:raise
             # Recheck owned custody before the existing bounded restart protocol.
             a.assert_owned(m)
             if primed and not probe_stopped and process.poll() is None:
@@ -318,7 +327,13 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             a.stop_job(out/'probe-job.json',m['owner']);process.wait(timeout=10)
             if 'probe' not in record.value['processes']:record.value['processes']['probe']={'returncode':process.returncode,'stoppedByRunner':True};record.save()
         if monitor:monitor.__exit__(None,None,None)
-        if load_started:a.phase_snapshot(d,out,'after-reconnect')
+        retain_load(a,d,m,record)
+        if load_started:
+            primary=sys.exc_info()[1]
+            try:a.phase_snapshot(d,out,'after-reconnect')
+            except Exception as secondary:
+                record.failure('after-reconnect-snapshot',secondary,True)
+                if primary is None:raise
         if (out/'probe.json').is_file():
             record.value['probe']=a.document(out/'probe.json');record.save()
             require(not record.value['probe'].get('hardFailure'),'M7_DISCOVERY_PROBE_HARD_FAILURE')
@@ -335,9 +350,11 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         recovery=record.value['probe'].get('restart',{}).get('runtimeAcquisitionObservation',{})
         require(not hard_recovery(recovery),'M7_DISCOVERY_CLINICAL_FAILURE')
         if recovery:record.value['strictChecks']['recovery']={**{k:recovery[k] for k in ('verdict','code') if k in recovery},'hardFailure':False}
+    # Publish completed HTTP/frame segments before later optional collection.
+    retain_load(a,d,m,record)
     if m.get('evaluatorCatchup') is not None:evaluator_catchup.run(a,d,m,record)
     if (out/'k6-summary.json').is_file():
-        metrics=a.document(out/'k6-summary.json')['metrics'];record.value['metrics']={key:metrics[key] for key in ('http_reqs','http_req_failed','iterations','dropped_iterations','scenario_request_attempts','scenario_http_responses','scenario_transport_failures','writes_ok','writes_refused','writes_uncertain','responses_refused') if key in metrics}
+        metrics=a.document(out/'k6-summary.json')['metrics']
         record.value['rateOffer']=a.rate_offer(m)
         fingerprint=a.profile_provenance.fingerprint_check(metrics);record.value['settingsFingerprintObservation']=fingerprint;record.save()
         try:result,known=count_observation(a,d,out,runid,metrics)
@@ -359,6 +376,33 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         record.save()
 
     record.save()
+
+def retain_load(a,d,m,record):
+    """File-only: publish successful actors even when a later collector refuses."""
+    out=d/'load'
+    if m.get('revisionWitness'):
+        try:
+            result=a.revision_witness.retain(d,m);record.value['revisionWitness']=result
+            a.write(out/'revision-witness-assessment.json',result)
+        except Exception as error:
+            record.value.setdefault('retentionFailures',{})['revisionWitness']={'verdict':'UNMEASURED','code':safe_code(error)}
+    for name,key in (('k6-summary.json','metrics'),('probe.json','probe')):
+        if not (out/name).is_file():continue
+        try:
+            value=a.document(out/name)
+            if key=='metrics':
+                metrics=value['metrics']
+                from http_accounting import assess
+                record.value['httpAccounting']=assess(metrics)
+                a.write(out/'http-accounting.json',record.value['httpAccounting'])
+                value={key:value for key,value in metrics.items() if key in ('http_reqs','http_req_failed','iterations','dropped_iterations','scenario_request_attempts','scenario_http_responses','scenario_transport_failures','writes_ok','writes_refused','writes_uncertain','responses_refused') or key.startswith('m7_http_')}
+            record.value[key]=value
+        except Exception as error:
+            # The raw file remains retained; malformed optional reduction must
+            # not replace a primary actor/observer failure in a finally block.
+            record.value.setdefault('retentionFailures',{})[name]={'verdict':'UNMEASURED','code':safe_code(error)}
+    record.save()
+
 
 def observed_load(a,d,m,out,work,record=None,oneoff=None):
     import demand_recovery

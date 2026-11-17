@@ -67,31 +67,73 @@ DISCOVERY_K6 = Limit(2000, 4096 * MIB)
 HOST = MappingProxyType({'probe': (512, 1), 'generator': (256, 1), 'helper': (128, 2)})
 
 
+class AllocationLimit(Limit):
+    def __post_init__(self):
+        need(type(self.cpu) is int and 1<=self.cpu<=64000,'CPU_INVALID')
+        need(type(self.memory) is int and MIB<=self.memory<=128*1024*MIB,'MEMORY_INVALID')
+
+
+def explicit_allocation(value):
+    """One finite authored allocation, not a new named profile or permission grant."""
+    need(isinstance(value,dict) and set(value)=={'version','services','driver','ceiling','edge'} and type(value['version']) is int and value['version']==1,'ALLOCATION_SHAPE')
+    need(isinstance(value['services'],dict) and 1<=len(value['services'])<=32,'ALLOCATION_ROSTER')
+    for role,limit in value['services'].items():
+        need(isinstance(role,str) and (role in LIMITS and role!='k6' or role=='pgstream' or re.fullmatch(r'(api|realtime|evaluator)-(?:[2-9]|1[0-6])',role)),'UNKNOWN_ROLE')
+        allocation_limit(limit)
+    allocation_limit(value['driver'])
+    ceiling=value['ceiling']
+    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and 1<=ceiling['millicpus']<=64000 and type(ceiling['memoryBytes']) is int and MIB<=ceiling['memoryBytes']<=128*1024*MIB,'ALLOCATION_CEILING')
+    need(value['edge']=={'workerProcesses':1,'workerConnections':16384} and all(type(x) is int for x in value['edge'].values()) and 'nginx' in value['services'],'ALLOCATION_EDGE')
+    cpu=sum(limit['millicpus']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+value['driver']['millicpus']
+    memory=sum(limit['memoryBytes']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+value['driver']['memoryBytes']
+    need(cpu<=ceiling['millicpus'] and memory<=ceiling['memoryBytes'],'ALLOCATION_AGGREGATE_EXCEEDED')
+    return value
+
+
+def allocation_limit(value):
+    need(isinstance(value,dict) and set(value)=={'millicpus','memoryBytes'},'ALLOCATION_LIMIT')
+    return AllocationLimit(value['millicpus'],value['memoryBytes'])
+
+
+def external_selection(value):
+    return isinstance(value,dict) or value in EXTERNAL_PROFILES
+
+
+def driver_limit(profile):
+    return allocation_limit(profile['driver']) if isinstance(profile,dict) else LIMITS['k6']
+
+
 def selection(name=None):
+    if isinstance(name,dict):return explicit_allocation(name)
     need(name in (None, *PROFILES), 'SELECTION_INVALID')
     return name
 
 
 def memory_ceiling(profile):
     selection(profile)
+    if isinstance(profile,dict):return profile['ceiling']['memoryBytes']
     if profile == QUALIFICATION_NAME: return 10240 * MIB
     return 8448 * MIB if profile == EVALUATOR250_MEMORY512_NAME else MAX_MEMORY
 
 
 def cpu_ceiling(profile):
     selection(profile)
-    return 6000 if profile == QUALIFICATION_NAME else MAX_CPU
+    return profile['ceiling']['millicpus'] if isinstance(profile,dict) else 6000 if profile == QUALIFICATION_NAME else MAX_CPU
 
 
 def edge_worker_budget(profile):
     if profile is None:return None
     selection(profile)
     cpu=role_limit('nginx',profile).cpu
+    if isinstance(profile,dict):return {**profile['edge'],'nginxMillicpus':cpu,'source':'explicit-resource-allocation-v1'}
     return {'workerProcesses':(cpu+999)//1000,'workerConnections':16384,'nginxMillicpus':cpu,'source':'diagnostic-resource-profile-v1'}
 
 
 def role_limit(role, profile=NAME):
     selection(profile)
+    if isinstance(profile,dict):
+        need(role in profile['services'],'ALLOCATION_ROLE_MISSING')
+        return allocation_limit(profile['services'][role])
     if profile == QUALIFICATION_NAME:
         selected = {'postgres': Limit(1000, 1536*MIB),
                     'vault': Limit(250, 512*MIB),
@@ -125,27 +167,27 @@ class Plan:
     # (service, limit, concurrent count). Every selected role is reserved even
     # when idle, ops-only or used only during preparation. No stage subtraction.
     services: tuple
-    profile: str = NAME
+    profile: object = NAME  # Named selector or exact explicit allocation JSON.
 
     def __post_init__(self):
-        need(self.profile in PROFILES,'PROFILE_CHANGED')
+        need(selection(self.profile) is not None,'PROFILE_CHANGED')
         need(type(self.services) is tuple and bool(self.services), 'SERVICES_REQUIRED')
         need(len({r for r, _, _ in self.services}) == len(self.services), 'DUPLICATE_ROLE')
         for role, limit, count in self.services:
             need(isinstance(role, str) and role_limit(role,self.profile) == limit, 'LIMIT_CHANGED')
             need(type(count) is int and count == (2 if role in ('bootstrap', 'primer') else 1), 'MULTIPLICITY_CHANGED')
-        cpu = sum(limit.cpu * count for _, limit, count in self.services) + LIMITS['k6'].cpu
-        memory = sum(limit.memory * count for _, limit, count in self.services) + LIMITS['k6'].memory
+        cpu = sum(limit.cpu * count for _, limit, count in self.services) + driver_limit(self.profile).cpu
+        memory = sum(limit.memory * count for _, limit, count in self.services) + driver_limit(self.profile).memory
         need(cpu <= cpu_ceiling(self.profile) and memory <= memory_ceiling(self.profile), 'AGGREGATE_EXCEEDED')
         need(sum(heap * count for heap, count in HOST.values()) <= MAX_HEAP, 'HOST_AGGREGATE_EXCEEDED')
 
     def record(self):
         return {'version': 1, 'profile': self.profile,
                 'services': {r: {'millicpus': l.cpu, 'memoryBytes': l.memory, 'maximumConcurrent': n} for r, l, n in self.services},
-                'standalone': {'k6': {'millicpus': LIMITS['k6'].cpu, 'memoryBytes': LIMITS['k6'].memory, 'maximumConcurrent': 1}},
+                'standalone': {'k6': {'millicpus': driver_limit(self.profile).cpu, 'memoryBytes': driver_limit(self.profile).memory, 'maximumConcurrent': 1}},
                 'host': {r: {'heapMiB': h, 'maximumConcurrent': n} for r, (h, n) in HOST.items()},
-                'aggregate': {'millicpus': sum(l.cpu*n for _, l, n in self.services)+LIMITS['k6'].cpu,
-                              'memoryBytes': sum(l.memory*n for _, l, n in self.services)+LIMITS['k6'].memory,
+                'aggregate': {'millicpus': sum(l.cpu*n for _, l, n in self.services)+driver_limit(self.profile).cpu,
+                              'memoryBytes': sum(l.memory*n for _, l, n in self.services)+driver_limit(self.profile).memory,
                               'heapMiB': sum(h*n for h, n in HOST.values())},
                 'basis': 'ALL_SELECTED_SERVICES_PLUS_DECLARED_OVERLAPS_PLUS_STANDALONE_K6',
                 'hostRss': 'SEPARATELY_OBSERVED_NOT_HEAP_BOUNDED'}
@@ -155,8 +197,9 @@ def plan(config):
     services = config.get('services', {})
     need(isinstance(services, dict) and bool(services), 'SERVICES_REQUIRED')
     need('k6' not in services, 'K6_COMPOSE_STANDALONE_AMBIGUOUS')
-    profile=config.get(PROFILE_KEY,NAME);need(profile in PROFILES,'PROFILE_CHANGED')
-    need(profile not in EXTERNAL_PROFILES or 'pgstream' in services and 'evaluator' in services,'EXTERNAL_ROSTER_REQUIRED')
+    profile=config.get(PROFILE_KEY,NAME);need(selection(profile) is not None,'PROFILE_CHANGED')
+    if isinstance(profile,dict):need(set(profile['services'])==set(services),'ALLOCATION_ROSTER_CHANGED')
+    need(not external_selection(profile) or 'pgstream' in services and 'evaluator' in services,'EXTERNAL_ROSTER_REQUIRED')
     return Plan(tuple((r, role_limit(r,profile), 2 if r in ('bootstrap', 'primer') else 1) for r in sorted(services)),profile)
 
 
@@ -166,7 +209,7 @@ def overlay(config, selected):
         return config
     selection(selected)
     result = copy.deepcopy(config)
-    if selected in EXTERNAL_PROFILES:result[PROFILE_KEY]=selected
+    if external_selection(selected):result[PROFILE_KEY]=selected
     need(result.get(PROFILE_KEY,NAME)==selected,'PROFILE_CHANGED')
     budget = plan(result)
     for role, limit, _ in budget.services:
@@ -197,6 +240,7 @@ def discovery_driver_record(owner):
     if owner.get('runPurpose') != 'discovery' or owner.get('profile') != 'pgstream-sample' or 'diagnosticResources' not in owner:
         return None
     original=owner['diagnosticResources']
+    if isinstance(original.get('profile'),dict):return None  # explicit driver quota remains authoritative
     return {'kind':'discovery-k6-allocation-v1','owner':owner['owner'],'pair':owner['pair'],
             'imageId':owner['imageId'],'instrument':owner['instrument']['sha256'],
             'serverProfile':original['profile'],'serverResourceRecordUnchanged':True,
@@ -263,7 +307,7 @@ class Runtime:
             need(self.budget is not None and record == self.budget.record(), 'RECORD_CHANGED')
             verify_config(config, self.budget)
         self.observe = observe
-        self.driver_limit = LIMITS['k6']
+        self.driver_limit = driver_limit(self.budget.profile) if self.budget else LIMITS['k6']
         self.lock = threading.RLock()
         self.host = Counter()
         self.driver_fd = None
@@ -307,6 +351,7 @@ class Runtime:
 
     def bind(self, config):
         self.budget = plan(config)
+        self.driver_limit = driver_limit(self.budget.profile)
         verify_config(config, self.budget)
         return self.budget.record()
 
@@ -358,7 +403,7 @@ class Runtime:
             need(count <= maximum, 'CONTAINER_CONCURRENCY_EXCEEDED')
             cpu += limit.cpu * count
             memory += limit.memory * count
-        need(cpu <= cpu_ceiling(self.budget.profile)+self.driver_limit.cpu-LIMITS['k6'].cpu and memory <= memory_ceiling(self.budget.profile)+self.driver_limit.memory-LIMITS['k6'].memory, 'RUNTIME_AGGREGATE_EXCEEDED')
+        need(cpu <= cpu_ceiling(self.budget.profile)+self.driver_limit.cpu-driver_limit(self.budget.profile).cpu and memory <= memory_ceiling(self.budget.profile)+self.driver_limit.memory-driver_limit(self.budget.profile).memory, 'RUNTIME_AGGREGATE_EXCEEDED')
         return counts
 
     def compose(self, args, config):
