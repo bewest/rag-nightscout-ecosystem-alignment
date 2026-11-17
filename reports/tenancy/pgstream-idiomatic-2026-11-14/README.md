@@ -2629,3 +2629,61 @@ joined helper corpus: 537 tests, four skipped and no failures; the remote helper
 has 99 tests, five skipped and no failures. These are instrument checks, not additional
 application acceptance or capacity. The performance owner retains all entered
 experiments, their immutable inputs, budget and cleanup custody.
+
+
+## Stream amplification and executable retirement — 2026-11-16
+
+**Reproduced source and image qualification; local, unpushed.** Core
+`c31c6e0b69a2a2f2a5320b9e4d32195f1b3e1878`, deployment
+`92227d9d4853ed75c5f1ea10c0ba00f03bd2dac5`, image
+`sha256:5ea63b884651b329d206b7bccb8b9aae94a6fa51998a645846c093e5f7d40aca`
+form a separately qualified follow-on candidate. The earlier 5e runtime and all
+entered operating points retain their original source/image attribution.
+
+The deployment enables the maintained subscription cache with synchronous startup
+loading and a 60-second refresh. Startup refuses a failed initial read; a failed
+refresh retains the last good state. Stopped-worker recovery retains exact stored
+subscription checks. An upstream package discriminator at pgstream v1.6.0
+`97d7ab464f0accf6cf1373b3c3f7b328debae4b9` exercises 10,000 lookups: direct access
+issues 10,000 SQL queries; cached access issues one initial query. Startup/current,
+stopped-change/restart and refresh-failure/recovery controls pass. This is a
+primitive SQL-issuance result, not serving-binary equivalence or HTTP capacity.
+
+Core recognizes exact persisted replay despite JSONB key reordering and historical
+missing optional fields. It retains contract checks, durable acceptance and
+coherent same-LSN rows while avoiding redundant replay writes. The last completed
+engine instant shares the existing admitted input read. Addressed output hints
+select bounded tenant receipts; one fixed-deadline recovery pass also recovers
+unwoken durable neighbors. New hints cannot postpone that deadline. Global indexed
+startup/overflow/retry recovery and authority/restore/send-before-acknowledgement
+fences remain. Healthy idle gains no recurring full-roster scan.
+
+The executable untyped JSONB work runtime and adapters are retired. Typed runtime
+callers and native recovery controls remain; historical migration recognition,
+checksums and compatibility seeds are retained. Per-event durable acknowledgement,
+FULL replica identity, the stored-size AFTER trigger and active notification
+retry/repeat ownership remain required. No schema, trigger algorithm, wire format
+or single-tenant default change is claimed.
+
+| Qualification | Result and boundary |
+|---|---|
+| Final coherent campaign | All eight regular/browser tiers pass. Enabled native corpus: 968 passing, two pending, zero failures; duplicated formatted totals are counted once. Pending legacy epoch-counter and end-to-end latency/throughput diagnostics are not passes. Commands use Node 24.22.1, `scripts/test-tiers.js check/run` and the recorded `scripts/test-multitenant.js --record ... --only ...` suite selection. |
+| Final source review | prcheck passes with `official/dev` `4a482627bfdafb1fef8dcbe0ac6c484811cae563` contained and selected HEAD unchanged. No push, dev merge or release occurred. |
+| Exact cleanup | Independent receipt verifies 41 container references, 50 volumes and 18 recorded process births absent; producer ports 20123/20124 bind free. This proves recorded-resource absence, not a global host inventory. |
+| Image binding | All 1,258 expected source files, both commit labels and immutable source binding match. Altering the expected `clinical-stream-sql.js` hash fails on that exact path; restoration passes. Recorded builders and byte qualifiers are absent. The source lane did not start a serving stack with this image. |
+| Failed precursor and meaningful controls | The first 450f campaign stopped at a stale integration source-regex assertion; later tiers were not run in that attempt. Independent review then reproduced missed-neighbor delivery recovery and sparse pending-replay defects in that candidate. Repairs joined before the final c31 campaign. Historical pending replay, early-ACK and automatic lost-wake omission controls fail with the required symptoms and pass after restoration. Originals remain unchanged. |
+
+Retained evidence identifier: `stream-amplification-20261116/`, under ignored
+`externals/work/`. Its `selected-qualification.json` has SHA-256
+`e01026b86cbf886c33829a22aeeeaf10f1fa838b74740d2aeba60d181108a145` and binds the
+final campaign, native record, independent cleanup, image/build/restored-control,
+prcheck and consistency artifacts. Those artifact hashes were checked at records
+integration. The evolving local source handoff is
+`externals/work/HANDOFF-stream-amplification-retirement-2026-11-16.md`; raw logs,
+source archives, failed attempts and draft maintainer packets remain outside Git.
+
+Matched HTTP, clinical/frame latency, operating capacity and backlog/query-plan
+cost remain **UNMEASURED by this source qualification**. Capacity's owner controls
+fresh adoption/comparison and existing run cleanup; no entered run is repinned or
+relabeled. Source qualification does not admit HA, fleet, provider delivery or a
+production workload, and these records require no new application campaign.

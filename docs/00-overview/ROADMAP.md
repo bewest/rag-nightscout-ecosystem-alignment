@@ -177,7 +177,7 @@ owns these mechanisms; the same operating report owns separately attributed
 capacity observations. Current tests may proceed independently of optional
 multihost/platform work under the [production sequencing](../30-design/tenancy/production-critical-path.md).
 The next work is to establish useful workload/resource and recovery limits on
-qualified sources, finish the separate stream-amplification/retirement candidate,
+qualified sources, compare the [qualified amplification/retirement candidate](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16),
 and close the chosen deployment's trust and admission criteria. Performance
 experiments and source work can proceed concurrently without repinning entered
 runs. The generated table retains queue dependencies; each state remains a claim

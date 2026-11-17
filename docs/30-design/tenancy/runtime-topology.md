@@ -113,8 +113,8 @@ cohorts, bounded clinical state, completed output/checkpoint and independent raw
 storage delivery. The platform owns pgstream lifecycle. Source-scoped functional
 qualification and recovery/upgrade pairs live in the
 [selected integration record](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16).
-This plate grants no workload, HA, provider or fleet admission. Further
-amplification and code retirement remain future-candidate work until qualified.
+This plate grants no workload, HA, provider or fleet admission. The [follow-on amplification/retirement source](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16)
+has separate functional qualification; matched operating evidence remains separate.
 
 ### Historical accepted one-host reference
 

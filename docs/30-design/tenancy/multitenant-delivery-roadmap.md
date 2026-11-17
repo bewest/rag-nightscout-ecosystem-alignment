@@ -39,8 +39,9 @@ upgrade/cold rollback retain their own executed pairs. The
 implementation. These closures do not promote every M6/M7 criterion.
 
 Workload/resource limits and recovery under load belong to the existing operating
-report. Further subscription/intake amplification, addressed scheduling and code
-retirement belong to a separate future source candidate until qualified. The
+report. The [follow-on source qualification](../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16)
+closes bounded subscription/intake amplification, addressed delivery and executable
+retirement. Its operating comparison retains a separate evidence boundary. The
 [production path](production-critical-path.md) owns deployment admission criteria;
 optional fleet, HA and multihost work follows the declared profile. Progress is
 reported by completed capability and remaining criterion, rather than by counting

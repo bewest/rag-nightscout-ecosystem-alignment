@@ -94,9 +94,9 @@ completed output and independent raw storage delivery. Earlier R72/R73 and
 operation-window records retain their original source and scope.
 
 Remaining work has distinct boundaries. The existing operating report owns load,
-resource and recovery observations, including partial and failed points. Further
-stream amplification and code retirement are implementation work until their
-owner supplies a qualified candidate. A supported production profile also needs
+resource and recovery observations, including partial and failed points. The [follow-on source qualification](../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16)
+closes bounded stream amplification and executable retirement; matched operating
+comparison remains separate. A supported production profile also needs
 its workload limits, deployment trust and recovery objectives accepted together;
 optional HA, multihost and fleet placement retain separate scope. The
 [production path](../30-design/tenancy/production-critical-path.md) explains those

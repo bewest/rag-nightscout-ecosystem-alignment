@@ -1,5 +1,5 @@
 {
- "measured": "2026-11-16 read-derived reconciliation against selected runtime records at alignment 5fdc4bf0685d35d2fac980bad1b28bd66525ccdb and selected core 5e112547b31252ec428747c821d3cd1b3684ce2b. Current architecture is stream acceptance, bounded clinical working state, completed result/checkpoint and independent raw storage delivery. Named records retain executed source/image/instrument and failed/pending limits. M6a/M6b and earlier R72/R73 keep their source-scoped acceptance; parent queue states are not milestone or production promotion. Workload/resource/recovery envelopes and future amplification/retirement work remain separate. Application dev merge, operator release, deployment trust, HA/fleet/provider admission require their own evidence.",
+ "measured": "2026-11-16 read-derived reconciliation against selected runtime records at alignment 5fdc4bf0685d35d2fac980bad1b28bd66525ccdb and selected core 5e112547b31252ec428747c821d3cd1b3684ce2b. Current architecture is stream acceptance, bounded clinical working state, completed result/checkpoint and independent raw storage delivery. Named records retain executed source/image/instrument and failed/pending limits. M6a/M6b and earlier R72/R73 keep their source-scoped acceptance; parent queue states are not milestone or production promotion. Workload/resource/recovery envelopes and the separately qualified amplification/retirement source keep their own evidence scope; matched operating comparison remains separate. Application dev merge, operator release, deployment trust, HA/fleet/provider admission require their own evidence.",
  "tracks": [
   {
    "id": "storage",
@@ -1239,8 +1239,12 @@
    "state": "progress",
    "short": "Stream runtime / operating limits",
    "title": "Selected local stream runtime has source-scoped functional qualification: recoverably accepted cohorts, bounded clinical state, completed output and independent raw delivery. Parent runtime/production work remains open.",
-   "ref": "Ordinary slot recovery and populated upgrade/cold rollback retain executed pair attribution. Capacity/latency, production trust, live provider/device, HA and fleet scope remain separate; future source optimizations are not yet qualified.",
+   "ref": "Ordinary slot recovery and populated upgrade/cold rollback retain executed pair attribution. Capacity/latency, production trust, live provider/device, HA and fleet scope remain separate; the amplification/retirement follow-on has separate functional qualification, with matched operating comparison still open.",
    "spec": [
+    {
+     "label": "Qualified follow-on amplification and executable retirement",
+     "href": "../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#stream-amplification-and-executable-retirement--2026-11-16"
+    },
     {
      "label": "Selected stream integration and its limits",
      "href": "../../../reports/tenancy/pgstream-idiomatic-2026-11-14/README.md#streamlined-runtime-integration--2026-11-16"
