@@ -4,6 +4,14 @@
 one configuration and the existing `adapter.py` entrypoints. It does not build
 an image, allocate a remote host or grant capacity acceptance.
 
+For new runs on this workstation, use the overflow-disk storage layout in
+`AGENTS.md`. Keep helpers under the appropriate
+`/mnt/data/nightscout-workspace/worktrees/` directory and select outputs under
+`/mnt/data/nightscout-workspace/artifacts/<lane>/<run>`. The directory arguments
+below are explicit storage choices, not automatic runner defaults. A missing or
+unwritable `/mnt/data` is a storage error; do not fall back to the home drive.
+Existing runs and their original guards keep their current paths.
+
 Copy [the small rehearsal profile](examples/local-rehearsal.json) to private
 storage. Set its verified helper head, repository paths, existing diagnostic
 receipt, new project and unused explicit CIDRs. The receipt still binds the
@@ -29,11 +37,11 @@ records contention without requiring other agents to stop their containers.
 
 ```bash
 python3 -B tools/mt-bench/m7-joined/runner.py prepare \
-  /absolute/private/run.json /absolute/private/new-run
+  /absolute/private/run.json /mnt/data/nightscout-workspace/artifacts/example-lane/run01
 python3 -B tools/mt-bench/m7-joined/runner.py rehearse \
-  /absolute/private/new-run
+  /mnt/data/nightscout-workspace/artifacts/example-lane/run01
 python3 -B tools/mt-bench/m7-joined/runner.py result \
-  /absolute/private/new-run
+  /mnt/data/nightscout-workspace/artifacts/example-lane/run01
 ```
 
 Use the qualified Node/npm paths in `PATH`. `prepare` stages canonical source,
@@ -52,7 +60,7 @@ the deadline. The runner checks process birth and group before escalating a
 stage that ignores TERM. Normal completion also cleans up. Explicit cleanup is:
 
 ```bash
-python3 -B tools/mt-bench/m7-joined/runner.py down /absolute/private/new-run
+python3 -B tools/mt-bench/m7-joined/runner.py down /mnt/data/nightscout-workspace/artifacts/example-lane/run01
 ```
 
 Keep the helper source fixed while a run or its guard is live. Cleanup retains
@@ -566,13 +574,13 @@ worktree unchanged until exact absence. An existing point, foreign fixture or
 sealed run cannot be adopted into a session.
 
 ```bash
-python3 -B tools/mt-bench/m7-joined/runner.py session-start CONFIG.json /tmp/OWNED-SESSION
-python3 -B tools/mt-bench/m7-joined/runner.py session-observe /tmp/OWNED-SESSION \
+python3 -B tools/mt-bench/m7-joined/runner.py session-start CONFIG.json /mnt/data/nightscout-workspace/artifacts/example-lane/session01
+python3 -B tools/mt-bench/m7-joined/runner.py session-observe /mnt/data/nightscout-workspace/artifacts/example-lane/session01 \
   --owner OWNER_FROM_SESSION_START --name first --config CONFIG.json --history HISTORY.json
 # A second named observation uses the same seeded physical fixture.
-python3 -B tools/mt-bench/m7-joined/runner.py session-observe /tmp/OWNED-SESSION \
+python3 -B tools/mt-bench/m7-joined/runner.py session-observe /mnt/data/nightscout-workspace/artifacts/example-lane/session01 \
   --owner OWNER_FROM_SESSION_START --name repaired-collector --config COLLECTOR-CONFIG.json --history HISTORY.json
-python3 -B tools/mt-bench/m7-joined/runner.py session-close /tmp/OWNED-SESSION --owner OWNER_FROM_SESSION_START
+python3 -B tools/mt-bench/m7-joined/runner.py session-close /mnt/data/nightscout-workspace/artifacts/example-lane/session01 --owner OWNER_FROM_SESSION_START
 ```
 
 Each history input is a JSON object describing `warmCache`, `seedHistory`,

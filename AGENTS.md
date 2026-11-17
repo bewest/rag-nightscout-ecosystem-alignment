@@ -99,6 +99,29 @@ the source anchors and evidence needed to resume. Update the existing document
 or lane handoff rather than adding a parallel summary, style score or reporting
 step. Use ASD-STE100-inspired plain language without claiming formal conformity.
 
+**Storage on this workstation**
+
+- New worktrees and large experiment outputs use the mounted overflow disk at
+  `/mnt/data/nightscout-workspace`. Its `WORKSPACE-LAYOUT.txt` defines the local
+  directory layout. Confirm that `/mnt/data` is mounted and writable before creating
+  a lane. If it is unavailable, stop and report the storage problem; do not silently
+  create a replacement directory on the home filesystem.
+- Create alignment worktrees under `worktrees/alignment/<lane>`, application
+  worktrees under `worktrees/cgm-remote-monitor/<lane>`, and deployment worktrees
+  under `worktrees/deploy/<lane>`, relative to that storage root. Pass absolute paths
+  to `git worktree add`. Do not create new lane worktrees under `externals/work`
+  or elsewhere on the home drive.
+- Put new capacity, acceptance, performance and other large run outputs under
+  `artifacts/<lane>/<run>` on that disk. Select this absolute directory in the existing
+  runner CLI/configuration; the runner does not choose or redirect storage for you.
+  Use `retained/` for preserved originals and retired checkout archives. Large
+  dependency installations, build trees and scratch captures belong on that disk too.
+  Small disposable test files can still use `/tmp`.
+- Existing live worktrees, fixtures, dependency targets, evidence paths, Docker
+  storage and cleanup guards stay at their original paths. Move an inactive resource
+  only after checking its owner, local changes, references and retained evidence.
+  A directory's age or a merged commit alone does not establish that it is unused.
+
 **Git and worktrees**
 
 - The main checkout stays on `main`. Branch work happens in a worktree (`git worktree add`), one
@@ -123,8 +146,9 @@ step. Use ASD-STE100-inspired plain language without claiming formal conformity.
 
 **What goes into the public repository**
 
-- Raw capacity and acceptance outputs belong in ignored `data/capacity/<run>/`,
-  `data/acceptance/<run>/`, an existing ignored run workspace, or an external evidence store.
+- New raw capacity and acceptance outputs use the overflow-disk artifact layout above.
+  Existing ignored `data/capacity/<run>/`, `data/acceptance/<run>/` and run workspaces
+  retain their captured originals and attribution; do not repoint them during a run.
   This includes full logs, traces, SQL/cgroup samples, per-tenant oracles and run archives.
   Commit concise findings, selected aggregates or figures, source/workload/command details,
   limitations, checksums and a retained-evidence identifier. Do not force-add bulk outputs.
@@ -207,8 +231,10 @@ A handoff is for a reader with none of your context, possibly a different tool. 
 6. **Who owns what** among the open lanes, and where to send notes.
 
 Record the programme-level state in `releases/<product>-<version>/contents.md` (a dated "Update"
-table) and `decisions.md`. Write the lane-level detail to `externals/work/HANDOFF-<lane>-<date>.md`
-(local, untracked: it names worktrees and ports on this machine). Link the second from the first.
+table) and `decisions.md`. Write new lane-level detail to
+`/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>-<date>.md`
+(local, untracked: it names worktrees and ports on this machine). Keep an existing
+lane handoff at its current path, including legacy `externals/work/` handoffs. Link the second from the first.
 Vendor memory (Claude's memory directory, Copilot session state) is private to one tool: anything
 another agent must know goes in the files above or in this contract, never only in memory.
 

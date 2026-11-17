@@ -32,7 +32,7 @@ Append to `items:`. Every field below is required unless marked optional.
     repo: cgm-remote-monitor
     branch: bf/example
     base: official/dev@61eb3733           # WHICH commit, never just "dev"
-    worktree: externals/work/crm-bf-example
+    worktree: /mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/crm-bf-example
     state: gate-not-met                   # a claim; see states: in meta
     blast_radius: 2 commits, lib/server/example.js, +40/-12.
     review: maintainer, plus one reviewer who has not merged their own work here

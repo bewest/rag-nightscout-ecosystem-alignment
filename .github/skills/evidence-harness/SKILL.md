@@ -41,12 +41,16 @@ that bundle rather than each becoming a new programme acceptance record.
 
 ## Run the matrix
 
+Use the overflow-disk worktree and artifact locations in `AGENTS.md` for new
+experiments. Pass the output location explicitly; preserve existing captures
+and live cleanup paths.
+
 ```bash
 # a fresh MongoDB on its own port; never a real site
 docker run -d --name wc-mongo-$$ -p 27151:27017 mongo:7.0
-WC_WORKTREE=externals/work/<crm worktree> WC_MONGO=mongodb://127.0.0.1:27151 \
-  node tools/qc/write-contract-matrix.js --out /tmp/<scratch>/after.json
-node tools/qc/write-contract-matrix.js --compare tools/qc/results/write-contract-matrix/<pin>.json /tmp/<scratch>/after.json
+WC_WORKTREE=/mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/example-lane WC_MONGO=mongodb://127.0.0.1:27151 \
+  node tools/qc/write-contract-matrix.js --out /mnt/data/nightscout-workspace/artifacts/example-lane/run01/after.json
+node tools/qc/write-contract-matrix.js --compare tools/qc/results/write-contract-matrix/<pin>.json /mnt/data/nightscout-workspace/artifacts/example-lane/run01/after.json
 ```
 
 For a new differential matrix capture, run each compared tree **twice**; a cell
