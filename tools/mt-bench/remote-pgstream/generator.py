@@ -14,7 +14,7 @@ import sys
 import threading
 import time
 
-from protocol import viewer_total, Channel, binding, need, source_identity, TRAFFIC_FILES, write, workload, discovery_mode, work_seconds
+from protocol import allocation_boundary, viewer_total, Channel, binding, need, source_identity, TRAFFIC_FILES, write, workload, discovery_mode, work_seconds
 
 UID = 1001
 GID = 1001
@@ -193,6 +193,31 @@ def sample(process, b, output, stop_event, k6_name):
               'refusal': refusal, 'cadenceSeconds': interval, 'networkScope': 'generator-host cumulative receive+transmit, including SSH/control', 'samples': samples})
 
 
+def driver_resources(b):
+    value=b.get('diagnosticResourceAllocation')
+    if value is None:return None
+    need(b.get('diagnosticResourceProfile') is None,'EXTERNAL_K6_RESOURCE_SELECTION')
+    allocation_boundary(value)
+    return dict(value['driver'])
+
+
+def driver_flags(limits):
+    if limits is None:return []
+    cpu=str(limits['millicpus']//1000) if limits['millicpus']%1000==0 else ('%.3f'%(limits['millicpus']/1000)).rstrip('0')
+    return ['--cpus',cpu,'--memory',str(limits['memoryBytes']),'--memory-swap',str(limits['memoryBytes'])]
+
+
+def verify_driver_flags(argv,b):
+    limits=driver_resources(b)
+    if limits is None:return None  # Historical launch/qualification remains unchanged.
+    expected=driver_flags(limits)
+    for flag,value in zip(expected[::2],expected[1::2]):
+        need(argv.count(flag)==1 and argv.index(flag)+1<len(argv) and argv[argv.index(flag)+1]==value,'EXTERNAL_K6_RESOURCE_FLAGS')
+    allowed=set(expected[::2])
+    need(not any((v.startswith(('--cpu','--memory','--cpuset')) and v not in allowed) or v=='-m' for v in argv),'EXTERNAL_K6_RESOURCE_FLAGS')
+    return limits
+
+
 def traffic_commands(directory, b, descriptor, k6_name, run_start_ms):
     """The existing launch commands, bound to the validated workload."""
     selected = workload(b); cadence = selected['cadence']; d = Path(directory); out = d / 'load'
@@ -210,6 +235,8 @@ def traffic_commands(directory, b, descriptor, k6_name, run_start_ms):
     k6 += ['-e', 'JWT_SETUP_CONCURRENCY=' + str(selected.get('jwtSetupConcurrency', 1))]
     if 'offeredRps' in cadence:k6 += ['-e', 'OFFERED_RPS=' + str(cadence['offeredRps'])]
     k6 += [b['k6Image'], 'run', '--quiet', '--summary-export', '/out/k6-summary.json', '/scripts/workload.js']
+    limits=driver_resources(b)
+    if limits is not None:k6=k6[:3]+driver_flags(limits)+k6[3:]
     return probe, k6
 
 def actor_files(directory,name):
@@ -240,6 +267,7 @@ def plan_k6(argv,d,b,name):
     need(not any(v.startswith('--env') or (v.startswith('-') and not v.startswith('--') and v not in ('-e','-v')) for v in argv[:i]),'EXTERNAL_K6_JWT_SETUP_CHANGED')
     jwt_flags=[argv[n+1] for n,v in enumerate(argv[:-1]) if v=='-e' and argv[n+1].split('=',1)[0]=='JWT_SETUP_CONCURRENCY']
     need(jwt_flags==['JWT_SETUP_CONCURRENCY='+str(workload(b).get('jwtSetupConcurrency',1))],'EXTERNAL_K6_JWT_SETUP_CHANGED')
+    limits=verify_driver_flags(argv[:i],b)
     metadata=json.loads(subprocess.check_output(['docker','image','inspect',b['k6Image']],text=True,timeout=10));need(len(metadata)==1 and re.fullmatch('sha256:[a-f0-9]{64}',metadata[0]['Id']),'EXTERNAL_K6_IMAGE_ID')
     mounts=[];env=dict(v.split('=',1)for v in metadata[0]['Config'].get('Env',[])if'='in v)
     for n,v in enumerate(argv):
@@ -248,9 +276,10 @@ def plan_k6(argv,d,b,name):
         if v=='-e':key,value=argv[n+1].split('=',1);env[key]=value
     need(len(mounts)==3 and{v[1]for v in mounts}=={'/scripts/workload.js','/tenants.private.json','/out'}and all(Path(v[0]).is_relative_to(Path(d).resolve())for v in mounts),'EXTERNAL_K6_MOUNT')
     value={'name':name,'nonce':b['nonce'],'sourceSha256':b['sourceSha256'],'image':b['k6Image'],'imageId':metadata[0]['Id'],'command':argv[i+1:],'entrypoint':metadata[0]['Config'].get('Entrypoint'),'mounts':sorted(mounts),'environment':env,'notBefore':time.time(),'argv':argv}
+    if limits is not None:value['resourceLimits']=limits
     write(intent,value);return argv[:i]+['--cidfile',str(cid)]+argv[i:]
 
-def qualify_k6(row,intent):
+def qualify_k6(row,intent,*,check_resources=True):
     need(re.fullmatch('[a-f0-9]{64}',row.get('Id',''))is not None,'EXTERNAL_K6_FULL_CID');cfg=row['Config'];host=row['HostConfig']
     need(row.get('Name')=='/'+intent['name']and(cfg.get('Labels')or{}).get('org.nightscout.external.owner')==intent['nonce'],'EXTERNAL_K6_OWNER_NAME')
     need(row['Image']==intent['imageId']and cfg.get('Image')==intent['image']and cfg.get('Cmd')==intent['command']and cfg.get('Entrypoint')==intent['entrypoint'],'EXTERNAL_K6_IMAGE_COMMAND')
@@ -258,7 +287,11 @@ def qualify_k6(row,intent):
     actual=sorted([str(Path(v['Source']).resolve()),v['Destination'],v['RW']]for v in row.get('Mounts',[])if v['Type']=='bind')
     need(len(actual)==len(row.get('Mounts',[]))and actual==intent['mounts'],'EXTERNAL_K6_MOUNTS')
     need(cfg.get('User')=='1001:1001'and host.get('ReadonlyRootfs')is True and host.get('Privileged')is False and host.get('NetworkMode')=='host'and host.get('CapDrop')==['ALL']and host.get('CapAdd')in(None,[])and host.get('Devices')in(None,[])and host.get('PidMode')==''and host.get('IpcMode')=='private'and host.get('AutoRemove')is True and host.get('SecurityOpt')==['no-new-privileges'],'EXTERNAL_K6_SECURITY')
-    environment=dict(v.split('=',1)for v in cfg.get('Env',[])if'='in v);need(environment==intent['environment']and len(environment)==len(cfg.get('Env',[])),'EXTERNAL_K6_ENVIRONMENT');return row['Id']
+    environment=dict(v.split('=',1)for v in cfg.get('Env',[])if'='in v);need(environment==intent['environment']and len(environment)==len(cfg.get('Env',[])),'EXTERNAL_K6_ENVIRONMENT')
+    if check_resources and intent.get('resourceLimits') is not None:
+        limits=intent['resourceLimits']
+        need(host.get('NanoCpus')==limits['millicpus']*1000000 and host.get('Memory')==limits['memoryBytes'] and host.get('MemorySwap')==limits['memoryBytes'],'EXTERNAL_K6_RESOURCE_LIMITS')
+    return row['Id']
 
 def cleanup_k6(directory,b,name):
     intent_file,cid_file,record=actor_files(directory,name)
@@ -279,6 +312,10 @@ def cleanup_k6(directory,b,name):
         if row is None:continue
         try:actual=qualify_k6(row,intent);owned[actual]=row
         except (RuntimeError,KeyError,TypeError,ValueError)as error:
+            if str(error)=='EXTERNAL_K6_RESOURCE_LIMITS':
+                # Wrong native limits are still a failure. All original owner,
+                # image, creation, mount and security checks must pass to clean.
+                actual=qualify_k6(row,intent,check_resources=False);owned[actual]=row
             refusals.append(str(error)if str(error).startswith('EXTERNAL_K6_')else'LAYOUT_UNAVAILABLE')
     planned=candidates.get(name)
     if cid and planned is not None and planned.get('Id')!=cid:refusals.append('CAPTURED_CID_DIFFERS_FROM_PLANNED_NAME')
@@ -295,13 +332,41 @@ def cleanup_k6(directory,b,name):
 
 
 def run_k6(argv,d,b,name,output,timeout):
-    command=plan_k6(argv,d,b,name);process=None
+    command=plan_k6(argv,d,b,name);process=None;deadline=time.monotonic()+timeout
     try:
         process=subprocess.Popen(command,stdout=output,stderr=subprocess.STDOUT,start_new_session=True)
-        return subprocess.CompletedProcess(command,process.wait(timeout=timeout))
+        if driver_resources(b) is not None:
+            intent_file,_,captured=actor_files(d,name);intent=json.loads(intent_file.read_text())
+            until=min(deadline,time.monotonic()+5)
+            while True:
+                row=_inspect_actor(name)
+                if row is not None:
+                    try:actual=qualify_k6(row,intent)
+                    except RuntimeError as error:
+                        native={key:row.get('HostConfig',{}).get(key) for key in ('NanoCpus','Memory','MemorySwap')}
+                        try:write(captured.with_suffix('.native.json'),{'status':'FAIL','code':str(error) if str(error).startswith('EXTERNAL_K6_') else 'EXTERNAL_K6_QUALIFICATION_REFUSED','resourceLimits':intent['resourceLimits'],'native':native})
+                        except OSError:error.publicationFailed=True
+                        raise
+                    native={key:row['HostConfig'][key] for key in ('NanoCpus','Memory','MemorySwap')}
+                    write(captured.with_suffix('.native.json'),{'status':'PASS','id':actual,'resourceLimits':intent['resourceLimits'],'native':native,'qualifiedAt':time.time()})
+                    break
+                if process.poll() is not None or time.monotonic()>=until:
+                    write(captured.with_suffix('.native.json'),{'status':'UNMEASURED','code':'EXTERNAL_K6_RESOURCE_READBACK_UNAVAILABLE','returncode':process.poll()})
+                    raise RuntimeError('EXTERNAL_K6_RESOURCE_READBACK_UNAVAILABLE')
+                time.sleep(.05)
+        return subprocess.CompletedProcess(command,process.wait(timeout=max(.01,deadline-time.monotonic())))
     finally:
-        try:stop(process) # End the CLI before recovery, but a CLI stop failure cannot skip owned cleanup.
-        finally:cleanup_k6(d,b,name)
+        primary=sys.exc_info()[1]
+        try:stop(process) # CLI failure cannot skip exact owned cleanup.
+        except BaseException as error:
+            if primary is None:
+                primary=error;raise
+            primary.stopFailure='EXTERNAL_K6_CLI_STOP_REFUSED'
+        finally:
+            try:cleanup_k6(d,b,name)
+            except BaseException as error:
+                if primary is None:raise
+                primary.cleanupFailure=str(error) if str(error).startswith('EXTERNAL_K6_') else 'EXTERNAL_K6_CLEANUP_REFUSED'
 
 def cleanup_actors(directory,b):
     names=['nsexternal-'+b['nonce'][:12]+'-k6']

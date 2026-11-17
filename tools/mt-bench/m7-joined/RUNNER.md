@@ -768,3 +768,13 @@ malformed state, foreign work, changed ownership/runtime, restore rewinds, clock
 failures, durable reader/source mismatches and collection bounds still refuse.
 The three existing durable-before-inspection captures and their cost bounds stay
 in place. Original failed runs are unchanged.
+
+For explicit remote allocations, the trusted DRIVER supervisor now inserts the
+authored driver CPU/memory/no-swap flags, binds them into its existing creation
+intent, and verifies exact native Docker HostConfig before qualifying the run.
+Missing, duplicated or conflicting flags are refused before launch; a missing
+readback is UNMEASURED. Native mismatches remain failures. Exact owner/image/
+creation/mount/security qualification still permits cleanup of our actor with a
+wrong limit, while preserving that refusal and the primary error. The fixed
+readback file is beside the existing captured-CID record. Historical requests
+without an explicit allocation keep their launch and qualification behavior.
