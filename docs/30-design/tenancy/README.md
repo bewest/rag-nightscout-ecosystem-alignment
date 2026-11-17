@@ -53,7 +53,7 @@ guide below.
 | [Runtime topology](runtime-topology.md) | Reusable roles, scale envelopes, private APIs and the [logical REST/worker map](runtime-topology.md#logical-rest-cohesion-and-worker-placement). |
 | [Private API composition and scaling plan](selectable-endpoints-and-api-scaling-plan.md) | The adopted `serve.internal` listener, graceful shutdown, fixed-roster API replicas and their acceptance matrix. |
 | [Realtime sharding plan](realtime-sharding-plan.md) | Implemented fixed-roster tenant placement and controlled moves, their source-scoped qualification, and remaining topology/capacity boundaries. |
-| [Evaluator/realtime communication](evaluator-realtime-communication.md) | Stream acceptance and clinical completion, bounded working state, independent raw storage delivery, notification handoff and recovery. |
+| [Evaluator/realtime communication](evaluator-realtime-communication.md) | Stream acceptance, clinical completion and delivery contracts; the [single-evaluator efficiency plan](evaluator-realtime-communication.md#single-evaluator-efficiency-plan) owns current priorities, measured comparisons and integration boundaries. |
 | [SQL and migration architecture](sql-and-migration-architecture.md) | Table families, RLS and grants, tenant clock/order, migrations and restore inclusion. |
 | [Counter and restore options](counter-and-restore-options.md) | Clinical time, public history, implemented insertion order and internal stream progress; current recovery obligations and retained alternatives. |
 | [Retained legacy history proof plan](../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.md) | Original public-history no-missed-write controls and source-scoped experiment design; not current internal CDC sequencing or dispatch. |

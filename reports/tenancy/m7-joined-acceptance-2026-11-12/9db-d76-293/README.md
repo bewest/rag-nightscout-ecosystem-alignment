@@ -27,4 +27,4 @@ python3 tools/queue/gates/m7_joined_receipt.py \
   --evidence-root "$M7_EVIDENCE_ROOT" --scope acceptance
 ```
 
-The private bundle and local unpushed ownership are in the [evolving handoff](../../../../externals/work/HANDOFF-m7-join-2026-11-11.md). The main checkout and peer work are untouched.
+The private bundle and local unpushed ownership are in the evolving handoff (`externals/work/HANDOFF-m7-join-2026-11-11.md`, untracked). The main checkout and peer work are untouched.
