@@ -1749,6 +1749,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1944,6 +1948,8 @@
       
         
       
+        
+      
     
     
     
@@ -2014,6 +2020,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fresh-image functional diagnostic before full acceptance
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="DIAGNOSTIC-SEAM.html" class="md-nav__link md-nav__link--active">
         
   
@@ -2030,6 +2054,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#explicit-independent-pgstream-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit independent pgstream topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2079,6 +2133,34 @@
     
   
     Remote controller seam
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="RUNNER.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reuse the canonical local runner
   
 
     
@@ -2361,6 +2443,64 @@
   
   
   
+    <a href="../native-clinical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    native-clinical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../nrg-resolution-poc/index.html" class="md-nav__link">
       
   
@@ -2427,6 +2567,64 @@
     
   
     postgrest-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remote-pgstream/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remote-pgstream/
   
 
     
@@ -3845,6 +4043,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#explicit-independent-pgstream-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit independent pgstream topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -3861,7 +4078,7 @@
 
 
 <h1 id="fresh-image-functional-diagnostic-before-full-acceptance">Fresh-image functional diagnostic before full acceptance<a class="headerlink" href="#fresh-image-functional-diagnostic-before-full-acceptance" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>094dcc182</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>96723072e</code>.</em></p>
 <p>This is an explicit diagnostic authorization/result scope. It does <strong>not</strong> fabricate
 joined acceptance, unlock a capacity run or satisfy pilot/ladder gates. The remote
 controller owns all cloud activity and enforces its current maintainer-authorized spending/deadline policy. This instrument creates
@@ -3956,6 +4173,93 @@ HTTP refusal after one stock socket connects with no frames; failure exits with
 its original diagnostic code rather than waiting for the traffic deadline. Python
 retains that safe terminal code and reports process termination or exit timeout
 separately. This does not force process exit or change the traffic budget.</p>
+<h2 id="explicit-independent-pgstream-topology">Explicit independent pgstream topology<a class="headerlink" href="#explicit-independent-pgstream-topology" title="Permanent link">&para;</a></h2>
+<p>Fresh <code>pgstream-sample</code> discovery configurations for a separately managed Go
+service select <code>--pgstream-topology external-service-v1</code> and
+<code>--diagnostic-resource-profile local-diagnostic-external-pgstream-4cpu-8g-v1</code>.
+The default remains <code>colocated-v1</code>; a standalone Compose service under that
+selection refuses. The new selection validates the exact pinned core schema,
+canonical frozen service command, source/image identity and separate process
+instrumentation. The existing paired producer and core CLI source-contract check
+still applies. It does not imply image or runtime acceptance.</p>
+<p>The new resource profile explicitly divides the former evaluator allocation:</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th style="text-align: right;">CPU limit</th>
+<th style="text-align: right;">Memory limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Evaluator Node</td>
+<td style="text-align: right;">125 millicpus</td>
+<td style="text-align: right;">256 MiB</td>
+</tr>
+<tr>
+<td>Independent pgstream Go</td>
+<td style="text-align: right;">125 millicpus</td>
+<td style="text-align: right;">256 MiB</td>
+</tr>
+</tbody>
+</table>
+<p>All other role, driver, oneoff and host-heap limits remain the existing policy.
+The complete one-replica roster reserves 3875 millicpus, 8192 MiB container memory
+and 1024 MiB host V8 heaps. This is a bounded diagnostic policy; whether these
+quotas are adequate for a workload is UNMEASURED. A constrained generator or
+service is a finding, not capacity acceptance. The old profile retains its
+250 millicpu/512 MiB evaluator allocation and refuses the new Go role.</p>
+<p>The explicit <code>local-diagnostic-external-pgstream-evaluator250-4cpu-8g-v1</code>
+variant changes only evaluator CPU to 250 millicpus. Evaluator memory remains
+256 MiB; the independent Go service remains at 125 millicpus/256 MiB. Its full
+reservation is 4,000 millicpus, 8,192 MiB container memory and 1,024 MiB host V8
+heaps. It is a separate diagnostic profile for a CPU comparison, not evidence
+that the original profile passes. The frozen configuration and actual container
+limits must match that selection. Capture effective <code>cpu.max</code> separately;
+requested CPU is not a measurement of the kernel's quota rounding.</p>
+<p>Deployment includes the independent service in the maintained role roster.
+Preflight requires Node counters in the evaluator container and Go counters in
+the pgstream container, with exact image/command and running-container birth
+checks. Reduction requires both roles and stable process births across each
+window. Go logs use the existing bounded collector; Node diagnostics environment
+flags are validated only for Node roles. Raw log, source and runtime receipts
+retain their existing homes. Old captures remain on their original helper.</p>
+<p>The opt-in <code>local-diagnostic-external-pgstream-evaluator250-memory512-4cpu-8448m-v1</code>
+variant keeps evaluator CPU at 250 millicpus and changes only its container
+memory and memory-plus-swap limit from 256 to 512 MiB relative to evaluator250.
+It reserves 4000 millicpus and 8448 MiB across the selected services, declared
+oneoff overlaps and standalone k6, plus the unchanged 1024 MiB host V8 heap
+allowance. Native host RSS remains separately observed. The old profiles retain
+their 8192 MiB ceiling. This local finite memory discriminator grants no capacity
+and changes no default or remote allocation. The existing 8192 MiB batch
+reservation explicitly refuses this larger variant; it must not underreserve it.
+Timeline preloads, mounts and extra observations are separate instrument changes
+and must be sealed and reported, not called a pure performance comparison.</p>
+<p>For that variant only, <code>--clinical-intake-timeline two-target-intake-timeline-v1</code>
+selects a sealed diagnostic preload outside <code>/opt/app</code>. A readonly owned-state
+mount and explicit Node <code>--require</code> argument load the tap; image product files
+stay unchanged. After priming, before evaluator startup, the helper publishes
+only the first probe tenant ID and the last comparison tenant ID. It exposes no
+roster credentials. Quietness of the comparison tenant requires unchanged SQL
+writer observations. The tap records bounded receipt/pool/SQL/HTTP, existing
+scheduler callbacks and durable begin/completion events without awaiting them;
+it preserves original Promise and timer-handle returns. Scheduler run callbacks
+carry no version, so their version is UNMEASURED; durable begin/completion events
+record actual vectors. The host probe separately persists writer ACK and first
+matching frame events. Drops, persistence failure or absent exit status refuse
+complete trace qualification. Cleanup retains bounded evaluator traces before
+removing private state, including partial traces after failure. Source hashes,
+argv, mount, overhead and limits are instrument deltas; clinical gates and the
+existing write-to-completion budget remain unchanged.</p>
+<p>The timeline preload observes canonical module loads after the paired entrypoint
+applies its ordinary private environment. It does not import core or PostgreSQL
+modules during preloading. Runtime wrapping retains static export descriptors
+and a consistent cached export on repeated imports. The selected discovery
+caller passes the same client-timeline selector as the ordinary caller. Controls
+exercise the actual paired entrypoint/private reader and actual discovery Popen
+environment; premature core import and omitted discovery selector are red.
+The earlier timeline leaf/packet remains unentered with those defects recorded.</p>
 
 
 

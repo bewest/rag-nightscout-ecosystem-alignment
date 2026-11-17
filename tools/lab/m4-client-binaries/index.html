@@ -3900,6 +3900,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -5228,7 +5232,7 @@
 
 
 <h1 id="m4-actual-client-differential-lab">M4 actual-client differential lab<a class="headerlink" href="#m4-actual-client-differential-lab" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>2575cbbf0</code>.</em></p>
+<p><em>Living document, last changed 2026-11-15 at <code>cad0f5293</code>.</em></p>
 <p><em>Contributor-facing lab manual, living. Measurements on archived CRM <code>35903069</code> live in
 <a href="../../../reports/m4-client-binaries/2026-11-06/index.html">the dated report</a>; item state lives
 in <code>queue/work-queue.yaml</code>.</em></p>
@@ -5298,6 +5302,13 @@ and SandboxKey are typed lifecycle observations retained before/after, with no m
 or ownership authority. State, RestartCount and ExecIDs remain runtime observations.
 No unrelated Sandbox transition has been reproduced by this source-only work; the
 classification is prospective. It does not claim host quiescence or unchanged full endpoints.</p>
+<p>A never-started container may have a configured network name with an empty NetworkID.
+The adapter retains that complete configured endpoint in its static fingerprint without
+adding a global network or endpoint. Admission requires typed <code>created</code> state, zero PID,
+zero start/finish timestamps, false active-state flags and empty sandbox, endpoint and
+address fields with zero prefixes. Any actual global membership still refuses. Configured
+names are observations, not inspect or cleanup handles. Every raw configured field and the
+complete inventory remain exact across baseline comparison; this rule needs a fresh baseline.</p>
 <p>Each container is created stopped under a fixed initially absent name, journaled by exact ID,
 validated against the typed image/argv/env/mount specification, then independently inspected.
 <code>custody/custody.jsonl</code> is fsynced before <code>custody/observer.jsonl</code> and its exclusive receipt

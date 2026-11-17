@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -3238,7 +3236,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3463,34 +3461,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5632,7 +5602,7 @@
 
 
 <h1 id="m5m6-current-decisions-and-next-review">M5/M6: current decisions and next review<a class="headerlink" href="#m5m6-current-decisions-and-next-review" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>28107d068</code>.</em></p>
 <p><em>Living contributor-facing decision index, 2026-11-10. Read this before older
 question packets. Release decisions own adopted policy; the roadmap owns
 acceptance; the queue/dashboard own claimed work/milestone state. This index
@@ -5809,10 +5779,10 @@ lifetimes and self-service operations are not approved defaults. The <a href="..
 open-decision note</a> preserves already
 answered A questions, not the current backlog.</p>
 <p>The <a href="counter-and-restore-options.html">counter and restore options analysis</a>
-separates the tenant-local history clock from internal insertion order. The
-tenant-local insertion prototype removes cross-tenant allocation state while
-preserving supported per-tenant order; exact physical and logical backup fidelity
-retain their separate contracts.</p>
+separates the tenant-local history clock from internal insertion order. The admitted tenant-local insertion allocator already preserves supported
+per-tenant/collection order. It does not replace public update/delete history or
+internal transaction coverage. Physical and logical backup fidelity retain their
+separate contracts.</p>
 <h2 id="from-preview-to-production">From preview to production<a class="headerlink" href="#from-preview-to-production" title="Permanent link">&para;</a></h2>
 <p>The <a href="production-critical-path.html">production critical path</a> maps these adopted
 requirements to closing evidence and conditional topology choices. It separates

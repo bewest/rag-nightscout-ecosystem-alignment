@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -2821,6 +2819,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concurrent-experiments-and-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrent experiments and acceptance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Concurrent experiments and acceptance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#application-requirements-and-environment-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application requirements and environment capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3260,7 +3286,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3485,34 +3511,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5582,6 +5580,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#concurrent-experiments-and-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrent experiments and acceptance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Concurrent experiments and acceptance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#application-requirements-and-environment-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application requirements and environment capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#deployment-choices-and-fault-domains" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5676,18 +5702,18 @@
 
 
 <h1 id="deployment-scenarios-and-rig-testing">Deployment scenarios and rig testing<a class="headerlink" href="#deployment-scenarios-and-rig-testing" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>92fd94a15</code>.</em></p>
 <p><em>Contributor-facing living runbook. Deployment structure and commands are
 </em><em>read-derived</em><em> from cgm-remote-monitor
 <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>, with the nginx edge-network correction
 in <code>4935aa77049c66793669a7be940e40ed6ba5b386</code>, inspected 2026-11-07. Executed
-results retain their own source in the linked records. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold
+results retain their own source in the linked records. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold
 Compose measurement</a>
 records the later ed2 implementation, including its Host-preserving demo sender.
 Architecture/evidence grooming: 2026-11-08; no new runtime campaign was run.
 This document implements
 the documentation scope of MT-DOC-DEPLOY; current claims live in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/queue/work-queue.yaml">work queue</a> and
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/queue/work-queue.yaml">work queue</a> and
 <a href="multitenant-delivery-dashboard.html">delivery dashboard</a>.</em></p>
 <h2 id="choose-the-experiment">Choose the experiment<a class="headerlink" href="#choose-the-experiment" title="Permanent link">&para;</a></h2>
 <table>
@@ -5707,7 +5733,7 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 <tr>
 <td>One-host synthetic Compose preview</td>
 <td>Exercise separate services, browser/API/socket paths and tenant-local restore</td>
-<td>Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">Cold functional acceptance</a> passed on ed2; real-client, capacity and production admission have separate gates.</td>
+<td>Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">Cold functional acceptance</a> passed on ed2; real-client, capacity and production admission have separate gates.</td>
 </tr>
 <tr>
 <td>Headless client lab</td>
@@ -5740,6 +5766,94 @@ selected prerequisite.</p>
 maps ordinary Kubernetes resources onto these logical roles without assuming
 multi-host membership or a particular Ingress controller. Its candidate resource
 layout and access-policy extensions need their own acceptance.</p>
+<h2 id="concurrent-experiments-and-acceptance">Concurrent experiments and acceptance<a class="headerlink" href="#concurrent-experiments-and-acceptance" title="Permanent link">&para;</a></h2>
+<p>Agents may run isolated synthetic branch experiments before the branch has full
+acceptance, alongside implementation and other experiments. The maintainer's
+<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#concurrent-branch-experiments">experiment decision</a>
+governs this workflow. Acceptance qualifies a selected candidate and its claims;
+it is not a prerequisite for discovering that candidate's faults.</p>
+<table>
+<thead>
+<tr>
+<th>Run purpose</th>
+<th>Execution prerequisites</th>
+<th>Result boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Branch experiment or diagnosis</td>
+<td>Identified source/image/instrument, synthetic input, owned resources, finite limits and focused checks for the changed path</td>
+<td>Record failures, partial observations and unknown metrics independently. No capacity or release acceptance.</td>
+</tr>
+<tr>
+<td>Performance comparison</td>
+<td>Experiment prerequisites plus matched workload and declared host contention</td>
+<td>Compare only compatible observations. Record setup, steady traffic, recovery and observer cost separately.</td>
+</tr>
+<tr>
+<td>Candidate acceptance</td>
+<td>Frozen coherent source/configuration plus applicable full, browser, clinical, isolation and recovery checks</td>
+<td>Promote only the criteria actually measured on that candidate.</td>
+</tr>
+</tbody>
+</table>
+<p>Use the existing discovery path, including <code>pgstream-sample</code> with
+<code>--run-purpose discovery</code> on the runner branch, for bounded experiments on pending or accepted sources.
+Keep strict/default acceptance separate. The existing
+<a href="../../../tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.html">fresh-image diagnostic</a>
+is a small functional profile; its limits do not define every discovery workload.
+The reusable runner's current local qualification and remaining remote boundary
+are recorded in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15">release update</a>.</p>
+<p>Give each concurrent lane its own worktree, project identity, database/state,
+ports, networks and cleanup custody. Record contention on shared hosts. Reserve
+a quiet host for a comparison that needs one; do not impose a global quiet-host
+lock on diagnostics. Do not stop peer resources. Reuse immutable images and
+qualified unchanged dependencies. Keep an active run on its original helper;
+a new branch or helper version must not reset that run.</p>
+<p>Within existing resource and spending authority, changing tenant count, rate or
+duration needs a configuration change and applicable input checks, not another
+human approval or full application campaign. Run the actual generated probe on
+a tiny fixture before expensive seeding when its generator or remote environment
+changes. Record focused controls on changed code; reuse unchanged evidence with
+its original source attribution. Missing optional instrumentation, slow startup,
+HTTP errors and expected saturation are findings, not automatic bans on collecting
+other bounded observations. A missing essential oracle leaves the dependent claim
+unmeasured. An intended outage or refusal stays confined to synthetic owned resources.</p>
+<p>Stop for lost resource ownership, breached budget/deadline, credential exposure,
+cross-tenant effects or a source mismatch that prevents identifying the experiment.
+Preserve raw outputs and any valid observations even when a run stops. Never
+convert a failed correctness check into accepted capacity. Keep independent
+experiments running when one lane fails. Reusing a seeded fixture requires its
+runtime owner's custody and finite deadline; record its existing history and use
+new output metadata rather than overwriting a capture.</p>
+<p>Remote provisioning has an additional tool-permission boundary. A source receipt
+does not change Codex permissions. If automatic review rejects provisioning or
+cleanup, retain the denial and resolve the supported approval path with the user;
+do not cycle through new launch scripts or executors. A remote diagnostic must
+qualify its own transport/environment, without repeating unrelated application
+acceptance. Start with the smallest useful remote point and reuse that qualified
+path for larger authorized configurations.</p>
+<h3 id="application-requirements-and-environment-capabilities">Application requirements and environment capabilities<a class="headerlink" href="#application-requirements-and-environment-capabilities" title="Permanent link">&para;</a></h3>
+<p>Application correctness requires tenant/current authority and restore fences,
+a durable recoverable receipt before acknowledgement, coherent cohorts, separate
+accepted and clinically completed positions, actual due work, correct stock-client
+output, and durable recovery. A passing reference deployment provides evidence
+for those requirements within its measured source, workload and environment.</p>
+<p>Single-host placement, one API in a discovery profile, a Unix Docker daemon,
+Vault, a particular PostgreSQL image and selected quotas are properties of the
+current instrument or reference deployment. They constrain tests that use them;
+they are not universal application semantics. A parameter does not admit a new
+topology. An unavailable provider, browser, HA rig or optional metric leaves the
+dependent claim UNMEASURED while other bounded diagnosis may continue. Required
+source, authority, isolation, receipt and clinical checks remain in force.</p>
+<p>The <a href="../../../tools/mt-bench/m7-joined/RUNNER.html#resolve-once-for-local-and-remote-discovery">runner configuration contract</a>
+separates run purpose, source acceptance evidence and execution limits. Its
+version-2 diagnostic receipts admit truthful PENDING or PASS source status without
+capacity/release promotion. Legacy captures keep their original attribution.
+Reuse unchanged module/source evidence with its identity and limits. Qualify a
+changed remote transport with a small actual remote probe; do not repeat unrelated
+application acceptance solely for a helper, configuration or environment change.</p>
 <h2 id="deployment-choices-and-fault-domains">Deployment choices and fault domains<a class="headerlink" href="#deployment-choices-and-fault-domains" title="Permanent link">&para;</a></h2>
 <p>Tenancy, storage, execution and placement answer different questions. The
 <a href="multitenancy-decisions.html#2-storage-resolution-and-profiles">adopted profiles</a>
@@ -5887,7 +6001,7 @@ flowchart below retains the accepted reference's connection summary.</p>
   Operator --&gt; RT
   Operator --&gt; Eval
   Operator --&gt; Admin</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
 exercises this topology as a one-host synthetic reference. UI and nginx receive
 no database credentials. PostgreSQL, Vault,
 tenant-admin and maintenance endpoints have no public port in this reference.
@@ -5905,7 +6019,7 @@ An external TLS ingress requires its own declared trust configuration and test.<
 <p>nginx alone attaches to both the internal <code>backend</code> network and the <code>edge</code>
 bridge. The edge bridge permits host publication; every application, database,
 Vault and maintenance service stays on the internal backend network. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
 reproduces reachable UI/API/socket paths and A restore with B committing work;
 it retains exact source/image and independent cleanup attribution.</p>
 <h2 id="prepare-a-disposable-synthetic-instance">Prepare a disposable synthetic instance<a class="headerlink" href="#prepare-a-disposable-synthetic-instance" title="Permanent link">&para;</a></h2>
@@ -6010,7 +6124,7 @@ its explicitly authored new writes are expected differences.</p>
 <tr>
 <td>Shared-role restart with A suspended</td>
 <td>Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged</td>
-<td>Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a> reproduces the bounded shared-role restart criterion; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a> supplies the separate packaged ordinary-restore proof.</td>
+<td>Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a> reproduces the bounded shared-role restart criterion; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a> supplies the separate packaged ordinary-restore proof.</td>
 </tr>
 <tr>
 <td>Missing/restarted participant</td>
@@ -6071,9 +6185,9 @@ B progress while A remains unavailable, with independent physical closure. Its
 fixed trusted cooperative cohort and private credential/ingress boundary remain
 load-bearing. The earlier <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/index.html">b029 record</a>
 retains its own narrower scope. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>
-keeps their source-specific verdicts separate. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a>
+keeps their source-specific verdicts separate. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a>
 adds actual UI/socket and ordinary restore/history/B-continuity acceptance.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client record</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client record</a>
 adds actual cgmsim/oref0 execution with matching stored outcomes and independent
 physical closure. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-full-accepted/index.html">final ed2 regression</a>
 passed all seven nonbrowser tiers. Other clients and rigs, capacity, HA,

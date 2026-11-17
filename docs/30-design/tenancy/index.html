@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -3125,7 +3123,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3350,34 +3348,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5530,19 +5500,23 @@
 
 
 <h1 id="tenancy-what-to-read-and-maintain">Tenancy: what to read and maintain<a class="headerlink" href="#tenancy-what-to-read-and-maintain" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>d445eae32</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>28107d068</code>.</em></p>
 <p><em>Contributor-facing living reading guide, current with the release decisions of
-2026-11-12. Each document below owns one kind of fact; it links to the others
+2026-11-16. Each document below owns one kind of fact; it links to the others
 rather than restating them. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">Release decisions</a>
-own adopted policy, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/queue/work-queue.yaml">queue</a> owns claimed item
+own adopted policy, the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/queue/work-queue.yaml">queue</a> owns claimed item
 state and the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
 own merges, acceptance and publication. Retired journals, answered packets and
 superseded analyses are in the <a href="../../archive/tenancy/index.html">tenancy archive</a>;
 a date in a filename does not establish currency.</em></p>
-<p>For an outsider's first reading, start with <a href="runtime-topology.html">runtime topology</a>
-for reusable roles and scale envelopes, <a href="deployment-bindings-and-public-names.html">deployment bindings</a>
-for configuration and trust, then <a href="production-critical-path.html">production sequencing</a>
-for evidence and admission. The release record is a journal of executed work, not
+<p>For a first reading, start with <a href="runtime-topology.html">runtime topology</a> for roles
+and placement, then <a href="evaluator-realtime-communication.html">evaluator/realtime communication</a>
+for the current stream, bounded clinical state and separate raw storage delivery.
+Use <a href="deployment-bindings-and-public-names.html">deployment bindings</a> for configuration
+and trust, then <a href="production-critical-path.html">production sequencing</a> for evidence
+and admission. The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected runtime record</a>
+owns functional qualification; the same report owns separately attributed
+operating measurements. Neither a design diagram nor an old run grants capacity. The release record is a journal of executed work, not
 the architecture explanation.</p>
 <p>For a diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">multitenant database and component ownership
 page</a>, rendered from the SQL
@@ -5628,7 +5602,7 @@ guide below.</p>
 <tbody>
 <tr>
 <td><a href="single-and-multitenant-architecture.html">Single and multitenant architecture</a></td>
-<td>Mode comparison, compatibility and the <a href="single-and-multitenant-architecture.html#current-service-composition-and-restore-integration-2026-11-07">current service composition and restore integration</a>.</td>
+<td>Mode comparison, compatibility and the <a href="single-and-multitenant-architecture.html#current-service-composition-and-restore-integration-2026-11-07">source-pinned service and restore reference</a>.</td>
 </tr>
 <tr>
 <td><a href="runtime-topology.html">Runtime topology</a></td>
@@ -5640,11 +5614,11 @@ guide below.</p>
 </tr>
 <tr>
 <td><a href="realtime-sharding-plan.html">Realtime sharding plan</a></td>
-<td>Proposed realtime tenant placement, recovery and co-location comparison.</td>
+<td>Implemented fixed-roster tenant placement and controlled moves, their source-scoped qualification, and remaining topology/capacity boundaries.</td>
 </tr>
 <tr>
 <td><a href="evaluator-realtime-communication.html">Evaluator/realtime communication</a></td>
-<td>Clinical projections, notification handoff, private API forwarding, output revisions and alarm repeat.</td>
+<td>Stream acceptance and clinical completion, bounded working state, independent raw storage delivery, notification handoff and recovery.</td>
 </tr>
 <tr>
 <td><a href="sql-and-migration-architecture.html">SQL and migration architecture</a></td>
@@ -5652,11 +5626,11 @@ guide below.</p>
 </tr>
 <tr>
 <td><a href="counter-and-restore-options.html">Counter and restore options</a></td>
-<td>History clock versus insertion order, restore alternatives and the census counter-writer rule.</td>
+<td>Clinical time, public history, implemented insertion order and internal stream progress; current recovery obligations and retained alternatives.</td>
 </tr>
 <tr>
-<td><a href="postgres-tenant-clock-proof.html">Clock proof plan</a></td>
-<td>Tenant clock invariants and experiment design; acceptance records keep their own scope.</td>
+<td><a href="../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.html">Retained legacy history proof plan</a></td>
+<td>Original public-history no-missed-write controls and source-scoped experiment design; not current internal CDC sequencing or dispatch.</td>
 </tr>
 </tbody>
 </table>

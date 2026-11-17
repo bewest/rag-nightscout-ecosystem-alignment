@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -2734,6 +2732,17 @@
   
     <nav class="md-nav" aria-label="Read the diagrams">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-stream-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current stream runtime
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#historical-accepted-one-host-reference" class="md-nav__link">
@@ -3305,7 +3314,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3530,34 +3539,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5650,6 +5631,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#current-stream-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current stream runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#historical-accepted-one-host-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5766,12 +5758,11 @@
 
 
 <h1 id="runtime-topology-zones-components-and-private-apis">Runtime topology: zones, components and private APIs<a class="headerlink" href="#runtime-topology-zones-components-and-private-apis" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>3cbf37c82</code>.</em></p>
-<p><em>Living contributor-facing architecture guide, reconciled 2026-11-12. Structure is
+<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
+<p><em>Living contributor-facing architecture guide, reconciled 2026-11-16. Structure is
 </em><em>read-derived</em><em>; measured acceptance retains its exact source in the linked
-records. This Markdown generates the site's <code>runtime-topology.html</code>. The
-<a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API work plan</a> owns remaining
-implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/queue/work-queue.yaml">queue</a>
+records. The <a href="selectable-endpoints-and-api-scaling-plan.html">endpoint/API work plan</a> owns remaining
+implementation and acceptance criteria; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/queue/work-queue.yaml">queue</a>
 owns claimed work state. A diagram is not deployment or capacity acceptance.</em></p>
 <h2 id="reuse-the-components-across-profiles">Reuse the components across profiles<a class="headerlink" href="#reuse-the-components-across-profiles" title="Permanent link">&para;</a></h2>
 <p>A deployment profile selects where the same roles run and how they share work.
@@ -5837,10 +5828,11 @@ distinguishes experimental rigs from operating recipes.</p>
 They do not imply separate binaries, containers or production qualification.
 The inventory below groups existing responsibilities; release records own their
 current acceptance. Role launch details remain in the application source.</p>
-<p><strong>Read-derived source check, 2026-11-12:</strong> cgm-remote-monitor
-<code>ff5156b984424f1ef34bcef22d5bfa0071354cfa</code>, <code>lib/server/serve/roles.js</code>,
-<code>lib/cli/index.js</code> and <code>lib/cli/commands/multitenant.js</code>.
-The role registry declares API, evaluator, realtime, vcpool, tenant-admin, admin and feed-reader.
+<p><strong>Read-derived source check, 2026-11-16:</strong> cgm-remote-monitor
+<code>5e112547b31252ec428747c821d3cd1b3684ce2b</code>, <code>lib/server/serve/roles.js</code> and
+<code>lib/server/serve/preview-realtime.js</code>. The selected registry declares API,
+evaluator, realtime, vcpool, tenant-admin and admin. The platform runs pgstream
+as a separate service; the application does not own its process lifecycle.
 UI, maintenance jobs and backing services have different entry points.</p>
 <table>
 <thead>
@@ -5858,12 +5850,12 @@ UI, maintenance jobs and backing services have different entry points.</p>
 </tr>
 <tr>
 <td>Evaluator</td>
-<td>Tenant acquisition and clinical/plugin computation; input checkpoints, eligible output and notification production have separate completion meanings.</td>
-<td>Assignment, scheduling, freshness, output eligibility and recovery.</td>
+<td>Durable stream receiver, bounded clinical working state and clinical/plugin computation. Accepted input, completed output and notification effects have separate completion meanings.</td>
+<td>Assignment, pending/due scheduling, freshness, output eligibility and recovery.</td>
 </tr>
 <tr>
 <td>Realtime</td>
-<td>Client connections, subscriptions and record fanout; forwards authorized writes to API. Owns its projection and connection state.</td>
+<td>Client connections, completed-output fanout and independent raw storage events; forwards authorized writes to API. Owns delivery receipts and connection state, without another raw clinical projection.</td>
 <td>Socket service, authority checks, tenant placement and reconnect/recovery.</td>
 </tr>
 <tr>
@@ -5892,9 +5884,9 @@ UI, maintenance jobs and backing services have different entry points.</p>
 <td>Migration, backup/restore, fencing, uncertain outcomes and recovery.</td>
 </tr>
 <tr>
-<td>Feed-reader</td>
-<td>Dedicated metadata slot reader that emits change hints. It runs alone, outside tenant-operation cohorts.</td>
-<td>Reader ownership, slot retention, hint transport and recovery.</td>
+<td>Platform pgstream service</td>
+<td>Maintained WAL change transport to the evaluator receiver. The platform owns the pinned process/restart policy; the application owns durable acceptance, completion and readiness.</td>
+<td>Slot/receiver ownership, grants, WAL retention, delivery health and explicit gap recovery.</td>
 </tr>
 <tr>
 <td>Projections and durable delivery</td>
@@ -5919,22 +5911,16 @@ The same topic must explain configuration, startup refusal, readiness, shutdown,
 failure recovery, compatibility and operating limits. Follow existing contract
 and evidence links for each answer; mark missing answers as unmeasured or proposed.
 These are review questions for the existing design, not another status checklist.</p>
-<p>The inspected CLI already selects multitenant roles and provides migration,
-healthcheck, environment, diagnostic and operator-client commands. Its top-level multitenant
-summary still names only API and tenant-admin, while the registry supports more roles.
-The admin summary advertises provisioning but omits its removal verb.
-These are discoverability gaps, not evidence of missing implementations.
-The <code>admin</code> client and <code>admin</code> server role have different responsibilities.
-A healthcheck response also does not prove tenant progress or completed evaluation.
-Role-specific reference material is still spread across source documents and guides.
-Measured resource limits, remote placement and recovery qualification also remain
-source/profile-specific. The architecture is ready for coherent topics; a complete
-production operations manual would need those answers joined for a selected profile.
-No new command, help option or man page is required for this documentation work.</p>
+<p>The <a href="evaluator-realtime-communication.html">current communication guide</a> explains
+accepted transaction cohorts, bounded clinical state, completed result/checkpoint
+and the separate source-mutation tail. The old metadata feed-reader and independent
+realtime clinical acquisition are retained only in the <a href="../../archive/tenancy/evaluator-realtime-reference-2026-11-16.html">historical reference</a>.
+Health alone does not prove completed tenant work. Measured resource limits,
+remote placement and recovery qualification remain source/profile-specific.</p>
 <h2 id="read-the-diagrams">Read the diagrams<a class="headerlink" href="#read-the-diagrams" title="Permanent link">&para;</a></h2>
-<p>The three plates preserve different architectural scopes: the historical accepted
-deployment, the November private-listener composition, and a fixed-roster scale
-placement example. Their captured heads and publication labels belong to those
+<p>The current stream plate explains the selected runtime. Three retained plates
+show the historical accepted deployment, November private-listener composition
+and a fixed-roster scale placement example. Their captured heads and publication labels belong to those
 plates; use release contents for current implementation and acceptance.
 Read downward through client ingress, edge, service destinations,
 actual role processes and backing resources. Components sit on a grid; named
@@ -5942,10 +5928,20 @@ terminals and a communication ledger replace long crossing connectors.</p>
 <p>A trust zone is not a host or Pod. A logical API contract, bound listener and
 deployable process are separate boundaries. Ordinary service destinations and
 the exact instance endpoints needed for maintenance are also different identities.</p>
+<h3 id="current-stream-runtime">Current stream runtime<a class="headerlink" href="#current-stream-runtime" title="Permanent link">&para;</a></h3>
+<p><img alt="Current stream runtime" src="diagrams/current-stream-runtime-topology.svg" /></p>
+<p><a href="diagrams/current-stream-runtime-topology.png">PNG preview</a> · <a href="diagrams/current-stream-runtime-topology.svg">SVG source</a></p>
+<p>The <a href="evaluator-realtime-communication.html">communication contract</a> owns accepted
+cohorts, bounded clinical state, completed output/checkpoint and independent raw
+storage delivery. The platform owns pgstream lifecycle. Source-scoped functional
+qualification and recovery/upgrade pairs live in the
+<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected integration record</a>.
+This plate grants no workload, HA, provider or fleet admission. The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">follow-on amplification/retirement source</a>
+has separate functional qualification; matched operating evidence remains separate.</p>
 <h3 id="historical-accepted-one-host-reference">Historical accepted one-host reference<a class="headerlink" href="#historical-accepted-one-host-reference" title="Permanent link">&para;</a></h3>
 <p><img alt="Historical accepted one-host reference" src="diagrams/accepted-one-host-topology.svg" /></p>
 <p><a href="diagrams/accepted-one-host-topology.png">PNG preview</a> · <a href="diagrams/accepted-one-host-topology.svg">SVG source</a></p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose record</a>
 measures synthetic UI/socket/ordinary restore; the
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a>
 retains its separate-role restore and restart scope. The reference publishes lab
@@ -5957,7 +5953,7 @@ OIDC, network transport, scaling or production measurements.</p>
 <p>The plate illustrates the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">adopted listener composition</a>.
 In this composition, each process that serves private contracts has one private listener.
 Explicit contract modules select its operations. The <a href="../../../reports/tenancy/internal-listener-2026-11-10/index.html">listener evidence</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">shared-transport acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">shared-transport acceptance</a>
 retain their executed heads and controls. Their source-scoped passes do not qualify
 every network, topology or later candidate. Current integration/publication belongs
 in <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>, not
@@ -5993,7 +5989,8 @@ purpose, not different networks or mandatory sockets:</p>
 <p>Each process that serves private contracts opens one <code>serve.internal</code>.
 API serves socket-authority and
 lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant; evaluator and
-tenant-admin serve lifecycle-participant. A process with no contract (UI) opens none. The default is a
+tenant-admin serve lifecycle-participant. The selected stream evaluator also
+serves its private receiver; realtime serves completed-output hints. A process with no contract (UI) opens none. The default is a
 unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
 listener finishes in-flight calls up to a deadline (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>).
 The <code>admin</code> role serves ownership operations on its operator listener
@@ -6035,7 +6032,7 @@ modules may co-locate while retaining their credentials/audiences/listener rules
 Process layout is a deployment choice; request pools, caches and in-flight work
 still make every real instance a maintenance participant. The
 <a href="tenant-admission-and-activity.html#one-logical-api-does-not-require-one-listener-or-process">placement/admission review</a>
-owns the detailed assessment and the separate open activity-policy proposal.</p>
+owns the detailed assessment and the adopted activity policy.</p>
 <p>Nginx already performs reverse proxying and Socket.IO upgrade/tunnelling in the
 reference. An optional nginx <code>auth_request</code> or Oathkeeper decision adapter would
 need its own private HTTP status/metadata/trusted-header contract. The socket
@@ -6185,7 +6182,7 @@ The <a href="deployment-bindings-and-public-names.html#configurable-transports-a
 owns binding responsibilities. The <a href="production-critical-path.html">production guide</a> explains admission order.
 The queue and release records own current state.</p>
 <p>Figures are generated by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/tools/site/render_tenancy_topologies.py"><code>render_tenancy_topologies.py</code></a>.
 Use <code>--png</code> to render previews and <code>--check</code> to detect stale vector outputs. Review
 the figures with contract/listener or deployment changes. Rendering checks
 freshness and layout, not application runtime acceptance.</p>
@@ -6235,7 +6232,7 @@ one possible assignment mechanism, not a universal scaling rule:</p>
 <tbody>
 <tr>
 <td>Clinical evaluator</td>
-<td>Tenant's scheduled acquisition/time-based evaluation</td>
+<td>Tenant's accepted-input, pending and clinical due work</td>
 <td>Selected M7 member-count/ordinal assignment; partition inspection belongs here.</td>
 </tr>
 <tr>
@@ -6250,8 +6247,8 @@ one possible assignment mechanism, not a universal scaling rule:</p>
 </tr>
 <tr>
 <td>Realtime</td>
-<td>Client connections/rooms and per-tenant projection/checkpoint consumers</td>
-<td>It has scheduled refresh work and retained state. Replication needs affinity, checkpoint ownership and complete notification fanout; it is not ordinary stateless replication and does not inherently require one realtime instance per tenant.</td>
+<td>Client connections, completed output and raw-delivery cursors/receipts</td>
+<td>It retains connection/delivery state and recovers missed wakes. Replication needs affinity, checkpoint ownership and complete notification fanout; it is not ordinary stateless replication and does not inherently require one realtime instance per tenant.</td>
 </tr>
 <tr>
 <td>REST/owner request serving</td>

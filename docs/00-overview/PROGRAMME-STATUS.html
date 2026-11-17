@@ -2306,21 +2306,22 @@
 
 
 <h1 id="programme-status--cgm-remote-monitor">Programme status — cgm-remote-monitor<a class="headerlink" href="#programme-status--cgm-remote-monitor" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>9ab7c284a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
 <p><em>What this is: a record (contributor-facing; technical throughout). Read after the
 <a href="mission.html">mission</a>; leads to the <a href="ROADMAP.html">roadmap</a>. Prepared for the Nightscout project;
 proposed for Nightscout Foundation stewardship.
 Prose revised 2026-10-08 against cgm-remote-monitor <code>official/dev</code> <code>fade2299</code> and
 <code>official/master</code> <code>92d08342</code> (tag <code>15.0.8</code>); the remedial horizon and the register paragraph
 2026-10-21, against <code>official/master</code> <code>c6a0d8ed</code> (tag <code>v15.0.9</code>); the multitenant paragraph
-2026-11-10. The tables are generated from
+2026-11-16 against the selected stream integration records. The tables are generated from
 <code>queue/work-queue.yaml</code>; see <a href="#how-to-check-any-of-this-yourself">How to check any of this yourself</a>.</em></p>
 <p>This page answers "where is the work, and what is it waiting for" across the three
 horizons the project runs in parallel. The detail lives in the queue, the backfix
 register and the design documents; this page says which of those to open.</p>
 <p>The counts below are generated and <code>make views-check</code> fails when they drift. The
-prose is hand-written and dated. Where the prose and a table disagree, the table is
-current and the prose is stale.</p>
+prose is hand-written and dated. Tables describe recorded queue claims; measurements in linked release records
+may close a narrower capability while its parent item remains open. A generated
+state is not evidence that a gate ran or that a milestone was promoted.</p>
 <hr />
 <h2 id="the-three-horizons">The three horizons<a class="headerlink" href="#the-three-horizons" title="Permanent link">&para;</a></h2>
 <!-- BEGIN GENERATED: horizons -->
@@ -2448,27 +2449,27 @@ The <a href="../../site/pages/nightscout-next-gen-platform.html">next-generation
 shows the dependencies and bounded acceptance stages. These records distinguish local
 branch acceptance, combined integration and milestone completion; <code>make queue-status</code>
 measures the queue's claims.</p>
-<p><a href="../30-design/remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a>
-retains the M0–M4 baseline; <a href="../30-design/remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a>
-accepts the functional M5 reference on one host at its recorded local source.
-The <a href="../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">published operation-window reference</a>
-adds bounded tenant-local restore, shared-role restart with another tenant suspended,
-and cold Compose/UI/client acceptance. M6 is split into M6a–M6d and M7
-(<a href="../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-split-and-queue-collapse">decision</a>).
-Draft PR #8898 carries the M6a owner/OIDC and internal service API work and the M6b
-join, each with a joined acceptance record
-(<a href="../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>,
-<a href="../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a>);
-no M6 milestone is promoted. M7 production readiness is measured, not declared:
-<a href="../30-design/tenancy/runtime-topology.html">runtime topology</a>,
-<a href="../30-design/tenancy/selectable-endpoints-and-api-scaling-plan.html">endpoint/API scaling</a>
-and <a href="../30-design/tenancy/realtime-sharding-plan.html">realtime sharding</a> hold the plans.
-The <a href="../30-design/tenancy/deployment-and-rig-testing.html">deployment guide</a>
-explains deployment models and shared fault domains. The <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
-own the current published head and remote verification for draft PR #8898.
-Local acceptance does not imply remote publication, dev merge or operator release. The
-<a href="../30-design/tenancy/single-and-multitenant-architecture.html">architecture comparison</a>
-lists what it holds and which record governs each module.
+<p>The <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected stream integration record</a>
+owns the functionally qualified local runtime, stock-client/raw-event behavior,
+ordinary lost-slot recovery and the separately attributed populated upgrade and
+cold rollback. These are reproduced capabilities on named source/deployment pairs.
+The <a href="../30-design/tenancy/evaluator-realtime-communication.html">communication guide</a>
+owns the current architecture: durable stream acceptance, bounded clinical state,
+completed output and independent raw storage delivery. Earlier R72/R73 and
+operation-window records retain their original source and scope.</p>
+<p>Remaining work has distinct boundaries. The existing operating report owns load,
+resource and recovery observations, including partial and failed points. The <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">follow-on source qualification</a>
+closes bounded stream amplification and executable retirement; matched operating
+comparison remains separate. A supported production profile also needs
+its workload limits, deployment trust and recovery objectives accepted together;
+optional HA, multihost and fleet placement retain separate scope. The
+<a href="../30-design/tenancy/production-critical-path.html">production path</a> explains those
+criteria without making them prerequisites for independent experiments.</p>
+<p>The <a href="../30-design/tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a>
+owns milestone claims and the <a href="../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
+own integration and publication. Local source qualification, alignment records
+integration, application dev merge and an operator release are different events.
+No milestone is promoted by this documentation reconciliation.
 Decisions D1–D23 live in the
 <a href="../30-design/tenancy/multitenancy-decisions.html">tenancy decisions reference</a>,
 with the adopted <a href="../30-design/tenancy/owner-authority.html">owner-authority amendment</a>

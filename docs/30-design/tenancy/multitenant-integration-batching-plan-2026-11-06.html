@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -3288,7 +3286,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3513,34 +3511,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5736,9 +5706,9 @@
 <p class="admonition-title">Record</p>
 <p>Record as of 2026-11-06. A point-in-time document; it is not kept up to date.</p>
 </div>
-<p><em>Contributor-facing living coordination plan, refreshed 2026-11-10. This page owns
+<p><em>Contributor-facing living coordination plan, refreshed 2026-11-15. This page owns
 capability boundaries, integration order and verification depth. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/queue/work-queue.yaml">queue</a> owns claimed item state; the
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/queue/work-queue.yaml">queue</a> owns claimed item state; the
 <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
 <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> and the
 <a href="../remedial/rc-16.0.0-integration-record.html">integration record</a> own actual source,
@@ -5862,6 +5832,7 @@ preserves original branch identities, commands, predictions, failures, controls
 and ownership. Those completed/older lanes are evidence inputs, not today's task
 list. The schedule below governs further work.</p>
 <h2 id="5-current-completion-schedule-adopted-2026-11-06">5. Current completion schedule (adopted 2026-11-06)<a class="headerlink" href="#5-current-completion-schedule-adopted-2026-11-06" title="Permanent link">&para;</a></h2>
+<p><strong>Current order, 2026-11-15:</strong> the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#single-host-streaming-first">single-host streaming decision</a> governs the immediate baseline. Use the existing runnable UDS composition and existing performance lane; finish supported-path qualification and bounded operating-envelope experiments without waiting for optional topology or platform expansion. Preserve their research checkpoints and gates, but do not add them to the baseline critical path. One outcome, existing evidence homes and one final coherent candidate campaign are sufficient.</p>
 <table>
 <thead>
 <tr>
@@ -5873,7 +5844,7 @@ list. The schedule below governs further work.</p>
 <tbody>
 <tr>
 <td><strong>A — data, control and clients (M0–M4)</strong></td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">pinned-client campaign</a> belongs to its own source/instrument.</td>
+<td><a href="../remedial/rc-16.0.0-integration-record.html#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06">R72</a> retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">pinned-client campaign</a> belongs to its own source/instrument.</td>
 <td>Preserve legacy root/subject behavior and supported PG differences. Android emulator and measured operating limits remain C; no all-client claim. A's closed criteria are not new prerequisites to re-run for the documentation refresh.</td>
 </tr>
 <tr>
@@ -5909,7 +5880,7 @@ list. The schedule below governs further work.</p>
 <tr>
 <td><strong>M7 — production readiness</strong></td>
 <td>Plans: <a href="production-critical-path.html">production critical path</a>, <a href="selectable-endpoints-and-api-scaling-plan.html">selectable endpoints and API scaling</a>, <a href="realtime-sharding-plan.html">realtime sharding</a>.</td>
-<td>Bench, contrast, scale-unbound, evaluator partition, realtime sharding, Android lab and Kubernetes binding items in the queue.</td>
+<td>Measure and qualify the declared single-host baseline first. Partition, sharding, Kubernetes and multihost operating-model proofs retain their own queue scope and are parallel research, not prerequisites for that baseline. Applicable client and correctness gates remain; no milestone is promoted by this ordering change.</td>
 </tr>
 </tbody>
 </table>

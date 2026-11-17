@@ -16,7 +16,7 @@
         <link rel="prev" href="../progress-archive-2026-03-18-to-31.html">
       
       
-        <link rel="next" href="milestone-promotion-review-2026-11-06.html">
+        <link rel="next" href="counter-and-restore-options-2026-11-07.html">
       
       
         
@@ -2979,6 +2979,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -3031,6 +3037,62 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="counter-and-restore-options-2026-11-07.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Counter and restore alternatives — November 7 baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evaluator-realtime-reference-2026-11-16.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evaluator/realtime polling reference and stream integration plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
               
             
               
@@ -3244,6 +3306,34 @@
     
   
     Owner session and issuer lifecycle: the decision packet (2026-11-06)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="postgres-tenant-clock-proof-2026-11-06.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transactional history clock — retained proof plan
   
 
     
@@ -4601,7 +4691,7 @@
 
 
 <h1 id="tenancy-execution-archive">Tenancy execution archive<a class="headerlink" href="#tenancy-execution-archive" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>d445eae32</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>28107d068</code>.</em></p>
 <p><em>Contributor-facing retained records. The original consolidation captured
 alignment <code>072ef9e37b6643d66d00248308fa6979d75f559b</code> on 2026-11-06; the batching
 journal was captured from <code>8792fc7a3d62f59629ed94bac168dcad5d9aa3c7</code> on 2026-11-08;
@@ -4623,52 +4713,27 @@ source-scoped measurements. They are not current plans or lane assignments.</em>
 </thead>
 <tbody>
 <tr>
-<td><a href="production-path-assessment-2026-11-10.html">Production-path assessment</a></td>
-<td>November 8–10 gap table, first-topology/HA recommendations and commit-pinned prior-art survey, captured from alignment <code>8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61</code> on 2026-11-12. Old implementation gaps retain their capture scope.</td>
-<td><a href="../../30-design/tenancy/production-critical-path.html">Production guide</a> for current explanation/closure criteria; queue and release records for current implementation/acceptance</td>
+<td><a href="counter-and-restore-options-2026-11-07.html">Counter/restore alternatives</a></td>
+<td>Original f0 global-allocator baseline, tenant-local prototype, restore alternatives and source surveys, retained from alignment <code>e9f9430e4ada20f35163253a6179c2dae3b1ffb6</code> on 2026-11-16.</td>
+<td><a href="../../30-design/tenancy/counter-and-restore-options.html">Current ordering/history guide</a>; SQL guide for the implemented allocator</td>
 </tr>
 <tr>
-<td><a href="nightscout-multitenancy-execution-plan-2026-09-14.html">Multitenancy execution and decision journal</a></td>
-<td>September architecture rationale, decision detail, original seam-chain tasks and later decision amendments through this capture. Old task states and release claims describe their named baselines.</td>
-<td><a href="../../30-design/tenancy/multitenancy-decisions.html">Tenancy decisions</a>; current contracts linked from that reference</td>
-</tr>
-<tr>
-<td><a href="multitenant-delivery-roadmap-2026-11-02.html">Current-dev delivery journal</a></td>
-<td>November dispatch packets, lane checkpoints, integration commands, semantic controls, failed experiments and capacity holds.</td>
-<td><a href="../../30-design/tenancy/multitenant-delivery-roadmap.html">Delivery roadmap</a> for boundaries/criteria; <a href="../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a> for sequencing</td>
-</tr>
-<tr>
-<td><a href="multitenant-integration-batching-journal-2026-11-06.html">Integration batching journal</a></td>
-<td>Original November 6–7 B1–B7 dispatch, A–C planning matrices, source/CI snapshots, commands, semantic controls, failures and per-lane ownership. Earlier pending claims retain their capture scope.</td>
-<td><a href="../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html">Living completion schedule</a> for current A/B/C boundaries and coordination; release/integration records for later acceptance</td>
-</tr>
-<tr>
-<td><a href="multitenant-open-decisions-2026-11-06.html">Critical-path decision note</a></td>
-<td>The five November 6 questions (owner mode, M2 bar, numeric budgets, M4 client execution, batch C ownership) as asked, with mechanisms and recommendations. Each has a recorded decision or deferral.</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">Release decisions, promotion bars</a>; <a href="../../30-design/tenancy/m5-m6-decision-list.html">M5/M6 decision list</a></td>
-</tr>
-<tr>
-<td><a href="owner-lifecycle-decision-packet-2026-11-06.html">Owner lifecycle decision packet</a></td>
-<td>Published-source survey and alternatives for owner identity, sessions, issuer/audience split, existing-grant authority and ownership lifecycle; draft recommended defaults that were not adopted as written.</td>
-<td><a href="../../30-design/tenancy/owner-authority.html">Owner authority</a>; session and ownership rows in release decisions</td>
-</tr>
-<tr>
-<td><a href="milestone-promotion-review-2026-11-06.html">M0–M3 promotion review</a></td>
-<td>Read-derived mapping of M0–M3 acceptance cells to R24–R55, with the ranked gaps of that date.</td>
-<td><a href="../../30-design/tenancy/multitenant-delivery-dashboard.html">Delivery dashboard</a> and <a href="../../30-design/remedial/rc-16.0.0-integration-record.html">integration record</a></td>
-</tr>
-<tr>
-<td><a href="nightscout-multitenancy-discussion-2026-09-09.html">September multitenancy discussion</a></td>
-<td>The 2026-09-09/14 single-tenant assumption map, candidate architectures, storage ladder and EXP-MT experiments, with in-place notes where a later decision contradicts a recommendation.</td>
-<td><a href="../../30-design/tenancy/multitenancy-decisions.html">Tenancy decisions</a></td>
-</tr>
-<tr>
-<td><a href="nightscout-deployable-components-2026-09-14.html">Deployable components</a></td>
-<td>The 2026-09-14 entrypoint/program decomposition and its measurements, adopted as D5/D6 and extended by D7, D16 and D21.</td>
-<td><a href="../../30-design/tenancy/multitenancy-decisions.html">Tenancy decisions</a>; <a href="../../30-design/tenancy/runtime-topology.html">runtime topology</a></td>
+<td><a href="postgres-tenant-clock-proof-2026-11-06.html">Transactional history-clock proof plan</a></td>
+<td>November 6 concurrency/rollback/recovery/public-history proof and original dispatch assumptions, retained from the same alignment head on 2026-11-16. Public no-missed-write outcomes remain required.</td>
+<td><a href="../../30-design/tenancy/counter-and-restore-options.html">Current ordering/history guide</a>; <a href="../../30-design/tenancy/evaluator-realtime-communication.html#transaction-coverage-and-mechanism-retirement">communication guide</a> for proposed internal stream coverage</td>
 </tr>
 </tbody>
 </table>
+<p>| <a href="evaluator-realtime-reference-2026-11-16.html">Evaluator/realtime reference</a> | November 7 inspected polling/snapshot source map and November 13 stream prototype/integration plan, retained from alignment <code>5fdc4bf0685d35d2fac980bad1b28bd66525ccdb</code> on 2026-11-16. Original criteria, source-scoped evidence and pending statements retain their capture scope. | <a href="../../30-design/tenancy/evaluator-realtime-communication.html">Communication guide</a> for current stream/working-state/raw-tail ownership; existing integration report and release contents for later execution |
+| <a href="production-path-assessment-2026-11-10.html">Production-path assessment</a> | November 8–10 gap table, first-topology/HA recommendations and commit-pinned prior-art survey, captured from alignment <code>8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61</code> on 2026-11-12. Old implementation gaps retain their capture scope. | <a href="../../30-design/tenancy/production-critical-path.html">Production guide</a> for current explanation/closure criteria; queue and release records for current implementation/acceptance |
+| <a href="nightscout-multitenancy-execution-plan-2026-09-14.html">Multitenancy execution and decision journal</a> | September architecture rationale, decision detail, original seam-chain tasks and later decision amendments through this capture. Old task states and release claims describe their named baselines. | <a href="../../30-design/tenancy/multitenancy-decisions.html">Tenancy decisions</a>; current contracts linked from that reference |
+| <a href="multitenant-delivery-roadmap-2026-11-02.html">Current-dev delivery journal</a> | November dispatch packets, lane checkpoints, integration commands, semantic controls, failed experiments and capacity holds. | <a href="../../30-design/tenancy/multitenant-delivery-roadmap.html">Delivery roadmap</a> for boundaries/criteria; <a href="../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a> for sequencing |
+| <a href="multitenant-integration-batching-journal-2026-11-06.html">Integration batching journal</a> | Original November 6–7 B1–B7 dispatch, A–C planning matrices, source/CI snapshots, commands, semantic controls, failures and per-lane ownership. Earlier pending claims retain their capture scope. | <a href="../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html">Living completion schedule</a> for current A/B/C boundaries and coordination; release/integration records for later acceptance |
+| <a href="multitenant-open-decisions-2026-11-06.html">Critical-path decision note</a> | The five November 6 questions (owner mode, M2 bar, numeric budgets, M4 client execution, batch C ownership) as asked, with mechanisms and recommendations. Each has a recorded decision or deferral. | <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">Release decisions, promotion bars</a>; <a href="../../30-design/tenancy/m5-m6-decision-list.html">M5/M6 decision list</a> |
+| <a href="owner-lifecycle-decision-packet-2026-11-06.html">Owner lifecycle decision packet</a> | Published-source survey and alternatives for owner identity, sessions, issuer/audience split, existing-grant authority and ownership lifecycle; draft recommended defaults that were not adopted as written. | <a href="../../30-design/tenancy/owner-authority.html">Owner authority</a>; session and ownership rows in release decisions |
+| <a href="milestone-promotion-review-2026-11-06.html">M0–M3 promotion review</a> | Read-derived mapping of M0–M3 acceptance cells to R24–R55, with the ranked gaps of that date. | <a href="../../30-design/tenancy/multitenant-delivery-dashboard.html">Delivery dashboard</a> and <a href="../../30-design/remedial/rc-16.0.0-integration-record.html">integration record</a> |
+| <a href="nightscout-multitenancy-discussion-2026-09-09.html">September multitenancy discussion</a> | The 2026-09-09/14 single-tenant assumption map, candidate architectures, storage ladder and EXP-MT experiments, with in-place notes where a later decision contradicts a recommendation. | <a href="../../30-design/tenancy/multitenancy-decisions.html">Tenancy decisions</a> |
+| <a href="nightscout-deployable-components-2026-09-14.html">Deployable components</a> | The 2026-09-14 entrypoint/program decomposition and its measurements, adopted as D5/D6 and extended by D7, D16 and D21. | <a href="../../30-design/tenancy/multitenancy-decisions.html">Tenancy decisions</a>; <a href="../../30-design/tenancy/runtime-topology.html">runtime topology</a> |</p>
 <p>Use the <a href="../../30-design/tenancy/index.html">tenancy reading guide</a> for current
 work. The <a href="../../30-design/tenancy/multitenant-delivery-dashboard.html">dashboard</a>
 owns recorded milestone claims, the queue owns item state/gates, and the release
@@ -4677,7 +4742,7 @@ integration record and linked reports own later measurements. A journal's
 <h2 id="retention-and-use">Retention and use<a class="headerlink" href="#retention-and-use" title="Permanent link">&para;</a></h2>
 <p>All source headings remain available for evidence citations. Relocation rewrites
 links and adds the archive notice; it does not reinterpret the recorded results
-or remove unique content. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/tenancy-journal-consolidation-2026-11-06.json">consolidation record</a>
+or remove unique content. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/tenancy-journal-consolidation-2026-11-06.json">consolidation record</a>
 records source identity and the link-only preservation check.</p>
 <p>Do not append new progress here. Correct current rules in their decision/contract
 home and put new acceptance in the release integration record or a dated report.

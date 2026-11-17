@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -3038,6 +3036,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#immediate-m7-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immediate M7 priority
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-proposed-first-production-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3249,7 +3258,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3474,34 +3483,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5560,6 +5541,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#immediate-m7-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immediate M7 priority
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-proposed-first-production-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5654,12 +5646,12 @@
 
 
 <h1 id="from-multitenant-preview-to-production">From multitenant preview to production<a class="headerlink" href="#from-multitenant-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>e0765ac4a</code>.</em></p>
-<p><em>Living contributor-facing production guide, reconciled 2026-11-12 against the
-release decisions at alignment <code>8ae6f4a3729548de0c88cc0ee5b3c0aede9aba61</code>.
+<p><em>Living document, last changed 2026-11-16 at <code>4806ab303</code>.</em></p>
+<p><em>Living contributor-facing production guide, reconciled 2026-11-16 against the
+release records at alignment <code>5fdc4bf0685d35d2fac980bad1b28bd66525ccdb</code>.
 This is </em><em>read-derived</em><em> sequencing and explanation, not an application measurement.
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">Release decisions</a> own
-adopted policy; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/queue/work-queue.yaml">queue</a> owns claimed work state;
+adopted policy; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/queue/work-queue.yaml">queue</a> owns claimed work state;
 <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> and linked
 reports own executed acceptance, source heads and publication. Use those records
 for the current candidate and blockers.</em></p>
@@ -5668,6 +5660,26 @@ failure/recovery envelope. It is a stronger claim than implementing a component,
 passing a functional preview or running a capacity experiment. This guide explains
 how those pieces join without making every later production feature a prerequisite
 to testing an independently ready capability.</p>
+<h2 id="immediate-m7-priority">Immediate M7 priority<a class="headerlink" href="#immediate-m7-priority" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#single-host-streaming-first">single-host streaming decision</a>
+sets the current order: use the existing evaluator/realtime composition and UDS
+interfaces, measure a bounded local workload, and qualify the supported candidate.
+Explore toward 10,000 synthetic tenants as measured resources permit. Keep actual
+transport, accepted/stored/completed progress, due work and client behavior explicit.
+The selected stream runtime has source-scoped functional qualification in the
+<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">existing integration record</a>.
+Its ordinary lost-slot recovery and populated upgrade/cold rollback rehearsals
+retain their own executed revision pairs. The <a href="evaluator-realtime-communication.html">communication guide</a>
+owns the implemented architecture; <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>
+own current integration/publication. Capacity measurements and incomplete or failed
+points remain in the <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html">operating report</a>.
+Functional qualification does not admit a workload or deployment profile.</p>
+<p>Optional desired-N, selected-v2/HOLD, full platform recommission, Kubernetes and
+multihost operating-model proofs proceed independently. They do not block a
+supported single-host clinical witness, load experiment or qualification. Keep
+existing correctness gates for the configuration actually claimed and one final
+coherent candidate campaign; do not add a campaign or deliverable per leaf.
+This sequencing changes no workload qualification, publication or budget claim.</p>
 <h2 id="the-proposed-first-production-boundary">The proposed first production boundary<a class="headerlink" href="#the-proposed-first-production-boundary" title="Permanent link">&para;</a></h2>
 <p>Qualify a bounded deployment of the reusable API, evaluator, realtime, admin and
 supporting roles. The <a href="runtime-topology.html">runtime topology</a> explains their

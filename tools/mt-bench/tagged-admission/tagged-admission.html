@@ -1749,6 +1749,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1930,6 +1934,8 @@
       
         
           
+        
+      
         
       
         
@@ -2192,6 +2198,64 @@
   
   
   
+    <a href="../native-clinical/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    native-clinical/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../nrg-resolution-poc/index.html" class="md-nav__link">
       
   
@@ -2258,6 +2322,64 @@
     
   
     postgrest-poc/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../remote-pgstream/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    remote-pgstream/
   
 
     
@@ -2423,7 +2545,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_12" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_14" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -2445,14 +2567,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_8_9_12" id="__nav_8_9_12_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_8_9_14" id="__nav_8_9_14_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_12_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_8_9_12">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_14_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_9_14">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2535,6 +2657,28 @@
     <span class="md-ellipsis">
       
         Controller-owned driver boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explicit-operator-lease-v2-observation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit operator-lease v2 observation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-ledger3-compatibility-sourcemodel-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common ledger3 compatibility: source/model only
       
     </span>
   </a>
@@ -3798,6 +3942,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#explicit-operator-lease-v2-observation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicit operator-lease v2 observation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-ledger3-compatibility-sourcemodel-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common ledger3 compatibility: source/model only
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3816,7 +3982,7 @@
 
 
 <h1 id="tagged-admission-measurement">Tagged admission measurement<a class="headerlink" href="#tagged-admission-measurement" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>06e3473ea</code>.</em></p>
+<p><em>Living document, last changed 2026-11-13 at <code>84e3fe171</code>.</em></p>
 <p>The proposed instrument measures the selected connection-admission candidate.
 It does not change the reference measurement selector. Its first implemented
 boundary is a read-only intake in <code>tagged_admission.py</code>. It attributes the source
@@ -3924,6 +4090,86 @@ prepared image and private plan, rather than copying whatever a new observation
 reports. The output directory must not exist. The driver records the spec and
 all direct command results before validating them. A failed capture directory is
 retained unchanged; a new episode needs a new directory and owner decision.</p>
+<h2 id="explicit-operator-lease-v2-observation">Explicit operator-lease v2 observation<a class="headerlink" href="#explicit-operator-lease-v2-observation" title="Permanent link">&para;</a></h2>
+<p>Source/model compatibility now also covers the exact independently reviewed
+companion helper <code>f098dcc368a80fd0fdeb25c72316523a5c6dd955</code> and its version-one
+<code>lifecycleOperator</code> protocol. The core/deployment admission constants above are
+unchanged historical fixture pins. This compatibility work does not admit that
+companion as an executable pair or transfer earlier image/native evidence.</p>
+<p>A plan without that capability requires an explicit version-one worker ledger
+and no control history. An enabled plan requires a fresh version-two ledger with
+explicit <code>controlLeases</code>, including empty or CLOSED-only history. Missing,
+unsupported, mixed or malformed versions refuse; there is no inferred migration.
+The collector validates the fixed principal/file/tenant declarations, each intent
+and its hash, source, plan, nonce, incarnation, exact lifecycle tag, one-credit
+lease, container custody and at most one unclosed lease. Collisions with worker
+incarnations, nonces or tags and any missing/foreign census tag refuse. A source
+protocol or profile change needs an explicit review rather than schema widening.</p>
+<p>Version-two intake adds a separate private <code>controlProcesses</code> capture list.
+Workers retain their existing attribution and controls are marked <code>actor: control</code>;
+control history and held credit are explicit even if authenticated occupancy is
+zero. ISSUED, BOUND and UNKNOWN all retain one credit. CLOSED is reported only
+from the validated ledger, not inferred from an absent process, local close,
+zero census, or a claimed receipt. This observer does not authenticate a new
+quiescence ACK or grant closure authority. Original application names remain
+UNKNOWN for control actors.</p>
+<p>The fixed capture inspects each unclosed control lease's original exact CID,
+image, source, project, directory, service, StartedAt and operator-incarnation
+label. Unbound or failed inspection remains explicit uncertainty with held
+credit. No PID discovery, arbitrary program, SQL, or new observer reservation is
+introduced. Control actors share the existing 128-held-generation, 131-command,
+16-MiB and 120-second budgets. The atomic ledger must still match after all
+inspections, including empty and CLOSED-only version-two captures.</p>
+<p>The output separates authenticated <code>occupancy.workers</code> and <code>occupancy.control</code>
+from declared <code>heldCredits</code>. The controller's occupancy must exactly match the
+attributed census sums. <code>occupancyWithinHeldCredits</code> reports the comparison
+without hiding an observed overage or refunding an unused credit. No occupancy
+snapshot proves a peak or preauthentication absence. Every result still grants
+no lifecycle authority and reports native acceptance UNMEASURED. Existing valid
+version-one intake bytes are preserved; the separate collector fingerprint
+changes with these reviewed source/test/contract bytes. The legacy measurement
+selector and its fingerprint are untouched.</p>
+<h2 id="common-ledger3-compatibility-sourcemodel-only">Common ledger3 compatibility: source/model only<a class="headerlink" href="#common-ledger3-compatibility-sourcemodel-only" title="Permanent link">&para;</a></h2>
+<p>The declared common contract at deployment <code>cbd631364699210a0e8d452d58e45d675e03dd51</code>
+adds host plan2, lifecycle capability2, ledger3, and observation2/stored-count2.
+The fixed control classes are lifecycle-operator, restore-commissioner and
+realtime-recovery. This instrument checks exact class principals and worker
+DB identity, capability-derived worker/class tags, exact process custody,
+primitive identities, generation bounds, two shared held control credits,
+one active execution, and stopped-predecessor/setup-terminal constraints.
+Authenticated physical occupancy is classed separately from held credits.
+UNKNOWN with zero clients stays UNKNOWN and charged. This instrument never
+retires credit, dispatches a control, or interprets a completion as quiescence.</p>
+<p><code>observe_envelope()</code> validates shared ledger/census attribution for either
+version2 envelope. It does not certify the stored-count payload, selector,
+PG-container custody, clinical isolation, or HTTP ledger; those existing oracle
+checks must still run. The fixed capture command remains <code>observe</code> and never
+executes stored-counts, SQL or a caller-selected command. Both held controls
+consume the existing shared generation/command/output/deadline budgets.</p>
+<p><code>common_model_fixture.cjs</code> is a test-only actual-helper producer using an
+explicit immutable archived common module. Its deterministic JSON is synthetic
+model input, not output from an actual controller CLI. For the CBD archive,
+control-recovery.js SHA256 is
+<code>82eabd74efbadd2da0ed81fc1212b7447a46e0f6b10f34838cc48475b86f5143</code>;
+fixture JSON SHA256 is
+<code>b0912a4d13ec5718b1f34b3f84edbaffb00fc4d08f774b1bc84f44cf331c990e</code>.
+The archive's actual controller still refuses host plan2 and emits legacy
+version1 envelopes. Producer parity with the next repaired immutable common
+checkpoint remains required before final selection. The historical CORE/DEPLOY
+constants remain unchanged and are model fixture pins, not a selected new pair.
+Legacy v1 and f098 v2 observations keep their existing output bytes.</p>
+<p>Focused checks: <code>python3 -m unittest discover -s tools/mt-bench/tagged-admission -p 'test_*.py'</code>.
+No native, resource, SQL, capacity or clinical acceptance follows from them.</p>
+<p>Independent review found that Python numeric equality permitted malformed plan2
+metadata (negative/bool declared worker maximum, bool/float census settings, and
+an array resource ID). Plan2 now validates source-bounded integer capacities,
+positive worker maxima, canonical string resource identity and exact census
+primitive types before credit arithmetic or comparisons. Legacy validation/output
+stays separate. The model system identifier is now the canonical synthetic
+numeric string <code>123</code>; the same archived CBD helper regenerated its fixture.
+The unchanged independent five-case malformed-primitive oracle is red on the
+original collector3 checkpoint and green after this repair. These model findings
+do not change the pending actual common producer/runtime boundary.</p>
 
 
 

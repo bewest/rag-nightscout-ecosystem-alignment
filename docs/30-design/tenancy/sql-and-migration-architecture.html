@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -2730,6 +2728,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#clinical-stream-storage-extension--selected-branch-2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clinical stream storage extension — selected branch, 2026-11-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scope-and-evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2829,6 +2838,17 @@
     <span class="md-ellipsis">
       
         Application command paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stream-state-and-delivery-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stream state and delivery ownership
       
     </span>
   </a>
@@ -3421,7 +3441,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3646,34 +3666,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5732,6 +5724,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#clinical-stream-storage-extension--selected-branch-2026-11-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clinical stream storage extension — selected branch, 2026-11-16
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#scope-and-evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5831,6 +5834,17 @@
     <span class="md-ellipsis">
       
         Application command paths
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stream-state-and-delivery-ownership" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stream state and delivery ownership
       
     </span>
   </a>
@@ -5998,7 +6012,7 @@
 
 
 <h1 id="sql-migrations-and-tenant-recovery-architecture">SQL, migrations and tenant recovery architecture<a class="headerlink" href="#sql-migrations-and-tenant-recovery-architecture" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>a2dacd669</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>28107d068</code>.</em></p>
 <p><em>Living contributor-facing architecture guide. Source reading verified 2026-11-07
 against cgm-remote-monitor <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>
 (tree <code>3bb46431a19e604dc028768f0e72e6ad29616c26</code>). Mechanisms and diagrams below are
@@ -6020,6 +6034,41 @@ the <a href="#restore-census-and-non-clinical-identities">restore census</a> and
 sections are pinned to <code>16a1fc2d</code>; the other sections keep their <code>151de024</code>
 reading. The refresh is read-derived from source; acceptance of that head lives
 in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.</em></p>
+<h2 id="clinical-stream-storage-extension--selected-branch-2026-11-16">Clinical stream storage extension — selected branch, 2026-11-16<a class="headerlink" href="#clinical-stream-storage-extension--selected-branch-2026-11-16" title="Permanent link">&para;</a></h2>
+<p>The <a href="evaluator-realtime-communication.html#stream-fed-clinical-materializer--adopted-target-2026-11-16">adopted materializer contract</a>
+uses the existing evaluator input consumer checkpoint for bounded accepted rows
+and unfinished XID cohorts. The completed consumer continues to own completed
+versions, result/frame/revision and due state. Transport acceptance and clinical
+completion are separate commits. No new durable inbox table is introduced.
+The default trusted receiver needs checkpoint-only metadata rights on its input
+consumer as well as its completed consumer; clinical source tables remain read-only.</p>
+<p>The extension is joined in selected core <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code>.
+The migration reading below retains precursor <code>1dc7a74576b5d77f99cc4a42d900e1692d94a393</code>:
+append-only typed migrations add <code>storage_bytes</code> to each clinical table. An
+invoker-rights AFTER INSERT / UPDATE OF doc trigger measures the stored datum
+with PostgreSQL <code>pg_column_size</code>, then updates only that projection. A generated
+JSON-length column would change compressed-storage semantics. The same committed
+cohort carries both row and stored-size changes to the materializer. Bootstrap
+retains invalid physical rows for statistics/history and filters only clinical
+output. Logical export remains document/identity/order based; restore recomputes
+the storage projection through the existing INSERT path. Populated backfill binds
+each tenant explicitly and restores the previous binding, preserving the insertion
+trigger. An INSERT-only writer also needs the narrow <code>UPDATE(storage_bytes)</code> right
+for this invoker trigger; it does not need document UPDATE solely for accounting.
+Existing clinical-table
+restore/delete census includes these columns. Final qualification lives in the
+<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected integration record</a>.</p>
+<p>The exact reviewed <code>0099_&lt;domain&gt;_storage_bytes</code> migration is common to standard
+and optional ordered variants. Its SQL does not depend on insertion ordinals, so
+it can commute with the existing empty-table ordering conversion. The migration
+inspector validates known names and exact checksums first, rejects duplicates,
+and retains strict ordinary-prefix history and a required base migration. It
+computes pending work from applied names. No other operation gains this exception;
+historical SQL/checksums and the empty-table conversion requirement remain fixed.</p>
+<p>The public evaluator boot explicitly refuses optional selected multiworker intake
+until its separate grants and ownership path adopt clinical materialization. The
+maintained single-host default is the baseline; lower profile/schema/ownership
+controls remain useful without qualifying an obsolete serving path.</p>
 <h2 id="scope-and-evidence">Scope and evidence<a class="headerlink" href="#scope-and-evidence" title="Permanent link">&para;</a></h2>
 <p>For diagram-first review, open the <a href="../../../site/pages/multitenant-database-design.html">database and component ownership visual
 review</a>. It renders the
@@ -6052,7 +6101,7 @@ own admitted port behavior.</p>
 <td>Exact c23 executed source, fixed trusted cooperative cohort. No automatic orphan clearance, suspended-restore resume command or production recovery bound.</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td><strong>Reproduced:</strong> packaged A restore preserved clinical value/public identity, forward history and B rows while B committed work; actual controller committed/reactivated; independent configuration/resource/process closure.</td>
 <td>Exact ed2 source/image, fixed cooperative one-host reference. Client and final regression gates remain separate.</td>
 </tr>
@@ -6062,7 +6111,7 @@ own admitted port behavior.</p>
 <td>Source/protocol reading; actual runtime measurements retain their c23 attribution above.</td>
 </tr>
 <tr>
-<td><a href="counter-and-restore-options.html">Counter analysis</a> and <a href="postgres-tenant-clock-proof.html">clock proof plan</a></td>
+<td><a href="counter-and-restore-options.html">Counter analysis</a> and <a href="../../archive/tenancy/postgres-tenant-clock-proof-2026-11-06.html">clock proof plan</a></td>
 <td>Rationale, alternatives and invariants, with individually scoped experiments.</td>
 <td>Their earlier source anchors and feasibility results do not replace current catalogue/readiness verification.</td>
 </tr>
@@ -6105,9 +6154,12 @@ and admitted handler/storage contracts still bound actual coverage.</p>
 <p>Realtime owns live connections; the evaluator is a headless worker and remains
 one current workload owner. Connector actors (<code>vcpool</code>) belong to background
 polling/egress work and submit clinical writes through the canonical API boundary;
-the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/lib/server/serve/roles.js#L81">ed2 role declaration</a>
-has no runnable start. Evaluator partitioning and realtime replication are separate future capabilities, not
-prerequisites for the queued request-serving API scale-out.</p>
+the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/5e112547b31252ec428747c821d3cd1b3684ce2b/lib/server/serve/roles.js">selected role registry</a>
+selects its explicit preview implementation. Fixed-roster evaluator assignment
+and realtime controlled placement have source-scoped implementation records;
+<a href="runtime-topology.html">runtime topology</a> and release contents own their qualification.
+A replica count does not establish workload ownership or capacity. These worker
+contracts are separate from request-serving API replicas.</p>
 <h3 id="private-maintenance-execution">Private maintenance execution<a class="headerlink" href="#private-maintenance-execution" title="Permanent link">&para;</a></h3>
 <p>The lifecycle/restore controller executes as a private operator CLI, job or
 worker; the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/restore.js#L97">ed2 operator tool</a>
@@ -6157,9 +6209,9 @@ The following ownership map does not introduce a generic SQL-over-HTTP service.<
 <td>Existing <a href="evaluator-realtime-communication.html#browser-authorization-and-mutations">private authorization and mutation protocol</a>; realtime must not edit suppression rows as a substitute.</td>
 </tr>
 <tr>
-<td>Clinical acquisition and consumer recovery state</td>
-<td>Evaluator and realtime each read through tenant-bound storage interfaces and own separate projection/checkpoint namespaces.</td>
-<td>Existing bounded snapshot acquisition. Direct admitted reads and atomic projection/checkpoint persistence remain appropriate; sending every read through API would add dependency and transport cost without establishing stronger semantics.</td>
+<td>Accepted input, clinical completion and raw delivery recovery</td>
+<td>Evaluator owns durable accepted clinical state and atomically completed result/checkpoint/next due. Realtime consumes completed output and the independent raw storage tail, with its own delivery receipts and live cursors.</td>
+<td>The <a href="evaluator-realtime-communication.html">current stream contract</a> replaces independent warm snapshot acquisition. Cold/GAP/missing-history recovery may read consistent source state. Admitted component-owned storage remains direct; cross-component commands use their owned APIs.</td>
 </tr>
 <tr>
 <td>Notification intent, attempts and handoff</td>
@@ -6186,11 +6238,25 @@ mutation have separate authorization and acknowledgement contracts; the arrows d
 <pre class="mermaid"><code>flowchart LR
   EV["Evaluator notification consumer"] --&gt;|"alarm handoff"| RT["Realtime"]
   RT --&gt;|"authorize / mutate / ack"| API["Unified REST/API&lt;br/&gt;v1 / v2 / v3 adapters"]</code></pre>
+<h3 id="stream-state-and-delivery-ownership">Stream state and delivery ownership<a class="headerlink" href="#stream-state-and-delivery-ownership" title="Permanent link">&para;</a></h3>
+<p><strong>Read-derived selected stream diagram.</strong> The input and completed checkpoints
+have different commit boundaries. Raw storage events remain independent of the
+clinical window. The <a href="evaluator-realtime-communication.html">communication contract</a>
+owns recovery, authority and compatibility; this view introduces no new table.</p>
+<pre class="mermaid"><code>flowchart TB
+  PG["Committed source + WAL"] --&gt; PS["Platform pgstream service"]
+  PS --&gt; Input["Durable input checkpoint&lt;br/&gt;clinical state + raw tail + observed work"]
+  Input --&gt; Eval["Bounded clinical evaluator + due work"]
+  Eval --&gt; Done["Atomic completed output&lt;br/&gt;covered versions + result + next due"]
+  Done --&gt; RT["Realtime: completed frames and delivery receipts"]
+  Input --&gt;|"independent raw storage mutations"| RT
+  RT --&gt; Clients["Currently authorized clients"]</code></pre>
 <h3 id="component-storage-ownership">Component storage ownership<a class="headerlink" href="#component-storage-ownership" title="Permanent link">&para;</a></h3>
 <p><strong>Read-derived ownership matrix.</strong> Each row is an admitted component's storage
 responsibility, not a mandatory process or a separate physical database. The two
 REST/API rows are responsibilities within one logical component, retaining their
-separate authority/listener contracts. Realtime and evaluator read the same clinical tables, but own distinct checkpoint namespaces. Privilege checks
+separate authority/listener contracts. The selected stream evaluator and realtime have distinct input/completion/delivery responsibilities,
+read-derived at core <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code>. Privilege checks
 remain specific to the selected catalogue and operation.</p>
 <table>
 <thead>
@@ -6208,13 +6274,13 @@ remain specific to the selected catalogue and operation.</p>
 </tr>
 <tr>
 <td>Realtime</td>
-<td>Clinical records; current configuration and admitted authority</td>
-<td>Realtime projection and checkpoint namespace</td>
+<td>Completed evaluator output; bounded raw mutation tail; current configuration and admitted authority</td>
+<td>Delivery receipts and live cursor/connection state, without a second raw clinical projection</td>
 </tr>
 <tr>
 <td>Evaluator / notification component</td>
-<td>Clinical records; current configuration and suppression</td>
-<td>Evaluator projection and checkpoint namespace; notification producer state, requests and attempts</td>
+<td>Accepted streamed clinical state; consistent source recovery when required; current configuration and suppression</td>
+<td>Input/observed work and completed result/checkpoint/next due; independent raw tail; notification producer state, requests and attempts</td>
 </tr>
 <tr>
 <td>Logical REST/API — owner/authority modules</td>
@@ -6334,7 +6400,7 @@ new client record identity. See the <a href="https://github.com/nightscout/cgm-r
 <tr>
 <td>Projection state</td>
 <td><code>tenant_consumer_checkpoint(tenant_id,consumer,checkpoint,projection,contract_digest)</code>.</td>
-<td>Per-consumer recovery position/materialization. Preview realtime and evaluator select separate checkpoint namespaces. Retained current during logical clinical restore; actual invalidation and fresh acquisition reconcile output.</td>
+<td>Named input/completed/delivery recovery state. Selected stream input retains the bounded clinical envelope and independent raw tail; completed state retains covered versions, result and next due. Restore invalidation preserves current fences and reconciles derived state through the admitted recovery path.</td>
 </tr>
 <tr>
 <td>Authentication / authorization</td>
@@ -6463,6 +6529,11 @@ source/protocol scope. <a href="https://github.com/nightscout/cgm-remote-monitor
 <td>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/tenant-lifecycle/tenant-insertion-sql.js#L36">insertion trigger</a> allocates within one tenant/collection in the same transaction as the row. Missing/invalid state refuses; updates cannot change tenant/ordinal identity.</td>
 <td>Reproduces supported natural/first-match ordering. The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/storage/postgres-entries-read.js#L102">read path</a> selects <code>id_kind,doc</code> and orders by the private ordinal; the ordinal is not a public ID or history cursor.</td>
 </tr>
+<tr>
+<td>Internal accepted/completed progress</td>
+<td>At qualified c31, <code>clinical-stream-sql.js:30–41</code> seals an XID cohort on a clock-table event and observes that clock floor. Evaluator retains separate durable accepted/completed/pending/due state.</td>
+<td>This dependency is an implementation constraint to evaluate, not a public-history or insertion-order requirement. A <a href="evaluator-realtime-communication.html#transaction-coverage-and-mechanism-retirement">connector-framed replacement</a> is proposed and must prove actual transport transaction completeness/recovery before acceptance.</td>
+</tr>
 </tbody>
 </table>
 <p>There is no required cross-tenant total order. Separate insertion state also
@@ -6473,7 +6544,8 @@ CPU and DDL locks remain shared resources. The adopted
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-insertion-semantics">insertion semantics</a>
 and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-history-forward-correction">history-forward restore policy</a>
 own compatibility decisions; the <a href="counter-and-restore-options.html">counter analysis</a>
-retains alternatives and comparisons with database revision/change-stream designs.</p>
+owns current distinctions and links retained alternatives; the connector-framed
+internal replacement remains proposed.</p>
 <h2 id="upgrade-and-readiness-sequence">Upgrade and readiness sequence<a class="headerlink" href="#upgrade-and-readiness-sequence" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/migrations/catalogue.js#L23">catalogue validator</a> accepts an explicit ordered JSON catalogue,
 checks SQL checksums and validates the exact reviewed typed conversion/correction
@@ -6733,7 +6805,7 @@ full membership availability and operator recovery remain distinct from running
 B continuity. Realtime aggregate readiness remains strict while additive live
 and per-tenant fields describe partial tenant availability. The exact startup,
 health and fixed-cohort boundaries live in the <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#L74">application cohort guide</a>.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold measurement</a>
 adds the packaged ordinary-restore/UI/B-continuity scope. HA, multihost
 membership, capacity and whole M6 retain separate admission criteria. The
 <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>

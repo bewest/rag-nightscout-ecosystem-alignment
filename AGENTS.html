@@ -2451,7 +2451,7 @@
 
 
 <h1 id="working-in-this-repository-the-contract-for-any-agent">Working in this repository: the contract for any agent<a class="headerlink" href="#working-in-this-repository-the-contract-for-any-agent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>d37d66e68</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>cd850286a</code>.</em></p>
 <p><em>What this is: the operating contract for coding agents (contributor-facing). Read before anything
 else; leads to <a href="docs/00-overview/REVIEWER-ONBOARDING.html">docs/00-overview/REVIEWER-ONBOARDING.md</a>.
 Vendor-neutral: Copilot, Claude Code, Codex, Cursor and local models all read this file. The
@@ -2621,6 +2621,29 @@ leads with what closed, what blocks progress, and the next action and owner; kee
 the source anchors and evidence needed to resume. Update the existing document
 or lane handoff rather than adding a parallel summary, style score or reporting
 step. Use ASD-STE100-inspired plain language without claiming formal conformity.</p>
+<p><strong>Storage on this workstation</strong></p>
+<ul>
+<li>New worktrees and large experiment outputs use the mounted overflow disk at
+  <code>/mnt/data/nightscout-workspace</code>. Its <code>WORKSPACE-LAYOUT.txt</code> defines the local
+  directory layout. Confirm that <code>/mnt/data</code> is mounted and writable before creating
+  a lane. If it is unavailable, stop and report the storage problem; do not silently
+  create a replacement directory on the home filesystem.</li>
+<li>Create alignment worktrees under <code>worktrees/alignment/&lt;lane&gt;</code>, application
+  worktrees under <code>worktrees/cgm-remote-monitor/&lt;lane&gt;</code>, and deployment worktrees
+  under <code>worktrees/deploy/&lt;lane&gt;</code>, relative to that storage root. Pass absolute paths
+  to <code>git worktree add</code>. Do not create new lane worktrees under <code>externals/work</code>
+  or elsewhere on the home drive.</li>
+<li>Put new capacity, acceptance, performance and other large run outputs under
+  <code>artifacts/&lt;lane&gt;/&lt;run&gt;</code> on that disk. Select this absolute directory in the existing
+  runner CLI/configuration; the runner does not choose or redirect storage for you.
+  Use <code>retained/</code> for preserved originals and retired checkout archives. Large
+  dependency installations, build trees and scratch captures belong on that disk too.
+  Small disposable test files can still use <code>/tmp</code>.</li>
+<li>Existing live worktrees, fixtures, dependency targets, evidence paths, Docker
+  storage and cleanup guards stay at their original paths. Move an inactive resource
+  only after checking its owner, local changes, references and retained evidence.
+  A directory's age or a merged commit alone does not establish that it is unused.</li>
+</ul>
 <p><strong>Git and worktrees</strong></p>
 <ul>
 <li>The main checkout stays on <code>main</code>. Branch work happens in a worktree (<code>git worktree add</code>), one
@@ -2645,8 +2668,9 @@ step. Use ASD-STE100-inspired plain language without claiming formal conformity.
 </ul>
 <p><strong>What goes into the public repository</strong></p>
 <ul>
-<li>Raw capacity and acceptance outputs belong in ignored <code>data/capacity/&lt;run&gt;/</code>,
-  <code>data/acceptance/&lt;run&gt;/</code>, an existing ignored run workspace, or an external evidence store.
+<li>New raw capacity and acceptance outputs use the overflow-disk artifact layout above.
+  Existing ignored <code>data/capacity/&lt;run&gt;/</code>, <code>data/acceptance/&lt;run&gt;/</code> and run workspaces
+  retain their captured originals and attribution; do not repoint them during a run.
   This includes full logs, traces, SQL/cgroup samples, per-tenant oracles and run archives.
   Commit concise findings, selected aggregates or figures, source/workload/command details,
   limitations, checksums and a retained-evidence identifier. Do not force-add bulk outputs.
@@ -2678,6 +2702,16 @@ step. Use ASD-STE100-inspired plain language without claiming formal conformity.
   research continuing".</li>
 </ul>
 <p><strong>Agents running agents</strong></p>
+<p>Branch experiments run concurrently with implementation and acceptance. Full acceptance is
+required to promote a candidate, not to start an isolated synthetic experiment. Use the
+<a href="docs/30-design/tenancy/deployment-and-rig-testing.html#concurrent-experiments-and-acceptance">experiment policy</a>
+to separate execution limits from result qualification. A missing optional metric, expected
+overload or incomplete observation does not invalidate other observations or require a new
+application acceptance campaign. Keep the exact failure and its scope. Never turn missing
+evidence into a pass. Each lane owns its resources and cleanup; a shared host is recorded as
+shared rather than reserved globally for every diagnostic. Preserve running lanes when another
+branch or instrument changes. Use focused controls for changed code and one coherent final
+acceptance campaign for the selected candidate.</p>
 <p>Milestones run with background agents without asking each time. Give each lane a complete
 capability or an explicit milestone criterion, one owner and one integration boundary. Keep its
 helper changes, fixture repairs and authored controls in that lane; use another agent when the
@@ -2712,8 +2746,10 @@ defines its operational detail.</p>
 <li><strong>Who owns what</strong> among the open lanes, and where to send notes.</li>
 </ol>
 <p>Record the programme-level state in <code>releases/&lt;product&gt;-&lt;version&gt;/contents.md</code> (a dated "Update"
-table) and <code>decisions.md</code>. Write the lane-level detail to <code>externals/work/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>
-(local, untracked: it names worktrees and ports on this machine). Link the second from the first.
+table) and <code>decisions.md</code>. Write new lane-level detail to
+<code>/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>
+(local, untracked: it names worktrees and ports on this machine). Keep an existing
+lane handoff at its current path, including legacy <code>externals/work/</code> handoffs. Link the second from the first.
 Vendor memory (Claude's memory directory, Copilot session state) is private to one tool: anything
 another agent must know goes in the files above or in this contract, never only in memory.</p>
 <h2 id="7-before-saying-done">7. Before saying "done"<a class="headerlink" href="#7-before-saying-done" title="Permanent link">&para;</a></h2>

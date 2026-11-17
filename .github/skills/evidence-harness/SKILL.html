@@ -2764,7 +2764,7 @@
 
 
 <h1 id="evidence-harness-measure-control-record">Evidence harness: measure, control, record<a class="headerlink" href="#evidence-harness-measure-control-record" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>e95108d74</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>cd850286a</code>.</em></p>
 <p>The programme's evidence has one shape. A harness <code>require()</code>s the shipping module <strong>by path from
 a worktree</strong> so the thing measured is the thing that ships; it runs against a throwaway database
 with synthetic data; it asserts liveness before and after each measured step; and each claimed
@@ -2826,11 +2826,14 @@ that bundle rather than each becoming a new programme acceptance record.</p>
 </tbody>
 </table>
 <h2 id="run-the-matrix">Run the matrix<a class="headerlink" href="#run-the-matrix" title="Permanent link">&para;</a></h2>
+<p>Use the overflow-disk worktree and artifact locations in <code>AGENTS.md</code> for new
+experiments. Pass the output location explicitly; preserve existing captures
+and live cleanup paths.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># a fresh MongoDB on its own port; never a real site</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>wc-mongo-<span class="nv">$$</span><span class="w"> </span>-p<span class="w"> </span><span class="m">27151</span>:27017<span class="w"> </span>mongo:7.0
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">WC_WORKTREE</span><span class="o">=</span>externals/work/&lt;crm<span class="w"> </span>worktree&gt;<span class="w"> </span><span class="nv">WC_MONGO</span><span class="o">=</span>mongodb://127.0.0.1:27151<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--out<span class="w"> </span>/tmp/&lt;scratch&gt;/after.json
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--compare<span class="w"> </span>tools/qc/results/write-contract-matrix/&lt;pin&gt;.json<span class="w"> </span>/tmp/&lt;scratch&gt;/after.json
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">WC_WORKTREE</span><span class="o">=</span>/mnt/data/nightscout-workspace/worktrees/cgm-remote-monitor/example-lane<span class="w"> </span><span class="nv">WC_MONGO</span><span class="o">=</span>mongodb://127.0.0.1:27151<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--out<span class="w"> </span>/mnt/data/nightscout-workspace/artifacts/example-lane/run01/after.json
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>node<span class="w"> </span>tools/qc/write-contract-matrix.js<span class="w"> </span>--compare<span class="w"> </span>tools/qc/results/write-contract-matrix/&lt;pin&gt;.json<span class="w"> </span>/mnt/data/nightscout-workspace/artifacts/example-lane/run01/after.json
 </code></pre></div>
 <p>For a new differential matrix capture, run each compared tree <strong>twice</strong>; a cell
 that differs between a tree's own runs is noise, not a finding. This repeatability

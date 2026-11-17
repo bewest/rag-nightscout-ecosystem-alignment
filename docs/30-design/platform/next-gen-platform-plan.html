@@ -3827,8 +3827,6 @@
       
         
       
-        
-      
     
     
     
@@ -5830,17 +5828,14 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-08 at <code>f70852564</code>.</em></p>
-<p><em>Contributor-facing living plan. Reconciled 2026-11-08 to the published
-<a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">operation-window acceptance family</a>
-and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a>.
-Draft <a href="https://github.com/nightscout/cgm-remote-monitor/pull/8898">#8898</a> carries
-<code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>, based on dev <code>4a482627</code>.
-Native/browser, corpus and cold-deployment campaigns retain their actual source
-heads. Current milestone claims live in the
-<a href="../tenancy/multitenant-delivery-dashboard.html">delivery dashboard</a>; release
-placement lives in <a href="release-allocation-2026-10-27.html">release allocation</a>.
-This is a map of bounded capabilities and remaining work, not production admission.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
+<p><em>Contributor-facing living plan, reconciled 2026-11-16 against the
+<a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected stream integration record</a>
+and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.
+Architecture interpretation is </em><em>read-derived</em><em>; reproduced runs keep their own
+source, deployment and instrument attribution. Queue/dashboard claims, local
+functional qualification, application publication and production admission remain
+separate. Release placement lives in <a href="release-allocation-2026-10-27.html">release allocation</a>.</em></p>
 <p>The interactive version, with the dependency map, is the site page <a href="../../../site/pages/nightscout-next-gen-platform.html">nightscout-next-gen-platform.html</a>.</p>
 <p>This plan covers the work that follows the 16.0.0 modernization:</p>
 <ul>
@@ -5869,24 +5864,19 @@ use this map to see how the platform tracks meet.</p>
 <td>Wider owner catalogue/lifecycle and production resolution trust; Android emulator and resource bounds in C. No all-client claim.</td>
 </tr>
 <tr>
-<td>Durable runtime</td>
-<td><a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a> accepts functional M5 on one host: separate roles, polling/snapshots, durable suppression and reference notification handoff.</td>
-<td>Live provider/device delivery, multi-node ownership and capacity/freshness/egress budgets.</td>
+<td>Stream runtime and completed output</td>
+<td>The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected integration</a> qualifies the bounded clinical working set, independent raw storage delivery, current stock-client effects and final functional regression on its recorded source/image.</td>
+<td>Workload/resource and recovery envelopes; matched comparison of the separately <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">qualified amplification/retirement source</a>. Provider/device, HA and fleet claims need their own evidence.</td>
 </tr>
 <tr>
-<td>Tenant-local recovery and shared-process restart</td>
-<td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">Operation-window acceptance</a> accepts same-ID logical restore with forward client history, public-ID preservation, fail-closed uncertainty and B continuity while A remains suspended, including fresh service processes. Native evidence is on c23; cold Compose/UI/socket/restore and pinned-client evidence is on ed2.</td>
-<td>Fixed trusted process cohort, private ingress and direct PG connections bound this proof. Dynamic membership, transaction pooling, multi-host coordination, arbitrary direct SQL writers and automatic orphan clearance remain outside it.</td>
+<td>Recovery and revision transitions</td>
+<td>The same record retains ordinary two-tenant lost-slot recovery, the admitted populated upgrade pair and separate cold-backup rollback, with exact authority/due/completed-state checks. Earlier restore/restart captures retain their original scope.</td>
+<td>Broader version/topology matrices and production recovery objectives. Operator-led recovery does not imply automatic failover.</td>
 </tr>
 <tr>
-<td>Deployment artifact and verification</td>
-<td>The published ed2 draft has an exact-source Compose image and cold synthetic deployment acceptance. Final full-suite and pinned-client campaigns are on ed2; native/default-browser on c23 and entire enabled corpus on 39f4 retain their source attribution.</td>
-<td>Whole M6 stays blocked. Draft publication, dev merge, operator release, default enablement and production admission are distinct boundaries.</td>
-</tr>
-<tr>
-<td>Optional shared human identity</td>
-<td><a href="../../../reports/tenancy/shared-oidc-sessions-2026-11-07/index.html">Shared OIDC/session capability</a> is fixed on a separate local source branch with bounded source checks and controls.</td>
-<td>Actual signed native DB/Vault/HTTPS/browser and reference-provider acceptance are UNMEASURED. It has not joined the published Compose candidate.</td>
+<td>Deployment and human identity</td>
+<td>Existing <a href="../../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>, <a href="../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a> and selected runtime records each own their executed source/profile.</td>
+<td>The chosen production profile still needs identity/provider, ingress/secrets trust and applicable lifecycle acceptance. A branch pass or an older published draft is not admission of every later candidate.</td>
 </tr>
 <tr>
 <td>Independent single/nonresident profile</td>
@@ -5895,8 +5885,8 @@ use this map to see how the platform tracks meet.</p>
 </tr>
 </tbody>
 </table>
-<p>The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">acceptance family</a>
-owns exact source/instrument identities and immutable failed and successful runs;
+<p>The named acceptance records own exact source/instrument identities and
+immutable failed and successful runs;
 the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release record</a> owns
 programme disposition. This reconciliation is <strong>read-derived</strong> from those records,
 not a rerun of the application. Recorded-evidence gates replay archived captures;
@@ -5931,9 +5921,9 @@ and failure recovery under the selected topology.</p>
 <td>Supported production workloads, pool limits, noisy-neighbor behavior, capacity and restore/upgrade budgets.</td>
 </tr>
 <tr>
-<td>Scope a reusable current-property result</td>
-<td><a href="../../../reports/tenancy/derived-output-2026-11-07/index.html">Derived-output characterization</a> finds selected evaluator/API properties agree, with time/settings/identity-sensitive controls.</td>
-<td>A reusable result interface and expiry/invalidation checks. Raw realtime frames remain a different product; no publication service or distributed result store is selected.</td>
+<td>Consume the evaluator's completed result in realtime</td>
+<td>The selected stream implementation persists completed clinical output/checkpoint and delivers raw storage mutations independently. The <a href="../tenancy/evaluator-realtime-communication.html">communication contract</a> owns the boundary.</td>
+<td>Qualification for changed sources/profiles; no universal computed-single or fleet result-store claim.</td>
 </tr>
 <tr>
 <td>Choose resident versus computed execution for single-tenant sites</td>
@@ -5966,10 +5956,13 @@ connector work and private operator maintenance have separate workload roles;
 API participants consume admission/invalidation hooks rather than run restoration
 orchestration. This is a clarification of responsibilities, not a new process layout.</p>
 <p><a href="../tenancy/selectable-endpoints-and-api-scaling-plan.html">Endpoint transport and fixed-roster API scaling</a>
-are queued source capabilities; Kubernetes/Jsonnet proof and evaluator partitioning
-are deferred. <a href="../tenancy/tenant-admission-and-activity.html">Operator activity/resource policy</a>
-is proposed and undecided, separate from existing maintenance safety and observed
-health. The map's acceptance states and historical measurements remain unchanged.</p>
+have fixed-roster source implementations and source-scoped records; their
+selected binding and operating limits still need qualification. Kubernetes,
+multihost and fleet placement retain separate scope. The
+<a href="../tenancy/tenant-admission-and-activity.html">activity policy</a> uses adopted pause
+and suspend behavior. Resource limits are measured for each workload/profile.
+The map retains parent-item states; completed slices can coexist with remaining
+criteria. It does not turn historical evidence into a fresh pass.</p>
 <table>
 <thead>
 <tr>
@@ -6337,7 +6330,7 @@ contains request-flow, isolation and historical-comparison diagrams.</p>
 </tbody>
 </table>
 <p>Single-tenant on MongoDB stays first-class (D1, D4). The subcommand selects tenancy (maintainer, 2026-10-27): <code>nightscout single</code> is single-tenant and the <code>nightscout multitenant</code> namespace selects multitenancy (#8899), so the API preview requires explicit multitenant configuration and <code>TENANCY_MODE</code> retires as an operator setting. The <a href="interface-ownership-2026-10-27.html">interface ownership proposal</a> retains its original questions; current separate-process composition and restore boundaries are in the <a href="../tenancy/single-and-multitenant-architecture.html">architecture comparison</a>. The settings census on dev is <a href="../../60-research/tenancy/t30-census-dev-2026-10-27.html">t30-census-dev</a>. The decisions D1–D23 are in the <a href="../tenancy/multitenancy-decisions.html">execution plan</a>.</p>
-<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. R72 accepts request-local loader/cache frames at its bounded M1–M4 scope; R73 accepts the functional multitenant evaluator/realtime reference; M6 retains lifecycle and wider admission work. This does not establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the multitenant candidate. R67 bounds recovered clinical constructor evidence. R73 promotes functional M5; the independent computed-single profile retains its separate entry bar. Input acquisition and clinical result persistence are not one atomic operation.</p>
+<p>Tenancy and execution are separate axes (D-EXEC-PROFILE, 2026-10-31). The subcommand selects tenancy; whether a site keeps a resident <code>ddata</code> or computes its views from bounded queries is a second choice. R72 accepts request-local loader/cache frames at its bounded M1–M4 scope; R73 accepts the functional multitenant evaluator/realtime reference; M6 retains lifecycle and wider admission work. This does not establish a universal computed execution profile. The independent single/nonresident prototype retains properties between cycles; R50 now measures acquisition races, failed-cycle retention and recovery through actual triggers. R49/R50 retain the measured differences in bounds, frame/future behavior, identity unions, statistics and failure lifecycle. Cost remains unmeasured and default single remains resident. R54/R55 accept a shared private allocation helper behind those separate caller policies. R62/R64 retain the published REST side. The whole independent profile branch remains separate; a private helper/evaluateCycle hunk is reused in the multitenant candidate. R67 bounds recovered clinical constructor evidence. R73 promotes functional M5; the independent computed-single profile retains its separate entry bar. Durable input acceptance is separate from clinical completion; selected stream completion atomically commits covered versions, result and next due before RAM advances.</p>
 <h2 id="5-decisions-and-remaining-questions">5. Decisions and remaining questions<a class="headerlink" href="#5-decisions-and-remaining-questions" title="Permanent link">&para;</a></h2>
 <p>Cards labelled decided describe adopted constraints. Other cards retain their
 question and owner; an option marked recommended is a proposal. Select <strong>Show on

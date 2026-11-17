@@ -2416,7 +2416,7 @@
 
 
 <h1 id="roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order">Roadmap for cgm-remote-monitor: what comes next, and in what order<a class="headerlink" href="#roadmap-for-cgm-remote-monitor-what-comes-next-and-in-what-order" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>9ab7c284a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
 <p><em>What this is: a map of the work ahead (contributor-facing). Read after <a href="PROGRAMME-STATUS.html">programme
 status</a>; leads to <a href="NEEDS-A-HUMAN.html">work waiting on a person</a>. Prepared for the
 Nightscout project; proposed for Nightscout Foundation stewardship. Living document: §1 and §2 dated
@@ -2746,9 +2746,20 @@ inform component and recovery decisions. M6 is split into M6a–M6d and M7
 the M6a and M6b joined candidates have acceptance records on draft #8898
 (<a href="../../reports/tenancy/m6a-join-2026-11-09/index.html">M6a</a>,
 <a href="../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/index.html">M6b</a>), with
-no milestone promoted. Deployment trust (M6c) and the M7 bench, scale, evaluator
-partition, realtime sharding and Android items follow, in the order the generated
-table gives; multi-host failover has no acceptance.
+no milestone promoted. Deployment trust (M6c) remains open. The selected M7 stream runtime has
+<a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">source-scoped functional qualification</a>,
+including bounded clinical state and independent raw delivery. The
+<a href="../30-design/tenancy/evaluator-realtime-communication.html">current architecture</a>
+owns these mechanisms; the same operating report owns separately attributed
+capacity observations. Current tests may proceed independently of optional
+multihost/platform work under the <a href="../30-design/tenancy/production-critical-path.html">production sequencing</a>.
+The next work is to establish useful workload/resource and recovery limits on
+qualified sources, compare the <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">qualified amplification/retirement candidate</a>,
+and close the chosen deployment's trust and admission criteria. Performance
+experiments and source work can proceed concurrently without repinning entered
+runs. The generated table retains queue dependencies; each state remains a claim
+until its gate measures it. This documentation change promotes no milestone. Multi-host
+failover has no acceptance.
 Use the <a href="../30-design/tenancy/deployment-and-rig-testing.html">deployment models and fault domains</a>
 to distinguish these boundaries. Tenant-local suppression and controlled notification
 handoff are measured; live provider/device delivery remains separately gated by
@@ -2860,7 +2871,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <tr>
 <td style="text-align: right;">1</td>
 <td><code>MT-D6-SLOT-READER</code></td>
-<td>D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backsto</td>
+<td>D6: qualify default stream-fed clinical materialization and output recovery</td>
 <td><code>in-progress</code></td>
 <td>&mdash;</td>
 </tr>
@@ -3291,7 +3302,7 @@ handoff are measured; live provider/device delivery remains separately gated by
 <h2 id="4-remedial-fix-what-ships">4. Remedial: fix what ships<a class="headerlink" href="#4-remedial-fix-what-ships" title="Permanent link">&para;</a></h2>
 <p>The remedial work is not a sequence. It is prioritized by what reaches operators today: the
 operator-exposure table on <a href="PROGRAMME-STATUS.html#status-words-merged-is-not-released">PROGRAMME-STATUS</a>
-lists the queue items for defects that are present on 15.0.8. A fix reaches operators only in a
+lists the queue items for defects that reach the tagged release named by the register. A fix reaches operators only in a
 release, so each merged fix joins the next step on the release train.</p>
 <h2 id="5-proposals">5. Proposals<a class="headerlink" href="#5-proposals" title="Permanent link">&para;</a></h2>
 <p>These are proposals for discussion with other projects and maintainers. None is scheduled in the

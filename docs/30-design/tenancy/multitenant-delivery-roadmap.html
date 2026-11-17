@@ -2579,8 +2579,6 @@
       
         
       
-        
-      
     
     
     
@@ -2993,6 +2991,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#current-implementation-and-remaining-qualification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current implementation and remaining qualification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#supported-boundary-and-owner-journeys" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3271,7 +3280,7 @@
   <span class="md-ellipsis">
     
   
-    Counters, compatibility and tenant restore options
+    Ordering, history and restore responsibilities
   
 
     
@@ -3496,34 +3505,6 @@
     
   
     T1.1 — the storage seam: interface definition and call-site classification
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="postgres-tenant-clock-proof.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Transactional PostgreSQL tenant clock: proof plan
   
 
     
@@ -5593,6 +5574,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#current-implementation-and-remaining-qualification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current implementation and remaining qualification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#supported-boundary-and-owner-journeys" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5698,11 +5690,11 @@
 
 
 <h1 id="multitenant-delivery-roadmap">Multitenant delivery roadmap<a class="headerlink" href="#multitenant-delivery-roadmap" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
-<p><em>Contributor-facing living plan. Reconciled 2026-11-10 to the M6a/M6b joined acceptance records and adopted release decisions,
+<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
+<p><em>Contributor-facing living plan. Reconciled 2026-11-16 to the selected stream integration records and adopted release decisions,
 without a new application campaign or milestone promotion. This page owns delivery boundaries and promotion criteria.
 The <a href="multitenant-delivery-dashboard.html">dashboard</a> owns recorded milestone claims;
-the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
+the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/queue/work-queue.yaml">queue</a> owns item states, gates and blockers.</em></p>
 <h2 id="reading-and-execution-order">Reading and execution order<a class="headerlink" href="#reading-and-execution-order" title="Permanent link">&para;</a></h2>
 <p>Use the <a href="index.html">reading guide</a> to select a contract. Use the
 <a href="multitenant-integration-batching-plan-2026-11-06.html#5-current-completion-schedule-adopted-2026-11-06">completion schedule</a>
@@ -5722,6 +5714,22 @@ verdicts on the applicable final tree.</p>
 <p>Use the <a href="m5-m6-decision-list.html">current M5/M6 decision list</a> for remaining human
 questions and measurement prerequisites. Prefer a minimal working reference with
 explicitly deferred enhancements; do not substitute a component pass for a milestone.</p>
+<h2 id="current-implementation-and-remaining-qualification">Current implementation and remaining qualification<a class="headerlink" href="#current-implementation-and-remaining-qualification" title="Permanent link">&para;</a></h2>
+<p>The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected runtime record</a>
+closes source-scoped stream, bounded clinical-state, raw delivery, stock-client
+and functional regression criteria. Its ordinary recovery and populated
+upgrade/cold rollback retain their own executed pairs. The
+<a href="evaluator-realtime-communication.html">communication contract</a> and
+<a href="runtime-topology.html#current-stream-runtime">current stream topology</a> explain the
+implementation. These closures do not promote every M6/M7 criterion.</p>
+<p>Workload/resource limits and recovery under load belong to the existing operating
+report. The <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#stream-amplification-and-executable-retirement--2026-11-16">follow-on source qualification</a>
+closes bounded subscription/intake amplification, addressed delivery and executable
+retirement. Its operating comparison retains a separate evidence boundary. The
+<a href="production-critical-path.html">production path</a> owns deployment admission criteria;
+optional fleet, HA and multihost work follows the declared profile. Progress is
+reported by completed capability and remaining criterion, rather than by counting
+historical dispatch lanes or treating every open parent item as unimplemented.</p>
 <h2 id="supported-boundary-and-owner-journeys">Supported boundary and owner journeys<a class="headerlink" href="#supported-boundary-and-owner-journeys" title="Permanent link">&para;</a></h2>
 <p>The supported owner deliverable is a <strong>headless, documented, versioned API</strong>, with
 conformance independent of vendor UI. A first-party owner UI is deferred; vendor
@@ -5963,7 +5971,7 @@ implementation and destroy/after-window refusal evidence remain separate.</p>
 comprehensive verification. These synthetic native records retain their declared
 executed heads; runnable RECORDED-EVIDENCE gates replay archived physical
 observations, not a fresh current-HEAD campaign. The later accepted ed2 reference is published on draft
-PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
+PR #8898; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication and alignment CI record</a>
 is distinct from dev merge, release and production/default admission.</p>
 <table>
 <thead>

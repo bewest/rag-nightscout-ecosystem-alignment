@@ -2742,7 +2742,7 @@
 
 
 <h1 id="session-handoff">Session handoff<a class="headerlink" href="#session-handoff" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>e95108d74</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>cd850286a</code>.</em></p>
 <p>Two layers, linked: the <strong>programme-level state</strong> goes in the release records (shared, tracked),
 and the <strong>lane-level detail</strong> goes in a local handoff file (untracked, because it names worktrees
 and ports on this machine). Vendor memory is private to one tool and is never the only copy.</p>
@@ -2760,7 +2760,10 @@ coordination contract in <code>AGENTS.md</code> and the applicable batch plan.</
 <p>Append a dated Update table to <code>releases/&lt;product&gt;-&lt;version&gt;/contents.md</code> and any decision rows to
 <code>decisions.md</code> (the <code>release-record</code> skill). Hashes come from <code>git log</code> run now, not from a brief.</p>
 <h2 id="2-write-the-lane-handoff-local">2. Write the lane handoff (local)<a class="headerlink" href="#2-write-the-lane-handoff-local" title="Permanent link">&para;</a></h2>
-<p>File: <code>externals/work/HANDOFF-&lt;lane&gt;-&lt;YYYY-MM-DD&gt;.md</code>. Template:</p>
+<p>For a new lane on this workstation, use
+<code>/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-&lt;lane&gt;-&lt;YYYY-MM-DD&gt;.md</code>,
+following the storage rule in <code>AGENTS.md</code>. Update an existing lane handoff at its
+current path; do not move a live lane to apply this default. Template:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gh"># Handoff from &lt;lane&gt; (&lt;date&gt;, &lt;time&gt;Z)</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Lane: &lt;one line: what this lane owns&gt;
@@ -2797,7 +2800,7 @@ coordination contract in <code>AGENTS.md</code> and the applicable batch plan.</
 </ul>
 <h2 id="3-link-the-two">3. Link the two<a class="headerlink" href="#3-link-the-two" title="Permanent link">&para;</a></h2>
 <p>Put the handoff file's path in the contents.md Update row ("lane detail:
-<code>externals/work/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>, local"). If the handoff carries decisions or traps that
+<code>/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>, local"). If the handoff carries decisions or traps that
 outlive the lane, write them into <code>AGENTS.md</code> §5 or a skill in the same commit, so they reach every
 tool.</p>
 <h2 id="4-tell-the-person">4. Tell the person<a class="headerlink" href="#4-tell-the-person" title="Permanent link">&para;</a></h2>

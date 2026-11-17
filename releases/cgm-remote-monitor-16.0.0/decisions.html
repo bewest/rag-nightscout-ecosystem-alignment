@@ -2190,7 +2190,7 @@
 
 
 <h1 id="cgm-remote-monitor-1600--decisions">cgm-remote-monitor 16.0.0 — decisions<a class="headerlink" href="#cgm-remote-monitor-1600--decisions" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>f309b4996</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>28107d068</code>.</em></p>
 <p><em>Contributor-facing. Living record of the decisions that shape 16.0.0, taken from 2026-10-21, as of
 <code>dev</code> <code>61eb3733</code> (2026-11-01, after #8895/#8896), with the 2026-10-29 and 2026-10-30 rows added at <code>dev</code> <code>991b0654</code>
 (2026-10-30, after #8865). Each row states the decision as it stands, with its date and who made
@@ -3152,6 +3152,12 @@ contracts; future schema upload does not waive current compatibility testing.</p
 <td>Existing original-tenant import binding remains. R69 retains its historical executed source and results; representative backup/upgrade proof remains at its entries/clock scope. Cloning implementation and native acceptance are UNMEASURED. This adds no M1–M4 gate.</td>
 </tr>
 <tr>
+<td><a id="deleted-tenant-exact-artifact-first"></a><strong>The first deleted-tenant recovery path uses the exact operator-confirmed deletion artifact within the adopted retention window and restores the original tenant ID.</strong> Older clinical snapshots combined with deletion-time authority are deferred. The exact artifact supplies the latest credential, write-clock and insertion-order floors without a second reconstruction source.</td>
+<td>maintainer delegated the choice to architecture, performance and delivery judgment, 2026-11-15; completion coordinator selected exact artifact first</td>
+<td>Refines <a href="#tenant-deletion-key-retention">tenant deletion key retention</a> and <a href="#restore-identity-and-cloning">restore identity</a>; selected-platform lifecycle/recovery</td>
+<td>Implementation and native reconstruction remain open. Current logical correction requires a live write-clock row and cannot by itself recommission an erased tenant. The existing retention ledger holds the deletion digest, but admission must bind that exact artifact before reconstruction. Preserve other tenants, current control authority and the existing supported-writer boundary. Local implementation custody: <code>externals/work/HANDOFF-selected-platform-artifact-2026-11-15.md</code>.</td>
+</tr>
+<tr>
 <td><a id="m5-bounded-snapshot-reconciliation"></a><strong>Bounded snapshot reconciliation first for M5 current-state recovery:</strong> reconcile the full admitted current identity/absence set in a consistent tenant snapshot, with explicit row/byte refusal. Preserve existing hard-delete, activity timestamp and write-result behavior. Retained change/deletion journals, every-transition semantics and notification delivery remain separate contracts.</td>
 <td>maintainer, 2026-11-06 ("Bounded snapshot reconciliation first (recommended)")</td>
 <td><code>MT-RUNTIME-PLAN</code>, M5</td>
@@ -3662,7 +3668,7 @@ deployment has run.</p>
 <td><a id="internal-service-contracts"></a><strong>Internal APIs use shared transport with separate service contracts, request/response schemas, named clients and documentation. Each listener owns an explicit operation set; a component with a public contract opens a second listener/port for its private contract. Unix sockets and explicitly configured internal HTTP are supported. HTTP access policy belongs to the deployment; no new bearer authentication convention is introduced.</strong></td>
 <td>maintainer, 2026-11-09, internal IPC/API refactor discussion</td>
 <td>Realtime authority/writes, alarm delivery, lifecycle participant coordination; public/private listener separation</td>
-<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/b5ae59800c34f6eee32c2723946fa82a1a155932/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
+<td>Incorporated in joined candidate <code>dc795bd1515f11808a8d0732f2be9925cb2ffcd1</code>; its <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/3bd6ca0ba3f8fc442a9dc7b5c93dc38cc0487838/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">recorded acceptance</a> retains executed scope. UDS/HTTP schemas, clients and endpoint references exist; network qualification beyond loopback remains unmeasured. <a href="../../docs/30-design/tenancy/runtime-topology.html">Current topology and remaining composition work</a> distinguish private application/lifecycle purpose from listener allocation. Direct application calls retain existing authority; an optional JSON-to-status/header edge adapter does not imply an authentication redesign or mandatory gateway hop. Communicating peers require coordinated upgrade. No dev merge or operator release is claimed.</td>
 </tr>
 </tbody>
 </table>
@@ -4074,6 +4080,12 @@ deployment has run.</p>
 <td>Preserve the exact frozen application/image, normal workload, cadence, API1/RT1/EV1, Vault SERVER, diagnostics OFF, native successful-TIME support, quiet-host conditions, independent stored-count oracle, recovery and cleanup requirements. Source and transport bind the authorization to the exact pair, instrument, image and run with fixed bounds and shared fleet budget. Captured results retain their unaccepted scope; existing accepted-capacity checks refuse them, including wrapped cells. Once actual source acceptance and final prcheck pass for the same candidate, a separate read-only qualification assessment may reference both immutable measurements and the accepted receipt. It never rewrites the original capture, invents a PASS receipt or credits unrun checks. This supersedes sequential data acquisition only; acceptance and production claims retain their gates.</td>
 </tr>
 <tr>
+<td><a id="concurrent-branch-experiments"></a><strong>Allow concurrent isolated synthetic branch experiments before full acceptance, locally and remotely. Execution uses existing resource/spending authority and focused checks; acceptance gates promotion of a coherent candidate. Parameter changes within that authority do not require repeated approval or application acceptance. Preserve failed and partial evidence; qualify each observation independently. Keep running lanes on their own pinned tooling and resources.</strong></td>
+<td>maintainer, 2026-11-15, explicit approval and concurrent-workflow clarification</td>
+<td><code>MT-BENCH-BASELINE</code>, <code>MT-SCALE-UNBOUND</code></td>
+<td><a href="../../docs/30-design/tenancy/deployment-and-rig-testing.html#concurrent-experiments-and-acceptance">Operating policy</a>. Reuse qualified images and unchanged evidence with original attribution. Shared-host contention limits comparisons, not diagnostic execution. Optional metric gaps and expected overload do not suppress other useful measurements. Isolation, resource ownership, source identity, credentials, finite budgets and cleanup remain execution boundaries. Tool approval failures are resolved through the supported approval path; no alternate executor bypass. This decision grants no capacity acceptance or new spending ceiling.</td>
+</tr>
+<tr>
 <td><a id="m7-baseline-discovery"></a><strong>Run the matched500→750→1000 reference baseline as explicit performance discovery. Preserve strict correctness evidence and its FAILED/UNMEASURED findings; incomplete idle proof does not suppress bounded load and recovery measurements.</strong></td>
 <td>maintainer,2026-11-12, explicit continuation: make the adjustment and run discovery without waiting for admission control or another broad acceptance campaign</td>
 <td><code>MT-BENCH-BASELINE</code>, <code>MT-SCALE-UNBOUND</code></td>
@@ -4116,10 +4128,10 @@ deployment has run.</p>
 <td>Read at J: the owner lock is a session-held advisory lock (<code>lib/realtime-placement/owner.js:4-12</code>), so PostgreSQL frees it only when the old connection is gone. Realtime writes nothing (D23), so a brief overlap would duplicate socket pushes rather than damage data (read-derived). Unmeasured.</td>
 </tr>
 <tr>
-<td><a id="tenant-ensure-and-factory-reset"></a><strong>Two operator operations, both audited. <code>ensure</code> (create or repair) recreates what is missing when no stored data depends on it, and refuses with a clear reason when data is encrypted under a missing key (restore the key from backup instead). <code>factory reset</code> returns a tenant's operational and configuration state to the deployment defaults and never erases clinical data; it therefore keeps the keys that protect that data. Inspect stays as built. A provisioning retry keeps reading PostgreSQL only; controllers call inspect.</strong></td>
-<td>maintainer, 2026-11-12 ("factory reset doesn't or shouldn't erase clinical data, just resets operational/configuration conditions"; "ensure and factory reset are intended for operators")</td>
+<td><a id="tenant-ensure-and-factory-reset"></a><strong>Two operator operations, both audited. <code>ensure</code> (create or repair) recreates what is missing when no stored data depends on it, and refuses with a clear reason when data is encrypted under a missing key (restore the key from backup instead). <code>factory reset</code> returns a tenant's operational and configuration state to the deployment defaults and never erases clinical data; it therefore keeps the keys that protect that data. Factory reset preserves login and connector credentials; credential revocation remains a separate explicit operation. Inspect stays as built. A provisioning retry keeps reading PostgreSQL only; controllers call inspect.</strong></td>
+<td>maintainer, 2026-11-12 ("factory reset doesn't or shouldn't erase clinical data, just resets operational/configuration conditions"; "ensure and factory reset are intended for operators"); credential scope confirmed 2026-11-13 (chose "Preserve credentials")</td>
 <td>proposed <code>MT-PROVISION-OPERATOR</code></td>
-<td>Measured on leaf <code>claude/provision-operator-20261112</code> <code>866301df</code>: with the data key deleted, retry answers <code>existing</code> and inspect reports it incomplete. Exactly which settings and credentials a reset restores is still to be designed.</td>
+<td>Measured on leaf <code>claude/provision-operator-20261112</code> <code>866301df</code>: with the data key deleted, retry answers <code>existing</code> and inspect reports it incomplete. Credential preservation is decided; exact settings and operational reset boundaries remain to be designed and measured.</td>
 </tr>
 <tr>
 <td><a id="legacy-decision-reuse-60s"></a><strong>Amends <a href="#legacy-decision-reuse-window">legacy-decision-reuse-window</a>: when legacy decision reuse is enabled, its default window is 60 s (still settable, ceiling 60 s), and a cache miss skips the second authority-state read when the first is only milliseconds old, so a miss costs the same as no cache. Reuse covers the legacy credentials only: API_SECRET and Nightscout subject access tokens, including tokens exchanged from them. New access tokens (<code>ns-access+jwt</code>) and human sessions never pass through it. It stays off by default until the 1,000-tenant results justify it.</strong></td>
@@ -4162,6 +4174,163 @@ deployment has run.</p>
 <td>maintainer, 2026-11-12 (asked what is best for maintenance, testing and adoption by hosting providers; adopted "contract in core, plan in deploy")</td>
 <td><code>MT-STATIC-MODE-RETIRE</code> (proposed), <a href="#core-static-plan-retired">core-static-plan-retired</a></td>
 <td>Read at deploy <code>2e9afbb6</code>: <code>bindings/compose/SOURCE.md</code>, <code>SOURCE.delta.patch</code> and <code>tools/compose-identity-check.sh</code> require core's <code>deploy/multitenant</code> plus a patch to equal the deploy copy byte for byte, so every plan change is made twice.</td>
+</tr>
+<tr>
+<td><a id="edge-forwarded-headers-left"></a><strong>The Compose edge keeps forwarding <code>X-Resolved-Tenant</code>, <code>X-Forwarded-Port</code> and the client-address headers as it does today; core's refusal of the tenant selector remains the control. The trust record lists the forwarded set, so any future code that reads one of these headers must first treat it as client-supplied.</strong></td>
+<td>maintainer, 2026-11-13 (chose "Leave as is" for trust-probes finding F1)</td>
+<td><code>DEPLOY-TRUST-PROBES</code></td>
+<td>Measured on deploy <code>claude/g2-join-20261113</code> <code>3178cfd2</code>: the contract probe reports 10 checks red for these headers (<code>bindings/compose/multitenant/nginx.conf:25-30</code>, <code>:47-52</code>, <code>:65-70</code>); core refuses the selector (<code>lib/tenant-registry/resolver.js:128</code>), so they cannot select a tenant.</td>
+</tr>
+<tr>
+<td><a id="vault-approle-lockout-off"></a><strong>The deployment's single Vault AppRole login has Vault's user lockout disabled. The secret-id is long and random, so lockout adds little against guessing, while it is a deployment-wide availability hazard. The trust record documents the setting; revoking a machine credential still requires both destroying the secret-id and revoking its issued token.</strong></td>
+<td>maintainer, 2026-11-13 (chose "Turn off lockout for this login")</td>
+<td><code>DEPLOY-TRUST-PROBES</code>, proposed <code>DEPLOY-VAULT-LOCKOUT</code></td>
+<td>Reproduced twice (trust-probes on J; g2-join on <code>3178cfd2</code> with the Vault Agent overlay): after machine-credential revocation the Agent's retries locked the AppRole, and a correctly re-credentialed deployment stayed refused for 120 s until <code>unlock</code> (<code>bindings/compose/vault-agent/README.md:86-88</code> has no unlock step). Destroying a secret-id left its issued token valid (finding F5). Multitenant only.</td>
+</tr>
+<tr>
+<td><a id="failed-login-delay-core"></a><strong>The multitenant API delays the next request after a failed authentication exactly as a single site does, keyed on the real client address. To make that address trustworthy, every multitenant role refuses to start without an explicit trusted-proxy setting (finding F3). The edge's per-client budget remains a coarse backstop; there is no separate nginx login limit.</strong></td>
+<td>maintainer, 2026-11-13 (chose "Core, plus require trusted-proxy config" after the trade-off against an nginx-only limit)</td>
+<td><code>DEPLOY-TRUST-PROBES</code>, proposed <code>MT-FAILED-AUTH-DELAY</code></td>
+<td>Measured on deploy <code>3178cfd2</code>: wrong secrets answered 401 in 54-93 ms with no delay. Single site: <code>lib/authorization/index.js:12-15</code>, <code>:169-181</code>, default 5000 ms at <code>lib/settings.js:71</code>; the multitenant path (<code>lib/server/tenant-app/legacy-authorization</code>, wired at <code>lib/server/serve/preview-domains.js:15</code>) has none. Decision <code>deployment-ingress-peer-list-trust</code> already requires the trust setting; roles start without it today (trust-probes F3). Same behaviour in single and multitenant.</td>
+</tr>
+<tr>
+<td><a id="compose-restart-on-failure"></a><strong>The Compose binding's production default is <code>restart: on-failure</code> for every role, so the recovery decisions' deliberate exits are restarted by the platform. Test and lab runs can select no restart to inject failures or hold an instance down, and lab records count restarts so a crash loop is visible in evidence.</strong></td>
+<td>maintainer, 2026-11-13 ("1 for production defaults, except for tests where it is desirable to inject failure")</td>
+<td>proposed <code>DEPLOY-RESTART-POLICY</code></td>
+<td>Measured on deploy <code>claude/datastore-recovery-20261113</code>: with <code>restart: "no"</code> (<code>bindings/compose/multitenant/compose.yaml:11</code>) an api that reached its recovery bound stayed down. Supports <a href="#realtime-automatic-recovery">realtime-automatic-recovery</a> and <a href="#datastore-loss-recover-in-place">datastore-loss-recover-in-place</a>.</td>
+</tr>
+<tr>
+<td><a id="feed-healthy-sweep-default"></a><strong>The multitenant binding turns the healthy feed sweep on by default at 30 s (<code>NS_FEED_SWEEP_MS</code>), once the 1,000-tenant on/off comparison confirms the saving and that alarm and change-detection bounds hold. Until that run reports, the option ships off by default.</strong></td>
+<td>maintainer, 2026-11-13 (chose "On, 30 s", "confirmed by measuring")</td>
+<td>proposed <code>MT-IDLE-FEED-SWEEP</code></td>
+<td>Measured at 200 idle tenants on J (core <code>claude/idle-cost-20261112</code> <code>dbcfa7b2</code>, record on its alignment branch): against the off control on the same image, SQL calls fell 66-67% and PostgreSQL CPU 56-57%; time-driven clinical work unchanged; a write was evaluated 0.36-1.0 s after acknowledgement versus 1.6-7.9 s. Hinted tenants still go on the next tick; the evaluator refuses a sweep longer than half its evaluation-gap alert bound. The 1,000-tenant run is queued with the cloud owner.</td>
+</tr>
+<tr>
+<td><a id="lane-failure-recover-in-place"></a><strong>When a role's database session lane fails under overload, the role reports itself unhealthy and replaces the lane in place, after confirming that any operation the lane held finished or is recorded as uncertain. It never silently replaces a lane that hides an uncertain completion. This is the same rule as <a href="#datastore-loss-recover-in-place">datastore-loss-recover-in-place</a>.</strong></td>
+<td>maintainer, 2026-11-13 (chose "Recover in place, report unhealthy meanwhile")</td>
+<td>proposed <code>MT-OVERLOAD-STICKY-503</code></td>
+<td>Reproduced on J at 200 tenants (idle-cost record): after a 1,500-concurrent burst all 200 tenants answered 503 <code>AUTHORITY_UNAVAILABLE</code> for 4.5 minutes until an api restart. A lane that fails once throws on every later acquire and is never replaced (<code>lib/tenant-lifecycle/lifetime-sessions.js:34</code>); an overload completion timeout poisons it (<code>operation-window.js:255</code>). The coherent join's lane replacement is read to cover this; unmeasured under overload.</td>
+</tr>
+<tr>
+<td><a id="feed-slot-advance-idle"></a><strong>When a feed-reader poll finds no published change, the reader advances its replication slot past the range it decoded (<code>pg_replication_slot_advance</code>), through the database function that owns the slot, and records the checkpoint. It never advances past a range that holds a published change whose notification is not yet sent, so notification still precedes acknowledgement. The function receives the privilege to advance its own slot only.</strong></td>
+<td>maintainer, 2026-11-13 (approved; Codex proposed "progress through irrelevant WAL needs a safe checkpoint design")</td>
+<td><code>MT-D6-SLOT-READER</code>, proposed <code>MT-FEED-SLOT-IDLE-ADVANCE</code></td>
+<td>Measured at 200 idle tenants on J (idle-cost record): the slot advances only on a published change (<code>lib/change-feed/reader.js:20</code>), lag grew 2.2-3.0 kB/s and each poll re-decoded it in 240-277 ms. Read-derived: with <code>max_slot_wal_keep_size=256MB</code> an idle deployment would lose the slot in about a day. Saving unmeasured. Extends <a href="#d6-sql-reader-transport">d6-sql-reader-transport</a>.</td>
+</tr>
+<tr>
+<td><a id="tenant-version-batch-read"></a><strong>Evaluator and realtime read unchanged-tenant state in one batched call per pass, through a small privileged function that returns, for the role's own pool slice only, each tenant's pause/suspend state, settings version and last change marker, and no clinical data or settings content. A tenant's full settings read runs only when its version moved, plus the periodic recovery reconciliation and all time-driven clinical evaluation, which stay as they are. Settings reads that do run use one owned connection performing tenant binding, revocation, catalogue validation, readiness and the read, with every check fresh on every read (no caching of successful checks).</strong></td>
+<td>maintainer, 2026-11-13 (approved the version-only cross-tenant function; Codex proposed batching and the one-checkout settings read)</td>
+<td>proposed <code>MT-SETTINGS-SCREEN-PER-READ</code>, <code>MT-TENANT-VERSION-BATCH</code></td>
+<td>Measured at 200 idle tenants on J (idle-cost record): each evaluator check is a full settings read of about 33 statements and three new connections (<code>evaluator-runtime.js:404</code>, <code>effective-postgres.js:55</code>, <code>tenant-settings/readiness.js:9-29</code>, <code>migrations/postgres.js:139-160</code>); the scope screen is 20.6 ms each, 53% of evaluator exec time. Derived saving up to about 70% of the evaluator's remaining calls; unmeasured. Multitenant only.</td>
+</tr>
+<tr>
+<td><a id="settings-screen-evaluator-only"></a><strong>The full settings safety screen (grants, row-level security, migration ledger) runs on every settings read in the evaluator only. api and realtime use the lighter settings read and rely on their startup and periodic checks.</strong></td>
+<td>maintainer, 2026-11-13 (chose "Evaluator only")</td>
+<td>proposed <code>MT-SETTINGS-DATA-PATH-SCREEN</code></td>
+<td>Measured on Codex <code>2bff10a0</code> against <code>4f09765b</code> at 200 idle tenants (record on alignment <code>claude/settings-one-checkout-20261113</code> <code>bd249670</code>): screening every read (<code>lib/tenant-settings/effective-postgres.js:52-53</code>) took realtime's read from 7 statements / 1.1 ms to 16 statements / 3.1-3.7 ms, and with the sweep off its completed reads fell from 208-210/s to 88-104/s. At <code>4f09765b</code> only <code>revalidate</code> readers re-screened (<code>presentation-reader.js:58</code>). Multitenant only.</td>
+</tr>
+<tr>
+<td><a id="evaluator-settings-error-shape"></a><strong>Settings-read failures reach the evaluator as <code>SETTINGS_POLICY_UNAVAILABLE</code> with a short cause code (for example screen refusal or transport failure), as in the other roles. Driver error text is logged only when diagnostic logging is switched on for debugging or maintenance, and never appears in alerts.</strong></td>
+<td>maintainer, 2026-11-13 ("1, but when debugging or maintaining, driver errors may be needed with extra logging")</td>
+<td>proposed <code>MT-SETTINGS-EVALUATOR-ERROR-SHAPE</code></td>
+<td>Read at Codex <code>2bff10a0</code>: <code>read()</code> no longer wraps failures, and <code>lib/server/serve/evaluator-config.js:179</code> has no wrapping layer, so a cross-scope read reaches the evaluator as an uncoded driver error (measured), while api and realtime still return the fixed code from <code>presentation-reader.js</code> (measured).</td>
+</tr>
+<tr>
+<td><a id="version-batch-shared-login-bound"></a><strong>The tenant version function bounds a caller to a live member of its pool kind (wrong kind, dead member, mismatched ordinal and widened count refused); a member sharing the pool's database login could name a peer's slice. That is accepted for now because the same login can already read any tenant directly. One database login per member is tracked as later hardening. The row also carries the operator-policy generation, since a policy change alters effective settings. The idle feed checkpoint runs at most once a second and stays configurable (<code>idleAdvanceMs</code>); the binding keeps a 50 ms poll until 100 and 250 ms are measured at 1,000 tenants; upgrade steps for existing databases follow <a href="#multitenant-upgrade-shape">multitenant-upgrade-shape</a>.</strong></td>
+<td>maintainer, 2026-11-13 (accepted the shared-login bound; did not object to the lane recommendations listed)</td>
+<td>proposed <code>MT-TENANT-VERSION-BATCH</code>, <code>MT-FEED-SLOT-IDLE-ADVANCE</code>, <code>MT-FEED-READER-POLL-COST</code></td>
+<td>Measured on core <code>claude/tenant-version-batch-20261113</code> <code>fda2a126</code> (17 break-it mutations; alignment record <code>45cb01db</code>) and <code>claude/feed-slot-advance-20261113</code> <code>bf4aadf7</code> (record <code>bfd06e67</code>): an idle checkpoint on every empty poll cost more reader CPU (0.325 vs 0.261 cores) for no smaller lag. Shared evaluator login read at deploy <code>bindings/compose/multitenant/config.js:155</code>.</td>
+</tr>
+<tr>
+<td><a id="evaluator-settings-safety-net"></a><strong>With the tenant version batch, the evaluator also re-reads every tenant's full settings on a slow unconditional timer, every 10 minutes by default and configurable, in addition to full re-reads whenever the feed is degraded. This bounds how long a settings change that did not bump a version (a manual database edit, a restore of older rows, a change in how effective settings are computed, a change in the deployment's default policy) can leave alarms evaluated against old thresholds.</strong></td>
+<td>maintainer, 2026-11-13 (chose "Yes, every 10 min, configurable")</td>
+<td>proposed <code>MT-TENANT-VERSION-BATCH</code></td>
+<td>As built on core <code>fda2a126</code>, only ticks taken while the feed is degraded read in full (<code>lib/change-feed/consumer.js:89</code>, <code>evaluator-runtime.js:462</code>). Derived cost: about 0.33 extra full reads/s at 200 tenants, about 17/s at 10,000. Keeps <a href="#tenant-version-batch-read">periodic recovery reconciliation</a>.</td>
+</tr>
+</tbody>
+</table>
+<p>| <a id="trusted-worker-performance-boundary"></a><strong>Trusted evaluator and feed workers process their global or assigned tenant set directly. Their normal scheduling and settings paths do not impersonate each tenant or repeat full grant, RLS and migration inspection for each tenant operation. Public and routed components retain tenant-scoped authorization and database protections. Operational integrity checks run at startup, recovery and a bounded worker-level cadence outside individual tenant execution budgets.</strong> | maintainer, 2026-11-13, performance architecture chat (trusted verified workers; one coherent implementation batch) | <code>MT-PERF-EVALUATOR</code>, <code>MT-PERF-REALTIME</code>, <code>MT-TENANT-VERSION-BATCH</code> (proposed) | Supersedes the evaluator per-read inspection obligation in <a href="#settings-screen-evaluator-only">settings-screen-evaluator-only</a>, the procedural discovery boundary in <a href="#tenant-version-batch-read">tenant-version-batch-read</a>, and the same-runtime-check requirement there. Use ordinary role/table grants appropriate to trusted multitenant workers and set-based metadata access. Assignment, tenant identity, clinical outputs and database restore exclusion remain correctness obligations. Dirty state records observed and processed generations/checkpoints; work arriving during evaluation remains pending. Unchanged tenants cause no routine full settings reads; due clinical timers, committed changes, recovery and the adopted <a href="#evaluator-settings-safety-net">slow settings safety net</a> remain. One implementation owner delivers source, deployment wiring, focused controls and comparative measurements as a coherent batch; the existing integrator owns the joined acceptance freeze. Proposed implementation and scalability remain UNMEASURED; this decision grants neither public cross-tenant access nor capacity acceptance. |
+| <a id="realtime-connection-driven"></a><strong>Multitenant realtime is connection-driven by default: it loads a tenant when its first socket connects, follows that tenant's change notifications (with a slow safety-net re-read) only while it has sockets, and drops it after a grace period. Tenants with no sockets cost realtime nothing. Placement mode parks a socket for an unloaded tenant instead of refusing it; restore invalidation of an unloaded tenant is a no-op; the cold-tenant alert covers loaded tenants only. Realtime accepts the evaluator's alarm handoff for a tenant with no <code>/alarm</code> subscriber without loading it, after the shard route check; alarm evaluation and repeat timing stay with the evaluator.</strong> | maintainer, 2026-11-13 (chose "Adopt as the default directly" and "Accept without loading") | proposed <code>MT-REALTIME-CONNECTION-DRIVEN</code> | Read-derived design packet on alignment branch <code>claude/rt-connection-driven-20261113</code> <code>1767f388</code> (22 findings with <code>file:line</code> at Codex join <code>e1f130ec</code>): every detection pass reads settings for every tenant (<code>change-detector.js:41</code>, <code>preview-realtime.js:49-61</code>, <code>:187</code>), matching the measured 6.9 reads/s at 200 tenants with no clients. Changes needed: <code>preview-realtime.js:138</code> (park, not <code>TENANT_WARMING</code>), <code>runtime.js:165-166</code> (no-op invalidate), <code>tenant-startup.js:252-258</code> (cold alert). Estimated cold first frame about 50-100 ms of server work at 1,000 stored rows and 0.5 s at 10,000 (unmeasured). Lands after the realtime author's recovery source freeze. Single site unaffected (<code>lib/server/websocket.js</code>). |
+| <a id="realtime-move-readiness-viewers"></a><strong>Under <a href="#realtime-connection-driven">connection-driven realtime</a>, a worker taking over a shard counts as ready when it holds the shard's ownership lock, can reach the database and api, and has loaded the tenants that currently have viewers on the old owner; other tenants load on their next connect. This is a new version of the recovery readiness contract, built in the same change as connection-driven realtime after the realtime author's recovery source freezes. Until then, moves keep the current rule of loading every tenant in the shard.</strong> | maintainer, 2026-11-13 (chose target (b) with (a) until then, after asking what is best for maintenance, performance and architecture) | proposed <code>MT-REALTIME-CONNECTION-DRIVEN</code>, <code>MT-REALTIME-SHARDING</code> | Read at Codex join <code>e1f130ec</code>: the recovery warm proof requires every affected tenant to report <code>startupComplete</code> and <code>modelAvailable</code> (<code>realtime-inspection.js:18-21</code>; deploy <code>realtime-recovery-warm.js:52</code>, untracked). Derived at 10,000 tenants, 256 shards, about 75 ms per tenant load, 10% watched: taking over a crashed worker loads about 2,500 tenants (about 90 s) under the current rule against about 250 (about 9 s) under this one. Unmeasured. |</p>
+<h3 id="event-driven-priority--2026-11-13">Event-driven priority — 2026-11-13<a class="headerlink" href="#event-driven-priority--2026-11-13" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Decision as it stands</th>
+<th>Owner / date</th>
+<th>Scope</th>
+<th>Basis and limits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="event-driven-reset"></a><strong>Stop tuning and benchmarking the old M7 polling architecture. First prove a small local maintained-pgstream CDC flow through actual clinical and socket modules. Assess evaluator ownership of input/settings changes and recoverable due work, with realtime consuming durable output/alarm changes and viewer/auth lifecycle. The proposed proof keeps two logical modules, initially co-located where useful; physical separation follows evidence.</strong></td>
+<td>maintainer, 2026-11-13; successor coordinator owns integration/design/local resources</td>
+<td>M7; <a href="../../docs/archive/tenancy/evaluator-realtime-reference-2026-11-16.html#event-driven-target-and-first-proof">retained communication proof target</a>, <a href="../../docs/30-design/tenancy/multitenancy-decisions.html#d6">D6</a></td>
+<td>Direction adopted; <a href="../../reports/tenancy/pgstream-flow-2026-11-13/index.html">local proof</a> retains bounded prototype delivery/recovery evidence. The <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html">canonical report</a> owns later source-scoped runtime/integration qualification and operating limits; prototype evidence does not qualify capacity. Supersedes the immediate SQL-polling/NOTIFY and paged-roster tuning priority in <code>d6-sql-reader-transport</code>, <code>d6-paged-backstop</code>, <code>feed-slot-advance-idle</code> and <code>cost-proportional-to-activity</code>; retains clinical-write decoupling, B7, isolation, authority, restore and compatibility. Prefer output CDC over an unrecorded direct-RPC chain. Caches may disappear; durable versions/checkpoints, alarm and due state may not. Reuse current durable contracts before adding queues. No paid hosts, old 500 retry, broad acceptance, generic control framework or configuration matrix during this proof. Thin flow and focused controls precede small matched measurements and any later capacity campaign; previous capacity targets remain unproved.</td>
+</tr>
+<tr>
+<td><a id="pgstream-operating-constraints"></a><strong>For the pgstream change-delivery batch (<a href="#event-driven-reset">event-driven-reset</a>): pgstream's webhooks land on one receiver in the evaluator role, with no extra broker. Its privileged init (event triggers) runs once per deployment as a separate DBA step, and the running process uses a narrow streaming role, not a database owner; if a narrow role cannot work, the batch reports it and Debezium Server is the fallback. wal2json with <code>output_plugin_libraries</code> set is accepted for deployments. Webhook delivery runs with <code>strict_mode: true</code>. The supported single-host baseline retires synthetic heartbeat rows, pulses and timers, including heartbeat-driven blanket application unavailability, trusted-state invalidation and full-roster recovery. Platform lifecycle remains separate from durable receipt/completion/due and real per-use authority/owner/schema/restore checks. Process health is not proof of delivery; bounded detection of a silently stalled idle feed is no longer claimed. Evaluator and realtime are trusted internal roles; their internal CDC payloads may contain clinical, configuration and completed-output rows. Reuse existing rows and versions. Small hints are an implementation optimization, not a requirement to add sanitized tables or extra reads; current tenant authority and ownership/restore fences remain mandatory at effects.</strong></td>
+<td>maintainer, 2026-11-13; heartbeat retirement clarified 2026-11-15 (chose one receiver in the evaluator role and one-time DBA setup with a narrow streaming role; accepted wal2json, noting Codex's proof already ran it; clarified that the internal roles are trusted across tenants)</td>
+<td><code>event-driven-reset</code> batch</td>
+<td>Codex proof <code>reports/tenancy/pgstream-flow-2026-11-13/</code> ran pgstream v1.6.0 with wal2json 2.7 on PostgreSQL 16.16 and <code>output_plugin_libraries=wal2json</code>. Documented and source-read on the web, cited 2026-11-13 (alignment <code>claude/change-delivery-options-20261113</code> <code>2f62f694</code>, not run): wal2json only; init needs a superuser for event triggers; default (non-strict) webhook delivery drops a 4xx and still checkpoints (<code>webhook_notifier.go:79-80</code>, <code>:217-220</code>); serial webhooks stop after 3 retries; <code>/health</code> always 200; single process only. Multitenant only.</td>
+</tr>
+<tr>
+<td><a id="evaluator-platform-restart"></a><strong>Separate pgstream restart custody from evaluator process lifetime. Assess pgstream as a separately restarted service that delivers to the evaluator receiver; a pgstream restart does not by itself require evaluator exit.</strong></td>
+<td>maintainer, 2026-11-15 clarification; recovery lane owns topology and protocol assessment</td>
+<td><a href="#pgstream-operating-constraints">pgstream operating constraints</a>, multitenant recovery</td>
+<td>Platform-managed pgstream and the evaluator private receiver are implemented on local branches. Separately attributed restart, durable catch-up, missing-slot refusal and schema/receipt recovery evidence is linked from <a href="contents.html">release contents</a>; final candidate and capacity acceptance remain separate. Existing trust conventions, one intake owner, current authority, ownership/restore fences, due work and per-tenant isolation remain mandatory. Overload alone is not a confirmed stall. Current custody: <code>externals/work/HANDOFF-switch-over-finish-2026-11-15.md</code>.</td>
+</tr>
+<tr>
+<td><a id="single-host-streaming-first"></a><strong>Qualify a simple single-host evaluator/realtime baseline first and explore 10,000 synthetic tenants using existing Unix-domain-socket interfaces where supported. Kubernetes, multihost operating models and selected-v2/desired-N/HOLD/platform-recommission expansion continue as parallel research; they are not prerequisites to supported baseline testing or qualification.</strong></td>
+<td>maintainer, 2026-11-15, clarified to minimize deliverables and process overhead</td>
+<td>Streaming baseline, experiments and qualification</td>
+<td>Use the existing runnable configuration, runner, authority and durable receipt/completion/due/restore/notification contracts. Declare every actual transport, including pgstream private HTTP; do not add a proxy, supervisor or configuration layer merely to label the topology all-UDS. Keep one implementation outcome, concise evidence in existing records and one coherent final baseline-candidate campaign. Independent finite experiments continue while research is unfinished. Preserve entered inputs, original bounds and cleanup; source or optional metric gaps never become passes. Remote runs may proceed as needed within the active owner’s explicit authorization, budget/time ledger and actual tool review; this architecture decision grants no separate spend.</td>
+</tr>
+</tbody>
+</table>
+<p><a id="stream-fed-clinical-materializer"></a></p>
+<h3 id="stream-fed-clinical-materializer-2026-11-16">Stream-fed clinical materializer (2026-11-16)<a class="headerlink" href="#stream-fed-clinical-materializer-2026-11-16" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Date / authority</th>
+<th>Decision</th>
+<th>Implementation and evidence boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-11-16, maintainer direction through dispatch</td>
+<td>Adopt actual committed clinical-row streaming into the evaluator working set, recoverable acceptance before transport ACK, one bounded clinical scheduler, atomic fenced completion/due state, and output-only realtime with one owed-delivery retry responsibility. Snapshot acquisition is for bootstrap/recovery/gaps/history, not routine event rediscovery.</td>
+<td>The <a href="../../docs/30-design/tenancy/evaluator-realtime-communication.html#stream-fed-clinical-materializer--adopted-target-2026-11-16">architecture contract</a> owns responsibilities and current gaps. One integration batch must prove the default deployed route, restart recovery, clinical/client/isolation obligations and meaningful obsolete-path controls before promotion. Implemented and source-qualified on local branches; the <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#final-source-and-operating-result">current evidence</a> owns final native/browser/prcheck and the completed partial local operating point. Capacity remains UNMEASURED. Historical acceptance does not qualify this target.</td>
+</tr>
+<tr>
+<td>2026-11-16, bounded-state selection and outcome requirement review</td>
+<td>Select the engine-sufficient clinical window and independent raw mutation tail in the existing checkpoint machinery. Completed stream output retains results/frames without duplicating clinical input. Keep FULL old identity for truthful raw updates/deletes and its explicit WAL trade-off. Keep actual current authority, restore, durable coverage and due/output obligations; stable RAM generations and acquisition/TIME classification are implementation observations.</td>
+<td>The <a href="../../docs/30-design/tenancy/evaluator-realtime-communication.html#bounded-clinical-input-next-batch-contract">selected contract</a> owns the mechanism; the <a href="../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">integration evidence</a> owns exact source, required client qualification and final acceptance. Existing failed captures remain unchanged; counter-only idle evidence cannot promote clinical correctness or capacity.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="internal-stream-coverage-and-mechanism-retirement-2026-11-16">Internal stream coverage and mechanism retirement (2026-11-16)<a class="headerlink" href="#internal-stream-coverage-and-mechanism-retirement-2026-11-16" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Date / authority</th>
+<th>Direction and enduring obligations</th>
+<th>Implementation and evidence boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="stream-native-coverage-direction"></a>2026-11-16, maintainer direction relayed through coordinated source/records owners</td>
+<td>Evaluate PostgreSQL committed-stream ownership of internal transaction ordering/coverage instead of treating the application clock-table seal as permanent architecture. Evaluator owns durable accepted-versus-completed work, bounded clinical state and due obligations; realtime consumes completed output under current authority. Clinical time, public legacy history, insertion ordering and internal stream positions remain separate. Preserve clinical correctness, isolation, authorization, restore, durable acknowledgement and supported clients.</td>
+<td>Qualified c31 still depends on clock-event sealing and observed clock floors (<code>clinical-stream-sql.js:30–41</code>); its qualification remains valid. A connector-framed replacement is <strong>proposed, unimplemented and unqualified</strong> pending actual pinned transaction framing, complete commits, rollback, replay/ACK, same-LSN rows, snapshot overlap and source/restore-generation controls. The <a href="../../docs/30-design/tenancy/evaluator-realtime-communication.html#transaction-coverage-and-mechanism-retirement">communication contract</a> owns this boundary. No new CDC engine, general event log, per-tenant slots or opaque cursors are adopted.</td>
+</tr>
+<tr>
+<td>Same direction; one source capability and one records boundary</td>
+<td>Retire obsolete mechanisms and their implementation-specific test assertions together, with replacement semantic red/restored controls for the retained user-visible outcome. Tests do not independently mandate old machinery. Keep public history no-missed-write tests until an actually qualified compatible replacement exists. Ordinary tenant-local insertion allocation already exists and still uses a transactional row lock; it is not a universal revision/history counter and a lower cost is UNMEASURED.</td>
+<td>The <a href="../../docs/30-design/tenancy/counter-and-restore-options.html">ordering guide</a> owns the current distinctions and retained consumer proof. Authorized REST durability remains independently measurable during evaluator recovery; explicit storage/backlog limits may refuse writes. Source/operating owner coordinates the pinned-connector proof with the current source continuation; records owner updates existing homes after measured closure. Focused controls and one coherent applicable final source acceptance qualify a replacement. Entered experiments, original receipts, resource custody and supported public history remain unchanged.</td>
 </tr>
 </tbody>
 </table>

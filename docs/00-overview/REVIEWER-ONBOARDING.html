@@ -2460,7 +2460,7 @@
 
 
 <h1 id="reviewer-onboarding--read-this-first">Reviewer onboarding — read this first<a class="headerlink" href="#reviewer-onboarding--read-this-first" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>773c8bc59</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>4806ab303</code>.</em></p>
 <p><em>What this is: a guide (contributor-facing). Read after the <a href="index.html">overview</a>; leads to the
 <a href="mission.html">mission</a>. Written for somebody who has never seen this repository and
 is considering reviewing work in it. Prose revised 2026-10-03 against
@@ -2541,7 +2541,7 @@ of them owns each.</p>
 <p>Then, by horizon, when you need it:</p>
 <ul>
 <li><strong>Modernization</strong> — <a href="../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.html"><code>../30-design/modernization/semver-and-release-versioning-policy-2026-09-15.md</code></a></li>
-<li><strong>Multitenancy</strong> — <a href="../30-design/tenancy/multitenancy-decisions.html"><code>../30-design/tenancy/nightscout-multitenancy-execution-plan-2026-09-14.md</code></a> (decisions D1–D21)</li>
+<li><strong>Multitenancy</strong> — <a href="../30-design/tenancy/index.html">tenancy reading guide</a> for current architecture and evidence homes; <a href="../30-design/tenancy/multitenancy-decisions.html">tenancy decisions</a> for D1–D23</li>
 <li><strong>Research and measurements</strong> — <code>../60-research/{remedial,modernization,tenancy}/</code>, filed by horizon</li>
 </ul>
 <hr />
@@ -2569,10 +2569,11 @@ that is the thing to be suspicious of.</p>
 <p><strong>5. Neither <code>fixed</code> nor <code>merged</code> means released.</strong> In the register, <code>fixed</code> means
 repaired on a branch that has not been merged; <code>merged</code> means merged into
 <code>origin/dev</code> and not released; <code>released</code> means in a tagged release operators run.
-No programme fix is released: <code>official/master</code> is 523 commits behind <code>dev</code>
-(2026-10-02) and the shipping tag is 15.0.8. The register's open count is therefore
-not "the defects still shipping": of the 109 defects in the register's §1 (2026-10-02), 26 are
-open, 81 merged, 1 partly merged and 1 fixed on a branch. See <a href="PROGRAMME-STATUS.html#status-words-merged-is-not-released">PROGRAMME-STATUS.md</a>.</p>
+Release state belongs to the <a href="../../releases/cgm-remote-monitor-15.0.9/contents.html">release contents</a> and
+<a href="PROGRAMME-STATUS.html#status-words-merged-is-not-released">PROGRAMME-STATUS</a>.
+The 15.0.9 cycle has a tagged release; the local multitenant candidate's
+qualification does not make it merged into dev or released. Use each release's
+contents and the register for its own scope rather than a repository-wide claim.</p>
 <hr />
 <h2 id="picking-something-to-review">Picking something to review<a class="headerlink" href="#picking-something-to-review" title="Permanent link">&para;</a></h2>
 <p>Four entry points, easiest first:</p>

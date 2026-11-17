@@ -3235,7 +3235,7 @@
 
 
 
-<p><em>Living document, last changed 2026-11-12 at <code>c62ecb446</code>.</em></p>
+<p><em>Living document, last changed 2026-11-16 at <code>615736895</code>.</em></p>
 <!--
   ============================================================================
   GENERATED FILE - MUST NOT BE HAND-EDITED.
@@ -21059,9 +21059,9 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td><code>MT-D6-SLOT-READER</code></td>
-<td>D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N</td>
+<td>D6: qualify default stream-fed clinical materialization and output recovery</td>
 <td><code>in-progress</code></td>
-<td><code>workspace/d6-slot-20261112</code></td>
+<td><code>codex/streamlined-runtime-20261116</code></td>
 <td>n/a</td>
 <td>0 run + 1 no-gate</td>
 </tr>
@@ -27414,7 +27414,7 @@ alarm-readiness items, and the seam branch refresh.</p>
 <li><code>reports/tenancy/eval-cost-2026-11-11/README.md</code></li>
 </ul>
 <p><strong>Notes.</strong> 2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms. Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.</p>
-<h3 id="mt-d6-slot-reader--d6-stage-2-replication-slot-reader-emits-notify-on-one-channel-bounded-backstop-poll-whose-per-call-cost-does-not-grow-with-n"><code>MT-D6-SLOT-READER</code> &mdash; D6 stage 2: replication-slot reader emits NOTIFY on one channel; bounded backstop poll whose per-call cost does not grow with N<a class="headerlink" href="#mt-d6-slot-reader--d6-stage-2-replication-slot-reader-emits-notify-on-one-channel-bounded-backstop-poll-whose-per-call-cost-does-not-grow-with-n" title="Permanent link">&para;</a></h3>
+<h3 id="mt-d6-slot-reader--d6-qualify-default-stream-fed-clinical-materialization-and-output-recovery"><code>MT-D6-SLOT-READER</code> &mdash; D6: qualify default stream-fed clinical materialization and output recovery<a class="headerlink" href="#mt-d6-slot-reader--d6-qualify-default-stream-fed-clinical-materialization-and-output-recovery" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -27433,15 +27433,15 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 <tr>
 <td>branch</td>
-<td><code>workspace/d6-slot-20261112</code></td>
+<td><code>codex/streamlined-runtime-20261116</code></td>
 </tr>
 <tr>
 <td>base</td>
-<td><code>workspace/capacity-fixes-20261111@5c60aec669362b032a10d6dd7ac368e9c61e8003</code></td>
+<td><code>codex/streaming-closure-20261116@58fb8444910559ee86c7a1970971090ade7ae67f</code></td>
 </tr>
 <tr>
 <td>worktree</td>
-<td><code>externals/work/crm-d6-slot-20261112</code></td>
+<td><code>externals/work/cgm-streamlined-runtime-20261116</code></td>
 </tr>
 <tr>
 <td>semver</td>
@@ -27453,20 +27453,23 @@ alarm-readiness items, and the seam branch refresh.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Blast radius.</strong> Realtime and evaluator change detection (lib/server/realtime/change- detector.js, runtime.js wake path, lib/server/serve/evaluator-runtime.js backstop pass, lib/change-stamps); a new slot reader role and its SECURITY DEFINER catalogue; PostgreSQL configuration (wal_level=logical, max_replication_slots, max_slot_wal_keep_size), a publication on the tenant write clock, a least-privilege replication identity; core deploy/multitenant bootstrap and the nightscout-deploy Compose binding.</p>
+<p><strong>Blast radius.</strong> Default stream-fed evaluator input/settings and recoverable due-work ownership; bounded accepted clinical rows, persisted completed output and browser frame; realtime output/control consumption, maintained pgstream replication adapter, PostgreSQL wal2json/slot retention, and eventual deployment wiring. Existing clinical-write decoupling, tenant authority/isolation, restore and single-tenant compatibility obligations remain.</p>
 <p><strong>What an operator sees.</strong> <em>Nothing. No operator-visible change.</em></p>
 <p><strong>Why <code>n/a</code>.</strong> unreleased preview</p>
 <p><strong>Gates.</strong></p>
 <ul>
-<li><strong>NO GATE</strong> &mdash; Planned: change-to-frame latency at 1,000 and 3,000 tenants with the reader running no worse than the stage 1 poll, and per-call detector DB cost flat in N; with the reader stopped the backstop alone delivers every change within its bound and an alert fires (control: backstop also disabled goes red); a grep gate that fails when a trigger emits NOTIFY (control: planted trigger); restore and epoch suites green.</li>
+<li><strong>NO GATE</strong> &mdash; Destructive local source/image and operating qualification is not a read-only queue gate. The existing pgstream-idiomatic report records exact frozen source, native default-path row acceptance/completion/frame/recovery controls, comprehensive campaigns and their limits. Promotion retains current authority, ownership/restore fencing, clinical/client compatibility and least-privilege obligations. An offered-load point does not establish capacity acceptance.</li>
 </ul>
 <p><strong>Evidence.</strong></p>
 <ul>
+<li><code>docs/30-design/tenancy/evaluator-realtime-communication.md</code></li>
+<li><code>reports/tenancy/pgstream-idiomatic-2026-11-14/README.md</code></li>
+<li><code>reports/tenancy/pgstream-flow-2026-11-13/README.md</code></li>
 <li><code>reports/tenancy/d6-native-discriminators-2026-11-11/README.md</code></li>
 <li><code>reports/tenancy/m7-join-2026-11-11/README.md</code></li>
 <li><code>reports/tenancy/capacity-2026-11-11/README.md</code></li>
 </ul>
-<p><strong>Notes.</strong> 2026-11-12: started (decision D6, decisions.md#cost-proportional-to-activity staging). Measured trigger: the stamp scan takes 71-76 ms per call at 3,000 tenants (capacity run x1). Maintainer answers recovered in the 2026-11-11 continuation: decisions.md#d6-paged-backstop selects paging now (watermark only if later outage measurements warrant it); decisions.md#d6-sql-reader- transport selects SQL polling for the reader; decisions.md#d6-activity- control-path requires no evaluator/realtime data work while paused or suspended, with an independent stop/resume control path. Implementation, outage latency and bounded-cost evidence remain UNMEASURED. Reader placement and identity still need their design/least-privilege review.</p>
+<p><strong>Notes.</strong> 2026-11-13: event-driven reset (release decisions event-driven-reset). One capability owner and one successor M7 coordinator; old polling tuning and paid retry are stopped. Maintained upstream CDC is evaluated before more custom transport. Proposed model: evaluator owns raw changes and durable due state; realtime consumes durable output/alarm and viewer/auth lifecycle, initially co-located as useful. Existing acquired-input checkpoints do not prove clinical completion. Prototype and delivery guarantees retain their exact measured scope; this item remains in-progress, not production accepted. The pgstream-flow report records final v1.6.0 local positives and deliberate red controls on frozen aba583199e9ab8a4bb907adc46dc9262a3dcedf5. Notifier liveness, schema/control routing, actual process recovery, overlapping- owner/restore fencing, authority lifecycle and WAL-cap recovery remain open. Same capability lane owns actual evaluator/realtime integration under the communication guide criteria: durable receipt/completion, notifier health, schema/control routing, OS-process restart and stale-owner fencing, with matching deploy wiring. Internal clinical/config/output payloads are allowed within the trusted worker boundary; no sanitized-marker infrastructure is required solely for internal isolation. Fresh execution uses the same lane handoff and one owner; coordinator owns the final joined freeze. 2026-11-16: the stream-fed target now joins bounded engine-sufficient clinical history and an independent raw mutation tail in the existing checkpoint machinery. Warm reads stay read-only; raw client publication keeps current operation/authority/restore fences. Completed output omits duplicate clinical rows. Receipt pruning follows completed engine time, not the logical write stamp; exact bounded transitions remove redundant copying and serialization. The pgstream-idiomatic report's streamlined-runtime section records source/image, focused/default-client/operator recovery evidence, retained failed campaigns and the selected final freeze. Original failed operating captures retain their scope. Future observation measures durable completion/due outcomes rather than forcing stable RAM generations or TIME counters. This item remains in-progress with no read-only gate: functional qualification or offered load does not establish capacity or a release. Runtime owns source/deploy/image/full acceptance and canonical records; performance owns every entered operating experiment and resource cleanup. Independent scoped discovery with truthful source acceptance PENDING does not wait for unrelated full acceptance or optional metrics.</p>
 <hr />
 <h2 id="document-truth-sweeps">Document-truth sweeps<a class="headerlink" href="#document-truth-sweeps" title="Permanent link">&para;</a></h2>
 <p><code>parcel: docs-truth</code> &mdash; 19 items</p>
