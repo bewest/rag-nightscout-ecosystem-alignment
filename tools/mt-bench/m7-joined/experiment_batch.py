@@ -22,12 +22,51 @@ import time
 import uuid
 
 RESOURCE_KEYS = ('millicpus', 'memoryBytes', 'heapMiB', 'hourlyMicrousd', 'totalMicrousd', 'liveResources')
+# Retained legacy reference, not a ceiling on configured ordinary producers.
 LOCAL_RESOURCES = dict(zip(RESOURCE_KEYS, (4000, 8192*1024*1024, 1024, 0, 0, 64)))
 CAP_KEYS = dict(zip(RESOURCE_KEYS, ('millicpus','memoryBytes','heapMiB','hourlyMicrousd','totalMicrousd','maxLiveResources')))
 
 
 def need(value, code):
     if not value:raise RuntimeError('M7_BATCH_' + code)
+
+
+def local_resource_plan(selected):
+    """Reserve the selected producer, including its effective discovery driver.
+
+    Profile ceilings are conservative whole-cell bounds, not measured demand or
+    a host reservation. Explicit allocations retain their authored driver. Named
+    profiles use discovery's larger standalone driver instead of its old default.
+    """
+    import diagnostic_resources as resources
+    need(selected is not None, 'LOCAL_PROFILE_REQUIRED')
+    resources.selection(selected)
+    original_driver = resources.driver_limit(selected)
+    driver = original_driver if isinstance(selected, dict) else resources.DISCOVERY_K6
+    sut = {'millicpus': resources.cpu_ceiling(selected) - original_driver.cpu,
+           'memoryBytes': resources.memory_ceiling(selected) - original_driver.memory}
+    heap = sum(size * count for size, count in resources.HOST.values())
+    required = {'millicpus': sut['millicpus'] + driver.cpu,
+                'memoryBytes': sut['memoryBytes'] + driver.memory,
+                'heapMiB': heap, 'hourlyMicrousd': 0, 'totalMicrousd': 0,
+                'liveResources': LOCAL_RESOURCES['liveResources']}
+    return {'resources': required,
+            'allocationBreakdown': {
+                'basis': 'selected allocation ceiling; conservative concurrent upper bound',
+                'sutAndOneoffs': sut,
+                'driverK6': {'millicpus': driver.cpu, 'memoryBytes': driver.memory},
+                'hostV8': {'heapMiB': heap},
+                'hostRss': 'SEPARATELY_OBSERVED_NOT_HEAP_BOUNDED',
+                'generatorHeadroom': 'UNMEASURED_UNLESS_RETAINED'},
+            'capacityAcceptance': 'NOT_GRANTED'}
+
+
+def check_local_reservation(declared, required):
+    """Allow larger authored reservations, refuse every undercount by dimension."""
+    need(declared['hourlyMicrousd'] == declared['totalMicrousd'] == 0, 'LOCAL_MONEY')
+    for key in RESOURCE_KEYS:
+        need(type(declared[key]) is int and declared[key] >= required[key],
+             'LOCAL_RESERVATION_UNDERSIZED:' + key)
 
 
 def canonical(value):
