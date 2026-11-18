@@ -22,9 +22,12 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import adapter as a
 from contract import require
+from auto_catalog import auto_catalog
 
 TIERS = ('smoke', 'discovery', 'acceptance')
 GENERATED_RECEIPT = 'configuration-receipt.json'
+TO_COMPLETION = 'local-owned-to-completion'
+STRUCTURED_OPTIONS = {'diagnostic-resource-allocation', 'driver-plan', 'drain-observation'}
 SMOKE_DEFAULTS = {
     'tenants': 8, 'replicas': 1, 'load-seconds': 60, 'warmup-seconds': 5,
     'idle-seconds': 5, 'probe-every-ms': 10000, 'sockets-per-tenant': 1,
@@ -64,7 +67,8 @@ def tier_plan(config):
         'tier': tier, 'defaultsApplied': defaults,
         'authoredKeys': sorted(config['prepare']),
         'effective': effective,
-        'execution': {key: config[key] for key in ('workSeconds', 'cleanupSeconds')},
+        'execution': {**{key: config[key] for key in ('workSeconds', 'cleanupSeconds')},
+                      'mode': TO_COMPLETION if config['workSeconds'] is None else 'fixed-window'},
         'sourceAdmission': ('frozen acceptance receipt' if tier == 'acceptance' else
                             'runner-materialized PENDING tuple' if parsed.freeze == GENERATED_RECEIPT
                             else 'supplied diagnostic receipt'),
@@ -77,6 +81,9 @@ def tier_plan(config):
         },
         'preflight': {
             'sourceAndImage': 'checked before fixture seed on tiered runs',
+            'deploymentPrimer': 'uses the authored work time remaining when priming starts',
+            'socketAndJwtSetup': 'setupSeconds selects the separate generator setup window',
+            'generatorDrain': 'drainSeconds selects collector drain; the clinical deadline is separate',
             'transportOrGeneratorChange': 'run a smoke point with the same source, image and instrument before seeding a larger discovery point',
             'runtime': 'owned readiness, driver export and completion reader checks',
         },
@@ -98,19 +105,6 @@ def clean_source_preflight(parsed):
         a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
                  'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
 
-
-def auto_catalog(root):
-    tool = HERE.parent / 'run-catalog' / 'catalog.py'
-    artifacts = Path('/mnt/data/nightscout-workspace/artifacts')
-    if not root.is_relative_to(artifacts) or not tool.is_file():
-        return
-    try:
-        completed = subprocess.run([sys.executable, '-B', str(tool), 'add', str(root)],
-                                   capture_output=True, timeout=30)
-        if completed.returncode:
-            write(root / 'catalog-status.json', {'status': 'UNMEASURED', 'code': 'M7_CATALOG_INDEX_REFUSED'})
-    except (OSError, subprocess.TimeoutExpired):
-        write(root / 'catalog-status.json', {'status': 'UNMEASURED', 'code': 'M7_CATALOG_COULD_NOT_RUN'})
 
 
 def write(path, value):
@@ -152,8 +146,13 @@ def validate_config(config):
                 'M7_SMOKE_BASELINE_PATH')
     verify_helper(config)
     require(re.fullmatch(r'sha256:[a-f0-9]{64}', config['k6Image']) is not None, 'M7_RUNNER_K6_PIN')
-    require(type(config['workSeconds']) is int and 30 <= config['workSeconds'] <= 86400
-            and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <= 3600, 'M7_RUNNER_FINITE_LIMIT')
+    work = config['workSeconds']
+    local_to_completion = work is None and tier == 'discovery'
+    require((local_to_completion or type(work) is int and 30 <= work <= 86400)
+            and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <= 3600,
+            'M7_RUNNER_FINITE_LIMIT')
+    require(not local_to_completion or not os.environ.get('M7_BATCH_RESERVATION'),
+            'M7_RUNNER_TO_COMPLETION_REQUIRES_ONE_SHOT')
     options = config['prepare']
     require(isinstance(options, dict) and 'directory' not in options and 'fixture-project' in options
             and 'backend-subnet' in options and 'edge-subnet' in options, 'M7_RUNNER_PREPARE_CONFIG')
@@ -163,6 +162,8 @@ def validate_config(config):
             'M7_FROZEN_ACCEPTANCE_REQUIRED')
     argv = []
     for key, value in options.items():
+        if key in STRUCTURED_OPTIONS and isinstance(value, dict):
+            value = json.dumps(value, sort_keys=True, allow_nan=False)
         require(re.fullmatch(r'[a-z][a-z0-9-]+', key) and isinstance(value, (str, int, float)) and not isinstance(value, bool), 'M7_RUNNER_PREPARE_OPTION')
         argv.extend(['--' + key, str(value)])
     # The adapter owns supported options and all source/profile admission.
@@ -178,7 +179,12 @@ def validate_config(config):
     from run_configuration import validate_prepare
     validate_prepare(parsed)
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
-    require(config['workSeconds'] > sum(a.cadence_options(parsed)[k] for k in ('warmupSeconds', 'idleSeconds', 'loadSeconds')), 'M7_RUNNER_WORK_WINDOW')
+    cadence = a.cadence_options(parsed)
+    require(not local_to_completion or {'setupSeconds', 'drainSeconds'} <= cadence.keys(),
+            'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED')
+    authored_windows = ('warmupSeconds', 'idleSeconds', 'loadSeconds', 'setupSeconds', 'drainSeconds')
+    require(local_to_completion or work > sum(cadence.get(key, 0) for key in authored_windows),
+            'M7_RUNNER_WORK_WINDOW')
     return config, argv
 
 
@@ -186,6 +192,9 @@ def preflight_receipt(config, argv):
     # Validate receipt/config mirrors before creating output or arming a guard.
     parsed=a.parser().parse_args(['prepare','--directory','/tmp/m7-runner-validation',*argv])
     receipt=a.document(parsed.freeze)
+    if 'workSeconds' in config and config['workSeconds'] is None:
+        require(receipt.get('version') == 2 and receipt.get('executionScope') == 'LOCAL_OWNED_TO_COMPLETION',
+                'M7_RUNNER_TO_COMPLETION_RECEIPT_REQUIRED')
     if config.get('tier') == 'acceptance':
         pair = {'core': parsed.core_commit, 'deploy': parsed.deploy_commit}
         require(receipt.get('imageId') == (parsed.image_id or parsed.image), 'M7_ACCEPTANCE_IMAGE_MISMATCH')
@@ -198,7 +207,7 @@ def preflight_receipt(config, argv):
         a.receipt_scope({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},receipt,'deploy')
 
 
-def prepare(config_file, directory):
+def prepare(config_file, directory, *, one_shot=False):
     config = a.document(config_file)
     tier = config.get('tier')
     if tier is None:
@@ -213,6 +222,7 @@ def prepare(config_file, directory):
     try:
         if tier is not None:
             _, argv = validate_config(config)
+            require(config['workSeconds'] is not None or one_shot, 'M7_RUNNER_TO_COMPLETION_REQUIRES_ONE_SHOT')
             parsed = a.parser().parse_args(['prepare', '--directory', str(root / 'fixture'), *argv])
             phase = 'source-input'
             clean_source_preflight(parsed)
@@ -239,7 +249,7 @@ def prepare(config_file, directory):
                 cleanup(root, 'PREPARE_FAILURE')
             except BaseException as cleanup_error:
                 write(root / 'cleanup-failure.json', {'code': code(cleanup_error)})
-        auto_catalog(root)
+        auto_catalog(root, write)
         raise
     return root
 
@@ -276,7 +286,9 @@ def stop_stage(file, owner):
 
 def cleanup(root,reason):
     state=a.document(root/'execution.json') if (root/'execution.json').exists() else {}
-    with a.command_deadline(state.get('cleanupAt')):
+    deadline = (time.time() + state['cleanupSeconds'] if state.get('mode') == TO_COMPLETION
+                else state.get('cleanupAt'))
+    with a.command_deadline(deadline):
         return _cleanup(root,reason)
 
 
@@ -310,13 +322,41 @@ def _cleanup(root, reason):
         return result
 
 
+def controller_identity(pid):
+    fields = (Path('/proc') / str(pid) / 'stat').read_text().rsplit(')', 1)[1].split()
+    return {'pid': pid, 'startTicks': int(fields[19])}, fields[0]
+
+
+def controller_alive(expected):
+    try:
+        actual, state = controller_identity(expected['pid'])
+    except (FileNotFoundError, ProcessLookupError):
+        return False
+    return actual == expected and state not in ('Z', 'X')
+
+
+def work_active(state):
+    if state.get('mode') == TO_COMPLETION:
+        return controller_alive(state['controller'])
+    return time.time() < state.get('stopWorkAt', state['cleanupAt'])
+
+
 def guard(root):
     state = a.document(root / 'execution.json')
+    live_owner = state.get('mode') == TO_COMPLETION
     write(root / 'guard-ready.json', {'pid': os.getpid(), 'owner': state['owner'], 'cleanupAt': state['cleanupAt']})
-    while time.time() < state.get('stopWorkAt',state['cleanupAt']) and not (root / 'cleanup.json').exists():
+    while work_active(state) and not (root / 'cleanup.json').exists():
         time.sleep(.2)
     if not (root / 'cleanup.json').exists():
-        cleanup(root, 'FINITE_DEADLINE')
+        cleanup(root, 'CONTROLLER_EXITED' if live_owner else 'FINITE_DEADLINE')
+        if live_owner:
+            result = a.document(root / 'result.json')
+            if result['status'] in ('PREPARING', 'PREPARED'):
+                phase = a.document(root/'phase.json')['phase'] if (root/'phase.json').is_file() else 'guard'
+                write(root/'result.json', {'version': 1, 'status': 'ABORTED', 'phase': phase,
+                      'failure': {'code': 'M7_RUNNER_CONTROLLER_EXITED'}, 'finishedAt': time.time(),
+                      'partial': partial(root), 'capacityAcceptance': 'NOT_GRANTED'})
+                auto_catalog(root, write)
     write(root / 'guard-result.json', {'status': 'RETURNED', 'at': time.time()})
 
 
@@ -391,19 +431,51 @@ def optional_preflight(root, directory):
     return result
 
 
+def launch_stage(root, output, args, state):
+    command = [sys.executable, '-B', str(HERE / 'adapter.py'), *args]
+    if state.get('mode') != TO_COMPLETION:
+        child = subprocess.Popen(command, stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
+        a.job_record(root / 'stage-job.json', child, state['owner'], group=True)
+        return child
+    # Hold the child before exec until its birth and process-group ownership
+    # are journaled. Owner death before the handoff closes the write end.
+    read_fd, write_fd = os.pipe()
+    gate = '''
+import os
+import sys
+
+with os.fdopen(int(sys.argv[1]), 'rb') as start:
+    if start.read(1) != b'1':
+        sys.exit(1)
+os.execv(sys.argv[2], sys.argv[2:])
+'''
+    try:
+        child = subprocess.Popen([sys.executable, '-B', '-c', gate, str(read_fd), *command],
+                                 stdout=output, stderr=subprocess.STDOUT, start_new_session=True,
+                                 pass_fds=(read_fd,))
+        identity, _ = controller_identity(child.pid)
+        write(root / 'stage-job.json', {**identity, 'startTicks': str(identity['startTicks']),
+              'owner': state['owner'], 'group': True, 'completed': False})
+        os.write(write_fd, b'1')
+        return child
+    finally:
+        os.close(read_fd)
+        os.close(write_fd)
+
+
 def stage(root, name, args):
     state = a.document(root / 'execution.json')
     with custody(root):
-        require(time.time() < state['stopWorkAt'] and not (root / 'cleanup.json').exists(), 'M7_RUNNER_WORK_DEADLINE')
+        require(work_active(state) and not (root / 'cleanup.json').exists(), 'M7_RUNNER_WORK_DEADLINE')
         write(root / 'phase.json', {'phase': name, 'startedAt': time.time()})
         with (root / (name + '.private.log')).open('xb') as output:
             child_args = [*args]
-            if child_args[:1] in (['deploy'],['preflight'],['run']):
-                child_args += ['--work-deadline', str(state['stopWorkAt'])]
-            child = subprocess.Popen([sys.executable, '-B', str(HERE / 'adapter.py'), *child_args], stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
-        a.job_record(root / 'stage-job.json', child, state['owner'], group=True)
+            deadline = state['stopWorkAt']
+            if deadline is not None and child_args[:1] in (['deploy'],['preflight'],['run']):
+                child_args += ['--work-deadline', str(deadline)]
+            child = launch_stage(root, output, child_args, state)
     try:
-        rc = child.wait(timeout=max(.1, state['stopWorkAt'] - time.time()))
+        rc = child.wait(timeout=None if deadline is None else max(.1, deadline - time.time()))
         write(root / 'stage-job.json', {**a.document(root / 'stage-job.json'), 'completed': True, 'returncode': rc})
         write(root / (name + '-result.json'), {'phase': name, 'returncode': rc, 'endedAt': time.time()})
         require(rc == 0, 'M7_RUNNER_' + re.sub('[^A-Z0-9_]', '_', name.upper()) + '_FAILED')
@@ -444,9 +516,15 @@ def guard_alive(root):
 def arm_window(root,config):
     require(not (root/'execution.json').exists(),'M7_RUNNER_WINDOW_EXISTS')
     start=time.time()
-    state={'owner':uuid.uuid4().hex,'startedAt':start,'stopWorkAt':start+config['workSeconds'],
-           'cleanupAt':start+config['workSeconds']+config['cleanupSeconds'],
-           'configSha256':a.digest(root/'config.json'),'includesPreparation':True}
+    work = config['workSeconds']
+    cleanup_seconds = config['cleanupSeconds']
+    state = {'owner': uuid.uuid4().hex, 'startedAt': start, 'startedMonoNs': time.monotonic_ns(),
+             'stopWorkAt': start + work if work is not None else None,
+             'cleanupAt': start + work + cleanup_seconds if work is not None else None,
+             'configSha256': a.digest(root/'config.json'), 'includesPreparation': True}
+    if work is None:
+        state.update(mode=TO_COMPLETION, controller=controller_identity(os.getpid())[0],
+                     cleanupSeconds=cleanup_seconds)
     if config.get('producer')=='vault-component-v1':state['producer']=config['producer']
     if os.environ.get('M7_BATCH_RESERVATION'):
         require(state['cleanupAt']<=a.document(os.environ['M7_BATCH_RESERVATION'])['cleanupAt'],'M7_BATCH_CELL_DEADLINE')
@@ -463,8 +541,17 @@ def arm_window(root,config):
 def execution_window(root,config):
     state=a.document(root/'execution.json')
     require(state.get('includesPreparation') is True and state['configSha256']==a.digest(root/'config.json'), 'M7_RUNNER_WINDOW_CHANGED')
-    require(state['stopWorkAt']==state['startedAt']+config['workSeconds'] and state['cleanupAt']==state['stopWorkAt']+config['cleanupSeconds'],'M7_RUNNER_WINDOW_CHANGED')
-    require(time.time()<state['stopWorkAt'] and not (root/'cleanup.json').exists(),'M7_RUNNER_WORK_DEADLINE')
+    work = config['workSeconds']
+    if work is None:
+        require(state.get('mode') == TO_COMPLETION and state.get('stopWorkAt') is None
+                and state.get('cleanupAt') is None and state.get('cleanupSeconds') == config['cleanupSeconds']
+                and state.get('controller') == controller_identity(os.getpid())[0],
+                'M7_RUNNER_TO_COMPLETION_CONTROLLER_CHANGED')
+    else:
+        require(state['stopWorkAt'] == state['startedAt'] + work
+                and state['cleanupAt'] == state['stopWorkAt'] + config['cleanupSeconds'],
+                'M7_RUNNER_WINDOW_CHANGED')
+    require(work_active(state) and not (root/'cleanup.json').exists(),'M7_RUNNER_WORK_DEADLINE')
     require(guard_alive(root) and a.document(root/'guard-ready.json')['owner']==state['owner'],'M7_RUNNER_GUARD_NOT_READY')
     return state
 
@@ -501,8 +588,10 @@ def execute(directory, rehearsal=False):
         while guard_alive(root) and time.monotonic()<until:time.sleep(.05)
         if guard_alive(root):failure={**(failure or {}),'guardCode':'M7_RUNNER_GUARD_PENDING'}
         result = {'version': 1, 'status': ('COMPLETED' if partial(root)['adapterStatus'] == 'MEASURED' else 'COMPLETED_PARTIAL') if failure is None else 'FAILED_PARTIAL', 'phase': phase, 'failure': failure, 'partial': partial(root), 'cleanup': a.document(root / 'cleanup.json') if (root / 'cleanup.json').exists() else {'status': 'UNMEASURED'}, 'capacityAcceptance': 'NOT_GRANTED', 'finishedAt': time.time()}
+        if 'startedMonoNs' in state:
+            result['elapsedSeconds'] = (time.monotonic_ns() - state['startedMonoNs']) / 1e9
         write(root / 'result.json', result)
-        auto_catalog(root)
+        auto_catalog(root, write)
     require(failure is None, 'M7_RUNNER_POINT_INCOMPLETE')
     return result
 
@@ -631,7 +720,7 @@ def session_observe(directory, owner, name, config_file, history_file):
                 'capacityAcceptance':'NOT_GRANTED','runtime':'REUSED',
                 'writeEffects':'UNCERTAIN after failure; inspect originals before another scenario' if failure else 'Retained; never reset'}
             write(ob/'result.json',result)
-            auto_catalog(ob)
+            auto_catalog(ob, write)
             if failure and failure.get('errorType') in ('KeyboardInterrupt','SystemExit'):
                 session_close(root,session['owner'])
         require(failure is None,'M7_SESSION_OBSERVATION_INCOMPLETE')
@@ -812,7 +901,7 @@ def main():
     observe.add_argument('--name',required=True);observe.add_argument('--config',required=True);observe.add_argument('--history',required=True)
     close = sub.add_parser('session-close');close.add_argument('directory');close.add_argument('--owner',required=True)
     args = parser.parse_args()
-    if args.action in ('session-start','session-observe'):
+    if args.action in ('prepare', 'execute', 'rehearse', 'run', 'session-start', 'session-observe'):
         def interrupted(signum, frame):raise KeyboardInterrupt()
         signal.signal(signal.SIGTERM,interrupted)
     if args.action == 'session-start':return print(json.dumps(session_start(args.config,args.directory),indent=2))
@@ -845,7 +934,7 @@ def main():
     if args.action == 'plan':
         return print(json.dumps(tier_plan(a.document(args.config)), indent=2))
     if args.action in ('prepare', 'run'):
-        root = prepare(args.config, args.directory)
+        root = prepare(args.config, args.directory, one_shot=args.action == 'run')
         if args.action == 'run':
             return execute(root)
         return root

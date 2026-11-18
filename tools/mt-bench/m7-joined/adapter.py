@@ -53,6 +53,8 @@ import static_topology
 import dependency_reuse
 import collection_segments
 import vault_refusal
+import workload_inputs
+import phase_windows
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
           "tools/mt-bench/compose-baseline/probes/sample.sh", "tools/mt-bench/compose-baseline/oracle/disk.sh",
@@ -433,23 +435,35 @@ def port():
 
 def cadence_options(args):
     value=dict(CADENCE[args.profile])
-    knobs={'warmup_seconds':'warmupSeconds','idle_seconds':'idleSeconds','load_seconds':'loadSeconds','accel':'accel','hot_factor':'hotFactor','sampler_interval':'samplerIntervalSeconds','probe_every_ms':'probeEveryMs','sockets_per_tenant':'socketsPerTenant','driver_shards':'driverShards'}
+    knobs={'warmup_seconds':'warmupSeconds','idle_seconds':'idleSeconds','load_seconds':'loadSeconds','setup_seconds':'setupSeconds','drain_seconds':'drainSeconds','accel':'accel','hot_factor':'hotFactor','sampler_interval':'samplerIntervalSeconds','probe_every_ms':'probeEveryMs','sockets_per_tenant':'socketsPerTenant','driver_shards':'driverShards'}
     changed={key:getattr(args,key,None) for key in knobs if getattr(args,key,None) is not None}
     require(not changed or args.profile=='pgstream-sample','M7_SAMPLE_KNOB_PROFILE')
     if args.profile=='pgstream-sample':
         value.update(warmupSeconds=60,samplerIntervalSeconds=2)
         for key,number in changed.items():
-            require(type(number) is int and 1<=number<=({'probe_every_ms':3600000,'sockets_per_tenant':8,'driver_shards':16}.get(key,86400)),'M7_SAMPLE_KNOB_RANGE');value[knobs[key]]=number
-        require(value['samplerIntervalSeconds']<=60 and sum(value[key] for key in ('warmupSeconds','idleSeconds','loadSeconds'))<=86400,'M7_SAMPLE_DURATION_RANGE')
+            if key == 'probe_every_ms':
+                require(workload_inputs.probe_interval(number), 'M7_PROBE_INTERVAL_RANGE')
+            else:
+                require(type(number) is int and 1 <= number <=
+                        {'sockets_per_tenant':8,'driver_shards':16}.get(key, workload_inputs.MAX_SECONDS),
+                        'M7_SAMPLE_KNOB_RANGE:' + knobs[key])
+            value[knobs[key]] = number
+        require(value['samplerIntervalSeconds'] <= 60 and sum(value.get(key, 0) for key in
+                ('warmupSeconds','idleSeconds','loadSeconds','setupSeconds','drainSeconds')) <= workload_inputs.MAX_SECONDS,
+                'M7_SAMPLE_DURATION_RANGE')
+        require(workload_inputs.probe_fits_ledger(value['probeEveryMs'], value['loadSeconds']),
+                'M7_PROBE_LEDGER_WINDOW')
     offered=getattr(args,'offered_rps',None)
     if offered is not None:
         require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_OFFERED_RPS_DISCOVERY_ONLY')
-        require(type(offered) in (int,float) and math.isfinite(offered) and 1<=offered<=10000,'M7_OFFERED_RPS_RANGE')
+        require(workload_inputs.offered_rate(offered), 'M7_OFFERED_RPS_RANGE')
+        require(workload_inputs.aggregate_cycle_ms(args.tenants, value['hotFactor'], offered) is not None,
+                'M7_OFFERED_RPS_TIME_UNIT')
         value['offeredRps']=offered
     clients=getattr(args,'logical_polling_clients',None)
     if clients is not None:
         require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_VIEWER_DISCOVERY_ONLY')
-        require(type(clients) is int and 0<=clients<=80000,'M7_VIEWER_TOTAL_RANGE')
+        require(workload_inputs.polling_clients(clients), 'M7_VIEWER_TOTAL_RANGE')
         value['logicalPollingClients']=clients
     restart=getattr(args,'restart_during_load_after_seconds',None)
     if restart is not None:
@@ -469,6 +483,13 @@ def cadence_options(args):
         require(mix == REALISTIC_MIX and type(scale) in (int, float) and math.isfinite(scale)
                 and 0.25 <= scale <= 8, 'M7_WORKLOAD_SCALE_CONFIGURATION')
         value['workloadScale'] = scale
+    observation = getattr(args, 'drain_observation', None)
+    if observation is not None:
+        require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
+                and 'drainSeconds' in value and args.evaluator_catchup == 'fixed-target-v1',
+                'M7_DRAIN_OBSERVATION_SCOPE')
+        value['drainObservation'] = observation
+    phase_windows.selection(value)
     value.update(driver_vu_diagnostic.selection(args, value))
     return value
 
@@ -494,8 +515,9 @@ def rate_offer(m):
     weight=m['tenants']-1+m['cadence'].get('hotFactor',10)
     nominal=11000*weight/(300000/m['cadence'].get('accel',1))
     requested=m['cadence'].get('offeredRps')
-    cycle=math.floor((11000*weight/requested if requested is not None else 300000/m['cadence'].get('accel',1))+.5)
-    require(cycle>=1,'M7_OFFERED_RPS_TIME_UNIT')
+    cycle = (workload_inputs.aggregate_cycle_ms(m['tenants'], m['cadence'].get('hotFactor', 10), requested)
+             if requested is not None else math.floor(300000 / m['cadence'].get('accel', 1) + .5))
+    require(cycle is not None and cycle >= 1, 'M7_OFFERED_RPS_TIME_UNIT')
     return {'requestedScenarioRps':requested,'nominalScenarioRps':nominal,'effectiveScenarioRps':11000*weight/cycle,
             'arrivalCycleMs':cycle,'scope':'scenario HTTP attempts only; credential exchanges and stock-client probes are separate; attempts do not prove bytes reached server'}
 
@@ -541,7 +563,10 @@ def attach(args):
         if static_selection:
             require(m.get('staticBuildReceiptSha256') == runtime.get('staticBuildReceiptSha256'),
                     'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
-            require(isinstance(runtime.get('diagnosticResources',{}).get('profile'),dict),'M7_STATIC_EXPLICIT_ALLOCATION')
+            topology = static_selection['staticTopology']
+            if topology['workers'] > 1 or m['replicas'] > 1:
+                require(isinstance(runtime.get('diagnosticResources',{}).get('profile'),dict),
+                        'M7_STATIC_EXPLICIT_ALLOCATION')
         if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
         commissioning_wal.inherit(args,m,runtime,runtime_directory)
         node_observation.inherit(args,m,runtime,runtime_directory)
@@ -1294,14 +1319,18 @@ def deploy(d, m):
     stages=[]
     for name,scope,args in deployment_plan(config,pgstream=m.get("profile")=="pgstream-sample",primer_concurrency_value=m.get("primerConcurrency",1),platform_verification=bool(m.get("platformStartup"))):
         with deployment_stage(d, stages, name):
+            timeout = discovery_seconds(m, 1800)
+            if (name in ("provision", "prime") and
+                    m.get('discoveryAuthorization', {}).get('executionScope') == 'LOCAL_OWNED_TO_COMPLETION'):
+                timeout = None
             if name=="prime":
                 prior=d/"state/primer/tenants.json"
-                write(d/"primer-start.json",{"concurrency":m.get("primerConcurrency",1),"reusedTenants":len(document(prior)["tenants"]) if prior.exists() else 0,"requestedTenants":m["tenants"],"stageTimeoutSeconds":discovery_seconds(m,1800)})
+                write(d/"primer-start.json",{"concurrency":m.get("primerConcurrency",1),"reusedTenants":len(document(prior)["tenants"]) if prior.exists() else 0,"requestedTenants":m["tenants"],"stageTimeoutSeconds":timeout})
             observer=(api_warm_cause.observe(sys.modules[__name__],d,m) if name=='prime'
                       else contextlib.nullcontext())
             with observer, (d/(name+".log")).open("wb") as output:
                 if scope=="local":command(["node",d/"core/deploy/multitenant"/args[0],d/"state"],file=output)
-                else:compose(d,*args,file=output,timeout=discovery_seconds(m,1800))
+                else:compose(d,*args,file=output,timeout=timeout)
             if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
             if name=="prime" and m.get("primerConcurrency",1)!=1:primer_counts(d,m)
             if name=="publish-primer" and m.get("clinicalTimeline"):
@@ -2220,10 +2249,11 @@ def parser():
                       help='Private correlated warm refusal class for the owned 10000-tenant primer')
     prep.add_argument('--api-cause-observation',choices=('off','on'),default='off',help='Source-pinned private setup-diagnostic observer; file-I/O overhead is separate')
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
+    prep.add_argument('--drain-observation', type=json.loads, help='Optional bounded post-writer catchup observer budget')
     prep.add_argument('--evaluator-catchup',choices=('fixed-target-v1',),help='Read-only post-write drain within existing work deadline; discovery without restart only')
     prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='NEXT explicit trusted SQL opportunity observer; unselected pgstream v2 discovery idle/load')
     prep.add_argument('--fixture-project',help='Owner-selected new Compose project; existing containers, volumes or networks refuse')
-    for knob in ('warmup-seconds','idle-seconds','load-seconds','accel','hot-factor','sampler-interval'):
+    for knob in ('warmup-seconds','idle-seconds','load-seconds','setup-seconds','drain-seconds','accel','hot-factor','sampler-interval'):
         prep.add_argument('--'+knob,type=int,help='Explicit pgstream-sample workload knob; retained in manifest')
     prep.add_argument("--backend-subnet",help="Owner-selected explicit private backend CIDR; pass together with --edge-subnet")
     prep.add_argument("--edge-subnet",help="Owner-selected explicit private edge CIDR")

@@ -303,11 +303,16 @@ def discovery_authorization(manifest, receipt):
     require(receipt.get('purpose')=='BOUNDED_DISCOVERY' and resolved.get('runPurpose')=='discovery',
             'M7_DIAGNOSTIC_PURPOSE_REQUIRED')
     execution=receipt.get('execution')
-    require(isinstance(execution,dict) and set(execution)=={'workSeconds','cleanupSeconds','k6Image'}
-            and type(execution['workSeconds']) is int and 30<=execution['workSeconds']<=86400
-            and type(execution['cleanupSeconds']) is int and 30<=execution['cleanupSeconds']<=3600
-            and re.fullmatch('sha256:[a-f0-9]{64}',execution.get('k6Image',''))
-            and sum(resolved.get('cadence',{}).get(k,86400) for k in ('warmupSeconds','idleSeconds','loadSeconds'))<execution['workSeconds'],
+    require(isinstance(execution, dict) and set(execution) == {'workSeconds', 'cleanupSeconds', 'k6Image'},
+            'M7_DIAGNOSTIC_EXECUTION_LIMIT')
+    work = execution['workSeconds']
+    cadence = resolved.get('cadence', {})
+    phase_seconds = sum(cadence.get(k, 86400) for k in ('warmupSeconds','idleSeconds','loadSeconds'))
+    phase_seconds += sum(cadence.get(key, 0) for key in ('setupSeconds','drainSeconds'))
+    work_ok = (receipt.get('executionScope') == 'LOCAL_OWNED_TO_COMPLETION' if work is None
+               else type(work) is int and 30 <= work <= 86400 and phase_seconds < work)
+    require(work_ok and type(execution['cleanupSeconds']) is int and 30 <= execution['cleanupSeconds'] <= 3600
+            and re.fullmatch('sha256:[a-f0-9]{64}', execution.get('k6Image', '')),
             'M7_DIAGNOSTIC_EXECUTION_LIMIT')
     acceptance=receipt.get('sourceAcceptance')
     require(isinstance(acceptance,dict) and acceptance.get('status') in ('PENDING','PASS')
@@ -327,7 +332,8 @@ def discovery_authorization(manifest, receipt):
                 and re.fullmatch('[a-f0-9]{64}',value.get('evidenceSha256','')), 'M7_DIAGNOSTIC_ACCEPTANCE_TUPLE')
     return {'authorizationVersion':2,'measurementMode':'diagnostic','functionalAcceptance':acceptance['status'],
             'functionalAcceptanceAtAuthorization':acceptance['status'],'sourceAcceptance':acceptance,
-            'configurationSha256':receipt['configurationSha256'],'capacityAcceptance':'NOT_GRANTED'}
+            'configurationSha256':receipt['configurationSha256'],'capacityAcceptance':'NOT_GRANTED',
+            **({'executionScope': 'LOCAL_OWNED_TO_COMPLETION'} if work is None else {})}
 
 
 def discovery_scope(manifest):

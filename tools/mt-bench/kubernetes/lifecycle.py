@@ -8,6 +8,8 @@ from pathlib import Path
 from lifecycle_config import fixture_config
 import frozen
 import producer_startup
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
+from auto_catalog import auto_catalog
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); inst=Path(cfg['instrumentDirectory']); tool=Path(cfg['toolsDirectory'])
 read=lambda p:json.loads(p.read_bytes())
@@ -274,5 +276,8 @@ finally:
         except Exception as error:cleanup_errors.append({'scope':'namespace','code':type(error).__name__})
     if cleanup_errors:
         put('cleanup-failure.json',{'verdict':'UNMEASURED','failures':cleanup_errors})
+    else:
+        put('absence.json',{'namespace':ns,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
+    auto_catalog(d, lambda path, value: path.write_text(json.dumps(value, indent=2) + '\n'))
+    if cleanup_errors:
         raise RuntimeError('OWNED_CLEANUP_UNCONFIRMED')
-    put('absence.json',{'namespace':ns,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})

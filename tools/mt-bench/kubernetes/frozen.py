@@ -55,6 +55,10 @@ def source(manifest):
         selected = src.get('pair') or dict(core=src['coreCommit'], deploy=src['deployCommit'])
         require(selected == pair and src['imageReceiptSha256'] == build_ref['sha256'], 'SOURCE_PAIR')
         status = 'PENDING'
+    tier = manifest.get('tier', 'discovery')
+    require(tier in ('smoke','discovery','acceptance'), 'TIER')
+    require(tier != 'acceptance' or status == 'PASS' and 'bootstrapHelper' not in manifest,
+            'FROZEN_ACCEPTANCE_REQUIRED')
     chosen = dict(coreCommit=pair['core'], deployCommit=pair['deploy'], localImageId=image,
                 producerBinarySha256=producer, diagnosticSha256=manifest['sourceReceipt']['sha256'],
                 imageReceiptSha256=build_ref['sha256'], sourceAcceptance=status)

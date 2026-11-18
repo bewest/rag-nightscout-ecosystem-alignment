@@ -1245,3 +1245,32 @@ allocation selects its explicit service/driver caps and existing readback.
 Static workers and batch reservations still require their exact allocation
 inputs. Review requested versus observed limits before comparing operating
 points.
+
+### Phase clocks and local discovery to completion
+
+`setup-seconds` covers stock-client priming and the ordinary driver's JWT
+exchanges. `drain-seconds` governs the post-writer probe and fixed-target
+observer. It leaves the selected per-write clinical deadline at 120 seconds.
+Use `plan` to inspect their values and the work they cover. Set these limits
+from observed phase timings and keep their evidence with the experiment.
+Deployment priming is a separate provisioning stage. A traffic window names
+the generator's offered-work plan and does not set the overall cleanup clock.
+
+For an owner-monitored one-shot local discovery point, set `"tier": "discovery"`
+and `"workSeconds": null`, supply positive `setup-seconds` and `drain-seconds`
+under `prepare`, and launch the existing `run` command. The configuration
+still selects finite ordinary traffic. No additional whole-run wall timer
+stops deployment priming or ordinary progress. The selected generator phase
+budgets and independent correctness checks still apply. The guard follows
+the controller's process identity, keeps an aborted result after controller
+loss, and bounds owned teardown with `cleanupSeconds`. Operator cancellation
+uses the usual signal or `down` on the exact run directory. Batch and reused
+session configurations continue to carry a finite work window.
+
+Current instrument limits remain distinct from service settings. The release
+supports the 10,000-tenant experimental roster, the stock client's 80,000-viewer
+ledger, and the probe's 100,000-write accounting envelope. The numeric cadence
+resolver reports an unrepresentable k6 time unit or Node timer before seeding.
+Explicit allocation profiles retain their checked range and renderer shape.
+Select uncapped services where a reference profile would distort first-fit
+measurement.

@@ -121,6 +121,24 @@ class CatalogTests(unittest.TestCase):
         self.assertIsNone(row["work"]["issued"])
         self.assertEqual(row["provenance"]["source"], SOURCE)
 
+    def test_kubernetes_terminal_case_includes_nested_packet_and_cleanup(self):
+        path = self.artifacts / "lane" / "case"
+        pins = {"pair": SOURCE, "instrument": TOOL, "appImageId": IMAGE}
+        packet = "runtime/packet/"
+        write(path, packet + "run.json", {"pins": pins, "tenants": 2, "roles": {"api": {}}, "tier": "smoke"})
+        write(path, packet + "experiment/result.json", {"verdict": "OBSERVED"})
+        write(path, packet + "load/result.json", {"pins": pins, "storedWrites": {"verdict": "PASS"}})
+        write(path, "intent.json", {"profile": {"history": {"mode": "existing-provisioner-only"}}})
+        write(path, "runtime/custody.json", {"namespaceUid": "synthetic"})
+        write(path, "runtime/absence.json", {"verifiedAt": "synthetic"})
+        row = add(self.artifacts, self.index, path)
+        self.assertEqual(row["tier"], "smoke")
+        self.assertEqual(row["runStatus"], "OBSERVED")
+        self.assertEqual(row["oracles"]["stored"], "PASS")
+        self.assertEqual(row["oracles"]["cleanup"], "PASS")
+        self.assertEqual(row["history"]["runtime"], "FRESH")
+        self.assertIn(packet + "load/result.json", row["evidence"])
+
     def test_interrupted_result_requires_explicit_partial_import(self):
         (self.run / "result.json").write_text("null")
         with self.assertRaisesRegex(CatalogError, "terminal status unavailable"):

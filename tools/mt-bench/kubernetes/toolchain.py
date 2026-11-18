@@ -14,13 +14,13 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
        'generator-dependency-receipt-sha256','fixture-project','backend-subnet','edge-subnet','port','receipt','freeze'}
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
-         'logical-polling-clients','probe-every-ms','driver-plan','driver-vu-diagnostic','driver-shards',
+         'logical-polling-clients','probe-every-ms','setup-seconds','drain-seconds','driver-plan','driver-vu-diagnostic','driver-shards',
          'static-workers','static-build-receipt','static-build-receipt-sha256','pgstream-topology'}
 
 def legacy(m,target='kubernetes'):
     if m.get('kind')=='k8s-frozen-experiment':return copy.deepcopy(m)
     frozen.require(m.get('kind')=='multitenant-experiment' and m.get('version')==1 and
-        set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local'},'MANIFEST')
+        set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','tier'},'MANIFEST')
     app=m['application']
     frozen.require(set(app)<= {'sourceReceipt','buildReceipt','bindingCommit','postgresImageId','bootstrapHelper'},'APPLICATION_FIELDS')
     topology=m['topology']
@@ -31,6 +31,7 @@ def legacy(m,target='kubernetes'):
     if target=='kubernetes':
         frozen.require(topology=={'apiReplicas':1,'evaluatorWorkers':1,'pgstreamTopology':'external'},'KUBERNETES_TOPOLOGY_UNSUPPORTED')
     return dict(version=1,kind='k8s-frozen-experiment',**copy.deepcopy(app),profile=copy.deepcopy(m['profile']),
+                **({'tier': m['tier']} if 'tier' in m else {}),
                 **({'deploymentJobs':copy.deepcopy(m['deploymentJobs'])} if 'deploymentJobs'in m else {}))
 
 def local(m,instance):
@@ -50,6 +51,9 @@ def local(m,instance):
         'pgstream-topology':{'external':'external-service-v1','colocated':'colocated-v1'}[t['pgstreamTopology']]})
     options.update({('workload-mix' if key=='workloadMix' else 'workload-scale' if key=='workloadScale' else 'offered-rps'):w[key]
                     for key in ('workloadMix','workloadScale','offeredRps') if key in w})
+    for field, option in (('setupSeconds', 'setup-seconds'), ('drainSeconds', 'drain-seconds')):
+        if field in w:
+            options[option] = w[field]
     if 'driverPlan'in w:
         options.update({'driver-plan':json.dumps(w['driverPlan']),'driver-shards':w.get('driverShards',1)})
     if t['evaluatorWorkers']>1 or t['apiReplicas']>1:
@@ -59,7 +63,8 @@ def local(m,instance):
     # subprocess. Both historical modules are called adapter.py; never let the
     # Python module cache silently select the other transport.
     config=dict(version=1,helperInstrument=None,k6Image=defaults['k6Image'],
-                workSeconds=p['phases']['workSeconds'],cleanupSeconds=p['phases']['cleanupSeconds'],prepare=options)
+                workSeconds=p['phases']['workSeconds'],cleanupSeconds=p['phases']['cleanupSeconds'],prepare=options,
+                **({'tier': original['tier']} if 'tier' in original else {}))
     return config
 
 def project(m,instance,target,out):

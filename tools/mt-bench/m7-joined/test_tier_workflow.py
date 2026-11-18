@@ -1,5 +1,6 @@
 import copy
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -9,6 +10,9 @@ import diagnostic_resources as resources
 import runner
 import tier_smoke
 from test_run_configuration import config
+
+sys.path.append(str(adapter.HERE.parent / 'kubernetes'))
+import workload_runtime
 
 
 class TierWorkflow(unittest.TestCase):
@@ -117,3 +121,50 @@ class TierWorkflow(unittest.TestCase):
                 self.assertEqual(report['sqlDeltas'][statements_key]['delta'], 1)
                 good['signals'][statements_key]['value'] = 3
                 tier_smoke.assess(root, path)
+
+    def test_shared_workload_accepts_fractional_rate_and_sparse_slow_probe(self):
+        value = config()
+        value['prepare'].update({'offered-rps': 2.5, 'probe-every-ms': 600000,
+                                 'logical-polling-clients': 0, 'hot-factor': 1,
+                                 'setup-seconds': 900, 'drain-seconds': 600})
+        value['workSeconds'] = 2200
+        with patch.object(adapter, 'instrument', return_value={'sha256': value['helperInstrument']}):
+            _, argv = runner.validate_config(value)
+        args = adapter.parser().parse_args(['prepare', '--directory', '/tmp/plan-only', *argv])
+        local = adapter.cadence_options(args)
+        keys = ('loadSeconds', 'setupSeconds', 'drainSeconds', 'logicalPollingClients', 'hotFactor',
+                'probeEveryMs', 'offeredRps')
+        kube = {key: local[key] for key in keys}
+        workload_runtime.validate(kube, adapter.require)
+        self.assertEqual(workload_runtime.environment(kube, {}, adapter.require)['OFFERED_RPS'], '2.5')
+        rate = adapter.rate_offer({'tenants': args.tenants, 'cadence': local})
+        cycles, rates = workload_runtime.rates(kube, args.tenants)
+        self.assertEqual(rate['arrivalCycleMs'], cycles['r_sgv'])
+        self.assertAlmostEqual(rate['effectiveScenarioRps'], sum(rates.values()))
+        with self.assertRaisesRegex(RuntimeError, 'WORKLOAD_PROBE_LEDGER_WINDOW'):
+            workload_runtime.validate({**kube, 'loadSeconds': 120, 'probeEveryMs': 1}, adapter.require)
+        args.load_seconds = 120
+        args.probe_every_ms = 1
+        with self.assertRaisesRegex(RuntimeError, 'M7_PROBE_LEDGER_WINDOW'):
+            adapter.cadence_options(args)
+
+    def test_phase_and_rate_inputs_report_representation_refusal(self):
+        value = config()
+        value['tier'] = 'discovery'
+        for offered in (0.25, 12000):
+            value['prepare'].update({'offered-rps': offered, 'logical-polling-clients': 0,
+                                     'hot-factor': 1, 'probe-every-ms': 600000})
+            with patch.object(adapter, 'instrument', return_value={'sha256': value['helperInstrument']}):
+                _, argv = runner.validate_config(value)
+            args = adapter.parser().parse_args(['prepare', '--directory', '/tmp/plan-only', *argv])
+            local = adapter.cadence_options(args)
+            kube = {key: local[key] for key in ('offeredRps', 'logicalPollingClients',
+                                               'hotFactor', 'probeEveryMs', 'loadSeconds')}
+            workload_runtime.validate(kube, adapter.require, args.tenants)
+            self.assertEqual(workload_runtime.environment(kube, {}, adapter.require)['OFFERED_RPS'], str(float(offered)))
+            for invalid in (1e-20, 1e20):
+                with self.assertRaisesRegex(RuntimeError, 'WORKLOAD_OFFERED_TIME_UNIT'):
+                    workload_runtime.validate({**kube, 'offeredRps': invalid}, adapter.require, args.tenants)
+                args.offered_rps = invalid
+                with self.assertRaisesRegex(RuntimeError, 'M7_OFFERED_RPS_TIME_UNIT'):
+                    adapter.cadence_options(args)

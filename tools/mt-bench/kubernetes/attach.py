@@ -43,6 +43,8 @@ def observe_selected_bootstrap(packet, runtime, namespace_uid, adapter_cmd, exec
             raise RuntimeError('K8S_BOOTSTRAP_HELPER_MISSING_OR_CHANGED')
         execute('bootstrap-map', adapter_cmd+['bootstrap-map', packet, namespace_uid])
     execute('observe', adapter_cmd+['observe', packet])
+    execute('candidate-proof', adapter_cmd+['candidate-proof', packet])
+    execute('policy', adapter_cmd+['policy', packet])
 
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
 fp=execute('source-settings',[cfg['driver']['node'],src/'m7-joined/fingerprint.cjs',core,e['sourceCommit'],live/'primer-config.private.json',str(e['tenantCount'])],30)
@@ -71,8 +73,6 @@ try:
     write(live/'instance.json',instance)
     execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet,'--await-primer'])
     observe_selected_bootstrap(packet, live, uid, ad, execute)
-    execute('candidate-proof',ad+['candidate-proof',packet])
-    execute('policy',ad+['policy',packet])
     execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer','--concurrency',str(control['primerConcurrency'])],3600)
     assert read(packet/'primer/result.json')['verdict']=='OBSERVED'
     # Capture read-only SQL independently of optional client measurements.

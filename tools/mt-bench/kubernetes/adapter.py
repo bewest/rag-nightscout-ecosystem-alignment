@@ -204,7 +204,7 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
     need(isinstance(c.get('roles'), dict) and {'postgres', 'api', 'realtime', 'evaluator'} <= set(c['roles']), 'ROLE_ROSTER')
     if 'workload' in c:
         from workload_runtime import validate as validate_workload
-        validate_workload(c['workload'], need)
+        validate_workload(c['workload'], need, c['tenants'])
     objs = manifests(rendered)
     by_key = {key(x): x for x in objs}
     need(len(by_key) == len(objs), 'DUPLICATE_RESOURCE')
@@ -705,9 +705,6 @@ def generate_probe(target):
     source = source.replace(anchor, "requestStartedAt:e.sent,clientProofVersion:e.clientProofVersion,expectedSockets:e.expectedSockets,sentMono:e.sentMono,rawRow:e.rawRow,clientObservations:[...(pending.get(e.tenant+':'+e.date)?.clientFrames?.values()||[])],...e.completion")
     anchor = "oracleCost.observationEndMono=performance.now();"
     need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
-    socket_wait = 'Date.now() - t0 < 300000'
-    need(source.count(socket_wait) == 1, 'PROBE_SETUP_ANCHOR_CHANGED')
-    source = source.replace(socket_wait, 'Date.now() - t0 < Number(args.setupSeconds || 300) * 1000')
     source = source.replace(anchor, "out.kubernetesFrames=kubernetesFrames;" + anchor)
     need("execFile('docker'" not in source and 'composeArgs' not in source, 'DOCKER_EXECUTION_REMAINED')
     Path(target).write_text(source)
@@ -728,12 +725,6 @@ def prepare(config, inventory_file, render_file, directory):
         os.chmod(d / name, 0o600)
     generated = generate_probe(d / 'probe.cjs')
     work = workload.generate(ROOT, d / 'workload.js')
-    if 'setupSeconds' in c.get('workload', {}):
-        path = d / 'workload.js'
-        script = path.read_text()
-        need(script.count("setupTimeout: '300s'") == 1, 'SETUP_TIMEOUT_ANCHOR_CHANGED')
-        path.write_text(script.replace("setupTimeout: '300s'", "setupTimeout: Math.min(%d, Number(__ENV.K8S_REMAINING_SETUP_SECONDS || %d)) + 's'" % ((c['workload']['setupSeconds'],) * 2)))
-        work['adaptedSha256'] = digest(path)
     if 'driverPlan' in c.get('workload', {}):
         import workload_runtime
         import driver_vu_diagnostic as driver

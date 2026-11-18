@@ -9,6 +9,7 @@ import sys
 import tarfile
 
 import adapter as k
+from auto_catalog import auto_catalog
 import execute
 import frozen
 import matrix
@@ -94,7 +95,9 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
                 inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']),
                 candidate=inventory['candidateContract'])
     k.need(config.get('pins', pins) == pins, 'INSTANCE_PINS_CHANGED')
-    c = profile.bind(p, dict(config, pins=pins))
+    tier = m.get('tier', 'discovery')
+    k.need(config.get('tier', tier) == tier, 'INSTANCE_TIER_CHANGED')
+    c = profile.bind(p, dict(config, pins=pins, tier=tier))
     objects = k.validate(c, inventory, render)
     frozen.check_bootstrap_render(m, objects.values())
     k.need(all(pins['candidate'].get(key) == selected.get(key) for key in
@@ -151,7 +154,8 @@ def run(packet, grant_path, expected_digest, group=None):
     # Claim the attempt exactly once, including failed admissions. Never overwrite its evidence.
     attempt = d / 'experiment'
     attempt.mkdir(mode=0o700, exist_ok=False)
-    outcome = dict(verdict='UNMEASURED', capacityAcceptance='NOT_GRANTED', experimentSha256=c['experimentSha256'])
+    outcome = dict(verdict='UNMEASURED', tier=c.get('tier', 'discovery'),
+                   capacityAcceptance='NOT_GRANTED', experimentSha256=c['experimentSha256'])
     selection = c['pins'].get('candidate', {})
     if 'runtimeBootstrapHelper' in selection:
         outcome.update({key: selection[key] for key in ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')})
@@ -195,6 +199,9 @@ def run(packet, grant_path, expected_digest, group=None):
                 reduce.reduce_stage(d/'load', attempt/'observations')
             except Exception as exc:
                 k.write(attempt/'reduction-failure.json', failure(exc))
+        # The outer lifecycle indexes its case after it verifies absence.
+        if d.name != 'packet' or d.parent.name != 'runtime':
+            auto_catalog(d, k.write)
     return outcome
 
 

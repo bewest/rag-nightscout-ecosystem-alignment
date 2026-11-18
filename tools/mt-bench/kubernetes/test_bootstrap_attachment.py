@@ -31,7 +31,8 @@ class BootstrapAttachment(unittest.TestCase):
                 step(packet, root, 'namespace-uid', ['adapter'], lambda name, args: calls.append((name, args)))
 
             run()
-            self.assertEqual(calls, [('observe', ['adapter', 'observe', packet])])
+            native = [(name, ['adapter', name, packet]) for name in ('observe', 'candidate-proof', 'policy')]
+            self.assertEqual(calls, native)
             calls.clear()
             readback.update(mode='diagnostic-overlay', sha256='a'*64)
             with self.assertRaisesRegex(RuntimeError, 'BOOTSTRAP_HELPER_UNDECLARED'):
@@ -44,4 +45,9 @@ class BootstrapAttachment(unittest.TestCase):
             readback['sha256'] = 'b'*64
             run()
             self.assertEqual(calls, [('bootstrap-map', ['adapter','bootstrap-map',packet,'namespace-uid']),
-                                     ('observe', ['adapter','observe',packet])])
+                                     *native])
+            calls.clear()
+            readback['effectiveInstanceAcceptance'] = 'PASS'
+            with self.assertRaisesRegex(RuntimeError, 'BOOTSTRAP_ACCEPTANCE_CHANGED'):
+                run()
+            self.assertEqual(calls, [])

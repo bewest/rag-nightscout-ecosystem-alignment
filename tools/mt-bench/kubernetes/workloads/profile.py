@@ -41,7 +41,7 @@ def validate(p):
     n = p['population']['provisionedTenants']
     w = p['workload']
     need(type(n) is int and 2 <= n <= 10000, 'TENANTS')
-    workload_runtime.validate(w, need)
+    workload_runtime.validate(w, need, n)
     need(p['population']['ordinaryRosterTenants'] == n and p['population']['hotFactor'] == 1,
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
     need(p['history'] == {'mode': 'existing-provisioner-only', 'additionalSeedRows': 0,
@@ -65,6 +65,10 @@ def describe(p):
     cycle_ms = cycles['w_sgv']
     return {'version': 1, 'profile': p['name'], 'basis': 'read-derived equations from generated M7 workload',
             'workload': w, 'arrivalCycleMs': cycle_ms, 'shapeCycleMs': cycles, 'shapeRequestsPerSecond': rates,
+            'effectivePhaseWindows': {
+                key: {'seconds': w.get(key, default), 'origin': 'authored' if key in w else 'legacy default'}
+                for key, default in (('setupSeconds', 310), ('drainSeconds', 120))
+            },
             'effectiveOrdinaryIngestionCadenceSecondsPerTenant': cycle_ms / 1000,
             'nominalIngestionCadenceSeconds': 300,
             'cadenceMultiplier': 300000 / cycle_ms,
@@ -74,7 +78,7 @@ def describe(p):
             'setupJwtExchanges': n, 'stockViewers': w['logicalPollingClients'],
             'probeWritesPerSecondWhileOpen': 1000 / w['probeEveryMs'],
             'probeWrites': 'observed independently; initial write and drain can extend the nominal window',
-            'limits': ['realistic-v1 scale1 preserves per-shape sensor cadence; aggregate profiles retain their integer rate',
+            'limits': ['realistic-v1 scale1 preserves per-shape sensor cadence; aggregate profiles retain their authored rate',
                        'HTTP logical pollers are not a configured population; shape rates define offered REST',
                        'all ordinary roster tenants are eligible; actual changed/witness sets are observed',
                        'no hot/cold skew, extra history seeding, alarm synthesis or reconnect burst is executed'],
@@ -107,7 +111,7 @@ def bind(p, config):
     # runtime marker identity. Revalidate to refuse incompatible combinations.
     result['workload'] = {k: v for k, v in existing.items() if k in ('pointId', 'hotFactor')}
     result['workload'].update(p['workload'])
-    workload_runtime.validate(result['workload'], need)
+    workload_runtime.validate(result['workload'], need, config['tenants'])
     return result
 
 

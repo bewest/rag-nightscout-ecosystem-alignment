@@ -91,6 +91,8 @@ def resolve(config, source_acceptance=None):
               'sourceAcceptance':acceptance,'functionalAcceptanceAtAuthorization':acceptance.get('status'),
               'configurationSha256':sha(resolved),'limits':limits,
               'execution':{'workSeconds':config['workSeconds'],'cleanupSeconds':config['cleanupSeconds'],'k6Image':config['k6Image']}}
+    if config['workSeconds'] is None:
+        template['executionScope'] = 'LOCAL_OWNED_TO_COMPLETION'
     from contract import discovery_authorization
     discovery_authorization({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},template)
     return {'configuration': resolved, 'configurationSha256': sha(resolved), 'diagnosticReceiptTemplate':template,
@@ -112,6 +114,7 @@ def remote_projection(config, overlay, source_acceptance=None):
         import transport
     finally:
         sys.path[:]=previous
+    require(config['workSeconds'] is not None, 'M7_REMOTE_TO_COMPLETION_UNSUPPORTED')
     result = resolve(config,source_acceptance); r = result['configuration']
     if r.get('staticTopology'):
         require(r['staticTopology']=={'kind':'static-hash-v1','workers':1} and r['replicas']==1 and isinstance((r.get('resources')or{}).get('profile'),dict),'M7_STATIC_REMOTE_K1_N1_ONLY')
@@ -123,7 +126,10 @@ def remote_projection(config, overlay, source_acceptance=None):
     # Caller owns transport/authority; semantic mirrors are generated exclusively.
     require(not set(b).intersection({'tenants','pair','imageId','k6Image','workload','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','staticTopology','commissioningSlotWalMiB','tenantReadiness'}),
             'M7_CONFIG_REMOTE_MIRROR_REFUSED')
-    cadence = dict(r['cadence']); viewers = cadence.get('logicalPollingClients',r['tenants']*cadence['socketsPerTenant'])
+    cadence = dict(r['cadence'])
+    require(not {'setupSeconds','drainSeconds','drainObservation'} & cadence.keys(),
+            'M7_REMOTE_PHASE_WINDOWS_UNSUPPORTED')
+    viewers = cadence.get('logicalPollingClients',r['tenants']*cadence['socketsPerTenant'])
     b.update(tenants=r['tenants'], pair=r['pair'], imageId=r['imageId'], reportMode='discovery',
              k6Image='grafana/k6@'+config['k6Image'], workload={
                  'cadence':cadence, 'primerConcurrency':r['primerConcurrency'], 'jwtSetupConcurrency':r['jwtSetupConcurrency'],

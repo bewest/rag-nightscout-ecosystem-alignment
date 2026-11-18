@@ -115,7 +115,10 @@ class Evidence:
             self.loaded[name] = self.read_obj(name)
         return self.loaded[name]
 
-    def read_obj(self, name):
+    def array(self, name):
+        return self.read_obj(name, list)
+
+    def read_obj(self, name, expected=dict):
         path = self.file(name)
         if path is None:
             return {}
@@ -125,8 +128,8 @@ class Evidence:
             if len(data) > 32 * 1024 * 1024:
                 raise ValueError("oversize JSON")
             value = json.loads(data, parse_constant=reject_constant, parse_float=finite_float)
-            if not isinstance(value, dict):
-                raise ValueError("expected JSON object")
+            if not isinstance(value, expected):
+                raise ValueError("unexpected JSON document type")
             return value
         except (OSError, UnicodeError, ValueError, RecursionError):
             self.note(name, "EVIDENCE_MALFORMED")
@@ -208,11 +211,16 @@ def source_conflicts(evidence, *pins):
                 evidence.note(path, "PROVENANCE_MISMATCH")
 
 
-def journal_history(evidence, result):
+def journal_history(evidence, result, owner):
     journal = evidence.obj("history.json")
     prior = journal.get("previousObservations")
+    runtime = token(journal.get("runtime")) or token(result.get("runtime"))
+    if runtime is None and owner.get("prepared") is True and owner.get("attached") is not True:
+        if evidence.file("execution.json"):
+            runtime = "FRESH"
+            prior = []
     return {
-        "runtime": token(journal.get("runtime")) or token(result.get("runtime")),
+        "runtime": runtime,
         "priorObservations": len(prior) if isinstance(prior, list) else None,
         "priorPlan": key_digest(prior) if isinstance(prior, list) else None,
         "elapsedSeconds": number(journal.get("elapsedSessionSeconds")),
@@ -280,7 +288,12 @@ def local_signals(evidence, summary, owner, driver):
                 continue
             millicpus = count(get(limits, role, "millicpus"))
             mean = number(get(measured, "cpuCoresMean"))
-            value = mean * 1000 / millicpus if mean is not None and millicpus and get(measured, "counterReset") is False else None
+            valid_mean = mean if get(measured, "counterReset") is False else None
+            if owner.get("composeLimitMode") == "uncapped-services":
+                signals[f"cpu.{role}.cores"] = observation(
+                    valid_mean, "cores", "load-window elapsed seconds", "load-window cgroup bookends",
+                    [info], number(get(windows, "seconds")))
+            value = valid_mean * 1000 / millicpus if valid_mean is not None and millicpus else None
             signals[f"cpu.{role}.quota"] = observation(
                 value, "fraction", "configured role CPU quota", "load-window cgroup bookends",
                 [info, "fixture/owner.json"], number(get(windows, "seconds")))
@@ -297,6 +310,26 @@ def local_signals(evidence, summary, owner, driver):
     return signals
 
 
+
+def setup_observations(evidence, probe_path, deployment_path):
+    observations = {}
+    steps = evidence.array(deployment_path)
+    if isinstance(steps, list):
+        primer = next((row for row in steps if get(row, "name") == "prime"), None)
+        duration = number(get(primer, "seconds"))
+        if duration is not None:
+            observations["deploymentPrimer"] = {
+                "seconds": duration, "status": token(get(primer, "status")),
+                "evidence": deployment_path,
+            }
+    probe = evidence.obj(probe_path)
+    for name, milliseconds in (("socketPriming", get(probe, "prime", "ms")),
+                               ("probeCredentialExchange", probe.get("exchangeMs"))):
+        if number(milliseconds) is not None:
+            observations[name] = {"seconds": milliseconds / 1000, "evidence": probe_path}
+    return observations
+
+
 def local(evidence):
     result = evidence.obj("result.json")
     config = evidence.obj("config.json")
@@ -305,6 +338,7 @@ def local(evidence):
     partial = get(result, "partial")
     host_path = "fixture/load-before-host.json"
     host = evidence.obj(host_path)
+    setup = setup_observations(evidence, "fixture/load/probe.json", "fixture/deployment-stages.json")
     offered = get(summary, "rateOffer")
     http = get(summary, "httpAccounting") or evidence.obj("fixture/load/http-accounting.json")
     raw_k6 = evidence.obj("fixture/load/k6-summary.json")
@@ -317,6 +351,8 @@ def local(evidence):
     options = get(config, "prepare")
     configured = get(summary, "cadence") or get(owner, "cadence")
     resources = get(owner, "runConfiguration", "resources")
+    if resources is None and owner.get("composeLimitMode") == "uncapped-services":
+        resources = {"composeMode": "uncapped-services"}
     tier = config.get("tier") or get(owner, "runPurpose") or get(options, "run-purpose")
     if tier == "strict":
         tier = "acceptance"
@@ -339,11 +375,13 @@ def local(evidence):
         evidence.file(name)
     return {
         "producer": "local",
+        **({"setupObservations": setup} if setup else {}),
         "tier": tier if tier in ("smoke", "discovery", "acceptance") else None,
         "runStatus": token(result.get("status")), "phase": phase or traffic_phase,
         "trafficPhase": traffic_phase,
         "failureCode": token(get(result, "failure", "code")) or token(result.get("code")),
         "finishedAt": number(result.get("finishedAt")),
+        **({"elapsedSeconds": result["elapsedSeconds"]} if number(result.get("elapsedSeconds")) is not None else {}),
         "provenance": provenance(owner.get("pair") or summary.get("pair"),
                                  get(owner, "instrument", "sha256") or summary.get("instrument"),
                                  owner.get("imageId") or summary.get("imageId"), evidence.digest("config.json"),
@@ -366,7 +404,7 @@ def local(evidence):
         "population": count(first_known(owner.get("tenants"), summary.get("tenants"), get(options, "tenants"))),
         "replicas": count(first_known(owner.get("replicas"), summary.get("replicas"), get(options, "replicas"))),
         "cadence": cadence(configured),
-        "history": journal_history(evidence, result),
+        "history": journal_history(evidence, result, owner),
         "work": {
             "scope": "scenario HTTP attempts; JWT setup and probe writes excluded",
             "planned": count(get(totals, "planned")),
@@ -453,10 +491,12 @@ def add_pooled(evidence, signals, driver, configured, path, source):
 
 
 def kube(evidence):
-    run = evidence.obj("run.json")
-    result_path = "experiment/result.json"
-    load_path = "load/result.json"
-    reduction_path = "experiment/observations/reduction.json"
+    prefix = "runtime/packet/" if (evidence.root / "runtime/packet/run.json").is_file() else ""
+    run_path = prefix + "run.json"
+    run = evidence.obj(run_path)
+    result_path = prefix + "experiment/result.json"
+    load_path = prefix + "load/result.json"
+    reduction_path = prefix + "experiment/observations/reduction.json"
     result = evidence.obj(result_path)
     first_failure = get(result, "firstFailure") or evidence.obj("runtime/first-failure.json")
     load = evidence.obj(load_path) or get(result, "load") or {}
@@ -468,13 +508,13 @@ def kube(evidence):
     def common(value):
         return {"pair": get(value, "pair"), "instrument": get(value, "instrument"), "imageId": get(value, "appImageId")}
 
-    source_conflicts(evidence, ("run.json", common(pins)), (load_path, common(load_pins)),
+    source_conflicts(evidence, (run_path, common(pins)), (load_path, common(load_pins)),
                      (reduction_path, common(reduced_pins)))
     config_hash = token(run.get("experimentSha256"), SHA)
     result_hash = token(result.get("experimentSha256"), SHA)
     if config_hash and result_hash and config_hash != result_hash:
         evidence.note(result_path, "CONFIG_MISMATCH")
-    allocation = evidence.obj("experiment/allocation.json")
+    allocation = evidence.obj(prefix + "experiment/allocation.json")
     startup = evidence.obj("environment.json")
     inventory = evidence.obj("inventory.json")
     intent = evidence.obj("intent.json")
@@ -484,16 +524,24 @@ def kube(evidence):
                      ("environment.json", {"pair": declared_source} if startup else {}))
     configured = get(reduction, "configured") or run.get("workload") or get(intent, "profile", "workload")
     tier = run.get("tier")
-    if tier is None and startup.get("trialPurpose") == "scale-diagnostic":
+    if tier is None:
+        tier = intent.get("tier")
+    if tier is None and (startup.get("trialPurpose") == "scale-diagnostic" or result):
         tier = "discovery"
     driver = get(reduction, "configuredDriver") or get(load, "loadFunctionalChecks", "configuredDriver")
     totals = get(driver, "totals")
+    replicas = count(get(driver, "apiReplicas"))
+    roles = run.get("roles")
+    if replicas is None and isinstance(roles, dict):
+        replicas = sum(role == "api" or role.startswith("api-") for role in roles)
+    history_mode = get(intent, "profile", "history", "mode")
+    fresh = history_mode == "existing-provisioner-only" and evidence.file("runtime/custody.json") is not None
     signals = {}
     percentiles(signals, get(reduction, "backlog", "recordedProbe"), [reduction_path])
-    add_pooled(evidence, signals, driver, configured, "load", reduction_path if reduction else load_path)
+    add_pooled(evidence, signals, driver, configured, prefix + "load", reduction_path if reduction else load_path)
     for name in ("load/before.json", "load/after.json", "load/driver.json", "load/window.json",
                  "experiment/observations/first-failure.json", "experiment/cleanup.json"):
-        evidence.file(name)
+        evidence.file(prefix + name)
     return {
         "producer": "kubernetes",
         "tier": tier if tier in ("smoke", "discovery", "acceptance") else None,
@@ -506,7 +554,7 @@ def kube(evidence):
                                  get(pins, "appImageId") or get(inventory, "candidateContract", "imageConfigId"),
                                  config_hash or get(startup, "experimentManifest", "sha256"),
                                  key_digest(run.get("workload") or get(intent, "profile", "workload")),
-                                 allocation.get("sha256") or key_digest(startup.get("resources"))),
+                                 key_digest(allocation.get("accounting") or startup.get("resources"))),
         "declaredSource": pair(get(pins, "pair") or declared_source),
         "declaredImage": token(get(pins, "appImageId"), IMAGE),
         "environment": {
@@ -517,12 +565,13 @@ def kube(evidence):
             "observerHostSha256": key_digest(get(run, "observer", "hostId")),
         },
         "limits": {"requestedSha256": token(allocation.get("sha256"), SHA),
-                   "nativeReadback": [name for name in ("load/before.json", "load/after.json", "load/driver.json")
-                                      if name in evidence.files]},
+                   "nativeReadback": [prefix + name for name in ("load/before.json", "load/after.json", "load/driver.json")
+                                      if prefix + name in evidence.files]},
         "population": count(first_known(run.get("tenants"), startup.get("tenantCount"))),
-        "replicas": count(get(driver, "apiReplicas")),
+        "replicas": replicas,
         "cadence": cadence(configured),
-        "history": {"runtime": None, "priorObservations": None, "elapsedSeconds": None},
+        "history": {"runtime": "FRESH" if fresh else None, "priorObservations": 0 if fresh else None,
+                    "priorPlan": key_digest([]) if fresh else None, "elapsedSeconds": None},
         "work": {
             "scope": "configured scenario HTTP scheduling; separate JWT setup and drain",
             "planned": count(get(totals, "planned")),
@@ -552,7 +601,8 @@ def kube(evidence):
 def project(root, run_id):
     evidence = Evidence(root)
     record = kube(evidence) if any((root / name).is_file() for name in
-                                  ("run.json", "experiment/result.json", "runtime/first-failure.json")) else local(evidence)
+                                  ("run.json", "experiment/result.json", "runtime/first-failure.json",
+                                   "runtime/packet/run.json")) else local(evidence)
     signals = record["signals"]
     for name, (unit, denominator, scope) in SIGNALS.items():
         signals.setdefault(name, observation(None, unit, denominator, scope, None))

@@ -290,7 +290,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     k.need(not out.exists(), 'STAGE_OUTPUT_EXISTS')
     if load:
         k.need('k6' in c['driver'] and 'k6Sha256' in c['driver'] and k.HEX.fullmatch(c.get('settingsFingerprint','')),'LOAD_INPUTS_REQUIRED','UNMEASURED')
-    settings = workload_runtime.validate(c['workload'], k.need)
+    settings = workload_runtime.validate(c['workload'], k.need, c['tenants'])
     env = workload_runtime.environment(settings, environment(c, d), k.need)
     completion(c)
     tenants = roster(c)
@@ -343,7 +343,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
         midpoint = threading.Thread(target=capture_midpoint, daemon=True)
         midpoint.start()
         if load:
-            prime_until = min(time.time() + setup, k.timestamp(c['deadlines']['workUntil']))
+            prime_until = min(started + setup, k.timestamp(c['deadlines']['workUntil']))
             while not (out / '.window').exists():
                 k.need(process.poll() is None and time.time() < prime_until, 'PROBE_NOT_PRIMED', 'UNMEASURED')
                 time.sleep(.2)
@@ -358,7 +358,10 @@ def execute(d, c, objects, client, load=False, recovery=False):
             if 'setupSeconds' in settings:
                 setup = int(prime_until - time.time())
                 k.need(setup > 0, 'SETUP_WINDOW_EXHAUSTED', 'UNMEASURED')
-                env['K8S_REMAINING_SETUP_SECONDS'] = str(setup)
+                env['M7_SETUP_SECONDS'] = str(setup)
+                env['M7_SETUP_UNTIL_MS'] = str(int(prime_until * 1000))
+                k.write(out/'setup-window.json', {'configuredSeconds': settings['setupSeconds'],
+                        'remainingSecondsAtDriverLaunch': setup, 'setupUntilUnixMs': int(prime_until * 1000)})
             load_process_started = time.time()
             if 'driverPlan' in settings:
                 accounting = configured_load(d, out, c, env, setup)

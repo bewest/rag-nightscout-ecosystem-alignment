@@ -53,3 +53,8 @@ data is missing, cannot be reconciled, or exceeds the catalog's trace budget.
 ```bash
 python3 -m unittest discover -s tools/mt-bench/run-catalog -v
 ```
+
+The configured controllers index terminal evidence after normal result
+publication and owned cleanup. Kubernetes cases may include a nested runtime
+packet. Setup observations keep deployment primer time, socket priming and
+probe credential exchange separate where each instrument was present.

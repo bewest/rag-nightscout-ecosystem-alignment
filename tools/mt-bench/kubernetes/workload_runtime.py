@@ -1,24 +1,24 @@
 """Select the existing M7 generator inputs, independently of roster and viewers."""
 import math
 from workload import REALISTIC_MIX, REALISTIC_CADENCE_MS
+import workload_inputs
 
 SHAPES = dict(w_sgv=1, w_devicestatus=1, w_treatments_v3=1,
               r_sgv=5, r_devicestatus=1, r_treatments=1, r_status=1)
-# The stock probe ledger bounds attempts to 100000, at >= 1 second cadence.
-MAX_SECONDS = 86400
 SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE')
 
 
-def validate(w, need):
+def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
          'driverPlan', 'driverShards'}, 'WORKLOAD_FIELDS')
-    need(type(w.get('loadSeconds')) is int and 1 <= w['loadSeconds'] <= MAX_SECONDS, 'WORKLOAD_BOUND')
-    need(type(w.get('logicalPollingClients')) is int and 0 <= w['logicalPollingClients'] <= 80000, 'WORKLOAD_VIEWERS')
-    need(type(w.get('probeEveryMs')) is int and 1000 <= w['probeEveryMs'] <= 300000 and
-         type(w.get('hotFactor', 1)) is int and 1 <= w.get('hotFactor', 1) <= 10, 'WORKLOAD_BOUND')
+    need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
+    need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
+    need(workload_inputs.probe_interval(w.get('probeEveryMs')), 'WORKLOAD_PROBE_INTERVAL')
+    need(workload_inputs.probe_fits_ledger(w['probeEveryMs'], w['loadSeconds']), 'WORKLOAD_PROBE_LEDGER_WINDOW')
+    need(type(w.get('hotFactor', 1)) is int and 1 <= w.get('hotFactor', 1) <= 10, 'WORKLOAD_HOT_FACTOR')
     for key, default in (('setupSeconds', 310), ('drainSeconds', 120)):
-        need(type(w.get(key, default)) is int and 1 <= w.get(key, default) <= MAX_SECONDS, 'PHASE_WINDOW')
+        need(workload_inputs.seconds(w.get(key, default)), 'PHASE_WINDOW:' + key)
     if 'workloadMix' in w:
         need(w['workloadMix'] == REALISTIC_MIX and 'offeredRps' not in w and w.get('hotFactor', 1) == 1,
              'REALISTIC_MIX_CONFIGURATION')
@@ -27,7 +27,10 @@ def validate(w, need):
              'WORKLOAD_SCALE_CONFIGURATION')
     else:
         need('workloadScale' not in w, 'WORKLOAD_SCALE_CONFIGURATION')
-        need(type(w.get('offeredRps')) is int and 1 <= w['offeredRps'] <= 10000, 'WORKLOAD_BOUND')
+        need(workload_inputs.offered_rate(w.get('offeredRps')), 'WORKLOAD_OFFERED_RPS')
+        if tenants is not None:
+            need(workload_inputs.aggregate_cycle_ms(tenants, w.get('hotFactor', 1), w['offeredRps']) is not None,
+                 'WORKLOAD_OFFERED_TIME_UNIT')
     need('driverShards' not in w or 'driverPlan' in w, 'DRIVER_PLAN_REQUIRED')
     if 'driverPlan' in w:
         import driver_vu_diagnostic as driver
@@ -69,6 +72,7 @@ def rates(w, n):
         cycles = {shape: math.floor(REALISTIC_CADENCE_MS[shape] * weight / w.get('workloadScale', 1) + .5)
                   for shape, weight in SHAPES.items()}
     else:
-        cycle = math.floor(sum(SHAPES.values()) * n * 1000 / w['offeredRps'] + .5)
+        cycle = workload_inputs.aggregate_cycle_ms(n, w.get('hotFactor', 1), w['offeredRps'])
         cycles = dict.fromkeys(SHAPES, cycle)
+        n += w.get('hotFactor', 1) - 1
     return cycles, {shape: weight * n * 1000 / cycles[shape] for shape, weight in SHAPES.items()}
