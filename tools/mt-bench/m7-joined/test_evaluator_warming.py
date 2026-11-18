@@ -97,7 +97,7 @@ class Warming(unittest.TestCase):
     def test_actual_readiness_waits_held_release_and_keeps_failure_fatal(self):
         held=self.frame();released=copy.deepcopy(held);released['view']['tenants'][0]['progress'].update(completedAcquisitions=1,lastCompletedAgeMs=0)
         records=[];frames=iter([held,released])
-        with tempfile.TemporaryDirectory() as directory,patch.object(adapter,'document',return_value=[{'id':A}]),patch.object(adapter,'progress_services',return_value=['evaluator']),patch.object(adapter,'progress_fetch',side_effect=lambda *_:json.dumps(next(frames)).encode()),patch.object(adapter,'write',side_effect=lambda _,value:records.append(value)),patch.object(adapter.time,'sleep') as sleep:
+        with tempfile.TemporaryDirectory() as directory,patch.object(adapter,'document',return_value=[{'id':A}]),patch.object(adapter,'progress_services',return_value=['evaluator']),patch.object(adapter,'progress_fetch',side_effect=lambda *_, timeout:json.dumps(next(frames)).encode()),patch.object(adapter,'write',side_effect=lambda _,value:records.append(value)),patch.object(adapter.time,'sleep') as sleep:
             adapter.readiness(Path(directory),{})
         self.assertEqual(sleep.call_args.args,(15,));self.assertEqual(records[0]['verdict'],'UNMEASURED');self.assertEqual(records[0]['observations'][0]['code'],'M7_EVALUATOR_PROGRESS_WARMING')
         self.assertEqual(records[0]['observations'][0]['diagnostic']['field'],'completedAcquisitions')

@@ -103,6 +103,8 @@ class Progress(unittest.TestCase):
                     self.assertEqual((clock.now,saved['code']),(1200,'M7_RUNTIME_NOT_READY'))
                 else:
                     self.assertEqual((clock.now,result['verdict']),(1215.25,'PASS'))
+                    self.assertNotIn('code',saved)
+                    self.assertEqual(saved['observations'][0]['code'],'M7_EVALUATOR_PROGRESS_ERROR')
                     self.assertEqual(saved['capture']['limits'],{'attempts':100,'queries':200,'bytes':800000})
                     used=saved['capture']['used']
                     self.assertEqual((used['attempts'],used['queries']),(82,83))

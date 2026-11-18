@@ -1999,8 +1999,9 @@ def readiness(d, m, *, clock=time):
         return value
 
     def publish(verdict, **fields):
-        result.update(verdict=verdict,**fields)
-        write(d/'runtime-readiness.json',result)
+        outcome={**result,'verdict':verdict,**fields}
+        write(d/'runtime-readiness.json',outcome)
+        return outcome
 
     while clock.monotonic()<deadline and used['attempts']<limits['attempts']:
         used['attempts']+=1
@@ -2023,8 +2024,7 @@ def readiness(d, m, *, clock=time):
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
             if verdict=='FAIL' and clinical_stall:
                 result.update(clinicalVerdict='FAIL',clinicalCode=discovery_rest.CODE,restCollectionPermitted=True,capacityAcceptance='NOT_GRANTED',sourceBinding=discovery_rest.binding(m))
-            publish(verdict,meaning='sampled evaluator availability; UNMEASURED availability does not stop discovery REST; durable completion is separate')
-            return result
+            return publish(verdict,meaning='sampled evaluator availability; UNMEASURED availability does not stop discovery REST; durable completion is separate')
         except evaluator_progress.Refused as error:
             cost=getattr(error,'collection',{})
             if not cost and value is not None:
