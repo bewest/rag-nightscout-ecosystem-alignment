@@ -756,7 +756,7 @@ def generate_probe(target):
     anchor = "const at = Date.now(); s.frames.push(at);"
     need(source.count(anchor) == 1, 'PROBE_FRAME_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "\n    if(kubernetesFrames.rows.length<4096){const ids=(frame?.sgvs||[]).slice(0,1024).map(v=>String(v._id));if((frame?.sgvs||[]).length>1024)kubernetesFrames.overflow=true;kubernetesFrames.rows.push({tenant:t.id,socket:sockets.indexOf(s),ids,at});}else kubernetesFrames.overflow=true;")
-    anchor = "e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE'};"
+    anchor = "e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE',assessedCode:result.code,...(result.clientFailure?{assessedClientFailure:result.clientFailure}:{})};"
     need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "e.rawRow=row;")
     anchor = "requestStartedAt:e.sent,...e.completion"

@@ -30,6 +30,13 @@ def write(path, value):
         stream.write('\n')
 
 
+def _counts(values):
+    result = {}
+    for value in values:
+        result[str(value)] = result.get(str(value), 0) + 1
+    return result
+
+
 def witness_coverage(probe, ledger):
     """Check coverage of recorded results; never requalify clinical semantics."""
     expected = sum(row['accepted'] for row in ledger['byTenant'].values())
@@ -41,11 +48,20 @@ def witness_coverage(probe, ledger):
     by_tenant = {t: sum(row.get('tenant') == t for row in witnesses) for t in ledger['byTenant']}
     complete = len(witnesses) == expected and len(set(actual)) == expected and all(
         by_tenant[t] == row['accepted'] for t, row in ledger['byTenant'].items())
+    # Fixed-size detail, retained on refusal: which tenants lack witnesses and
+    # why recorded witnesses were not ready (codes only, no clinical bodies).
+    detail = {'expectedAcceptedProbeWitnesses': expected, 'retainedWitnesses': len(witnesses),
+              'missingTenants': sorted(t for t, row in ledger['byTenant'].items() if by_tenant[t] != row['accepted']),
+              'notReadyCodes': _counts(row.get('code') for row in witnesses if row.get('ready') is not True),
+              'notReadyAssessedCodes': _counts(row.get('assessedCode') for row in witnesses
+                                               if row.get('ready') is not True and row.get('assessedCode')),
+              'notReadyClientFailures': _counts(row.get('assessedClientFailure') or row.get('clientFailure')
+                                                for row in witnesses if row.get('ready') is not True
+                                                and (row.get('assessedClientFailure') or row.get('clientFailure')))}
     if not complete:
-        return {'verdict': 'FAIL', 'code': 'K8S_LOAD_WITNESS_COVERAGE',
-                'expectedAcceptedProbeWitnesses': expected, 'retainedWitnesses': len(witnesses)}
+        return {'verdict': 'FAIL', 'code': 'K8S_LOAD_WITNESS_COVERAGE', **detail}
     ready = sum(row.get('ready') is True for row in witnesses)
-    return {'verdict': 'PASS' if ready == expected and expected > 0 else 'FAIL' if expected else 'UNMEASURED',
+    return {**detail,'verdict': 'PASS' if ready == expected and expected > 0 else 'FAIL' if expected else 'UNMEASURED',
             'code': 'K8S_LOAD_WITNESS_COVERAGE_COMPLETE' if ready == expected and expected else 'K8S_LOAD_WITNESS_NOT_COMPLETE',
             'acceptedProbeWrites': expected, 'recordedReady': ready,
             'witnessTenants': len(set(t for t, _ in actual)),

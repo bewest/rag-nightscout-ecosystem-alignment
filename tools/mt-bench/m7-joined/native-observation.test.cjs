@@ -42,3 +42,8 @@ test('accepted coverage fence omission makes the regression criterion red; resto
  const rejects=api=>assert.equal(api.assess(bad,target,config).code,'M7_COMPLETION_NATIVE_FENCE');
  rejects(native);assert.throws(()=>rejects(mod.exports),assert.AssertionError);rejects(native);green();
 });
+
+test('native receipt cutover digest is read as the contract; a malformed digest refuses',()=>{
+ const cut=structuredClone(row);cut.typed.contractDigest='c'.repeat(64);assert.equal(assess(cut).ready,true);
+ const bad=structuredClone(row);bad.typed.contractDigest='not-a-digest';assert.equal(assess(bad).code,'M7_COMPLETION_TYPED_STATE');green();
+});

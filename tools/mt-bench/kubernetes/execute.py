@@ -747,6 +747,8 @@ def assess_stage(d, out, c, objects, client):
     counts = accepted_writes(out, c, values)
     from workloads.reduce import witness_coverage
     coverage = witness_coverage(probe, k.document(out / 'probe-accounting.json'))
+    # Retained before the clinical refusal so a FAIL keeps its coverage detail.
+    k.write(out / 'witness-coverage.json', coverage)
     k.need(coverage['verdict'] == 'PASS', 'CLINICAL_WITNESS_COVERAGE',
            'FAIL' if coverage['verdict'] == 'FAIL' else 'UNMEASURED')
     clinical = {**semantic(c, out), 'coverage': coverage}

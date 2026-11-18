@@ -54,11 +54,18 @@ function query(config,ids,marker,progress=false){
 }
 const version=value=>typeof value==='string'&&/^(0|[1-9][0-9]*)$/.test(value);
 const exact=value=>version(value)&&value.length<=19&&BigInt(value)<=9223372036854775807n;
+// The native receipt cutover rewrites contract_digest to the native selection's
+// contract (core lib/pgstream/native-receipt-cutover.js). The row is already
+// selected by table and consumer, so a native row needs only a well-formed
+// digest; the non-native contract keeps its exact recomputation.
+function contractMatches(t,config){
+ if(config.native)return typeof t?.contractDigest==='string'&&/^[a-f0-9]{64}$/.test(t.contractDigest);
+ return t?.contractDigest===createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex');
+}
 function typedState(row,config,progress=false){
  const t=row.typed,s=row.state,o=s?.output;
- const digest=createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex');
 
- if(!t||t.version!==2||t.contractDigest!==digest||t.enabled!==true||t.arrayBounds!==true||t.bodyMetadataAbsent!==true)return false;
+ if(!t||t.version!==2||!contractMatches(t,config)||t.enabled!==true||t.arrayBounds!==true||t.bodyMetadataAbsent!==true)return false;
  for(const [field,name]of [['observed','observed'],['completed','completed']]){
   const values=t[field],map=s?.[name];
   if(!Array.isArray(values)||values.length!==SOURCES.length||!map||typeof map!=='object'||Array.isArray(map)||Object.keys(map).some(k=>!SOURCES.includes(k)))return false;
@@ -125,7 +132,7 @@ function progressSnapshot(rows,config,ids){
     revisionZero:t?.revision==='0',identityNull:t?.identity===null,digestNull:t?.digest===null,
     completedEmpty:Array.isArray(t?.completed)&&t.completed.length===6&&t.completed.every(v=>v===null),
     versionTwo:t?.version===2,enabled:t?.enabled===true,arrayBounds:t?.arrayBounds===true,bodyMetadataAbsent:t?.bodyMetadataAbsent===true,
-    contractDigestMatches:t?.contractDigest===(createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex')),
+    contractDigestMatches:contractMatches(t,config),
     observedSixSlots:Array.isArray(t?.observed)&&t.observed.length===6,
     completedSixSlots:Array.isArray(t?.completed)&&t.completed.length===6}};
    throw error;

@@ -85,7 +85,7 @@ def generate(root, target, *, serial_exchange=False):
           // The SQL read may cross the deadline after admission. Credit only
           // evidence returned within the same-process strict 120-second window.
           const withinDeadline=performance.now()-e.sentMono<120000;
-          e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE'};
+          e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE',assessedCode:result.code,...(result.clientFailure?{assessedClientFailure:result.clientFailure}:{})};
           if(e.completion.ready){e.evaluatedAt=Date.now();evalLatencies.push(e.evaluatedAt-e.sent);}
         }
       }else if (open.length) {""")

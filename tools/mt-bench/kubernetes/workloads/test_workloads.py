@@ -78,6 +78,16 @@ class Coverage(unittest.TestCase):
         broken['completedOutput']['witnesses'][1] = copy.deepcopy(broken['completedOutput']['witnesses'][0])
         self.assertEqual(reduction.witness_coverage(broken, ledger)['verdict'], 'FAIL')
         self.assertEqual(reduction.witness_coverage(p, ledger)['verdict'], 'PASS')
+        broken = copy.deepcopy(p)
+        broken['completedOutput']['witnesses'].pop()
+        self.assertEqual(reduction.witness_coverage(broken, ledger)['missingTenants'], ['synthetic-b'])
+        late = copy.deepcopy(p)
+        late['completedOutput']['witnesses'][0].update(ready=False, code='M7_COMPLETION_DEADLINE',
+                                                       assessedCode='M7_COMPLETION_TYPED_STATE')
+        detail = reduction.witness_coverage(late, ledger)
+        self.assertEqual((detail['verdict'], detail['recordedReady']), ('FAIL', 1))
+        self.assertEqual(detail['notReadyCodes'], {'M7_COMPLETION_DEADLINE': 1})
+        self.assertEqual(detail['notReadyAssessedCodes'], {'M7_COMPLETION_TYPED_STATE': 1})
 
     def test_unsupported_skew_history_and_restart_refuse(self):
         p = profiles.read(profiles.HERE / 'small.json')
