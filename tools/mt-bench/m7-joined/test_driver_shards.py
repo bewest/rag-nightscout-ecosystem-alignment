@@ -27,9 +27,18 @@ class DriverShards(unittest.TestCase):
         self.assertEqual(len({round(r['offeredRps'] / r['weight'], 12) for r in rows}), 1)
 
     def test_plan_refusals(self):
-        for args in [(10, 1, 60.0, 1), (10, 1, 60.0, 17), (3, 1, 60.0, 4), (1000, 1, 1.0, 2)]:
+        for args in [(10, 1, 60.0, 1), (10, 1, 60.0, 17), (3, 1, 60.0, 4),
+                     (1000,1,0,2),(1000,1,True,2),(1000,1,float('inf'),2),(1000,1,float('nan'),2),
+                     (1000,1,5e-324,16)]:
             with self.assertRaises(RuntimeError):
                 ds.plan(*args)
+
+    def test_fractional_rates_preserve_aggregate_and_each_shards_weight(self):
+        for rate in (.25,1,12000):
+            rows=ds.plan(1000,4,rate,8)
+            self.assertAlmostEqual(sum(r['offeredRps'] for r in rows),rate)
+            self.assertTrue(all(r['offeredRps']>0 for r in rows))
+            self.assertEqual(len({round(r['offeredRps']/r['weight'],12) for r in rows}),1)
 
     def test_argv_rewrites_only_roster_hot_and_rate(self):
         rows = ds.plan(1000, 4, 180.0, 4)

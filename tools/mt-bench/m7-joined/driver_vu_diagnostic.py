@@ -225,7 +225,7 @@ def configuration(value, cadence):
 
 def expected_plans(m):
     """Independent projection of existing workload math and configured overrides."""
-    from workload import REALISTIC_CADENCE_MS
+    from workload import REALISTIC_CADENCE_MS, MAX_TIME_UNIT_MS
     import driver_shards
     c = m['cadence']; cfg = configuration(c['driverPlan'], c)
     count = m['tenants']; hot = c.get('hotFactor', 10); n = c.get('driverShards', 1)
@@ -251,7 +251,7 @@ def expected_plans(m):
                 unit = math.floor(sum(WEIGHTS[k] for k in cfg['scenarios']) * weight * 1000 / shard['offeredRps'] + .5)
             else:
                 unit = math.floor(300000 / c.get('accel', 1) + .5)
-            require(integer(unit, 1, 2**53 - 1), 'M7_DRIVER_PLAN_RATE')
+            require(integer(unit, 1, MAX_TIME_UNIT_MS), 'M7_DRIVER_PLAN_RATE')
             offered = rate * 1000 * r['durationSeconds'] / unit
             scenarios[name] = {'rate': rate, 'timeUnit': str(unit) + 'ms', 'perSecond': rate * 1000 / unit,
                 **r, 'offeredIterations': offered, 'plannedIterations': math.ceil(offered - 1e-9),

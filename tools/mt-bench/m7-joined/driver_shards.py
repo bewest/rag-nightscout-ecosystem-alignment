@@ -14,7 +14,9 @@ not a pooled-percentile bound. Gauge extrema are sums of per-shard extrema,
 not a synchronized peak.
 """
 import json
+import math
 import shlex
+import sys
 from pathlib import Path
 
 from contract import require
@@ -26,7 +28,7 @@ QUANTILES = ('med', 'p(90)', 'p(95)', 'p(99)')
 def plan(count, hot, offered, shards):
     require(type(shards) is int and 2 <= shards <= MAX_SHARDS and type(count) is int and count >= shards, 'M7_DRIVER_SHARDS_RANGE')
     require(type(hot) is int and hot >= 1, 'M7_DRIVER_SHARDS_HOT')
-    require(offered is None or (isinstance(offered, (int, float)) and offered > 0), 'M7_DRIVER_SHARDS_RATE')
+    require(offered is None or (type(offered) in (int, float) and 0 < offered <= sys.float_info.max and math.isfinite(offered)), 'M7_DRIVER_SHARDS_RATE')
     total = count - 1 + hot
     rows, start = [], 0
     for index in range(shards):
@@ -38,8 +40,9 @@ def plan(count, hot, offered, shards):
                      'offeredRps': None if offered is None else offered * weight / total})
         start = end
     require(start == count and sum(r['weight'] for r in rows) == total, 'M7_DRIVER_SHARDS_PLAN')
-    # The generated workload refuses an offered rate below 1 request/s.
-    require(offered is None or all(r['offeredRps'] >= 1 for r in rows), 'M7_DRIVER_SHARDS_RATE')
+    # Fractional shard rates retain the same weighted aggregate. Refuse a
+    # floating-point underflow instead of silently dropping a shard's demand.
+    require(offered is None or all(math.isfinite(r['offeredRps']) and r['offeredRps'] > 0 for r in rows), 'M7_DRIVER_SHARDS_RATE')
     return rows
 
 

@@ -6,6 +6,9 @@ from contract import require
 
 
 REALISTIC_MIX = 'realistic-v1'
+# k6 durations use Go's signed int64 nanoseconds; this is representability,
+# rather than a reference workload rate or population ceiling.
+MAX_TIME_UNIT_MS = (2**63 - 1) // 1000000
 REALISTIC_CADENCE_MS = {
     'w_sgv': 300000,
     'w_devicestatus': 300000,
@@ -38,7 +41,7 @@ def generate(root, target):
   return response;""")
     arrival="const shapes = Object.fromEntries(Object.entries(ALL_SHAPES).filter(([name]) => SELECTED.includes(name)));"
     require(source.count(arrival)==1,'M7_WORKLOAD_ARRIVAL_ANCHOR_CHANGED')
-    source=source.replace(arrival,arrival+"\nconst offered = __ENV.OFFERED_RPS === undefined ? null : Number(__ENV.OFFERED_RPS);\nif(offered !== null && (!Number.isFinite(offered) || offered < 1 || offered > 10000)) throw Error('M7_OFFERED_RPS_RANGE');\nconst ARRIVAL_CYCLE_MS = offered === null ? Math.round(CYCLE * 1000) : Math.round(Object.values(shapes).reduce((a,b)=>a+b,0)*weight*1000/offered);\nif(ARRIVAL_CYCLE_MS < 1) throw Error('M7_OFFERED_RPS_TIME_UNIT');")
+    source=source.replace(arrival,arrival+"\nconst offered = __ENV.OFFERED_RPS === undefined ? null : Number(__ENV.OFFERED_RPS);\nif(offered !== null && (!Number.isFinite(offered) || offered <= 0)) throw Error('M7_OFFERED_RPS_RANGE');\nconst ARRIVAL_CYCLE_MS = offered === null ? Math.round(CYCLE * 1000) : Math.round(Object.values(shapes).reduce((a,b)=>a+b,0)*weight*1000/offered);\n")
     scenario_anchor = "const scenarios = {};"
     require(source.count(scenario_anchor) == 1, 'M7_WORKLOAD_SCENARIO_ANCHOR_CHANGED')
     source = source.replace(scenario_anchor, f"""
@@ -53,6 +56,9 @@ if (mix !== undefined &&
   throw Error('M7_REALISTIC_MIX_CONFIGURATION');
 }}
 const cycleMs = name => mix === undefined ? ARRIVAL_CYCLE_MS : Math.round(realisticCadenceMs[name] * shapes[name] / workloadScale);
+if (Object.keys(shapes).some(name => !Number.isSafeInteger(cycleMs(name)) || cycleMs(name) < 1 || cycleMs(name) > {MAX_TIME_UNIT_MS})) {{
+  throw Error('M7_OFFERED_RPS_TIME_UNIT');
+}}
 {scenario_anchor}""")
     source=source.replace("Math.round(CYCLE * 1000) + 'ms'","cycleMs(name) + 'ms'").replace("Math.ceil(rate / CYCLE)","Math.ceil(rate * 1000 / cycleMs(name))")
     source=source.replace("const responsesRefused = new Counter('responses_refused');", "const responsesRefused = new Counter('responses_refused');\nconst scenarioAttempts = new Counter('scenario_request_attempts'), scenarioResponses = new Counter('scenario_http_responses'), scenarioTransport = new Counter('scenario_transport_failures');")
