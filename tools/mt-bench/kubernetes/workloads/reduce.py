@@ -6,6 +6,7 @@ import gzip
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import sys
 from types import SimpleNamespace
@@ -14,6 +15,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / 'm7-joined'))
 import discovery_counts
 import http_accounting
+from node_observation import log_events
 import viewer_plan
 
 
@@ -68,6 +70,29 @@ def trace(path, origin_ms, bin_ms=10000):
             b[name] += value
     return {'binMs': bin_ms, 'originMs': origin_ms, 'totals': totals,
             'bins': [{'offsetMs': k, **v} for k, v in sorted(bins.items())]}
+
+
+def interrupted_drivers(stage, files):
+    """Use bounded real marker reads independently of terminal counters."""
+    phases = ('jwt-setup-start', 'jwt-setup-end', 'scenario-first-iteration',
+              'driver-setup-start', 'driver-setup-end', 'driver-scenario-start')
+    rows = []
+    for path in sorted(stage.glob('k6-process*.json')):
+        match = re.fullmatch(r'k6-process(-[0-9]+)?\.json', path.name)
+        if not match:
+            continue
+        suffix = match[1] or ''
+        process = read(path)
+        summary = stage / f'k6-summary{suffix}.json'
+        if type(process.get('returncode')) is int and process['returncode'] == 0 and summary.is_file():
+            continue
+        log = stage / (f'k6-shard{suffix}.log' if suffix else 'k6.log')
+        markers = log_events(log, tail=True, names=phases) | log_events(log, names=phases)
+        files.extend((path, log, summary))
+        rows.append({'process': path.name, 'returncode': process.get('returncode'),
+                     'markersAtMs': markers, 'summaryRetained': summary.is_file(),
+                     'finalAccounting': 'UNMEASURED'})
+    return rows
 
 
 def reduce_stage(stage, output, fixture=None):
@@ -166,6 +191,20 @@ def reduce_stage(stage, output, fixture=None):
                 read(stage / 'fanout.json')['probeWrites']['byTenant'])
         except RuntimeError as error:
             result['delivered'] = {'verdict': 'FAIL', 'code': str(error)}
+    midpoint_refusal = stage / 'progress-midpoint-failure.json'
+    if midpoint_refusal.is_file():
+        failure = read(midpoint_refusal)
+        result['midpointEvaluatorProgress'] = {
+            key: failure[key] for key in ('verdict', 'code')
+        }
+        midpoint = result['midpointEvaluatorProgress']
+        midpoint['responseRetained'] = failure.get('responseRetained', 'UNMEASURED')
+        response = stage / 'progress-midpoint-response.json'
+        if response.is_file():
+            midpoint['observedAt'] = read(response).get('observedAt', 'UNMEASURED')
+        files.extend((midpoint_refusal, response, stage / 'progress-midpoint.private.jsonl'))
+    if interrupted := interrupted_drivers(stage, files):
+        result['interruptedDrivers'] = interrupted
     progress_refusal = stage / 'progress-after-failure.json'
     if progress_refusal.is_file():
         files.extend([progress_refusal,stage/'progress-after-response.json'])
@@ -193,7 +232,6 @@ def reduce_stage(stage, output, fixture=None):
     csv_file = stage / 'k6-scheduling.csv.gz'
     if csv_file.exists():
         # Earliest original scenario-start marker is the scheduling origin.
-        import re
         starts = []
         log = stage / 'k6.log'
         if log.exists():
@@ -210,7 +248,14 @@ def reduce_stage(stage, output, fixture=None):
         result['rateCurve']['reconciled'] = all(
             discovery_counts.counter(metrics, k) == v for k, v in result['rateCurve']['totals'].items())
         files.append(csv_file)
-    result['inputs'] = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in files if p.exists()}
+    result['inputs'] = {}
+    for path in dict.fromkeys(files):
+        if path.is_file():
+            with path.open('rb') as stream:
+                digest = hashlib.sha256()
+                for block in iter(lambda: stream.read(1024 * 1024), b''):
+                    digest.update(block)
+                result['inputs'][str(path)] = digest.hexdigest()
     result['limits'] = ['Original source/placement/contention retained; no workload or topology admission.',
                         'Recorded clinical readiness coverage is distinct from rerunning semantic/raw-SQL proof.',
                         'Ordinary accepted/stored writes do not imply all-writer clinical completion.',

@@ -87,7 +87,8 @@ def wait_observed(process, seconds, failures):
             continue
 
 
-def finite(c, argv, *, env=None, data=None, output=None, seconds=120, failures=None, outcome=None, failure_stdout=None):
+def finite(c, argv, *, env=None, data=None, output=None, error_output=None, seconds=120,
+           failures=None, outcome=None, failure_stdout=None):
     """coreutils timeout survives loss of its parent and bounds the native child.
 
     Only this owned process group is signalled. Cluster cleanup stays HUMAN.
@@ -95,13 +96,13 @@ def finite(c, argv, *, env=None, data=None, output=None, seconds=120, failures=N
     bound = min(seconds, k.deadline(c))
     argv = ['/usr/bin/timeout', '--signal=TERM', '--kill-after=3s', str(max(.01, bound)) + 's', *map(str, argv)]
     process = subprocess.Popen(argv, stdin=subprocess.PIPE if data is not None else subprocess.DEVNULL,
-                               stdout=output or subprocess.PIPE, stderr=output or subprocess.PIPE,
+                               stdout=output or subprocess.PIPE, stderr=error_output or output or subprocess.PIPE,
                                env=env, start_new_session=True)
     try:
         if failures is None:
             out, err = process.communicate(input=data, timeout=bound + 5)
         else:
-            # k6 streams both descriptors directly into the original evidence file.
+            # Stream both descriptors directly into retained files while polling for failures.
             k.need(output is not None and data is None, 'WORKER_CAPTURE_REQUIRED')
             wait_observed(process, bound + 5, failures)
             out, err = None, None
@@ -125,6 +126,24 @@ def finite(c, argv, *, env=None, data=None, output=None, seconds=120, failures=N
         if outcome is not None:
             k.write(outcome, {'returncode': process.returncode, 'boundSeconds': bound,
                              'scope': 'owned native process group; no mutation replay'})
+
+
+def native_k6(c, out, script, *, env, seconds, failures=None, shard=None, options=(), trace_bytes=None):
+    suffix = '' if shard is None else f'-{shard}'
+    eventlog = out / ('k6.log' if shard is None else f'k6-shard-{shard}.log')
+    native = out / f'k6-native{suffix}.log'
+    summary = out / f'k6-summary{suffix}.json'
+    # k6 buffers the file log backend and can lose it on process-group TERM.
+    # Stream the logger to its own descriptor so terminal stdout stays separate.
+    argv = [c['driver']['k6'], 'run', '--quiet', '--log-output=stderr',
+            '--summary-export', summary, *options, script]
+    if trace_bytes is not None:
+        argv[:0] = ['/usr/bin/prlimit', f'--fsize={trace_bytes}:{trace_bytes}', '--']
+    def private_log_opener(path, flags):
+        return os.open(path, flags, 0o600)
+    with open(eventlog, 'xb', opener=private_log_opener) as events, open(native, 'xb', opener=private_log_opener) as output:
+        finite(c, argv, env=env, output=output, error_output=events, seconds=seconds, failures=failures,
+               outcome=out / f'k6-process{suffix}.json')
 
 
 def configured_load(d, out, c, env, setup):
@@ -154,20 +173,15 @@ def configured_load(d, out, c, env, setup):
                      HOT_FACTOR=str(row['hotFactor']), SHAPES=','.join(cfg['scenarios']))
         if row['offeredRps'] is not None:
             local['OFFERED_RPS'] = str(row['offeredRps'])
-        eventlog = out / ('k6-shard-%d.log' % index if n > 1 else 'k6.log')
-        argv = ['/usr/bin/prlimit', '--fsize=%d:%d' % ((cfg['maxTraceBytes'],) * 2), '--',
-                c['driver']['k6'], 'run', '--quiet', '--address', '127.0.0.1:0',
-                '--log-output=file=' + str(eventlog), '--summary-export', out / ('k6-summary' + suffix + '.json')]
+        options = ['--address', '127.0.0.1:0']
         if cfg['observer'] == 'scheduling-v1':
-            argv += ['--out', 'csv=' + str(out / ('k6-scheduling' + suffix + '.csv.gz'))]
-        argv.append(d / driver.SCRIPT)
+            options += ['--out', 'csv=' + str(out / ('k6-scheduling' + suffix + '.csv.gz'))]
         resultfile = out / ('k6-process' + suffix + '.json')
         try:
-            with (out / ('k6-native' + suffix + '.log')).open('xb') as output:
-                finite(c, argv, env=local, output=output,
-                       seconds=c['workload']['loadSeconds'] + setup +
-                               max(r['gracefulStopSeconds'] for r in cfg['scenarios'].values()) + 5,
-                       outcome=resultfile)
+            native_k6(c, out, d / driver.SCRIPT, env=local,
+                      seconds=c['workload']['loadSeconds'] + setup +
+                              max(r['gracefulStopSeconds'] for r in cfg['scenarios'].values()) + 5,
+                      shard=index if n > 1 else None, options=options, trace_bytes=cfg['maxTraceBytes'])
         finally:
             rc = k.document(resultfile)['returncode'] if resultfile.exists() else None
             if n > 1:
@@ -486,10 +500,9 @@ def execute(d, c, objects, client, load=False, recovery=False):
         if cancel.wait(settings['loadSeconds'] / 2 if load else .5):
             return
         try:
-            k.write(out / 'progress-midpoint.json', progress(d, c, objects, client))
+            retained_progress(d, out, c, objects, client, 'progress-midpoint')
         except Exception as error:
             midpoint_failure.append(error)
-            k.write(out / 'progress-midpoint-failure.json', {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': str(error) if str(error) == 'EVALUATOR_SCOPE_UNSAFE' or str(error).startswith(('M7_', 'K8S_')) else 'K8S_PROGRESS_UNAVAILABLE'})
     log = (out / 'probe.log').open('xb')
     try:
         bound = k.deadline(c)
@@ -508,8 +521,6 @@ def execute(d, c, objects, client, load=False, recovery=False):
                        DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(settings.get('jwtSetupConcurrency', 1)),
                        SETTINGS_FINGERPRINT=c['settingsFingerprint'],
                        SHAPES='w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status')
-            # k6's native terminal summary can exceed the bounded witness reader.
-            # Keep its structured event log separate from that full summary.
             if 'setupSeconds' in settings:
                 setup = int(prime_until - time.time())
                 k.need(setup > 0, 'SETUP_WINDOW_EXHAUSTED', 'UNMEASURED')
@@ -527,9 +538,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 load_started = min(p['scheduleStartMs'] for p in phases) / 1000
                 load_ended = min(load_process_ended, max(p['scheduleEndMs'] for p in phases) / 1000)
             else:
-                with (out / 'k6-native.log').open('xb') as output:
-                    finite(c, [c['driver']['k6'], 'run', '--quiet', '--log-output=file=' + str(out / 'k6.log'), '--summary-export', out / 'k6-summary.json', d / 'workload.js'], env=env, output=output, seconds=settings['loadSeconds'] + setup + 5, failures=midpoint_failure,
-                           outcome=out / 'k6-process.json')
+                native_k6(c, out, d / 'workload.js', env=env,
+                          seconds=settings['loadSeconds'] + setup + 5, failures=midpoint_failure)
                 load_process_ended = time.time()
                 load_started, load_ended = ordinary_load_window(c, out / 'k6.log', load_process_started, load_process_ended)
             (out / '.restart').touch()
