@@ -126,6 +126,32 @@ class Catchup(unittest.TestCase):
             self.assertEqual(value['captures'], [])
             self.assertEqual(value['code'], 'M7_DRAIN_BYTE_BOUND')
 
+    def test_configured_observation_can_pass_after_old_time_bound(self):
+        value=self.observe([self.boundary,self.completed()],seconds=600,interval=130)
+        self.assertEqual(value['verdict'],'PASS')
+        self.assertEqual(value['observationSeconds'],600)
+        self.assertGreater(value['endNs']-value['startNs'],120e9)
+        for bad in (0,-1,float('inf'),float('nan'),True):
+            with self.subTest(bad=bad),self.assertRaisesRegex(p.Refused,'M7_DRAIN_BOUND'):
+                self.observe([],seconds=bad)
+
+    def test_explicit_round_query_and_byte_budgets_allow_a_longer_capture(self):
+        rows=[self.boundary]*18+[self.completed()]
+        original=self.observe(rows,seconds=600,interval=1)
+        self.assertEqual(original['verdict'],'UNMEASURED')
+        self.assertEqual(original['code'],'M7_DRAIN_QUERY_BOUND')
+        self.now=3_000_000_000
+        policy={'maxRounds':40,'maxQueries':40,'maxBytes':1000000000,'roundSeconds':30}
+        value=self.observe(rows,seconds=600,interval=1,policy=policy)
+        self.assertEqual(value['verdict'],'PASS')
+        self.assertEqual(value['rounds'],19)
+        self.assertEqual(value['policy']['maxRounds'],40)
+        self.now=3_000_000_000
+        refused=self.observe(rows,seconds=600,interval=1,policy={**policy,'maxQueries':1})
+        self.assertEqual(refused['verdict'],'UNMEASURED')
+        self.assertEqual(refused['queries'],1)
+        self.assertEqual(refused['code'],'M7_DRAIN_QUERY_BOUND')
+
     def test_changed_or_unknown_join_bracket_refuses(self):
         with self.assertRaisesRegex(p.Refused, 'WRITER_BOUNDARY'):
             c.observe(self.boundary, [A, B], BINDING, None,

@@ -105,6 +105,30 @@ const cycleMs = name => mix === undefined ? ARRIVAL_CYCLE_MS : Math.round(realis
     projection=helper[helper.index('function projection('):helper.index("const fs = require(")]
     source="import { sha256 } from 'k6/crypto';\n"+source
     source+= "\n"+projection+"\n"
+    source += """
+// An authored remaining setup window replaces the historical default. The
+// surrounding runner still enforces its original absolute work cutoff.
+if (__ENV.M7_SETUP_SECONDS !== undefined) {
+  const seconds = Number(__ENV.M7_SETUP_SECONDS);
+  const until = Number(__ENV.M7_SETUP_UNTIL_MS);
+  if (!/^[1-9][0-9]*$/.test(__ENV.M7_SETUP_SECONDS) ||
+      !Number.isSafeInteger(seconds * 1000) || !/^[1-9][0-9]*$/.test(__ENV.M7_SETUP_UNTIL_MS || '') ||
+      !Number.isSafeInteger(until)) throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
+  options.setupTimeout = seconds + 's';
+} else if (__ENV.M7_SETUP_UNTIL_MS !== undefined) {
+  throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
+}
+function setupRemainingMs () {
+  if (__ENV.M7_SETUP_UNTIL_MS === undefined) return 60000;
+  const remaining = Number(__ENV.M7_SETUP_UNTIL_MS) - Date.now();
+  if (remaining <= 0) throw Error('M7_PHASE_WINDOW_EXHAUSTED:setup');
+  return remaining;
+}
+"""
+    account("export function setup () {", "export function setup () {\n  setupRemainingMs();")
+    account("responseType: 'text', timeout: '60s'", "responseType: 'text', timeout: Math.min(60000,setupRemainingMs()) + 'ms'")
+    account("    for (let j = 0; j < requests.length; j++) {", "    setupRemainingMs();\n    for (let j = 0; j < requests.length; j++) {")
+    account("  return { jwts };", "  setupRemainingMs();\n  return { jwts };")
     source+= "const fingerprintObserved = new Counter('settings_fingerprint_observed');\nconst fingerprintInvalid = new Counter('settings_fingerprint_invalid');\nconst fingerprintMismatch = new Counter('settings_fingerprint_mismatch');\n"
     old="export function r_status () { const { t } = pick(); get(t, '/api/v1/status.json', 'GET v1 status'); }"
     require(source.count(old)==1,'M7_WORKLOAD_STATUS_ANCHOR_CHANGED')

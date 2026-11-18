@@ -12,8 +12,9 @@ import time
 import evaluator_opportunities as o
 import evaluator_progress as p
 import evaluator_idle as idle
+import phase_windows
 
-POLICY = {'version': 1, 'maxSeconds': 120, 'maxRounds': 16,
+POLICY = {'version': 1, 'maxRounds': 16,
           'maxQueries': 1024, 'maxBytes': 67108864, 'roundSeconds': 20}
 
 
@@ -84,7 +85,7 @@ def assess(boundary, previous, current, ids, binding, *, boundary_clock=None,cur
 
 def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns, seconds=60, interval=5,
             initial_cost=None, round_max_queries=None, round_max_bytes=o.ROUND_BYTES,
-            monotonic_ns=time.monotonic_ns, sleep=time.sleep):
+            monotonic_ns=time.monotonic_ns, sleep=time.sleep, policy=None):
     """Finite collector; retain every capture and refusal, including partial work.
 
     The returned brackets are on one observer's monotonic clock. A completion's
@@ -93,7 +94,12 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
     The caller supplies the boundary bracket separately to measure from writer
     join; this function never invents a join time from a revision or wall clock.
     """
-    p.need(type(seconds) in (int, float) and math.isfinite(seconds) and 0 < seconds <= POLICY['maxSeconds'], 'M7_DRAIN_BOUND')
+    limits=dict(POLICY)
+    if policy is not None:
+        p.need(isinstance(policy,dict) and set(policy)<=set(limits) and policy.get('version',1)==1,'M7_DRAIN_OBSERVER_FIELDS')
+        phase_windows.observation_override({key:value for key,value in policy.items() if key!='version'})
+        limits.update(policy)
+    p.need(type(seconds) in (int, float) and math.isfinite(seconds) and 0 < seconds, 'M7_DRAIN_BOUND')
     p.need(type(interval) in (int, float) and math.isfinite(interval) and 0 < interval <= seconds, 'M7_DRAIN_BOUND')
     selected_native=o.native_binding(binding)
     boundary_clock=(initial_cost or {}).get('inspection') if selected_native else None
@@ -114,7 +120,7 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
     p.need(type(round_max_queries) is int and round_max_queries > 0 and type(round_max_bytes) is int and round_max_bytes > 0, 'M7_DRAIN_BOUND')
     history = []; previous = boundary; initial_rounds = int(initial_cost is not None)
     queries, size = totals(initial_cost) if initial_cost is not None else (0, 0)
-    p.need(queries <= POLICY['maxQueries'] and size <= POLICY['maxBytes'], 'M7_DRAIN_INITIAL_COST')
+    p.need(queries <= limits['maxQueries'] and size <= limits['maxBytes'], 'M7_DRAIN_INITIAL_COST')
     result = initial; code = None
     last_pending = {t: boundary_window['startNs'] for t, row in initial['byTenant'].items() if row['status'] == 'PENDING'}
     bounds = {t: {'lowerNs': None, 'upperNs': boundary_window['endNs']} for t, row in initial['byTenant'].items() if row['status'] == 'COMPLETED'}
@@ -123,19 +129,19 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
             now = monotonic_ns(); remaining = (deadline - now) / 1e9
             if remaining <= 0: code = 'M7_DRAIN_DEADLINE'; break
             if result['classifications'].get('UNMEASURED',0):code='M7_DRAIN_DUE_CLOCK_REQUIRED';break
-            if len(history) + initial_rounds >= POLICY['maxRounds'] or queries + round_max_queries > POLICY['maxQueries']:
+            if len(history) + initial_rounds >= limits['maxRounds'] or queries + round_max_queries > limits['maxQueries']:
                 code = 'M7_DRAIN_QUERY_BOUND'; break
-            if size + round_max_bytes > POLICY['maxBytes']:
+            if size + round_max_bytes > limits['maxBytes']:
                 code = 'M7_DRAIN_BYTE_BOUND'; break
             start = now
-            snapshot, cost = fetch(min(POLICY['roundSeconds'], remaining))
+            snapshot, cost = fetch(min(limits['roundSeconds'], remaining))
             end = monotonic_ns()
             # Retain bytes and brackets before validation, even for refused data.
             history.append({'startNs': start, 'endNs': end, 'snapshot': snapshot, 'cost': cost})
             used_queries, used_bytes = totals(cost)
             p.need(used_queries <= round_max_queries and used_bytes <= round_max_bytes, 'M7_DRAIN_ROUND_COST')
             queries += used_queries; size += used_bytes
-            p.need(size <= POLICY['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
+            p.need(size <= limits['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
             current = assess(boundary, previous, snapshot, ids, binding,**({'boundary_clock':boundary_clock,'current_clock':cost.get('inspection')} if selected_native else {}))
             p.need(end <= deadline, 'M7_DRAIN_DEADLINE')
             for tenant, row in current['byTenant'].items():
@@ -154,7 +160,7 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
     except Exception:
         code = 'M7_DRAIN_COLLECTION_REFUSED'
         result = {**result, 'verdict': 'UNMEASURED'}
-    return {**result, 'code': code, 'policy': POLICY, 'boundary': boundary,
+    return {**result, 'code': code, 'policy': limits, 'observationSeconds': seconds, 'boundary': boundary,
             'reader': binding, 'writerStoppedNs': writer_stopped_ns, 'boundaryWindow': boundary_window, 'captures': history, 'startNs': started, 'endNs': monotonic_ns(),
             'completionBounds': bounds, 'drainAfterWriterJoinMs': {t: {'lower': max(0, ((b['lowerNs'] or writer_stopped_ns) - writer_stopped_ns) / 1e6), 'upper': (b['upperNs'] - writer_stopped_ns) / 1e6} for t, b in bounds.items()}, 'rounds': len(history) + initial_rounds, 'queries': queries, 'responseBytes': size,
             'costScope': 'queries/responseBytes totals include initial boundary SQL plus all tail SQL and runtime inspection response bytes; preparation node cost is separate',
@@ -204,16 +210,25 @@ def run(a, directory, manifest, record):
                and all(row['pending'] == 0 for row in accounting['byTenant'].values()), 'M7_DRAIN_PROBE_PENDING')
         # Bounded preparation and every child command share the original work
         # deadline. The local observation budget includes preparation/boundary.
-        seconds = min(60, a.remaining_seconds(60)); until = time.monotonic_ns() + int(seconds * 1e9)
+        window_file=directory/'load/phase-windows.json'
+        window=a.document(window_file) if window_file.exists() else {}
+        requested=phase_windows.drain_seconds(manifest,window,time.monotonic_ns())
+        seconds=a.remaining_seconds(requested);until=time.monotonic_ns()+int(seconds*1e9)
+        value['observationWindow']={'requestedRemainingSeconds':requested,'effectiveSeconds':seconds,
+            'selectedClinicalDeadlineSeconds':120,
+            'scope':'fixed-target observation after writers join; selected clinical deadline unchanged'}
         with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + seconds)):
             services = a.progress_services(directory)
             rpc_queries = len(services) * math.ceil(len(ids) / 128)
             round_queries = math.ceil(len(ids) / 64) + rpc_queries
             round_bytes = o.ROUND_BYTES + rpc_queries * (p.POLICY['responseMaxBytes'] + 8192)
+            policy,interval=phase_windows.observation_policy(manifest['cadence'],seconds,round_queries,round_bytes,POLICY)
+            value['observationWindow']['collectorPolicy']=policy
+            value['observationWindow']['intervalSeconds']=interval
             # Reserve the first read before constructing/calling its collector,
             # exactly as observe reserves each later read. Refusal spends no SQL.
-            p.need(POLICY['maxRounds'] >= 1 and round_queries <= POLICY['maxQueries'], 'M7_DRAIN_QUERY_BOUND')
-            p.need(round_bytes <= POLICY['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
+            p.need(policy['maxRounds'] >= 1 and round_queries <= policy['maxQueries'], 'M7_DRAIN_QUERY_BOUND')
+            p.need(round_bytes <= policy['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
             collector = a.opportunity_collector(directory, manifest, ids)
             value['preparationCost'] = collector.preparation_cost
             def fetch(timeout):
@@ -235,7 +250,7 @@ def run(a, directory, manifest, record):
                         raise
                     return snapshot, cost
             start = time.monotonic_ns()
-            boundary, boundary_cost = fetch(min(20, (until - start) / 1e9))
+            boundary, boundary_cost = fetch(min(policy['roundSeconds'], (until - start) / 1e9))
             end = time.monotonic_ns()
             value.update(boundary=boundary, boundaryCost=boundary_cost,
                          reader=collector.binding, sourceSha256=collector.source_sha256,
@@ -244,7 +259,7 @@ def run(a, directory, manifest, record):
             p.need(remaining > 0, 'M7_DRAIN_DEADLINE')
             result = observe(boundary, ids, collector.binding, fetch,
                              writer_stopped_ns=stopped, boundary_window={'startNs': start, 'endNs': end},
-                             seconds=remaining, interval=min(5, remaining), initial_cost=boundary_cost,
+                             seconds=remaining, interval=min(interval, remaining), initial_cost=boundary_cost, policy=policy,
                              round_max_queries=round_queries, round_max_bytes=round_bytes)
             value.update(result)
     except p.Refused as error:

@@ -49,6 +49,16 @@ def generate(root, target, *, serial_exchange=False):
     # of this exact image (runner records the image and dependency archive hash).
     from probe_discovery import adapt
     source=adapt(source)
+    setup_anchor="  const jwts = new Array(tenants.length);"
+    require(source.count(setup_anchor)==1,'M7_PROBE_SETUP_ANCHOR_CHANGED')
+    source=source.replace(setup_anchor,"""  const setupSeconds=Number(args.setupSeconds??300),setupStartedMono=performance.now();
+  if(!Number.isSafeInteger(setupSeconds)||!Number.isSafeInteger(setupSeconds*1000)||setupSeconds<=0)throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
+"""+setup_anchor)
+    setup_wait='Date.now() - t0 < 300000'
+    require(source.count(setup_wait)==1,'M7_PROBE_SETUP_ANCHOR_CHANGED')
+    # Retain the legacy default branch's literal for existing Kubernetes
+    # materializers; an explicit clock includes exchanges before socket opens.
+    source=source.replace(setup_wait,'(args.setupSeconds===undefined ? '+setup_wait+' : performance.now()-setupStartedMono<setupSeconds*1000)')
     source=source.replace("{ encoding: 'utf8', maxBuffer: 64 << 20 }", "{ encoding: 'utf8', timeout:5000, maxBuffer:64 << 20 }")
     # The first pgstream sample joins an actual stored marker, durable completion,
     # the evaluator-produced frame and already-connected client identity/content.

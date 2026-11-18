@@ -9,6 +9,7 @@ import discovery_rest
 import evaluator_catchup
 import driver_vu_diagnostic
 import node_observation
+import phase_windows
 from contract import require, SHA, OWNER, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope
 
 INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
@@ -290,11 +291,16 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     env.update(a.clinical_timeline.probe_environment(m))
     env.update(a.revision_witness.probe_environment(d,m))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
+    windows=phase_windows.start(m,time.monotonic_ns(),int(time.time()*1000))
+    if windows:a.write(out/'phase-windows.json',windows)
     process=None;monitor=None;load_started=False;primed=False;probe_stopped=False
     try:
         with (out/'probe.log').open('wb') as probe_log,a.sampling(d,out):
-            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window')],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
-            a.job_record(out/'probe-job.json',process,m['owner'],group=True);deadline=a.time.monotonic()+a.discovery_seconds(m,600)
+            process=a.diagnostic_resources.popen(a.subprocess.Popen, [m['generator']['tools']['node']['path'],str(d/'probe.js'),'--base','http://127.0.0.1:'+str(m['port']),'--tenants',str(d/'tenants.private.json'),'--compose',spec,'--runid',runid,'--clients',str(viewer_plan.total(m)),'--per',str(m['cadence'].get('socketsPerTenant',2)),'--open','5','--window',str(m['cadence']['loadSeconds']),'--probeEvery',str(m['cadence'].get('probeEveryMs',3000)),'--restart','1' if m['cadence'].get('restart',True) else '0','--evalTimeout','900','--out',str(out/'probe.json'),'--signal',str(out/'.window'),*(['--setupSeconds',str(windows['setupSeconds'])] if 'setupSeconds' in windows else [])],env=env,stdout=probe_log,stderr=a.subprocess.STDOUT,start_new_session=True)
+            a.job_record(out/'probe-job.json',process,m['owner'],group=True)
+            setup_seconds=(a.remaining_seconds(phase_windows.remaining(windows,'setup',time.monotonic_ns()))
+                           if 'setupSeconds' in windows else a.discovery_seconds(m,600))
+            deadline=a.time.monotonic()+setup_seconds
             while not (out/'.window').is_file() and process.poll() is None and a.time.monotonic()<deadline:a.time.sleep(1)
             primed=(out/'.window').is_file()
             if (out/'probe.json').is_file():
@@ -309,7 +315,20 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             try:
                 def work():
                     with node_observation.collect(a,d,m,out) as node, (out/'k6.log').open('wb') as output:
-                        record.process('k6',lambda:(lambda argv,**kw:oneoff('k6-load',argv,**kw)if oneoff else a.command(argv,**kw))(k6_command(a,d,m,k6_id,runid),file=output,timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)))
+                        def launch():
+                            argv=k6_command(a,d,m,k6_id,runid)
+                            timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)
+                            if 'setupSeconds' in windows:
+                                setup=a.remaining_seconds(phase_windows.remaining(windows,'setup',time.monotonic_ns()))
+                                argv=phase_windows.k6_setup(argv,k6_id,setup,windows['setupUntilUnixMs'])
+                                grace=max((row.get('gracefulStopSeconds',30) for row in m['cadence'].get('driverPlan',{}).get('scenarios',{}).values()),default=30)
+                                timeout=a.remaining_seconds(setup+m['cadence']['loadSeconds']+grace+5)
+                            return (oneoff('k6-load',argv,file=output,timeout=timeout) if oneoff
+                                    else a.command(argv,file=output,timeout=timeout))
+                        record.process('k6',launch)
+                        if 'drainSeconds' in windows:
+                            windows['drainStartedMonoNs']=time.monotonic_ns()
+                            a.write(out/'phase-windows.json',windows)
                     if node is not None:
                         record.value['nodeObservation']=node;record.save()
                     if record.value['processes']['k6'].get('timeout'):stop_k6(a,m,record,oneoff=oneoff)
@@ -329,9 +348,14 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                     if primary is None:raise
             # Recheck owned custody before the existing bounded restart protocol.
             a.assert_owned(m)
+            if 'drainSeconds' in windows:
+                windows.setdefault('drainStartedMonoNs',time.monotonic_ns())
+                a.write(out/'phase-windows.json',windows)
             if primed and not probe_stopped and process.poll() is None:
                 (out/'.restart').touch();start=time.time()
-                try:rc=process.wait(timeout=a.discovery_seconds(m,1500))
+                drain=(a.remaining_seconds(phase_windows.remaining(windows,'drain',time.monotonic_ns()))
+                       if 'drainSeconds' in windows else a.discovery_seconds(m,1500))
+                try:rc=process.wait(timeout=drain)
                 except a.subprocess.TimeoutExpired:rc=None
                 record.value['processes']['probe']={'returncode':rc,'startedRecoveryAt':start,'endedAt':time.time(),'timeout':rc is None,'endMonoNs':time.monotonic_ns()};record.save()
             else:

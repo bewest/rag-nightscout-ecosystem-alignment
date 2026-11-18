@@ -124,5 +124,28 @@ class DiagnosticOneoffs(unittest.TestCase):
         owner.pop('jwtSetupConcurrency');(self.root/'owner.json').write_text(json.dumps(owner))
         b._oneoff_intent(self.binding,'k6-load',legacy,self.scope,self.meta,self.root/'cid')
 
+    def test_remaining_setup_clock_is_bound_to_authored_window_and_owner(self):
+        import phase_windows
+        m={'project':self.binding['project'],'owner':self.scope['owner'],'port':12345,
+           'settingsFingerprint':{'sha256':'f'*64},'cadence':{'loadSeconds':2,'setupSeconds':900}}
+        owner=b.load(self.root/'owner.json');owner['cadence']=m['cadence']
+        (self.root/'owner.json').write_text(json.dumps(owner))
+        window=phase_windows.start(m,0,1000000)
+        (self.root/'load').mkdir(exist_ok=True)
+        (self.root/'load/phase-windows.json').write_text(json.dumps(window))
+        base=discovery.k6_command(adapter,self.root,m,self.scope['imageId'],'synthetic')
+        argv=phase_windows.k6_setup(base,self.scope['imageId'],750,window['setupUntilUnixMs'])
+        b._oneoff_intent(self.binding,'k6-load',argv,self.scope,self.meta,self.root/'cid')
+        for replacement in ('M7_SETUP_SECONDS=901','M7_SETUP_SECONDS=0','M7_SETUP_UNTIL_MS=99999999'):
+            key=replacement.split('=')[0]
+            broken=[replacement if x.startswith(key+'=') else x for x in argv]
+            with self.assertRaisesRegex(RuntimeError,'SETUP_WINDOW_CHANGED'):
+                b._oneoff_intent(self.binding,'k6-load',broken,self.scope,self.meta,self.root/'cid')
+        with self.assertRaisesRegex(RuntimeError,'SETUP_WINDOW_CHANGED'):
+            b._oneoff_intent(self.binding,'k6-load',base,self.scope,self.meta,self.root/'cid')
+        window['owner']='foreign';(self.root/'load/phase-windows.json').write_text(json.dumps(window))
+        with self.assertRaisesRegex(RuntimeError,'SETUP_WINDOW_CHANGED'):
+            b._oneoff_intent(self.binding,'k6-load',argv,self.scope,self.meta,self.root/'cid')
+
 
 if __name__=='__main__':unittest.main()
