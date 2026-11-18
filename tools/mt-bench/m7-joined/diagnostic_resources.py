@@ -203,6 +203,39 @@ def plan(config):
     return Plan(tuple((r, role_limit(r,profile), 2 if r in ('bootstrap', 'primer') else 1) for r in sorted(services)),profile)
 
 
+
+COMPOSE_CPU_LIMITS = ('cpus', 'cpu_quota', 'cpu_period', 'cpu_count', 'cpu_percent')
+COMPOSE_MEMORY_LIMITS = ('mem_limit', 'memswap_limit', 'mem_reservation')
+NATIVE_CPU_LIMITS = ('NanoCpus', 'CpuQuota', 'CpuPeriod', 'CpuCount', 'CpuPercent')
+NATIVE_MEMORY_LIMITS = ('Memory', 'MemorySwap', 'MemoryReservation')
+
+
+def compose_limit_mode(config, selected):
+    if selected is not None:
+        return 'configured'
+    for role, spec in config['services'].items():
+        alternate = spec.get('deploy', {}).get('resources', {}).get('limits', {})
+        need(not any(spec.get(key) for key in (*COMPOSE_CPU_LIMITS, *COMPOSE_MEMORY_LIMITS))
+             and not any(alternate.get(key) for key in ('cpus', 'memory')),
+             'IMPLICIT_SERVICE_LIMIT:' + role)
+    return 'uncapped-services'
+
+
+def uncapped_readback(rows, services):
+    evidence = []
+    for row in rows:
+        role = row['Config']['Labels'].get('com.docker.compose.service')
+        if role not in services:
+            continue
+        config = row['HostConfig']
+        observed = {key: config.get(key) for key in (*NATIVE_CPU_LIMITS, *NATIVE_MEMORY_LIMITS)}
+        need(all(type(value) is int and value == 0 for value in observed.values()),
+             'UNEXPECTED_NATIVE_SERVICE_LIMIT:' + role)
+        evidence.append({'role': role, 'containerId': row['Id'], 'limits': observed})
+    need(bool(evidence), 'NATIVE_SERVICE_LIMITS_UNMEASURED')
+    return evidence
+
+
 def overlay(config, selected, *, applying=True):
     """Return a full JSON Compose document; never mutate source/default config."""
     if selected is None:

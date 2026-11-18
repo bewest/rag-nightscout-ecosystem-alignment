@@ -55,7 +55,8 @@ import collection_segments
 import vault_refusal
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
-          "tools/mt-bench/compose-baseline/probes/sample.sh", "tools/mt-bench/compose-baseline/oracle/disk.sh"]
+          "tools/mt-bench/compose-baseline/probes/sample.sh", "tools/mt-bench/compose-baseline/oracle/disk.sh",
+          "tools/mt-bench/run-catalog/retained.py", "tools/mt-bench/run-catalog/latency.py"]
 
 
 def jwt_setup_concurrency(value):
@@ -843,8 +844,6 @@ def prepare_staged(args,target,pinned):
     serving_mounts(config)
     stream_topology.verify_config(m,config)
     static_topology.verify_config(m,config)
-    if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
-        require(diagnostic_resources.external_selection(selected_resources_profile(args)),'M7_PGSTREAM_EXTERNAL_RESOURCE_PROFILE_REQUIRED')
     measurement_topology(m,config)
     profile_provenance.select_environment(config,m["diagnostics"])
     platform_startup_config(config,target,m,getattr(args,"tenant_readiness",None))
@@ -870,13 +869,16 @@ def prepare_staged(args,target,pinned):
     require(not any("shared_preload_libraries" in str(x) for x in pg["command"][:-6]), "M7_POSTGRES_PRELOAD_ALREADY_SELECTED")
     selected_resources=selected_resources_profile(args)
     config=diagnostic_resources.overlay(config,selected_resources)
+    if m.get('runPurpose') == 'discovery':
+        m['composeLimitMode'] = diagnostic_resources.compose_limit_mode(config, selected_resources)
     clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'),getattr(args,'clinical_sender_binary',None),getattr(args,'clinical_sender_receipt',None),getattr(args,'clinical_intake_targets',None))
     revision_witness.install(config,target,m,getattr(args,'revision_witness_targets',None))
     api_cause.install(config,target,m,getattr(args,'api_cause_observation','off')=='on')
     api_warm_cause.install(config,target,m,api_warm_cause.option(args).get('apiWarmCauseMode','off'))
     m['servingInstances'] = role_instances.roster(config,m['replicas'])
     node_observation.install(config,target,m,node_observation.option(args).get('nodeObservationMode','off'))
-    if selected_resources is not None:config=seal_diagnostic_images(config,m)
+    if selected_resources is not None or m.get('runPurpose') == 'discovery':
+        config=seal_diagnostic_images(config,m)
     record=diagnostic_resources.selected_record(config,selected_resources)
     if record is not None:
         m['diagnosticResources']=record
@@ -1327,6 +1329,10 @@ def deploy(d, m):
     require(all(value==projections[0] for value in projections),"M7_PRIMER_OUTPUT_CONFLICT")
     write(d/"tenants.private.json",projections[0])
     profile_provenance.runtime_environment(resources(m),m["diagnostics"],config,pgstream=m.get("profile")=="pgstream-sample")
+    if m.get('composeLimitMode') == 'uncapped-services':
+        rows = diagnostic_resources.uncapped_readback(diagnostic_resource_rows(m), config['services'])
+        write(d/'compose-limits-readback.json', {'mode': m['composeLimitMode'], 'services': rows,
+              'scope': 'owned Compose services; host-level constraints and contention may still apply'})
     m["restartRoles"]=service_roster(config)
     write(d/"owner.json",m);write(d/"deployment.json",{"stages":stages,"pair":m["pair"],"imageId":m["imageId"]})
 

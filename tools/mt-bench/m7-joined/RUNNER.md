@@ -1199,3 +1199,49 @@ CPU/memory/event/lifetime peaks. Deployment failure also attempts an immediate
 credential arguments are excluded. A stopped/removed cgroup remains UNMEASURED.
 The observer's lifetime RSS peak and collection CPU delta are separate. Missing
 optional counters do not erase retained termination facts or authorize replay.
+
+## Run tiers and effective settings
+
+Add `"tier": "smoke"`, `"tier": "discovery"` or `"tier": "acceptance"` to
+the existing runner configuration. Existing version 1 configurations that
+omit `tier` retain their receipt-based workflow.
+
+```bash
+python3 tools/mt-bench/m7-joined/runner.py plan /absolute/private/config.json
+python3 tools/mt-bench/m7-joined/runner.py run /absolute/private/config.json \
+  /mnt/data/nightscout-workspace/artifacts/<lane>/<new-run>
+```
+
+`plan` prints authored keys, applied defaults, effective cadence, resource
+mode, and source admission. It starts no services. Tiered runs check source
+worktree heads and cleanliness and inspect the actual image before starting a
+fixture. Supply an existing immutable application image and its exact core
+and deployment heads. For smoke and discovery, omit `prepare.receipt` to
+have the runner bind the verified source and authored finite plan into a
+private PENDING receipt. Supply the frozen source acceptance receipt for the
+acceptance tier. The runner preserves input failures and automatically indexes
+terminal evidence under the overflow artifact root.
+
+Smoke defaults to eight tenants and 60 seconds of load and uses the same
+runner and count controls. Its retained verdict covers the exercised stored
+counts, fixture ownership, viewer-to-tenant bindings and selected clinical
+witnesses. Full-population clinical tails and restore qualification require
+their own evidence. Use a smoke point on the same source, image and instrument
+before a larger seed after transport or generator changes. Runtime and
+cleanup clocks still use the authored work and cleanup windows.
+
+If `smokeBaseline` is set to an absolute path, the smoke report compares its
+SQL signals with the baseline's version 1 `signals` using matching scopes.
+Use `exactStatementSignals` for baseline keys whose deterministic statement
+count per unit must match. PostgreSQL timing changes remain observations.
+Measurements with uncertain or variable units stay outside the exact list.
+
+Omitting both `diagnostic-resource-profile` and
+`diagnostic-resource-allocation` selects uncapped Compose services, including
+ordinary external pgstream discovery. The normal preparation rejects an
+unexpected embedded service quota and deployment checks the owned Docker
+readback. Host constraints still apply. A named profile or an authored
+allocation selects its explicit service/driver caps and existing readback.
+Static workers and batch reservations still require their exact allocation
+inputs. Review requested versus observed limits before comparing operating
+points.

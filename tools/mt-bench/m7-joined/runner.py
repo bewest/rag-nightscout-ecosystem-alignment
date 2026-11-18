@@ -23,6 +23,95 @@ sys.path.insert(0, str(HERE))
 import adapter as a
 from contract import require
 
+TIERS = ('smoke', 'discovery', 'acceptance')
+GENERATED_RECEIPT = 'configuration-receipt.json'
+SMOKE_DEFAULTS = {
+    'tenants': 8, 'replicas': 1, 'load-seconds': 60, 'warmup-seconds': 5,
+    'idle-seconds': 5, 'probe-every-ms': 10000, 'sockets-per-tenant': 1,
+    'offered-rps': 2, 'completion-contract': 'evaluator-work-v2',
+}
+
+
+def tier_options(config):
+    tier = config.get('tier')
+    options = config['prepare']
+    if tier is None:
+        return options, {}
+    defaults = {'profile': 'pgstream-sample',
+                'run-purpose': 'acceptance' if tier == 'acceptance' else 'discovery'}
+    if tier == 'smoke':
+        defaults.update(SMOKE_DEFAULTS)
+        if 'workload-mix' in options:
+            del defaults['offered-rps']
+    if tier != 'acceptance' and not {'receipt', 'freeze'} & options.keys():
+        defaults['receipt'] = GENERATED_RECEIPT
+    effective = {**defaults, **options}
+    return effective, {key: value for key, value in defaults.items() if key not in options}
+
+
+def tier_plan(config):
+    from run_configuration import from_args, resolve
+    _, argv = validate_config(config)
+    parsed = a.parser().parse_args(['prepare', '--directory', '/tmp/m7-tier-plan', *argv])
+    tier = config.get('tier', 'discovery')
+    _, defaults = tier_options(config)
+    if tier == 'acceptance':
+        projection = {'configuration': from_args(parsed, a.instrument()['sha256'])}
+    else:
+        projection = resolve(config)
+    effective = projection['configuration']
+    return {
+        'tier': tier, 'defaultsApplied': defaults,
+        'authoredKeys': sorted(config['prepare']),
+        'effective': effective,
+        'execution': {key: config[key] for key in ('workSeconds', 'cleanupSeconds')},
+        'sourceAdmission': ('frozen acceptance receipt' if tier == 'acceptance' else
+                            'runner-materialized PENDING tuple' if parsed.freeze == GENERATED_RECEIPT
+                            else 'supplied diagnostic receipt'),
+        'resourceOrigin': ('configured diagnostic allocation' if effective['resources'] else
+                           'uncapped Compose services; host limits may apply'),
+        'coverage': {
+            'clinical': 'selected write witnesses',
+            'wholePopulationClinicalTails': 'UNMEASURED',
+            'restore': 'separate frozen acceptance control',
+        },
+        'preflight': {
+            'sourceAndImage': 'checked before fixture seed on tiered runs',
+            'transportOrGeneratorChange': 'run a smoke point with the same source, image and instrument before seeding a larger discovery point',
+            'runtime': 'owned readiness, driver export and completion reader checks',
+        },
+        'capacityAcceptance': 'NOT_GRANTED',
+    }
+
+
+def clean_source_preflight(parsed):
+    for role in ('core', 'deploy'):
+        repo = getattr(parsed, role + '_repo')
+        selected = a.commit(repo, getattr(parsed, role + '_commit'))
+        label = role.upper()
+        require(a.git(repo, 'rev-parse', 'HEAD') == selected, 'M7_SOURCE_' + label + '_HEAD')
+        require(not a.git(repo, 'status', '--porcelain', '--untracked-files=normal'),
+                'M7_SOURCE_' + label + '_DIRTY')
+    if parsed.run_purpose == 'discovery':
+        a.prepare_image_inputs(parsed)
+    else:
+        a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
+                 'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
+
+
+def auto_catalog(root):
+    tool = HERE.parent / 'run-catalog' / 'catalog.py'
+    artifacts = Path('/mnt/data/nightscout-workspace/artifacts')
+    if not root.is_relative_to(artifacts) or not tool.is_file():
+        return
+    try:
+        completed = subprocess.run([sys.executable, '-B', str(tool), 'add', str(root)],
+                                   capture_output=True, timeout=30)
+        if completed.returncode:
+            write(root / 'catalog-status.json', {'status': 'UNMEASURED', 'code': 'M7_CATALOG_INDEX_REFUSED'})
+    except (OSError, subprocess.TimeoutExpired):
+        write(root / 'catalog-status.json', {'status': 'UNMEASURED', 'code': 'M7_CATALOG_COULD_NOT_RUN'})
+
 
 def write(path, value):
     path = Path(path)
@@ -53,7 +142,14 @@ def load_config(path):
 def validate_config(config):
     require(config.get('version') == 1, 'M7_RUNNER_CONFIG_VERSION')
     common = {'version', 'prepare', 'k6Image', 'workSeconds', 'cleanupSeconds'}
-    require(set(config) in (common | {'helperHead'}, common | {'helperInstrument'}), 'M7_RUNNER_CONFIG_FIELDS')
+    keys = set(config) - {'tier', 'smokeBaseline'}
+    require(keys in (common | {'helperHead'}, common | {'helperInstrument'}), 'M7_RUNNER_CONFIG_FIELDS')
+    tier = config.get('tier')
+    require('tier' not in config or tier in TIERS, 'M7_RUNNER_TIER')
+    if 'smokeBaseline' in config:
+        baseline = config['smokeBaseline']
+        require(tier == 'smoke' and isinstance(baseline, str) and Path(baseline).is_absolute(),
+                'M7_SMOKE_BASELINE_PATH')
     verify_helper(config)
     require(re.fullmatch(r'sha256:[a-f0-9]{64}', config['k6Image']) is not None, 'M7_RUNNER_K6_PIN')
     require(type(config['workSeconds']) is int and 30 <= config['workSeconds'] <= 86400
@@ -61,13 +157,24 @@ def validate_config(config):
     options = config['prepare']
     require(isinstance(options, dict) and 'directory' not in options and 'fixture-project' in options
             and 'backend-subnet' in options and 'edge-subnet' in options, 'M7_RUNNER_PREPARE_CONFIG')
+    options, _ = tier_options(config)
+    require(not {'receipt', 'freeze'} <= options.keys(), 'M7_RUNNER_RECEIPT_AMBIGUOUS')
+    require(tier != 'acceptance' or bool({'receipt', 'freeze'} & options.keys()),
+            'M7_FROZEN_ACCEPTANCE_REQUIRED')
     argv = []
     for key, value in options.items():
         require(re.fullmatch(r'[a-z][a-z0-9-]+', key) and isinstance(value, (str, int, float)) and not isinstance(value, bool), 'M7_RUNNER_PREPARE_OPTION')
         argv.extend(['--' + key, str(value)])
     # The adapter owns supported options and all source/profile admission.
     parsed = a.parser().parse_args(['prepare', '--directory', '/tmp/m7-runner-validation', *argv])
-    require(parsed.profile == 'pgstream-sample' and parsed.run_purpose == 'discovery', 'M7_RUNNER_DISCOVERY_ONLY')
+    purpose = 'acceptance' if tier == 'acceptance' else 'discovery'
+    require(parsed.profile == 'pgstream-sample' and parsed.run_purpose == purpose, 'M7_RUNNER_TIER_PROFILE')
+    if tier in ('smoke', 'discovery'):
+        require(re.fullmatch(r'sha256:[a-f0-9]{64}', parsed.image_id or parsed.image) is not None,
+                'M7_TIER_IMAGE_PIN')
+        require(parsed.completion_contract is not None, 'M7_TIER_COMPLETION_CONTRACT')
+    if tier == 'smoke':
+        require(parsed.logical_polling_clients != 0, 'M7_SMOKE_CLIENT_WITNESS_REQUIRED')
     from run_configuration import validate_prepare
     validate_prepare(parsed)
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
@@ -79,7 +186,12 @@ def preflight_receipt(config, argv):
     # Validate receipt/config mirrors before creating output or arming a guard.
     parsed=a.parser().parse_args(['prepare','--directory','/tmp/m7-runner-validation',*argv])
     receipt=a.document(parsed.freeze)
-    if receipt.get('version')==2 or parsed.static_workers is not None:
+    if config.get('tier') == 'acceptance':
+        pair = {'core': parsed.core_commit, 'deploy': parsed.deploy_commit}
+        require(receipt.get('imageId') == (parsed.image_id or parsed.image), 'M7_ACCEPTANCE_IMAGE_MISMATCH')
+        a.receipt_scope({'pair': pair, 'profile': parsed.profile, 'runPurpose': 'acceptance'},
+                        receipt, 'deploy')
+    elif receipt.get('version')==2 or parsed.static_workers is not None:
         from run_configuration import from_args, validate_execution
         validate_execution(config,receipt)
         resolved=from_args(parsed,a.instrument()['sha256'])
@@ -87,22 +199,47 @@ def preflight_receipt(config, argv):
 
 
 def prepare(config_file, directory):
-    config, argv = load_config(config_file)
-    preflight_receipt(config,argv)
+    config = a.document(config_file)
+    tier = config.get('tier')
+    if tier is None:
+        _, argv = validate_config(config)
+        preflight_receipt(config, argv)
     root = Path(directory).resolve()
     require(not root.exists(), 'M7_RUNNER_OUTPUT_EXISTS')
     root.mkdir(mode=0o700, parents=True)
     write(root / 'config.json', config)
     write(root / 'result.json', {'version': 1, 'status': 'PREPARING', 'phase': 'prepare', 'capacityAcceptance': 'NOT_GRANTED'})
-    arm_window(root,config)
+    phase = 'configuration'
     try:
+        if tier is not None:
+            _, argv = validate_config(config)
+            parsed = a.parser().parse_args(['prepare', '--directory', str(root / 'fixture'), *argv])
+            phase = 'source-input'
+            clean_source_preflight(parsed)
+            if parsed.freeze == GENERATED_RECEIPT:
+                from run_configuration import resolve
+                receipt = resolve(config)['diagnosticReceiptTemplate']
+                receipt['status'] = 'AUTHORIZED_DIAGNOSTIC'
+                write(root / GENERATED_RECEIPT, receipt)
+                argv[argv.index('--receipt') + 1] = str(root / GENERATED_RECEIPT)
+            phase = 'receipt'
+            preflight_receipt(config, argv)
+        phase = 'prepare'
+        arm_window(root, config)
         stage(root,'prepare',['prepare','--directory',str(root/'fixture'),*argv])
+        phase = 'source-preflight'
         stage(root,'source-preflight',['source-preflight',str(root/'fixture')])
         write(root / 'result.json', {'version': 1, 'status': 'PREPARED', 'phase': 'prepare', 'runtimeStarted': False, 'configSha256': a.digest(root / 'config.json'), 'capacityAcceptance': 'NOT_GRANTED'})
     except BaseException as error:
-        write(root / 'result.json', {'version': 1, 'status': 'FAILED', 'phase': 'prepare', 'code': code(error), 'runtimeStarted': False, 'capacityAcceptance': 'NOT_GRANTED'})
-        try:cleanup(root,'PREPARE_FAILURE')
-        except BaseException as cleanup_error:write(root/'cleanup-failure.json',{'code':code(cleanup_error)})
+        write(root / 'result.json', {'version': 1, 'status': 'FAILED', 'phase': phase,
+                                     'code': code(error), 'runtimeStarted': False,
+                                     'finishedAt': time.time(), 'capacityAcceptance': 'NOT_GRANTED'})
+        if (root / 'execution.json').exists():
+            try:
+                cleanup(root, 'PREPARE_FAILURE')
+            except BaseException as cleanup_error:
+                write(root / 'cleanup-failure.json', {'code': code(cleanup_error)})
+        auto_catalog(root)
         raise
     return root
 
@@ -348,6 +485,9 @@ def execute(directory, rehearsal=False):
         optional_preflight(root, d)
         stage(root, 'run', ['run', str(d), '--k6-image', config['k6Image']])
         if m.get('vaultRefusalControl'):stage(root,'vault-check',['vault-check',str(d)])
+        if config.get('tier') == 'smoke':
+            from tier_smoke import assess
+            assess(root, config.get('smokeBaseline'))
     except BaseException as error:
         failure = {'code': code(error), 'errorType': type(error).__name__}
     finally:
@@ -362,6 +502,7 @@ def execute(directory, rehearsal=False):
         if guard_alive(root):failure={**(failure or {}),'guardCode':'M7_RUNNER_GUARD_PENDING'}
         result = {'version': 1, 'status': ('COMPLETED' if partial(root)['adapterStatus'] == 'MEASURED' else 'COMPLETED_PARTIAL') if failure is None else 'FAILED_PARTIAL', 'phase': phase, 'failure': failure, 'partial': partial(root), 'cleanup': a.document(root / 'cleanup.json') if (root / 'cleanup.json').exists() else {'status': 'UNMEASURED'}, 'capacityAcceptance': 'NOT_GRANTED', 'finishedAt': time.time()}
         write(root / 'result.json', result)
+        auto_catalog(root)
     require(failure is None, 'M7_RUNNER_POINT_INCOMPLETE')
     return result
 
@@ -490,6 +631,7 @@ def session_observe(directory, owner, name, config_file, history_file):
                 'capacityAcceptance':'NOT_GRANTED','runtime':'REUSED',
                 'writeEffects':'UNCERTAIN after failure; inspect originals before another scenario' if failure else 'Retained; never reset'}
             write(ob/'result.json',result)
+            auto_catalog(ob)
             if failure and failure.get('errorType') in ('KeyboardInterrupt','SystemExit'):
                 session_close(root,session['owner'])
         require(failure is None,'M7_SESSION_OBSERVATION_INCOMPLETE')
@@ -657,7 +799,12 @@ def main():
         command=sub.add_parser(mode);command.add_argument('config');command.add_argument('--payload-root',required=True)
         if mode=='batch-run':command.add_argument('directory')
     cell=sub.add_parser('_batch-cell');cell.add_argument('config');cell.add_argument('directory')
-    prep = sub.add_parser('prepare');prep.add_argument('config');prep.add_argument('directory')
+    for mode in ('prepare', 'run'):
+        prep = sub.add_parser(mode)
+        prep.add_argument('config')
+        prep.add_argument('directory')
+    plan = sub.add_parser('plan')
+    plan.add_argument('config')
     for name in ('execute', 'rehearse', 'result', 'down', '_guard', 'batch-result'):
         sub.add_parser(name).add_argument('directory')
     start = sub.add_parser('session-start');start.add_argument('config');start.add_argument('directory')
@@ -695,8 +842,13 @@ def main():
     if args.action == 'identity':
         identity = a.instrument()
         return print(json.dumps({'helperHead': identity['commit'], 'helperInstrument': identity['sha256']}, indent=2))
-    if args.action == 'prepare':
-        return prepare(args.config, args.directory)
+    if args.action == 'plan':
+        return print(json.dumps(tier_plan(a.document(args.config)), indent=2))
+    if args.action in ('prepare', 'run'):
+        root = prepare(args.config, args.directory)
+        if args.action == 'run':
+            return execute(root)
+        return root
     root = Path(args.directory).resolve()
     if args.action in ('execute', 'rehearse'):return execute(root, args.action == 'rehearse')
     if args.action == '_guard':return guard(root)

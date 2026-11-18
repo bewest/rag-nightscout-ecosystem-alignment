@@ -334,7 +334,8 @@ def local(evidence):
     if driver:
         source_conflicts(evidence, ("fixture/owner.json", owner), ("fixture/load/driver-vu-assessment.json", driver))
     for name in ("cleanup.json", "fixture/deployment-stages.json", "fixture/runtime-readiness.json",
-                 "fixture/terminal-before-cleanup.json", "fixture/terminal-capture-unavailable.json"):
+                 "fixture/terminal-before-cleanup.json", "fixture/terminal-capture-unavailable.json",
+                 "fixture/compose-limits-readback.json", "smoke.json"):
         evidence.file(name)
     return {
         "producer": "local",
@@ -357,8 +358,11 @@ def local(evidence):
         },
         "limits": {"requestedSha256": key_digest(resources),
                    "nativeReadback": [name for name in ("fixture/load/before-cgroups.json",
-                                      "fixture/load/after-cgroups.json", "runtime-before.json")
-                                      if evidence.file(name)]},
+                                      "fixture/load/after-cgroups.json", "runtime-before.json",
+                                      "fixture/compose-limits-readback.json")
+                                      if evidence.file(name)],
+                   **({"composeMode": owner["composeLimitMode"]} if owner.get("composeLimitMode") in
+                      ("uncapped-services", "configured") else {})},
         "population": count(first_known(owner.get("tenants"), summary.get("tenants"), get(options, "tenants"))),
         "replicas": count(first_known(owner.get("replicas"), summary.get("replicas"), get(options, "replicas"))),
         "cadence": cadence(configured),
