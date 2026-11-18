@@ -20,8 +20,8 @@ def cfg():
     value['services']['evaluator']['command']=['node','entrypoint.js','evaluator'];return value
 
 
-def source_schema():
-    return {'properties':{'pgstream':{'type':'object','required':['receiver','slot','streamRole','bounds'],
+def source_schema(startup=False):
+    value={'properties':{'pgstream':{'type':'object','required':['receiver','slot','streamRole','bounds'],
         'additionalProperties':False,'properties':{
             **dict.fromkeys(['receiver','slot','streamRole','bounds'],{}),
             'transactionRows':{'type':'integer','minimum':1,'maximum':1000000},
@@ -32,6 +32,12 @@ def source_schema():
                     'timeoutMs':{'type':'integer','minimum':1,'maximum':30000},
                     'maxQueued':{'type':'integer','minimum':1,'maximum':1024}}}},
         'dependentRequired':{'generation':['transactionRows'],'recovery':['transactionRows']}}}}
+    if startup:
+        value['properties']['pgstream']['properties']['startupTransport']={
+            'type':'object','additionalProperties':False,'required':['timeoutMs','retryIntervalMs'],
+            'properties':{name:{'type':'integer','minimum':1,'maximum':9223372036854}
+                          for name in ('timeoutMs','retryIntervalMs')}}
+    return value
 
 
 class Topology(unittest.TestCase):
@@ -104,13 +110,56 @@ class Topology(unittest.TestCase):
         with self.assertRaises(AssertionError):criterion(namespace['verify_source'])
         criterion(t.verify_source);t.verify_source(EXTERNAL,source_schema())
 
+    def test_startup_transport_closed_finite_schema_and_historical_source(self):
+        original=source_schema(startup=True)
+        t.verify_source(EXTERNAL,original)
+        t.verify_source(EXTERNAL,source_schema())
+        cases=[
+            lambda s:s.pop('required'),
+            lambda s:s['required'].remove('retryIntervalMs'),
+            lambda s:s['required'].append('timeoutMs'),
+            lambda s:s['properties'].pop('timeoutMs'),
+            lambda s:s['properties'].update(fallback={}),
+            lambda s:s.update(additionalProperties=True),
+            lambda s:s.update(unknownKeyword=True),
+            lambda s:s['properties']['timeoutMs'].update(type='number'),
+            lambda s:s['properties']['timeoutMs'].update(minimum=0),
+            lambda s:s['properties']['timeoutMs'].pop('maximum'),
+            lambda s:s['properties']['retryIntervalMs'].update(maximum=9223372036855),
+        ]
+        for change in cases:
+            broken=copy.deepcopy(original);change(broken['properties']['pgstream']['properties']['startupTransport'])
+            with self.assertRaisesRegex(RuntimeError,'STARTUP_TRANSPORT_REQUIRED'):t.verify_source(EXTERNAL,broken)
+            t.verify_source(EXTERNAL,original)
+        annotated=copy.deepcopy(original)
+        annotated['properties']['pgstream']['properties']['startupTransport']['description']='annotation only'
+        t.verify_source(EXTERNAL,annotated)
+        unknown=copy.deepcopy(original);unknown['properties']['pgstream']['properties']['fallback']={}
+        with self.assertRaisesRegex(RuntimeError,'EXTERNAL_SOURCE_REQUIRED'):t.verify_source(EXTERNAL,unknown)
+        t.verify_source(EXTERNAL,original)
+
+    def test_startup_validator_ablation_is_red_and_restoration_passes(self):
+        source=Path(t.__file__).read_text();needle="startup.get('additionalProperties') is False"
+        self.assertEqual(source.count(needle),1)
+        namespace=dict(t.__dict__);exec(compile(source.replace(needle,'True'),t.__file__,'exec'),namespace)
+        broken=source_schema(startup=True);broken['properties']['pgstream']['properties']['startupTransport']['additionalProperties']=True
+        def criterion(verify):
+            with self.assertRaisesRegex(RuntimeError,'STARTUP_TRANSPORT_REQUIRED'):verify(EXTERNAL,broken)
+        criterion(t.verify_source)
+        with self.assertRaises(AssertionError):criterion(namespace['verify_source'])
+        criterion(t.verify_source);t.verify_source(EXTERNAL,source_schema(startup=True))
+
     @unittest.skipUnless(os.environ.get('M7_NATIVE_CORE_REPO') and os.environ.get('M7_NATIVE_CORE_COMMIT'),'exact selected Git source required')
     def test_actual_selected_schema_from_exact_git_object(self):
         repo=os.environ['M7_NATIVE_CORE_REPO'];head=os.environ['M7_NATIVE_CORE_COMMIT']
         exact=subprocess.check_output(['git','-C',repo,'rev-parse',head+'^{commit}'],text=True).strip()
         self.assertRegex(exact,r'^[a-f0-9]{40}$')
         raw=subprocess.check_output(['git','-C',repo,'show',exact+':lib/server/serve/plan-contract/schema/evaluator.schema.json'],text=True)
-        schema=json.loads(raw);t.verify_source(EXTERNAL,schema)
+        schema=json.loads(raw)
+        if os.environ.get('M7_EXPECT_STARTUP_TRANSPORT')=='1':
+            self.assertEqual(len(schema['properties']['pgstream']['properties']),8)
+            self.assertIn('startupTransport',schema['properties']['pgstream']['properties'])
+        t.verify_source(EXTERNAL,schema)
         broken=copy.deepcopy(schema);broken['properties']['pgstream']['properties']['generation']['pattern']='.*'
         with self.assertRaisesRegex(RuntimeError,'NATIVE_SOURCE_REQUIRED'):t.verify_source(EXTERNAL,broken)
         t.verify_source(EXTERNAL,schema)
