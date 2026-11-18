@@ -36,10 +36,10 @@ async function run(tenants,base,io,{connectMs=5000,observeMs=5000}={}){
       // A swapped credential on the stock Socket.IO authorization path must
       // produce no dataUpdate during a finite observed polling connection.
       const connectStarted=Date.now();
-      let frames=0,authorizeReply=false,engineOpened=false,firstError=null,disconnected=false;
+      let frames=0,authorizeReply=false,engineOpened=false,firstError=null,disconnect=null;
       const socket=io('http://'+tenants[1-i].host+':'+base.port,{transports:['polling'],agent,reconnection:false,timeout:connectMs});sockets.push(socket);
       socket.io?.once('open',()=>{engineOpened=true;});
-      socket.once('disconnect',()=>{disconnected=true;});
+      socket.once('disconnect',reason=>{disconnect={at:Date.now(),serverClosed:reason==='io server disconnect'};});
       socket.on('dataUpdate',()=>frames++);
       const connected=await new Promise(resolve=>{
         const timer=setTimeout(()=>resolve(false),Math.max(0,Math.min(connectMs,deadline-Date.now())));
@@ -57,8 +57,9 @@ async function run(tenants,base,io,{connectMs=5000,observeMs=5000}={}){
       const observationStarted=Date.now();
       await new Promise(resolve=>setTimeout(resolve,observeMs));
       if(frames)throw Error('K8S_FOREIGN_SOCKET_FRAME');
-      if(disconnected)socketRefusal('disconnect');
-      records.push({case:'cross-token-socket',tenantIndex:i,connected,authorizeReply,frames,observedMs:Date.now()-observationStarted,
+      if(disconnect && (!disconnect.serverClosed || disconnect.at<observationStarted))socketRefusal('disconnect');
+      records.push({case:'cross-token-socket',tenantIndex:i,connected,authorizeReply,frames,
+        observedMs:(disconnect?.at??Date.now())-observationStarted,terminal:disconnect?'server-closed':'observation-complete',
         connectElapsedMs:observationStarted-connectStarted});socket.close();
     }
     return {version:1,verdict:'PASS',crossTenantChecks:2,records,startedAt,endedAt:Date.now(),scope:'finite read refusal and no foreign frame; no network-policy enforcement claim',capacityAcceptance:'NOT_GRANTED'};
