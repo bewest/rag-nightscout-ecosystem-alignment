@@ -94,6 +94,14 @@ qualify its own transport/environment, without repeating unrelated application
 acceptance. Start with the smallest useful remote point and reuse that qualified
 path for larger authorized configurations.
 
+The maintainer has authorized routine private diagnostic image publication and
+pulls at negligible cost, including the roughly $0.00067 storage example. Reuse
+that [standing authority](multitenancy-decisions.md#routine-diagnostic-image-delivery)
+for ordinary testing and repair images; do not request approval for each digest.
+Keep source/image identity, measured transfer/storage, cache custody and cleanup
+in the existing run record. This removes repeated image-delivery approval from
+the experiment path.
+
 ### Application requirements and environment capabilities
 
 Application correctness requires tenant/current authority and restore fences,
