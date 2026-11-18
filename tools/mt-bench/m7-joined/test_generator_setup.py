@@ -59,8 +59,17 @@ class SetupConcurrency(unittest.TestCase):
         args=['prepare','--directory','/tmp/new','--core-repo','/tmp/core','--core-commit','a'*40,'--deploy-repo','/tmp/deploy','--deploy-commit','b'*40,'--image','synthetic','--freeze','/tmp/freeze','--tenants','500','--replicas','1']
         self.assertEqual(adapter.parser().parse_args(args).jwt_setup_concurrency,1)
         self.assertEqual(adapter.parser().parse_args(args+['--jwt-setup-concurrency','16']).jwt_setup_concurrency,16)
-        with patch('sys.stderr'):
-            with self.assertRaises(SystemExit):adapter.parser().parse_args(args+['--jwt-setup-concurrency','65'])
+        class Captured(Exception):pass
+        with patch.object(adapter,'port',return_value=12345),patch.object(adapter,'inventory',return_value={}),patch.object(adapter,'host_identity',return_value='synthetic'),patch.object(adapter,'write',side_effect=Captured) as publication:
+            for purpose, value in [('acceptance',65),('discovery',0),('discovery',2**53)]:
+                parsed=adapter.parser().parse_args(args+['--run-purpose',purpose,'--jwt-setup-concurrency',str(value)])
+                with self.assertRaisesRegex(RuntimeError,'M7_JWT_SETUP_CONCURRENCY_INVALID'):
+                    adapter.prepare_staged(parsed,Path('/tmp/synthetic'),{})
+            publication.assert_not_called()
+            discovery_args=adapter.parser().parse_args(args+['--run-purpose','discovery','--jwt-setup-concurrency','65'])
+            with self.assertRaises(Captured):
+                adapter.prepare_staged(discovery_args,Path('/tmp/synthetic'),{})
+            self.assertEqual(publication.call_args.args[1]['jwtSetupConcurrency'],65)
 
 
     def test_campaign_cli_records_selection_and_refuses_changed_resume(self):

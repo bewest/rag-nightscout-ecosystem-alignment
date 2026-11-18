@@ -35,7 +35,11 @@ def prepare_fixture(target, concurrency=1, overlay_kind="directory"):
             (target/'state').mkdir();(overlay/'.env').write_text('SYNTHETIC=1\n');return ''
         if argv[:2]==['docker','compose'] and argv[-3:]==['config','--format','json']:
             roles=('postgres','vault','admin','primer','api','realtime','evaluator','tenant-admin','ui','nginx','feed-reader')
-            return json.dumps({'services':{role:{'command':['postgres'] if role=='postgres' else ['synthetic']} for role in roles}})
+            services={role:{'command':['synthetic']} for role in roles}
+            services['postgres']['command']=['postgres']
+            for role in ('api','realtime','evaluator'):
+                services[role]['command']=['node','lib/server/serve/main.js',role]
+            return json.dumps({'services':services})
         raise AssertionError(('unexpected command effect',argv))
     with contextlib.ExitStack() as stack:
         for name,value in {'commit':lambda *args:None,'git':git,'command':command,'instrument':lambda:{'sha256':'f'*64},'inventory':lambda *args:{},'host_identity':lambda value:'synthetic','resources':lambda m:[],'port':lambda:12345,'setup_generator':lambda *args:None}.items():
