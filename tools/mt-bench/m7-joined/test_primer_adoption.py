@@ -1,4 +1,5 @@
 import json
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -54,6 +55,59 @@ class PrimerAdoption(unittest.TestCase):
         commit.assert_called_once_with(args.deploy_repo,args.deploy_commit)
         preflight.assert_called_once_with(args)
         self.assertEqual(args.image_input_preflight,proof)
+
+    def test_timed_out_constructor_removes_exact_owned_container_and_checks_absence(self):
+        name='ns-primer-option-probe-'+'a'*32
+        container='b'*64
+        image='sha256:'+'c'*64
+        events=[]
+        for cleanup in ('owned','foreign','unobservable'):
+            with self.subTest(cleanup=cleanup):
+                state={'present':False}
+                events.clear()
+
+                def docker(argv, timeout):
+                    self.assertGreater(timeout,0)
+                    self.assertEqual(argv[:2],['docker','container'])
+                    action=argv[2]
+                    events.append(action)
+                    if action=='create':
+                        self.assertEqual(argv[argv.index('--name')+1],name)
+                        self.assertIn('org.nightscout.m7.owner='+'a'*32,argv)
+                        self.assertIn(primer_options._PROBE_LABEL+'=v1',argv)
+                        self.assertEqual(argv[argv.index('--network')+1],'none')
+                        self.assertEqual(argv[argv.index('--pull')+1],'never')
+                        self.assertIn('--read-only',argv)
+                        self.assertIn('--init',argv)
+                        self.assertIn('--cpus',argv)
+                        self.assertIn('--memory-swap',argv)
+                        self.assertIn('--pids-limit',argv)
+                        state['present']=True
+                        return container+'\n'
+                    if action=='ls':
+                        if cleanup=='unobservable' and 'start' in events:
+                            raise subprocess.CalledProcessError(1,argv)
+                        return container+'\n' if state['present'] else ''
+                    if action=='inspect':
+                        owner='d'*32 if cleanup=='foreign' and 'start' in events else 'a'*32
+                        return json.dumps([container,'/'+name,image,owner,'v1'])
+                    if action=='start':
+                        self.assertEqual(argv[3:],['--attach',container])
+                        raise subprocess.TimeoutExpired(argv,timeout)
+                    if action=='rm':
+                        self.assertEqual(argv[3:],['--force',container])
+                        state['present']=False
+                        return container
+                    self.fail('Unexpected Docker operation '+action)
+
+                with patch.object(primer_options.uuid,'uuid4',return_value=primer_options.uuid.UUID(hex='a'*32)):
+                    code={'owned':'PRIMER_OPTION_PROBE_TIMEOUT','foreign':'PRIMER_OPTION_PROBE_OWNER_CHANGED',
+                          'unobservable':'PRIMER_OPTION_PROBE_CLEANUP_UNMEASURED'}[cleanup]
+                    with self.assertRaisesRegex(RuntimeError,code):
+                        primer_options.probe_image(docker,image,primer_options._DECLARATION,{'concurrency':64},adapter.primer_need)
+                self.assertEqual(events[:4],['create','ls','inspect','start'])
+                self.assertEqual(('rm' in events,state['present']),(cleanup=='owned',cleanup!='owned'))
+                if cleanup=='owned':self.assertEqual(events[-3:],['rm','ls','ls'])
 
     def fixture(self,root):
         adapter.write(root/'frozen.compose.json',{'services':{'postgres':{'environment':{'POSTGRES_DB':'synthetic_application'}}}})

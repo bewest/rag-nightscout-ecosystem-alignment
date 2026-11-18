@@ -119,7 +119,8 @@ def materialize(manifest, binding_repo, deploy_repo, out):
            'UNSUPPORTED_BINDING_DEPLOYMENT_INPUT')
     if protocol:
         proof = primer_options.probe_image(
-            lambda argv:subprocess.check_output(argv, timeout=30),selected['localImageId'],prime_source,options,k.need)
+            lambda argv,timeout:subprocess.check_output(argv, timeout=timeout, text=True),
+            selected['localImageId'],prime_source,options,k.need)
         k.need(proof['sha256']==measured['sourceFilesSha256']['prime.js'], 'PRIMER_OPTION_IMAGE_SOURCE_CHANGED')
         measured[primer_options.PROTOCOL_FIELD] = protocol
     frozen.install_bootstrap_helper(manifest, deploy_repo, package, measured)

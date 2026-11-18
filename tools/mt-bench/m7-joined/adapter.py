@@ -676,7 +676,8 @@ def prepare_image_inputs(args):
     result={'appImageId':selected,'postgresImageId':postgres['Id'],'scope':'existing image identity and source labels only; runtime preflight still required'}
     if primer_raw is not None:
         result['primerSource']=primer_options.probe_image(
-            lambda argv:command(argv,timeout=30,phase='primer-source-preflight'),selected,primer_raw,options,primer_need)
+            lambda argv,timeout:command(argv,timeout=timeout,phase='primer-source-preflight'),
+            selected,primer_raw,options,primer_need)
     return result
 
 

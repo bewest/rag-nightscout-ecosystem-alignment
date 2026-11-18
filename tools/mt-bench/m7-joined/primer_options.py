@@ -2,7 +2,13 @@
 
 import hashlib
 import json
+import re
+import subprocess
+import time
+import uuid
 
+from contract import OWNER
+from diagnostic_resources import LIMITS
 import workload_inputs
 
 
@@ -13,6 +19,11 @@ SOURCE_PATH = 'bindings/compose/multitenant/prime.js'
 DEFAULT_CONCURRENCY = 1
 DEFAULT_MAX_TENANTS = 10000
 LEGACY_CONCURRENCY_MAX = 32
+_PROBE_SECONDS = 30
+_CLEANUP_SECONDS = 10
+_PROBE_LABEL = 'org.nightscout.m7.primer-option-probe'
+_CONTAINER_ID = re.compile(r'[0-9a-f]{64}')
+_DOCKER_ERRORS = (OSError, RuntimeError, subprocess.SubprocessError)
 
 _DECLARATION = b"const PRIMER_OPTION_PROTOCOL = 'positive-safe-integer-v1';\n"
 _LEGACY_VALIDATOR = (b'!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 32 || '
@@ -85,10 +96,82 @@ console.log(JSON.stringify({sha256, protocol: source.PRIMER_OPTION_PROTOCOL, opt
 def probe_image(command, image, raw, options, need):
     protocol = source_protocol(raw)
     require_source(options, protocol, need)
+    need(image.startswith('sha256:') and _CONTAINER_ID.fullmatch(image[7:]), 'PRIMER_OPTION_IMAGE_ID')
     sha = hashlib.sha256(raw).hexdigest()
-    result = json.loads(command(['docker', 'run', '--rm', '--pull', 'never', '--network', 'none', '--read-only',
-                                 '--entrypoint', 'node', image, '-e', image_probe(),
-                                 json.dumps(argv(options, include_serial=True)), sha]))
+    owner = uuid.uuid4().hex
+    name = 'ns-primer-option-probe-' + owner
+    container = None
+    docker = ['docker', 'container']
+    selector = [*docker, 'ls', '--all', '--quiet', '--no-trunc', '--filter']
+    by_name = [*selector, 'name=^/' + name + '$']
+    by_owner = [*selector, 'label=' + OWNER + '=' + owner]
+    identity_format = ('[{{json .Id}},{{json .Name}},{{json .Image}},'
+                       '{{json (index .Config.Labels "' + OWNER + '")}},'
+                       '{{json (index .Config.Labels "' + _PROBE_LABEL + '")}}]')
+
+    def bounded(seconds, code):
+        deadline = time.monotonic() + seconds
+
+        def run(args):
+            remaining = deadline - time.monotonic()
+            need(remaining > 0, code)
+            return command(args, timeout=remaining)
+
+        return run
+
+    def owned_container(run):
+        ids = run(by_name).splitlines()
+        if not ids:
+            need(not run(by_owner).strip(), 'PRIMER_OPTION_PROBE_OWNER_CHANGED')
+            return None
+        need(len(ids) == 1 and _CONTAINER_ID.fullmatch(ids[0]) and container in (None, ids[0]),
+             'PRIMER_OPTION_PROBE_OWNER_CHANGED')
+        candidate = ids[0]
+        try:
+            observed = json.loads(run([*docker, 'inspect', '--format', identity_format, candidate]))
+        except _DOCKER_ERRORS:
+            # Auto-remove may win the race between the list and inspect.
+            if not run(by_name).strip() and not run(by_owner).strip():
+                return None
+            raise
+        need(observed == [candidate, '/' + name, image, owner, 'v1'], 'PRIMER_OPTION_PROBE_OWNER_CHANGED')
+        return candidate
+
+    limits = LIMITS['primer']
+    active = bounded(_PROBE_SECONDS, 'PRIMER_OPTION_PROBE_TIMEOUT')
+    try:
+        # Keep Node below PID 1 so the in-container timer can stop it even
+        # when the attached Docker client or the fixture controller has exited.
+        created = active([*docker, 'create', '--rm', '--name', name, '--label', OWNER + '=' + owner,
+                          '--label', _PROBE_LABEL + '=v1', '--pull', 'never', '--network', 'none', '--read-only', '--init',
+                          '--cpus', limits.cpus, '--memory', str(limits.memory), '--memory-swap', str(limits.memory),
+                          '--pids-limit', '64', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+                          '--entrypoint', '/bin/busybox', image, 'timeout', '-s', 'KILL', str(_PROBE_SECONDS),
+                          'node', '-e', image_probe(), json.dumps(argv(options, include_serial=True)), sha]).strip()
+        need(_CONTAINER_ID.fullmatch(created), 'PRIMER_OPTION_PROBE_CONTAINER_ID')
+        container = created
+        need(owned_container(active) == container, 'PRIMER_OPTION_PROBE_OWNER_CHANGED')
+        result = json.loads(active([*docker, 'start', '--attach', container]))
+    except subprocess.TimeoutExpired:
+        need(False, 'PRIMER_OPTION_PROBE_TIMEOUT')
+    finally:
+        cleanup = bounded(_CLEANUP_SECONDS, 'PRIMER_OPTION_PROBE_CLEANUP_UNMEASURED')
+        try:
+            owned = owned_container(cleanup)
+            if owned:
+                try:
+                    cleanup([*docker, 'rm', '--force', owned])
+                except _DOCKER_ERRORS:
+                    # The actor can also remove itself on its independent cutoff.
+                    pass
+                while owned_container(cleanup):
+                    time.sleep(.05)
+        except (OSError, subprocess.SubprocessError):
+            need(False, 'PRIMER_OPTION_PROBE_CLEANUP_UNMEASURED')
+        except RuntimeError as error:
+            if hasattr(error, 'returncode') or str(error) == 'M7_COMMAND_DEADLINE':
+                need(False, 'PRIMER_OPTION_PROBE_CLEANUP_UNMEASURED')
+            raise
     expected = {'concurrency': options.get('concurrency', DEFAULT_CONCURRENCY),
                 **({'maxTenants': options['maxTenants']} if 'maxTenants' in options else {})}
     need(result == {'sha256': sha, 'protocol': protocol, 'options': expected},
