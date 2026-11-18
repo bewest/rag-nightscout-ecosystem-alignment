@@ -80,7 +80,7 @@ try:
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)
     except RuntimeError:pass
-    execute('access',ad+['access',packet])
+    execute('access',ad+['access',packet],65+m['profile']['phases'].get('accessSetupSeconds',0))
     pre=read(d/'preflight.json');profile=m['profile']
     actor=cfg['driver']['hostId']
     assert actor==cfg['observer']['hostId']

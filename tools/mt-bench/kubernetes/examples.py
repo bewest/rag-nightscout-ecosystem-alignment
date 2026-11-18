@@ -15,6 +15,7 @@ def main():
     p.add_argument('--population',action='append',type=int)
     p.add_argument('--duration',type=int,default=1800);p.add_argument('--setup',type=int,default=900);p.add_argument('--drain',type=int,default=900)
     p.add_argument('--ack-timeout-ms',type=int,help='Producer acknowledgment budget for the generated discovery points')
+    p.add_argument('--access-setup',type=int,default=60,help='Kubernetes socket witness warm-up budget in seconds')
     p.add_argument('--work',type=int,default=7200);p.add_argument('--cleanup',type=int,default=900)
     p.add_argument('--scale',type=float,default=1);p.add_argument('--full-viewers',action='store_true')
     p.add_argument('--driver-shards',type=int,default=1);p.add_argument('--preallocated-vus',type=int,default=2);p.add_argument('--max-vus',type=int,default=16)
@@ -30,7 +31,7 @@ def main():
         base=k.document(k.HERE/'workloads/realistic-500.json');base.pop('referencePins')
         base['name']='configured-'+str(n)
         base['population'].update(provisionedTenants=n,ordinaryRosterTenants=n)
-        base['phases'].update(workSeconds=a.work,cleanupSeconds=a.cleanup)
+        base['phases'].update(workSeconds=a.work,cleanupSeconds=a.cleanup,accessSetupSeconds=a.access_setup)
         base['proposedEnvelope']=copy.deepcopy(envelope)
         base['workload'].update(loadSeconds=a.duration,setupSeconds=a.setup,drainSeconds=a.drain,workloadScale=a.scale,
             logicalPollingClients=n if a.full_viewers else n//10,driverShards=a.driver_shards,
@@ -42,7 +43,7 @@ def main():
         legacy=toolchain.legacy(m,'compose');selected=toolchain.frozen.source(legacy)
         profile.validate(dict(base,referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=app['bindingCommit'])))
         k.write(out/('experiment-'+str(n)+'.json'),m)
-    print(json.dumps(dict(output=str(out),setupSeconds=a.setup,drainSeconds=a.drain,
+    print(json.dumps(dict(output=str(out),setupSeconds=a.setup,drainSeconds=a.drain,accessSetupSeconds=a.access_setup,
                           **{toolchain.frozen.ACK_BUDGET:ack_budget},execution='NOT_RUN',capacityAcceptance='NOT_GRANTED')))
 
 if __name__=='__main__':main()

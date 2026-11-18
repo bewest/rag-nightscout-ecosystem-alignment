@@ -9,6 +9,17 @@ from test_adapter import k as adapter, execute
 
 
 class AccessDiagnostics(unittest.TestCase):
+    def test_socket_warmup_failure_retains_original_refusal_and_bounded_prior_witness(self):
+        code = 'K8S_SOCKET_PREWARM_UNMEASURED'
+        before = {'tenantIndex': 0, 'attempts': 1, 'refused403': 0, 'elapsedMs': 8, 'verdict': 'CONNECTED'}
+        row = {'tenantIndex': 1, 'stage': 'warmup', 'engineOpened': False, 'elapsedMs': 6000,
+               'firstError': {'errorClass': 'TransportError', 'status': 403, 'code': None},
+               'attempts': 4, 'refused403': 4, 'prior': [before]}
+        payload = {'socketEvidence': row}
+        self.assertEqual(execute.socket_failure(code, json.dumps(payload).encode()), payload)
+        before['credential'] = 'private marker'
+        self.assertEqual(execute.socket_failure(code, json.dumps(payload).encode()), {})
+
     def test_spawned_socket_refusal_retains_only_eligible_transport_fields(self):
         sample = {'socketEvidence': {'tenantIndex': 0, 'stage': 'connect', 'engineOpened': False, 'elapsedMs': 5000,
                                      'firstError': {'errorClass': 'TransportError', 'status': 502, 'code': None}}}

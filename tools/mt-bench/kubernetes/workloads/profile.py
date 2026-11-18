@@ -48,7 +48,11 @@ def validate(p):
                           'retention': 'UNMEASURED'}, 'HISTORY_UNSUPPORTED')
     need(p['phases']['restart'] is False and p['phases']['reconnectBurstClients'] == 0,
          'RESTART_IS_SEPARATE_SCENARIO')
-    need(p['phases']['workSeconds'] >= w.get('setupSeconds', 310) + w['loadSeconds'] + w.get('drainSeconds', 120) + 5,
+    access_setup = p['phases'].get('accessSetupSeconds')
+    if 'accessSetupSeconds' in p['phases']:
+        need(workload_runtime.workload_inputs.seconds(access_setup), 'ACCESS_SETUP_WINDOW')
+    access_window = access_setup + 60 if access_setup is not None else 0
+    need(p['phases']['workSeconds'] >= w.get('setupSeconds', 310) + w['loadSeconds'] + w.get('drainSeconds', 120) + access_window + 5,
          'WORK_WINDOW')
     need(1 <= p['phases']['cleanupSeconds'] <= 3600, 'CLEANUP_WINDOW')
     for group in ('clusterLimits', 'nativeLimits'):
@@ -68,7 +72,8 @@ def describe(p):
             'effectivePhaseWindows': {
                 key: {'seconds': w.get(key, default), 'origin': 'authored' if key in w else 'legacy default'}
                 for key, default in (('setupSeconds', 310), ('drainSeconds', 120))
-            },
+            } | ({'accessSetupSeconds': {'seconds': p['phases']['accessSetupSeconds'], 'origin': 'authored'}}
+                 if 'accessSetupSeconds' in p['phases'] else {}),
             'effectiveOrdinaryIngestionCadenceSecondsPerTenant': cycle_ms / 1000,
             'nominalIngestionCadenceSeconds': 300,
             'cadenceMultiplier': 300000 / cycle_ms,
@@ -107,6 +112,10 @@ def bind(p, config):
     need(set(existing) <= set(p['workload']) | {'pointId', 'hotFactor', 'offeredRps', 'workloadMix', 'workloadScale'}, 'UNKNOWN_WORKLOAD_FIELD')
     need(existing.get('hotFactor', 1) == p['population']['hotFactor'], 'PROFILE_HOT_FACTOR')
     result = copy.deepcopy(config)
+    access_setup = p['phases'].get('accessSetupSeconds')
+    need(config.get('accessSetupSeconds', access_setup) == access_setup, 'ACCESS_SETUP_WINDOW_CHANGED')
+    if access_setup is not None:
+        result['accessSetupSeconds'] = access_setup
     # A profile intentionally replaces the old rate selection, but preserves
     # runtime marker identity. Revalidate to refuse incompatible combinations.
     result['workload'] = {k: v for k, v in existing.items() if k in ('pointId', 'hotFactor')}

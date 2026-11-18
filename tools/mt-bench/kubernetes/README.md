@@ -123,6 +123,15 @@ Preserve the source lock and uncertain-write journal after an interrupted
 request. Commissioning owns acknowledgement of the waiting Job. A previously
 source-projected roster still uses the original prepare command.
 
+Set `profile.phases.accessSetupSeconds` to give the first and last selected
+socket witnesses an explicit warm-up window. The native client connects to
+both exact hosts without credentials first. It may retry HTTP 403 while it
+waits for a positive connection and records each host's attempts and elapsed
+time. Expired setup and persistent refusal stop access. The runner then
+checks both own-token exchanges, both cross-tenant refusals, and the full
+connected zero-foreign-frame observation. The access window has its own
+budget and remains within the fixture's entered work cutoff.
+
 For an independent database observation within the original work deadline, run
 `adapter.py observe-sql PACKET NEW_DIRECTORY`. It counts the source primer's
 stored seed rows and distinct tenants, checks the candidate database epoch and

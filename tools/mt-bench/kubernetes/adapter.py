@@ -198,6 +198,9 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
     if 'workload' in c:
         from workload_runtime import validate as validate_workload
         validate_workload(c['workload'], need, c['tenants'])
+    if 'accessSetupSeconds' in c:
+        from workload_inputs import seconds
+        need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
     objs = manifests(rendered)
     by_key = {key(x): x for x in objs}
     need(len(by_key) == len(objs), 'DUPLICATE_RESOURCE')

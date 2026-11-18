@@ -10,11 +10,47 @@ function transportError(error){
   const errorClass=[error?.type,error?.name].find(value=>SOCKET_ERROR_CLASSES.has(value));
   return {errorClass:errorClass??'Other',status:status??null,code:code??null};
 }
-async function run(tenants,base,io,{connectMs=5000,observeMs=5000}={}){
+async function warmWitnesses(tenants,open,until,connectMs){
+  const observations=[];
+  for(let tenantIndex=0;tenantIndex<tenants.length;tenantIndex++){
+    const started=Date.now();
+    let attempts=0,refused403=0,firstError=null,engineOpened=false,connected=false;
+    while(Date.now()<until){
+      firstError=null;
+      const timeout=Math.max(1,Math.min(connectMs,until-Date.now()));
+      const socket=open(tenants[tenantIndex].host,timeout);
+      attempts++;
+      try{
+        connected=await new Promise(resolve=>{
+          const timer=setTimeout(()=>resolve(false),timeout);
+          const finish=value=>{clearTimeout(timer);resolve(value);};
+          socket.io?.once('open',()=>{engineOpened=true;});
+          socket.once('connect_error',error=>{firstError=transportError(error);finish(false);});
+          socket.once('connect',()=>finish(true));
+        });
+      }finally{socket.close();}
+      if(connected)break;
+      if(firstError?.status!==403)break;
+      refused403++;
+      await new Promise(resolve=>setTimeout(resolve,Math.max(0,Math.min(500*2**Math.min(attempts-1,4),5000,until-Date.now()))));
+    }
+    const row={tenantIndex,attempts,refused403,elapsedMs:Date.now()-started};
+    if(!connected || Date.now()>until){
+      const error=Error('K8S_SOCKET_PREWARM_UNMEASURED');
+      error.socketEvidence={...row,stage:'warmup',firstError,engineOpened,prior:observations};
+      throw error;
+    }
+    observations.push({...row,verdict:'CONNECTED'});
+  }
+  return observations;
+}
+async function run(tenants,base,io,{connectMs=5000,observeMs=5000,warmupMs=0}={}){
   if(tenants.length!==2||!base.hostname.match(/^(127\.0\.0\.1|localhost)$/))throw Error('K8S_ACCESS_SCOPE');
-  const records=[],sockets=[],startedAt=Date.now(),deadline=startedAt+45000;
+  const records=[],sockets=[],startedAt=Date.now();
+  if(!Number.isSafeInteger(warmupMs)||warmupMs<0||!Number.isSafeInteger(startedAt+warmupMs))throw Error('K8S_SOCKET_PREWARM_BUDGET');
   const lookup=(host,opts,cb)=>opts?.all?cb(null,[{address:'127.0.0.1',family:4}]):cb(null,'127.0.0.1',4);
   const agent=new http.Agent({lookup});
+  const open=(host,timeout)=>io('http://'+host+':'+base.port,{transports:['polling'],agent,reconnection:false,timeout});
   const get=(host,token,exchange=false)=>new Promise((resolve,reject)=>{
     const route=exchange?'/api/v2/authorization/request/'+encodeURIComponent(token):'/api/v1/entries/sgv.json?count=1&token='+encodeURIComponent(token);
     const req=http.get({hostname:base.hostname,port:base.port,path:route,headers:{Host:host},timeout:5000},res=>{
@@ -24,9 +60,12 @@ async function run(tenants,base,io,{connectMs=5000,observeMs=5000}={}){
     });req.on('timeout',()=>req.destroy(Error('K8S_ACCESS_TIMEOUT')));req.on('error',reject);
   });
   try{
+    const warmup=warmupMs?await warmWitnesses(tenants,open,startedAt+warmupMs,connectMs):null;
+    const deadline=Date.now()+45000;
     for(let i=0;i<2;i++){
       const exchanged=await get(tenants[i].host,tenants[i].token,true);
       if(exchanged.status!==200||typeof exchanged.jwt!=='string'||!exchanged.jwt)throw Error('K8S_ACCESS_EXCHANGE_UNMEASURED');
+      records.push({case:'own-token-exchange',tenantIndex:i,status:200});
       const foreign=await get(tenants[1-i].host,tenants[i].token);
       if(![401,403].includes(foreign.status)||foreign.arrayBody)throw Error('K8S_CROSS_TENANT_AUTHORITY');
       records.push({case:'cross-token-host',tenantIndex:i,...foreign});
@@ -37,7 +76,7 @@ async function run(tenants,base,io,{connectMs=5000,observeMs=5000}={}){
       // produce no dataUpdate during a finite observed polling connection.
       const connectStarted=Date.now();
       let frames=0,authorizeReply=false,engineOpened=false,firstError=null,disconnect=null;
-      const socket=io('http://'+tenants[1-i].host+':'+base.port,{transports:['polling'],agent,reconnection:false,timeout:connectMs});sockets.push(socket);
+      const socket=open(tenants[1-i].host,connectMs);sockets.push(socket);
       socket.io?.once('open',()=>{engineOpened=true;});
       socket.once('disconnect',reason=>{disconnect={at:Date.now(),serverClosed:reason==='io server disconnect'};});
       socket.on('dataUpdate',()=>frames++);
@@ -62,7 +101,9 @@ async function run(tenants,base,io,{connectMs=5000,observeMs=5000}={}){
         observedMs:(disconnect?.at??Date.now())-observationStarted,terminal:disconnect?'server-closed':'observation-complete',
         connectElapsedMs:observationStarted-connectStarted});socket.close();
     }
-    return {version:1,verdict:'PASS',crossTenantChecks:2,records,startedAt,endedAt:Date.now(),scope:'finite read refusal and no foreign frame; no network-policy enforcement claim',capacityAcceptance:'NOT_GRANTED'};
+    return {version:1,verdict:'PASS',crossTenantChecks:2,records,startedAt,endedAt:Date.now(),
+      ...(warmup?{warmup:{budgetMs:warmupMs,observations:warmup}}:{}),
+      scope:'finite read refusal and no foreign frame; no network-policy enforcement claim',capacityAcceptance:'NOT_GRANTED'};
   }finally{for(const s of sockets)s.close();agent.destroy();}
 }
 function witnesses(tenants) {
@@ -75,7 +116,8 @@ async function main() {
   const tenants = JSON.parse(fs.readFileSync(process.argv[2]));
   const selected = witnesses(tenants);
   const result = await run(selected, new URL(process.argv[3]),
-    require(path.join(process.argv[4], 'node_modules/socket.io-client')).io);
+    require(path.join(process.argv[4], 'node_modules/socket.io-client')).io,
+    {warmupMs:process.argv[5]===undefined?0:Number(process.argv[5])*1000});
   console.log(JSON.stringify({ ...result, tenantRosterSize: tenants.length, witnessTenants: selected.map(row => row.id) }));
 }
 module.exports = { run, witnesses };

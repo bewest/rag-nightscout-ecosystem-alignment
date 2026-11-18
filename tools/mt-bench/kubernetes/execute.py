@@ -219,15 +219,32 @@ def progress(d, c, objects, client):
     return value
 
 
+def warmup_counts(row):
+    return (isinstance(row,dict) and type(row.get('attempts')) is type(row.get('refused403')) is type(row.get('elapsedMs')) is int
+            and 0 <= row['refused403'] <= row['attempts'] and row['elapsedMs'] >= 0)
+
+
 def socket_failure(code, raw):
-    if code != 'K8S_SOCKET_REFUSAL_UNMEASURED' or len(raw) > 1024:
+    warmup = code == 'K8S_SOCKET_PREWARM_UNMEASURED'
+    if (not warmup and code != 'K8S_SOCKET_REFUSAL_UNMEASURED') or len(raw) > 1024:
         return {}
     try:
         row = json.loads(raw)['socketEvidence']
         first = row['firstError']
-        if (set(row) == {'tenantIndex', 'stage', 'engineOpened', 'firstError', 'elapsedMs'}
+        fields = {'tenantIndex', 'stage', 'engineOpened', 'firstError', 'elapsedMs'}
+        stages = ('warmup',) if warmup else ('connect', 'observation-budget', 'disconnect')
+        if warmup:
+            fields.update(('attempts','refused403','prior'))
+            prior = row['prior']
+            if not (warmup_counts(row) and isinstance(prior,list) and len(prior)==row['tenantIndex']
+                    and all(isinstance(before,dict)
+                            and set(before)=={'tenantIndex','attempts','refused403','elapsedMs','verdict'}
+                            and type(before['tenantIndex']) is int and before['tenantIndex']==0
+                            and before['verdict']=='CONNECTED' and warmup_counts(before) for before in prior)):
+                return {}
+        if (set(row) == fields
                 and type(row['tenantIndex']) is int and row['tenantIndex'] in (0, 1)
-                and row['stage'] in ('connect', 'observation-budget', 'disconnect')
+                and row['stage'] in stages
                 and type(row['engineOpened']) is bool and type(row['elapsedMs']) is int and row['elapsedMs'] >= 0):
             if first is None or (set(first) == {'errorClass', 'status', 'code'}
                     and first['errorClass'] in ('Error', 'TransportError', 'TypeError', 'Other')
@@ -255,12 +272,20 @@ def access(d, c, objects, client):
         phase = 'native-actor-readback'
         actor(c)
         phase = 'node-witness'
+        setup = c.get('accessSetupSeconds')
         raw = finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'],
-                        c['baseUrl'], c['driver']['dependencies']], env=environment(c, d), seconds=60,
+                        c['baseUrl'], c['driver']['dependencies'], *([setup] if setup else [])],
+                     env=environment(c, d), seconds=60+(setup or 0),
                      failure_stdout=lambda code, raw: witness_failure.update(socket_failure(code, raw)))
         phase = 'witness-document'
         value = json.loads(raw)
         k.need(isinstance(value, dict), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
+        if setup is not None:
+            warmup = value.get('warmup', {})
+            witnesses = warmup.get('observations',[])
+            k.need(warmup.get('budgetMs') == setup*1000 and len(witnesses)==2 and
+                   all(warmup_counts(row) and row.get('tenantIndex')==index and row.get('verdict')=='CONNECTED'
+                       for index,row in enumerate(witnesses)), 'SOCKET_PREWARM_UNMEASURED', 'UNMEASURED')
         phase = 'after-observe'
         k.observe(c, objects, client, baseline)
         phase = 'witness-roster'
