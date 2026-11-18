@@ -93,11 +93,9 @@ console.log(JSON.stringify({sha256, protocol: source.PRIMER_OPTION_PROTOCOL, opt
 """
 
 
-def probe_image(command, image, raw, options, need):
-    protocol = source_protocol(raw)
-    require_source(options, protocol, need)
+def probe_constructor(command, image, script, arguments, need):
+    """Run one offline constructor under the existing owned probe policy."""
     need(image.startswith('sha256:') and _CONTAINER_ID.fullmatch(image[7:]), 'PRIMER_OPTION_IMAGE_ID')
-    sha = hashlib.sha256(raw).hexdigest()
     owner = uuid.uuid4().hex
     name = 'ns-primer-option-probe-' + owner
     container = None
@@ -147,7 +145,7 @@ def probe_image(command, image, raw, options, need):
                           '--cpus', limits.cpus, '--memory', str(limits.memory), '--memory-swap', str(limits.memory),
                           '--pids-limit', '64', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                           '--entrypoint', '/bin/busybox', image, 'timeout', '-s', 'KILL', str(_PROBE_SECONDS),
-                          'node', '-e', image_probe(), json.dumps(argv(options, include_serial=True)), sha]).strip()
+                          'node', '-e', script, *arguments]).strip()
         need(_CONTAINER_ID.fullmatch(created), 'PRIMER_OPTION_PROBE_CONTAINER_ID')
         container = created
         need(owned_container(active) == container, 'PRIMER_OPTION_PROBE_OWNER_CHANGED')
@@ -172,6 +170,15 @@ def probe_image(command, image, raw, options, need):
             if hasattr(error, 'returncode') or str(error) == 'M7_COMMAND_DEADLINE':
                 need(False, 'PRIMER_OPTION_PROBE_CLEANUP_UNMEASURED')
             raise
+    return result
+
+
+def probe_image(command, image, raw, options, need):
+    protocol = source_protocol(raw)
+    require_source(options, protocol, need)
+    sha = hashlib.sha256(raw).hexdigest()
+    result = probe_constructor(command, image, image_probe(),
+                               [json.dumps(argv(options, include_serial=True)), sha], need)
     expected = {'concurrency': options.get('concurrency', DEFAULT_CONCURRENCY),
                 **({'maxTenants': options['maxTenants']} if 'maxTenants' in options else {})}
     need(result == {'sha256': sha, 'protocol': protocol, 'options': expected},

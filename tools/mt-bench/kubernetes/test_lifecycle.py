@@ -82,6 +82,18 @@ class Lifecycle(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'PRIMER_OPTION_SOURCE_UNSUPPORTED'):l.fixture_config(path)
                 materialize(contract)
                 self.assertEqual(l.fixture_config(path),selected)
+                intent['profile']['population']['maxTenants']=10001
+                e['populationCeiling']=10001
+                put(files['intent'],intent);put(files['environment'],e)
+                contract.update(populationCeiling=10001,populationCeilingProtocol='population-ceiling-v1')
+                materialize(contract)
+                bound=l.fixture_config(path,capture=True);put(path,bound)
+                self.assertEqual(bound['populationCeilingPreflight']['selection'],10001)
+                self.assertEqual(l.fixture_config(path),bound)
+                materialize({**contract,'populationCeiling':500})
+                with self.assertRaisesRegex(ValueError,'POPULATION_BINDING_CHANGED'):l.fixture_config(path)
+                materialize(contract)
+                self.assertEqual(l.fixture_config(path),bound)
 
 
 class BootstrapReadback(unittest.TestCase):

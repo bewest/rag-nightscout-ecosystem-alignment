@@ -487,6 +487,7 @@ acceptance remains separate and failed correctness remains failed.
 | `sampler-interval` | Compose sampler interval of 1–60 seconds. Native Kubernetes has its own observer settings. |
 | `accel`, `hot-factor` | Compose acceleration uses positive integers within the shared input representation. Both transports require the roster plus hot weight to fit the generated array. |
 | `primer-concurrency`, `primer-max-tenants` | The bound DATA primer accepts positive JavaScript safe integers when the selected source supports them. Defaults are one worker and at most 10,000 pending tenants per invocation. Both settings are bounded by the actual pending roster. |
+| `population-ceiling` | Optional whole-registry population budget for a fresh discovery fixture. Omission retains 10,000. The seed must fit the selected budget and the source's UUID/array representation. Page, cache, byte, resource and primer chunk bounds stay independent. |
 | `jwt-setup-concurrency` | Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
 | `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Compose accepts named profiles and explicit per-service CPU and memory. Native Kubernetes binds requests and selected limits in its own fixture and allocation. |
 
@@ -504,6 +505,21 @@ and image for the extended range. Legacy source refuses an unsupported value
 before fixture preparation. A smaller maximum can produce a partial DATA
 result and leave its saved custody for the owner. The owned deployment requires
 complete priming before publishing the roster.
+
+The common intent selects this optional population budget with
+`profile.population.maxTenants`. Any explicit value, including a lower value,
+requires the pinned source's `population-ceiling-v1` support. Preflight checks
+the actual cached image constructor before fixture preparation. Bootstrap's
+private primer configuration and every serving population budget must agree;
+the helper records effective values and private configuration hashes.
+
+The preflight's `populationCommissioning` describes a fresh seed's chunk budget.
+For 10,001 seed tenants, the unchanged primer default of 10,000 pending tenants
+per invocation reports `PARTIAL_CHUNK_BUDGET` and one tenant beyond that budget.
+Author `primer-max-tenants: 10001` (common intent
+`profile.phases.primerOptions.maxTenants: 10001`) for one-invocation coverage
+budget. The helper keeps the author's value. Constructor or budget success does
+not establish DATA completion; the existing partial/custody oracle remains strict.
 
 The remote overlay has exactly `binding`, `hostInventory`, and
 `resourceReference`. `binding` contains existing controller protocol identity,

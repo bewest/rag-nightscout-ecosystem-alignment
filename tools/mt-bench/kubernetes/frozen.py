@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import primer_options
+import population_ceiling
 
 ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
 ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
@@ -87,6 +88,10 @@ def source(manifest):
                 and storage['secretCodec'] in ('raw-v1','gzip-v1'), 'PRIMER_STORAGE_SELECTION')
         chosen[PRIMER_STORAGE] = storage
     primer = primer_options.from_profile(manifest.get('profile',{}), require)
+    population=population_ceiling.from_profile(manifest.get('profile',{}),require)
+    if population is not None:
+        require(tier=='discovery','POPULATION_DISCOVERY_ONLY')
+        chosen[population_ceiling.FIELD]=population
     if primer is not None:
         require(tier == 'discovery', 'PRIMER_OPTIONS_DISCOVERY_ONLY')
         chosen[primer_options.FIELD] = primer
@@ -107,6 +112,9 @@ def contract(manifest, observed):
     require((PRIMER_STORAGE in observed) == (PRIMER_STORAGE in chosen), 'PRIMER_STORAGE_UNDECLARED')
     require((JOB_COMPLETE in observed) == (JOB_COMPLETE in chosen),'STARTUP_JOB_COMPLETE_UNDECLARED')
     require((primer_options.FIELD in observed) == (primer_options.FIELD in chosen), 'PRIMER_OPTIONS_UNDECLARED')
+    require(observed.get(population_ceiling.FIELD)==chosen.get(population_ceiling.FIELD),'POPULATION_CEILING_CHANGED')
+    if population_ceiling.FIELD in chosen:
+        require(observed.get(population_ceiling.PROTOCOL_FIELD)==population_ceiling.PROTOCOL,'POPULATION_SOURCE_UNSUPPORTED')
     if primer_options.PROTOCOL_FIELD in observed:
         require(observed[primer_options.PROTOCOL_FIELD] == primer_options.PROTOCOL and
                 re.fullmatch('[a-f0-9]{64}', observed.get('sourceFilesSha256', {}).get('prime.js', '')),
@@ -167,7 +175,18 @@ HELPER_ANNOTATIONS = {'nightscout.org/bootstrap-helper-commit': BOOTSTRAP_HELPER
 
 
 
-def compatible_deployment_inputs(manifest, expected, measured, *, prime_source=None):
+def compatible_deployment_inputs(manifest, expected, measured, *, prime_source=None, population_support=None):
+    if (isinstance(population_support,dict) and set(population_support)=={'protocol','sourceFilesSha256'} and
+            population_support['protocol']==population_ceiling.PROTOCOL and
+            isinstance(population_support['sourceFilesSha256'],dict) and
+            set(population_ceiling.SOURCE_FILES)<=population_support['sourceFilesSha256'].keys() and
+            set(population_support['sourceFilesSha256'])==set(expected)|{'population-ceiling.js'} and
+            all(population_support['sourceFilesSha256'].get(name)==value
+                for name,value in expected.items() if name not in population_ceiling.SOURCE_FILES) and
+            all(isinstance(value,str) and re.fullmatch('[a-f0-9]{64}',value)
+                for value in population_support['sourceFilesSha256'].values()) and
+            measured==population_support['sourceFilesSha256']):
+        return True
     if ('prime.js' in expected and prime_source is not None and digest(prime_source) == measured.get('prime.js') and
             primer_options.legacy_source_digest(prime_source) == expected['prime.js']):
         measured = {**measured, 'prime.js': expected['prime.js']}
