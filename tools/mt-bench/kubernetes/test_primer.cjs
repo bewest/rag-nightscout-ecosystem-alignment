@@ -78,7 +78,7 @@ test('selected primer reaches both Service origins, uses DATA credentials, class
       const legacyFile = path.join(dir, 'without-source-protocol.json');
       fs.writeFileSync(legacyFile,JSON.stringify(legacy),{mode:0o600});
       const unproved = [...args]; unproved[2] = sha(fs.readFileSync(legacyFile));
-      if (Number(args[6])>32 || Number(args[7])>10000)
+      if (Number(args[6])>32)
         await assert.rejects(run({contractFile:legacyFile,args:unproved}), {code:'K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED'});
       assert.equal(calls,0);
       assert.equal(fs.existsSync(path.join(dir,'prime.lock')),false);

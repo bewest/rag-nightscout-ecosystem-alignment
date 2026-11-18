@@ -26,7 +26,7 @@ def validate_prepare(args):
     a.stream_topology.ack_option(args)
     a.preload_convergence.option(args)
     require(args.measurement_mode=='accepted','M7_CONFIG_DISCOVERY_MEASUREMENT_MODE')
-    require(workload_inputs.tenants(args.tenants) and (args.run_purpose=='discovery' or args.tenants<=10000)
+    require(workload_inputs.tenants(args.tenants)
             and (discovery_api_replicas(args.replicas) if args.run_purpose=='discovery'
                  else type(args.replicas) is int and args.replicas in REPLICAS)
             and (args.replicas == 1 or static),

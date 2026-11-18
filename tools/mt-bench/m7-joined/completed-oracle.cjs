@@ -36,7 +36,7 @@ function source(evaluator,realtime,selected){
 }
 function query(config,ids,marker,progress=false){
  if(typeof progress!=='boolean'||progress&&config.kind!=='evaluator-work-v2')fail('M7_COMPLETION_SELECTOR');
- if(!['clock','checkpoint','entries'].every(key=>NAME.test(config[key]))||!/^evaluator-[A-Za-z0-9_-]{1,100}-completed$/.test(config.consumer)||!['evaluator-work-v1','evaluator-work-v2'].includes(config.kind)||!Array.isArray(ids)||!ids.length||ids.length>10000||!ids.every(id=>UUID.test(id))||!/^[a-z0-9-]{1,120}$/.test(marker))fail('M7_COMPLETION_SELECTOR');
+ if(!['clock','checkpoint','entries'].every(key=>NAME.test(config[key]))||!/^evaluator-[A-Za-z0-9_-]{1,100}-completed$/.test(config.consumer)||!['evaluator-work-v1','evaluator-work-v2'].includes(config.kind)||!Array.isArray(ids)||!ids.length||!ids.every(id=>UUID.test(id))||!/^[a-z0-9-]{1,120}$/.test(marker))fail('M7_COMPLETION_SELECTOR');
  binding(config.binding);selection(config);if(config.kind!==config.binding.kind)fail('M7_COMPLETION_READER_MISMATCH');
  const selected=ids.map(id=>"'"+id+"'").join(',');
  const vector=column=>`(SELECT coalesce(jsonb_object_agg(k,v),'{}'::jsonb) FROM (VALUES ${SOURCES.map((key,i)=>`('${key}',c.${column}[${i+1}]::text)`).join(',')}) s(k,v) WHERE v IS NOT NULL)`;
@@ -117,7 +117,7 @@ function assess(row,witness,clients,expected,config){
 // This is neither a clinical nor a client-frame verdict.
 function progressSnapshot(rows,config,ids){
  binding(config?.binding);selection(config);
- if(config.kind!=='evaluator-work-v2'||config.binding.kind!==config.kind||!Array.isArray(ids)||!ids.length||ids.length>10000||!ids.every(id=>UUID.test(id))||new Set(ids).size!==ids.length||!Array.isArray(rows)||rows.length!==ids.length||new Set(rows.map(r=>r?.tenant)).size!==ids.length)fail('M7_OPPORTUNITY_COVERAGE');
+ if(config.kind!=='evaluator-work-v2'||config.binding.kind!==config.kind||!Array.isArray(ids)||!ids.length||!ids.every(id=>UUID.test(id))||new Set(ids).size!==ids.length||!Array.isArray(rows)||rows.length!==ids.length||new Set(rows.map(r=>r?.tenant)).size!==ids.length)fail('M7_OPPORTUNITY_COVERAGE');
  const byTenant=new Map(rows.map(row=>[row?.tenant,row]));
  const values=ids.map(tenant=>{
   const row=byTenant.get(tenant);

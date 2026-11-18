@@ -74,7 +74,7 @@ def cell_contract(m, b=None):
     need(m.get('postgresImageId') == POSTGRES, 'REMOTE_QUALIFIED_SOURCE_REQUIRED')
     need(exploratory or selected['primerConcurrency'] == 1 or m['pair']['deploy'] in (PRIMER_DEPLOY,PERFORMANCE_DEPLOY), 'REMOTE_PRIMER_CONCURRENCY_UNSUPPORTED_SOURCE')
     need(m.get('profile') == 'pgstream-sample' and m.get('runPurpose') == 'discovery' and
-         m.get('measurementMode', 'accepted') == 'accepted' and type(m.get('tenants')) is int and (1<=m['tenants']<=10000 if exploratory else m['tenants'] in (10, 1000, 3000, 5000, 10000)) and
+         m.get('measurementMode', 'accepted') == 'accepted' and type(m.get('tenants')) is int and m['tenants']>=1 and
          m.get('replicas') == 1 and m.get('cadence') == prepared_cadence(bound) and m.get('primerConcurrency', 1) == selected['primerConcurrency'] and type(m.get('jwtSetupConcurrency', 1)) is int and m.get('jwtSetupConcurrency', 1) == selected.get('jwtSetupConcurrency', 1), 'REMOTE_EXPLICIT_CADENCE_REQUIRED')
 
 def local_nics():

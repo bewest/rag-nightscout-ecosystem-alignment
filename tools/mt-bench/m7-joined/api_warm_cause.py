@@ -32,7 +32,7 @@ def option(args):
     if mode == 'off':
         return {}
     require(mode in (MODE,STARTUP_MODE) and args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
-            and (args.tenants==10000 if mode==MODE else 1<=args.tenants<=10000) and args.replicas == 1
+            and type(args.tenants) is int and args.tenants>=1 and args.replicas == 1
             and args.pgstream_topology == 'external-service-v1'
             and getattr(args,'api_cause_observation','off') == 'off'
             and getattr(args,'node_observation','off') == 'off', 'M7_API_WARM_SCOPE')
@@ -80,7 +80,7 @@ def verify(config,d,manifest):
         return
     require(not manifest.get('attached') and manifest['profile']=='pgstream-sample'
             and manifest['runPurpose']=='discovery'
-            and (manifest['tenants']==10000 if record['mode']==MODE else 1<=manifest['tenants']<=10000)
+            and type(manifest['tenants']) is int and manifest['tenants']>=1
             and record['mode'] in (MODE,STARTUP_MODE) and observed=={'api'},'M7_API_WARM_SCOPE')
     spec = config['services']['api']
     require(spec.get('command')==COMMAND and not spec.get('entrypoint')

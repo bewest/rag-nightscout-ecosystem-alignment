@@ -77,7 +77,7 @@ async function commission({ app, dir, contractFile, env, args }) {
   if (contract.primerOptionProtocol !== undefined &&
       (contract.primerOptionProtocol !== 'positive-safe-integer-v1' ||
        source.PRIMER_OPTION_PROTOCOL !== contract.primerOptionProtocol)) fail('K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED');
-  if ((Number(concurrency) > 32 || Number(maxTenants) > 10000) && contract.primerOptionProtocol === undefined) {
+  if (Number(concurrency) > 32 && contract.primerOptionProtocol === undefined) {
     fail('K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED');
   }
   const options = source.parsePrimeOptions(['--concurrency', concurrency, ...(maxTenants === undefined ? [] : ['--max-tenants', maxTenants])]);
