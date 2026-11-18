@@ -1121,13 +1121,16 @@ selected image, and coherent source qualification remains the integration owner.
 
 ### Bounded rate brackets for the realistic mix
 
-`workload-scale` is an optional finite factor from 0.25 through 8, accepted only
+`workload-scale` is an optional positive finite factor, accepted only
 with `workload-mix: realistic-v1`. Default factor one preserves every existing
 per-tenant cadence. Other factors are **uniform rate brackets**: factor two
 halves all seven per-tenant intervals while retaining the roster, viewer count,
 shape proportions, duration and resource allocation. A factor above one is not
 realistic sensor cadence. An aggregate `offered-rps` override remains incompatible
-with the mix. Unknown/nonfinite factors and out-of-range values refuse.
+with the mix. Zero, nonfinite factors and factors whose rounded time units cannot
+be represented by k6 refuse before preparation. Compose and Kubernetes share
+this rule. The legacy remote calibration binding retains its earlier 0.25–8
+bracket until that binding and its validator are extended.
 
 The canonical cadence and receipt bind `workloadScale`. Local and remote k6
 commands mirror it as `M7_WORKLOAD_SCALE`, including every shard in the existing

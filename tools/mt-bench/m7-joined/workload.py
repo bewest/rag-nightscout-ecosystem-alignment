@@ -1,6 +1,7 @@
 """Hash-recorded adaptations to existing payload/shape functions, no source mount."""
 import hashlib
 import json
+import math
 from pathlib import Path
 from contract import require
 
@@ -18,6 +19,23 @@ REALISTIC_CADENCE_MS = {
     'r_treatments': 900000,
     'r_status': 900000,
 }
+
+
+def realistic_cycle_ms(scale):
+    """Resolve finite k6 time units without a reference multiplier ceiling."""
+    try:
+        positive=type(scale) in (int,float) and scale>0 and math.isfinite(scale)
+    except OverflowError:
+        positive=False
+    require(positive,'M7_WORKLOAD_SCALE_CONFIGURATION')
+    result={}
+    for shape,interval in REALISTIC_CADENCE_MS.items():
+        value=interval*(5 if shape=='r_sgv' else 1)/scale
+        require(math.isfinite(value),'M7_WORKLOAD_SCALE_TIME_UNIT')
+        unit=math.floor(value+.5)
+        require(1<=unit<=MAX_TIME_UNIT_MS,'M7_WORKLOAD_SCALE_TIME_UNIT')
+        result[shape]=unit
+    return result
 
 
 def generate(root, target):
@@ -47,7 +65,7 @@ def generate(root, target):
     source = source.replace(scenario_anchor, f"""
 const mix = __ENV.M7_WORKLOAD_MIX;
 const workloadScale = __ENV.M7_WORKLOAD_SCALE === undefined ? 1 : Number(__ENV.M7_WORKLOAD_SCALE);
-if (!Number.isFinite(workloadScale) || workloadScale < 0.25 || workloadScale > 8 ||
+if (!Number.isFinite(workloadScale) || workloadScale <= 0 ||
     (__ENV.M7_WORKLOAD_SCALE !== undefined && mix !== '{REALISTIC_MIX}')) throw Error('M7_WORKLOAD_SCALE_CONFIGURATION');
 const realisticCadenceMs = {json.dumps(REALISTIC_CADENCE_MS)};
 if (mix !== undefined &&

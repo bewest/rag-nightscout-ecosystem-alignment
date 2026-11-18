@@ -69,7 +69,8 @@ scenario options. Sensor and device-status writes and SGV reads recur every
 every 900 seconds. For shape weight `s_j` and cadence `tau_j_ms`, the released
 generator sets `timeUnit = round(tau_j_ms × s_j / workloadScale)` and
 `rate = N × s_j`. Scale 1 preserves cadence; scale 2 is a uniform rate bracket.
-Select scale 0.25..8 explicitly, independent of the roster and viewer total.
+Select a positive finite scale explicitly, independent of the roster and viewer
+total. Every rounded scenario time unit must remain representable by k6.
 All seven shapes remain required. An `offeredRps` field alongside realistic-v1,
 nonuniform hot weighting or conflicting ambient selector refuses.
 

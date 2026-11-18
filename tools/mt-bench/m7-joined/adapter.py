@@ -27,7 +27,7 @@ sys.path.insert(0, str(HERE))
 from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, require, digest, labels_match, owned,
                       tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity, receipt_scope, diagnostic_check, measurement_request, measurement_topology, measurement_output, unaccepted_check, MEASUREMENT_AUTHORIZATION)
 from probe import generate
-from workload import REALISTIC_CADENCE_MS, REALISTIC_MIX, generate as generate_workload
+from workload import REALISTIC_CADENCE_MS, REALISTIC_MIX, realistic_cycle_ms, generate as generate_workload
 import profile_provenance
 import orchestration_binding
 import evaluator_progress
@@ -480,8 +480,8 @@ def cadence_options(args):
         value['workloadMix'] = mix
     scale = getattr(args, 'workload_scale', None)
     if scale is not None:
-        require(mix == REALISTIC_MIX and type(scale) in (int, float) and math.isfinite(scale)
-                and 0.25 <= scale <= 8, 'M7_WORKLOAD_SCALE_CONFIGURATION')
+        require(mix == REALISTIC_MIX, 'M7_WORKLOAD_SCALE_CONFIGURATION')
+        realistic_cycle_ms(scale)
         value['workloadScale'] = scale
     observation = getattr(args, 'drain_observation', None)
     if observation is not None:
@@ -497,11 +497,8 @@ def cadence_options(args):
 def rate_offer(m):
     if m['cadence'].get('workloadMix') == REALISTIC_MIX:
         scale = m['cadence'].get('workloadScale', 1)
-        require(type(scale) in (int, float) and math.isfinite(scale) and 0.25 <= scale <= 8,
-                'M7_WORKLOAD_SCALE_CONFIGURATION')
         weights = {shape: 5 if shape == 'r_sgv' else 1 for shape in REALISTIC_CADENCE_MS}
-        units = {shape: math.floor(interval * weights[shape] / scale + .5)
-                 for shape, interval in REALISTIC_CADENCE_MS.items()}
+        units = realistic_cycle_ms(scale)
         rates = {shape: m['tenants'] * weights[shape] * 1000 / units[shape] for shape in units}
         return {'workloadMix': REALISTIC_MIX, 'workloadScale': scale,
                 'workloadInterpretation': 'sensor-cadence' if scale == 1 else 'uniform-rate-bracket',
@@ -2310,7 +2307,7 @@ def parser():
                       help='Historical matched diagnostic, or configured-v1 with --driver-plan')
     prep.add_argument('--driver-plan',type=json.loads,help='Finite JSON scheduling/VU/observer configuration; selects configured-v1')
     prep.add_argument('--workload-mix', choices=(REALISTIC_MIX,))
-    prep.add_argument('--workload-scale', type=float, help='Uniform realistic-v1 rate bracket 0.25..8; default1 preserves sensor cadence')
+    prep.add_argument('--workload-scale', type=float, help='Positive representable realistic-v1 rate multiplier; default1 preserves sensor cadence')
     prep.add_argument("--restart-during-load-after-seconds",type=int,help="Discovery-only planned evaluator restart after actual ordinary scenario demand begins; requires v2 receipt")
     prep.add_argument("--offered-rps",type=float,help="Explicit scenario HTTP arrival rate for pgstream discovery only; preserves mix")
     prep.add_argument("--jwt-setup-concurrency",type=int,choices=range(1,65),default=1)

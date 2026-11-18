@@ -67,7 +67,7 @@ console.log(JSON.stringify(vm.runInNewContext(source + '\noptions.scenarios;', c
             path = Path(directory)
             (path / 'load').mkdir()
             (path / 'tenants.private.json').write_text(json.dumps([{'id': i} for i in range(1000)]))
-            selection = SimpleNamespace(profile='pgstream-sample', run_purpose='discovery',
+            selection = SimpleNamespace(tenants=1000,profile='pgstream-sample', run_purpose='discovery',
                                         workload_mix='realistic-v1', driver_shards=8, offered_rps=None)
             cadence = adapter.cadence_options(selection)
             manifest = {'cadence': cadence, 'project': 'local-fixture', 'port': 1, 'owner': 'a' * 32,

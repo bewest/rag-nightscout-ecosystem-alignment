@@ -230,7 +230,7 @@ The run input has these fields:
 | `tenants`, `tenantsFile` | Synthetic roster count and private projection; commissioning requires two `.test` tenant hosts |
 | `completion` | Source projection from the original completed-output oracle, with this instrument binding |
 | `baseUrl` | Existing operator-owned loopback forward to the exact edge Pod; tenant alias Host headers stay intact |
-| `workload` | `loadSeconds` (1..86400, within the actual work deadline), either integer `offeredRps` (1..100) or `workloadMix: "realistic-v1"` with optional `workloadScale` (0.25..8, default 1); `logicalPollingClients` (0..80000) is independent of tenant count; `probeEveryMs` (1000..300000). Optional `hotFactor` (1..10) retains legacy aggregate weighting; realistic-v1 requires 1 |
+| `workload` | `loadSeconds` (1..86400, within the actual work deadline), either positive finite `offeredRps` or `workloadMix: "realistic-v1"` with optional positive finite `workloadScale` (default 1). Rounded scenario time units must be representable by k6. `logicalPollingClients` (0..80000) is independent of tenant count. `probeEveryMs` is a positive integer within the Node timer range and the probe ledger budget. Optional `hotFactor` (1..10) retains legacy aggregate weighting; realistic-v1 requires 1 |
 | `settingsFingerprint` | Existing source-derived settings fingerprint for native load |
 
 For sequential workload points on one admitted fixture, prepare a new packet

@@ -21,7 +21,7 @@ class WorkloadScale(unittest.TestCase):
     return json.loads(subprocess.check_output(['node','-e',JS,str(p),str(n),mix,str(scale),str(offered)],text=True))
    self.assertEqual(options(1000),options(1000,1))
    for n in (1000,10000):
-    for scale in (.25,.5,1,1.3,2,8):
+    for scale in (.1,.25,.5,1,1.3,2,8,16):
      rates={shape:0 for shape in workload.REALISTIC_CADENCE_MS}
      for part in driver_shards.plan(n,1,None,8):
       for shape,row in options(part['tenants'],scale).items():
@@ -33,17 +33,45 @@ class WorkloadScale(unittest.TestCase):
      self.assertEqual(offer['sensorCadence'],scale==1)
      self.assertEqual(offer['workloadInterpretation'],'sensor-cadence' if scale==1 else 'uniform-rate-bracket')
      for shape,value in rates.items():self.assertAlmostEqual(value,offer['scenarioRpsByShape'][shape])
-   for scale,mix,offered in [('0','realistic-v1','-'),('8.1','realistic-v1','-'),('NaN','realistic-v1','-'),('Infinity','realistic-v1','-'),('2','-','-'),('2','realistic-v1','180')]:
+   for scale,mix,offered in [('0','realistic-v1','-'),('-1','realistic-v1','-'),('NaN','realistic-v1','-'),('Infinity','realistic-v1','-'),('2','-','-'),('2','realistic-v1','180'),('1e20','realistic-v1','-'),('1e-20','realistic-v1','-')]:
     bad=subprocess.run(['node','-e',JS,str(p),'1000',mix,scale,offered],capture_output=True,text=True)
-    self.assertNotEqual(bad.returncode,0);self.assertRegex(bad.stderr,'M7_(WORKLOAD_SCALE|REALISTIC_MIX)_CONFIGURATION')
+    self.assertNotEqual(bad.returncode,0);self.assertRegex(bad.stderr,'M7_((WORKLOAD_SCALE|REALISTIC_MIX)_CONFIGURATION|OFFERED_RPS_TIME_UNIT)')
+   original=p.read_text()
+   p.write_text(original.replace('workloadScale <= 0','workloadScale < 0.25 || workloadScale > 8'))
+   old=subprocess.run(['node','-e',JS,str(p),'1000','realistic-v1','.1','-'],capture_output=True,text=True)
+   self.assertNotEqual(old.returncode,0);self.assertIn('M7_WORKLOAD_SCALE_CONFIGURATION',old.stderr)
+   p.write_text(original);self.assertEqual(options(1000,.1)['w_sgv']['timeUnit'],'3000000ms')
    self.assertEqual(options(1000),options(1000,1))
+
+ def test_local_and_kubernetes_share_multiplier_units_and_refuse_true_bounds(self):
+  import sys
+  sys.path.append(str(adapter.HERE.parent/'kubernetes'))
+  import workload_runtime as kube
+  for scale in (.1,1,16):
+   w={'loadSeconds':1800,'workloadMix':'realistic-v1','workloadScale':scale,
+      'logicalPollingClients':100,'probeEveryMs':5000,'setupSeconds':1800,'drainSeconds':600}
+   kube.validate(w,adapter.require,tenants=1000)
+   cycles,rates=kube.rates(w,1000)
+   local=adapter.rate_offer({'tenants':1000,'cadence':w})
+   self.assertEqual(cycles,local['scenarioTimeUnitMs'])
+   self.assertAlmostEqual(sum(rates.values()),local['effectiveScenarioRps'])
+  for scale in (0,True,float('nan'),float('inf'),1e-20,1e20):
+   w['workloadScale']=scale
+   with self.assertRaisesRegex(RuntimeError,'WORKLOAD_SCALE_(CONFIGURATION|TIME_UNIT)'):
+    kube.validate(w,adapter.require,tenants=1000)
 
  def test_canonical_cadence_and_local_eight_shard_environment(self):
   args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',workload_mix='realistic-v1',workload_scale=2,driver_shards=8)
   cadence=adapter.cadence_options(args);self.assertEqual(cadence['workloadScale'],2)
-  for value in (True,0,.24,8.01,float('nan'),float('inf')):
+  for value in (True,0,-1,float('nan'),float('inf')):
    args.workload_scale=value
    with self.assertRaisesRegex(RuntimeError,'M7_WORKLOAD_SCALE_CONFIGURATION'):adapter.cadence_options(args)
+  for value in (.1,.24,8.01,16):
+   args.workload_scale=value
+   self.assertEqual(adapter.cadence_options(args)['workloadScale'],value)
+  for value in (1e-20,1e20):
+   args.workload_scale=value
+   with self.assertRaisesRegex(RuntimeError,'M7_WORKLOAD_SCALE_TIME_UNIT'):adapter.cadence_options(args)
   args.workload_scale=2;args.workload_mix=None
   with self.assertRaisesRegex(RuntimeError,'M7_WORKLOAD_SCALE_CONFIGURATION'):adapter.cadence_options(args)
   with tempfile.TemporaryDirectory() as tmp:

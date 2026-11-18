@@ -1,6 +1,5 @@
 """Select the existing M7 generator inputs, independently of roster and viewers."""
-import math
-from workload import REALISTIC_MIX, REALISTIC_CADENCE_MS
+from workload import REALISTIC_MIX, realistic_cycle_ms
 import workload_inputs
 
 SHAPES = dict(w_sgv=1, w_devicestatus=1, w_treatments_v3=1,
@@ -23,8 +22,9 @@ def validate(w, need, tenants=None):
         need(w['workloadMix'] == REALISTIC_MIX and 'offeredRps' not in w and w.get('hotFactor', 1) == 1,
              'REALISTIC_MIX_CONFIGURATION')
         scale = w.get('workloadScale', 1)
-        need(type(scale) in (int, float) and math.isfinite(scale) and .25 <= scale <= 8,
-             'WORKLOAD_SCALE_CONFIGURATION')
+        try:realistic_cycle_ms(scale)
+        except RuntimeError as error:
+            need(False,'WORKLOAD_SCALE_TIME_UNIT' if str(error)=='M7_WORKLOAD_SCALE_TIME_UNIT' else 'WORKLOAD_SCALE_CONFIGURATION')
     else:
         need('workloadScale' not in w, 'WORKLOAD_SCALE_CONFIGURATION')
         need(workload_inputs.offered_rate(w.get('offeredRps')), 'WORKLOAD_OFFERED_RPS')
@@ -69,8 +69,7 @@ def environment(w, inherited, need):
 
 def rates(w, n):
     if 'workloadMix' in w:
-        cycles = {shape: math.floor(REALISTIC_CADENCE_MS[shape] * weight / w.get('workloadScale', 1) + .5)
-                  for shape, weight in SHAPES.items()}
+        cycles = realistic_cycle_ms(w.get('workloadScale',1))
     else:
         cycle = workload_inputs.aggregate_cycle_ms(n, w.get('hotFactor', 1), w['offeredRps'])
         cycles = dict.fromkeys(SHAPES, cycle)
