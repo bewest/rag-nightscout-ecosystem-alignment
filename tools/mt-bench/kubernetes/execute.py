@@ -218,18 +218,40 @@ def progress(d, c, objects, client):
 
 
 def access(d, c, objects, client):
-    k.candidate.require(k, d, c)
-    k.need(not (d / 'access.json').exists(), 'ACCESS_OUTPUT_EXISTS')
-    tenants = roster(c)
-    k.observe(c, objects, client, k.active_baseline(d))
-    actor(c)
-    value = json.loads(finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'], c['baseUrl'], c['driver']['dependencies']], env=environment(c, d), seconds=60))
-    k.observe(c, objects, client, k.active_baseline(d))
-    k.need(value.get('tenantRosterSize') == len(tenants) and
-           value.get('witnessTenants') == [tenants[0]['id'], tenants[-1]['id']], 'ACCESS_WITNESS_ROSTER_CHANGED')
-    value.update(pins=c['pins'],namespaceUid=k.active_baseline(d)['namespace']['uid'],context=c['context'])
-    k.write(d / 'access.json', value)
-    return value
+    k.need(not (d / 'access.json').exists() and not (d / 'access-failure.json').exists(),
+           'ACCESS_OUTPUT_EXISTS')
+    phase = 'candidate-receipt'
+    try:
+        k.candidate.require(k, d, c)
+        phase = 'verified-roster'
+        tenants = roster(c)
+        baseline = k.active_baseline(d)
+        phase = 'before-observe'
+        k.observe(c, objects, client, baseline)
+        phase = 'native-actor-readback'
+        actor(c)
+        phase = 'node-witness'
+        raw = finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'],
+                        c['baseUrl'], c['driver']['dependencies']], env=environment(c, d), seconds=60)
+        phase = 'witness-document'
+        value = json.loads(raw)
+        k.need(isinstance(value, dict), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
+        phase = 'after-observe'
+        k.observe(c, objects, client, baseline)
+        phase = 'witness-roster'
+        k.need(value.get('tenantRosterSize') == len(tenants) and
+               value.get('witnessTenants') == [tenants[0]['id'], tenants[-1]['id']],
+               'ACCESS_WITNESS_ROSTER_CHANGED')
+        value.update(pins=c['pins'], namespaceUid=baseline['namespace']['uid'], context=c['context'])
+        phase = 'publish'
+        k.write(d / 'access.json', value)
+        return value
+    except Exception as error:
+        try:
+            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error)})
+        except OSError:
+            pass
+        raise
 
 
 def policy_assess(observations):

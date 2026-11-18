@@ -19,6 +19,7 @@ import tempfile
 import time
 from datetime import datetime, timezone
 from types import SimpleNamespace
+import traceback
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -879,14 +880,29 @@ def main():
     return execute(d, c, objects, client, load=args.command == 'load', recovery=args.command == 'recovery')
 
 
+
+def failure_evidence(error):
+    code = str(error)
+    if code != 'EVALUATOR_SCOPE_UNSAFE' and not re.fullmatch(r'(?:K8S|M7)_[A-Z_]+(?::[A-Za-z0-9_.-]+)?', code):
+        code = 'K8S_ADAPTER_ERROR'
+    result = {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': code,
+              'capacityAcceptance': 'NOT_GRANTED'}
+    if code == 'K8S_ADAPTER_ERROR':
+        # Only static source locations and exception class are retained.
+        frames = []
+        for frame in traceback.extract_tb(error.__traceback__):
+            path = Path(frame.filename)
+            if path.parent in (HERE, M7):
+                frames.append({'file': path.name, 'function': frame.name, 'line': frame.lineno})
+        result.update(errorType=type(error).__name__, frames=frames[-8:])
+    return result
+
+
 if __name__ == '__main__':
     try:
         result = main()
         if result is not None:
             print(json.dumps(result, sort_keys=True, allow_nan=False))
     except Exception as error:
-        code = str(error)
-        if code != 'EVALUATOR_SCOPE_UNSAFE' and not re.fullmatch(r'(?:K8S|M7)_[A-Z_]+(?::[A-Za-z0-9_.-]+)?', code):
-            code = 'K8S_ADAPTER_ERROR'
-        print(json.dumps({'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': code, 'capacityAcceptance': 'NOT_GRANTED'}), file=sys.stderr)
+        print(json.dumps(failure_evidence(error)), file=sys.stderr)
         sys.exit(1)
