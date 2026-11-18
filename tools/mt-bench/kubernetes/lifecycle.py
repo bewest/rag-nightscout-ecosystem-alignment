@@ -144,8 +144,10 @@ def summary(pod):
 def failure_codes(pod,container,uid,previous=False):
     owned()
     require_pod_uid(pod,uid)
-    args=['logs',pod,'-n',ns,'-c',container,'--tail=60']
+    limit=65536
+    args=['logs',pod,'-n',ns,'-c',container,'--tail=60','--limit-bytes='+str(limit)]
     if previous:args.append('--previous')
+    output=None
     try:
         output=command(rpc+args,private=True)
         observed={'status':'CAPTURED','codes':producer_startup.log_codes(output)}
@@ -155,6 +157,22 @@ def failure_codes(pod,container,uid,previous=False):
     except (RuntimeError, OSError, subprocess.TimeoutExpired):
         observed={'status':'UNMEASURED','codes':[]}
     require_pod_uid(pod,uid)
+    if output is not None:
+        retained=output[-limit:]
+        digest=hashlib.sha256(retained).hexdigest()
+        identity=hashlib.sha256((uid+'\0'+container+'\0'+str(previous)).encode()).hexdigest()[:16]
+        path=live/('failed-container-'+identity+'-'+digest+'.private.log')
+        try:
+            if path.exists():
+                assert path.read_bytes()==retained,'FAILED_CONTAINER_CAPTURE_CHANGED'
+            else:
+                with os.fdopen(os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600),'wb') as stream:
+                    stream.write(retained)
+            observed['privateLog']={'status':'CAPTURED','path':str(path),'bytes':len(retained),
+                'sha256':digest,'responseBytes':len(output),'responseSha256':hashlib.sha256(output).hexdigest(),
+                'responseTruncated':len(output)>limit,'tailLines':60,'byteLimit':limit}
+        except OSError as error:
+            observed['privateLog']={'status':'UNMEASURED','code':type(error).__name__}
     return observed
 
 def require_pod_uid(name,uid):
