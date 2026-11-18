@@ -1020,9 +1020,17 @@ def prepare_staged(args,target,pinned):
     print(json.dumps({"prepared": m["project"], "pair": m["pair"], "tenants": args.tenants, "replicas": args.replicas}))
 
 
+def verify_source(d, m):
+    """Once per candidate, before the image is built: the owned core copy is the
+    selected commit and the shipping build inputs are clean. Later stages
+    identify the run by image id and frozen configuration only."""
+    require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
+    code = "require('./deploy/multitenant/build').assertCleanSource(process.cwd(),process.argv[1])"
+    command(["node", "-e", code, m["pair"]["core"]], cwd=d / "core")
+
+
 def verify(d, m, teardown=False):
     require(host_identity(fixture_inventory(m))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
-    require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
     if not teardown and not m.get('attached') and primer_options.requires_extended(primer_options.from_manifest(m)):
         reference=m.get('imageInputPreflight',{})
@@ -1060,9 +1068,6 @@ def verify(d, m, teardown=False):
     require(digest(d / "k6/workload.js") == m["workload"]["adaptedSha256"], "M7_WORKLOAD_CHANGED")
     for file, sha in m["sourceCompose"].items():
         require(digest(d / file) == sha, "M7_SOURCE_COMPOSE_CHANGED")
-    # Shipping build admission checks every input against the two commits.
-    code = "require('./deploy/multitenant/build').assertCleanSource(process.cwd(),process.argv[1])"
-    command(["node", "-e", code, m["pair"]["core"]], cwd=d / "core")
     assert_owned(m)
 
 
@@ -2555,10 +2560,10 @@ def main():
         observed=fixture_inventory(m);write(d/"host-identity-inventory.json",observed)
         require(host_identity(observed)==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
         return print(json.dumps({"hostIdentity":m["hostIdentity"],"pair":m["pair"],"instrument":m["instrument"]["sha256"]}))
-    if args.command == "verify":verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
+    if args.command == "verify":verify_source(d, m);verify(d, m);image(m);print("M7_PAIR_AND_INSTRUMENT_PINNED")
     elif args.command == "build":
         require(not m.get("diagnosticResources"),"M7_DIAGNOSTIC_RESOURCE_BUILD_REFUSED")
-        frozen(m,"build");experiment_host(d,m,"build-before");verify(d,m)
+        frozen(m,"build");experiment_host(d,m,"build-before");verify_source(d,m);verify(d,m)
         overlay = d / "core/deploy/multitenant"
         command(["node", overlay / "build.js"], cwd=overlay, timeout=1800)
     elif args.command == "source-preflight":discovery_source_preflight(d,m)
