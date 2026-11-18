@@ -1,7 +1,7 @@
 # Kubernetes binding (DEPLOY-K8S-BINDING), lane K, 2026-11-10
 
 *Contributor-facing evidence record. Captured 2026-11-10; not edited after capture. Figures are
-from tool output in this session. Status words as in AGENTS.md section 4.*
+from tool output in this session. Status words as in AGENTS.md section 3.*
 
 Decision of record: [tanka-binding-parallel](../../../docs/30-design/tenancy/multitenancy-decisions.md#tanka-binding-parallel)
 (Tanka/Jsonnet in nightscout-deploy, local cluster, in parallel with the Compose bench; the

@@ -14,8 +14,7 @@
 ## Resuming multitenant or capacity work
 
 Read the [decisions in force](docs/30-design/tenancy/decisions-in-force.md), the newest updates at
-the end of `docs/30-design/tenancy/execution-log.md`, and the lane index
-`/mnt/data/nightscout-workspace/artifacts/handoffs/INDEX.md` (local). The index names each open
-lane, its owner and its one handoff file. Confirm your source head and that your task is still open.
-Coordinate cloud work with the cloud owner the index names; an old lock, a paused chat or an
-archived handoff does not authorize a duplicate run.
+the end of `docs/30-design/tenancy/execution-log.md`, and the newest handoffs in
+`/mnt/data/nightscout-workspace/artifacts/handoffs/` (local). Confirm your source head and that your
+task is still open; an old lock, a paused chat or an archived handoff does not authorize a duplicate
+run.
