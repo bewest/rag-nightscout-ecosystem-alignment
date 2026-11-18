@@ -9,11 +9,12 @@ import sys
 from producer_startup import cohort_ready_seconds
 sys.path.append(str(Path(__file__).resolve().parent.parent/'m7-joined'))
 import workload_inputs
+import phase_fit
 
 FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bindingDirectory',
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
-          'startupWindowPreflight'}
+          'startupWindowPreflight','resourcePhasePreflight'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def need(ok, code):
@@ -92,16 +93,26 @@ def fixture_config(path, capture=False):
         p=package/'bindings/kubernetes'/name
         need(p.is_relative_to(package) and sha(p)==expected,'BINDING_CHANGED');files.append(p)
     files += [d/(name+'.json') for name in ('environment','intent','inventory','render','preflight')]
-    rendered=[]
+    rendered=[]; stage_objects={}
     for stage in STAGES:
         p=d/'stages'/(stage+'.json');files.append(p)
-        for obj in read(p)['items']:
+        stage_objects[stage]=read(p)['items']
+        for obj in stage_objects[stage]:
             rendered.append(obj)
             kind=obj['kind'];meta=obj['metadata']
             need(kind in ('Namespace','ClusterRoleBinding','ConfigMap','Service','Secret','ServiceAccount','Role','RoleBinding','NetworkPolicy','ResourceQuota','LimitRange','Deployment','StatefulSet','Job'),'RESOURCE_UNSUPPORTED')
             need(kind in ('Namespace','ClusterRoleBinding') or meta['namespace']==e['namespace'],'STAGE_NAMESPACE')
             need(kind!='Service' or obj['spec'].get('type','ClusterIP')=='ClusterIP','NEW_BILLABLE_RESOURCE')
     startup=startup_preflight(m,e,rendered)
+    phase=phase_fit.staged_projection(e,list(phase_fit.objects(read(d/'render.json'))),stage_objects,need)
+    phase_preflight=None
+    if phase is not None:
+        need(pre.get('trialEnvelope',{}).get(phase_fit.FIELD)==phase,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
+        publisher=package/'bindings/kubernetes/scripts/secrets.sh'
+        phase_preflight={'plan':phase,'publisherSha256':sha(publisher),
+                         'lifecycleSha256':sha(Path(__file__).with_name('lifecycle.py')),
+                         'moduleSha256':sha(Path(phase_fit.__file__))}
+        files += [publisher,Path(phase_fit.__file__),Path(phase_fit.resource_budget.__file__)]
     files += [Path(c[key]) for key in ('k6','readonlyGuard','observerScript')]
     files += [Path(c['toolsDirectory'])/'kubectl']
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]
@@ -109,10 +120,12 @@ def fixture_config(path, capture=False):
     if capture:
         c['inputs']=expected
         c['startupWindowPreflight']=startup
+        if phase_preflight is not None:c['resourcePhasePreflight']=phase_preflight
     else:
         need(c.get('inputs')==expected,'INPUT_CHANGED')
         need(c.get('startupWindowPreflight')==startup or
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
+        need(c.get('resourcePhasePreflight')==phase_preflight,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
     return c
 
 if __name__=='__main__':

@@ -41,6 +41,7 @@ import workload_inputs
 import resource_budget
 import primer_storage
 import edge_configuration
+import phase_fit
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
@@ -299,6 +300,7 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
              hashlib.sha256(visible_helper['data']['bootstrap.js'].encode()).hexdigest() == helper['sha256'],
              'BOOTSTRAP_HELPER_SCOPE')
     candidate.pins(sys.modules[__name__], c, inventory, by_key)
+    phase_fit.runtime_binding(c,objs,need)
     return by_key
 
 
@@ -504,10 +506,12 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         need(baseline is not None and not cleanup and restarted_role is None, 'SERVING_BASELINE_REQUIRED')
         need(not ns['metadata'].get('deletionTimestamp'), 'NAMESPACE_TERMINATING')
         result['setupJobs'] = {}
+    phase_job=None
     for name, expected in by_key.items():
         if expected['kind'] not in PLURALS:
             continue
         actual = client.get(expected['kind'], expected['metadata']['name'], cleanup)
+        if name==phase_fit.PROVISION:phase_job=actual
         owned(c, actual)
         if serving_sql:
             need(not actual['metadata'].get('deletionTimestamp'), 'RESOURCE_TERMINATING')
@@ -602,6 +606,8 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         if baseline is not None:
             need(baseline.get('bootstrapHelper', {}).get('configMapUid') == result['bootstrapHelper']['configMapUid'],
                  'BOOTSTRAP_HELPER_UID_CHANGED')
+    if not cleanup and phase_fit.FIELD in c:
+        result['resourcePhasePlan']=phase_fit.runtime(c,by_key,result['namespace']['uid'],phase_job,pods,need)
     candidate.images(sys.modules[__name__], c, result)
     for role, selection in c['roles'].items():
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]

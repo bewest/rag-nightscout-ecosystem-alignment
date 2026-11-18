@@ -10,6 +10,7 @@ from lifecycle_config import fixture_config, startup_preflight
 import frozen
 import primer_storage
 import producer_startup
+import phase_fit
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 cfg=fixture_config(Path(sys.argv[1]))
@@ -79,6 +80,8 @@ def step(stage):
     events.append({'stage':stage,'time':timestamp()});put('stages.json',events)
 def install(stage):
     step(stage);owned()
+    if cfg.get('resourcePhasePreflight') and stage in ('private-admin','primer','serving'):
+        confirm_provision_retirement()
     for obj in objects(stage):
         assert obj['metadata']['namespace']==ns
         made=create(obj)
@@ -86,6 +89,22 @@ def install(stage):
         put('created.json',uids)
 def pods(label):
     return json.loads(k(['get','pods','-n',ns,'-l',label,'-o','json']))['items']
+def confirm_provision_retirement():
+    """Positive retirement precedes every post-provision allocation."""
+    owned()
+    expected,=objects('provision')
+    job=get('job','provision')
+    made,=(r for r in uids if r['kind']=='Job' and r['name']=='provision')
+    assert job is not None and job['metadata']['uid']==made['uid'],'K8S_PHASE_JOB_UID_CHANGED'
+    path=live/'provision-retirement.json'
+    previous=read(path) if path.exists() else None
+    old={k:v for k,v in previous.items() if k!='planSha256'} if previous else None
+    proof=phase_fit.terminal(expected,job,pods(''),nsuid,rid,old)
+    proof['planSha256']=phase_fit.digest(cfg['resourcePhasePreflight']['plan'])
+    if previous is not None:
+        assert previous==proof,'K8S_PHASE_TERMINAL_PROOF_CHANGED'
+    else:put('provision-retirement.json',proof)
+    return proof
 def summary(pod):
     sts=pod.get('status',{})
     return {'name':pod['metadata']['name'],'uid':pod['metadata']['uid'],'node':pod['spec'].get('nodeName'),'phase':sts.get('phase'),
@@ -257,6 +276,9 @@ try:
         ack_wire=json.loads(published.splitlines()[-2])
         assert ack_wire['effectiveTimeoutMs']==selected_source[frozen.ACK_BUDGET], 'K8S_PGSTREAM_ACK_PUBLISH_CHANGED'
         put('producer-ack-published.json',ack_wire)
+    if cfg.get('resourcePhasePreflight'):
+        with startup_window('provision-terminal',waits['jobCompleteSeconds']):
+            confirm_provision_retirement()
     install('private-admin');workload_ready('private-admin')
     install('primer');pobj=get('job','primer')
     assert pobj['spec']['suspend'] is True
@@ -293,6 +315,7 @@ try:
         put('producer-ack-readback.json',{**ack_wire,'runId':rid,'namespace':ns,'namespaceUid':nsuid,
                                         'podUid':latest['uid'],'containerId':container['containerID']})
     step('attach released runtime')
+    if cfg.get('resourcePhasePreflight'):confirm_provision_retirement()
     limits=cfg['nativeLimits']
     command(['systemd-run','--user','--scope','--quiet','--unit=ns-'+rid+'-native',
              '-p','CPUQuota='+str(limits['millicpus']/10)+'%',

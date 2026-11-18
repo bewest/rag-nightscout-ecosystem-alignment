@@ -511,6 +511,48 @@ python3 -B -m unittest discover -s tools/mt-bench/kubernetes
 The external-fixture controls report a skip when their source is absent. A skipped
 commissioner or binding control does not qualify a runtime configuration.
 
+### Provision and serving phases
+
+The existing lifecycle publishes provisioned Secrets and waits for the provision
+Job to complete before it creates admin, primer or serving workloads. A fresh
+commissioning environment can select
+`"resourcePhasePlan":{"contract":"provision-before-serving-v1"}` to account
+that ordering. Omission retains the full simultaneous-envelope calculation.
+
+The selected plan preserves full namespace quota, per-role requests, Pod slots
+and the native allocation grant. Preflight separately reports the per-node
+provision and serving peaks used for fit, including retained memory-backed
+`emptyDir` bytes as memory and disk-backed `emptyDir` bytes as local storage.
+Possible disk file-cache residency is a separate sensitivity, not an additional
+pinned-memory quota. Existing worker reserves, sampled usage and pressure checks
+remain in force. A snapshot establishes neither a reservation nor future use.
+
+The contract supports the rendered single provision Job with one completion,
+one parallel Pod, no retries and no restartable sidecars. Lifecycle binding
+checks the complete stage partition, resource projection and publisher/controller
+hashes. The phase hash also binds the complete authored Pod templates: executable,
+image, arguments, environment, source volumes, mounts and security settings.
+Live source comparison normalizes explicit API defaults and equivalent resource
+quantities, then requires the authored source. Server UID/version/controller
+metadata and the existing service-account projection retain their separate rules.
+Before later resources are created, the controller retains an exact
+namespace/Job/Pod/container receipt: Complete Job, succeeded Pod, all declared
+containers terminated successfully with no restarts. Every later install and
+runtime observation checks that receipt. A replaced, running, failed, terminating
+or overlapping provision actor refuses. Absence alone is insufficient; a retained
+terminal proof can outlive its exact Pod while the same Job remains complete.
+Existing downstream Pod-roster checks still apply.
+
+Copy `phase_fit.py` and `resource_budget.py` from the same frozen helper into the
+new commissioner's `bin/` directory. The complete
+`commissioning-accounting.patch` includes this opt-in path for its declared base.
+The separate [phase-only patch](commissioning-phase-fit.patch) targets the exact
+already-patched operator base identified in its header and preserves that base's
+volume and diagnostic guards. Use one applicable patch on a fresh source copy;
+retain the original. `test_phase_fit.py` and the selected commissioner controls
+exercise the stage, fit, terminal proof and changed-input boundaries without
+cluster actors.
+
 ## One intent for Compose and Kubernetes
 
 `toolchain.py` projects a version 1 `multitenant-experiment` into the existing
