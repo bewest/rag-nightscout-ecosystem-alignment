@@ -1217,8 +1217,11 @@ owned-to-completion discovery; it is not a product or remote-capacity limit.
 
 The phase keeps each original complete strict source snapshot and its actual
 PASS, FAIL or UNMEASURED verdict under `preload-convergence/`. It can continue
-observing the source-defined starting, acquisition-required or pending-input-aged
-signals while their failed-completion counters remain zero. A failed snapshot
+observing the source-defined starting, acquisition-required, pending-input-aged
+or unready-without-error states while their failed-completion counters remain
+zero. The source can report no error code while reconstructing a component or
+gating metadata recovery; job flags and prior acquisition credit do not identify
+all such transitions. A failed snapshot
 remains failed; this does not declare its cause benign or allow ordinary work.
 Permanent source errors, failed evaluations, changed ownership/runtime identity,
 counter rewind and incomplete observations refuse the phase.

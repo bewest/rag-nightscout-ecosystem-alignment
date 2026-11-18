@@ -39,6 +39,13 @@ def frame(code=None, acquisitions=1, runtime=R):
                      'gate': {'eligible': True, 'reason': None}, 'tenants': rows}}
 
 
+def errorless_unready(running=True, acquisitions=2):
+    value = frame(acquisitions=acquisitions)
+    value['view']['tenants'][0]['ready'] = False
+    value['view']['tenants'][0]['jobs']['running'] = running
+    return value
+
+
 class Clock:
     def __init__(self):
         self.now = time.time()
@@ -128,6 +135,36 @@ class Convergence(unittest.TestCase):
         self.assertEqual(result['readyBracket']['lastSample'], 1)
         self.assertEqual(result['readyBracket']['availability']['availability']['classifications']['READY'], 4)
 
+    def test_errorless_source_transition_keeps_strict_failure_before_credited_ready_views(self):
+        for running in (True, False):
+            for acquisitions in (0, 2):
+                with self.subTest(running=running, acquisitions=acquisitions), tempfile.TemporaryDirectory() as area:
+                    d = Path(area);a.write(d/'tenants.private.json', [{'id': A}, {'id': B}])
+                    positive = frame(acquisitions=max(1, acquisitions))
+                    io = IO([errorless_unready(running, acquisitions), positive, positive])
+                    warm.run(io, d, self.m, clock=io.clock)
+                    saved = a.document(d/'preload-convergence/result.json')
+                    self.assertEqual([sample['verdict'] for sample in saved['samples']], ['FAIL', 'PASS', 'PASS'])
+                    self.assertIsNone(saved['samples'][0]['diagnostic']['failedRow']['code'])
+
+    def test_persistent_errorless_unready_expires_without_declaring_it_healthy(self):
+        for running in (True, False):
+            with self.subTest(running=running), tempfile.TemporaryDirectory() as area:
+                d = Path(area);a.write(d/'tenants.private.json', [{'id': A}, {'id': B}])
+                io = IO([errorless_unready(running=running)])
+                with self.assertRaisesRegex(RuntimeError, 'CONVERGENCE_EXPIRED'):
+                    warm.run(io, d, self.m, clock=io.clock)
+                saved = a.document(d/'preload-convergence/result.json')
+                self.assertTrue(all(sample['verdict'] == 'FAIL' for sample in saved['samples']))
+
+    def test_permanent_poison_after_errorless_unready_still_refuses_first_snapshot(self):
+        value = errorless_unready()
+        value['view']['tenants'][1].update(ready=False, code='EVALUATOR_CONFIG_REFUSED')
+        with self.assertRaisesRegex(RuntimeError, 'SOURCE_REFUSAL'):
+            self.run_phase([value, frame(acquisitions=2), frame(acquisitions=2)])
+        self.assertEqual(len(self.saved()['samples']), 1)
+        self.assertEqual(self.saved()['failure']['diagnostic']['tenant'], B)
+
     def test_first_release_zero_credit_and_starting_are_not_ready(self):
         self.run_phase([frame('EVALUATOR_STARTING', acquisitions=0), frame(acquisitions=0), frame(), frame()])
         self.assertEqual([v['verdict'] for v in self.saved()['samples']], ['UNMEASURED', 'UNMEASURED', 'PASS', 'PASS'])
@@ -206,6 +243,17 @@ class Convergence(unittest.TestCase):
         self.assertNotIn('after-readiness', io.calls)
         self.assertEqual(self.saved()['status'], 'CONVERGED')
         self.assertEqual(a.document(self.d/'runtime-readiness.json')['verdict'], 'FAIL')
+
+    def test_fresh_normal_readiness_keeps_existing_null_code_unavailable_semantics(self):
+        io = IO([errorless_unready(), frame(acquisitions=2), frame(acquisitions=2), errorless_unready()])
+        with self.assertRaisesRegex(RuntimeError, 'M7_TEST_AFTER_READINESS'):
+            discovery._run_discovery(io, self.d, self.m, 'never-launched')
+        self.assertEqual(self.saved()['status'], 'CONVERGED')
+        # This is the existing independent discovery gate, not a pre-load
+        # strict view. Preserve its UNMEASURED result rather than inventing a
+        # new normal-readiness restriction for this source transition.
+        self.assertEqual(a.document(self.d/'runtime-readiness.json')['verdict'], 'UNMEASURED')
+        self.assertIn('after-readiness', io.calls)
 
     def test_baseline_without_selection_still_refuses_first_strict_failure(self):
         self.m.pop(warm.FIELD)

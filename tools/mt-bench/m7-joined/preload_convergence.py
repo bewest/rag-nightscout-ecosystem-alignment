@@ -122,8 +122,13 @@ def inspect_pages(raw, services, ids):
                         source_need(value['code'] in PENDING_CODES or value['code'] is None,
                                     'M7_PRELOAD_SOURCE_REFUSAL')
                         require(not value['ready'] or value['code'] is None, 'M7_PRELOAD_SOURCE_CONTRACT')
-                        require(value['ready'] or value['code'] in PENDING_CODES,
-                                'M7_PRELOAD_UNCLASSIFIED_UNREADY')
+                        # The source can retire acquired/output state while
+                        # awaiting replacement, or temporarily gate worker
+                        # readiness during metadata recovery, without an error
+                        # code. Keep that original strict FAIL; only the later
+                        # unchanged strict whole-cohort bracket closes this
+                        # finite observation phase. Job flags and previous
+                        # acquisition credit do not identify every such state.
                         owners[row['tenant']] = value
                     else:
                         require(not row['ready'], 'M7_PRELOAD_FOREIGN_READY')
