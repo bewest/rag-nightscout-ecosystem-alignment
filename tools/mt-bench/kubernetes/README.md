@@ -409,6 +409,10 @@ supplied limit must cover its corresponding request. Actual Pod readback preserv
 the complete resources object: injected LimitRange caps and changed requests
 remain refusals.
 
+Readback compares exact quantity values, so API normalization such as `0.5` CPU
+to `500m` or `0.5Gi` memory to `512Mi` is accepted. Observations retain the raw
+returned values. Added limits and real quantity changes still refuse.
+
 Use a **new** copy of the released commissioner source with
 [`commissioning-accounting.patch`](commissioning-accounting.patch). The patch
 header identifies the base source hash; retained instruments are unchanged. From

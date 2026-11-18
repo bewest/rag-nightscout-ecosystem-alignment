@@ -64,6 +64,78 @@ class ResourceBudget(unittest.TestCase):
                 k.admission_projection(expected, actual)
         k.admission_projection(expected, copy.deepcopy(expected))
 
+    def test_normalized_workload_and_pod_quantities_pass_with_raw_observations(self):
+        c, inv, rendered, client = fixture()
+        for obj in rendered:
+            if obj['kind'] in k.WORKLOADS:
+                for container in k.template(obj)['spec']['containers']:
+                    container['resources'] = {
+                        'requests': {'cpu': '0.1', 'memory': '0.0625Gi', 'ephemeral-storage': '0.0625Gi'},
+                        'limits': {'cpu': '0.5', 'memory': '0.25Gi', 'ephemeral-storage': '0.125Gi'}}
+        original_pods, original_objects = copy.deepcopy(client.pods), copy.deepcopy(client.objects)
+        objects = k.validate(c, inv, rendered)
+        result = k.observe(c, objects, client)
+        self.assertEqual(result['pods']['cohort-0']['resources']['api']['requests'],
+                         {'cpu': '100m', 'memory': '64Mi', 'ephemeral-storage': '64Mi'})
+        self.assertEqual(client.pods, original_pods)
+        self.assertEqual(client.objects, original_objects)
+        for source in (client.objects['StatefulSet/cohort']['spec']['template']['spec'], client.pods[0]['spec']):
+            source['containers'][0]['resources']['requests']['cpu'] = '101m'
+            with self.assertRaisesRegex(k.Refused, 'POD_BUDGET_CHANGED'):
+                k.observe(c, objects, client)
+            source['containers'][0]['resources']['requests']['cpu'] = '100m'
+            k.observe(c, objects, client)
+
+    def test_semantic_resource_projection_uses_exact_values_and_full_dimensions(self):
+        expected = {'containers': [{'name': 'api', 'resources': {
+            'requests': {'cpu': '0.5', 'memory': '0.5Gi', 'ephemeral-storage': '1e6'},
+            'limits': {'cpu': '1', 'memory': '1Gi', 'ephemeral-storage': '1e7'}}}],
+            'initContainers': [{'name': 'config', 'resources': {'requests': {'cpu': '0.001'}}, 'restartPolicy': 'Always'}],
+            'overhead': {'cpu': '0.01', 'memory': '0.001Gi'}}
+        actual = copy.deepcopy(expected)
+        actual['containers'][0]['resources'] = {
+            'requests': {'cpu': '500m', 'memory': '512Mi', 'ephemeral-storage': '1000k'},
+            'limits': {'cpu': '1000m', 'memory': '1024Mi', 'ephemeral-storage': '10M'}}
+        actual['initContainers'][0]['resources']['requests']['cpu'] = '1m'
+        actual['overhead'] = {'cpu': '10m', 'memory': '1073741.824'}
+        raw = copy.deepcopy(actual)
+        projected, _ = k.admission_projection(expected, actual)
+        self.assertTrue(k.subset(expected, projected))
+        self.assertEqual(actual, raw)
+        for group, resource, changed in [('requests', 'cpu', '501m'), ('limits', 'memory', '1025Mi'),
+                                         ('requests', 'memory', '511.999999999Mi')]:
+            with self.subTest(group=group, resource=resource, changed=changed):
+                broken = copy.deepcopy(actual)
+                broken['containers'][0]['resources'][group][resource] = changed
+                with self.assertRaisesRegex(k.Refused, 'POD_BUDGET_CHANGED'):
+                    k.admission_projection(expected, broken)
+        for mutate in (lambda x: x['containers'][0]['resources']['requests'].pop('memory'),
+                       lambda x: x['containers'][0]['resources']['limits'].update({'example.test/device': '1'}),
+                       lambda x: x['containers'][0]['resources'].update({'unrecognized': {}}),
+                       lambda x: x['initContainers'][0].pop('restartPolicy'),
+                       lambda x: x['containers'][0].update(name='reordered'),
+                       lambda x: x.update(resources={'requests': {'cpu': '1'}})):
+            broken = copy.deepcopy(actual)
+            mutate(broken)
+            with self.assertRaises(k.Refused):
+                k.admission_projection(expected, broken)
+
+    def test_empty_limits_are_unbounded_but_nonempty_injected_caps_refuse(self):
+        expected = {'containers': [{'name': 'api', 'resources': {
+            'requests': {'cpu': '0.5', 'memory': '0.5Gi', 'ephemeral-storage': '1Mi'}}}]}
+        actual = copy.deepcopy(expected)
+        actual['containers'][0]['resources']['requests']['cpu'] = '500m'
+        actual['containers'][0]['resources']['limits'] = {}
+        projected, _ = k.admission_projection(expected, actual)
+        self.assertTrue(k.subset(expected, projected))
+        self.assertEqual(actual['containers'][0]['resources']['limits'], {})
+        reverse, _ = k.admission_projection(actual, expected)
+        self.assertTrue(k.subset(actual, reverse))
+        actual['containers'][0]['resources']['limits'] = {'cpu': '1'}
+        with self.assertRaisesRegex(k.Refused, 'POD_BUDGET_CHANGED'):
+            k.admission_projection(expected, actual)
+        self.assertFalse(r.equivalent_resources({'limits': {}}, {'requests': {'cpu': '1m'}}, k.need))
+
     def test_socket_cohort_and_other_replica_capability_have_distinct_refusals(self):
         c, inv, rendered, client = fixture()
         rendered[1]['spec']['replicas'] = 2

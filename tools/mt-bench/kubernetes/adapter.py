@@ -156,15 +156,7 @@ def subset(expected, actual):
 
 def admission_projection(expected, actual):
     """Permit only Kubernetes' default projected service-account volume."""
-    value = copy.deepcopy(actual)
-    for key in ('overhead', 'resources'):
-        need(actual.get(key, {}) == expected.get(key, {}), 'POD_BUDGET_CHANGED')
-    for section in ('containers', 'initContainers'):
-        want, got = expected.get(section, []), actual.get(section, [])
-        need(len(want) == len(got), 'POD_SPEC_CHANGED')
-        for left, right in zip(want, got):
-            need(left.get('restartPolicy') == right.get('restartPolicy') and
-                 left.get('resources') == right.get('resources'), 'POD_BUDGET_CHANGED')
+    value = resource_budget.readback_projection(expected, actual, need)
     declared = {v['name'] for v in expected.get('volumes', [])}
     extra = [v for v in value.get('volumes', []) if v['name'] not in declared]
     admitted = []
@@ -492,7 +484,9 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             helper_annotations(expected['metadata'], actual['metadata'])
             helper_annotations(template(expected)['metadata'], template(actual)['metadata'])
             helper_pod(template(expected)['spec'], template(actual)['spec'])
-            need(subset(template(expected_visible), template(actual)), 'BINDING_READBACK_CHANGED')
+            comparison = dict(template(actual), spec=resource_budget.readback_projection(
+                template(expected)['spec'], template(actual)['spec'], need))
+            need(subset(template(expected_visible), comparison), 'BINDING_READBACK_CHANGED')
         elif 'spec' in expected:
             need(subset(expected_visible['spec'], actual.get('spec')), 'RESOURCE_READBACK_CHANGED')
         elif expected['kind'] == 'ConfigMap' and name != 'ConfigMap/' + BOOTSTRAP_MAP:
