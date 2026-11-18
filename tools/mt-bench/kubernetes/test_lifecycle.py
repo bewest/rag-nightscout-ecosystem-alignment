@@ -40,6 +40,7 @@ class Lifecycle(unittest.TestCase):
                     print('RED_RESTORED',code)
                 refusal('INPUT_CHANGED',lambda:(p/'k6').write_text('wrong'),lambda:(p/'k6').write_text('synthetic'))
                 refusal('SOURCE_CHANGED',lambda:put(files['environment'],{**e,'sourceCommit':'9'*40}),lambda:put(files['environment'],e))
+                refusal('RESOURCE_ACCOUNTING_MISMATCH',lambda:put(files['environment'],{**e,'resourceAccounting':'requests-v1'}),lambda:put(files['environment'],e))
                 wrong=copy.deepcopy(frozen);wrong['nativeLimits']['millicpus']=9000
                 refusal('ALLOCATION_EXCEEDED',lambda:put(path,wrong),lambda:put(path,frozen))
                 wrong=copy.deepcopy(frozen);wrong['instrumentSha256']='3'*64

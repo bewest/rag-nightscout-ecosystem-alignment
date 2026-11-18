@@ -68,8 +68,12 @@ try:
     pre=read(d/'preflight.json');profile=m['profile']
     actor=cfg['driver']['hostId']
     assert actor==cfg['observer']['hostId']
-    nodes={node:{'millicpus':round(total['limits']['cpu']*1000),'memoryBytes':int(total['limits']['memory']),'ephemeralBytes':int(total['limits']['ephemeral-storage'])} for node,total in pre['trialEnvelope']['placementEnvelopes'].items()}
+    mode=cfg.get('resourceAccounting','limits-v1')
+    assert mode in ('limits-v1','requests-v1') and pre['trialEnvelope'].get('resourceAccounting','limits-v1')==mode,'RESOURCE_ACCOUNTING_MISMATCH'
+    group='requests' if mode=='requests-v1' else 'limits'
+    nodes={node:{'millicpus':round(total[group]['cpu']*1000),'memoryBytes':int(total[group]['memory']),'ephemeralBytes':int(total[group]['ephemeral-storage'])} for node,total in pre['trialEnvelope']['placementEnvelopes'].items()}
     grant={'version':1,'status':'RELEASED','existingCapacityOnly':True,'context':cfg['context'],**cfg['deadlines'],
+           'resourceAccounting':mode,
            'preflight':ref(d/'preflight.json'),'experimentSha256':sha(d/'intent.json'),'nodeCeilings':nodes,
            'actorCeilings':{actor:profile['proposedEnvelope']['nativeLimits']},
            'fixtures':[{'runId':e['runId'],'namespace':ns,'namespaceUid':uid,'runSha256':sha(packet/'run.json')}]}

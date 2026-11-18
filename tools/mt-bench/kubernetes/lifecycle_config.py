@@ -45,6 +45,10 @@ def fixture_config(path, capture=False):
     need(pre.get('commissioning')=='PREFLIGHT_ONLY' and pre['experiment']['renderSha256']==sha(d/'render.json'), 'PREFLIGHT')
     need(all(limits[k]<=m['profile']['proposedEnvelope']['nativeLimits'][k] for k in limits), 'ALLOCATION_EXCEEDED')
     template=read(c['runTemplate']['path'])
+    mode=template.get('resourceAccounting','limits-v1')
+    need(mode in ('limits-v1','requests-v1') and mode==e.get('resourceAccounting','limits-v1') and
+         mode==pre.get('trialEnvelope',{}).get('resourceAccounting','limits-v1') and
+         mode==read(d/'inventory.json').get('resourceAccounting','limits-v1'),'RESOURCE_ACCOUNTING_MISMATCH')
     need(all(sum(template[a]['resources'][k] for a in ('driver','observer'))<=limits[k] for k in limits),'ALLOCATION_EXCEEDED')
     need(template['driver']['hostId']==template['observer']['hostId'], 'NATIVE_HOST')
     need(e['workDeadlineSeconds']>0 and e['cleanupDeadlineSeconds']>e['workDeadlineSeconds'] and e['provisionDeadlineSeconds']>0,'DEADLINES')

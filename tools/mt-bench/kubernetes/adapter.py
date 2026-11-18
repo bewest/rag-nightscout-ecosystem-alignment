@@ -33,6 +33,7 @@ import dependency_reuse
 import probe
 import viewer_plan
 import workload
+import resource_budget
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
@@ -130,6 +131,20 @@ def template(obj):
     return obj['spec']['template']
 
 
+def resource_accounting(c):
+    return resource_budget.selection(c, need)
+
+
+def replica_scope(obj):
+    count = obj['spec'].get('replicas', 1)
+    if obj['metadata']['name'] == 'cohort':
+        need(obj['kind'] == 'StatefulSet' and count == 1, 'ONE_COHORT_REPLICA')
+    else:
+        # Role selection and the Pod census still require one Pod per workload.
+        # This is an instrument capability, not a shared-socket cohort rule.
+        need(count == 1, 'WORKLOAD_REPLICA_CENSUS_UNSUPPORTED:' + key(obj))
+
+
 def subset(expected, actual):
     if isinstance(expected, dict):
         return isinstance(actual, dict) and all(k in actual and subset(v, actual[k]) for k, v in expected.items())
@@ -181,6 +196,8 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
     need(inventory.get('bindingIdentity') == p['bindingCommit'], 'BINDING_CHANGED')
     need(inventory.get('runId') == c['runId'], 'INVENTORY_RUN_CHANGED')
     need(inventory.get('namespace', c['namespace']) == c['namespace'] and inventory.get('ownership', {}).get('label', {c['ownerLabel']: c['runId']}) == {c['ownerLabel']: c['runId']}, 'INVENTORY_OWNERSHIP')
+    accounting = resource_accounting(c)
+    need(resource_accounting(inventory) == accounting, 'RESOURCE_ACCOUNTING_MISMATCH')
     need(inventory.get('prefix') == 'nsdemo', 'SOURCE_SCHEMA_UNSUPPORTED')
     need(timestamp(c['deadlines']['workUntil']) < timestamp(c['deadlines']['cleanupUntil']) <= timestamp(c['deadlines']['workUntil']) + 3600, 'CLEANUP_WINDOW')
     deadline(c, cleanup=cleanup, now=now)
@@ -204,12 +221,10 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         if obj['kind'] in WORKLOADS:
             t = template(obj)
             need(t['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'POD_TEMPLATE_OWNERSHIP')
-            need(obj['spec'].get('replicas', 1) == 1, 'ONE_COHORT_REPLICA')
+            replica_scope(obj)
+            need(not t['spec'].get('resources'), 'POD_LEVEL_RESOURCE_ACCOUNTING_UNSUPPORTED')
             for container in t['spec'].get('containers', []) + t['spec'].get('initContainers', []):
-                budget = container.get('resources', {})
-                need(all(all(k in budget.get(part, {}) for k in ('cpu', 'memory', 'ephemeral-storage')) for part in ('requests', 'limits')), 'UNBUDGETED_CONTAINER')
-            if obj['metadata']['name'] == 'cohort':
-                need(obj['kind'] == 'StatefulSet' and obj['spec'].get('replicas') == 1, 'ONE_COHORT_REPLICA')
+                resource_budget.validate_container(container, accounting, need)
     if c.get('tenants', 2) != 2:
         count = c['tenants']
         provision = by_key.get('Job/provision')
@@ -472,7 +487,7 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             visible_object = actual
         expected_visible = visible(expected, visible_object)
         if actual['kind'] in WORKLOADS:
-            need(actual['spec'].get('replicas', 1) == 1, 'ONE_COHORT_REPLICA')
+            replica_scope(actual)
             helper_annotations(expected['metadata'], actual['metadata'])
             helper_annotations(template(expected)['metadata'], template(actual)['metadata'])
             helper_pod(template(expected)['spec'], template(actual)['spec'])

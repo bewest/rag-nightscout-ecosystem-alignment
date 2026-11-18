@@ -605,44 +605,22 @@ def continuity(d, c, independent_directory):
 
 
 def quantity(value, cpu=False):
-    text = str(value)
-    if cpu:
-        if k.re.fullmatch(r'[0-9]+m',text):return int(text[:-1])
-        if k.re.fullmatch(r'[0-9]+',text):return int(text)*1000
-    else:
-        for suffix,factor in [('Ki',1024),('Mi',1024**2),('Gi',1024**3)]:
-            if text.endswith(suffix) and text[:-len(suffix)].isdigit():return int(text[:-len(suffix)])*factor
-        if text.isdigit():return int(text)
-    raise k.Refused('K8S_RESOURCE_QUANTITY_UNSUPPORTED')
+    return k.resource_budget.quantity(value, cpu, k.need)
 
 
 def pod_limits(spec):
     """Per-resource upper bound across init phases and steady state."""
-    result = {}
-    for resource, dimension in (('cpu', 'millicpus'), ('memory', 'memoryBytes'),
-                                ('ephemeral-storage', 'ephemeralBytes')):
-        def limit(container):
-            return quantity(container['resources']['limits'][resource], cpu=resource == 'cpu')
-
-        sidecars = 0
-        peak = 0
-        for container in spec.get('initContainers', []):
-            phase = sidecars + limit(container)
-            peak = max(peak, phase)
-            if container.get('restartPolicy') == 'Always':
-                sidecars = phase
-        steady = sidecars + sum(limit(container) for container in spec['containers'])
-        overhead = quantity(spec.get('overhead', {}).get(resource, 0), cpu=resource == 'cpu')
-        result[dimension] = max(steady, peak) + overhead
-    return result
+    return k.resource_budget.pod_budget(spec, k.resource_budget.LIMITS, k.need)
 
 
 def matrix_plan(value):
     k.need(value.get('version')==1 and isinstance(value.get('fixtures'),list) and 1<=len(value['fixtures'])<=4,'MATRIX_BOUND')
     configs=[];names=set();owners=set();ports=set();claims=set();total={'millicpus':0,'memoryBytes':0,'ephemeralBytes':0}
+    accounting = k.resource_accounting(value)
     commands=[]
     for directory in value['fixtures']:
         d,c,objects=k.load(directory)
+        k.need(k.resource_accounting(c) == accounting, 'RESOURCE_ACCOUNTING_MISMATCH')
         url=urlparse(c['baseUrl'])
         k.need(url.scheme=='http' and url.hostname=='127.0.0.1' and url.port is not None and
                url.username is None and url.password is None and url.path in ('','/') and not url.query and not url.fragment,'LOOPBACK_FORWARD_REQUIRED')
@@ -662,7 +640,7 @@ def matrix_plan(value):
                     # Repeated use within one fixture is legitimate; another
                     # fixture cannot share a namespaced claim with unique ns.
                     claims.add(claim)
-            for dimension, amount in pod_limits(pod).items():
+            for dimension, amount in k.resource_budget.pod_budget(pod, accounting, k.need).items():
                 total[dimension] += amount
         for actor_name in ('driver','observer'):
             for field in ('millicpus','memoryBytes'):total[field]+=c[actor_name]['resources'][field]
@@ -670,7 +648,9 @@ def matrix_plan(value):
                          'argv':[sys.executable,'-B',str(k.HERE/'adapter.py'),'load',str(d)],'workload':c['workload'],'deadlines':c['deadlines']})
     ceiling=value.get('aggregateCeiling',{})
     k.need(set(ceiling)==set(total) and all(type(ceiling[key]) is int and total[key]<=ceiling[key] for key in total),'AGGREGATE_HEADROOM_EXCEEDED')
-    return {'version':1,'status':'PLANNED_ONLY','commands':commands,'conservativeAggregateLimits':total,'aggregateCeiling':ceiling,
+    return {'version':1,'status':'PLANNED_ONLY','commands':commands,
+            'resourceAccounting':accounting, 'accounting':k.resource_budget.scope(accounting),
+            ('aggregateRequests' if accounting == k.resource_budget.REQUESTS else 'conservativeAggregateLimits'):total,'aggregateCeiling':ceiling,
             'admission':'Lane E current per-node and driver headroom still required; this plan reserves nothing',
             'contention':'shared nodes, disk, PostgreSQL, network/control plane and driver/observer costs remain attributed',
             'capacityAcceptance':'NOT_GRANTED'}

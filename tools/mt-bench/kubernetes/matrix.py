@@ -49,6 +49,7 @@ def allocation(value, entries):
     k.need(path.is_absolute() and path.is_file() and not path.is_symlink() and k.HEX.fullmatch(value.get('allocationSha256', ''))
            and k.digest(path) == value['allocationSha256'], 'MATRIX_ALLOCATION_CHANGED')
     a = k.document(path)
+    accounting = k.resource_accounting(a)
     k.need(a.get('version') == 1 and a.get('status') == 'RELEASED' and
            a.get('existingCapacityOnly') is True, 'MATRIX_ALLOCATION_REQUIRED')
     now = time.time()
@@ -59,6 +60,8 @@ def allocation(value, entries):
            k.HEX.fullmatch(pre.get('sha256', '')) and k.digest(pre['path']) == pre['sha256'],
            'MATRIX_PREFLIGHT_CHANGED')
     preflight = k.document(pre['path'])
+    k.need(k.resource_accounting(preflight.get('trialEnvelope', {})) == accounting,
+           'RESOURCE_ACCOUNTING_MISMATCH')
     k.need(preflight.get('offline') == 'PASS' and preflight.get('commissioning') == 'PREFLIGHT_ONLY',
            'MATRIX_PREFLIGHT_REQUIRED')
     rows = a.get('fixtures')
@@ -67,6 +70,7 @@ def allocation(value, entries):
     expected = []
     nodes, actors = {}, {}
     for d, c, objects, baseline in entries:
+        k.need(k.resource_accounting(c) == accounting, 'RESOURCE_ACCOUNTING_MISMATCH')
         k.need(c['context'] == a['context'], 'MATRIX_CONTEXT_CHANGED')
         k.need(k.timestamp(c['deadlines']['workUntil']) <= k.timestamp(a['workUntil']) and
                k.timestamp(c['deadlines']['cleanupUntil']) <= k.timestamp(a['cleanupUntil']),
@@ -81,7 +85,7 @@ def allocation(value, entries):
             spec = k.template(objects[workload])['spec']
             # Reserve the peak for each placed workload, including setup Jobs.
             total = nodes.setdefault(pod['nodeName'], dict.fromkeys(DIMS, 0))
-            add(total, e.pod_limits(spec))
+            add(total, k.resource_budget.pod_budget(spec, accounting, k.need))
         k.need(accounted == {name for name, obj in objects.items() if obj['kind'] in k.WORKLOADS},
                'MATRIX_WORKLOAD_CENSUS')
         for role in ('driver', 'observer'):
@@ -94,8 +98,8 @@ def allocation(value, entries):
         ceiling(usage, a.get('nodeCeilings', {}).get(name), 'MATRIX_NODE_HEADROOM_EXCEEDED')
     for name, usage in actors.items():
         ceiling(usage, a.get('actorCeilings', {}).get(name), 'MATRIX_ACTOR_HEADROOM_EXCEEDED')
-    return a, {'nodes': nodes, 'nativeActors': actors,
-               'accounting': 'per-Pod peak limits over init and steady phases, including restartable sidecars and Pod overhead; native actors counted per fixture'}
+    return a, {'nodes': nodes, 'nativeActors': actors, 'resourceAccounting':accounting,
+               'accounting': k.resource_budget.scope(accounting) + '; native actors counted per fixture'}
 
 
 def joined_point(d, c, baseline, current):

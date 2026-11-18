@@ -384,6 +384,56 @@ due work or fixed-target drain. The operating collector owner retains that work.
 `load/k6.log` contains structured event witnesses; `k6-native.log` preserves the
 full terminal summary separately so its size cannot displace the demand marker.
 
+## Scheduling requests and optional service limits
+
+For a fresh discovery fixture, select `"resourceAccounting":"requests-v1"`
+in the commissioning environment, binding overrides and runtime template. Use
+the same value in a matrix specification and its allocation grant. Inventory,
+preflight and lifecycle validation check this selection before expensive setup.
+Existing inputs that omit it retain `limits-v1` accounting and capped behavior.
+
+In request mode, the binding removes reference per-container limits. A deliberate
+`resources.<role>.limits` override supplies exactly those optional limits; it does
+not inherit additional reference caps. Positive CPU, memory and ephemeral-storage
+requests remain necessary for this instrument's scheduling calculation. Each
+supplied limit must cover its corresponding request. Actual Pod readback preserves
+the complete resources object: injected LimitRange caps and changed requests
+remain refusals.
+
+Use a **new** copy of the released commissioner source with
+[`commissioning-accounting.patch`](commissioning-accounting.patch). The patch
+header identifies the base source hash; retained instruments are unchanged. From
+the new staging directory containing `bin/preflight.py`, apply the patch with
+`git apply /absolute/helper/tools/mt-bench/kubernetes/commissioning-accounting.patch`.
+Select request accounting in its environment. Its namespace quota covers requests
+and existing no-provider-resource boundaries; `limits.*` quotas or LimitRange
+defaults that force hidden limits are refused. The preflight retains both requests
+and limits, with `null` for an unbounded limit dimension, and a separate `accounted`
+vector. Attachment uses the selected vector for its grant.
+
+The planner and commissioner use init/steady peaks, restartable sidecars and Pod
+overhead for either mode. Request accounting tests scheduling fit; it is not a hard
+upper bound on use, a quiet-worker reservation or capacity acceptance. Capture
+actual memory, throttling, OOM/restarts and contention during the run. Native
+driver/observer cgroups and owned deadlines/cleanup retain their separate bounds.
+Pod-level resource budgets need their own instrument extension and refuse explicitly.
+
+The shared-socket cohort stays at one Pod. Other multi-Pod workloads currently
+refuse `WORKLOAD_REPLICA_CENSUS_UNSUPPORTED`, because role selection and the
+observed Pod census need an explicit topology extension. This is distinct from
+the cohort's socket-sharing requirement.
+
+Focused controls use real scratch Jsonnet renders and patched commissioner code:
+
+```bash
+K8S_BINDING_SOURCE=/absolute/deployment-repository \
+K8S_COMMISSIONING_SOURCE=/absolute/released/staging/ops/staging-k8s/bin \
+python3 -B -m unittest discover -s tools/mt-bench/kubernetes
+```
+
+The external-fixture controls report a skip when their source is absent. A skipped
+commissioner or binding control does not qualify a runtime configuration.
+
 ## One intent for Compose and Kubernetes
 
 `toolchain.py` projects a version 1 `multitenant-experiment` into the existing
