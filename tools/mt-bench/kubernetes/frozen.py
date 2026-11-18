@@ -121,6 +121,36 @@ HELPER_ANNOTATIONS = {'nightscout.org/bootstrap-helper-commit': BOOTSTRAP_HELPER
                       'nightscout.org/instance-acceptance': 'PENDING'}
 
 
+
+def compatible_deployment_inputs(manifest, expected, measured):
+    if expected == measured:
+        return True
+    # The previously controlled registry-admin lifetime correction can be
+    # embedded in the selected build. Every other binding asset stays exact.
+    return ('bootstrapHelper' not in manifest and expected.get('bootstrap.js') == BOOTSTRAP_ORIGINAL
+            and measured == {**expected, 'bootstrap.js': BOOTSTRAP_HELPER['sha256']})
+
+
+def bootstrap_readback(selected, actual, created, namespace, run_id):
+    helper = selected.get('runtimeBootstrapHelper')
+    if helper is None:
+        require(actual is None, 'BOOTSTRAP_HELPER_UNDECLARED')
+        return {'mode': 'embedded-image', 'effectiveInstanceAcceptance': selected['sourceAcceptance']}
+    require(actual is not None, 'BOOTSTRAP_HELPER_MISSING')
+    metadata = actual.get('metadata', {})
+    expected = [row['uid'] for row in created if row['kind'] == 'ConfigMap' and row['name'] == HELPER_MAP]
+    data = actual.get('data', {})
+    require(len(expected) == 1 and metadata.get('uid') == expected[0] and
+            metadata.get('namespace') == namespace and metadata.get('labels', {}).get('nightscout.org/run-id') == run_id,
+            'BOOTSTRAP_HELPER_OWNERSHIP')
+    require(actual.get('immutable') is True and set(data) == {'bootstrap.js'} and
+            not actual.get('binaryData') and isinstance(data['bootstrap.js'], str) and
+            digest(data['bootstrap.js'].encode()) == helper['sha256'], 'BOOTSTRAP_HELPER_CHANGED')
+    return {'mode': 'diagnostic-overlay', 'uid': expected[0], 'resourceVersion': metadata['resourceVersion'],
+            'sha256': helper['sha256'], 'imageSourceAcceptance': selected['imageSourceAcceptance'],
+            'effectiveInstanceAcceptance': selected['sourceAcceptance']}
+
+
 def install_bootstrap_helper(manifest, deploy_repo, package, measured):
     if 'bootstrapHelper' not in manifest:
         return

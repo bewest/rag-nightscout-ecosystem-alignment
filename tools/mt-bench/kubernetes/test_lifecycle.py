@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 import lifecycle_config as l
+import frozen as f
 
 class Lifecycle(unittest.TestCase):
     def test_bound_inputs_refuse_source_tool_allocation_and_stages_then_restore(self):
@@ -45,5 +46,40 @@ class Lifecycle(unittest.TestCase):
                 refusal('INSTRUMENT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 stage=case/'stages/stores.json'
                 refusal('STAGE_NAMESPACE',lambda:put(stage,{'items':[dict(kind='ConfigMap',metadata={'namespace':'foreign'})]}),lambda:put(stage,{'items':[]}))
+
+
+class BootstrapReadback(unittest.TestCase):
+    def test_native_binding_accepts_only_the_controlled_asset_difference(self):
+        original = {'bootstrap.js': f.BOOTSTRAP_ORIGINAL, 'other.js': 'original'}
+        corrected = {**original, 'bootstrap.js': f.BOOTSTRAP_HELPER['sha256']}
+        self.assertTrue(f.compatible_deployment_inputs({}, original, corrected))
+        self.assertFalse(f.compatible_deployment_inputs({}, original, {**corrected, 'other.js': 'changed'}))
+        self.assertFalse(f.compatible_deployment_inputs({'bootstrapHelper': {}}, original, corrected))
+        self.assertTrue(f.compatible_deployment_inputs({}, original, corrected))
+
+    def test_declared_overlay_remains_mandatory_and_undeclared_overlay_refuses(self):
+        native = {'sourceAcceptance': 'PENDING'}
+        overlay = {**native, 'imageSourceAcceptance': 'PASS',
+                   'runtimeBootstrapHelper': {'sha256': f.digest(b'synthetic bootstrap')}}
+        row = {'kind': 'ConfigMap', 'name': f.HELPER_MAP, 'uid': 'owned'}
+        actual = {'immutable': True, 'data': {'bootstrap.js': 'synthetic bootstrap'},
+                  'metadata': {'uid': 'owned', 'resourceVersion': '1', 'namespace': 'scope',
+                               'labels': {'nightscout.org/run-id': 'run'}}}
+        self.assertEqual(f.bootstrap_readback(native, None, [], 'scope', 'run'),
+                         {'mode': 'embedded-image', 'effectiveInstanceAcceptance': 'PENDING'})
+        with self.assertRaisesRegex(f.Refused, 'BOOTSTRAP_HELPER_UNDECLARED'):
+            f.bootstrap_readback(native, actual, [row], 'scope', 'run')
+        with self.assertRaisesRegex(f.Refused, 'BOOTSTRAP_HELPER_MISSING'):
+            f.bootstrap_readback(overlay, None, [], 'scope', 'run')
+        with self.assertRaisesRegex(f.Refused, 'BOOTSTRAP_HELPER_OWNERSHIP'):
+            f.bootstrap_readback(overlay, actual, [{**row, 'uid': 'foreign'}], 'scope', 'run')
+        with self.assertRaisesRegex(f.Refused, 'BOOTSTRAP_HELPER_CHANGED'):
+            f.bootstrap_readback(overlay, {**actual, 'data': {'bootstrap.js': 'wrong'}},
+                                 [row], 'scope', 'run')
+        result = f.bootstrap_readback(overlay, actual, [row], 'scope', 'run')
+        self.assertEqual(result['mode'], 'diagnostic-overlay')
+        self.assertEqual(result['effectiveInstanceAcceptance'], 'PENDING')
+        self.assertEqual(result['imageSourceAcceptance'], 'PASS')
+
 
 if __name__=='__main__':unittest.main()

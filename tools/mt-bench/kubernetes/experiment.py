@@ -40,7 +40,9 @@ def materialize(manifest, binding_repo, deploy_repo, out):
         k.need(measured[key] == supported[key], 'UNSUPPORTED_BINDING_CAPABILITY:' + key)
     # The package embeds deployment assets and a static role/provisioning protocol.
     # A changed deployment input needs a reviewed binding compatibility update.
-    k.need(measured['sourceFilesSha256'] == supported['sourceFilesSha256'], 'UNSUPPORTED_BINDING_DEPLOYMENT_INPUT')
+    k.need(frozen.compatible_deployment_inputs(manifest, supported['sourceFilesSha256'],
+                                               measured['sourceFilesSha256']),
+           'UNSUPPORTED_BINDING_DEPLOYMENT_INPUT')
     frozen.install_bootstrap_helper(manifest, deploy_repo, package, measured)
     measured.update(selected)
     k.write(asset, measured)

@@ -6,6 +6,7 @@ import base64, datetime as dt, hashlib, json, os, subprocess, sys, time, traceba
 import signal
 from pathlib import Path
 from lifecycle_config import fixture_config
+import frozen
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); inst=Path(cfg['instrumentDirectory']); tool=Path(cfg['toolsDirectory'])
 read=lambda p:json.loads(p.read_bytes())
@@ -117,6 +118,10 @@ assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
 assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-delegator' and trust['subjects']==[{'kind':'ServiceAccount','name':'vault','namespace':ns}] and get('clusterrolebinding',tn,False) is None
 assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
+intent=read(d/'intent.json')
+selected_source=frozen.source(intent)
+frozen.check_bootstrap_render(intent, [row for stage in
+    ('foundation','stores','provision','private-admin','primer','serving') for row in objects(stage)])
 nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
 signal.signal(signal.SIGTERM,interrupted)
@@ -140,15 +145,11 @@ try:
     step('seed stores')
     secret_script=Path(cfg['bindingDirectory'])/'bindings/kubernetes/scripts/secrets.sh'
     command(['bash',secret_script,'seed',ns,'unused'],timeout=90,private=True)
-    helper=next(o for o in objects('foundation') if o['kind']=='ConfigMap' and o['metadata']['name']=='bootstrap-diagnostic')
-    actual=get('configmap',helper['metadata']['name'])
-    assert actual['immutable'] is True and actual['metadata']['uid']==next(u['uid'] for u in uids if u['kind']=='ConfigMap' and u['name']==helper['metadata']['name'])
-    expected_helper=read(d/'intent.json')['bootstrapHelper']['sha256']
-    assert hashlib.sha256(actual['data']['bootstrap.js'].encode()).hexdigest()==expected_helper
-    put('bootstrap-helper-readback.json',{'uid':actual['metadata']['uid'],'resourceVersion':actual['metadata']['resourceVersion'],'sha256':expected_helper,'imageSourceAcceptance':'PASS','effectiveInstanceAcceptance':'PENDING'})
+    actual=get('configmap', frozen.HELPER_MAP)
+    put('bootstrap-helper-readback.json',frozen.bootstrap_readback(selected_source,actual,uids,ns,rid))
     install('stores');workload_ready('stores')
     install('provision')
-    provision=ready('job-name=provision','provision',min(e['provisionDeadlineSeconds'],1800))
+    provision=ready('job-name=provision','provision',e['provisionDeadlineSeconds'])
     step('owned role export')
     # Keep the two private configuration documents required for the completion oracle only.
     until=time.monotonic()+70
