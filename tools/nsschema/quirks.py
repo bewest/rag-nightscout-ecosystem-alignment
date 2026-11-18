@@ -15,7 +15,9 @@ Two modes:
     Compare each measurement against the entry's ``expect`` block and exit
     non-zero when a claim no longer holds — a quirk that has disappeared
     from the data, or one whose prevalence has collapsed. Intended for CI,
-    so the registry rots loudly rather than quietly.
+    so the registry rots loudly rather than quietly. ``check`` writes
+    nothing: it also fails when the recorded ``quirks.json`` differs from
+    the measurement, so a stale report is red rather than silently rewritten.
 
 D20 (execution plan §2.6.3, SPEC-REG-QUIRKS): an entry may name the
 ``(vendor, product, versions)`` it affects; the measurement adds, for those
@@ -544,12 +546,20 @@ def main(argv=None):
             "instances": "given" if instances is not None else "unmeasured",
         }
     dest = root / args.out
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps(report, indent=1) + "\n")
-    print(f"-> {args.out}")
+    text = json.dumps(report, indent=1) + "\n"
+    if not args.check:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(text)
+        print(f"-> {args.out}")
 
     if args.check:
+        # A gate reads; it never writes. Compare the measurement with the
+        # recorded report in memory and fail on drift instead of rewriting it.
         failures = check(results)
+        recorded = dest.read_text() if dest.is_file() else None
+        if recorded != text:
+            failures.append(("report", f"{args.out} differs from this measurement; "
+                                       "run `make schema-quirks` and review the diff"))
         for quirk_id, reason in failures:
             print(f"FAIL {quirk_id}: {reason}", file=sys.stderr)
         if failures:

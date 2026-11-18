@@ -112,17 +112,6 @@ controls:
       fails with #8895's different merge. This checks metadata, not test execution.
 
   - gate: |-
-      TEST=dependency-d3 npm run test-single
-    cwd: externals/cgm-remote-monitor-official
-    control-exempt: >
-      This gate's cwd is the SHIPPING CHECKOUT, which 19 worktrees hang
-      off. Ablating it means editing that tree, and rule 6 forbids it.
-      The gate fails against the live tree (RT-D3 0/2 in queue-status,
-      2026-09-22), so it is not silently green, and RT-D3's companion
-      instrument (d3-drag-clamp-covered.js) carries its own internal
-      CONTROL finding and is the non-vacuous measurement for this item.
-
-  - gate: |-
       bash -c 's=$(git -C externals/cgm-remote-monitor-official show official/dev:lib/api/alexa/index.js); echo "$s" | grep -q "switch (req.body.request.type)" || exit 1; echo "$s" | grep -q "default:"'
     cwd: .
     control: |-
@@ -132,20 +121,6 @@ controls:
       the identical pair of greps against a file that contains neither
       (lib/api/index.js) exits 1. It shows the greps read the file they
       are given rather than matching anything.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official cat-file -e bf/reads:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show bf/reads:lib/api3/generic/collection.js | grep -q "maxLimit" && exit 1 || exit 0
-    control-kind: static
-    proves: >
-      the same conjunction with a pattern that IS present in
-      collection.js (`maxLimit`) on a ref where count.js DOES exist
-      (bf/reads) exits 1. The state this gate is meant to go red in -
-      count.js present AND collection.js delegating to it - does not
-      exist on any ref yet, which is precisely the follow-up it tracks,
-      so the instrument is exercised with a stand-in pattern instead.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official cat-file -e official/dev:lib/server/count.js 2>/dev/null && git -C externals/cgm-remote-monitor-official show official/dev:lib/api3/generic/collection.js | grep -q "self.parseLimit" && exit 1 || exit 0
@@ -160,16 +135,6 @@ controls:
       count.js present AND collection.js delegating to it - does not
       exist on any ref yet, which is precisely the follow-up it tracks,
       so the instrument is exercised with a stand-in pattern instead.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q dfe2753d
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official ls-remote --heads origin bewest/wip/optimize-treatment-processing | grep -q 0000000000000000000000000000000000000000
-    control-kind: network
-    proves: >
-      the same read-only ls-remote piped into a grep for a SHA that is
-      not there exits 1. Rule 0: ls-remote READS and never pushes.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 84fac457 official/dev
@@ -220,121 +185,6 @@ controls:
       yes both ways would not be reading ancestry at all.
 
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/alarms
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/alarms
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command since bf/alarms merged into
-      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/alarms has NOT
-      taken, and the same command reports it not-an-ancestor (exit 1,
-      measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/auth
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/auth
-    control-kind: static
-    proves: >
-      origin/chore/nightscout-modernization is a base bf/auth has NOT
-      taken, and the same command reports it not-an-ancestor (exit 1,
-      measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/cache
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/cache
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command since bf/cache merged into
-      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/cache has NOT
-      taken, and the same command reports it not-an-ancestor (exit 1,
-      measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/coercion
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/coercion
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command since bf/coercion merged into
-      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/coercion has
-      NOT taken, and the same command reports it not-an-ancestor (exit
-      1, measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/connect-pin
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/connect-pin
-    control-kind: static
-    proves: >
-      origin/chore/nightscout-modernization is a base bf/connect-pin has
-      NOT taken, and the same command reports it not-an-ancestor (exit
-      1, measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/food
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/food
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command since bf/food merged into
-      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/food has NOT
-      taken, and the same command reports it not-an-ancestor (exit 1,
-      measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/merge
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/merge
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command since bf/merge merged into
-      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/merge has NOT
-      taken, and the same command reports it not-an-ancestor (exit 1,
-      measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/parms
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/parms
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command since bf/parms merged into
-      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/parms has NOT
-      taken, and the same command reports it not-an-ancestor (exit 1,
-      measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/dev bf/reads
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/chore/nightscout-modernization bf/reads
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command since bf/reads merged into
-      dev and its gate became a containment check (below). origin/chore/nightscout-modernization is a base bf/reads has NOT
-      taken, and the same command reports it not-an-ancestor (exit 1,
-      measured). That is exactly the shape this gate goes red in when
-      dev moves ahead of the branch.
-
-  - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor official/master official/dev
     cwd: .
     control: |-
@@ -344,57 +194,6 @@ controls:
       origin/master is a strict ancestor of origin/dev, so the reversed
       question must be answered no (exit 1, measured). A command that
       said yes both ways would not be reading ancestry at all.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/build-runtime-separation >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/chore/build-runtime-separation bf/reads >/dev/null
-    control-kind: static
-    proves: >
-      origin/chore/build-runtime-separation and bf/reads were measured
-      to conflict on 2026-09-15 and merge-tree exits 1 on the pair. A
-      trial merge that returned 0 for a conflicting pair would make
-      every "merges cleanly" row in this queue meaningless.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/compose-mongodb6 >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/chore/compose-mongodb6 bf/reads >/dev/null
-    control-kind: static
-    proves: >
-      origin/chore/compose-mongodb6 and bf/reads were measured to
-      conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial
-      merge that returned 0 for a conflicting pair would make every
-      "merges cleanly" row in this queue meaningless.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/mime-exposure-review >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/chore/mime-exposure-review bf/reads >/dev/null
-    control-kind: static
-    proves: >
-      origin/chore/mime-exposure-review and bf/reads were measured to
-      conflict on 2026-09-15 and merge-tree exits 1 on the pair. A trial
-      merge that returned 0 for a conflicting pair would make every
-      "merges cleanly" row in this queue meaningless.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/nightscout-modernization >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/retire-jsdom >/dev/null
-    control-kind: static
-    proves: >
-      origin/dev and origin/chore/retire-jsdom conflict in seven files,
-      measured 2026-09-21, and merge-tree exits 1 on the pair. A trial
-      merge that returned 0 for a conflicting pair would make every
-      "merges cleanly" row in this queue meaningless. The pair is chosen
-      because it is still unreconciled: cut 5 against bf/reads no longer
-      conflicts (bf/reads merged into dev as PR #8738 and cut 5 then merged
-      dev), so it cannot serve as the known-negative.
 
   - gate: |-
       node tools/queue/gates/pr-body-parity.js
@@ -446,35 +245,6 @@ controls:
       control asked whether 15.0.8's master lacked the commit, and went stale when
       15.0.9 released on 2026-10-21 (VACUOUS, measured 2026-11-06). A command that
       said yes both ways would not be reading ancestry at all.
-
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/dev >/dev/null
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-tree --write-tree official/dev official/chore/mime-exposure-review >/dev/null
-    control-kind: static
-    proves: >
-      A control for a control, deliberately. The gate merges dev with itself
-      and must always pass; its job is to prove merge-tree still works when
-      every other trial-merge in RT-REBASE is red. So what has to be shown is
-      that the command can still FAIL: dev against cut 4 conflicts in eighteen
-      files, measured 2026-09-21, exit 1. A
-      merge-tree that returned 0 for everything would make the self-merge pass
-      for the wrong reason and take the whole item's red with it.
-
-  - gate: |-
-      git -C externals/nightscout-connect merge-base --is-ancestor official/dev release/v0.0.14
-    cwd: .
-    control: |-
-      git -C externals/nightscout-connect merge-base --is-ancestor release/v0.0.14 v0.0.13
-    control-kind: static
-    proves: >
-      release/v0.0.14 is not contained in v0.0.13 - it is eleven commits past it
-      - and the same command reports it so (exit 1, measured 2026-09-21). The
-      gate asserts containment of upstream dev in the release branch; a command
-      that answered yes regardless would have hidden exactly the divergence this
-      gate was added to catch, which is that dev reached 0.0.14 on a different
-      tree.
 
   - gate: |-
       git -C externals/cgm-remote-monitor-official merge-base --is-ancestor 12154df9 official/dev
@@ -560,47 +330,6 @@ controls:
       does - measured 1 match) and 0 against a fixture that does not.
 
   - gate: |-
-      git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . && exit 1 || exit 0
-    cwd: .
-    control: |-
-      git -C externals/nightscout-connect ls-remote --tags origin v0.0.14 | grep -q . || git -C externals/nightscout-connect ls-remote --tags origin v0.0.13 | grep -q . && exit 1 || exit 0
-    control-kind: network
-    proves: >
-      the same shape asked about v0.0.13, which IS on the remote, exits
-      1. That is the state this gate must reach the moment someone
-      pushes v0.0.14 - rule 0 says a human does that, not this queue.
-
-  - gate: |-
-      git -C externals/nightscout-connect merge-base --is-ancestor v0.0.13 release/v0.0.14
-    cwd: .
-    control: |-
-      git -C externals/nightscout-connect merge-base --is-ancestor release/v0.0.14 v0.0.13
-    control-kind: static
-    proves: >
-      v0.0.13 is a strict ancestor of release/v0.0.14, so the reversed
-      question must be answered no (exit 1, measured). A command that
-      said yes both ways would not be reading ancestry at all.
-
-  - gate: |-
-      grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
-    cwd: externals/work/crm-bf-connect-pin
-    control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && git -C ../../../externals/cgm-remote-monitor-official show official/dev:package-lock.json | sed 's#234d47c85510a77f07b3be0d2c026dd0272715d6#archive/refs/tags/v0.0.14.tar.gz#g' > "$T/lock.json" && grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' "$T/lock.json"
-    positive-control: |-
-      grep -q '234d47c85510a77f07b3be0d2c026dd0272715d6' package-lock.json
-    control-kind: static
-    proves: >
-      This gate is DELIBERATELY INVERTED and its control has to be too.
-      It passes while the lockfile is still on the old connector SHA
-      (234d47c, which is also what origin/dev pins), and must go red the
-      moment P0-LOCK regenerates it - so the known-negative is a lockfile
-      with the SHA replaced by the v0.0.14 tarball, and against that the
-      grep exits 1. The gate also passes against origin/dev's own
-      lockfile: it is a handoff tripwire, not a gate on the branch, and
-      no derived control could have known that - which is why controls
-      are authored per gate and never generated.
-
-  - gate: |-
       grep -q '^queue-status:' Makefile
     cwd: .
     control: |-
@@ -612,46 +341,6 @@ controls:
       a near-miss fixture (`queue-status :`, with a space) is rejected
       and the exact target is accepted. A grep that matched the near
       miss would not be reading a Make target.
-
-  - gate: |-
-      grep -q 'archive/refs/tags/v0.0.14.tar.gz' package-lock.json
-    cwd: externals/work/crm-bf-connect-pin
-    control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' '"resolved": "https://github.com/nightscout/nightscout-connect/archive/234d47c.tar.gz"' > "$T/lock.json" && grep -q 'archive/refs/tags/v0.0.14.tar.gz' "$T/lock.json"
-    positive-control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' '"resolved": "https://github.com/nightscout/nightscout-connect/archive/refs/tags/v0.0.14.tar.gz"' > "$T/lock.json" && grep -q 'archive/refs/tags/v0.0.14.tar.gz' "$T/lock.json"
-    control-kind: static
-    proves: >
-      the gate is red ON PURPOSE - P0-LOCK is deliberately undone
-      until the tag is pushed - so both directions are shown on fixtures
-      rather than on the file. It rejects a lock pinned by SHA and
-      accepts one pinned to the tag tarball.
-
-  - gate: |-
-      grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json
-    cwd: externals/work/crm-bf-connect-pin
-    control: |-
-      git -C ../../../externals/cgm-remote-monitor-official show official/dev:package.json | grep -q 'archive/refs/tags/v0.0.14.tar.gz'
-    positive-control: |-
-      grep -q 'archive/refs/tags/v0.0.14.tar.gz' package.json
-    control-kind: static
-    proves: >
-      the same grep against origin/dev's package.json - the base this
-      branch's one-line change is made against - exits 1. This is the
-      one connect-pin gate that really does measure the branch.
-
-  - gate: |-
-      grep -q 'ulimits' docker-compose.yml
-    cwd: externals/cgm-remote-monitor-official
-    control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' 'services:' > "$T/dc.yml" && grep -q 'ulimits' "$T/dc.yml"
-    positive-control: |-
-      T=$(mktemp -d) && trap 'rm -rf "$T"' EXIT && printf '%s\n' ' ulimits:' > "$T/dc.yml" && grep -q 'ulimits' "$T/dc.yml"
-    control-kind: static
-    proves: >
-      fixtures both ways. The gate is red against the real file because
-      dev's compose file sets no nofile limit, which is the defect
-      BFQ-10 records.
 
   - gate: |-
       node -e "const b=require('./lib/backoff.js'); try { b({jitter:'wild'}); process.exit(1); } catch(e) { process.exit(/unknown jitter mode/.test(e.message)?0:1); }"
@@ -743,19 +432,6 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      node tools/queue/gates/config-surface-census.js --arm api3
-    cwd: .
-    control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/config-surface-census.js --arm api3
-    control-kind: static
-    proves: >
-      run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
-      the files it reads exist, the gate does not exit 0. THIS IS THE
-      WEAK FORM: it proves the gate is coupled to its inputs, not that
-      it is coupled to the right property of them. Where a sharper
-      control was run by hand the audit says so.
-
-  - gate: |-
       node tools/queue/gates/config-surface-census.js --arm azure
     cwd: .
     control: |-
@@ -795,19 +471,6 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      node tools/queue/gates/config-surface-census.js --arm webhook
-    cwd: .
-    control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/config-surface-census.js --arm webhook
-    control-kind: static
-    proves: >
-      run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
-      the files it reads exist, the gate does not exit 0. THIS IS THE
-      WEAK FORM: it proves the gate is coupled to its inputs, not that
-      it is coupled to the right property of them. Where a sharper
-      control was run by hand the audit says so.
-
-  - gate: |-
       node tools/queue/gates/connector-pin-exposure.js --refs official/master,official/dev
     cwd: .
     control: |-
@@ -825,19 +488,6 @@ controls:
     cwd: .
     control: |-
       tools/queue/gates/empty-root-control.sh tools/queue/gates/cut4-total-outage.js
-    control-kind: static
-    proves: >
-      run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
-      the files it reads exist, the gate does not exit 0. THIS IS THE
-      WEAK FORM: it proves the gate is coupled to its inputs, not that
-      it is coupled to the right property of them. Where a sharper
-      control was run by hand the audit says so.
-
-  - gate: |-
-      node tools/queue/gates/d3-drag-clamp-covered.js
-    cwd: .
-    control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/d3-drag-clamp-covered.js
     control-kind: static
     proves: >
       run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
@@ -915,19 +565,6 @@ controls:
       official/dev 2bc298b9 and cut 2 ee94b148 are 9 checked, 0 failing). The
       strong form: same instrument, a real tree where the property is
       false.
-
-  - gate: |-
-      node tools/queue/gates/platform-sql-surface.js
-    cwd: .
-    control: |-
-      tools/queue/gates/empty-root-control.sh tools/queue/gates/platform-sql-surface.js
-    control-kind: static
-    proves: >
-      run with QUEUE_GATE_ROOT pointed at an EMPTY directory, so none of
-      the files it reads exist, the gate does not exit 0. THIS IS THE
-      WEAK FORM: it proves the gate is coupled to its inputs, not that
-      it is coupled to the right property of them. Where a sharper
-      control was run by hand the audit says so.
 
   - gate: |-
       node tools/queue/gates/register-exposure-legend.js
@@ -1031,16 +668,6 @@ controls:
       control was run by hand the audit says so.
 
   - gate: |-
-      npm ci --dry-run
-    cwd: externals/work/crm-bf-connect-pin
-    control-exempt: >
-      Rule 0. It resolves against the npm registry and a GitHub tarball
-      for a tag that does not exist yet, and it CANNOT pass until a
-      human pushes v0.0.14 - which is the point of P0-LOCK. Running a
-      control for it here would mean either contacting those endpoints
-      or faking the answer.
-
-  - gate: |-
       npm test
     cwd: externals/work/nc-jitter
     control-cwd: .
@@ -1066,36 +693,6 @@ controls:
     proves: >
       --check exits 1 against a file that is not the rendering and 0
       against one that is. Both measured.
-
-  - gate: |-
-      test "$(git -C externals/nightscout-connect cat-file -t v0.0.14)" = tag
-    cwd: .
-    control: |-
-      test "$(git -C externals/nightscout-connect cat-file -t v0.0.13)" = tag
-    control-kind: static
-    proves: >
-      v0.0.13 is a LIGHTWEIGHT tag - cat-file -t says `commit` - so the
-      same test against it exits 1. The gate really is reading the
-      object type and not merely that the name resolves.
-
-  - gate: |-
-      test "$(git -C externals/nightscout-connect rev-parse v0.0.14^{commit})" = "$(git -C externals/nightscout-connect rev-parse release/v0.0.14)"
-    cwd: .
-    control: |-
-      test "$(git -C externals/nightscout-connect rev-parse v0.0.13^{commit})" = "$(git -C externals/nightscout-connect rev-parse release/v0.0.14)"
-    control-kind: static
-    proves: >
-      the same comparison against v0.0.13 (b394411a) versus
-      release/v0.0.14 (649a7de2) exits 1.
-
-  - gate: |-
-      test "$(git -C externals/nightscout-connect show release/v0.0.14:package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')" = 0.0.14
-    cwd: .
-    control: |-
-      test "$(git -C externals/nightscout-connect show v0.0.13:package.json | python3 -c 'import json,sys; print(json.load(sys.stdin)["version"])')" = 0.0.14
-    control-kind: static
-    proves: >
-      the same extraction at v0.0.13 yields 0.0.13 and the test exits 1.
 
   - gate: |-
       python3 tools/queue/emit_views.py --check
@@ -1366,22 +963,6 @@ controls:
   # different tree.
 
   - gate: |-
-      git -C externals/work/crm-adv-retro merge-base --is-ancestor official/dev bf/ws-loadretro-auth
-    cwd: .
-    control: |-
-      git -C externals/work/crm-adv-retro merge-base --is-ancestor bf/ws-loadretro-auth official/dev
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command; ADV-RETRO's branch merged into
-      dev (#8744) and its gate became a containment check. As measured
-      2026-09-22 in crm-adv-retro, this gate now exits 1 and its control 0.
-      Original record: the ancestry question reversed. RUN 2026-09-21: gate
-      exit 0, control exit 1, because bf/ws-loadretro-auth then carried
-      9765e8cd and origin/dev did not. A gate of this shape passes for any pair where the branch simply
-      equals the base, so the control is what distinguishes "branch is current"
-      from "branch is empty".
-
-  - gate: |-
       test -f externals/work/crm-adv-retro/tests/websocket.loadretro-authorization.test.js
     cwd: .
     control: |-
@@ -1393,17 +974,6 @@ controls:
       control exit 1. This is deliberately NOT a suite run; see the item's
       no-gate marker for the measured before/after counts and why automating
       them needs a fixture that owns its own mongod.
-
-  - gate: |-
-      git -C externals/work/crm-adv-alarm merge-base --is-ancestor official/dev bf/alarm-socket-scope
-    cwd: .
-    control: |-
-      git -C externals/work/crm-adv-alarm merge-base --is-ancestor bf/alarm-socket-scope official/dev
-    control-kind: static
-    proves: >
-      ORPHAN: no queue gate uses this command; ADV-ALARM's branch merged into
-      dev (#8745) and its gate became a containment check. Original record:
-      ancestry reversed. RUN 2026-09-21: gate exit 0, control exit 1.
 
   - gate: |-
       test -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.security.test.js -a -f externals/work/crm-adv-alarm/tests/api3.alarm-socket.ack.test.js
@@ -1535,53 +1105,6 @@ controls:
 
   # --- #8758 freeze pass, 2026-09-25 (session -6a) ---
   - gate: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/bf/object-id-crud
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official merge-base --is-ancestor e9dbb1fb official/master
-    control-kind: static
-    proves: >
-      The same ancestry question against origin/master (15.0.8), which does
-      not contain #8758's head, exits 1. Goes stale when #8758 is released.
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/bf/object-id-crud -- lib/server/object-id-forms.js
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "dropEmptyId" official/master -- lib/server/object-id-forms.js
-    control-kind: static
-    proves: >
-      #8758's pushed head has no dropEmptyId, so the grep exits 1 there
-      until the push. Presence only; tests/api.empty-id.test.js is the
-      behaviour.
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/bf/object-id-crud -- lib/server/devicestatus.js
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "withoutStoredIds" official/master -- lib/server/devicestatus.js
-    control-kind: static
-    proves: >
-      #8758's pushed head has no withoutStoredIds, so the grep exits 1 there
-      until the push.
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/bf/object-id-crud -- lib/api3/generic/delete/operation.js
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "deleteEveryForm" official/master -- lib/api3/generic/delete/operation.js
-    control-kind: static
-    proves: >
-      #8758's pushed head deletes one form, so the grep exits 1 there until
-      the push.
-  - gate: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" official/dev -- lib/api/entries/index.js'
-    cwd: .
-    control: |-
-      sh -c '! git -C externals/cgm-remote-monitor-official grep -q "No such id" official/master -- lib/api/entries/index.js'
-    control-kind: static
-    proves: >
-      15.0.8 has the same "No such id" branch, so the inverted grep exits 1
-      there as it does on the candidate today: the grep does match the text
-      it looks for. The gate is red until BF-129 is fixed.
-  - gate: |-
       sh -c '! git -C externals/cgm-remote-monitor-official grep -q "staleStringForms" official/dev -- lib/api3/storage/mongoCollection/modify.js'
     cwd: .
     control: |-
@@ -1594,58 +1117,6 @@ controls:
       it. Re-authored 2026-11-06: on official/dev the helper moved into
       lib/storage/write-intent.js with #8874, so treatments.js no longer matched
       (VACUOUS, measured 2026-11-06).
-  - gate: |-
-      node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
-    cwd: .
-    control: |-
-      node tools/queue/gates/bfq-109-oid-cell.js --build externals/work/crm-bf-object-id-crud --ref 6d120fa2
-    control-kind: integration
-    proves: >
-      Run 2026-09-25 on mongod 7.0.43 (read from the server). The control is
-      #8758 before the BF-109 fix, red on 4 cells ("GET 200 v3-copy" after
-      DELETE, identifier=X n=2 after PUT); also red on ab7b22d6 with only the
-      modify.js writeFilter reverted (0959c911). Green on ab7b22d6, 63dd716c
-      and cb7d4110. Exit 90 marks an unmeasured control. Needs docker and n.
-  - gate: |-
-      node tools/queue/gates/bfq-111-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
-    cwd: .
-    control: |-
-      node tools/queue/gates/bfq-111-oid-cell.js --build externals/work/crm-6a-replay-a --ref 92d08342
-    control-kind: integration
-    proves: >
-      Run 2026-09-25 on mongod 7.0.43. 15.0.8 leaves the string record
-      (n=1); also red on ab7b22d6 with query.js from dev (510c5b75); a
-      positive control on the same ablation worktree reset to ab7b22d6 is
-      green. Green on ab7b22d6, 63dd716c and cb7d4110.
-  - gate: |-
-      node tools/queue/gates/bfq-112-oid-cell.js --build externals/work/crm-6a-rc-cand --ref wip/object-id-crud-fixes-2
-    cwd: .
-    control: |-
-      node tools/queue/gates/bfq-112-oid-cell.js --build externals/work/crm-6a-replay-a --ref 92d08342
-    control-kind: integration
-    proves: >
-      Run 2026-09-25 on mongod 7.0.43. 15.0.8 leaves a legacy string
-      subject after DELETE by its hex (n=1); also red on ab7b22d6 with the
-      storage.js remove reverted (59728200). Green on ab7b22d6, 63dd716c and
-      cb7d4110.
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "opItem" official/bf/object-id-crud -- lib/server/treatments.js
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "opItem" official/master -- lib/server/treatments.js
-    control-kind: static
-    proves: >
-      #8758's pushed head has the one trailing stale delete and no opItem
-      map, so the grep exits 1 there until the push.
-  - gate: |-
-      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/bf/object-id-crud -- lib/server/entries.js
-    cwd: .
-    control: |-
-      git -C externals/cgm-remote-monitor-official grep -q "cacheRemoval" official/master -- lib/server/entries.js
-    control-kind: static
-    proves: >
-      #8758's pushed head reports opts.find._id to the cache and has no
-      cacheRemoval, so the grep exits 1 there until the push.
   - gate: |-
       sh -c 'bash -n tools/lab/rc-soak/lab.sh && for f in tools/lab/rc-soak/*.js; do node --check "$f" || exit 1; done'
     cwd: .
@@ -3296,16 +2767,6 @@ controls:
 
 
   # Routine queue-check artifact gate, not application/runtime acceptance.
-  - gate: python3 tools/site/render_tenancy_topologies.py --check
-    control: python3 tools/site/render_tenancy_topologies.py --check --output-dir tools/site/fixtures/stale-topology
-    positive-control: python3 tools/site/render_tenancy_topologies.py --check
-    control-kind: static
-    proves: >
-      The same read-only renderer reports STALE topology SVG and exits 1 for
-      existing deliberately stale fixture artifacts. Current generated SVGs
-      compare equal and exit 0. The control measures content drift, not just a
-      missing-file/setup error; it never writes a checkout or fixture.
-
   - gate: node bin/with-env.js ./tests/ci.test.env node_modules/mocha/bin/mocha.js --fail-zero --timeout 10000 --require ./tests/hooks.js --exit tests/internal-api-composition.test.js
     cwd: externals/work/crm-m6b-join-20261110
     control-exempt: >
