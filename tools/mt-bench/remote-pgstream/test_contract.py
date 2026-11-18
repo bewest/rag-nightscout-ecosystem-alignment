@@ -29,8 +29,13 @@ class Contract(unittest.TestCase):
     def test_small_binding_keeps_finite_tenant_selection(self):
         b = selected(); b['tenants'] = 10
         self.assertEqual(protocol.binding(b, 1000)['tenants'], 10)
-        for tenants in (True, 11, 0, 1001):
+        for tenants in (True, 0, -1, 1.5):
             with self.assertRaisesRegex(RuntimeError, 'EXTERNAL_CELL'):
+                protocol.binding({**b, 'tenants': tenants}, 1000)
+        # No fixed cohort set or tenant ceiling: other counts pass the cell check
+        # and need an explicit workload plan (the default cadence covers 10 and 1000).
+        for tenants in (11, 10001):
+            with self.assertRaisesRegex(RuntimeError, 'REMOTE_WORKLOAD_PLAN_REQUIRED'):
                 protocol.binding({**b, 'tenants': tenants}, 1000)
         self.assertEqual(protocol.binding(b, 1000)['tenants'], 10)
 
