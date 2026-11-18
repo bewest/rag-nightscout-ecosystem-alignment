@@ -11,11 +11,12 @@ sys.path.append(str(Path(__file__).resolve().parent.parent/'m7-joined'))
 import workload_inputs
 import primer_options
 import phase_fit
+import owned_worker
 
 FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bindingDirectory',
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
-          'startupWindowPreflight','resourcePhasePreflight','primerOptionsPreflight'}
+          'startupWindowPreflight','resourcePhasePreflight','primerOptionsPreflight','ownedWorkerPreflight'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def need(ok, code):
@@ -112,6 +113,36 @@ def fixture_config(path, capture=False):
             need(kind in ('Namespace','ClusterRoleBinding') or meta['namespace']==e['namespace'],'STAGE_NAMESPACE')
             need(kind!='Service' or obj['spec'].get('type','ClusterIP')=='ClusterIP','NEW_BILLABLE_RESOURCE')
     startup=startup_preflight(m,e,rendered)
+    worker_preflight = None
+    if owned_worker.FIELD in e:
+        selection = e[owned_worker.FIELD]
+        inventory = read(d/'inventory.json')
+        need(inventory.get(owned_worker.FIELD) == selection and inventory.get('targetNode') == e['targetNode']
+             and inventory.get('cleanupOwner') == e['cleanupOwner'], 'OWNED_WORKER_INVENTORY_CHANGED')
+        approved_render = list(phase_fit.objects(read(d/'render.json')))
+        owned_worker.render(selection, approved_render, need)
+        expected_workloads = {(row['kind'], row['metadata']['name']): row for row in approved_render
+                              if row['kind'] in owned_worker.WORKLOADS}
+        staged = [row for row in rendered if row['kind'] in owned_worker.WORKLOADS]
+        need(len(staged) == len(expected_workloads)
+             and {(row['kind'], row['metadata']['name']): row for row in staged} == expected_workloads,
+             'OWNED_WORKER_STAGE_CHANGED')
+        proof = owned_worker.prove(selection, e, c['snapshotDirectory'], need, fresh=capture)
+        guard = Path(c['readonlyGuard']).resolve()
+        commissioner = guard.parents[1]/'staging-k8s'
+        pin_paths = [commissioner/'bin/preflight.py', commissioner/'overlay.libsonnet',
+                     commissioner/'bin/owned_worker.py', commissioner/'bin/owned_worker_view.py']
+        source_dir = Path(owned_worker.__file__).parent
+        need(all(path.is_file() for path in pin_paths)
+             and all(sha(path) == sha(source_dir/path.name) for path in pin_paths[2:]),
+             'OWNED_WORKER_COMMISSIONER_SOURCE_CHANGED')
+        pins = owned_worker.source_pins(guard, *pin_paths)
+        worker_preflight = {'proof': proof, 'source': pins}
+        need(pre.get('ownedWorkerAdmission') == worker_preflight, 'OWNED_WORKER_PREFLIGHT_CHANGED')
+        files += [*pin_paths, *(source_dir/path.name for path in pin_paths[2:])]
+    else:
+        need(owned_worker.FIELD not in read(d/'inventory.json') and 'ownedWorkerAdmission' not in pre,
+             'OWNED_WORKER_UNDECLARED')
     primer_preflight=None
     if primer is not None:
         contract_path=package/'bindings/kubernetes/assets/source-contract.json'
@@ -149,12 +180,14 @@ def fixture_config(path, capture=False):
         c['startupWindowPreflight']=startup
         if primer_preflight is not None:c['primerOptionsPreflight']=primer_preflight
         if phase_preflight is not None:c['resourcePhasePreflight']=phase_preflight
+        if worker_preflight is not None:c['ownedWorkerPreflight']=worker_preflight
     else:
         need(c.get('inputs')==expected,'INPUT_CHANGED')
         need(c.get('startupWindowPreflight')==startup or
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
         need(c.get('primerOptionsPreflight')==primer_preflight,'PRIMER_OPTIONS_PREFLIGHT_CHANGED')
         need(c.get('resourcePhasePreflight')==phase_preflight,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
+        need(c.get('ownedWorkerPreflight')==worker_preflight,'OWNED_WORKER_PREFLIGHT_CHANGED')
     return c
 
 if __name__=='__main__':

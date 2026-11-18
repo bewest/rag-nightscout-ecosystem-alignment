@@ -529,6 +529,44 @@ python3 -B -m unittest discover -s tools/mt-bench/kubernetes
 The external-fixture controls report a skip when their source is absent. A skipped
 commissioner or binding control does not qualify a runtime configuration.
 
+### Explicitly owned worker
+
+The optional `ownedWorkerPlacement` contract tests placement on one separately
+acquired DigitalOcean Kubernetes worker. Select it only after a complete
+earlier provider and Kubernetes inventory establishes that the pool and Node
+are new. Prepare a private proof with the guard's named Node read, a fresh
+whole-cluster Node/Pod census, the provider cluster and pool responses, and the
+exact infrastructure Pod/controller identities reviewed for this fixture. The
+provider evidence must explicitly report `auto_scale: false` and one worker.
+An omitted flag leaves fixed-pool custody unmeasured.
+
+Use a fresh copy of the exact phase-patched private commissioner and its fixture
+constructor with the [owned-worker patch](commissioning-owned-worker.patch).
+Copy `owned_worker.py` and `owned_worker_view.py` from this same instrument into
+the new commissioner's `ops/staging-k8s/bin/`. The patch paths are relative to a
+directory containing `ops/` and the retained `prepare-private-case.py`. The
+focused control verifies the original file hashes before applying the patch.
+
+The constructor's `--owned-worker-placement` consumes the private selection by
+file. It binds the selected node name and lane label and authors one
+`Equal/NoSchedule` toleration per workload. Preflight joins cluster, pool,
+provider node and Kubernetes Node UID, checks the taint and workload templates,
+and then evaluates the existing resource fit. `collect.py --owned-worker-node
+NODE` retains the scoped, projected Node read beside its ordinary inventory.
+The lifecycle uses the guard at stage entry and immediately before each
+workload create. Runtime observations verify the same placement.
+Its selected read mode emits placement and ownership fields only. A wrong UID,
+label, taint, cordon, foreign or missing Pod, incomplete census, or unmeasured
+provider proof refuses admission. The lifecycle keeps namespace UID cleanup
+available when a worker check fails.
+
+The taint constrains ordinary scheduling. Pods with direct node bindings or
+wildcard tolerations can still appear, so each check uses the full worker Pod
+roster. Placement evidence is bounded to the times it was observed. Provider
+acquisition, image delivery, and managed-worker integration have separate
+custody and verification. This tool issues read commands and retains no
+capacity acceptance.
+
 ### Provision and serving phases
 
 The existing lifecycle publishes provisioned Secrets and waits for the provision
