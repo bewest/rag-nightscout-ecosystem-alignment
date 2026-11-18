@@ -10,6 +10,28 @@ import time
 
 import kube_adapter as k
 from contract import tenant_projection
+import primer_storage
+
+
+STATE_READBACK = '''const fs=require('node:fs'),crypto=require('node:crypto');
+const dir='/run/ns-primer',m=fs.statfsSync(dir),config=fs.readFileSync(dir+'/config.json');
+const sizes={};
+for(const name of ['config.json','expected-verification.json','provisioned.json','verified.json',
+  'prime.lock','tenants.json','tenants.json.new','entry-requests.json','entry-requests.json.new',
+  'management-requests.json','management-requests.json.new','primed.json']){
+  try{sizes[name]=fs.statSync(dir+'/'+name).size;}catch(error){if(error.code!=='ENOENT')throw error;}
+}
+console.log(JSON.stringify({type:m.type,bytes:m.bsize*m.blocks,freeBytes:m.bsize*m.bavail,
+  freeInodes:m.ffree,configBytes:config.length,configSha256:crypto.createHash('sha256').update(config).digest('hex'),sizes}));'''
+
+
+def storage_readback(c, client, target):
+    value = json.loads(client.call(['exec',target,'-c','done','--','node','-e',STATE_READBACK],read=False))
+    receipt = c['primerStorageReceipt']
+    k.need(value.get('type')==0x01021994 and value.get('bytes')==c[primer_storage.FIELD]['stateMiB']*primer_storage.MIB and
+           value.get('configBytes')==receipt['configBytes'] and value.get('configSha256')==receipt['configSha256'],
+           'PRIMER_STORAGE_READBACK_CHANGED')
+    return value
 
 
 def require_roster(d, c, baseline):
@@ -75,6 +97,10 @@ def prime(directory, output, concurrency):
         result['cutoffEpochMs'] = int(cutoff*1000)
         remaining = cutoff - time.time()
         k.need(remaining > 0, 'PRIMER_DEADLINE', 'UNMEASURED')
+        if primer_storage.FIELD in c:
+            result['stateVolume'] = {'before':storage_readback(c, client, target)}
+            remaining = cutoff - time.time()
+            k.need(remaining > 0, 'PRIMER_DEADLINE', 'UNMEASURED')
         # The ordinary observation client bounds short reads to 15 seconds.
         # This actor has its own in-container hard stop at the same absolute cutoff.
         command = [c['kubectl'], '--context', c['context'], '--namespace', c['namespace'],
@@ -95,8 +121,17 @@ def prime(directory, output, concurrency):
             'error','errorClass','requestClass','notReady','connectionCause','responseError',
             'state','tenants','remaining'}, 'PRIMER_EXEC_OUTCOME_UNMEASURED', 'UNMEASURED')
         result.update(sourceResult=native, actorExitCode=actor.returncode)
+        if primer_storage.FIELD in c:
+            try:
+                result['stateVolume']['after']=storage_readback(c, client, target)
+            except k.Refused as error:
+                result['stateVolume']['after']={'status':error.verdict, 'code':str(error)}
+            except (ValueError, KeyError, OSError, TypeError):
+                result['stateVolume']['after']={'status':'UNMEASURED'}
         k.need(actor.returncode == 0 and native == {'state': 'synthetic-data-primed', 'tenants': c['tenants']},
                'PRIMER_INCOMPLETE', 'UNMEASURED' if native.get('state') == 'synthetic-data-prime-partial' else 'FAIL')
+        if primer_storage.FIELD in c:
+            k.need(result['stateVolume']['after'].get('status')!='FAIL', 'PRIMER_STORAGE_READBACK_CHANGED')
         projected = tenant_projection(json.loads(private_file('tenants.json')), c['tenants'])
         k.observe(c, objects, client, initial)
         k.write(output/'tenants.json', projected)

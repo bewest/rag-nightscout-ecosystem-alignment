@@ -123,6 +123,16 @@ Preserve the source lock and uncertain-write journal after an interrupted
 request. Commissioning owns acknowledgement of the waiting Job. A previously
 source-projected roster still uses the original prepare command.
 
+For fresh discovery, `primerStorage` can select `stateMiB` and `secretCodec`
+in the experiment manifest. For example, `{"stateMiB":32,"secretCodec":"gzip-v1"}`
+selects a 32 MiB primer state volume and lossless transport of the primer
+configuration. `raw-v1` uses the source bytes directly. The materialized
+publisher checks the exact data size of every role Secret before publication.
+The primer installer checks the original config's byte count and SHA-256, then
+restores its private file. The actor verifies the mounted state volume and
+config digest before writing and records filesystem size and usage when
+available. The source retains its original atomic writes and uncertainty journal.
+
 Set `profile.phases.accessSetupSeconds` to give the first and last selected
 socket witnesses an explicit warm-up window. The native client connects to
 both exact hosts without credentials first. It may retry HTTP 403 while it

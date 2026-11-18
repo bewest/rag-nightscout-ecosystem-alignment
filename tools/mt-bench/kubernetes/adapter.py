@@ -35,6 +35,7 @@ import probe
 import viewer_plan
 import workload
 import resource_budget
+import primer_storage
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
@@ -202,6 +203,7 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         from workload_inputs import seconds
         need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
     objs = manifests(rendered)
+    primer_storage.check_render(c, objs)
     by_key = {key(x): x for x in objs}
     need(len(by_key) == len(objs), 'DUPLICATE_RESOURCE')
     ns = by_key.get('Namespace/' + c['namespace'])

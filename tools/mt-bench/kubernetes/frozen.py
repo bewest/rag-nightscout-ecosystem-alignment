@@ -7,6 +7,8 @@ import subprocess
 
 ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
 ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
+PRIMER_STORAGE = 'primerStorage'
+PRIMER_STORAGE_PACKAGE = 'scripts/primer_storage.py'
 
 
 class Refused(ValueError):
@@ -76,6 +78,12 @@ def source(manifest):
         require(tier == 'discovery' and type(budget) is int and 0 < budget <= (2**63 - 1) // 1_000_000,
                 'PGSTREAM_ACK_BUDGET')
         chosen[ACK_BUDGET] = budget
+    if PRIMER_STORAGE in manifest:
+        storage = manifest[PRIMER_STORAGE]
+        require(tier == 'discovery' and isinstance(storage, dict) and set(storage)=={'stateMiB','secretCodec'}
+                and type(storage['stateMiB']) is int and 0 < storage['stateMiB'] <= (2**53-1)//1048576
+                and storage['secretCodec'] in ('raw-v1','gzip-v1'), 'PRIMER_STORAGE_SELECTION')
+        chosen[PRIMER_STORAGE] = storage
     return chosen
 
 
@@ -85,6 +93,7 @@ def contract(manifest, observed):
     require(all((key in observed) == (key in chosen) for key in ('runtimeBootstrapHelper','imageSourceAcceptance')),
             'BOOTSTRAP_HELPER_UNDECLARED')
     require((ACK_BUDGET in observed) == (ACK_BUDGET in chosen), 'PGSTREAM_ACK_UNDECLARED')
+    require((PRIMER_STORAGE in observed) == (PRIMER_STORAGE in chosen), 'PRIMER_STORAGE_UNDECLARED')
     if 'bootstrapHelper' in manifest:
         require(observed.get('sourceFilesSha256', {}).get('bootstrap.js') == BOOTSTRAP_ORIGINAL, 'BOOTSTRAP_BASE_CHANGED')
     require(re.fullmatch('[a-f0-9]{64}', observed['nativeCatalogueSha256']), 'CATALOGUE_ID')
@@ -120,6 +129,8 @@ def rendered_contract(manifest, raw, binding_ref):
             'BOOTSTRAP_HELPER_PACKAGE_CHANGED')
     require(all((name in binding['files']) == (ACK_BUDGET in selected) for name in ACK_PACKAGE),
             'PGSTREAM_ACK_PACKAGE_CHANGED')
+    require((PRIMER_STORAGE_PACKAGE in binding['files']) == (PRIMER_STORAGE in selected),
+            'PRIMER_STORAGE_PACKAGE_CHANGED')
     return selected
 
 

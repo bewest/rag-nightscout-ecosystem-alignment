@@ -20,7 +20,7 @@ DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tena
 def legacy(m,target='kubernetes'):
     if m.get('kind')=='k8s-frozen-experiment':return copy.deepcopy(m)
     frozen.require(m.get('kind')=='multitenant-experiment' and m.get('version')==1 and
-        set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','tier',frozen.ACK_BUDGET},'MANIFEST')
+        set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','tier',frozen.ACK_BUDGET,frozen.PRIMER_STORAGE},'MANIFEST')
     app=m['application']
     frozen.require(set(app)<= {'sourceReceipt','buildReceipt','bindingCommit','postgresImageId','bootstrapHelper'},'APPLICATION_FIELDS')
     topology=m['topology']
@@ -33,6 +33,7 @@ def legacy(m,target='kubernetes'):
     return dict(version=1,kind='k8s-frozen-experiment',**copy.deepcopy(app),profile=copy.deepcopy(m['profile']),
                 **({'tier': m['tier']} if 'tier' in m else {}),
                 **({frozen.ACK_BUDGET: m[frozen.ACK_BUDGET]} if frozen.ACK_BUDGET in m else {}),
+                **({frozen.PRIMER_STORAGE: m[frozen.PRIMER_STORAGE]} if frozen.PRIMER_STORAGE in m else {}),
                 **({'deploymentJobs':copy.deepcopy(m['deploymentJobs'])} if 'deploymentJobs'in m else {}))
 
 def local(m,instance):

@@ -72,6 +72,8 @@ try:
               'roleDocuments':{role:str(live/(role+'-config.private.json')) for role in ('evaluator','realtime')}}
     if 'pgstreamNotifierAckTimeoutMs' in m:
         instance['producerAckReadback']=ref(live/'producer-ack-readback.json')
+    if 'primerStorage' in m:
+        instance['primerStorageReceipt']=ref(live/'primer-storage-published.json')
     write(live/'instance.json',instance)
     execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet,'--await-primer'])
     observe_selected_bootstrap(packet, live, uid, ad, execute)

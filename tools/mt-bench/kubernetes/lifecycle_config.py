@@ -58,7 +58,7 @@ def fixture_config(path, capture=False):
     identity=json.loads(subprocess.check_output([sys.executable,'-B',instrument,'identity']))
     need(identity['sha256']==c['instrumentSha256'],'INSTRUMENT_CHANGED')
     package=Path(c['bindingDirectory']);binding=read(package/'binding.json')
-    if 'pgstreamNotifierAckTimeoutMs' in m:
+    if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m:
         files.append(package/'binding.json')
     for name,expected in binding['files'].items():
         p=package/'bindings/kubernetes'/name

@@ -5,6 +5,7 @@ import json
 import re
 import time
 from producer_wire import ACK_BUDGET, WIRE_DIRECTORY, WIRE_NAME, valid_timeout
+import primer_storage
 
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
@@ -29,6 +30,10 @@ def pins(k, c, inventory, objects):
            contract.get('localImageId') == runtime['appImageId'] and all(contract.get(key) == selected[key] for key in FIELDS),
            'CANDIDATE_SOURCE_IMAGE_CHANGED')
     k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
+    k.need(contract.get(primer_storage.FIELD)==c.get(primer_storage.FIELD) and
+           (primer_storage.FIELD in contract)==('primerStorageReceipt' in c), 'PRIMER_STORAGE_PUBLISH_SCOPE')
+    if primer_storage.FIELD in contract:
+        primer_storage.verify_receipt(c[primer_storage.FIELD],c['primerStorageReceipt'])
     if ACK_BUDGET in contract:
         receipt = c['producerAckReadback']
         k.need(isinstance(receipt, dict) and valid_timeout(contract[ACK_BUDGET])

@@ -7,6 +7,7 @@ import signal
 from pathlib import Path
 from lifecycle_config import fixture_config
 import frozen
+import primer_storage
 import producer_startup
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
@@ -161,6 +162,7 @@ producer_policy=producer_startup.policy(intent['profile']['phases'].get('produce
 selected_source=frozen.source(intent)
 frozen.check_bootstrap_render(intent, [row for stage in
     ('foundation','stores','provision','private-admin','primer','serving') for row in objects(stage)])
+primer_storage.check_render(selected_source, objects('primer'))
 nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
 signal.signal(signal.SIGTERM,interrupted)
@@ -210,6 +212,13 @@ try:
     for role in ('evaluator','realtime'):
         (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
     published=command(['bash',secret_script,'publish',ns,'unused'],timeout=185,private=True)
+    if frozen.PRIMER_STORAGE in selected_source:
+        storage_receipt=json.loads(published.splitlines()[0])
+        selected_storage=selected_source[frozen.PRIMER_STORAGE]
+        primer_storage.verify_receipt(selected_storage, storage_receipt)
+        config=live/'primer-config.private.json'
+        assert storage_receipt['configSha256']==hashlib.sha256(config.read_bytes()).hexdigest() and storage_receipt['configBytes']==config.stat().st_size, 'K8S_PRIMER_STORAGE_PUBLISH_CHANGED'
+        put('primer-storage-published.json',storage_receipt)
     ack_wire=None
     if frozen.ACK_BUDGET in selected_source:
         ack_wire=json.loads(published.splitlines()[-2])
