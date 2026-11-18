@@ -20,6 +20,9 @@ import time
 from datetime import datetime, timezone
 from types import SimpleNamespace
 import traceback
+import contextlib
+import contextvars
+import math
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -41,6 +44,7 @@ import edge_configuration
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
+_OBSERVATION_DEADLINE = contextvars.ContextVar('k8s_observation_deadline', default=None)
 NAME = re.compile(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?')
 WORKLOADS = {'StatefulSet', 'Deployment', 'Job'}
 PLURALS = {'StatefulSet': ('apps/v1', 'statefulsets'), 'Deployment': ('apps/v1', 'deployments'),
@@ -108,9 +112,30 @@ def timestamp(value):
 
 def deadline(c, cleanup=False, now=None):
     until = timestamp(c['deadlines']['cleanupUntil' if cleanup else 'workUntil'])
+    observation = None if cleanup else _OBSERVATION_DEADLINE.get()
+    phase_clipped = observation is not None and observation < until
+    if observation is not None:
+        until = min(until, observation)
     remaining = until - (time.time() if now is None else now)
-    need(remaining > 0, 'CLEANUP_DEADLINE' if cleanup else 'WORK_DEADLINE', 'UNMEASURED')
+    need(remaining > 0, 'CLEANUP_DEADLINE' if cleanup else
+         'OBSERVATION_DEADLINE' if phase_clipped else 'WORK_DEADLINE', 'UNMEASURED')
     return remaining
+
+
+@contextlib.contextmanager
+def observation_deadline(until):
+    """A read-only phase can shorten, never extend, existing work custody."""
+    previous = _OBSERVATION_DEADLINE.get()
+    if until is not None:
+        need(type(until) in (int, float) and math.isfinite(until), 'OBSERVATION_DEADLINE_INPUT')
+        until = min(previous, until) if previous is not None else until
+    else:
+        until = previous
+    token = _OBSERVATION_DEADLINE.set(until)
+    try:
+        yield
+    finally:
+        _OBSERVATION_DEADLINE.reset(token)
 
 
 def manifests(value):
@@ -208,6 +233,10 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
     if 'dataPrimerSeconds' in c:
         need(workload_inputs.seconds(c['dataPrimerSeconds']), 'DATA_PRIMER_WINDOW')
+    if 'preloadConvergence' in c:
+        import preload
+        need(c.get('tier', 'discovery') == 'discovery', 'PRELOAD_DISCOVERY_ONLY')
+        preload.selection(c['preloadConvergence'])
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
@@ -277,7 +306,8 @@ class Client:
     def __init__(self, c, run=subprocess.run):
         self.c, self.run = c, run
 
-    def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024):
+    def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024,
+             response_sink=None):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -293,15 +323,24 @@ class Client:
                               timeout=min(20, deadline(c, cleanup)), check=False, env=env)
         except (OSError, subprocess.TimeoutExpired):
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
+        def bounded_response():
+            raw = result.stdout
+            if isinstance(raw, str):
+                raw = raw.encode()
+            need(isinstance(raw, bytes) and len(raw) <= output_limit, 'OBSERVATION_BOUND', 'UNMEASURED')
+            return raw
+        # Only an explicit private observer sink receives bounded returned bytes
+        # before the original deadline/exit refusal. Partial timeout output and
+        # oversized output are never presented as a complete returned response.
+        raw = None
+        if response_sink is not None:
+            raw = bounded_response()
+            response_sink(raw, result.returncode)
         deadline(c, cleanup)
         if result.returncode and re.search(rb'(?<![A-Z_])EVALUATOR_SCOPE_UNSAFE(?![A-Z_])', getattr(result, 'stderr', b'') or b''):
             raise Refused('EVALUATOR_SCOPE_UNSAFE', 'FAIL')
         need(result.returncode == 0, 'OBSERVATION_LOST', 'UNMEASURED')
-        raw = result.stdout
-        if isinstance(raw, str):
-            raw = raw.encode()
-        need(isinstance(raw, bytes) and len(raw) <= output_limit, 'OBSERVATION_BOUND', 'UNMEASURED')
-        return raw
+        return bounded_response() if raw is None else raw
 
     def get(self, kind, name=None, cleanup=False):
         argv = ['get', kind] + ([name] if name else []) + ['-o', 'json']

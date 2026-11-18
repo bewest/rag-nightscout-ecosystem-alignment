@@ -24,6 +24,8 @@ def execute(label,args,deadline=1800):
     path=live/(label+'.log')
     remaining=min(deadline,until-time.time())
     if remaining<=0:raise RuntimeError('ATTACH_WORK_DEADLINE')
+    write(live/(label+'-command-bound.json'), {'requestedSeconds':deadline, 'effectiveSeconds':remaining,
+          'originalWorkUntil':dl['workUntil'], 'safetyMarginSeconds':5})
     with path.open('xb') as f:
         result=subprocess.run([str(x) for x in args],stdout=f,stderr=subprocess.STDOUT,timeout=remaining)
     if result.returncode:
@@ -100,7 +102,10 @@ try:
            'actorCeilings':{actor:profile['proposedEnvelope']['nativeLimits']},
            'fixtures':[{'runId':e['runId'],'namespace':ns,'namespaceUid':uid,'runSha256':sha(packet/'run.json')}]}
     write(live/'grant.json',grant)
-    execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],min(7200,until-time.time()))
+    import preload
+    load_bound=preload.load_command_bound(profile,until-time.time())
+    write(live/'load-command-selection.json',load_bound)
+    execute('load',exp+['run',packet,live/'grant.json',sha(live/'grant.json')],load_bound['seconds'])
 finally:
     if forward and forward.poll() is None:
         forward.terminate()
