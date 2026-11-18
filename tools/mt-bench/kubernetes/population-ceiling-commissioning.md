@@ -10,6 +10,8 @@ It verifies the original overlay, preflight, private receipt validator and
 preparation constructor by SHA-256 before creating the output directory. It also
 checks the patch hash. An existing output or different source refuses; there is
 no in-place mode. The original private source and entered cases stay unchanged.
+The output is resolved before checking source ancestry, so `..` and symlinked
+parent directories cannot hide a destination inside the source.
 
 The copy receives the selected instrument's `frozen.py` and the five Python
 modules it imports for population/primer validation. Their hashes and the new

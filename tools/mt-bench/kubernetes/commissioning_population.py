@@ -35,7 +35,10 @@ def need(ok, code):
 
 
 def materialize(source, preparer, out):
-    source, preparer, out = Path(source).resolve(), Path(preparer).resolve(), Path(out).absolute()
+    source, preparer = Path(source).resolve(), Path(preparer).resolve()
+    requested = Path(out).absolute()
+    need(not requested.is_symlink(), 'OUTPUT_EXISTS')
+    out = requested.resolve(strict=False)
     patch = HERE/PATCH
     need(sha(patch) == PATCH_SHA256, 'PATCH_CHANGED')
     need(not out.exists() and not out.is_symlink(), 'OUTPUT_EXISTS')

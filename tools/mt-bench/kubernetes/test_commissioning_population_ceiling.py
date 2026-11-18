@@ -218,6 +218,26 @@ class PrivatePopulation(unittest.TestCase):
         self.assertFalse((self.root/'wrong-patch').exists())
         self.assertFalse((self.root/'wrong-base').exists())
 
+    def test_output_aliases_into_own_source_fixture_refuse_before_mkdir_or_copy(self):
+        source = self.root/'input-source'
+        shutil.copytree(self.source/'ops/staging-k8s', source/'ops/staging-k8s')
+        (source/'ops/bin').mkdir(parents=True)
+        shutil.copy2(self.source/'ops/bin/ro', source/'ops/bin/ro')
+        outside = self.root/'outside'
+        outside.mkdir()
+        alias = self.root/'source-alias'
+        alias.symlink_to(source, target_is_directory=True)
+        outputs = (outside/'..'/'input-source'/'lexical-child', alias/'symlink-child')
+        for output in outputs:
+            resolved = output.resolve(strict=False)
+            self.assertFalse(resolved.exists())
+            with patch.object(c.shutil, 'copytree', side_effect=AssertionError('source copy attempted')) as copy_source:
+                with self.assertRaisesRegex(ValueError, 'OUTPUT_SCOPE'):
+                    c.materialize(source, self.preparer, output)
+                copy_source.assert_not_called()
+            self.assertFalse(resolved.exists())
+        print('RED_RESTORED dotdot and symlink-parent outputs refuse before source write')
+
 
 if __name__ == '__main__':
     unittest.main()
