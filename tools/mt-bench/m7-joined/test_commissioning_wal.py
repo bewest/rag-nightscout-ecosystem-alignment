@@ -16,7 +16,7 @@ from test_run_configuration import config, parsed, packet, overlay
 
 def compose():
     roles=('postgres','vault','admin','primer','api','realtime','evaluator','tenant-admin','ui','nginx')
-    result={'services':{role:{'command':['synthetic']} for role in roles}}
+    result={'services':{role:{'command':['synthetic'],'image':'synthetic-cache'} for role in roles}}
     for role in ('api','realtime','evaluator'):result['services'][role]['command']=['node','lib/server/serve/main.js',role]
     result['services']['postgres']['command']=['postgres','-c','wal_level=logical','-c','max_slot_wal_keep_size=256MB']
     return result
@@ -140,6 +140,9 @@ class CommissioningWal(unittest.TestCase):
                 if argv[0]=='node' and argv[1].endswith('/prepare.js'):
                     (target/'state').mkdir();(binding/'.env').write_text('SYNTHETIC=1\n');return ''
                 if argv[:2]==['docker','compose'] and argv[-3:]==['config','--format','json']:return json.dumps(compose())
+                if argv[:3]==['docker','image','inspect']:
+                    self.assertIn(argv[3],(m['imageId'],'synthetic-cache'))
+                    return json.dumps([{'Id':m['imageId']}])
                 raise AssertionError(('unexpected actor',argv))
             with contextlib.ExitStack() as stack:
                 for name,fn in {'git':git,'command':command,'inventory':lambda *v:{},'host_identity':lambda *v:'synthetic',

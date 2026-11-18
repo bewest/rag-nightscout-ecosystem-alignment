@@ -9,6 +9,7 @@ import unittest
 from unittest import mock
 import adapter as a
 import runner
+import workload_inputs
 
 
 class ProcessDeadline(unittest.TestCase):
@@ -18,7 +19,7 @@ class ProcessDeadline(unittest.TestCase):
                          'from pathlib import Path\n'
                          f'sys.path.insert(0,{str(Path(a.__file__).parent)!r})\n'
                          'import adapter as a\n'
-                         'a.load=lambda *args,**kwargs:(Path(args[0]),{"evaluatorCatchup":"fixed-target-v1"})\n'
+                         'a.load=lambda *args,**kwargs:(Path(args[0]),{"runPurpose":"discovery","evaluatorCatchup":"fixed-target-v1"})\n'
                          'a.run=lambda *args,**kwargs:print(json.dumps({"childDeadline":a._COMMAND_DEADLINE.get()}))\n'
                          'a.deploy=a.run; a.preflight=a.run\n'
                          'try:a.main()\n'
@@ -29,7 +30,7 @@ class ProcessDeadline(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             directory=Path(temporary);self.entry(directory)
             deadline=time.time()+10
-            a.write(directory/'execution.json',{'owner':'synthetic-owner','stopWorkAt':deadline})
+            a.write(directory/'execution.json',{'owner':'synthetic-owner','stopWorkAt':deadline,'cleanupAt':deadline+60})
             with mock.patch.object(runner,'HERE',directory):
                 runner.stage(directory,'run',['run',str(directory/'fixture'),'--k6-image','synthetic'])
             value=json.loads((directory/'run.private.log').read_text())
@@ -42,7 +43,7 @@ class ProcessDeadline(unittest.TestCase):
             with self.subTest(stage=name),tempfile.TemporaryDirectory() as temporary:
                 directory=Path(temporary);self.entry(directory)
                 cutoff=time.time()+7
-                a.write(directory/'execution.json',{'owner':'synthetic-owner','stopWorkAt':cutoff})
+                a.write(directory/'execution.json',{'owner':'synthetic-owner','stopWorkAt':cutoff,'cleanupAt':cutoff+60})
                 args=[name,str(directory/'fixture')]+(['--k6-image','synthetic'] if name=='preflight' else [])
                 with mock.patch.object(runner,'HERE',directory):runner.stage(directory,name,args)
                 value=json.loads((directory/(name+'.private.log')).read_text().splitlines()[0])
@@ -52,9 +53,12 @@ class ProcessDeadline(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             directory=Path(temporary);entry=self.entry(directory)
             for stage in ('deploy','preflight'):
-                for until in ('0','nan','inf',str(time.time()+11000)):
-                    argv=[sys.executable,'-B',str(entry),stage,str(directory/'fixture')]
-                    if stage=='preflight':argv+=['--k6-image','synthetic']
+                argv=[sys.executable,'-B',str(entry),stage,str(directory/'fixture')]
+                if stage=='preflight':argv+=['--k6-image','synthetic']
+                original=time.time()+11000
+                accepted=subprocess.run([*argv,'--work-deadline',str(original)],capture_output=True,text=True,timeout=5,check=True)
+                self.assertEqual(json.loads(accepted.stdout.splitlines()[0])['childDeadline'],original)
+                for until in ('0','nan','inf',str(time.time()+workload_inputs.MAX_SECONDS+60)):
                     result=subprocess.run([*argv,'--work-deadline',until],capture_output=True,text=True,timeout=5)
                     self.assertNotEqual(result.returncode,0)
                     self.assertIn('M7_COMMAND_DEADLINE',result.stderr)
