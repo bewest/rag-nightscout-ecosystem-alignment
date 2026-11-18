@@ -162,6 +162,11 @@ cohort StatefulSet an explicit Pod Ready window. The controller uses the time
 remaining on its original work deadline if that deadline comes first. The
 legacy window is 300 seconds. The lifecycle verifies the hashed intent before
 entry and records the selected window and effective deadline at the wait.
+A cohort that is not Ready when that window ends, while the original work
+deadline still has time, is recorded as `readiness-signal-cohort.json`
+(`UNMEASURED`, with the waited seconds) and the run continues; readiness is a
+signal under the readiness-serve-then-warm decision. Reaching the work deadline
+still stops the run with `READY_DEADLINE_cohort`.
 
 Fresh intent also accepts positive integer seconds in
 `profile.phases.startupWindows.kubernetes`. Set `workloadReadySeconds` for
@@ -204,12 +209,16 @@ retains its raw response and bounded refusal evidence.
 
 Set `profile.phases.accessSetupSeconds` to give the first and last selected
 socket witnesses an explicit warm-up window. The native client connects to
-both exact hosts without credentials first. It may retry HTTP 403 while it
-waits for a positive connection and records each host's attempts and elapsed
-time. Expired setup and persistent refusal stop access. The runner then
-checks both own-token exchanges, both cross-tenant refusals, and the full
-connected zero-foreign-frame observation. The access window has its own
-budget and remains within the fixture's entered work cutoff.
+both exact hosts without credentials first. It retries any refusal (HTTP 403 or
+a transport error) until the warm window ends and records each host's attempts
+and elapsed time. A host that never connects is recorded as `UNMEASURED` with
+its last status and the run continues; the witness never reports PASS on
+missing evidence. The runner then checks both own-token exchanges, both
+cross-tenant refusals, and the connected zero-foreign-frame observation. A
+socket that cannot be observed is recorded as an `UNMEASURED` case and the
+overall access verdict is `UNMEASURED`; a foreign frame, an accepted wrong
+credential or a cross-tenant read still stops the run. The access window has
+its own budget and remains within the fixture's entered work cutoff.
 
 For an independent database observation within the original work deadline, run
 `adapter.py observe-sql PACKET NEW_DIRECTORY`. It counts the source primer's
@@ -753,21 +762,10 @@ by this binding. nginx documents the
 These settings configure a fresh fixture and do not qualify a capacity result
 or change edge replicas, socket topology, source images or an entered run.
 
-Use `examples.py --help` to generate 500, 1,000, 3,000 and 10,000 inputs from actual
-selected receipts, an existing local configuration and an explicit prospective
-envelope. Population, sparse/full viewers, realistic rate multiplier, duration,
-setup/drain/work/cleanup, per-scenario VUs and driver shards are arguments. The
-examples use 900 seconds each for setup and drain. They select a 60,000 ms
-producer acknowledgment budget unless the input already selects one. Use
-`--ack-timeout-ms` to select a different value. The generator prints these
-values beside the output path. Actual allocations and qualification remain
-with the execution owner.
+Project an intent with `toolchain.py`:
 
 ```bash
 K=tools/mt-bench/kubernetes
-python3 -B "$K/examples.py" --application "$SELECTED_APPLICATION" \
-  --local-config "$LOCAL_CONFIG" --envelope "$PROSPECTIVE_ENVELOPE" \
-  --output "$NEW_EXAMPLES" --driver-shards 2 --full-viewers
 python3 -B "$K/toolchain.py" compose "$INTENT" "$FRESH_LOCAL_INSTANCE" "$NEW_PROJECTION"
 python3 -B "$K/toolchain.py" kubernetes "$INTENT" "$FRESH_INSTANCE" "$NEW_PROJECTION"
 ```

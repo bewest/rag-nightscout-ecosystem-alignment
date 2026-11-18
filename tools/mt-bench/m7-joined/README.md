@@ -246,25 +246,6 @@ private local publisher completes custody before remaining roles start. Seeding
 uses DATA APIs. There is no direct tenant-row
 or Vault seeding in the campaign adapter.
 
-`campaign.py pilot` supplies a distinct500→750→1000 remote pilot. See
-[the remote controller seam](REMOTE-SEAM.md) for host prerequisites, cost ownership,
-commands, stage order, verdicts and artifacts. The controller enforces its current maintainer-authorized spending/deadline policy;
-this adapter performs no cloud action.
-
-`campaign.py all` accepts the same source/image/freeze arguments plus `--work` and
-`--k6-image`. It measures 1 API at 1,000 → 3,000 → 5,000 → 10,000, then 2 and 4 APIs
-at those counts on the **same frozen pair and image**. Every failed correctness or
-instrument gate stops growth. `campaign.py ladder --replicas 1` (then2, then4)
-provides separate explicit ladders in the same `--work` ledger. A measured profile
-ceiling stays FAIL; the coordinator may start the next profile at1,000 after a
-source/instrument/host-matched `measured-profile-ceiling` receipt links the failure
-artifact and diagnosis hashes. Any stored-oracle, authority/refusal or functional
-failure sets a global block: a ceiling receipt cannot override it. It never automatically starts anyway on a busy
-host. `check-campaign` refuses missing count/replica rows, mixed source/instrument/
-image identities and unmeasured cells. Realtime worker placement remains the
-product binding's selected topology; the API-replica matrix is not a claim that
-all possible realtime placements or automatic takeover were measured.
-
 ## Instrument
 
 The source manifest hashes every adapter file and every reused tracked instrument.
@@ -328,7 +309,6 @@ Focused preparation only:
 
 ```bash
 python3 tools/mt-bench/m7-joined/test_contract.py -v
-python3 tools/mt-bench/m7-joined/smoke.py /new/private/smoke-output
 ```
 
 The smoke owns one tiny PostgreSQL fixture and six synthetic HTTP accepted writes
@@ -555,16 +535,6 @@ callbacks refuse. The historical hold4000 failure stays unchanged: retained
 callbacks show timely stored-ID delivery, but omit connection counts and full
 callback values needed to identify its strict-predicate rejection.
 
-`--api-cause-observation on` installs a source-hash-bound private admission/exchange
-observer only for a setup diagnostic. Its bounded code/SQLSTATE counts carry no
-request body, error message or credential. File-I/O overhead is unmeasured; keep
-it outside an unmatched operating comparison. `api_cause.prepare_stages` prepares
-the fixed 0/4000/8000-viewer, 50-opens/second setup discriminator with sequential
-no-retry exchange checks. Its callback availability does not establish clinical
-or stored-frame equivalence. Runtime source-access captures use the existing
-`source-access-v1` private inspection port; M5's timer-only control checks actual
-snapshot/catalogue/data acquisition, with an unchanged checkpoint as no substitute.
-
 Focused offline controls (no SQL/runtime execution):
 
 ```bash
@@ -698,18 +668,6 @@ Node's first request-handler entry and later selected-row parsing. It is source
 instrumentation, not a product optimization or a capacity result. No native run,
 image or resource slot is selected by this implementation.
 
-`--clinical-intake-timeline two-target-intake-timeline-raw-v2` explicitly adds a
-separate Node metadata ledger. The existing `off` default and v1 selection remain.
-The ledger writes before calling the original handler, then records request
-abort/close and response finish/close even when parsing never identifies a row.
-A later record joins the local request ID to the selected trace; it never rewrites
-the original timestamp. Instance ID plus PID and local request ID prevent a join
-across process starts. Validated LSNs, numeric connection/port metadata and fixed
-lifecycle fields are retained; bodies, URLs, authorization and arbitrary strings
-are excluded. The handler still receives the original `this` and arguments and
-returns its original promise or exception. Passive lifecycle listeners add no
-body consumer, scheduler work, admission or ACK.
-
 Raw bounds are 32,768 rows, 8 MiB and 128 pending writes, separate from the existing
 4,096-row/2 MiB selected trace. Saturation, short writes, pending drain, missing
 status or an entry without an abort/response terminal record is UNMEASURED.
@@ -724,24 +682,6 @@ counts and its optional seal also match the retained bytes. COMPLETE here descri
 not prove target delivery or clinical completion. Node entry is a JavaScript
 handler boundary, not socket or kernel arrival. Malformed selected-row inspection
 forwards to the actual receiver's validation and preserves its rejection.
-
-`clinical-sender-trace.patch` is an experimental patch against the retained
-maintained v1.6.0 source archive, bound by `clinical-sender-source.json`. Original
-archive, go.mod and go.sum bytes stay unchanged. It instruments the actual
-notifier rather than introducing a proxy or substitute sender. It is disabled
-unless `NS_M7_CLINICAL_SENDER_TIMELINE=1`. That explicit mode reads two IDs and an explicit `clockSchema` at
-`/run/ns-intake-timeline/targets.json` and creates private, exclusive output under
-`/run/ns-ipc/clinical-sender-{timeline.jsonl,status.json}`. The raw Node selector alone installs no sender override. The additional explicit
-`--clinical-sender-binary` and `--clinical-sender-receipt` options stage only the
-reviewed instrumented CLI named in the source manifest; they accept no command
-override or alternative version. Preparation creates an owned exclusive 0555
-binary copy and 0444 build-receipt sidecar, a separate readonly sender-target
-mount and an isolated owned output directory. The original direct Go command,
-image, streaming wire mount, per-role quotas and application role mounts stay in
-use. Existing prepare/verify/publish/preflight/retain paths own these bindings. Its sender target
-file is a separate role mount: the next packet must bind `clockSchema` to the
-actual selected receiver route, with no default namespace fallback. Node target
-inspection uses the original receiver clock routes.
 
 Go records message-ready after serialization and before queue-byte admission;
 fast admission or blocking Acquire enter/return/refusal; unbuffered handoff-wait;
@@ -780,13 +720,6 @@ export GOPRIVATE= GONOPROXY= GONOSUMDB=
 ```
 
 Focused Node/Python controls, from the alignment root:
-
-```bash
-node tools/mt-bench/m7-joined/clinical-intake-raw.test.cjs "$CLINICAL_CORE"
-node tools/mt-bench/m7-joined/clinical-intake-timeline.test.cjs "$CLINICAL_CORE"
-node tools/mt-bench/m7-joined/clinical-timeline-startup.test.cjs "$CLINICAL_PAIRED_SOURCE"
-PYTHONPATH=tools/mt-bench/m7-joined python3 -B -m unittest test_clinical_timeline test_probe_counts test_discovery test_pgstream_sample test_runner -q
-```
 
 The startup control needs the actual application archive plus its exact deployment
 overlay and matching dependency lock; it intercepts CLI execution before services.

@@ -46,8 +46,7 @@ Prepare adds these explicit flags to the normal source command:
 
 Repeat only the prescribed count with the same immutable receipt/pair/image/
 instrument/run identity. `build`, `deploy` and `run` commands are unchanged.
-`campaign.py pilot` accepts the same measurement/run/image/minute flags; `all`
-and replica ladders cannot select this admission. Parent transport uses its own
+Parent transport uses its own
 existing ownership/deadline orchestration; no new shipping sequence is added.
 `adapter.py measurement-capabilities` returns a separate explicit version-1
 support descriptor. The existing cap4 `capabilities.json` remains byte-identical.

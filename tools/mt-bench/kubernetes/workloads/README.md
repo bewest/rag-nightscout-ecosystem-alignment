@@ -13,8 +13,7 @@ retain their existing homes.
 
 These files supply inputs and independent reductions to the
 [existing Kubernetes adapter](../README.md). They start no Kubernetes actor,
-reserve no resource and add no capacity gate. `loopback.py` is a finite instrument
-control using the actual generated k6 program and a synthetic HTTP listener.
+reserve no resource and add no capacity gate.
 
 ## Source mapping and scope
 
@@ -201,31 +200,3 @@ Backing-store Pod replacement on emptyDir loses state and cannot qualify durable
 recovery. Role restart, recovery without a new write, independent-tenant
 continuity, alarm/due work, connector catchup, large histories, long endurance,
 HA and production admission retain their own unmeasured boundaries.
-
-## Normal-entry synthetic qualification
-
-`qualify.py` executes profile binding, immutable preparation, native k6, the
-actual generated stock Socket.IO probe, original HTTP/settings/count/clinical/
-viewer reducers and final assessment. Its HTTP/socket/SQL and Kubernetes
-transport endpoints are explicitly synthetic. It proves instrument wiring,
-not application or cluster correctness. It starts one owned loopback actor,
-uses cached source-matched dependencies, and closes the actor at exit.
-Run the entire command in a finite CPU/memory scope with zero swap:
-
-```bash
-systemd-run --user --scope -p CPUQuota=120% -p MemoryMax=1342177280 -p MemorySwapMax=0 \
-  python3 -B tools/mt-bench/kubernetes/workloads/qualify.py \
-  --output /absolute/owned/artifacts/normal-entry-01 \
-  --k6 /absolute/cached/k6 --node /absolute/qualified/node \
-  --dependencies /absolute/qualified/dependencies --core /absolute/source-checkout
-```
-
-The bounded fixture selects ten tenants, one stock viewer, scale 8 and 40 seconds
-of ordinary demand so each sensor writer is exercised. It independently counts
-stored work for the nine unviewed tenants. Controls corrupt copied retained
-viewer bindings, dropped-work counters, clinical/frame observations and an
-unviewed tenant's storage count, and inject an aggregate selector. Each requires
-its named failure and restoration. Originals are retained unchanged. The final
-result labels all application/cluster outcomes UNMEASURED and capacity NOT_GRANTED.
-The local native command does not start another collector, matrix executor or
-application acceptance campaign.

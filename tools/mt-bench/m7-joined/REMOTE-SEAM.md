@@ -43,15 +43,10 @@ and provenance before destroying its owned VM, subject to its budget/deadline.
 
 ## Pilot invocation
 
+The 500, 750 and 1,000-tenant remote pilot runs as the granular cell commands below. The former one-command `campaign.py` convenience form was removed with the Kubernetes and remote-pgstream paths replacing it (history: alignment `5a203ee7`).
+
 ```bash
 python3 tools/mt-bench/m7-joined/adapter.py manifest > /private/instrument-manifest.json
-python3 tools/mt-bench/m7-joined/campaign.py pilot \
-  --work /private/new-pilot-directory \
-  --core-repo /sources/core.git --core-commit "$M7_CORE_SHA" \
-  --deploy-repo /sources/deploy.git --deploy-commit "$M7_DEPLOY_SHA" \
-  --image "$M7_PAIRED_IMAGE" --k6-image "$M7_K6_IMAGE" \
-  --freeze /private/frozen-acceptance.json --quiet-load 3
-python3 tools/mt-bench/m7-joined/adapter.py check-pilot /private/new-pilot-directory/campaign.json
 ```
 
 `pilot` selects one API and counts500→750→1000, real cadence, hot factor10 and two
@@ -109,8 +104,7 @@ For controller checkpoints, the same pilot is available as granular cell command
 `host-identity`, `run --k6-image ...`, and `down`. Repeat with fresh owned directories
 for750 and1000 only after the previous `summary.json` is PASS. Assemble their cells
 under `kind:m7-joined-remote-pilot` and check with `check-pilot`; it requires identical
-pair/instrument/image/host and all three rows. The full `campaign.py pilot` is the
-convenience form, not a resumable partially measured window. Preserve completed
+pair/instrument/image/host and all three rows. Preserve completed
 cell checkpoints; an interrupted window restarts as a new cell, not a continuation
 whose elapsed time is silently stitched together. `host-identity` returns only the
 identity/source hashes and keeps its full inventory private.
