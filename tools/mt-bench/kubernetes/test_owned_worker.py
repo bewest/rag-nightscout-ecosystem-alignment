@@ -1,4 +1,5 @@
 """Synthetic ownership proofs through the exact private and public read paths."""
+import ast
 import copy
 from datetime import datetime, timezone
 import hashlib
@@ -211,6 +212,29 @@ class Ownership(unittest.TestCase):
             entry['auto_scale']=False
         p.freeze()
         p.verify()
+
+
+class LifecycleCreate(unittest.TestCase):
+    def test_rechecks_each_workload_before_create_in_selected_mode(self):
+        path = HERE/'lifecycle.py'
+        create = next(node for node in ast.parse(path.read_text()).body
+                      if isinstance(node, ast.FunctionDef) and node.name == 'create')
+        code = compile(ast.Module(body=[create], type_ignores=[]), str(path), 'exec')
+        for selected in (False, True):
+            for kind in ('Deployment', 'StatefulSet', 'Job', 'ConfigMap'):
+                with self.subTest(selected=selected, kind=kind):
+                    calls = []
+                    def send(argv, obj):
+                        calls.append(argv[0])
+                        return json.dumps(obj)
+                    scope = {'cfg': {'ownedWorkerPreflight': {'selected': True}} if selected else {},
+                             'owned_worker': w, 'json': json, 'k': send,
+                             'check_worker': lambda: calls.append('read')}
+                    exec(code, scope)
+                    request = {'kind': kind}
+                    self.assertEqual(scope['create'](request), request)
+                    expected = ['read', 'create'] if selected and kind != 'ConfigMap' else ['create']
+                    self.assertEqual(calls, expected)
 
 
 class PrivateBoundary(unittest.TestCase):

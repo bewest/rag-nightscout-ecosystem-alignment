@@ -553,7 +553,8 @@ file. It binds the selected node name and lane label and authors one
 provider node and Kubernetes Node UID, checks the taint and workload templates,
 and then evaluates the existing resource fit. `collect.py --owned-worker-node
 NODE` retains the scoped, projected Node read beside its ordinary inventory.
-The same guard is used before lifecycle creates and during runtime observation.
+The lifecycle uses the guard at stage entry and immediately before each
+workload create. Runtime observations verify the same placement.
 Its selected read mode emits placement and ownership fields only. A wrong UID,
 label, taint, cordon, foreign or missing Pod, incomplete census, or unmeasured
 provider proof refuses admission. The lifecycle keeps namespace UID cleanup

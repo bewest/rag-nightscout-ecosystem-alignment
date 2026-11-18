@@ -65,6 +65,8 @@ def get(kind,name,local=True):
     b=k(['get',kind,name,*(['-n',ns] if local else []),'--ignore-not-found','-o','json'])
     return json.loads(b) if b.strip() else None
 def create(obj):
+    if cfg.get('ownedWorkerPreflight') and obj['kind'] in owned_worker.WORKLOADS:
+        check_worker()
     return json.loads(k(['create','-f','-','-o','json'],obj))
 def deluid(path,uid):
     k(['delete','--raw',path,'-f','-'],{'apiVersion':'v1','kind':'DeleteOptions','propagationPolicy':'Foreground','preconditions':{'uid':uid}})
