@@ -48,6 +48,8 @@ def check(export, output, environment=None):
                          postgresImageId='sha256:'+'0'*64)  # deliberately held until E supplies the commissioned mapping
     if application_topology.FIELD in inv:
         c[application_topology.FIELD] = application_topology.selection(inv, k.need)
+    if 'resourceAccounting' in inv:
+        c['resourceAccounting'] = inv['resourceAccounting']
     for name,item in inv['workloads'].items():
         if item['kind']=='Job':continue
         for container in item['containers']:
