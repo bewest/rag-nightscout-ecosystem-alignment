@@ -231,6 +231,14 @@ Read `experiment/result.json`, `load/failure.json` when present, and
 first failure, offered work, stored writes, selected clinical witnesses, frames
 and unavailable observations separately. Capacity remains NOT_GRANTED.
 
+The strict midpoint read is scheduled from the stock probe's `.window` signal.
+Native JWT setup can still be in progress when this read runs. A refusal retains
+the bounded private evaluator response when available, along with source and
+runtime binding for the capture. k6 phase markers stream to `load/k6.log` or
+`load/k6-shard-<index>.log` while the driver runs. After an early stop the
+reduction reports the markers it observed and whether a terminal summary
+exists. Terminal totals stay UNMEASURED when the summary is missing.
+
 | Existing Docker assumption | Kubernetes boundary |
 |---|---|
 | Compose project/container census | Explicit context, run label, namespace UID, workload/ReplicaSet owner chain, Pod UID and container incarnation |

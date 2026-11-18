@@ -143,7 +143,8 @@ def verify(config, directory, manifest):
                 'M7_NODE_OBSERVATION_CONFIG')
 
 
-def log_events(path, tail=False):
+def log_events(path, tail=False, *,
+               names=('scenario-first-iteration', 'scenario-phase-end')):
     """Read bounded k6 phase markers. Ignore response/request detail."""
     try:
         with path.open('rb') as stream:
@@ -158,8 +159,7 @@ def log_events(path, tail=False):
             value = json.loads(json.loads(encoded))
         except (TypeError, ValueError):
             continue
-        if isinstance(value, dict) and type(value.get('atMs')) is int and value.get('event') in (
-                'scenario-first-iteration', 'scenario-phase-end'):
+        if isinstance(value, dict) and type(value.get('atMs')) is int and value.get('event') in names:
             result.setdefault(value['event'], value['atMs'])
     return result
 
