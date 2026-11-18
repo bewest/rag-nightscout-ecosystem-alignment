@@ -804,8 +804,15 @@ def prepare(args):
     local_observer = bool(node_observation.option(args) or api_warm_cause.option(args))
     require(not local_observer or (selected and document(args.freeze).get('version')==2),
             'M7_LOCAL_OBSERVER_RECEIPT')
-    diagnostic_resources.configure(selected)
     options=prepare_primer_options(args)
+    extended_primer=primer_options.requires_extended(options)
+    if extended_primer:
+        # The fixture-specific resource driver receives its container budget
+        # after Compose is rendered. Check the isolated cached-image parser
+        # before arming that driver, without borrowing any runtime one-off.
+        commit(args.deploy_repo,args.deploy_commit)
+        args.image_input_preflight=prepare_image_inputs(args)
+    diagnostic_resources.configure(selected)
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
     ack_budget=stream_topology.ack_option(args)
@@ -856,7 +863,8 @@ def prepare(args):
             from run_configuration import namespace_preflight
             args.namespace_preflight=namespace_preflight(args)
     args.dependency_qualification=qualified_dependencies(args)
-    args.image_input_preflight=prepare_image_inputs(args)
+    if not extended_primer:
+        args.image_input_preflight=prepare_image_inputs(args)
     target.mkdir(parents=True, mode=0o700)
     try:
         with private_commands(target/'prepare-commands'):

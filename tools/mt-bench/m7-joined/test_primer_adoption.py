@@ -39,6 +39,22 @@ class PrimerAdoption(unittest.TestCase):
             image.assert_not_called()
             command.assert_called_once_with(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+primer_options.SOURCE_PATH],binary=True)
 
+    def test_extended_source_constructor_precedes_unbound_resource_driver(self):
+        from types import SimpleNamespace
+        args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',primer_concurrency=64,
+                             primer_max_tenants=20000,deploy_repo='/synthetic/deploy',deploy_commit='f'*40,
+                             generator_dependencies='/synthetic/dependencies')
+        proof={'primerSource':{'protocol':primer_options.PROTOCOL}}
+        class DriverWouldArm(Exception):pass
+        with patch.object(adapter,'selected_resources_profile',return_value='selected'), \
+             patch.object(adapter,'commit') as commit, patch.object(adapter,'prepare_image_inputs',return_value=proof) as preflight, \
+             patch.object(adapter.diagnostic_resources,'configure',side_effect=DriverWouldArm) as configure:
+            with self.assertRaises(DriverWouldArm):adapter.prepare(args)
+        configure.assert_called_once_with('selected')
+        commit.assert_called_once_with(args.deploy_repo,args.deploy_commit)
+        preflight.assert_called_once_with(args)
+        self.assertEqual(args.image_input_preflight,proof)
+
     def fixture(self,root):
         adapter.write(root/'frozen.compose.json',{'services':{'postgres':{'environment':{'POSTGRES_DB':'synthetic_application'}}}})
         p=root/'state/primer'

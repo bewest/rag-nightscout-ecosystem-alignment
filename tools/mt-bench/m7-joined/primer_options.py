@@ -86,7 +86,7 @@ def probe_image(command, image, raw, options, need):
     protocol = source_protocol(raw)
     require_source(options, protocol, need)
     sha = hashlib.sha256(raw).hexdigest()
-    result = json.loads(command(['docker', 'run', '--rm', '--pull=never', '--network', 'none', '--read-only',
+    result = json.loads(command(['docker', 'run', '--rm', '--pull', 'never', '--network', 'none', '--read-only',
                                  '--entrypoint', 'node', image, '-e', image_probe(),
                                  json.dumps(argv(options, include_serial=True)), sha]))
     expected = {'concurrency': options.get('concurrency', DEFAULT_CONCURRENCY),
