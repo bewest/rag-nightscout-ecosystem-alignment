@@ -193,6 +193,26 @@ shared rather than reserved globally for every diagnostic. Preserve running lane
 branch or instrument changes. Use focused controls for changed code and one coherent final
 acceptance campaign for the selected candidate.
 
+Multitenant is still in discovery; no multitenant deployment is in production.
+Reference sizes and previously measured workloads are starting configurations,
+not product ceilings. Keep tenant count, offered rate, viewers, resource sizes,
+setup/startup/traffic/drain/cleanup windows and supported topology choices in
+configuration. An explicit allocation replaces reference sizing for a fresh run;
+verify the applied values rather than requiring equality with the old defaults.
+Check aggregate fit against the lane's declared environment and authority, and
+distinguish CPU limits, scheduling requests, phase peaks and observed use.
+
+Before adding a restriction, identify its source: application correctness,
+instrument capability, reference default, environment allocation, actual authority
+or candidate acceptance. Keep numeric defaults overridable within the implemented
+contract and existing authority. A real implementation limit states the affected
+path and what extension would enable the experiment; it does not become a universal
+application rule. Reuse one workload resolver across local and Kubernetes paths,
+explain effective limits before expensive preparation and do not silently reduce
+a requested experiment to make it fit. This is part of the existing design and
+run configuration, not a new approval or reporting step. See the
+[restriction policy](docs/30-design/tenancy/deployment-and-rig-testing.md#configurable-limits-and-restrictions).
+
 Milestones run with background agents without asking each time. Give each lane a complete
 capability or an explicit milestone criterion, one owner and one integration boundary. Keep its
 helper changes, fixture repairs and authored controls in that lane; use another agent when the

@@ -94,6 +94,14 @@ qualify its own transport/environment, without repeating unrelated application
 acceptance. Start with the smallest useful remote point and reuse that qualified
 path for larger authorized configurations.
 
+The maintainer has authorized routine private diagnostic image publication and
+pulls at negligible cost, including the roughly $0.00067 storage example. Reuse
+that [standing authority](multitenancy-decisions.md#routine-diagnostic-image-delivery)
+for ordinary testing and repair images; do not request approval for each digest.
+Keep source/image identity, measured transfer/storage, cache custody and cleanup
+in the existing run record. This removes repeated image-delivery approval from
+the experiment path.
+
 ### Application requirements and environment capabilities
 
 Application correctness requires tenant/current authority and restore fences,
@@ -117,6 +125,53 @@ capacity/release promotion. Legacy captures keep their original attribution.
 Reuse unchanged module/source evidence with its identity and limits. Qualify a
 changed remote transport with a small actual remote probe; do not repeat unrelated
 application acceptance solely for a helper, configuration or environment change.
+
+### Configurable limits and restrictions
+
+Multitenant is in discovery and has no production deployment. Experiments establish
+which configurations work. A reference profile, a measured workload and a future
+production acceptance criterion have different scopes. Neither an unmeasured size
+nor an unaccepted production profile is a reason to prohibit an otherwise identified,
+owned, finite synthetic experiment.
+
+| Restriction source | What it protects | How to vary an experiment |
+|---|---|---|
+| Application correctness | Tenant authority/isolation, durable receipts, clinical output, restore fences and recovery | Preserve the requirement. A deliberately broken synthetic control records failure; it cannot grant the dependent correctness or capacity claim. |
+| Instrument capability | An implemented protocol, role roster, probe format or topology | Explain the unsupported path and extend it with focused controls. A one-Pod socket cohort does not establish a universal one-replica application limit. |
+| Reference default | Example tenant/viewer/rate values, per-role sizing, nginx sizing or phase durations | Override through configuration within the implemented contract. A new size does not require a new profile name, image allowlist or population-specific wrapper. |
+| Environment allocation | Actual local resources or Kubernetes placement, requests, quotas and phase peaks | Fit the declared allocation to the available environment. Record shared contention; CPU limits are ceilings, not dedicated CPU reservations or observed use. |
+| Actual authority | Owned resources, approved spending/publication scope and finite cleanup custody | Stay within the existing authority. A configuration or diagnostic receipt does not enlarge it. Do not infer another approval requirement merely from a changed parameter. |
+| Candidate acceptance | Promotion of a coherent source/configuration and its measured claims | Run the applicable acceptance once on the selected candidate after focused repair. Pending acceptance does not block independent discovery. |
+
+Tenant count, offered rate, viewers and resource/phase budgets belong in the run
+configuration. Setup, startup, ordinary traffic, drain and cleanup have separate
+finite windows. Size them to the experiment; a small rig's timeout is not a product
+deadline. An explicitly selected allocation replaces reference CPU/memory limits
+when preparing a fresh fixture. Read back actual limits and identities after
+application. Keep reference defaults and entered fixtures unchanged.
+
+Use one resolved workload across local and Kubernetes paths. A transport validates
+its own capabilities and placement without inventing another workload contract.
+If a transport cannot execute a requested value, report the exact field, supported
+path and extension needed before seeding. Do not silently downsize or rewrite the
+request. Missing optional observations stay unknown; preserve independent useful
+observations and the exact failure that limits each claim.
+
+Preflight should show requested and effective values, their origin, affected phase
+and configuration field. Reuse the existing runner's projection and validators.
+For local batching, `runner.py batch-resources <config>` exposes the selected
+whole-cell reservation and load-driver breakdown before `batch-plan` validates
+the envelope. This prevents a reference allocation from silently capping a larger
+cell and accounts for the actual discovery driver. The
+[runner guide](../../../tools/mt-bench/m7-joined/RUNNER.md#finite-experiment-batches)
+owns commands and accounting limits. Run catalogs and comparisons can consume the
+same resolved values; they need no new executor or mandatory observability platform.
+
+When adding a numerical bound, explain its source and override or implementation
+extension in the existing contract. Keep representation/protocol limits where they
+are required. Do not turn a conservative example into another hard-coded ceiling.
+This explanation belongs with the configuration or capability change; it adds no
+approval gate, separate reporting document or prerequisite for ongoing experiments.
 
 ## Deployment choices and fault domains
 
