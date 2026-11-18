@@ -74,9 +74,7 @@ def _deploy(d, m):
             a.primer_counts(d, m)
         if name == 'bootstrap':
             if m.get('staticTopology'):a.static_runtime_contract(d,m)
-            fingerprint = a.settings_fingerprint(d,m)
-            m['settingsFingerprint'] = fingerprint
-            m['profileSelection'] = a.profile_provenance.identity(fingerprint, m['diagnostics'], config)
+            m['profileSelection'] = a.profile_provenance.identity(m['diagnostics'], config)
             a.profile_provenance.state_environment(d / 'state', config, m['diagnostics'])
             a.write(d / 'owner.json', m)
             layout = a.document(d / 'state/bootstrap/layout.json')

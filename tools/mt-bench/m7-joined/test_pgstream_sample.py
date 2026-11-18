@@ -88,7 +88,7 @@ class Sample(unittest.TestCase):
     def test_discovery_pipeline_keeps_pending_scope_and_sample_proofs(self):
         import discovery
         from test_contract import PROFILE
-        m,_=self.diagnostic();m.update(owner='e'*32,hostIdentity='f'*64,generator={},profileSelection=PROFILE,settingsFingerprint=PROFILE['settings'])
+        m,_=self.diagnostic();m.update(owner='e'*32,hostIdentity='f'*64,generator={},profileSelection=PROFILE)
         with tempfile.TemporaryDirectory() as temp:
             d=Path(temp);(d/'deploy-before-host.json').write_text('{}')
             def load(a,d,m,image,record):

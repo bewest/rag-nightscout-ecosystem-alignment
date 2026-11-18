@@ -130,7 +130,7 @@ class ApiReplicas(unittest.TestCase):
         value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL',
                'capacityAcceptance':'NOT_GRANTED','pair':{'core':'a'*40,'deploy':'b'*40},
                'instrument':'d'*64,'hostIdentity':'c'*64,'imageId':'sha256:'+'e'*64,
-               'profileSelection':PROFILE,'settingsFingerprint':{'sha256':'f'*64,'sourceCommit':'a'*40},
+               'profileSelection':PROFILE,
                'owner':'f'*32,'ownershipVerified':True,'tenants':2,'strictChecks':{},'processes':{},
                'hardFailures':[],'oracle':None,'profile':'pgstream-sample',**c.UNACCEPTED_SCOPE}
         for count in (3,16):

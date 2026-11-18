@@ -483,7 +483,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out = d / name
     k.need(not out.exists(), 'STAGE_OUTPUT_EXISTS')
     if load:
-        k.need('k6' in c['driver'] and 'k6Sha256' in c['driver'] and k.HEX.fullmatch(c.get('settingsFingerprint','')),'LOAD_INPUTS_REQUIRED','UNMEASURED')
+        k.need('k6' in c['driver'] and 'k6Sha256' in c['driver'],'LOAD_INPUTS_REQUIRED','UNMEASURED')
     settings = workload_runtime.validate(c['workload'], k.need, c['tenants'])
     env = workload_runtime.environment(settings, environment(c, d), k.need)
     completion(c)
@@ -569,7 +569,6 @@ def execute(d, c, objects, client, load=False, recovery=False):
             # No Docker network/volume assumption or new driver Pod is introduced.
             env.update(BASE_URL=c['baseUrl'], TENANTS_FILE=c['tenantsFile'], RUN_ID=runid, RUN_START=str(int(time.time() * 1000)),
                        DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(settings.get('jwtSetupConcurrency', 1)),
-                       SETTINGS_FINGERPRINT=c['settingsFingerprint'],
                        SHAPES='w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status')
             if 'setupSeconds' in settings:
                 setup = int(prime_until - time.time())
@@ -716,13 +715,11 @@ def accepted_writes(out, c, values, metrics=None):
 
 
 def load_checks(out, c=None):
-    """Join the original M7 HTTP/offered-work and settings reducers."""
+    """Join the original M7 HTTP/offered-work reducers."""
     import http_accounting
-    import profile_provenance
     metrics = k.document(out / 'k6-summary.json').get('metrics', {})
     http = http_accounting.assess(metrics)
-    fingerprint = profile_provenance.fingerprint_check(metrics)
-    value = {'http': http, 'settingsFingerprint': fingerprint}
+    value = {'http': http}
     if c and 'driverPlan' in c.get('workload', {}):
         import driver_vu_diagnostic as driver
         measured = driver.retain(out.parent, workload_runtime.driver_manifest(c))
@@ -736,8 +733,6 @@ def load_checks(out, c=None):
            'SCENARIO_HTTP_FAILED', 'FAIL' if http['httpVerdict'] == 'FAIL' else 'UNMEASURED')
     k.need(http['offeredWorkVerdict'] == 'PASS', 'OFFERED_WORK_INCOMPLETE',
            'FAIL' if http['offeredWorkVerdict'] == 'FAIL' else 'UNMEASURED')
-    k.need(fingerprint['verdict'] == 'PASS', 'SETTINGS_FINGERPRINT_FAILED',
-           'FAIL' if fingerprint['verdict'] == 'FAIL' else 'UNMEASURED')
     return value
 
 

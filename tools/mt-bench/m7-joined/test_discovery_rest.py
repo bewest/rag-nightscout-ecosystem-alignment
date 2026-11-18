@@ -87,7 +87,7 @@ class RestAlongsideClinicalStall(unittest.TestCase):
             with patch.object(a,'frozen'),patch.object(a,'quiet'),patch.object(a,'verify'),patch.object(a,'readiness',return_value=finding),patch.object(a,'psql'),patch.object(a,'phase_snapshot'),patch.object(a,'enabled_idle',return_value=types.SimpleNamespace(result=finding)),patch.object(app.time,'sleep'):
                 self.assertEqual(app.idle(d,m),finding)
             out=d/'load';out.mkdir();(out/'runid').write_text('synthetic');(d/'idle/evaluator-progress.json').write_text(json.dumps(self.artifact()))
-            with patch.object(a,'verify'),patch.object(app,'load'),patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a.profile_provenance,'fingerprint_check',return_value={'verdict':'UNMEASURED'}),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True)),patch('clinical.completed',return_value={'verdict':'UNMEASURED'}),patch.object(app,'measurements',return_value={}):
+            with patch.object(a,'verify'),patch.object(app,'load'),patch.object(a,'progress_services',return_value=['evaluator']),patch.object(discovery,'count_observation',return_value=({'verdict':'GREEN'},True)),patch('clinical.completed',return_value={'verdict':'UNMEASURED'}),patch.object(app,'measurements',return_value={}):
                 result=app.discovery_summary(d,m,{}, {},{'metrics':{'http_reqs':{'count':3}}})
             self.assertEqual(result['clinicalVerdict'],'FAIL');self.assertEqual(result['metrics']['http_reqs']['count'],3);self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED');self.assertEqual(result['strictChecks']['idle']['verdict'],'FAIL')
     def test_independent_work_runs_and_record_keeps_fail(self):

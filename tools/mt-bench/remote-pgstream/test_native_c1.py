@@ -92,7 +92,6 @@ class NativeC1(unittest.TestCase):
             for target,name,kwargs in [
                 (app.a,'verify',{}),(app,'load',{}),(app.a,'progress_services',{'return_value':['evaluator']}),
                 (app.a.evaluator_opportunities,'verify',{'return_value':observation}),
-                (app.a.profile_provenance,'fingerprint_check',{'return_value':{'verdict':'UNMEASURED'}}),
                 (clinical,'completed',{'return_value':green}),
             ]:stack.enter_context(patch.object(target,name,**kwargs))
             import discovery

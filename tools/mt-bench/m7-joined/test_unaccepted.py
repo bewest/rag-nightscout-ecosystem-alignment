@@ -12,8 +12,8 @@ def manifest():return {'measurementMode':'unaccepted','pair':PAIR,'profile':'rem
 def authorization():return {'version':1,'kind':'joined-measurement-authorization','status':'AUTHORIZED_UNACCEPTED_MEASUREMENT','pair':PAIR,'instrument':SHA,'imageId':IMAGE,'runId':RUN,'functionalAcceptanceAtAuthorization':'PENDING','purpose':'PRE_ACCEPTANCE_BASELINE_ONLY','limits':copy.deepcopy(c.MEASUREMENT_LIMITS)}
 def topology():return {'services':{**{role:{'command':['node','serve',role]} for role in ('api','realtime','evaluator')},'vault':{'command':['vault','server']}}}
 def aggregate():
- p=identity({'schema':1,'sha256':'e'*64,'sourceCommit':'a'*40,'sourceBlobs':{}},selection(),topology())
- m=manifest();row={**c.measurement_output(m),'pair':PAIR,'hostIdentity':'f'*64,'instrument':SHA,'imageId':IMAGE,'verdict':'PASS','measurements':{'complete':True},'profileSelection':p,'settingsFingerprintObservation':{'verdict':'PASS','observations':1,'invalid':0,'mismatch':0},'profile':'remote-pilot','replicas':1,'cadence':c.CADENCE['remote-pilot']}
+ p=identity(selection(),topology())
+ m=manifest();row={**c.measurement_output(m),'pair':PAIR,'hostIdentity':'f'*64,'instrument':SHA,'imageId':IMAGE,'verdict':'PASS','measurements':{'complete':True},'profileSelection':p,'profile':'remote-pilot','replicas':1,'cadence':c.CADENCE['remote-pilot']}
  return {**c.measurement_output(m,aggregate=True),'version':1,'pair':PAIR,'hostIdentity':'f'*64,'instrument':SHA,'imageId':IMAGE,'verdict':'PASS','profileReplicas':1,'profileSelection':p,'diagnostics':selection(),'cells':[{**row,'tenants':n} for n in c.PILOT_COUNTS]}
 class Unaccepted(unittest.TestCase):
  def test_exact_authorization_and_old_accepted_path(self):

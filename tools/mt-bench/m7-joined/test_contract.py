@@ -18,7 +18,7 @@ from reduce import measurements
 A='11111111-1111-4111-8111-111111111111'
 B='22222222-2222-4222-8222-222222222222'
 from profile_provenance import identity,selection
-PROFILE=identity({'schema':1,'sha256':'f'*64,'sourceCommit':'a'*40,'sourceBlobs':{}},selection(),{'services':{'api':{},'vault':{'command':['vault','server']},'realtime':{},'evaluator':{}}})
+PROFILE=identity(selection(),{'services':{'api':{},'vault':{'command':['vault','server']},'realtime':{},'evaluator':{}}})
 OBS={'verdict':'PASS','observations':1,'invalid':0,'mismatch':0}
 
 class Contract(unittest.TestCase):

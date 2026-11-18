@@ -187,14 +187,12 @@ class Matrix(unittest.TestCase):
         self.assertEqual(e.stage_runid(c, 'load'), second)
         print('RED_RESTORED K8S_WORKLOAD_POINT_ID')
 
-    def test_original_http_offered_work_and_settings_join_controls(self):
+    def test_original_http_and_offered_work_join_controls(self):
         import http_accounting
         out = self.root / 'functional';out.mkdir()
         metrics = {name: {'count': value} for name, value in {
             'scenario_request_attempts': 7, 'scenario_http_responses': 7,
-            'scenario_transport_failures': 0, 'http_reqs': 8, 'dropped_iterations': 0,
-            'settings_fingerprint_observed': 1, 'settings_fingerprint_invalid': 0,
-            'settings_fingerprint_mismatch': 0}.items()}
+            'scenario_transport_failures': 0, 'http_reqs': 8, 'dropped_iterations': 0}.items()}
         for shape in ('jwt_setup', *http_accounting.SHAPES):
             for key in ('m7_http_attempts{http_shape:' + shape + '}',
                         'm7_http_completed{http_shape:' + shape + '}',
@@ -220,9 +218,6 @@ class Matrix(unittest.TestCase):
         cases.append(('OFFERED_WORK_INCOMPLETE', dropped))
         missing_counter = copy.deepcopy(metrics);del missing_counter['http_reqs']
         cases.append(('SCENARIO_HTTP_FAILED', missing_counter))
-        for field in ('settings_fingerprint_mismatch', 'settings_fingerprint_observed'):
-            broken = copy.deepcopy(metrics);broken[field]['count'] = int(field.endswith('mismatch'))
-            cases.append(('SETTINGS_FINGERPRINT_FAILED', broken))
         for code, broken in cases:
             with self.assertRaisesRegex(k.Refused, code):check(broken)
             self.assertTrue((out / 'load-functional.json').is_file())

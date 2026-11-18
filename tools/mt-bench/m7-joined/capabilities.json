@@ -1,14 +1,6 @@
 {
-  "version": 4,
+  "version": 5,
   "kind": "m7-joined-profile-capabilities",
-  "settingsFingerprint": {
-    "schema": 1,
-    "source": "pinned-core-defaults-and-actual-blank-registry-primer",
-    "observation": "existing-k6-r_status",
-    "missing": "UNMEASURED",
-    "invalidOrMismatch": "functional-FAIL",
-    "extraHttp": false
-  },
   "diagnostics": {
     "default": "off",
     "choices": [

@@ -70,9 +70,6 @@ if worker:
                       lambda argv: json.loads(scoped.call(argv, owned_worker_view=True)), adapter.need)
 
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
-fp=execute('source-settings',[cfg['driver']['node'],src/'m7-joined/fingerprint.cjs',core,e['sourceCommit'],live/'primer-config.private.json',str(e['tenantCount'])],30)
-# The source CLI may write legacy app initialization lines before its final JSON record.
-cfg['settingsFingerprint']=json.loads(fp.read_text().splitlines()[-1])['sha256']
 obj=read(live/'latest-edge.json');edge=obj['name'];edgeuid=obj['uid']
 kub=[cfg['kubectl'],'--context',cfg['context'],'-n',ns]
 def edge_id():return subprocess.check_output(kub+['get','pod',edge,'-o','jsonpath={.metadata.uid}'],timeout=12).decode()

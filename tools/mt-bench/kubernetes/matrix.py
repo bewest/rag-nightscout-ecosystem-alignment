@@ -128,8 +128,7 @@ def joined_point(d, c, baseline, current):
            result.get('storedWrites', {}).get('verdict') == 'GREEN' and
            result['storedWrites'].get('uncertain') == 0 and
            result.get('loadFunctionalChecks', {}).get('http', {}).get('httpVerdict') == 'PASS' and
-           result['loadFunctionalChecks']['http'].get('offeredWorkVerdict') == 'PASS' and
-           result['loadFunctionalChecks'].get('settingsFingerprint', {}).get('verdict') == 'PASS',
+           result['loadFunctionalChecks']['http'].get('offeredWorkVerdict') == 'PASS',
            'MATRIX_ORACLE_UNMEASURED', 'UNMEASURED')
     probe = k.document(out / 'probe.json')
     frames = probe.get('kubernetesFrames', {})

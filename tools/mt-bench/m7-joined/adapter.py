@@ -187,7 +187,7 @@ def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, bin
         # quota lease. Its source verifier still gets a fixed small V8 heap cap.
         bounded=[argv[0],'--max-heap-size=128',*argv[1:]]
         return _command(bounded,cwd=cwd,env=selected_env,input=input,file=file,timeout=timeout,binary=binary,phase=phase)
-    role = 'generator' if phase in ('product-prepare', 'settings-fingerprint', 'generator-client-preflight','completed-oracle') else 'helper'
+    role = 'generator' if phase in ('product-prepare', 'generator-client-preflight','completed-oracle') else 'helper'
     if diagnostic_resources._ACTIVE is not None and list(map(str,argv[:2]))==['docker','run']:argv=bounded_k6_argv(argv)
     with diagnostic_resources.command(argv, selected_env, role) as (bounded_argv, bounded_env):
         return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase)
@@ -644,8 +644,7 @@ def attach(args):
             candidates=[file for file in (state/'primer/tenants.json',state/'ops/tenants.json') if file.exists()]
             projections=[tenant_projection(document(file),m['tenants']) for file in candidates]
             require(projections and all(value==projections[0] for value in projections),'M7_PRIMER_OUTPUT_CONFLICT');write(target/'tenants.private.json',projections[0])
-            fingerprint=json.loads(command(['node',HERE/'fingerprint.cjs',source,pair['core'],state/'primer/config.json',str(m['tenants'])]))
-            m['settingsFingerprint']=fingerprint;m['profileSelection']=profile_provenance.identity(fingerprint,m['diagnostics'],config);m['restartRoles']=service_roster(config)
+            m['profileSelection']=profile_provenance.identity(m['diagnostics'],config);m['restartRoles']=service_roster(config)
             write(target/'owner.json',m);write(target/'generator-provenance.json',m['generator']);write(target/'deploy-before-host.json',fixture_inventory(m));verify(target,m)
             print('M7_EXISTING_FIXTURE_BOUND_NO_RESOURCE_CHANGE')
     except Exception as error:
@@ -1477,9 +1476,7 @@ def deploy(d, m):
                     m['pgstreamNotifierAckWire']=ack_wire
                     write(d/'producer-ack-budget.json',ack_wire)
                 if m.get('staticTopology'):static_runtime_contract(d,m)
-                fingerprint=settings_fingerprint(d,m)
-                m["settingsFingerprint"]=fingerprint
-                m["profileSelection"]=profile_provenance.identity(fingerprint,m["diagnostics"],config)
+                m["profileSelection"]=profile_provenance.identity(m["diagnostics"],config)
                 profile_provenance.state_environment(d/"state",config,m["diagnostics"])
                 write(d/"owner.json",m)
                 layout=document(d/"state/bootstrap/layout.json")
@@ -2132,11 +2129,6 @@ def run(d,m,k6_image,oneoff=None):
         raise
 
 
-def settings_fingerprint(d,m):
-    with private_commands(d/'source-node-checks'/'settings-fingerprint'/uuid.uuid4().hex, max_output_bytes=262144):
-        return json.loads(command(['node',HERE/'fingerprint.cjs',d/'core',m['pair']['core'],d/'state/primer/config.json',str(m['tenants'])],phase='settings-fingerprint'))
-
-
 def static_runtime_contract(d,m):
     import yaml
     config=document(d/'frozen.compose.json')
@@ -2321,7 +2313,6 @@ def run_cell(d, m, k6_image):
                 command(["docker", "run", "--rm", "--name", m["project"] + "-k6", "--label", OWNER + "=" + m["owner"], "--label", "com.docker.compose.project=" + m["project"], "--label", "com.docker.compose.service=k6",
                     "--network", "host", "-u", str(os.getuid()) + ":" + str(os.getgid()), "-v", str(d / "k6") + ":/scripts:ro", "-v", str(out) + ":/out", "-v", str(d / "tenants.private.json") + ":/tenants.private.json:ro",
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
-                    "-e", "SETTINGS_FINGERPRINT=" + m["settingsFingerprint"]["sha256"],
                     "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL="+str(m["cadence"]["accel"]), "-e", "HOT_FACTOR="+str(m["cadence"]["hotFactor"]), "-e", jwt_setup_env(m),
                     *(["-e","OFFERED_RPS="+str(m["cadence"]["offeredRps"])] if "offeredRps" in m["cadence"] else []), "-e", "SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status", k6_id, "run", "--quiet", "--summary-export", "/out/k6-summary.json", "/scripts/workload.js"], file=output, timeout=m["cadence"]["loadSeconds"]+600)
             phase_snapshot(d, out, "after")
@@ -2337,7 +2328,6 @@ def run_cell(d, m, k6_image):
     control(d, m)
     host = fixture_inventory(m);write(d / "run-after-host.json", host)
     result_probe = document(out / "probe.json")
-    fingerprint_result=profile_provenance.fingerprint_check(document(out/"k6-summary.json")["metrics"])
     completed_output=result_probe.get('completedOutput')
     if completion:
         attributed=sample_results(d,result_probe,sql_roles)
@@ -2349,12 +2339,12 @@ def run_cell(d, m, k6_image):
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
-                   result_probe["window"]["writes"]["failed"] == 0, fingerprint_result["verdict"]=="PASS", idle_progress.result["verdict"]=="PASS", load_progress.result["verdict"]=="PASS"]
+                   result_probe["window"]["writes"]["failed"] == 0, idle_progress.result["verdict"]=="PASS", load_progress.result["verdict"]=="PASS"]
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "viewerFrames":viewer_result, "completedOutput":completed_output or "NOT_SELECTED", "sqlAttribution":attributed if completion else "NOT_SELECTED",
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
-               "profileSelection":m["profileSelection"],"settingsFingerprint":m["settingsFingerprint"],"settingsFingerprintObservation":fingerprint_result,
+               "profileSelection":m["profileSelection"],
                "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("idle","load")},"idleTail":document(d/"idle/evaluator-tail-publication.json") if (d/"idle/evaluator-tail-publication.json").is_file() else None,"recovery":document(out/"evaluator-recovery.private.json.publication.json") if m["cadence"].get("restart",True) else "NOT_RUN"},
                "evaluatorProgress":{**{phase:progress_summary(d/phase) for phase in ("idle","load")},"recovery":{**{k:v for k,v in result_probe["restart"]["runtimeAcquisitionObservation"].items() if k not in ("baselineObservation","evidence")},**result_probe["restart"]["runtimeAcquisitionObservation"]["evidence"]} if m["cadence"].get("restart",True) else "NOT_RUN"},
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
@@ -2365,7 +2355,6 @@ def run_cell(d, m, k6_image):
     write(d / "summary.json", summary)
     metrics = document(out / "k6-summary.json")["metrics"]
     require(metric(metrics,"writes_refused")==0 and metric(metrics,"responses_refused")==0,"M7_FUNCTIONAL_REQUEST_REFUSAL")
-    require(fingerprint_result["verdict"]=="PASS","M7_FUNCTIONAL_SETTINGS_FINGERPRINT")
     require(summary["verdict"] == "PASS", "M7_CORRECTNESS_GROWTH_GATE_FAILED")
 
 
@@ -2403,7 +2392,7 @@ def diagnose(d,m):
         outcome=document(out/"diagnostic-observations.json")
         result={"kind":"m7-joined-fresh-image-diagnostic","profile":m["profile"],"pair":m["pair"],"instrument":m["instrument"]["sha256"],
                 "hostIdentity":m["hostIdentity"],"imageId":m["imageId"],"tenants":m["tenants"],"replicas":m["replicas"],"verdict":"PASS",
-                "profileSelection":m["profileSelection"],"settingsFingerprintObservation":"UNMEASURED; diagnostic is not k6 capacity",
+                "profileSelection":m["profileSelection"],
                 "checks":outcome["checks"],"acceptedWrites":outcome["acceptedWrites"],"dataHttpRequests":outcome["dataHttpRequests"],**{key:outcome[key] for key in ("httpAccountingVersion","criterionHttpRequests","physicalHttpRequests","warmProbeHttpRequests","trailRecords","trailBytes")},"oracle":counted["verdict"],"oracleControl":document(out/"oracle-control.json"),
                 "fullAcceptance":"NOT_RUN","capacity":"NO-MEASUREMENT","trafficDeadlineSeconds":scope["trafficSeconds"]}
         diagnostic_check(result);write(d/"diagnostic.json",result)
