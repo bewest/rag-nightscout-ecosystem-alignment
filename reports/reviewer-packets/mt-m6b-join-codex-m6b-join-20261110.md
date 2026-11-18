@@ -90,7 +90,12 @@ MT-ENDPOINT-TRANSPORT ship through this push. Lane unit ablations were run in
 the lanes, not repeated on the joined head. 2026-11-10 (read from GitHub at
 21:0xZ): maintainer pushed b70ad83f to #8898; all 16 CI jobs green including
 CodeQL and the multitenant opt-in corpus; no open code-scanning alerts on the
-PR (150 fixed).
+PR (150 fixed). 2026-11-18 (groom, reproduced): branch head b70ad83f is an
+ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub
+2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-
+base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on
+#8898, so in-flight-upstream stands; acceptance is the one campaign on the
+frozen candidate (decision restore-candidate-frozen).
 
 ---
 

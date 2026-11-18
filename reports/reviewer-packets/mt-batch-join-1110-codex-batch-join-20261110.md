@@ -66,6 +66,12 @@ identical): unit 3176, the other tiers re-run, 18 environment-reaching corpus
 suites 160/1. Open follow-ups: activity selections and grants in the demo
 config; export-expiry removeArtifact production wiring; API ingest refusal and
 socket disconnect under suspend are wired in core but not in the deploy demo.
+2026-11-18 (groom, reproduced): branch head 16a1fc2d is an ancestor of draft
+PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the
+frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in
+externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-
+upstream stands; acceptance is the one campaign on the frozen candidate
+(decision restore-candidate-frozen).
 
 ---
 

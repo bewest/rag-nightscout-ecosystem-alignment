@@ -67,7 +67,12 @@ candidate with the internal-listener reshape, deploy-tree move and ownership-
 in-admin-role lane. Two related decision questions from the same lane (legacy
 multi-mode writer without ownerPolicy; export-artifact expiry) are with the
 maintainer. 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-
-BATCH-JOIN-1110), accepted, not pushed.
+BATCH-JOIN-1110), accepted, not pushed. 2026-11-18 (groom, reproduced): branch
+head 65657a62 is an ancestor of draft PR #8898 head 6e193b3e (open, draft;
+read from GitHub 2026-11-18) and of the frozen restore candidate, core
+bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-
+official). The work is on #8898, so in-flight-upstream stands; acceptance is
+the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
 ---
 

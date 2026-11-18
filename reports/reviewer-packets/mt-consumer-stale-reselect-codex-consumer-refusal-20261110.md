@@ -70,7 +70,13 @@ unchanged; targeted wake. Deployed intervals: deliveries per active alarm
 60/min -> 1/min, selections 360 -> 125/min, 0 refusals; 150 ms churn 8/8
 delivered. Repeat covers any requested notification, as single-site processing
 does. Handed to the batch join. 2026-11-10: joined into codex/batch-
-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed. 2026-11-18
+(groom, reproduced): branch head 956d0940 is an ancestor of draft PR #8898
+head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen
+restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in
+externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-
+upstream stands; acceptance is the one campaign on the frozen candidate
+(decision restore-candidate-frozen).
 
 ---
 

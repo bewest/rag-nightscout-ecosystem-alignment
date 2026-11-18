@@ -105,7 +105,13 @@ maintainer to push dc795bd1 to #8898. 2026-11-10 (read from official and gh):
 maintainer pushed dc795bd1 to workspace/multitenant-20261102. Every CI job on
 that head is green, CodeQL included: alert 155 fixed, 154 dismissed (used in
 tests), 150 still open at the new line lib/authorization/storage.js:395 (the
-accessToken.length loop). Fix 7b30a6f2 joins under MT-M6B-JOIN.
+accessToken.length loop). Fix 7b30a6f2 joins under MT-M6B-JOIN. 2026-11-18
+(groom, reproduced): branch head dc795bd1 is an ancestor of draft PR #8898
+head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen
+restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in
+externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-
+upstream stands; acceptance is the one campaign on the frozen candidate
+(decision restore-candidate-frozen).
 
 ---
 

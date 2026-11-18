@@ -62,7 +62,13 @@ owner editing of plugin alert enables after the first preview (documents
 settle only the first preview); devicestatus.advanced defaults true on a
 single site but is unset for a tenant (read-derived, env.js:396 vs
 receiveddata.js:159). 2026-11-10: joined into codex/batch-join-20261110
-16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed. 2026-11-18 (groom,
+reproduced): branch head 2f1ae027 is an ancestor of draft PR #8898 head
+6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore
+candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-
+remote-monitor-official). The work is on #8898, so in-flight-upstream stands;
+acceptance is the one campaign on the frozen candidate (decision restore-
+candidate-frozen).
 
 ---
 

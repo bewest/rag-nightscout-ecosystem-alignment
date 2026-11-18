@@ -21,7 +21,7 @@ working set, in-process view reads with total order**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/eval-cost-20261111` |
 | base | `official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-EVAL-COST` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-EVAL-COST` is the measurement |
 | semver | `n/a` |
 
 ## What this changes
@@ -61,7 +61,14 @@ maintainer; clinical-path review
 
 2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0
 statements; acquisition 32.0 to 14.3 CPU-ms. Tie reads: MongoDB matches the
-ordinal order on 400 of 402, PostgreSQL's previous order on 0.
+ordinal order on 400 of 402, PostgreSQL's previous order on 0. 2026-11-18
+(groom, reproduced): branch head 745c7f4e is an ancestor of draft PR #8898
+head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen
+restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in
+externals/cgm-remote-monitor-official). The commits are already on #8898, so
+the next step is no longer a human push: ready-to-push -> in-flight-upstream.
+The gate's "frozen-head acceptance at the next #8898 batch join" is now the
+one campaign on the frozen candidate (decision restore-candidate-frozen).
 
 ---
 

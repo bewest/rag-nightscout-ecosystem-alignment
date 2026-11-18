@@ -67,7 +67,13 @@ same shape at MT-M6A-JOIN. test:affected on mongo:7: unit 191 / harness 27 /
 integration 24 passing, 0 failing. Report reports/tenancy/vault-
 agent-2026-11-09/. 2026-11-10: 0c547958 is an ancestor of dc795bd1 (git merge-
 base --is-ancestor), which the maintainer pushed to #8898; this item ships
-with the M6a bundle and needs no separate push.
+with the M6a bundle and needs no separate push. 2026-11-18 (groom,
+reproduced): branch head 0c547958 is an ancestor of draft PR #8898 head
+6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore
+candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-
+remote-monitor-official). The work is on #8898, so in-flight-upstream stands;
+acceptance is the one campaign on the frozen candidate (decision restore-
+candidate-frozen).
 
 ---
 

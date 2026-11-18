@@ -228,6 +228,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 
 ## Superseded or retired
 
+The text of every row below was archived unchanged on 2026-11-18 in [the superseded-decisions archive](../../archive/tenancy/multitenancy-decisions-superseded-2026-11-18.md); each link resolves to a one-line stub in multitenancy-decisions.md that points there.
+
 | row | replaced by | reason |
 |---|---|---|
 | [d9](multitenancy-decisions.md#d9) | its own text | historical base; the current-dev delivery plan supersedes it |

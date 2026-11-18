@@ -76,7 +76,12 @@ admin tools with their own token under single-site permissions
 subject-policy 38/0, focused unit 220/0; controls C1-C8. Owner and root share
 one catalogue (policy row digest), so the demo gives owners '*' too.
 2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-
-JOIN-1110), accepted, not pushed.
+JOIN-1110), accepted, not pushed. 2026-11-18 (groom, reproduced): branch head
+165c13bf is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read
+from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85
+(`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The
+work is on #8898, so in-flight-upstream stands; acceptance is the one campaign
+on the frozen candidate (decision restore-candidate-frozen).
 
 ---
 

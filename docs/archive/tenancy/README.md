@@ -15,6 +15,7 @@ source-scoped measurements. They are not current plans or lane assignments.*
 
 | Retained journal | What it preserves | Current home |
 |---|---|---|
+| [Superseded decision rows](multitenancy-decisions-superseded-2026-11-18.md) | The 28 rows the [decisions-in-force index](../../30-design/tenancy/decisions-in-force.md#superseded-or-retired) lists as superseded or retired, moved unchanged from alignment `b0645f9298` on 2026-11-18; the live file keeps a stub per anchor. | [Decisions in force](../../30-design/tenancy/decisions-in-force.md); the replacing row named in each stub |
 | [Counter/restore alternatives](counter-and-restore-options-2026-11-07.md) | Original f0 global-allocator baseline, tenant-local prototype, restore alternatives and source surveys, retained from alignment `e9f9430e4ada20f35163253a6179c2dae3b1ffb6` on 2026-11-16. | [Current ordering/history guide](../../30-design/tenancy/counter-and-restore-options.md); SQL guide for the implemented allocator |
 | [Transactional history-clock proof plan](postgres-tenant-clock-proof-2026-11-06.md) | November 6 concurrency/rollback/recovery/public-history proof and original dispatch assumptions, retained from the same alignment head on 2026-11-16. Public no-missed-write outcomes remain required. | [Current ordering/history guide](../../30-design/tenancy/counter-and-restore-options.md); [communication guide](../../30-design/tenancy/evaluator-realtime-communication.md#transaction-coverage-and-mechanism-retirement) for proposed internal stream coverage |
 
