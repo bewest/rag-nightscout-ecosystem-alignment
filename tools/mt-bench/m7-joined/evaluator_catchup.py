@@ -195,7 +195,9 @@ def run(a, directory, manifest, record):
              'authorityScope': 'sampled runtime generation/health, restore generation and observed control vectors; direct current authority not yet observed is NO-INSTRUMENT',
              'originalLoadVerdict': record.value['strictChecks'].get('load')}
     try:
-        p.need(a._COMMAND_DEADLINE.get() is not None, 'M7_DRAIN_WORK_DEADLINE_REQUIRED')
+        p.need(a._COMMAND_DEADLINE.get() is not None or
+               'drainSeconds' in phase_windows.selection(manifest.get('cadence',{})),
+               'M7_DRAIN_WORK_DEADLINE_REQUIRED')
         processes = record.value['processes']
         p.need(all(processes.get(k, {}).get('returncode') == 0 and type(processes[k].get('endMonoNs')) is int
                    for k in ('k6', 'probe')), 'M7_DRAIN_WRITERS_NOT_JOINED')
@@ -217,7 +219,9 @@ def run(a, directory, manifest, record):
         value['observationWindow']={'requestedRemainingSeconds':requested,'effectiveSeconds':seconds,
             'selectedClinicalDeadlineSeconds':120,
             'scope':'fixed-target observation after writers join; selected clinical deadline unchanged'}
-        with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + seconds)):
+        # The context manager clamps to an existing outer cutoff, if selected.
+        # Owner-monitored discovery still has this finite per-phase deadline.
+        with a.command_deadline(time.time() + seconds):
             services = a.progress_services(directory)
             rpc_queries = len(services) * math.ceil(len(ids) / 128)
             round_queries = math.ceil(len(ids) / 64) + rpc_queries
