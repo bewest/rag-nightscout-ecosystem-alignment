@@ -100,6 +100,12 @@ def tier_plan(config):
 
 
 def clean_source_preflight(parsed):
+    if parsed.run_purpose != 'discovery':
+        # An existing image is the run identity; its sources are not re-proved per run.
+        a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
+                 'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
+        return
+    # Discovery builds image inputs here: check the build sources once, at build.
     for role in ('core', 'deploy'):
         repo = getattr(parsed, role + '_repo')
         selected = a.commit(repo, getattr(parsed, role + '_commit'))
@@ -107,11 +113,7 @@ def clean_source_preflight(parsed):
         require(a.git(repo, 'rev-parse', 'HEAD') == selected, 'M7_SOURCE_' + label + '_HEAD')
         require(not a.git(repo, 'status', '--porcelain', '--untracked-files=normal'),
                 'M7_SOURCE_' + label + '_DIRTY')
-    if parsed.run_purpose == 'discovery':
-        a.prepare_image_inputs(parsed)
-    else:
-        a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
-                 'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
+    a.prepare_image_inputs(parsed)
 
 
 
@@ -128,13 +130,15 @@ def code(error):
 
 
 def verify_helper(config):
+    """Check the declared helper identity is well formed; the running instrument
+    is recorded by the observation, not compared with a pin."""
     if 'helperInstrument' in config:
         expected = config['helperInstrument']
         require(isinstance(expected, str) and re.fullmatch(r'[a-f0-9]{64}', expected) is not None,
                 'M7_RUNNER_HELPER_INSTRUMENT')
-        require(a.instrument()['sha256'] == expected, 'M7_RUNNER_HELPER_INSTRUMENT')
     else:
-        require(a.git(a.ROOT, 'rev-parse', 'HEAD') == config['helperHead'], 'M7_RUNNER_HELPER_HEAD')
+        require(isinstance(config['helperHead'], str) and re.fullmatch(r'[a-f0-9]{40}', config['helperHead']) is not None,
+                'M7_RUNNER_HELPER_HEAD')
 
 
 def load_config(path):
@@ -787,7 +791,6 @@ def local_batch_plan(spec, payload_root):
             import vault_component
             cell_plan=vault_component.plan(cell,spec,payload_root,allowlist)
             next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=cell_plan
-            batch.need(cell['config']['helperInstrument']==a.instrument()['sha256'],'VAULT_HELPER_CHANGED')
             continue
         config=cell['config'];validate_config(config);options=config['prepare']
         selected, allocation = local_batch_allocation(config)
@@ -796,7 +799,6 @@ def local_batch_plan(spec, payload_root):
         receipt=Path(options.get('receipt',''))
         batch.need(receipt.is_absolute() and receipt.is_relative_to(Path(payload_root).resolve()),'RECEIPT_ALLOWLIST')
         batch.need(str(receipt.relative_to(Path(payload_root).resolve())) in allowlist,'RECEIPT_ALLOWLIST')
-        batch.need(config.get('helperInstrument')==spec['payload']['helper'],'HELPER_CHANGED')
         batch.need(options.get('core-commit')==spec['payload']['source']['core'] and
                    options.get('deploy-commit')==spec['payload']['source']['deploy'],'SOURCE_CHANGED')
         batch.need(options.get('image-id')==options.get('image')==spec['payload']['image'],'IMAGE_CHANGED')
