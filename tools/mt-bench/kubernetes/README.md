@@ -127,6 +127,20 @@ checks the pinned parser and exact bytes before binding the selection. Legacy
 images refuse options beyond their supported range before resource creation.
 The waiting actor takes the bound selection automatically. Explicit arguments
 must match it. A partial DATA result stays incomplete and keeps its custody.
+Fresh discovery can also select `profile.population.maxTenants`, projected to
+the binding's `populationCeiling` and bootstrap's `NS_DEMO_POPULATION_CEILING`.
+Omission retains 10,000. An explicit selection requires the exact source
+protocol, image constructor and binding compatibility map, including a lower
+ceiling. Rendered inventory, the bootstrap environment and owned-container
+private-config readback must agree. Registry pages, LRU caches, file/Secret/IPC
+bytes, resources and clocks retain their independent contracts.
+
+Population and primer chunk sizing are separate. A 10,001 fresh seed with the
+default 10,000 pending-tenant chunk reports `PARTIAL_CHUNK_BUDGET` in
+`populationCommissioning`. Set `profile.phases.primerOptions.maxTenants` to
+10,001 for one-invocation coverage budget. The effective chunk is exposed;
+the helper does not rewrite it. Constructor success grants no DATA completion
+or operating capacity, and incomplete DATA continues to refuse traffic.
 The successful receipt binds the privately exported DATA roster to the run,
 namespace, Job, Pod and container. Access and load verify this receipt.
 Preserve the source lock and uncertain-write journal after an interrupted

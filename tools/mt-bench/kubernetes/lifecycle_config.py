@@ -10,13 +10,15 @@ from producer_startup import cohort_ready_seconds
 sys.path.append(str(Path(__file__).resolve().parent.parent/'m7-joined'))
 import workload_inputs
 import primer_options
+import population_ceiling
 import phase_fit
 import owned_worker
 
 FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bindingDirectory',
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
-          'startupWindowPreflight','resourcePhasePreflight','primerOptionsPreflight','ownedWorkerPreflight'}
+          'startupWindowPreflight','resourcePhasePreflight','primerOptionsPreflight',
+          'ownedWorkerPreflight','populationCeilingPreflight'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def need(ok, code):
@@ -70,6 +72,8 @@ def fixture_config(path, capture=False):
     files=[reference(c[key]) for key in ('runTemplate','delivery','cacheAbsence')]
     d=Path(c['caseDirectory']);e=read(d/'environment.json');m=read(d/'intent.json');pre=read(d/'preflight.json')
     primer = primer_options.from_profile(m['profile'],need)
+    population=population_ceiling.from_profile(m['profile'],need)
+    need(e.get(population_ceiling.FIELD)==population,'POPULATION_CEILING_CHANGED')
     if primer is None:
         legacy = primer_options.selection({'concurrency':c.get('primerConcurrency')},need)
         primer_options.require_source(legacy, None, need)
@@ -96,7 +100,7 @@ def fixture_config(path, capture=False):
     need(identity['sha256']==c['instrumentSha256'],'INSTRUMENT_CHANGED')
     package=Path(c['bindingDirectory']);binding=read(package/'binding.json')
     authored_startup=m['profile'].get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
-    if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None:
+    if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None or population is not None:
         files.append(package/'binding.json')
     for name,expected in binding['files'].items():
         p=package/'bindings/kubernetes'/name
@@ -157,6 +161,19 @@ def fixture_config(path, capture=False):
         primer_options.require_source(primer,protocol,need)
         primer_preflight={'selection':primer,'sourceContractSha256':sha(contract_path),'sourceProtocol':protocol}
     phase=phase_fit.staged_projection(e,list(phase_fit.objects(read(d/'render.json'))),stage_objects,need)
+    population_preflight=None
+    if population is not None:
+        contract_path=package/'bindings/kubernetes/assets/source-contract.json'
+        data=contract_path.read_bytes();contract=json.loads(data)
+        rendered_proof=[obj['data']['source-contract.json'].encode() for obj in stage_objects['foundation']
+                        if obj['kind']=='ConfigMap' and obj['metadata']['name']=='provision-scripts']
+        need(rendered_proof==[data] and binding.get('sourceContractSha256')==sha(contract_path) and
+             binding['files'].get('assets/source-contract.json')==sha(contract_path) and
+             contract.get(population_ceiling.FIELD)==population and
+             contract.get(population_ceiling.PROTOCOL_FIELD)==population_ceiling.PROTOCOL,
+             'POPULATION_BINDING_CHANGED')
+        population_preflight={'selection':population,'sourceContractSha256':sha(contract_path),
+                              'sourceProtocol':population_ceiling.PROTOCOL}
     phase_preflight=None
     if phase is not None:
         need(pre.get('trialEnvelope',{}).get(phase_fit.FIELD)==phase,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
@@ -179,6 +196,7 @@ def fixture_config(path, capture=False):
         c['inputs']=expected
         c['startupWindowPreflight']=startup
         if primer_preflight is not None:c['primerOptionsPreflight']=primer_preflight
+        if population_preflight is not None:c['populationCeilingPreflight']=population_preflight
         if phase_preflight is not None:c['resourcePhasePreflight']=phase_preflight
         if worker_preflight is not None:c['ownedWorkerPreflight']=worker_preflight
     else:
@@ -186,6 +204,7 @@ def fixture_config(path, capture=False):
         need(c.get('startupWindowPreflight')==startup or
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
         need(c.get('primerOptionsPreflight')==primer_preflight,'PRIMER_OPTIONS_PREFLIGHT_CHANGED')
+        need(c.get('populationCeilingPreflight')==population_preflight,'POPULATION_PREFLIGHT_CHANGED')
         need(c.get('resourcePhasePreflight')==phase_preflight,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
         need(c.get('ownedWorkerPreflight')==worker_preflight,'OWNED_WORKER_PREFLIGHT_CHANGED')
     return c

@@ -140,7 +140,7 @@
              },
            },
          },
-@@ -803,7 +821,10 @@
+@@ -803,6 +821,9 @@
    new(overrides)::
      local c = std.mergePatch($.defaults, overrides);
      local raw = $.raw(overrides);
@@ -150,7 +150,6 @@
 +    assert std.member(['limits-v1', 'requests-v1'], c.resourceAccounting) : 'unknown resource accounting';
      assert std.member(['dynamic', 'disposable', 'existing-claim'], c.storage.mode) : 'unknown storage mode';
      assert c.profile != 'existing-capacity' || (c.storage.mode != 'dynamic' && c.edge.serviceType == 'ClusterIP') : 'existing-capacity forbids dynamic storage and public Services';
-     assert c.tenantCount >= 1 && c.tenantCount <= 10000 : 'tenantCount out of source bounds';
 @@ -826,7 +847,14 @@
          (if std.member(['Deployment', 'StatefulSet', 'Job'], v.kind) then
            local name = v.metadata.name;

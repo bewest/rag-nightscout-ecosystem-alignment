@@ -17,6 +17,7 @@ import edge_configuration
 import matrix
 import primer_storage
 import primer_options
+import population_ceiling
 from workloads import profile, reduce
 
 
@@ -95,6 +96,25 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     options = selected.get(primer_options.FIELD, {})
     protocol = primer_options.source_protocol(prime_source)
     primer_options.require_source(options, protocol, k.need)
+    population=selected.get(population_ceiling.FIELD)
+    population_files=None
+    population_support=None
+    if population is not None:
+        try:
+            population_files={name:git(deploy_repo,'show',selected['deployCommit']+':'+population_ceiling.SOURCE_PREFIX+name)
+                              for name in population_ceiling.SOURCE_FILES}
+        except subprocess.SubprocessError:
+            k.need(False,'POPULATION_SOURCE_UNSUPPORTED')
+        population_ceiling.source_hashes(population_files,k.need)
+        try:
+            population_support=json.loads(git(binding_repo,'show',manifest['bindingCommit']+
+                                              ':bindings/kubernetes/assets/population-ceiling-source.json'))
+        except (subprocess.SubprocessError,ValueError):
+            k.need(False,'POPULATION_BINDING_UNSUPPORTED')
+        hashes=population_ceiling.source_hashes(population_files,k.need)
+        k.need(population_support.get('protocol')==population_ceiling.PROTOCOL and
+               all(population_support.get('sourceFilesSha256',{}).get(name)==value for name,value in hashes.items()),
+               'POPULATION_BINDING_SOURCE_CHANGED')
     archive = git(binding_repo, 'archive', manifest['bindingCommit'], 'bindings/kubernetes')
     out.mkdir(mode=0o700, parents=True, exist_ok=False)
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
@@ -102,6 +122,8 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     package = out / 'bindings/kubernetes'
     asset = package / 'assets/source-contract.json'
     supported = k.document(asset)
+    support_path=package/'assets/population-ceiling-source.json'
+    if support_path.is_file():population_support=k.document(support_path)
     subprocess.run(['git', 'apply', '--directory=bindings/kubernetes', str(k.HERE / 'binding-input.patch')],
                    cwd=out, check=True)
     subprocess.run([sys.executable, package/'check/source-equivalence.py', '--capture',
@@ -115,7 +137,8 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     # The package embeds deployment assets and a static role/provisioning protocol.
     # A changed deployment input needs a reviewed binding compatibility update.
     k.need(frozen.compatible_deployment_inputs(manifest, supported['sourceFilesSha256'],
-                                               measured['sourceFilesSha256'], prime_source=prime_source),
+                                               measured['sourceFilesSha256'], prime_source=prime_source,
+                                               population_support=population_support),
            'UNSUPPORTED_BINDING_DEPLOYMENT_INPUT')
     if protocol:
         proof = primer_options.probe_image(
@@ -123,6 +146,11 @@ def materialize(manifest, binding_repo, deploy_repo, out):
             selected['localImageId'],prime_source,options,k.need)
         k.need(proof['sha256']==measured['sourceFilesSha256']['prime.js'], 'PRIMER_OPTION_IMAGE_SOURCE_CHANGED')
         measured[primer_options.PROTOCOL_FIELD] = protocol
+    if population_files is not None:
+        measured['populationSource']=population_ceiling.probe_image(
+            lambda argv,timeout:subprocess.check_output(argv,timeout=timeout,text=True),
+            selected['localImageId'],population_files,population,k.need)
+        measured[population_ceiling.PROTOCOL_FIELD]=population_ceiling.PROTOCOL
     frozen.install_bootstrap_helper(manifest, deploy_repo, package, measured)
     measured.update(selected)
     k.write(asset, measured)
@@ -170,6 +198,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     config = k.document(instance['config'])
     inventory = k.document(instance['inventory'])
     render = k.document(instance['render'])
+    population_ceiling.check_render(m,inventory,k.manifests(render),k.need)
     edge=edge_configuration.check(m,inventory,k.manifests(render),k.need)
     delivery = frozen.read_ref(instance['delivery'])
     frozen.registry(delivery, inventory['images'], m)

@@ -10,6 +10,7 @@ import kube_adapter as k
 import frozen
 import edge_configuration
 import primer_options
+import population_ceiling
 from workloads import profile
 from contract import discovery_api_replicas, discovery_workers
 
@@ -58,6 +59,10 @@ def local(m,instance):
     p=profile.validate(dict(original['profile'],referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=original['bindingCommit'])))
     w=p['workload'];t=m['topology']
     primer=primer_options.from_profile(p,frozen.require)
+    population=population_ceiling.from_profile(p,frozen.require)
+    if population is not None:
+        frozen.require('population-ceiling' not in options,'DUPLICATE_LOCAL_FACT')
+        options['population-ceiling']=population
     if primer is not None:
         frozen.require(not {'primer-concurrency','primer-max-tenants'} & options.keys(), 'DUPLICATE_LOCAL_FACT')
         names={'concurrency':'primer-concurrency','maxTenants':'primer-max-tenants'}
@@ -102,7 +107,10 @@ def project(m,instance,target,out):
         result=legacy(m);profile.validate(dict(result['profile'],referencePins=dict(
             core=frozen.source(result)['coreCommit'],deploy=frozen.source(result)['deployCommit'],bindingCommit=result['bindingCommit'])))
         k.write(out/'manifest.json',result)
-        if 'edge'in result:k.write(out/'binding-inputs.json',{'edge':result['edge']})
+        inputs={**({'edge':result['edge']} if 'edge' in result else {})}
+        population=population_ceiling.from_profile(result['profile'],frozen.require)
+        if population is not None:inputs[population_ceiling.FIELD]=population
+        if inputs:k.write(out/'binding-inputs.json',inputs)
     else:
         result=local(m,instance)
         import subprocess

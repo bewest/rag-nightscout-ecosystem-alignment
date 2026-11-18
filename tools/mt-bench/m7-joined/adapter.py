@@ -56,6 +56,7 @@ import collection_segments
 import vault_refusal
 import workload_inputs
 import primer_options
+import population_ceiling
 import phase_windows
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
@@ -584,9 +585,17 @@ def attach(args):
     bound_primer='maxTenants' in selected_primer or primer_options.requires_extended(selected_primer)
     require(not bound_primer or getattr(args,'runtime_owner',None),'M7_PRIMER_OPTIONS_RUNTIME_OWNER_REQUIRED')
     m['primerConcurrency']=selected_primer['concurrency']
+    population=prepare_population_ceiling(args)
+    if population is not None:
+        require(getattr(args,'runtime_owner',None),'M7_POPULATION_RUNTIME_OWNER_REQUIRED')
+        m[population_ceiling.FIELD]=population
     if 'maxTenants' in selected_primer:m['primerMaxTenants']=selected_primer['maxTenants']
     if getattr(args,'runtime_owner',None):
         runtime=document(args.runtime_owner)
+        require(runtime.get(population_ceiling.FIELD)==m.get(population_ceiling.FIELD),'M7_POPULATION_RUNTIME_CHANGED')
+        if population is not None:
+            require(runtime.get('populationCeilingReadback',{}).get(population_ceiling.FIELD)==population,
+                    'M7_POPULATION_READBACK_REQUIRED')
         owner_path=Path(args.runtime_owner).resolve()
         runtime_directory=Path(runtime.get('directory','')).resolve()
         require(owner_path==runtime_directory/'owner.json' and runtime.get('prepared') is True
@@ -665,6 +674,16 @@ def prepare_image_inputs(args):
     # Build-after-prepare profiles retain their existing admission at deploy.
     if args.profile!='pgstream-sample' or getattr(args,'run_purpose','acceptance')!='discovery':return None
     options=prepare_primer_options(args)
+    population=prepare_population_ceiling(args)
+    population_files=None
+    if population is not None:
+        population_files={}
+        try:
+            for name in population_ceiling.SOURCE_FILES:
+                population_files[name]=command(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+population_ceiling.SOURCE_PREFIX+name],binary=True)
+        except RuntimeError:
+            primer_need(False,'POPULATION_SOURCE_UNSUPPORTED')
+        population_ceiling.source_hashes(population_files,primer_need)
     primer_raw=None
     if primer_options.requires_extended(options):
         primer_raw=command(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+primer_options.SOURCE_PATH],binary=True)
@@ -678,6 +697,11 @@ def prepare_image_inputs(args):
         result['primerSource']=primer_options.probe_image(
             lambda argv,timeout:command(argv,timeout=timeout,phase='primer-source-preflight'),
             selected,primer_raw,options,primer_need)
+    if population_files is not None:
+        result['populationSource']=population_ceiling.probe_image(
+            lambda argv,timeout:command(argv,timeout=timeout,phase='population-source-preflight'),
+            selected,population_files,population,primer_need)
+        result['populationCommissioning']=population_ceiling.commissioning(args.tenants,options)
     return result
 
 
@@ -721,6 +745,7 @@ def discovery_source_preflight(d,m):
 def preparation_environment(m):
     # Static overlays pin seed counts during prepare, before .env is appended.
     return {'NS_API_REPLICAS': str(m['replicas']), 'NS_DEMO_TENANTS': str(m['tenants']),
+            **({population_ceiling.ENV:str(m[population_ceiling.FIELD])} if population_ceiling.FIELD in m else {}),
             **static_topology.environment(m)}
 
 
@@ -806,7 +831,7 @@ def prepare(args):
     require(not local_observer or (selected and document(args.freeze).get('version')==2),
             'M7_LOCAL_OBSERVER_RECEIPT')
     options=prepare_primer_options(args)
-    extended_primer=primer_options.requires_extended(options)
+    extended_primer=primer_options.requires_extended(options) or prepare_population_ceiling(args) is not None
     if extended_primer:
         # The fixture-specific resource driver receives its container budget
         # after Compose is rendered. Check the isolated cached-image parser
@@ -846,6 +871,8 @@ def prepare(args):
                    'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**({'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract} if static_selection else {}),
                    'primerConcurrency':options['concurrency'],**({'primerMaxTenants':options['maxTenants']} if 'maxTenants' in options else {})}
         candidate.update(commissioning_wal.option(args))
+        population=prepare_population_ceiling(args)
+        if population is not None:candidate[population_ceiling.FIELD]=population
         candidate.update(ack_budget)
         candidate.update(preload)
         if preload:
@@ -896,6 +923,8 @@ def prepare_staged(args,target,pinned):
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     options=prepare_primer_options(args)
     m["primerConcurrency"]=options['concurrency']
+    population=prepare_population_ceiling(args)
+    if population is not None:m[population_ceiling.FIELD]=population
     if 'maxTenants' in options:m['primerMaxTenants']=options['maxTenants']
     m.update(commissioning_wal.option(args))
     m.update(stream_topology.ack_option(args))
@@ -934,6 +963,7 @@ def prepare_staged(args,target,pinned):
     # the owned lockfile context before invoking it, not after bootstrap.
     setup_generator(target,m)
     env = runtime_env({**preparation_environment(m),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
+    if population is not None:env[population_ceiling.ENV]=str(population)
     edge_budget=diagnostic_resources.edge_worker_budget(selected_resources_profile(args))
     if edge_budget is not None:
         explicit_edge=edge_budget['source']=='explicit-resource-allocation-v1'
@@ -973,6 +1003,7 @@ def prepare_staged(args,target,pinned):
             if volume.get("type")=="bind":
                 require(Path(volume["source"]).resolve().is_relative_to(target / "state"), "M7_FOREIGN_STATE_MOUNT_REFUSED")
     required=("postgres","vault","admin","primer","api","realtime","evaluator","tenant-admin","ui","nginx")+(() if args.profile=="pgstream-sample" else ("feed-reader",))
+    population_ceiling.project_compose(config,population,primer_need)
     require(all(name in config["services"] for name in required),"M7_BINDING_CAPABILITY_MISSING")
     # Ordinary runtime source stays in its paired image. The explicit clinical
     # diagnostic may later stage one separately attested sender executable;
@@ -1034,6 +1065,9 @@ def verify(d, m, teardown=False):
     require(host_identity(fixture_inventory(m))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
+    if not teardown:
+        population_ceiling.project_compose(document(d/'frozen.compose.json'),m.get(population_ceiling.FIELD),primer_need,verify=True)
+        if not m.get('attached'):population_ceiling.verify_image(d,m,primer_need)
     if not teardown and not m.get('attached') and primer_options.requires_extended(primer_options.from_manifest(m)):
         reference=m.get('imageInputPreflight',{})
         source=reference.get('primerSource',{})
@@ -1100,6 +1134,15 @@ def prepare_primer_options(args):
             (getattr(args,'run_purpose','acceptance')=='discovery' and args.profile=='pgstream-sample'),
             'M7_PRIMER_OPTIONS_BOUND_DISCOVERY_ONLY')
     return chosen
+
+
+def prepare_population_ceiling(args):
+    value=getattr(args,'population_ceiling',None)
+    if value is None:return None
+    value=population_ceiling.selection(value,args.tenants,primer_need)
+    require(value is None or getattr(args,'run_purpose','acceptance')=='discovery' and args.profile=='pgstream-sample',
+            'M7_POPULATION_CEILING_DISCOVERY_ONLY')
+    return value
 
 
 def application_database(d):
@@ -1485,6 +1528,10 @@ def deploy(d, m):
                 write(d/"owner.json",m)
             if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
             if name=="bootstrap":
+                population_readback=population_ceiling.local_readback(d,m,primer_need)
+                if population_readback is not None:
+                    m['populationCeilingReadback']=population_readback
+                    write(d/'population-ceiling-readback.json',population_readback)
                 ack_wire=stream_topology.install_ack_budget(d,m,config)
                 if ack_wire is not None:
                     m['pgstreamNotifierAckWire']=ack_wire
@@ -2537,6 +2584,7 @@ def parser():
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,default=1,help="Native DATA primer worker limit; default serial")
     prep.add_argument("--primer-max-tenants",type=int,help="Native DATA primer maximum pending tenants per invocation")
+    prep.add_argument("--population-ceiling",type=int,help="Optional finite registry population budget, independent of cache/page/chunk sizing")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, required=True, help="Discovery API count 1..16; acceptance retains its fixed grid");prep.add_argument("--quiet-load", type=float, default=3)
     attached=sub.add_parser('attach',parents=[prep],add_help=False)
     for name in ('project','source-root','state','env-file'):attached.add_argument('--'+name,required=True)

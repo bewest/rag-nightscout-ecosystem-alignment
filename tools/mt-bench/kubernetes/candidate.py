@@ -7,6 +7,7 @@ import time
 from producer_wire import ACK_BUDGET, WIRE_DIRECTORY, WIRE_NAME, valid_timeout
 import primer_storage
 import primer_options
+import population_ceiling
 
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
@@ -19,6 +20,7 @@ def pins(k, c, inventory, objects):
     overlay = objects.get('ConfigMap/provision-scripts', {}).get('data', {})
     if selected is None and 'candidate' not in runtime and 'candidate-documents.cjs' not in overlay:
         k.need(primer_options.FIELD not in c, 'PRIMER_OPTION_SOURCE_UNSUPPORTED')
+        k.need(population_ceiling.FIELD not in c, 'POPULATION_SOURCE_UNSUPPORTED')
         return
     k.need(selected == runtime.get('candidate') and isinstance(selected, dict), 'CANDIDATE_CONTRACT_CHANGED')
     # Qualification is provenance. A diagnostic runs on the exact admitted bytes.
@@ -35,6 +37,16 @@ def pins(k, c, inventory, objects):
     k.need(contract.get(primer_storage.FIELD)==c.get(primer_storage.FIELD) and
            (primer_storage.FIELD in contract)==('primerStorageReceipt' in c), 'PRIMER_STORAGE_PUBLISH_SCOPE')
     k.need(contract.get(primer_options.FIELD)==c.get(primer_options.FIELD), 'PRIMER_OPTIONS_CHANGED')
+    k.need(contract.get(population_ceiling.FIELD)==c.get(population_ceiling.FIELD), 'POPULATION_CEILING_CHANGED')
+    if population_ceiling.FIELD in c:
+        k.need(contract.get(population_ceiling.PROTOCOL_FIELD)==population_ceiling.PROTOCOL and
+               contract.get('populationSource',{}).get(population_ceiling.FIELD)==c[population_ceiling.FIELD] and
+               contract.get('populationSource',{}).get('protocol')==population_ceiling.PROTOCOL and
+               contract.get('populationSource',{}).get('overSeedRefused') is True and
+               contract.get('populationSource',{}).get('protocolRefused') is True and
+               contract.get('populationSource',{}).get('sourceFilesSha256')=={
+                   name:contract.get('sourceFilesSha256',{}).get(name) for name in population_ceiling.SOURCE_FILES},
+               'POPULATION_SOURCE_UNSUPPORTED')
     if primer_options.FIELD in c:
         chosen = primer_options.selection(c[primer_options.FIELD], k.need)
         primer_options.require_source(chosen, contract.get(primer_options.PROTOCOL_FIELD), k.need)
@@ -126,6 +138,7 @@ def observe(k, d, c, objects, client):
         raise k.Refused('K8S_CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED') from None
     checked_at = time.time()
     proof(k, c, value, now=checked_at)
+    population_readback=population_ceiling.capture(k,c,before,client)
     source = k.sql(d, c, objects, '''SELECT s.system_identifier::text,c.timeline_id::integer,current_database(),
       EXISTS(SELECT 1 FROM pg_catalog.pg_replication_slots WHERE slot_name='nsdemo_pgstream' AND slot_type='logical' AND database=current_database())
       FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c;''', client).strip().split('	')
@@ -135,6 +148,7 @@ def observe(k, d, c, objects, client):
     row = {'version': 1, 'proof': value, 'capturedAt': datetime.fromtimestamp(checked_at, timezone.utc).isoformat().replace('+00:00', 'Z'),
            'runSha256': k.digest(d / 'run.json'), 'namespaceUid': before['namespace']['uid'], 'primerPodUid': pod['uid'],
            'primerContainerId': pod['containers']['done']['containerID'], 'adminServiceUid': before['objects']['Service/admin']['uid']}
+    if population_readback is not None:row['populationCeilingReadback']=population_readback
     k.write(file, row)
     return row
 
@@ -146,6 +160,7 @@ def require(k, d, c):
     k.need(file.is_file(), 'CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED')
     value = k.document(file)
     baseline = k.active_baseline(d)
+    population_ceiling.verify_capture(k,c,baseline,value.get('populationCeilingReadback'))
     verify_ack_owner(k, c, baseline)
     prim = [p for p in baseline['pods'].values() if p['workload'] == 'Job/primer']
     k.need(len(prim) == 1 and value.get('namespaceUid') == baseline['namespace']['uid'] and

@@ -33,6 +33,7 @@ def validate_prepare(args):
             'M7_CONFIG_SINGLE_API_TENANT_RANGE')
     a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)
     a.prepare_primer_options(args)
+    a.prepare_population_ceiling(args)
     a.jwt_setup_concurrency(args.jwt_setup_concurrency, args.run_purpose=='discovery')
     a.fixture_project(args, '0'*32)
     networks = [ipaddress.ip_network(getattr(args, key), strict=True) for key in ('backend_subnet', 'edge_subnet')]
@@ -60,6 +61,7 @@ def from_args(args, instrument):
             'postgresImageId': args.postgres_image, 'profile': args.profile,
             'runPurpose': args.run_purpose, 'tenants': args.tenants, 'replicas': args.replicas,
             'cadence': cadence, 'primerConcurrency': args.primer_concurrency,
+            **({'populationCeiling':args.population_ceiling} if getattr(args,'population_ceiling',None) is not None else {}),
             **({'primerMaxTenants': args.primer_max_tenants} if getattr(args,'primer_max_tenants',None) is not None else {}),
             'jwtSetupConcurrency': args.jwt_setup_concurrency,
             'pgstreamTopology': args.pgstream_topology, 'resources': resources,
@@ -81,6 +83,7 @@ def from_manifest(m):
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
+            **({'populationCeiling':m['populationCeiling']} if 'populationCeiling' in m else {}),
             **({'primerMaxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
             'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED), 'resources': resources,
             'diagnostics':m.get('diagnostics',a.profile_provenance.selection())}
@@ -104,7 +107,9 @@ def resolve(config, source_acceptance=None):
     from contract import discovery_authorization
     discovery_authorization({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},template)
     authored=resolved['cadence'].get('startupWindows',{})
-    return {'configuration': resolved, 'configurationSha256': sha(resolved), 'diagnosticReceiptTemplate':template,
+    return {**({'populationCommissioning':a.population_ceiling.commissioning(resolved['tenants'],a.primer_options.from_manifest(resolved))}
+               if 'populationCeiling' in resolved else {}),
+            'configuration': resolved, 'configurationSha256': sha(resolved), 'diagnosticReceiptTemplate':template,
             'receiptLimits': limits,
             'startupWindows':{key:{'seconds':authored.get(key,value), 'origin':'authored' if key in authored else 'reference'}
                               for key,value in workload_inputs.COMPOSE_STARTUP_DEFAULTS.items()},
@@ -128,6 +133,7 @@ def remote_projection(config, overlay, source_acceptance=None):
     require(config['workSeconds'] is not None, 'M7_REMOTE_TO_COMPLETION_UNSUPPORTED')
     result = resolve(config,source_acceptance); r = result['configuration']
     import primer_options
+    require('populationCeiling' not in r,'M7_REMOTE_POPULATION_CEILING_UNSUPPORTED')
     require('primerMaxTenants' not in r and not primer_options.requires_extended(primer_options.from_manifest(r)),
             'M7_REMOTE_PRIMER_OPTIONS_UNSUPPORTED')
     if r.get('staticTopology'):

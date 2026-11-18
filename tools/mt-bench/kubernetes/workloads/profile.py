@@ -16,6 +16,7 @@ sys.path.append(str(ROOT / 'tools/mt-bench/m7-joined'))
 import workload_runtime
 import preload
 import primer_options
+import population_ceiling
 SHAPES = workload_runtime.SHAPES
 
 
@@ -41,6 +42,7 @@ def validate(p):
              __import__('re').fullmatch(r'[a-f0-9]{40}', p['referencePins'][k])
              for k in ('core', 'deploy', 'bindingCommit')), 'SOURCE_PINS')
     n = p['population']['provisionedTenants']
+    population_ceiling.from_profile(p,need)
     w = p['workload']
     need(workload_runtime.workload_inputs.tenants(n) and n >= 2, 'TENANTS')
     workload_runtime.validate(w, need, n)
@@ -84,6 +86,9 @@ def describe(p):
     return {'version': 1, 'profile': p['name'], 'basis': 'read-derived equations from generated M7 workload',
             'preloadConvergence':preload.selection(p['phases'].get('preloadConvergence')),
             **({primer_options.FIELD:p['phases'][primer_options.FIELD]} if primer_options.FIELD in p['phases'] else {}),
+            **({population_ceiling.FIELD:population_ceiling.from_profile(p,need)} if 'maxTenants' in p['population'] else {}),
+            **({'populationCommissioning':population_ceiling.commissioning(n,primer_options.from_profile(p,need))}
+               if 'maxTenants' in p['population'] else {}),
             'workload': w, 'arrivalCycleMs': cycle_ms, 'shapeCycleMs': cycles, 'shapeRequestsPerSecond': rates,
             'effectivePhaseWindows': {
                 key: {'seconds': w.get(key, default), 'origin': 'authored' if key in w else 'legacy default'}
@@ -145,6 +150,9 @@ def bind(p, config):
     if data_seconds is not None:
         result['dataPrimerSeconds']=data_seconds
     primer = primer_options.from_profile(p,need)
+    population=population_ceiling.from_profile(p,need)
+    need(config.get(population_ceiling.FIELD,population)==population,'POPULATION_CEILING_CHANGED')
+    if population is not None:result[population_ceiling.FIELD]=population
     need(config.get(primer_options.FIELD,primer)==primer,'PRIMER_OPTIONS_CHANGED')
     if primer is not None:
         result[primer_options.FIELD]=primer
