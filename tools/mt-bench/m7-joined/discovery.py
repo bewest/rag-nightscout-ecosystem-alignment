@@ -7,6 +7,8 @@ import sys
 import time
 import discovery_rest
 import evaluator_catchup
+import driver_vu_diagnostic
+import node_observation
 from contract import require, SHA, OWNER, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope
 
 INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
@@ -107,9 +109,9 @@ def check_discovery(value):
 class Record:
     def __init__(self,a,d,m):
         self.a,self.d,self.m=a,d,m
-        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
+        self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json','host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
         self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle-disabled','idle','load') for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
@@ -306,8 +308,14 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             monitor=a.loadgen_process(d,process);monitor.__enter__()
             try:
                 def work():
-                    with (out/'k6.log').open('wb') as output:record.process('k6',lambda:(lambda argv,**kw:oneoff('k6-load',argv,**kw)if oneoff else a.command(argv,**kw))(k6_command(a,d,m,k6_id,runid),file=output,timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)))
+                    with node_observation.collect(a,d,m,out) as node, (out/'k6.log').open('wb') as output:
+                        record.process('k6',lambda:(lambda argv,**kw:oneoff('k6-load',argv,**kw)if oneoff else a.command(argv,**kw))(k6_command(a,d,m,k6_id,runid),file=output,timeout=a.discovery_seconds(m,m['cadence']['loadSeconds']+600)))
+                    if node is not None:
+                        record.value['nodeObservation']=node;record.save()
                     if record.value['processes']['k6'].get('timeout'):stop_k6(a,m,record,oneoff=oneoff)
+                    if m['cadence'].get('driverShards',1)>1:
+                        import driver_shards
+                        record.value['processes']['k6']['shards']=driver_shards.collect(out,json.loads((out/'k6-shard-plan.json').read_text())['shards']);record.save()
                 if m.get('cadence',{}).get('restartDuringLoadAfterSeconds') is None:
                     record.observe('load',lambda:observed_load(a,d,m,out,work))
                 else:
@@ -386,6 +394,12 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
 def retain_load(a,d,m,record):
     """File-only: publish successful actors even when a later collector refuses."""
     out=d/'load'
+    if m.get('apiCause'):
+        try:
+            result=a.api_cause.retain(d,m);record.value['apiCause']=result
+            a.write(out/'api-cause-assessment.json',result)
+        except Exception as error:
+            record.value.setdefault('retentionFailures',{})['apiCause']={'verdict':'UNMEASURED','code':safe_code(error)}
     if m.get('revisionWitness'):
         try:
             result=a.revision_witness.retain(d,m);record.value['revisionWitness']=result
@@ -407,6 +421,13 @@ def retain_load(a,d,m,record):
             # The raw file remains retained; malformed optional reduction must
             # not replace a primary actor/observer failure in a finally block.
             record.value.setdefault('retentionFailures',{})[name]={'verdict':'UNMEASURED','code':safe_code(error)}
+    if m.get('cadence',{}).get('driverVuDiagnostic'):
+        try:
+            result = driver_vu_diagnostic.retain(d, m)
+            record.value['driverVuDiagnostic'] = result
+            a.write(out/'driver-vu-assessment.json', result)
+        except Exception as error:
+            record.value.setdefault('retentionFailures', {})['driverVuDiagnostic'] = {'verdict':'UNMEASURED','code':safe_code(error)}
     record.save()
 
 
@@ -428,7 +449,29 @@ def observed_load(a,d,m,out,work,record=None,oneoff=None):
     return getattr(observer,'result',None)
 
 def k6_command(a,d,m,image,runid):
-    return a.bounded_k6_argv(['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','SETTINGS_FINGERPRINT='+m['settingsFingerprint']['sha256'],'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status',image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
+    if m['cadence'].get('driverVuDiagnostic') == 'configured-v1':
+        require(not m.get('remoteTransport'), 'M7_DRIVER_TARGET_UNSUPPORTED')
+        driver_vu_diagnostic.expected_plans(m)
+    base=k6_base(a,d,m,image,runid)
+    shards=m['cadence'].get('driverShards',1)
+    if shards==1:return a.bounded_k6_argv(driver_vu_diagnostic.select_command(a,d,m,base))
+    import driver_shards
+    tenants=json.loads((d/'tenants.private.json').read_text())
+    rows=driver_shards.plan(len(tenants),m['cadence'].get('hotFactor',10),m['cadence'].get('offeredRps'),shards)
+    folder=driver_shards.write_rosters(d/'k6-shards',tenants,rows)
+    a.write(d/'load'/'k6-shard-plan.json',{'version':1,'shards':rows,'scope':'one admitted k6 container; contiguous roster slices; summed weight equals the unsharded plan'})
+    driver = None
+    if m['cadence'].get('driverVuDiagnostic') == 'configured-v1':
+        # Stage through the same guarded single-process interface; shard argv keeps its limits.
+        configured = driver_vu_diagnostic.select_command(a,d,m,base)
+        driver = {'environment': [driver_vu_diagnostic.configured_environment(m,i) for i in range(shards)],
+                  'observer': m['cadence']['driverPlan']['observer']}
+        base = [*configured[:configured.index(image)], *base[base.index(image):]]
+    return a.bounded_k6_argv(driver_shards.argv(base,image,rows,folder,driver=driver))
+
+
+def k6_base(a,d,m,image,runid):
+    return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','SETTINGS_FINGERPRINT='+m['settingsFingerprint']['sha256'],'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_vu_diagnostic.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
 
 def count_observation(a,d,out,runid,metrics):
     from discovery_counts import observe

@@ -25,8 +25,39 @@ def revision(value):
     return int(value)
 
 
+
+def native_binding(binding):
+    if not isinstance(binding,dict) or 'nativeConfigurationSha256' not in binding:return False
+    p.need(isinstance(binding['nativeConfigurationSha256'],str) and re.fullmatch(r'[a-f0-9]{64}',binding['nativeConfigurationSha256']),'M7_OPPORTUNITY_BINDING','FAIL')
+    return True
+
+
+def pending_targets(row,targets,native=False):
+    pending={key:value for key,value in targets.items() if key not in row['completed'] or revision(row['completed'][key])<revision(value)}
+    if native and 'bootstrap' in targets and revision(row['native']['completedInputFloor'])<revision(targets['bootstrap']):pending['bootstrap']=targets['bootstrap']
+    return pending
+
+
+def native_row(value):
+    p.need(isinstance(value,dict) and set(value)=={'source','generation','inputFloor','completedInputFloor','snapshotPosition','acceptedPosition','restoreGeneration','raw'},'M7_OPPORTUNITY_NATIVE')
+    source=value['source'];raw=value['raw']
+    p.need(isinstance(source,dict) and set(source)=={'system_id','timeline','database','slot'} and isinstance(source['system_id'],str) and re.fullmatch(r'[0-9]{1,20}',source['system_id']) and p.integer(source['timeline']) and source['timeline']>0 and isinstance(source['database'],str) and 0<len(source['database'])<=63 and isinstance(source['slot'],str) and re.fullmatch(r'[a-z0-9_]{1,63}',source['slot']),'M7_OPPORTUNITY_NATIVE')
+    floor=revision(value['inputFloor']);completed=revision(value['completedInputFloor']);restore=revision(value['restoreGeneration'])
+    p.need(floor<=9007199254740991 and completed<=floor and restore>0 and isinstance(value['generation'],str) and re.fullmatch(r'[a-f0-9]{32}:'+str(restore),value['generation']),'M7_OPPORTUNITY_NATIVE')
+    for key in ('snapshotPosition','acceptedPosition'):
+        at=value[key]
+        p.need(key=='acceptedPosition' and at is None or isinstance(at,str) and re.fullmatch(r'[0-9a-fA-F]{1,8}/[0-9a-fA-F]{1,8}',at),'M7_OPPORTUNITY_NATIVE_POSITION')
+    p.need(isinstance(raw,dict) and set(raw)=={'kind','head','base'} and raw['kind']=='storage-events-v1' and revision(raw['base'])<=revision(raw['head']),'M7_OPPORTUNITY_NATIVE_RAW')
+    return value
+
+def native_position(value):
+    high,low=value.split('/')
+    return (int(high,16)<<32)+int(low,16)
+
+
 def durable_rows(captures,ids,binding):
     p.need(isinstance(captures,list) and len(captures)==3 and isinstance(binding,dict),'M7_OPPORTUNITY_CAPTURE')
+    selected_native=native_binding(binding)
     decoded=[]
     for capture in captures:
         p.need(isinstance(capture,dict) and set(capture)=={'kind','reader','rows'} and capture['kind']=='evaluator-durable-progress-v1','M7_OPPORTUNITY_CAPTURE')
@@ -35,9 +66,15 @@ def durable_rows(captures,ids,binding):
         p.need(isinstance(rows,list) and len(rows)==len(ids) and {r.get('tenant') for r in rows}==set(ids),'M7_OPPORTUNITY_COVERAGE')
         by_tenant={}
         for row in rows:
-            p.need(set(row)-{'dueAt','completedAt'}=={'tenant','writerClock','observed','completed','outputRevision','restoreGeneration'},'M7_OPPORTUNITY_CAPTURE')
-            for key in ('dueAt','completedAt'):
+            p.need(set(row)-{'dueAt','completedAt','pendingAt','native'}=={'tenant','writerClock','observed','completed','outputRevision','restoreGeneration'},'M7_OPPORTUNITY_CAPTURE')
+            for key in ('dueAt','completedAt','pendingAt'):
                 if key in row:p.need(row[key] is None or p.integer(row[key]),'M7_OPPORTUNITY_TIME')
+            if selected_native:
+                p.need({'dueAt','completedAt','pendingAt'}<=set(row),'M7_OPPORTUNITY_NATIVE_WORK_METADATA')
+                native_row(row.get('native'))
+                n=row['native'];p.need(all(k!='bootstrap' or revision(v)<=revision(n['inputFloor']) for k,v in row['observed'].items()) and all(k!='bootstrap' or revision(v)<=revision(n['completedInputFloor']) for k,v in row['completed'].items()),'M7_OPPORTUNITY_NATIVE')
+                p.need(row['restoreGeneration']==n['restoreGeneration'] or row['outputRevision']=='0' and row['restoreGeneration'] is None,'M7_OPPORTUNITY_NATIVE_RESTORE','FAIL')
+            else:p.need('native' not in row,'M7_OPPORTUNITY_NATIVE')
             revision(row['writerClock']);revision(row['outputRevision'])
             p.need(row['outputRevision']!='0' or row['completed']=={} and row['restoreGeneration'] is None,'M7_OPPORTUNITY_REVISION')
             if row['restoreGeneration'] is not None:p.need(revision(row['restoreGeneration'])>0,'M7_OPPORTUNITY_REVISION')
@@ -45,14 +82,17 @@ def durable_rows(captures,ids,binding):
                 p.need(isinstance(row[key],dict) and set(row[key])<=set(SOURCES),'M7_OPPORTUNITY_VECTOR')
                 for value in row[key].values():revision(value)
             p.need(all(k in row['observed'] and revision(v)<=revision(row['observed'][k]) for k,v in row['completed'].items()),'M7_OPPORTUNITY_VECTOR')
-            p.need('clock' not in row['observed'] or revision(row['observed']['clock'])<=revision(row['writerClock']),'M7_OPPORTUNITY_CLOCK')
+            if not selected_native:p.need('clock' not in row['observed'] or revision(row['observed']['clock'])<=revision(row['writerClock']),'M7_OPPORTUNITY_CLOCK')
             by_tenant[row['tenant']]=row
         decoded.append(by_tenant)
     for previous,current in zip(decoded,decoded[1:]):
         for tenant in ids:
             a,b=previous[tenant],current[tenant]
+            if 'native' in a:
+                x,y=a['native'],b['native']
+                p.need(x['source']==y['source'] and x['generation']==y['generation'] and x['restoreGeneration']==y['restoreGeneration'] and revision(y['inputFloor'])>=revision(x['inputFloor']) and revision(y['completedInputFloor'])>=revision(x['completedInputFloor']) and (x['acceptedPosition'] is None or y['acceptedPosition'] is not None and native_position(y['acceptedPosition'])>=native_position(x['acceptedPosition'])) and revision(y['raw']['head'])>=revision(x['raw']['head']) and revision(y['raw']['base'])>=revision(x['raw']['base']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             p.need(a['restoreGeneration']==b['restoreGeneration'] or a['outputRevision']=='0' and a['restoreGeneration'] is None and revision(b['outputRevision'])>0,'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-            p.need(revision(b['writerClock'])>=revision(a['writerClock']) and revision(b['outputRevision'])>=revision(a['outputRevision']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
+            p.need((selected_native or revision(b['writerClock'])>=revision(a['writerClock'])) and revision(b['outputRevision'])>=revision(a['outputRevision']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             if a.get('completedAt') is not None and 'completedAt' in b:p.need(b['completedAt'] is not None and b['completedAt']>=a['completedAt'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             for field in ('observed','completed'):
                 p.need(all(k in b[field] and revision(b[field][k])>=revision(v) for k,v in a[field].items()),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
@@ -100,6 +140,7 @@ def timer_outcome(rounds,tenant,captures=None):
 def assess(rounds,ids,phase,*,durable=None,binding=None):
     p.validate_ids(ids);all_roster(rounds,ids,phase)
     captures=durable_rows(durable,ids,binding) if durable is not None else None
+    selected_native=native_binding(binding) if captures is not None else False
     outcomes={};source_tenants={key:set() for key in SOURCES}
     observed=0;total_work=0;total_time=0
     for tenant in ids:
@@ -113,9 +154,15 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
             for key,value in last['observed'].items():
                 prior=first['observed'].get(key)
                 if prior is None or revision(value)>revision(prior) or key not in first['completed'] or revision(first['completed'][key])<revision(prior):targets[key]=value
-            if not no_clock_advance or 'clock' not in first['completed'] or revision(first['completed']['clock'])<revision(first['writerClock']):targets['clock']=last['writerClock']
+            if selected_native:
+                # Native bootstrap is the accepted clinical floor. Public
+                # history remains a separate diagnostic, never an intake target.
+                floor=last['native']['inputFloor']
+                if revision(floor)>revision(first['native']['inputFloor']) or revision(first['native']['completedInputFloor'])<revision(first['native']['inputFloor']) or 'bootstrap' not in first['completed'] or revision(first['completed']['bootstrap'])<revision(first['native']['inputFloor']) or first['pendingAt'] is not None or last['pendingAt'] is not None:targets['bootstrap']=floor
+            elif not no_clock_advance or 'clock' not in first['completed'] or revision(first['completed']['clock'])<revision(first['writerClock']):targets['clock']=last['writerClock']
             for key in targets:source_tenants[key].add(tenant)
-            input_status=('COMPLETED' if all(key in last['completed'] and revision(last['completed'][key])>=revision(value) for key,value in targets.items()) else 'PENDING') if targets else 'NO_KNOWN_INPUT_OPPORTUNITY'
+            pending=pending_targets(last,targets,selected_native)
+            input_status=('PENDING' if pending or selected_native and last['pendingAt'] is not None else 'COMPLETED') if targets else 'NO_KNOWN_INPUT_OPPORTUNITY'
         timer=timer_outcome(rounds,tenant,captures)
         known=input_status in ('COMPLETED','PENDING') or timer in ('COMPLETED','PENDING')
         pending=input_status=='PENDING' or timer=='PENDING'
@@ -124,9 +171,10 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
         outcomes[tenant]={'classification':classification,'receivedInput':input_status,'inputTargets':targets,'timer':timer,
                           'completedWorkDelta':work,'completedTimeDelta':time,
                           'noOrdinaryClockAdvanceProven':no_clock_advance if captures else None}
+        if selected_native:outcomes[tenant].update(nativeInput={'acceptedFloor':last['native']['inputFloor'],'completedFloor':last['native']['completedInputFloor'],'pendingAt':last['pendingAt']},publicHistoryClock={'first':first['writerClock'],'last':last['writerClock'],'changed':not no_clock_advance})
     counts={key:sum(v['classification']==key for v in outcomes.values()) for key in ('KNOWN_COMPLETED','KNOWN_PENDING','NO_KNOWN_OPPORTUNITY','UNMEASURED')}
     eligible=counts['KNOWN_COMPLETED']+counts['KNOWN_PENDING']
-    return {'kind':'evaluator-opportunity-assessment-v1','assessmentVersion':2,'phase':phase,
+    result={'kind':'evaluator-opportunity-assessment-v1','assessmentVersion':2,'phase':phase,
             'verdict':'PASS' if eligible and not counts['KNOWN_PENDING'] and not counts['UNMEASURED'] else 'UNMEASURED',
             'allRosterHealth':p.availability(rounds,ids)['verdict'],'availability':p.availability(rounds,ids),'uncreditedAttempts':p.stable_discovery_baseline(rounds[0],rounds[-1],ids),'tenants':len(ids),'eligibleTenants':eligible,'classifications':counts,'byTenant':outcomes,
             'inputSourceTenantCoverage':{k:len(v) for k,v in source_tenants.items()},
@@ -137,6 +185,9 @@ def assess(rounds,ids,phase,*,durable=None,binding=None):
             'workWindowSeconds':None,'workRate':'UNMEASURED; bookends may include setup; collectorWallSeconds is observer cost',
             'inspectionCollectorWallSeconds':sum(r['wallSeconds'] for r in rounds),
             'durableCollectorCost':'UNMEASURED; collection caller must retain SQL query/byte/time cost separately'}
+    if selected_native:
+        result.update(inputCoverage='captured native accepted-input floor, metadata and due opportunities',writerIntakeCoverage={'verdict':'UNMEASURED','reason':'No post-writer source-WAL/replication-slot fence is captured by this port.'},scope='native accepted-input/due opportunities only; public history is independent; no all-writer intake, per-write clinical, client or capacity qualification')
+    return result
 
 
 def capture_windows(windows,count):

@@ -55,8 +55,8 @@ def generate(root, target, *, serial_exchange=False):
     source=source.replace("const { io } = require('socket.io-client');", "const { io } = require(process.env.M7_GENERATOR_ROOT?path.join(process.env.M7_GENERATOR_ROOT,'node_modules/socket.io-client'):'socket.io-client');")
     source=source.replace("const signalDir = path.dirname(args.signal);", "const completionSource=process.env.M7_COMPLETION_SOURCE?JSON.parse(process.env.M7_COMPLETION_SOURCE):null;\nconst completionOracle=completionSource?require('./completed-oracle.cjs'):null;const lag=require('./durable-lag.cjs');const oracleCost={queries:0,bytes:0,elapsedMs:0,missing:0,durablePendingPeak:0};\nconst signalDir = path.dirname(args.signal);")
     source=source.replace("const p = { sent: Date.now(),", "const p = { sentMono:performance.now(), sent: Date.now(),")
-    source=source.replace("const e = { tenant: t.id,", "const e = { date, sentMono:p.sentMono, tenant: t.id,")
-    source=source.replace("    for (const sgv of frame?.sgvs || []) {", "    for (const sgv of frame?.sgvs || []) { const proof=pending.get(t.id+':'+sgv.mills);if(proof&&completionSource){proof.clientFrames??=new Map();if(!proof.clientFrames.has(s))proof.clientFrames.set(s,{atMono:performance.now(),socket:sockets.indexOf(s),connects:s.connects,sgv:{_id:String(sgv._id),mills:sgv.mills,mgdl:sgv.mgdl}});}")
+    source=source.replace("const e = { tenant: t.id,", "const e = { clientProofVersion:2, expectedSockets:sockets.flatMap((s,i)=>s.index===tenants.indexOf(t)?[i]:[]), date, sentMono:p.sentMono, tenant: t.id,")
+    source=source.replace("    for (const sgv of frame?.sgvs || []) {", "    for (const sgv of frame?.sgvs || []) { const proof=pending.get(t.id+':'+sgv.mills);if(proof&&completionSource){proof.clientFrames??=new Map();if(!proof.clientFrames.has(s))proof.clientFrames.set(s,{atMono:performance.now(),socket:sockets.indexOf(s),connects:s.connects,transportId:s.socket.id,sgv:{_id:String(sgv._id),mills:sgv.mills,mgdl:sgv.mgdl}});}")
     source=source.replace("      if (open.length) {", """      if(open.length && completionSource){
         const ids=[...new Set(open.map(e=>e.tenant))];
         oracleCost.durablePendingPeak=Math.max(oracleCost.durablePendingPeak,open.filter(e=>e.acked!==null&&!e.durableObservation).length);
@@ -67,12 +67,16 @@ def generate(root, target, *, serial_exchange=False):
         for(const e of open){
           if(e.acked===null)continue;const row=rows.get(e.tenant);if(!row)continue;
           if(e.stamp===null)e.stamp=row.stamp;
+          if(completionSource.native&&!e.nativeTarget){try{e.nativeTarget=require('./native-observation.cjs').snapshot(row,completionSource);}catch{}}
           const proof=pending.get(e.tenant+':'+e.date);
           const durable=completionOracle.assessDurable(row,e,completionSource);
           lag.observe(e,durable,queryStart,queryEnd);
           const result=completionOracle.assess(row,e,[...(proof?.clientFrames?.values()||[])],PER,completionSource);
-          e.completion=result;
-          if(result.ready){e.evaluatedAt=Date.now();evalLatencies.push(e.evaluatedAt-e.sent);}
+          // The SQL read may cross the deadline after admission. Credit only
+          // evidence returned within the same-process strict 120-second window.
+          const withinDeadline=performance.now()-e.sentMono<120000;
+          e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE'};
+          if(e.completion.ready){e.evaluatedAt=Date.now();evalLatencies.push(e.evaluatedAt-e.sent);}
         }
       }else if (open.length) {""")
     source=source.replace("const e = { tenant: t.id, sent: p.sent,", "const e = { tenant: t.id, date, sent: p.sent,")
@@ -130,7 +134,7 @@ def generate(root, target, *, serial_exchange=False):
     target = Path(target)
     target.write_text(source)
     helpers={}
-    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','clinical-timeline-client.cjs','revision-witness.cjs','revision-witness-preload.cjs','completed-oracle.cjs','durable-lag.cjs'):
+    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','clinical-timeline-client.cjs','revision-witness.cjs','revision-witness-preload.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs'):
         data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
         helpers[name]=hashlib.sha256(data).hexdigest()
     if serial_exchange:

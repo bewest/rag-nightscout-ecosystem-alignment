@@ -18,6 +18,13 @@ io_pid=$!
 cleanup() { kill "$io_pid" 2>/dev/null || true; wait "$io_pid" 2>/dev/null || true; }
 trap cleanup EXIT
 trap 'exit 0' TERM INT
+# Only a source-pinned discovery actor opts into the paired blocker snapshot.
+owner=${M7_SAMPLE_OWNER:-}
+if [[ -n "$owner" ]]; then
+  [[ "$owner" =~ ^[0-9a-f]{32}$ ]] || exit 64
+  blocker_sql=$(normalize "$(dirname -- "$helper")/pg-blockers.sql") || exit 66
+  printf 't\towner\tkind\tfields...\n' > "$out/pg-blockers.tsv"
+fi
 pg=$(docker compose -p "$project" --env-file "$env" -f "$f1" -f "$f2" ps -q postgres)
 echo -e "t\tcontainer\tcpu_pct\tmem" > "$out/docker-stats.tsv"
 echo -e "t\tload1\tload5\tload15" > "$out/host-load.tsv"
@@ -28,8 +35,20 @@ while :; do
   docker stats --no-stream --format '{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}' $(docker ps -q --filter "label=com.docker.compose.project=$project") \
     | sed "s/^/$t\t/" >> "$out/docker-stats.tsv"
   echo -e "$t\t$(cut -d' ' -f1-3 /proc/loadavg | tr ' ' '\t')" >> "$out/host-load.tsv"
-  docker exec "$pg" psql -X -At -F $'\t' -U postgres -d postgres -c "SELECT usename, state, coalesce(wait_event_type,''), coalesce(wait_event,''), count(*) FROM pg_stat_activity WHERE datname='nightscout_compose_test' GROUP BY 1,2,3,4" 2>/dev/null \
-    | sed "s/^/$t\t/" >> "$out/pg-activity.tsv"
+  if [[ -n "$owner" ]]; then
+    # Buffer the bounded response so a failed query cannot publish a valid tick.
+    if rows=$(docker exec -i "$pg" psql -X -qAt -F $'\t' -v ON_ERROR_STOP=1 -U postgres -d postgres \
+          -c 'SET statement_timeout = 750' -f - < "$blocker_sql" 2>/dev/null); then
+      awk -F '\t' -v OFS='\t' -v t="$t" -v owner="$owner" -v out="$out" '
+        $1 == "activity" {print t,$2,$3,$4,$5,$6 >> (out "/pg-activity.tsv")}
+        $1 == "sample" {print t,owner,$1,$2,$3 >> (out "/pg-blockers.tsv")}
+        $1 == "wait" {print t,owner,$1,$2,$3,$4,$5,$6,$7,$8 >> (out "/pg-blockers.tsv")}
+      ' <<< "$rows"
+    fi
+  else
+    docker exec "$pg" psql -X -At -F $'\t' -U postgres -d postgres -c "SELECT usename, state, coalesce(wait_event_type,''), coalesce(wait_event,''), count(*) FROM pg_stat_activity WHERE datname='nightscout_compose_test' GROUP BY 1,2,3,4" 2>/dev/null \
+      | sed "s/^/$t\t/" >> "$out/pg-activity.tsv"
+  fi
   docker exec "$pg" psql -X -At -F $'\t' -U postgres -d postgres -c "SELECT (SELECT count(*) FROM pg_locks WHERE NOT granted), (SELECT count(*) FROM pg_stat_activity WHERE datname='nightscout_compose_test')" 2>/dev/null \
     | sed "s/^/$t\t/" >> "$out/pg-locks.tsv"
   sleep "$interval"

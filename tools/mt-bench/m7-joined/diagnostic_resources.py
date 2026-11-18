@@ -78,7 +78,7 @@ def explicit_allocation(value):
     need(isinstance(value,dict) and set(value)=={'version','services','driver','ceiling','edge'} and type(value['version']) is int and value['version']==1,'ALLOCATION_SHAPE')
     need(isinstance(value['services'],dict) and 1<=len(value['services'])<=32,'ALLOCATION_ROSTER')
     for role,limit in value['services'].items():
-        need(isinstance(role,str) and (role in LIMITS and role!='k6' or role=='pgstream' or re.fullmatch(r'(api|realtime|evaluator)-(?:[2-9]|1[0-6])',role)),'UNKNOWN_ROLE')
+        need(isinstance(role,str) and (role in LIMITS and role!='k6' or role in ('pgstream','socket-edge') or re.fullmatch(r'(api|realtime|evaluator)-(?:[2-9]|1[0-6])',role)),'UNKNOWN_ROLE')
         allocation_limit(limit)
     allocation_limit(value['driver'])
     ceiling=value['ceiling']
@@ -203,7 +203,7 @@ def plan(config):
     return Plan(tuple((r, role_limit(r,profile), 2 if r in ('bootstrap', 'primer') else 1) for r in sorted(services)),profile)
 
 
-def overlay(config, selected):
+def overlay(config, selected, *, applying=True):
     """Return a full JSON Compose document; never mutate source/default config."""
     if selected is None:
         return config
@@ -220,16 +220,18 @@ def overlay(config, selected):
         need(not spec.get('deploy', {}).get('resources'), 'ALTERNATE_LIMITS')
         for key, value in (('cpus', float(limit.cpus)), ('mem_limit', limit.memory), ('memswap_limit', limit.memory)):
             same=key not in spec or str(spec[key])==str(value) or key=='cpus' and type(spec[key]) in (int,float) and spec[key]==value
-            need(same, 'EXISTING_LIMIT_CONFLICT')
+            # An authored allocation replaces reference sizing during fresh
+            # preparation. Readback validation never reapplies that override.
+            need(same or applying and isinstance(selected,dict), 'EXISTING_LIMIT_CONFLICT')
             # Compose JSON preserves byte limits as strings and normalizes 1.0
             # CPU to integer 1. Preserve equivalent existing representations.
-            if key not in spec:spec[key] = value
+            if key not in spec or not same:spec[key] = value
     return result
 
 
 def verify_config(config, budget):
     need(plan(config) == budget, 'PLAN_CHANGED')
-    need(overlay(config, budget.profile) == config, 'CONFIG_LIMITS_CHANGED')
+    need(overlay(config, budget.profile, applying=False) == config, 'CONFIG_LIMITS_CHANGED')
 
 
 def standalone_limit():

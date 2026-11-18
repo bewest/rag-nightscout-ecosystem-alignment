@@ -84,7 +84,7 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
     for instance_index,(service,data) in enumerate(raw.items()):
         if isinstance(data,str):data=data.encode()
         need(isinstance(data,bytes) and len(data)<=budget,'M7_EVALUATOR_PROGRESS_BYTE_BOUND')
-        bytes_seen+=len(data);seen=set();runtime_id=None;ordinal=None;all_rows[service]={}
+        bytes_seen+=len(data);seen=set();runtime_id=None;ordinal=None;static_configuration=None;all_rows[service]={}
         for page_index,line in enumerate(data.splitlines()):
             queries+=1;need(len(line)<=POLICY['responseMaxBytes']+8192,'M7_EVALUATOR_PROGRESS_RESPONSE_BOUND')
             try:page=json.loads(line)
@@ -95,6 +95,18 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
             rid=view.get('runtimeId');position=view.get('configured',{}).get('ordinal')
             need(isinstance(rid,str) and UUID.fullmatch(rid) and integer(position),'M7_EVALUATOR_PROGRESS_CONTRACT')
             need(page.get('selfOrdinal')==position and page.get('selfMode')==view.get('configured',{}).get('mode'),'M7_EVALUATOR_PROGRESS_INSTANCE','FAIL')
+            if page.get('selfMode')=='static':
+                configured=view['configured']
+                expected_ordinal=0 if service=='evaluator' else int(service.removeprefix('evaluator-'))-1 if re.fullmatch(r'evaluator-[2-4]',service) else None
+                need(type(configured.get('count')) is int and type(page.get('selfCount')) is int
+                     and configured['count']==len(services)==page['selfCount'] and position==expected_ordinal
+                     and configured.get('rule')=='sha256-modulo-v1' and 'leaseMs' in configured and configured['leaseMs'] is None
+                     and 'observed' in view and view['observed'] is None
+                     and type(view.get('gate',{}).get('members')) is int and view['gate']['members']==len(services),
+                     'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
+                current_static={'count':configured['count'],'rule':configured['rule'],'observed':None}
+                need(static_configuration is None or static_configuration==current_static,'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
+                static_configuration=current_static
             need(runtime_id is None or runtime_id==rid,'M7_EVALUATOR_PROGRESS_RESET','FAIL');runtime_id=rid
             need(ordinal is None or ordinal==position,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL');ordinal=position
             need(view.get('kind')=='evaluator' and view.get('gate',{}).get('eligible') is True and view['gate'].get('reason') is None,'M7_EVALUATOR_PROGRESS_GATE','UNMEASURED' if warming else 'FAIL')
@@ -139,7 +151,7 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
                 contract(age is not None or first_release,'lastCompletedAgeMs','COMPLETION_AGE_OR_FIRST_RELEASE_REQUIRED')
                 owners[tenant]=value
         need(seen==known,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-        identities[service]={'runtimeId':runtime_id,'ordinal':ordinal}
+        identities[service]={'runtimeId':runtime_id,'ordinal':ordinal,**({'static':static_configuration} if static_configuration else {})}
     need(len({v['runtimeId'] for v in identities.values()})==len(services) and len({v['ordinal'] for v in identities.values()})==len(services),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(set(owners)==known,'M7_EVALUATOR_PROGRESS_COVERAGE','UNMEASURED' if warming else 'FAIL')
     need(queries==max_queries*len(services),'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
@@ -263,6 +275,11 @@ def decode_rounds(value,tenants,services,*,allow_unavailable=False,allow_clinica
         need(isinstance(raw,dict) and isinstance(raw.get('instances'),dict) and set(raw['instances'])==set(services),'M7_EVALUATOR_PROGRESS_INSTANCE')
         need(len({r.get('runtimeId') for r in raw['instances'].values()})==len(services) and len({r.get('ordinal') for r in raw['instances'].values()})==len(services),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
         need(all(isinstance(r.get('runtimeId'),str) and UUID.fullmatch(r['runtimeId']) and integer(r.get('ordinal')) for r in raw['instances'].values()),'M7_EVALUATOR_PROGRESS_CONTRACT')
+        selected_static=value.get('attribution',{}).get('staticTopology')
+        if selected_static or any('static' in row for row in raw['instances'].values()):
+            count=len(services)
+            need(not selected_static or selected_static=={'kind':'static-hash-v1','workers':count},'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
+            need(all(row.get('static')=={'count':count,'rule':'sha256-modulo-v1','observed':None} for row in raw['instances'].values()),'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
         need(integer(raw.get('queries')) and integer(raw.get('bytes')) and type(raw.get('wallSeconds')) in (int,float) and math.isfinite(raw['wallSeconds']) and raw['wallSeconds']>=0,'M7_EVALUATOR_PROGRESS_OVERHEAD')
         owners={};all_rows={service:{} for service in services};rows=raw.get('rows')
         need(isinstance(rows,list) and len(rows)==tenants*len(services) and 1<=tenants<=POLICY['maxTenants'],'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')

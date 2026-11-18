@@ -117,37 +117,38 @@ class DiscoverySource(unittest.TestCase):
     def test_actual_remote_idle_typed_opportunity_omission_continues_but_errors_stop(self):
         import contextlib
         from types import SimpleNamespace
-        from test_discovery import Discovery
         import discovery
         import evaluator_progress as progress
+        def fixture():
+            tmp=tempfile.TemporaryDirectory()
+            self.addCleanup(tmp.cleanup)
+            return Path(tmp.name),dict(self.request(),hostIdentity='c'*64,owner='d'*32,replicas=1,
+                profile='pgstream-sample',cadence=self.request()['workload']['cadence'],
+                instrument={'sha256':'e'*64},profileSelection={},settingsFingerprint={})
         for code,verdict in [('M7_OPPORTUNITY_NOT_OBSERVED','UNMEASURED'),('M7_EVALUATOR_PROGRESS_ERROR','FAIL'),('M7_DEMAND_RECOVERY_AUTHORITY_CHANGED','FAIL'),('M7_DEMAND_RECOVERY_RESTORE_CHANGED','FAIL')]:
-            fixture=Discovery();fixture.setUp();d,m=fixture.setup();m['cadence'].setdefault('warmupSeconds',1)
-            try:
-                record=discovery.Record(app.a,d,m)
-                with contextlib.ExitStack() as stack:
-                    for name in ('frozen','quiet','verify','readiness','psql','phase_snapshot'):
-                        stack.enter_context(patch.object(app.a,name))
-                    stack.enter_context(patch.object(app.time,'sleep'))
-                    stack.enter_context(patch.object(app.a,'enabled_idle',side_effect=progress.Refused(code,verdict)))
-                    if verdict=='UNMEASURED':
-                        record.observe('idle',lambda:app.idle(d,m))
-                        self.assertFalse(record.value['hardFailures'])
-                        self.assertEqual(record.value['strictChecks']['idle']['verdict'],'UNMEASURED')
-                        record.observe('next-load',lambda:'ordinary-load-entered')
-                        self.assertEqual(record.value['strictChecks']['next-load']['verdict'],'PASS')
-                    else:
-                        with self.assertRaises(RuntimeError):record.observe('idle',lambda:app.idle(d,m))
-                        self.assertTrue(record.value['hardFailures'])
-            finally:fixture.doCleanups()
-        fixture=Discovery();fixture.setUp();d,m=fixture.setup();m['cadence'].setdefault('warmupSeconds',1)
-        try:
+            d,m=fixture()
+            record=discovery.Record(app.a,d,m)
             with contextlib.ExitStack() as stack:
                 for name in ('frozen','quiet','verify','readiness','psql','phase_snapshot'):
                     stack.enter_context(patch.object(app.a,name))
                 stack.enter_context(patch.object(app.time,'sleep'))
-                stack.enter_context(patch.object(app.a,'enabled_idle',return_value=SimpleNamespace(result={'verdict':'UNMEASURED'})))
-                with self.assertRaisesRegex(RuntimeError,'EXTERNAL_IDLE_FAILED'):app.idle(d,{**m,'runPurpose':'acceptance'})
-        finally:fixture.doCleanups()
+                stack.enter_context(patch.object(app.a,'enabled_idle',side_effect=progress.Refused(code,verdict)))
+                if verdict=='UNMEASURED':
+                    record.observe('idle',lambda:app.idle(d,m))
+                    self.assertFalse(record.value['hardFailures'])
+                    self.assertEqual(record.value['strictChecks']['idle']['verdict'],'UNMEASURED')
+                    record.observe('next-load',lambda:'ordinary-load-entered')
+                    self.assertEqual(record.value['strictChecks']['next-load']['verdict'],'PASS')
+                else:
+                    with self.assertRaises(RuntimeError):record.observe('idle',lambda:app.idle(d,m))
+                    self.assertTrue(record.value['hardFailures'])
+        d,m=fixture()
+        with contextlib.ExitStack() as stack:
+            for name in ('frozen','quiet','verify','readiness','psql','phase_snapshot'):
+                stack.enter_context(patch.object(app.a,name))
+            stack.enter_context(patch.object(app.time,'sleep'))
+            stack.enter_context(patch.object(app.a,'enabled_idle',return_value=SimpleNamespace(result={'verdict':'UNMEASURED'})))
+            with self.assertRaisesRegex(RuntimeError,'EXTERNAL_IDLE_FAILED'):app.idle(d,{**m,'runPurpose':'acceptance'})
 
     def test_admission_failure_blocks_ingress_and_export_before_effects(self):
         # Exercise actual app.load ordering, keeping all host ports synthetic.

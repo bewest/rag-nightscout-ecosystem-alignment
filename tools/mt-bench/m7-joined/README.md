@@ -48,14 +48,22 @@ A separate synthetic correctness uploader writes every 300 seconds. Its stored
 ID/glucose, durable completed versions/rows/frame and already-connected stock
 clients must agree. All workload writes also pass the independent count oracle
 and row-mutation control. No worker restart campaign runs in this sample. The selected startup and runtime
-roster omit the retired legacy feed-reader; pgstream runs inside evaluator.
+roster omit the retired legacy feed-reader. The default colocated topology runs
+pgstream inside evaluator; explicit `external-service-v1` keeps a separate native
+producer service. Record the actual selected topology in comparisons.
 
 Source helpers resolve only the cell-owned lockfile dependency tree; evaluator
 and realtime image processes independently check `/opt/app` pg resolution before
 load. Per-process CPU-counter bookends and RSS distinguish evaluator Node from its
 pgstream child; process replacement/missing data is UNMEASURED.
-`sql-attribution.json` separates the configured pgstream role from adapter
-roles using full private statement bookends. The frozen PostgreSQL command preloads pg_stat_statements, enables top-level
+`sql-attribution.json` uses full private statement bookends for disjoint SQL-role
+buckets. A native recovery connection may use the configured pgstream role on
+the evaluator database. That role has a separate `shared` bucket, counted once;
+the exclusive pgstream bucket and the split between processes are UNMEASURED.
+The observer checks the selected recovery environment and database endpoint,
+rejects other overlapping identities, and retains actual per-role SQL totals.
+Historical disjoint-role captures retain their original two-bucket shape.
+The frozen PostgreSQL command preloads pg_stat_statements, enables top-level
 statement capture and I/O timing. Deploy creates the extension only in maintenance
 database postgres after infrastructure startup; an already-running server without
 the preload requires owner-controlled restart/recreation. Statement execution time is not
@@ -517,11 +525,52 @@ kind, work version, contract digest, array bounds/order, exact bigint range,
 output revision precision and metadata ownership before the existing stored
 write, BG-now and stock-client frame checks. It performs no duplicate writes.
 
+Current native configurations select the compact-input reader from the actual
+`pgstream.generation` and recovery configuration. One SELECT binds input source
+identity and restore generation, recoverable WAL positions, the local input floor,
+completed clinical coverage, pending/due work, output metadata and raw-tail head/base.
+The public history stamp is observed separately. Clinical completion can advance
+while an unchanged output keeps its original captured input floor and revision.
+Explicit lifecycle invalidation may reset the snapshot position to `0/0`; accepted
+commit positions retain their own source, generation and coverage fences.
+Native opportunity assessment and fixed-target drain use captured accepted-input
+floors, metadata and due work. New accepted input invalidates a frozen quiet
+target; pending work cannot pass. The drain declares `writerIntakeCoverage`
+UNMEASURED because this port has no post-writer WAL high-watermark together with
+the configured-slot acknowledgement fence. Public history does not supply that
+proof. Historical non-native readers retain their original target semantics.
+The reader checks the actual stored marker, BG-now result and stock callback;
+metadata alone does not qualify clinical equivalence or raw delivery.
+
+The unqualified selected-intake/profile reader and its mechanism-only control
+are removed. Original v1/v2 readers remain for historical source fixtures and
+retained baseline reproduction. A native configuration cannot fall back to them
+when its source/restore/coverage proof is missing.
+
+Client delivery is per logical viewer. Reconnection alone does not refute a valid
+callback. New captures retain the exact expected viewer slots, observed transport
+incarnation, connection count, SGV identity/time/value and a single-probe monotonic
+request-to-callback deadline. Missing, duplicate, foreign, wrong-value or late
+callbacks refuse. The historical hold4000 failure stays unchanged: retained
+callbacks show timely stored-ID delivery, but omit connection counts and full
+callback values needed to identify its strict-predicate rejection.
+
+`--api-cause-observation on` installs a source-hash-bound private admission/exchange
+observer only for a setup diagnostic. Its bounded code/SQLSTATE counts carry no
+request body, error message or credential. File-I/O overhead is unmeasured; keep
+it outside an unmatched operating comparison. `api_cause.prepare_stages` prepares
+the fixed 0/4000/8000-viewer, 50-opens/second setup discriminator with sequential
+no-retry exchange checks. Its callback availability does not establish clinical
+or stored-frame equivalence. Runtime source-access captures use the existing
+`source-access-v1` private inspection port; M5's timer-only control checks actual
+snapshot/catalogue/data acquisition, with an unchanged checkpoint as no substitute.
+
 Focused offline controls (no SQL/runtime execution):
 
 ```bash
 node tools/mt-bench/m7-joined/completed-oracle-control.cjs
 node tools/mt-bench/m7-joined/completed-oracle-v2-control.cjs
+node --test tools/mt-bench/m7-joined/native-observation.test.cjs tools/mt-bench/m7-joined/client-delivery.test.cjs
 cd tools/mt-bench/m7-joined
 python3 -B -m unittest test_cost_companion test_realtime_costs test_pgstream_sample
 ```
@@ -905,3 +954,38 @@ observations beside the control result. No-op corruption or failed restoration
 refuses. Strict/default acceptance keeps its requirement for a write from every
 tenant. This change applies to future helper runs; it does not qualify or relabel
 an earlier point whose control was not run.
+
+
+### Selected admin-verified startup
+
+New deployment pins that contain `platform-startup.js` require an explicit
+`--tenant-readiness serve` or `--tenant-readiness all`. The resolved configuration,
+diagnostic receipt and frozen serving environments carry that selection. The
+`platform-verify` job calls the private admin API after commission and before API
+launch. Its process receives no database or Vault credential. Older deployment
+pins keep their original stage sequence.
+
+For a bounded local startup experiment, select `--api-warm-cause startup-v1`
+with the existing discovery receipt and resource allocation. It supports small
+fixtures before a 10,000-tenant point. This source-bound observer samples actual
+API process heap use, V8 heap ceiling, cgroup memory ceiling/current use and safe
+startup counts once per second, retaining the first samples and a bounded recent
+window. It adds file I/O and count-sampling overhead; it is not a matched CPU
+baseline. No tenant identifier, credential, request body or glucose value is
+emitted. `warm-v1` keeps its original 10,000-tenant refusal-correlation scope.
+
+`deployment-stages.json` records each entry before effects and its elapsed time,
+verdict and safe first error in `finally`, including a throwing primer. New
+`startup-primer-boundary.json` keeps the exact API birth, process exit and Docker
+health state, latest startup counts, actual memory ceilings, typed primer error,
+and first useful response/completed primer events before cleanup. The raw bounded
+samples survive in `startup-samples.private.json`; failure log tails are private.
+Missing, stale, foreign or replaced-process observations remain UNMEASURED. A
+collector failure preserves the original primer failure. A failed primer starts
+no remaining roles or ordinary load.
+
+API process readiness, first useful tenant response, completed primer and remaining
+role readiness are separate stages. A warm primer proves neither cold evaluator
+recovery nor steady load. Pending and future-due recovery without new input needs
+its own clinical control; capacity remains ungranted until the integration owner
+qualifies the selected source and operating point.

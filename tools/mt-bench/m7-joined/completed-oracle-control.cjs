@@ -20,10 +20,11 @@ for(const [name,mutate] of [
  ['missing durable output',x=>x.state.output=null]]){
  const broken=structuredClone(row);mutate(broken);assert.equal(o.assess(broken,witness,clients,2,source).ready,false,name);console.log('EXPECTED_RED',name);green();
 }
-for(const [name,bad]of [['dropped client output',clients.slice(0,1)],['wrong client identity',clients.map(c=>({...c,sgv:{...c.sgv,_id:'other'}}))],['reconnected client',clients.map(c=>({...c,connects:2}))]]){
+for(const [name,bad]of [['dropped client output',clients.slice(0,1)],['wrong client identity',clients.map(c=>({...c,sgv:{...c.sgv,_id:'other'}}))],['unconnected client',clients.map(c=>({...c,connects:0}))]]){
  assert.equal(o.assess(row,witness,bad,2,source).ready,false,name);console.log('EXPECTED_RED',name);green();
 }
 
+assert.equal(o.assess(row,witness,clients.map(c=>({...c,connects:2})),2,source).ready,true,'reconnect alone does not refute delivery');
 assert.match(o.query(source,[tenant],'synthetic-run'),/evaluator-sample-completed/);
 assert.throws(()=>o.query(source,[tenant],"bad'"),/SELECTOR/);
 console.log('RESTORED_GREEN durable completion/stored/output/client model; no SQL or runtime run');

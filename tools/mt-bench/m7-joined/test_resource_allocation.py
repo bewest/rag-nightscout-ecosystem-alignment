@@ -18,6 +18,24 @@ def allocation():
     return {'version':1,'services':{role:{'millicpus':r.role_limit(role,r.QUALIFICATION_NAME).cpu,'memoryBytes':r.role_limit(role,r.QUALIFICATION_NAME).memory} for role in ROLES},'driver':{'millicpus':2000,'memoryBytes':4*1024**3},'ceiling':{'millicpus':16000,'memoryBytes':32*1024**3},'edge':{'workerProcesses':1,'workerConnections':16384}}
 
 class ExplicitAllocation(unittest.TestCase):
+    def test_authored_allocation_replaces_reference_but_readback_still_refuses(self):
+        selected=allocation();selected['services']['api']={'millicpus':3000,'memoryBytes':4*1024**3}
+        source={'services':{role:{} for role in ROLES}}
+        source['services']['api'].update(cpus=.25,mem_limit=512*1024**2,memswap_limit=512*1024**2)
+        original=copy.deepcopy(source)
+        with self.assertRaisesRegex(RuntimeError,'EXISTING_LIMIT_CONFLICT'):
+            r.overlay(source,r.QUALIFICATION_NAME)
+        applied=r.overlay(source,selected)
+        self.assertEqual(source,original)
+        self.assertEqual(applied['services']['api']['cpus'],3)
+        self.assertEqual(applied['services']['api']['mem_limit'],4*1024**3)
+        self.assertEqual(applied['services']['api']['memswap_limit'],4*1024**3)
+        budget=r.plan(applied);r.verify_config(applied,budget)
+        broken=copy.deepcopy(applied);broken['services']['api']['cpus']=.5
+        with self.assertRaisesRegex(RuntimeError,'EXISTING_LIMIT_CONFLICT'):r.verify_config(broken,budget)
+        r.verify_config(applied,budget)
+        print('RED_RESTORED reference conflict; explicit allocation replaces; changed actual limit refuses')
+
     def test_exact_roster_overlap_and_driver_native_quota_controls(self):
         selected=allocation();source={'services':{role:{} for role in ROLES}};config=r.overlay(source,selected);budget=r.plan(config)
         self.assertEqual(source,{'services':{role:{} for role in ROLES}})
@@ -70,10 +88,22 @@ class ExplicitAllocation(unittest.TestCase):
         self.assertIsNone(parsed.diagnostic_resource_profile);self.assertEqual(a.selected_resources_profile(parsed),selected)
         self.assertEqual(r.edge_worker_budget(a.selected_resources_profile(parsed))['workerProcesses'],1)
         protocol.allocation_boundary(selected,hosts)
-        for change,code in ((lambda x:x['receipt'].pop('remoteDiagnosticResourceAllocation'),'TOPOLOGY_RECEIPT'),(lambda x:x['diagnosticResourceAllocation']['edge'].update(workerProcesses=2),'ALLOCATION_EDGE'),(lambda x:x['hosts']['sut'].update(cpuCores=1),'HOST_CAPACITY'),(lambda x:x.update(diagnosticResourceProfile=r.QUALIFICATION_NAME),'SELECTION_AMBIGUOUS')):
-            bad=copy.deepcopy(spec);change(bad);result=call(bad);self.assertNotEqual(result.returncode,0);self.assertIn(code,result.stderr)
-            with self.assertRaises(RuntimeError):worker.prepare_arguments(bad,dependency)
-        self.assertEqual(call(spec).returncode,0)
+        controls=((lambda x:x['receipt'].pop('remoteDiagnosticResourceAllocation'),'TOPOLOGY_RECEIPT',True),
+                  (lambda x:x['diagnosticResourceAllocation']['edge'].update(workerProcesses=2),'ALLOCATION_SHAPE',False),
+                  (lambda x:x['hosts']['sut'].update(cpuCores=1),'HOST_CAPACITY',False),
+                  (lambda x:x.update(diagnosticResourceProfile=r.QUALIFICATION_NAME),'EXPLICIT_TOPOLOGY',True))
+        for change,code,worker_gate in controls:
+            with self.subTest(code=code):
+                bad=copy.deepcopy(spec);change(bad);result=call(bad);self.assertNotEqual(result.returncode,0);self.assertIn(code,result.stderr)
+                if worker_gate:
+                    with self.assertRaises(RuntimeError):worker.prepare_arguments(bad,dependency)
+                else:
+                    # The worker builds argv; physical/edge admission is enforced
+                    # by the actual caller and the receiving helper protocol.
+                    with self.assertRaisesRegex(RuntimeError,'REMOTE_ALLOCATION_(EDGE|HOST_CAPACITY)'):
+                        protocol.allocation_boundary(bad['diagnosticResourceAllocation'],bad['hosts'])
+                self.assertEqual(call(spec).returncode,0)
+                protocol.allocation_boundary(selected,hosts)
 
     def test_native_compose_render_preserves_explicit_limits(self):
         selected=allocation();config=r.overlay({'services':{role:{'image':'synthetic.invalid/fixture@sha256:'+'a'*64}for role in ROLES}},selected)

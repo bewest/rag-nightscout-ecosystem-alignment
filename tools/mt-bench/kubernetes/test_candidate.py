@@ -1,0 +1,66 @@
+import copy
+import json
+import unittest
+
+import adapter as k
+import candidate
+from test_adapter import fixture
+
+
+class CandidateControls(unittest.TestCase):
+    def test_source_config_and_actual_image(self):
+        c, inv, *_ = fixture()
+        p = c['pins']
+        current = dict(diagnosticSha256='0'*64, producerBinarySha256='1'*64, nativeCatalogueSha256='2'*64,
+                       imageConfigId=p['appImageId'], sourceAcceptance='PENDING')
+        inv['candidateContract'] = current
+        p.update(candidate=copy.deepcopy(current), postgresImage='example.invalid/postgres@sha256:'+'7'*64,
+                 postgresImageId='sha256:'+'8'*64)
+        inv['images'] = {'postgres': p['postgresImage']}
+        contract = dict(current, coreCommit=p['pair']['core'], deployCommit=p['pair']['deploy'], localImageId=p['appImageId'])
+        objects = {'ConfigMap/provision-scripts': {'data': {'source-contract.json': json.dumps(contract)}}}
+        candidate.pins(k, c, inv, objects)
+        # Identical source/image inputs can run at either qualification state.
+        inv['candidateContract']['sourceAcceptance'] = p['candidate']['sourceAcceptance'] = 'PASS'
+        candidate.pins(k, c, inv, objects)
+        inv['candidateContract']['sourceAcceptance'] = p['candidate']['sourceAcceptance'] = 'PENDING'
+        candidate.pins(k, c, inv, objects)
+        for field, value in [('coreCommit', 'a'*40), ('nativeCatalogueSha256', '9'*64), ('localImageId', 'sha256:'+'9'*64)]:
+            original = objects['ConfigMap/provision-scripts']['data']['source-contract.json']
+            objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(dict(contract, **{field:value}))
+            with self.assertRaisesRegex(k.Refused, '^K8S_CANDIDATE_SOURCE_IMAGE_CHANGED$'):
+                candidate.pins(k, c, inv, objects)
+            objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = original
+            candidate.pins(k, c, inv, objects)
+        pod = {'imageReferences': {'api': p['appImage'], 'postgres': p['postgresImage']},
+               'containers': {'api': {'imageID': p['appImage']}, 'postgres': {'imageID': p['postgresImageId']}}}
+        observation = {'pods': {'fixture': pod}}
+        candidate.images(k, c, observation)
+        for role, old in [('api', p['appImage']), ('postgres', p['postgresImageId'])]:
+            pod['containers'][role]['imageID'] = 'sha256:'+'9'*64
+            with self.assertRaisesRegex(k.Refused, '^K8S_CANDIDATE_ACTUAL_IMAGE_CHANGED$'):
+                candidate.images(k, c, observation)
+            pod['containers'][role]['imageID'] = old
+            candidate.images(k, c, observation)
+
+    def test_required_admin_and_native_fixture_proof(self):
+        c, *_ = fixture()
+        p = c['pins']
+        p['candidate'] = {'diagnosticSha256': '1'*64}
+        proof = dict(version=1, credentialBoundary='admin-private-api',
+                     coreCommit=p['pair']['core'], deployCommit=p['pair']['deploy'], diagnosticSha256='1'*64,
+                     fixture={'namespace': c['namespace'], 'runId': c['runId']},
+                     nativeSource={'system_id': '123', 'timeline': 1, 'database': 'nightscout_compose_test', 'slot': 'nsdemo_pgstream'},
+                     nativeGeneration='test-generation', nativeSelectionSha256='2'*64, selectionSha256='3'*64,
+                     roles=[dict(role=role, generation='4'*64, expiresAt='2026-11-19T00:00:00Z') for role in candidate.ROLES])
+        candidate.proof(k, c, proof, now=1)
+        cases = [
+            (None, 'ADMIN_PROOF_REQUIRED'),
+            (dict(proof, fixture={'namespace': c['namespace'], 'runId': 'foreign'}), 'FIXTURE_CHANGED'),
+            (dict(proof, nativeSource=dict(proof['nativeSource'], slot='wrong_slot')), 'NATIVE_SOURCE_CHANGED'),
+            (dict(proof, roles=proof['roles'][1:]), 'VERIFICATION_CHANGED'),
+        ]
+        for bad, code in cases:
+            with self.assertRaisesRegex(k.Refused, '^K8S_CANDIDATE_'+code+'$'):
+                candidate.proof(k, c, bad, now=1)
+            candidate.proof(k, c, proof, now=1)

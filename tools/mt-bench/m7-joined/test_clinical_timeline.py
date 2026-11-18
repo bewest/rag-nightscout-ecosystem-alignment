@@ -56,6 +56,49 @@ class Timeline(unittest.TestCase):
         second['arbitrary']='DO_NOT_EMIT';raw.write_text(json.dumps(row)+'\n'+json.dumps(second)+'\n');status['bytes']=raw.stat().st_size
         self.assertFalse(t.raw_complete(raw,status),'ARBITRARY_FIELD_MUST_REFUSE')
 
+class ExplicitSelection(unittest.TestCase):
+    A='11111111-1111-4111-8111-111111111111';B='30000397-3333-4333-8333-000000000397';C='33333333-3333-4333-8333-333333333333'
+    def test_explicit_allocation_source_target_red_restored(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as folder:
+            d=Path(folder);(d/'state').mkdir();targets=d/'requested.json';targets.write_text(json.dumps([self.A,self.B]))
+            sources={name:'fixture-'+name for name in t.C117_SOURCES}
+            for name,text in sources.items():
+                f=d/'core'/name;f.parent.mkdir(parents=True,exist_ok=True);f.write_text(text)
+            hashes={name:t.sha(d/'core'/name) for name in sources}
+            allocation={'version':1,'services':{role:{'millicpus':1000,'memoryBytes':512*r.MIB} for role in ['evaluator','pgstream','nginx']},'driver':{'millicpus':2000,'memoryBytes':1024*r.MIB},'ceiling':{'millicpus':8000,'memoryBytes':8192*r.MIB},'edge':{'workerProcesses':1,'workerConnections':16384}}
+            config=r.overlay({'services':{role:{'command':list(t.COMMAND) if role=='evaluator' else ['unchanged'],'environment':{},'volumes':[]} for role in allocation['services']}},allocation)
+            m={'runPurpose':'discovery','pair':{'core':t.C117}}
+            with patch.object(t,'C117_SOURCES',hashes):
+                t.install(config,d,m,t.RAW_NAME,targets_file=targets);t.publish(d,m,[{'id':x} for x in [self.A,self.C,self.B]]);t.verify(config,d,m)
+                self.assertEqual(json.loads((d/'state/clinical-timeline/targets.json').read_text())['ids'],[self.A,self.B])
+                self.assertEqual(json.loads(t.probe_environment(m)['M7_CLINICAL_TIMELINE_IDS']),[self.A,self.B])
+                source=d/'core'/next(iter(sources));old=source.read_bytes();source.write_bytes(b'wrong-source')
+                with self.assertRaisesRegex(RuntimeError,'TIMELINE_SOURCE'):t.verify(config,d,m)
+                source.write_bytes(old);t.verify(config,d,m)
+                config['services']['evaluator']['mem_limit']+=1
+                with self.assertRaisesRegex(RuntimeError,'EXISTING_LIMIT_CONFLICT'):t.verify(config,d,m)
+                config['services']['evaluator']['mem_limit']-=1;t.verify(config,d,m)
+                original=config[r.PROFILE_KEY]['driver']['millicpus'];config[r.PROFILE_KEY]['driver']['millicpus']+=1
+                with self.assertRaisesRegex(RuntimeError,'TIMELINE_ALLOCATION'):t.verify(config,d,m)
+                config[r.PROFILE_KEY]['driver']['millicpus']=original;t.verify(config,d,m)
+                target=d/'state/clinical-timeline/targets.json';old=target.read_bytes();target.write_text(json.dumps({'ids':[self.A,self.C]}))
+                with self.assertRaisesRegex(RuntimeError,'TIMELINE_TARGETS'):t.verify(config,d,m)
+                target.write_bytes(old);t.verify(config,d,m)
+                m['clinicalTimeline']['targetIds']=[self.A,self.C]
+                with self.assertRaisesRegex(RuntimeError,'TIMELINE_TARGETS'):t.verify(config,d,m)
+                m['clinicalTimeline']['targetIds']=[self.A,self.B];t.verify(config,d,m)
+    def test_target_roster_and_shape_refusals_restore(self):
+        with tempfile.TemporaryDirectory() as folder:
+            d=Path(folder);(d/'state').mkdir();targets=d/'requested.json';targets.write_text(json.dumps([self.A,self.B]))
+            config={r.PROFILE_KEY:r.EVALUATOR250_MEMORY512_NAME,'services':{'evaluator':{'command':list(t.COMMAND),'environment':{},'volumes':[]}}};m={'runPurpose':'discovery'}
+            t.install(config,d,m,t.NAME);m['clinicalTimeline']['targetIds']=[self.A,self.B]
+            with self.assertRaisesRegex(RuntimeError,'TARGET_ROSTER'):t.publish(d,m,[{'id':self.A},{'id':self.C}])
+            t.publish(d,m,[{'id':self.A},{'id':self.B}]);t.verify(config,d,m)
+            for ids in [[],[self.A,self.A],[self.A,self.B,self.C],['not-an-id']]:
+                with self.assertRaisesRegex(RuntimeError,'TARGET_IDS'):t.validate_ids(ids)
+            t.validate_ids([self.A]);t.validate_ids([self.A,self.B])
+
 class CaptureIntegrity(unittest.TestCase):
     instance='11111111-1111-4111-8111-111111111111'
     def setUp(self):

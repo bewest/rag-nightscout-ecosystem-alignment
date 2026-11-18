@@ -1,5 +1,8 @@
 """Synthetic actual-helper topology/resource/process controls; no app effects."""
 import copy
+import json
+import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -15,6 +18,20 @@ EXTERNAL={'profile':'pgstream-sample','pgstreamTopology':t.EXTERNAL}
 def cfg():
     value=config();value['services']['pgstream']={'command':list(t.EXTERNAL_COMMAND)}
     value['services']['evaluator']['command']=['node','entrypoint.js','evaluator'];return value
+
+
+def source_schema():
+    return {'properties':{'pgstream':{'type':'object','required':['receiver','slot','streamRole','bounds'],
+        'additionalProperties':False,'properties':{
+            **dict.fromkeys(['receiver','slot','streamRole','bounds'],{}),
+            'transactionRows':{'type':'integer','minimum':1,'maximum':1000000},
+            'generation':{'type':'string','pattern':'^[a-f0-9]{32}$'},
+            'recovery':{'type':'object','required':['connectionEnv','timeoutMs','maxQueued'],
+                'additionalProperties':False,'properties':{
+                    'connectionEnv':{'type':'string','pattern':'^[A-Z][A-Z0-9_]{0,127}$'},
+                    'timeoutMs':{'type':'integer','minimum':1,'maximum':30000},
+                    'maxQueued':{'type':'integer','minimum':1,'maximum':1024}}}},
+        'dependentRequired':{'generation':['transactionRows'],'recovery':['transactionRows']}}}}
 
 
 class Topology(unittest.TestCase):
@@ -40,9 +57,63 @@ class Topology(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'EXTERNAL_SERVICE_REQUIRED'):t.verify_config(EXTERNAL,missing)
         remaining=next(args for name,scope,args in a.deployment_plan(selected,pgstream=True) if name=='remaining-roles')
         self.assertIn('pgstream',remaining);self.assertNotIn('feed-reader',remaining)
-        schema={'properties':{'pgstream':{'required':['receiver','slot','streamRole','bounds'],'additionalProperties':False,'properties':dict.fromkeys(['receiver','slot','streamRole','bounds'],{})}}}
+        schema=source_schema()
         t.verify_source(EXTERNAL,schema)
         with self.assertRaisesRegex(RuntimeError,'EXTERNAL_SOURCE_REQUIRED'):t.verify_source(EXTERNAL,{'properties':{}})
+
+    def test_native_schema_missing_wrong_generation_recovery_and_unknown_property_refuse(self):
+        original=source_schema();green=lambda:t.verify_source(EXTERNAL,original)
+        green()
+        cases=[
+            ('missing generation',lambda v:v['properties'].pop('generation'),'EXTERNAL_SOURCE'),
+            ('missing recovery',lambda v:v['properties'].pop('recovery'),'EXTERNAL_SOURCE'),
+            ('unknown property',lambda v:v['properties'].update(oldAlternative={}),'EXTERNAL_SOURCE'),
+            ('wrong generation domain',lambda v:v['properties']['generation'].update(pattern='^[a-f0-9]{64}$'),'NATIVE_SOURCE'),
+            ('unbounded transaction',lambda v:v['properties']['transactionRows'].pop('maximum'),'NATIVE_SOURCE'),
+            ('missing recovery field',lambda v:v['properties']['recovery']['required'].remove('connectionEnv'),'NATIVE_RECOVERY'),
+            ('unknown recovery property',lambda v:v['properties']['recovery']['properties'].update(optionalFallback={}),'NATIVE_RECOVERY'),
+            ('unbounded recovery',lambda v:v['properties']['recovery']['properties']['timeoutMs'].pop('maximum'),'NATIVE_RECOVERY'),
+            ('wrong recovery bound',lambda v:v['properties']['recovery']['properties']['maxQueued'].update(maximum=1025),'NATIVE_RECOVERY'),
+            ('open recovery object',lambda v:v['properties']['recovery'].update(additionalProperties=True),'NATIVE_RECOVERY'),
+            ('missing generation dependency',lambda v:v['dependentRequired'].pop('generation'),'NATIVE_DEPENDENCIES'),
+            ('wrong recovery dependency',lambda v:v['dependentRequired'].update(recovery=['generation']),'NATIVE_DEPENDENCIES')]
+        for label,change,code in cases:
+            with self.subTest(label=label):
+                broken=copy.deepcopy(original);change(broken['properties']['pgstream'])
+                with self.assertRaisesRegex(RuntimeError,code+'_REQUIRED'):t.verify_source(EXTERNAL,broken)
+                green()
+        annotated=copy.deepcopy(original)
+        for key in ('transactionRows','generation','recovery'):annotated['properties']['pgstream']['properties'][key]['description']='annotation only'
+        t.verify_source(EXTERNAL,annotated)
+        old=copy.deepcopy(original);pgstream=old['properties']['pgstream']
+        for key in ('transactionRows','generation','recovery'):pgstream['properties'].pop(key)
+        pgstream.pop('dependentRequired')
+        with self.assertRaisesRegex(RuntimeError,'EXTERNAL_SOURCE_REQUIRED'):t.verify_source(EXTERNAL,old)
+        green()
+
+    def test_native_recovery_validator_ablation_is_red_and_restoration_passes(self):
+        source=Path(t.__file__).read_text()
+        needle="recovery.get('additionalProperties') is False"
+        self.assertEqual(source.count(needle),1)
+        namespace=dict(t.__dict__)
+        exec(compile(source.replace(needle,'True'),t.__file__,'exec'),namespace)
+        broken=source_schema();broken['properties']['pgstream']['properties']['recovery']['additionalProperties']=True
+        def criterion(verify):
+            with self.assertRaisesRegex(RuntimeError,'NATIVE_RECOVERY_REQUIRED'):verify(EXTERNAL,broken)
+        criterion(t.verify_source)
+        with self.assertRaises(AssertionError):criterion(namespace['verify_source'])
+        criterion(t.verify_source);t.verify_source(EXTERNAL,source_schema())
+
+    @unittest.skipUnless(os.environ.get('M7_NATIVE_CORE_REPO') and os.environ.get('M7_NATIVE_CORE_COMMIT'),'exact selected Git source required')
+    def test_actual_selected_schema_from_exact_git_object(self):
+        repo=os.environ['M7_NATIVE_CORE_REPO'];head=os.environ['M7_NATIVE_CORE_COMMIT']
+        exact=subprocess.check_output(['git','-C',repo,'rev-parse',head+'^{commit}'],text=True).strip()
+        self.assertRegex(exact,r'^[a-f0-9]{40}$')
+        raw=subprocess.check_output(['git','-C',repo,'show',exact+':lib/server/serve/plan-contract/schema/evaluator.schema.json'],text=True)
+        schema=json.loads(raw);t.verify_source(EXTERNAL,schema)
+        broken=copy.deepcopy(schema);broken['properties']['pgstream']['properties']['generation']['pattern']='.*'
+        with self.assertRaisesRegex(RuntimeError,'NATIVE_SOURCE_REQUIRED'):t.verify_source(EXTERNAL,broken)
+        t.verify_source(EXTERNAL,schema)
 
     def test_process_container_and_image_birth(self):
         old={'evaluator':{'hostProcesses':{'1':{'name':'node'},'2':{'name':'pgstream'}}}}

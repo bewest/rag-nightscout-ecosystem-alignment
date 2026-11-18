@@ -1,0 +1,195 @@
+--- a/check/source-equivalence.py
++++ b/check/source-equivalence.py
+@@ -34,4 +34,5 @@
+ imageId=subprocess.check_output(['docker','image','inspect',a.image,'--format','{{.Id}}'],text=True).strip()
+ contract={'schemaVersion':1,'coreCommit':result['receipt']['coreCommit'],'deployCommit':result['receipt']['deployCommit'],'localImageId':imageId,'published':False,'producerBinarySha256':result['producerBinarySha256'],'commands':commands,'postgresIdentities':result['postgresIdentities'],'sourceFilesSha256':hashes,'scope':'Offline constructor and byte equivalence; cluster and capacity UNMEASURED'}
++contract['nativeCatalogueSha256'] = result['nativeCatalogueSha256']
+ if a.diagnostic:
+     payload=a.diagnostic.read_bytes()
+--- a/lib/ns/nightscout.libsonnet
++++ b/lib/ns/nightscout.libsonnet
+@@ -90,4 +90,10 @@
+     local ns = c.namespace,
+     local source = import '../../assets/source-contract.json',
++    local helper = if std.objectHas(source, 'runtimeBootstrapHelper') then source.runtimeBootstrapHelper else null,
++    local helperAnnotations = if helper == null then {} else {
++      'nightscout.org/bootstrap-helper-commit': helper.deployCommit,
++      'nightscout.org/bootstrap-helper-sha256': helper.sha256,
++      'nightscout.org/instance-acceptance': 'PENDING',
++    },
+     local verifiedRoles = ['api', 'evaluator', 'realtime'],
+     local adminFiles = ['env.json', 'config.json', 'vault-token', 'management-vault-token'],
+@@ -626,4 +632,9 @@
+     // ---------------------------------------------------------------- provisioning
+     provision: {
++      [if helper != null then 'bootstrapHelper']: {
++        apiVersion: 'v1', kind: 'ConfigMap', immutable: true,
++        metadata: meta('bootstrap-diagnostic', 'provision') + { annotations: helperAnnotations },
++        data: { 'bootstrap.js': importstr '../../assets/bootstrap-helper.js' },
++      },
+       state: {
+         apiVersion: 'v1',
+@@ -648,10 +659,10 @@
+         apiVersion: 'batch/v1',
+         kind: 'Job',
+-        metadata: meta('provision', 'provision'),
++        metadata: meta('provision', 'provision') + (if helper != null then { annotations: helperAnnotations } else {}),
+         spec: {
+           backoffLimit: 0,
+           activeDeadlineSeconds: c.provisionDeadlineSeconds,
+           template: {
+-            metadata: { labels: labels('provision') },
++            metadata: { labels: labels('provision') } + (if helper != null then { annotations: helperAnnotations } else {}),
+             spec: {
+               restartPolicy: 'Never',
+@@ -677,5 +688,8 @@
+                   { name: 'scripts', mountPath: '/run/ns-overlay', readOnly: true },
+                   tmpMount,
+-                ] + (if name == 'bootstrap' then [{ name: 'postgres-password', mountPath: '/run/secrets', readOnly: true }] else []),
++                ] + (if name == 'bootstrap' then [{ name: 'postgres-password', mountPath: '/run/secrets', readOnly: true }] else []) +
++                    (if helper != null && name == 'bootstrap' then [{
++                      name: 'bootstrap-diagnostic', mountPath: helper.mountPath, subPath: 'bootstrap.js', readOnly: true,
++                    }] else []),
+               },
+               initContainers: [
+@@ -719,7 +733,10 @@
+                 ca,
+                 { name: 'scripts', configMap: { name: 'provision-scripts' } },
+-
+                 tmp,
+-              ],
++              ] + (if helper == null then [] else [{
++                name: 'bootstrap-diagnostic', configMap: {
++                  name: 'bootstrap-diagnostic', defaultMode: 292,
++                },
++              }]),
+             },
+           },
+@@ -804,4 +821,6 @@
+     local c = std.mergePatch($.defaults, overrides);
+     local raw = $.raw(overrides);
++    local source = import '../../assets/source-contract.json';
++    local helper = if std.objectHas(source, 'runtimeBootstrapHelper') then source.runtimeBootstrapHelper else null;
+     assert std.member(['standard', 'existing-capacity'], c.profile) : 'unknown profile';
+     assert std.member(['dynamic', 'disposable', 'existing-claim'], c.storage.mode) : 'unknown storage mode';
+@@ -863,5 +882,5 @@
+         ownership: { namespace: c.namespace, label: { 'nightscout.org/run-id': c.runId }, clusterScoped: [{ kind: 'ClusterRoleBinding', name: c.namespace + '-vault-tokenreview' }] },
+         services: { [v.metadata.name]: { selector: v.spec.selector, type: if std.objectHas(v.spec,'type') then v.spec.type else 'ClusterIP', ports: if std.objectHas(v.spec,'ports') then v.spec.ports else [] } for v in [rendered.postgres.service, rendered.vault.service, rendered.cohort.governing, rendered.cohort.apiService, rendered.cohort.realtimeService, rendered.cohort.intakeService, rendered.admin.service, rendered.ui.service, rendered.edge.service] },
+-        configMaps: ['vault-config','vault-agent-config','edge-nginx','provision-scripts'],
++        configMaps: ['vault-config','vault-agent-config','edge-nginx','provision-scripts'] + (if helper == null then [] else ['bootstrap-diagnostic']),
+         candidateContract: {
+           diagnosticSha256: (import '../../assets/source-contract.json').diagnosticSha256,
+@@ -869,6 +888,8 @@
+           producerBinarySha256: (import '../../assets/source-contract.json').producerBinarySha256,
+           nativeCatalogueSha256: (import '../../assets/source-contract.json').nativeCatalogueSha256,
+-          sourceAcceptance: 'PENDING',
+-        },
++          sourceAcceptance: source.sourceAcceptance,
++        } + (if helper == null then {} else {
++          runtimeBootstrapHelper: helper, imageSourceAcceptance: source.imageSourceAcceptance,
++        }),
+         imagePullSecrets: c.imagePullSecrets,
+         placement: c.placement,
+--- a/ops/vault-kubernetes-auth.js
++++ b/ops/vault-kubernetes-auth.js
+@@ -18,4 +18,6 @@
+ const DURATION = /^[1-9][0-9]{0,5}[smh]$/;
+ const NAME = /^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$/;
++const { isDeepStrictEqual } = require('node:util');
++const SOURCE_TOKEN_FILE = '/run/ns-config/vault-token';
+ const SINK = '/run/ns-vault/token';
+ 
+@@ -42,4 +44,29 @@
+ }
+ 
++// Rename only whole private documents. A failed Job can leave one copy at
++// the selected sink. Both source paths are checked before resuming the pair.
++function replacePrivateJson(file, value) {
++  const staging = fs.mkdtempSync(path.join(path.dirname(file), '.vault-update-'));
++  try {
++    const next = path.join(staging, 'next');
++    writePrivate(next, JSON.stringify(value, null, 2) + '\n');
++    fs.renameSync(next, file);
++  } finally {
++    fs.rmSync(staging, { recursive: true, force: true });
++  }
++}
++
++function verificationCopy(output, api) {
++  if (!api.platformVerification) return null;
++  const file = path.join(output, 'admin', 'verification', 'api.config.json');
++  if (!fs.existsSync(file)) throw fail('VAULT_VERIFICATION_DOCUMENT_REQUIRED');
++  const copy = readPrivateJson(file);
++  if (api.platformVerification.role !== 'api' || ![SOURCE_TOKEN_FILE, SINK].includes(copy.vault?.tokenFile) ||
++      !isDeepStrictEqual(api, { ...copy, vault: { ...copy.vault, tokenFile: api.vault.tokenFile } })) {
++    throw fail('VAULT_VERIFICATION_DOCUMENT_CHANGED');
++  }
++  return file;
++}
++
+ async function provision ({ vault, output, ttl, maxTtl, namespace, serviceAccount, audience }) {
+   const bootstrapDir = path.join(output, 'bootstrap'), agentDir = path.join(output, 'vault-agent');
+@@ -61,5 +88,7 @@
+   }
+   const apiDir = path.join(output, 'api'), apiConfig = readPrivateJson(path.join(apiDir, 'config.json')), apiEnv = readPrivateJson(path.join(apiDir, 'env.json'));
+-  const registry = !!apiConfig.registry && apiConfig.tenants === undefined && apiConfig.vault?.tokenFile === '/run/ns-config/vault-token';
++  const registry = !!apiConfig.registry && apiConfig.tenants === undefined &&
++    (apiConfig.vault?.tokenFile === SOURCE_TOKEN_FILE || (apiConfig.platformVerification && apiConfig.vault?.tokenFile === SINK));
++  const verificationFile = registry ? verificationCopy(output, apiConfig) : null;
+   if (!registry && (!Array.isArray(apiConfig.tenants) || !apiConfig.tenants.length)) throw fail('IMPORTED_API_CONFIG_INVALID');
+   const rules = [];
+@@ -89,6 +118,11 @@
+   for (const tenant of (registry ? [] : apiConfig.tenants)) { delete tenant.vault.tokenEnv; tenant.vault.tokenFile = SINK; }
+   for (const key of envKeys) delete apiEnv[key];
+-  writePrivate(path.join(apiDir, 'config.json'), JSON.stringify(apiConfig, null, 2) + '\n', { flag: 'w' });
+-  writePrivate(path.join(apiDir, 'env.json'), JSON.stringify(apiEnv, null, 2) + '\n', { flag: 'w' });
++  if (verificationFile) {
++    replacePrivateJson(verificationFile, apiConfig);
++    replacePrivateJson(path.join(apiDir, 'config.json'), apiConfig);
++  } else {
++    writePrivate(path.join(apiDir, 'config.json'), JSON.stringify(apiConfig, null, 2) + '\n', { flag: 'w' });
++    writePrivate(path.join(apiDir, 'env.json'), JSON.stringify(apiEnv, null, 2) + '\n', { flag: 'w' });
++  }
+   writePrivate(completeFile, JSON.stringify({ version: 1, method: 'kubernetes', role: roleName, policy: policyName, serviceAccount, namespace, audience,
+     tokenTtl: ttl, tokenMaxTtl: maxTtl, sink: SINK, mode: registry ? 'registry' : 'static', tenants: registry ? null : apiConfig.tenants.length }, null, 2) + '\n');
+--- a/check/candidate-documents.test.cjs
++++ b/check/candidate-documents.test.cjs
+@@ -107,2 +107,38 @@
+   } finally { fs.rmSync(root, { force: true, recursive: true }); }
+ });
++
++test('Vault provisions the same API document that the admin role verifies', async () => {
++  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vault-role-export-'));
++  const originalFetch = globalThis.fetch;
++  try {
++    const d = documents(root);
++    const { writePrivate } = binding('bootstrap');
++    const { input, provision } = require('../ops/vault-kubernetes-auth.js');
++    fs.unlinkSync(path.join(root, 'vault-agent/complete.json'));
++    writePrivate(path.join(root, 'bootstrap/layout.json'), binding('config').layout());
++    writePrivate(path.join(root, 'bootstrap/vault-init.json'), {root_token: 'synthetic'});
++    const options = input({NS_VAULT_K8S_AUTH:'1', NS_BOOTSTRAP_OUTPUT:root,
++      NS_VAULT_K8S_NAMESPACE:'synthetic', NS_VAULT_K8S_SERVICE_ACCOUNT:'cohort'});
++    let requests = 0;
++    globalThis.fetch = async (_, init) => {
++      requests++;
++      return init.method === 'GET' ? new Response(JSON.stringify({data:{policy:'synthetic'}})) : new Response(null, {status:204});
++    };
++    const before = d.get('api/config.json');
++    const name = 'admin/verification/api.config.json';
++    const restore = d.change(name, value => { value.platformVerification.namespace += '_changed'; });
++    try { await assert.rejects(provision(options), {code:'VAULT_VERIFICATION_DOCUMENT_CHANGED'}); }
++    finally { restore(); }
++    assert.equal(requests, 0);
++    assert.deepEqual(d.get('api/config.json'), before);
++    await provision(options);
++    const expected = {...before, vault:{...before.vault, tokenFile:'/run/ns-vault/token'}};
++    assert.deepEqual(d.get('api/config.json'), expected);
++    assert.deepEqual(d.get(name), expected);
++    const proof = bootstrapProof(root, app, contract, fixture('synthetic','vault-handoff'));
++    assert.deepEqual(proof.roles.map(row => row.role), ['api','evaluator','realtime']);
++  } finally {
++    globalThis.fetch = originalFetch;
++    fs.rmSync(root, {recursive:true, force:true});
++  }
++});

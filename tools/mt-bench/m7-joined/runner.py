@@ -56,8 +56,8 @@ def validate_config(config):
     require(set(config) in (common | {'helperHead'}, common | {'helperInstrument'}), 'M7_RUNNER_CONFIG_FIELDS')
     verify_helper(config)
     require(re.fullmatch(r'sha256:[a-f0-9]{64}', config['k6Image']) is not None, 'M7_RUNNER_K6_PIN')
-    require(type(config['workSeconds']) is int and 30 <= config['workSeconds'] <= 10800
-            and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <= 300, 'M7_RUNNER_FINITE_LIMIT')
+    require(type(config['workSeconds']) is int and 30 <= config['workSeconds'] <= 86400
+            and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <= 3600, 'M7_RUNNER_FINITE_LIMIT')
     options = config['prepare']
     require(isinstance(options, dict) and 'directory' not in options and 'fixture-project' in options
             and 'backend-subnet' in options and 'edge-subnet' in options, 'M7_RUNNER_PREPARE_CONFIG')
@@ -79,7 +79,7 @@ def preflight_receipt(config, argv):
     # Validate receipt/config mirrors before creating output or arming a guard.
     parsed=a.parser().parse_args(['prepare','--directory','/tmp/m7-runner-validation',*argv])
     receipt=a.document(parsed.freeze)
-    if receipt.get('version')==2:
+    if receipt.get('version')==2 or parsed.static_workers is not None:
         from run_configuration import from_args, validate_execution
         validate_execution(config,receipt)
         resolved=from_args(parsed,a.instrument()['sha256'])
@@ -187,7 +187,7 @@ def partial(root):
     """References remain private; missing instruments are never invented zeros."""
     d = root / 'fixture'
     artifacts = {}
-    for name in ('summary.json', 'runtime-readiness.json', 'deployment.json', 'role-logs/manifest.json', 'load/probe.json', 'load/k6-summary.json'):
+    for name in ('summary.json', 'runtime-readiness.json', 'deployment.json', 'deployment-stages.json', 'startup-primer-boundary.json', 'api-warm-cause.json', 'role-logs/manifest.json', 'load/probe.json', 'load/k6-summary.json'):
         file = d / name
         if file.is_file():
             artifacts[name] = {'sha256': a.digest(file), 'path': str(file)}
@@ -269,7 +269,7 @@ def stage(root, name, args):
         rc = child.wait(timeout=max(.1, state['stopWorkAt'] - time.time()))
         write(root / 'stage-job.json', {**a.document(root / 'stage-job.json'), 'completed': True, 'returncode': rc})
         write(root / (name + '-result.json'), {'phase': name, 'returncode': rc, 'endedAt': time.time()})
-        require(rc == 0, 'M7_RUNNER_' + name.upper() + '_FAILED')
+        require(rc == 0, 'M7_RUNNER_' + re.sub('[^A-Z0-9_]', '_', name.upper()) + '_FAILED')
     finally:
         if child.poll() is None:
             stop_stage(root / 'stage-job.json', state['owner'])
@@ -371,9 +371,9 @@ def execute(directory, rehearsal=False):
 # Reuse is opt-in and starts its own finite window; an entered point is never adopted.
 SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'idle-seconds',
     'load-seconds', 'offered-rps', 'hot-factor', 'probe-every-ms', 'sockets-per-tenant',
-    'logical-polling-clients', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
-    'evaluator-catchup', 'evaluator-opportunities', 'restart-during-load-after-seconds'))
-SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet',
+    'logical-polling-clients', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
+    'evaluator-catchup', 'evaluator-opportunities', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic'))
+SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet', 'commissioning-slot-wal-mib', 'tenant-readiness',
     'diagnostic-resource-profile', 'diagnostic-resource-allocation', 'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
     'generator-dependency-preparation-sha256', 'generator-dependency-preparation-head'))

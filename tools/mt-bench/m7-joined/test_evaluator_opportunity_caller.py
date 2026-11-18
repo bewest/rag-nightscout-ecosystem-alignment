@@ -67,7 +67,13 @@ class Caller(unittest.TestCase):
             for r in frame['view']['tenants']:
                 r.update(dueAt=None,dueReason=None,jobs=dict.fromkeys(('running','booting','acquire','time','parentAcquire','parentTime'),False))
                 if r['tenant']==A:r['progress']['completedAcquisitions']+=step;r['cycles']+=step
-                if health and step==1 and r['tenant']==B:r['progress']['failedCompletions']=1
+                # Rejected attempts are not individually classified clinical
+                # failures. Explicit clinical errors and counter resets remain
+                # separate refusing observations on the untouched tenant.
+                if r['tenant']==B:
+                    if health is True and step==1:r['evaluation']['alert']='SYNTHETIC_CLINICAL_FAILURE'
+                    if health=='counter' and step>=1:r['progress']['failedCompletions']=1
+                    if health=='reset' and step==1:r['progress']['failedCompletions']=1
             return json.dumps(frame)+'\n'
         caught=None;observer=None
         with mock.patch.object(a,'progress_services',return_value=['evaluator']),mock.patch.object(a,'psql',side_effect=sql),mock.patch.object(a,'progress_fetch',side_effect=rpc):
@@ -163,10 +169,25 @@ class Caller(unittest.TestCase):
             self.assertGreaterEqual(len(proof['durableCollectorCost']['rounds']),2)
             if kwargs.get('stale'):self.assertEqual(proof['byTenant'][A]['classification'],'KNOWN_PENDING')
 
-    def test_actual_all_roster_hidden_failure_remains_fail_for_untouched_tenant(self):
+    def test_actual_all_roster_clinical_error_remains_fail_for_untouched_tenant(self):
         _,out,_,_,error,_,_=self.exercise(health=True)
-        self.assertIsNotNone(error);self.assertEqual(error.verdict,'FAIL');self.assertIn('HIDDEN_FAILURE',str(error))
+        self.assertIsNotNone(error);self.assertEqual(error.verdict,'FAIL');self.assertEqual(str(error),'M7_EVALUATOR_PROGRESS_ERROR')
+        proof=a.document(out/'evaluator-progress.json')
+        self.assertEqual(proof['verdict'],'FAIL')
+        self.assertEqual(proof['failedCollection']['diagnostic']['failedRow']['alert'],'SYNTHETIC_CLINICAL_FAILURE')
+        self.assertIsNone(self.exercise()[4],'restored actual observer remains healthy')
+
+    def test_unclassified_counter_is_retained_and_reset_refuses(self):
+        # The former HIDDEN_FAILURE assertion treated rejected/superseded
+        # attempts as clinical failures. Preserve the count and its uncertainty.
+        _,out,_,_,error,_,_=self.exercise(health='counter');self.assertIsNone(error)
+        attempts=a.document(out/'evaluator-progress.json')['uncreditedAttempts']
+        self.assertEqual(attempts['uncreditedAttemptDelta'],1)
+        self.assertEqual(attempts['causeAttribution'],'UNMEASURED')
+        _,out,_,_,error,_,_=self.exercise(health='reset')
+        self.assertEqual(str(error),'M7_EVALUATOR_PROGRESS_RESET');self.assertEqual(error.verdict,'FAIL')
         self.assertEqual(a.document(out/'evaluator-progress.json')['verdict'],'FAIL')
+        self.assertIsNone(self.exercise()[4])
 
     def test_default_is_legacy_and_unsupported_or_missing_source_refuses_before_sql(self):
         d,out,m,_=self.fixture()
@@ -181,11 +202,18 @@ class Caller(unittest.TestCase):
             (d/'completion-source.json').unlink()
             with self.assertRaisesRegex(RuntimeError,'SOURCE_REQUIRED'):a.observe_progress(d,m,out,'load')
 
-    def test_explicit_prepare_selection_is_not_a_default_or_profile_fallback(self):
+    def test_prepare_default_is_exact_discovery_profile_and_explicit_wrong_scope_refuses(self):
         import argparse
         m={'profile':'pgstream-sample','completionContract':'evaluator-work-v2','runPurpose':'discovery'}
-        a.select_opportunities(argparse.Namespace(),m);self.assertNotIn('evaluatorOpportunities',m)
+        # Durable opportunities became the default for this exact discovery
+        # scope. Keep unsupported profiles and explicit wrong scope refused.
+        a.select_opportunities(argparse.Namespace(),m);self.assertEqual(m['evaluatorOpportunities'],o.CONTRACT)
         a.select_opportunities(argparse.Namespace(evaluator_opportunities=o.CONTRACT),m);self.assertEqual(m['evaluatorOpportunities'],o.CONTRACT)
+        for other in ({**m,'runPurpose':'acceptance'},{**m,'profile':'capacity'},{**m,'completionContract':'evaluator-work-v1'}):
+            other.pop('evaluatorOpportunities')
+            a.select_opportunities(argparse.Namespace(),other);self.assertNotIn('evaluatorOpportunities',other)
+        with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):
+            a.select_opportunities(argparse.Namespace(evaluator_opportunities='wrong-contract'),m)
         with self.assertRaisesRegex(RuntimeError,'PROFILE_UNSUPPORTED'):a.select_opportunities(argparse.Namespace(evaluator_opportunities=o.CONTRACT),{'profile':'capacity'})
 
     def test_actual_capture_byte_and_deadline_bounds_refuse_before_decoding_or_querying(self):

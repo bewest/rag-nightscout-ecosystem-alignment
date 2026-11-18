@@ -148,6 +148,19 @@ class Profile(unittest.TestCase):
             (d/'load/k6-summary.json').write_text(json.dumps({'metrics':{'http_req_duration{shape:'+k+'}':{'values':{'med':1,'p(95)':2,'p(99)':3,'count':1}} for k in shapes}}))
             value=measurements(d,{'project':'owned','tenants':2});self.assertTrue(value['complete'])
             self.assertEqual(set(value['windows']['load']['roles']),{'api'})
+            # Retained legacy metadata must not turn a shard statistic into a
+            # claimed pooled percentile in the downstream report.
+            summary_file=d/'load/k6-summary.json';original=summary_file.read_text();legacy=json.loads(original)
+            legacy['m7DriverShards']={'version':1,'scope':'upper bound of pooled quantile',
+                'quantileBounds':{'http_req_duration{shape:r_sgv}':{'p(95)':[1,2]}}}
+            summary_file.write_text(json.dumps(legacy));qualified=measurements(d,{'project':'owned','tenants':2})
+            self.assertEqual(qualified['httpShapes']['r_sgv']['p95'],2)
+            self.assertEqual(qualified['httpShapes']['r_sgv']['pooledPercentiles'],'UNMEASURED')
+            self.assertEqual(qualified['httpShapes']['r_sgv']['shardPercentileRange']['p(95)'],[1,2])
+            legacy['m7DriverShards']['quantileBounds']=None;summary_file.write_text(json.dumps(legacy))
+            missing=measurements(d,{'project':'owned','tenants':2});self.assertEqual(missing['httpShapes']['r_sgv']['pooledPercentiles'],'UNMEASURED');self.assertIsNone(missing['httpShapes']['r_sgv']['shardPercentileRange'])
+            summary_file.write_text(original)
+
             k6=value['windows']['load']['loadGenerators']['k6'];self.assertEqual(k6['sampleCount'],1);self.assertEqual(k6['processRssKiBAfter'],'UNMEASURED')
             missing=d/'load/after-cgroups.json';saved=missing.read_text();value=json.loads(saved);value['roles']['api'].pop('processRssKiB');missing.write_text(json.dumps(value))
             self.assertFalse(measurements(d,{'project':'owned','tenants':2})['complete']);missing.write_text(saved)

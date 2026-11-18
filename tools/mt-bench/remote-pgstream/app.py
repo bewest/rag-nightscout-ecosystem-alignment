@@ -12,7 +12,7 @@ import time
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from protocol import viewer_total, Channel, binding, need, source_identity, traffic_verdict, server_verdict, TRAFFIC_FILES, write, discovery_mode, topology_dependencies, work_seconds, RESERVE
+from protocol import viewer_total, Channel, binding, native_mode, native_project, need, source_identity, traffic_verdict, server_verdict, TRAFFIC_FILES, write, discovery_mode, topology_dependencies, work_seconds, RESERVE
 import traffic_probe
 sys.path.insert(0, str(HERE.parent / 'm7-joined'))
 import adapter as a
@@ -37,6 +37,14 @@ def load(cell, spec, now=None):
     need(receipt.get('remotePgstreamTopology') == b.get('pgstreamTopology') and receipt.get('remoteDiagnosticResourceProfile') == b.get('diagnosticResourceProfile') and receipt.get('remoteDiagnosticResourceAllocation') == b.get('diagnosticResourceAllocation') and receipt.get('remoteHelperDependencies') == b.get('helperDependencies'),'REMOTE_TOPOLOGY_AUTHORIZATION_REQUIRED')
     need(receipt.get('remoteWorkload') == b.get('workload'), 'REMOTE_WORKLOAD_AUTHORIZATION_REQUIRED')
     need(receipt.get('remoteComponentCases') == b.get('componentCases'), 'REMOTE_COMPONENT_RECEIPT_REQUIRED')
+    need(receipt.get('remoteStaticTopology')==b.get('staticTopology') and m.get('staticTopology')==b.get('staticTopology'),'REMOTE_STATIC_CELL_CHANGED')
+    from commissioning_wal import remote_selection
+    startup=remote_selection(b)
+    need(all(m.get(k)==startup.get(k)for k in ('commissioningSlotWalMiB','tenantReadiness')),'REMOTE_STARTUP_CELL_CHANGED')
+    need(receipt.get('remoteCommissioningSlotWalMiB')==startup.get('commissioningSlotWalMiB') and receipt.get('remoteTenantReadiness')==startup.get('tenantReadiness'),'REMOTE_STARTUP_RECEIPT')
+    need(receipt.get('remoteNativeSourceAdmission')==b.get('nativeSourceAdmission'),'REMOTE_NATIVE_SOURCE_ADMISSION_RECEIPT')
+    if native_mode(b):
+        need(receipt.get('remoteFixtureNetworks')==b['fixtureNetworks'],'REMOTE_NATIVE_NETWORKS')
     need(receipt.get('remoteProfile') == b['profile'] and receipt.get('remoteTransport') == b['transport'] and receipt.get('remoteExtensionSha256') == b['sourceSha256'], 'REMOTE_EXTENSION_AUTHORIZATION_REQUIRED')
     need(b['pair'] == m['pair'] and b['tenants'] == m['tenants'] and m['replicas'] == 1
          and b['imageId'] == a.image(m) and b['sourceSha256'] == source_identity(HERE)['sha256'], 'EXTERNAL_APP_IDENTITY')
@@ -58,12 +66,18 @@ def record_prepared_binding(cell, spec):
     need(m.get('prepared') is True and not m.get('attached') and
          m.get('preparedExternalBinding') is None and m.get('externalBinding') is None,
          'EXTERNAL_PREPARED_BINDING_ALREADY_SET')
-    need(m['project'] == a.fixture_project(argparse.Namespace(tenants=m['tenants'], replicas=m['replicas']), m['owner']), 'EXTERNAL_PREPARED_PROJECT_CHANGED')
+    prepared_project(m,b)
     # Canonical prepare selects the port; bind that actual value before ingress.
     prepared = binding({**b, 'port': m['port']})
     m['preparedExternalBinding'] = prepared
     write(d / 'owner.json', m)
     return d, m, prepared
+
+
+def prepared_project(m,b):
+    args=argparse.Namespace(tenants=m['tenants'],replicas=m['replicas'],
+                            fixture_project=native_project(b) if native_mode(b) else None)
+    need(m['project']==a.fixture_project(args,m['owner']),'EXTERNAL_PREPARED_PROJECT_CHANGED')
 
 
 def cleanup(cell, raw):
@@ -87,7 +101,7 @@ def cleanup(cell, raw):
         need(m.get('prepared') is True and not m.get('attached') and
              m.get('preparedExternalBinding') == raw and m['port'] == raw['port'],
              'EXTERNAL_PREPARED_BINDING_CHANGED')
-        need(m['project'] == a.fixture_project(argparse.Namespace(tenants=m['tenants'], replicas=m['replicas']), m['owner']), 'EXTERNAL_PREPARED_PROJECT_CHANGED')
+        prepared_project(m,raw)
         # Existing source/receipt, image, host, config and resource ownership
         # guards qualify cleanup even when admission never completed.
         d, m, _ = load(cell, raw, now)
@@ -258,7 +272,11 @@ def summarize(d, m, b, idle_result, load_result, recovered, health_result, resta
 def discovery_summary(d,m,b,probe,k6):
     """Retain observations; missing proof never becomes strict acceptance."""
     import discovery
+    from clinical import completed, completion_source
     out=d/'load'
+    native=native_mode(b)
+    if native:
+        m={**m,'remoteNativeObserver':True}
     result={'version':1,'kind':'remote-pgstream-discovery-cell','status':'PARTIAL','verdict':'UNMEASURED',
             'runPurpose':'discovery','capacityAcceptance':'NOT_GRANTED',**m.get('discoveryAuthorization',{}),'binding':b,'pair':m['pair'],
             'imageId':m['imageId'],'baseInstrument':m['instrument'],'externalInstrument':source_identity(HERE),
@@ -276,12 +294,24 @@ def discovery_summary(d,m,b,probe,k6):
         a.verify(d,m);load(d,b)
         need(not probe.get('hardFailure'),'REMOTE_DISCOVERY_PROBE_HARD_FAILURE')
         result['strictChecks']['sourceOwnership']={'verdict':'PASS'}
+        if native:
+            reader=completion_source(d,m)
+            source_sha=a.digest(d/'completion-source.json')
         for stage in ('idle','load'):
             file=d/stage/'evaluator-progress.json'
             observed=a.document(file) if file.is_file() else {'verdict':'UNMEASURED','code':'M7_EVALUATOR_PROGRESS_UNAVAILABLE'}
+            if native:
+                need(observed.get('phase')==stage,'REMOTE_NATIVE_OPPORTUNITY_REQUIRED')
+                witnessed=a.evaluator_opportunities.verify(observed,m['tenants'],a.progress_services(d),reader['binding'],source_sha256=source_sha)
+                if a.discovery_rest.result(witnessed):
+                    result['clinicalVerdict']='FAIL'
+                else:
+                    need(all('nativeInput' in row for row in witnessed['byTenant'].values()),'REMOTE_NATIVE_OPPORTUNITY_REQUIRED')
+                    result.setdefault('acceptedWorkAndDue',{})[stage]={k:witnessed[k] for k in ('verdict','inputCoverage','classifications','writerIntakeCoverage')}
             if a.discovery_rest.result(observed):
                 need(a.discovery_rest.selected(m),'REMOTE_DISCOVERY_CLINICAL_CONTINUATION_SCOPE')
-                a.evaluator_opportunities.verify(observed,m['tenants'],a.progress_services(d),{'kind':'evaluator-work-v2','pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']})
+                if not native:
+                    a.evaluator_opportunities.verify(observed,m['tenants'],a.progress_services(d),{'kind':'evaluator-work-v2','pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']})
                 result['clinicalVerdict']='FAIL'
             else:need(not discovery.hard_recovery(observed),'REMOTE_DISCOVERY_CLINICAL_FAILURE')
             result['strictChecks'][stage]={k:observed[k] for k in ('verdict','code') if k in observed}
@@ -297,11 +327,17 @@ def discovery_summary(d,m,b,probe,k6):
         if probe.get('window') and (out/'fanout.json').is_file():
             from viewer_plan import check
             result['viewerFrames']=check(m,a.document(d/'tenants.private.json'),probe,a.document(out/'fanout.json')['probeWrites']['byTenant'])
-        from clinical import completed
         try:result['completedOutput']=completed(d,m)
         except RuntimeError as error:
             if str(error) not in ('REMOTE_CLINICAL_CLIENT_WITNESS_REQUIRED','REMOTE_CLINICAL_COMPLETION_UNMEASURED'):raise
             result['completedOutput']={'verdict':'UNMEASURED','code':str(error)}
+        if native:
+            need(known and counts.get('verdict')=='GREEN','REMOTE_NATIVE_WRITER_COUNT_PROOF_REQUIRED')
+            need(result['completedOutput'].get('verdict')=='PASS' and
+                 result['completedOutput'].get('clientFrames',{}).get('verdict')=='PASS',
+                 'REMOTE_NATIVE_CLINICAL_PROOF_REQUIRED')
+            need(result.get('clinicalVerdict')!='FAIL','REMOTE_DISCOVERY_CLINICAL_FAILURE')
+            need(result['processes'].get('k6')==result['processes'].get('probe')==0,'REMOTE_NATIVE_DRIVER_PROCESS_FAILED')
         for name,collect in (('measurements',lambda:measurements(d,m)),('generatorMetrics',lambda:a.document(out/'generator-metrics.json'))):
             try:result['optionalObservations'][name]=collect()
             except Exception:result['optionalObservations'][name]={'verdict':'UNMEASURED','code':'REMOTE_OPTIONAL_OBSERVATION_UNAVAILABLE'}
@@ -324,7 +360,23 @@ def _session(d,m,b):
         return app_session(d,m,b,sys.modules[__name__])
     need(m.get('externalBinding') == b, 'EXTERNAL_BINDING_CHANGED')
     channel = Channel(b, 'app-0')
+    if m.get('staticTopology'):
+        a.write(d/'remote-static-runtime-roster.json',a.static_topology.verify_runtime(m,a.document(d/'frozen.compose.json'),a.resources(m,False)))
+    a.commissioning_wal.runtime(a,d,m,'before-traffic')
     a.sample_context(d, m)  # Actual evaluator/RT configs, dependencies and SQL identities on SUT.
+    if native_mode(b):
+        from clinical import completion_source
+        completion_source(d,{**m,'remoteNativeObserver':True})
+        runtime=d/'native-runtime'
+        runtime.mkdir(mode=0o700)
+        a.stream_topology.external_runtime(a.diagnostic_resource_rows(m),m)
+        limits=a.diagnostic_resources._ACTIVE
+        need(limits is not None,'REMOTE_NATIVE_RUNTIME_ALLOCATION_REQUIRED')
+        limits.containers()
+        a.write(runtime/'edge-worker-runtime.json',a.edge_runtime(d,m))
+        a.phase_snapshot(d,runtime,'before')
+        roles=a.document(runtime/'before-cgroups.json')['roles']
+        a.stream_topology.readable_processes(roles,m)
     if discovery_mode(b):
         import discovery
         record=discovery.Record(a,d,m)
@@ -333,6 +385,8 @@ def _session(d,m,b):
     channel.send('app-ready')
     primed = channel.receive('client-primed', work_seconds(b,1800))
     need(set(primed)=={'primed'} and type(primed['primed']) is int and 0<=primed['primed']<=viewer_total(b),'EXTERNAL_PRIME_INVALID')
+    if native_mode(b):
+        need(primed['primed']==viewer_total(b),'REMOTE_NATIVE_VIEWER_PRIME_REQUIRED')
     need(discovery_mode(b) or primed == {'primed': viewer_total(b)}, 'EXTERNAL_PRIME_FAILED')
     out = d / 'load'
     out.mkdir()

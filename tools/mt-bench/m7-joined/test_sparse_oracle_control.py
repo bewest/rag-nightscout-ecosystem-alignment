@@ -127,12 +127,14 @@ class SparseControl(unittest.TestCase):
     def test_actual_collection_routes_sparse_control_and_old_predicate_is_red(self):
         result,sql=self.run_collection(d.run_discovery)
         self.assertEqual(result['oracleControl'],{'baseline':'GREEN','broken':'RED','restored':'GREEN'});self.assertEqual(len(sql),2)
-        source=inspect.getsource(d.run_discovery)
+        # Resource admission now wraps the collector. Ablate the predicate
+        # in the actual collector rather than the delegation-only wrapper.
+        source=inspect.getsource(d._run_discovery)
         needle="control_domain(counts,m['tenants']) is not None"
         self.assertIn(needle,source);namespace=dict(d.__dict__)
         old="counts and counts.get('rows') and all(row.get('accepted',0)>0 and row.get('uncertain',0)==0 for row in counts['rows'])"
         exec(compile(source.replace(needle,old),d.__file__,'exec'),namespace)
-        broken,sql=self.run_collection(namespace['run_discovery'])
+        broken,sql=self.run_collection(namespace['_run_discovery'])
         self.assertNotIn('oracleControl',broken);self.assertEqual(sql,[])
         self.assertEqual(broken['strictChecks']['oracleControl']['code'],'M7_DISCOVERY_COUNTS_MISSING')
         restored,sql=self.run_collection(d.run_discovery);self.assertIn('oracleControl',restored);self.assertEqual(len(sql),2)

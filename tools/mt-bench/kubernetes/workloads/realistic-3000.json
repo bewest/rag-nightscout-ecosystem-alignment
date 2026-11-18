@@ -1,0 +1,47 @@
+{
+  "basis": "proposed sensor-cadence comparison; exact reference bridge source, sizing and live operation UNMEASURED",
+  "capacityAcceptance": "NOT_GRANTED",
+  "history": {
+    "additionalSeedRows": 0,
+    "mode": "existing-provisioner-only",
+    "retention": "UNMEASURED"
+  },
+  "kind": "k8s-m7-workload-profile",
+  "name": "realistic-3000",
+  "phases": {
+    "cleanupSeconds": 600,
+    "reconnectBurstClients": 0,
+    "restart": false,
+    "workSeconds": 2400
+  },
+  "population": {
+    "hotFactor": 1,
+    "ordinaryRosterTenants": 3000,
+    "provisionedTenants": 3000
+  },
+  "proposedEnvelope": {
+    "clusterLimits": {
+      "ephemeralStorageBytes": 3489660928,
+      "memoryBytes": 3221225472,
+      "millicpus": 2100
+    },
+    "imageCacheReserveBytes": 2147483648,
+    "nativeLimits": {
+      "memoryBytes": 1342177280,
+      "millicpus": 1200
+    }
+  },
+  "referencePins": {
+    "bindingCommit": "6133f9136c591551344e31c661bb23e0bd113c96",
+    "core": "5a94bbaee7f1130b7de8db0f90deae8c4c1e480b",
+    "deploy": "49db85682482d5fa8b304a3a9ffaf3cb0980ec05"
+  },
+  "version": 1,
+  "workload": {
+    "loadSeconds": 1800,
+    "workloadMix": "realistic-v1",
+    "workloadScale": 1,
+    "logicalPollingClients": 300,
+    "probeEveryMs": 300000
+  }
+}

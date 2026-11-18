@@ -162,3 +162,123 @@ receipt and prepared cell retain that exact name; the shared resource producer
 sets the actual role limits and the collector verifies effective cgroups. This
 selection retains diagnostic scope and grants no capacity acceptance. The default
 4CPU/8GiB selection and strict reporting are unchanged.
+
+Current single-process native preparation selects the `external-service-native-v1`
+helper dependency profile with the external-service topology and an explicit
+resource allocation. The packet binds the version-2 diagnostic configuration
+to exact built-image evidence and accepted-work reader dependencies. Its default
+path binds the reviewed source acceptance and sends that original hashed file
+only to the SUT. Explicit `nativeSourceAdmission: diagnostic-build-v1` instead
+retains exactly `sourceAcceptance: {status: PENDING}` and mirrors the selection
+in `remoteNativeSourceAdmission`. The paired controller validates actual
+image/build/source-plan/absence evidence and transfers a separate hashed
+`source-build-proof.json`; no source-acceptance PASS is manufactured. The worker checks both revision labels again after image import.
+The controller and extension still require the resource owner's genuine
+diagnostic authorization and finite reviewed transport scope.
+
+The SUT records the native producer and evaluator identities and effective
+container limits before load. The existing reader checks native accepted and
+completed work and sampled due opportunities in both idle and load. It joins
+selected completed output with the stock viewer's exact callback, transport
+incarnation and monotonic delay. A missing clinical or independent writer-count
+proof refuses the native smoke. Outcomes for unobserved due events, all-writer
+WAL-to-intake coverage and cross-host write-to-evaluation latency remain
+unmeasured. The remote worker requires the separate driver's actual Docker
+CPU, memory and no-swap readback for an explicit allocation.
+
+
+### Realistic cadence and driver shards
+
+Discovery workload bindings accept the existing `realistic-v1` mix and
+`driverShards` from the canonical runner configuration. The realistic mix keeps
+acceleration and hot factor at one and refuses an aggregate `offeredRps` override.
+Unknown selectors, ambiguous mixes, noninteger shard counts and counts outside
+1–16 or above the tenant count refuse. Strict historical presets keep their
+existing contract. The local VU scheduling trace selector remains local-only.
+
+For more than one shard, select the explicit external pgstream topology and
+include exact `driver_shards.py` and `contract.py` hashes in the existing helper
+dependency record. The remote projection derives these two hashes from its
+selected instrument and refuses a conflicting supplied hash. The paired caller
+and worker mirror the complete cadence, including the optional logical viewer
+count, to the actual helper parser. The driver passes `M7_WORKLOAD_MIX` to k6.
+
+The trusted generator derives contiguous readonly roster slices from the one
+verified traffic roster. It reuses the shared shard planner and script inside
+one existing admitted k6 container. CPU, memory, no-swap, UID, owner, image,
+mount, cleanup and finite lifetime checks remain on that container. The exact
+canonical shell program, environment and roster hashes are checked before
+launch; an arbitrary entrypoint or changed program refuses. No additional
+traffic file, database credential or provider credential is exported.
+
+Each shard retains its own summary, log and exit code. The shared reducer creates
+the aggregate summary only when all shards exit successfully. Counters and
+weighted means reduce the retained fields; each reported merged percentile is
+the largest shard statistic. The legacy `quantileBounds` field retains its range
+across shards, not pooled-percentile bounds. `pooledPercentiles` remains
+`UNMEASURED` without raw samples and a verified definition. This method makes no
+claim about a particular k6 percentile algorithm. The paired
+worker transports every selected shard artifact plus the hash-only roster
+record through its existing bounded result archive. Missing or failed shards
+remain visible and do not become zero traffic.
+
+This tooling support starts no remote job and proves no operating envelope.
+Use a new plan, helper digest, receipt and paired controller after changing the
+selection. Preserve entered run inputs and all independent clinical, stored-write
+and exact client-frame checks.
+
+
+The optional `cadence.workloadScale` bounds a uniform rate bracket to 0.25–8
+when `workloadMix` is `realistic-v1`. Its default one preserves nominal cadence;
+other factors scale all seven intervals together and retain the fixed roster,
+viewers and resource limits. The caller, worker, helper and k6 environment mirror
+the exact value. Dropping the worker flag, changing the receipt or changing the
+canonical driver environment refuses before entry. `shapeCycleMs` in the driver
+preallocation declaration is the selected, rounded time unit after scaling.
+A scaled point is a rate bracket, not a sensor-cadence capacity claim.
+
+### Explicit remote static K1/N1
+
+Native discovery supports only `staticTopology: {kind: static-hash-v1, workers: 1}`
+with the paired `remoteStaticTopology` receipt and `limits.staticWorkers: 1` plus
+`apiReplicas: 1`. It requires an authored allocation with socket-edge and without additional
+serving ordinals. The ordinary Compose definition retains a dormant placement
+operator, so its resource row stays reserved; the actual launch excludes it. Other remote K/N
+shapes refuse; the helper retains exact source-pair qualification.
+
+The projection, caller binding, worker CLI and actual cell parser bind the same
+selector and configuration digest. The ordinary product generator, real published
+plan parser and mounted role/producer documents remain authoritative. The remote
+launch plan includes socket-edge and skips retired pool initialization. Source
+slot/ordinal/peer checks run after bootstrap; actual role/edge census and private
+configuration contexts run before ordinary traffic. Native inspection v3 preserves
+configured count/ordinal separately from unknown peer liveness.
+
+Source and synthetic-host controls prove those paths and refusal/restoration.
+Actual remote startup, transport, resource observations and delivery still need a
+finite tiny qualification on the selected image. This support grants no capacity
+and does not qualify remote K2/N2. Entered helpers, source and clocks stay fixed.
+### Native driver kernel counters
+
+The existing trusted root supervisor adds optional `driverCgroup` observations
+inside `generator-metrics.json`; the existing worker export retains that file.
+Traffic children keep their original user and receive no Docker, SQL or credential
+authority. Each measured row qualifies the exact creation intent, full container
+ID, owner nonce, pinned image, canonical command, mounts and security, then checks
+the host PID birth and cgroup path before and after the kernel reads. A changed
+identity refuses the observation. Explicit driver CPU and memory selections must
+also match the kernel quota and memory cap.
+
+Rows retain cumulative `cpu.stat` counters (including `nr_throttled` and
+`throttled_usec`), `cpu.max`, `memory.current`, `memory.peak`, `memory.max` and
+`memory.events`. They cover the k6 container and all of its selected shards, apart
+from the probe child and SUT. The memory peak covers the container lifetime;
+interval CPU/throttling deltas require two measured rows with identical identity.
+Each row retains the monotonic CPU-counter read time and kernel read span, so
+interval normalization need not use the later Docker qualification timestamp.
+Missing/unsupported files or absent actors are `UNMEASURED` with a reason and no
+counter substitution. Docker-stats and native readback availability stay separate.
+Source controls cover owner/image mismatch, birth change, missing peak, unsupported
+cgroup version, missing CPU counters and unlimited quota, with restoration. Actual
+remote qualification of these new fields requires a new frozen point; historical
+commissioning captures retain their original scope.

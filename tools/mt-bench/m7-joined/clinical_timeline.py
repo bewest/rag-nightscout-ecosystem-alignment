@@ -18,6 +18,8 @@ import diagnostic_resources as resources
 NAME='two-target-intake-timeline-v1'
 RAW_NAME='two-target-intake-timeline-raw-v2'
 DEST='/run/ns-intake-timeline'
+C117='c1173eab7c4fea1270eb585aff5961142849d048'
+C117_SOURCES={'lib/pgstream/receiver.js': '1d23409f0d9501c162dfb1cbe6966476e5296b69e2c9b92e5386c319db7924fd', 'lib/pgstream/activity-scheduler.js': 'aba112d1e9b6bf17a9ef73d623bde26c5828fc2de65884d5986842f3d1938647', 'lib/server/serve/evaluator-runtime.js': '68033ab4fdae104737d3e6aee39666afae62d86c4482ca7f60425fe213388b69', 'lib/storage/clinical-stream-sql.js': 'bf6a122f3ef32726a52e72256a044bd880e67bd921aa2428ba6da55bb9bc17f5', 'lib/server/serve/evaluator-preview.js': '9348278415e0db66fa3aff79ab1e409488c633246b9040b63da872e445421129'}
 COMMAND=['node','deploy/multitenant/entrypoint.js','evaluator']
 SELECTED=['node','--require',DEST+'/preload.cjs',*COMMAND[1:]]
 
@@ -27,11 +29,29 @@ def sha(file):
         for chunk in iter(lambda:stream.read(1048576),b''):digest.update(chunk)
     return digest.hexdigest()
 
-def install(config,d,m,selected,sender_binary=None,sender_receipt=None):
+def validate_ids(ids):
+    require(isinstance(ids,list) and 1<=len(ids)<=2 and all(isinstance(i,str) and re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',i) and i!='00000000-0000-0000-0000-000000000000' for i in ids) and len(set(ids))==len(ids),'M7_CLINICAL_TIMELINE_TARGET_IDS')
+
+def validate_scope(config,d,m):
+    selected=config.get(resources.PROFILE_KEY)
+    if isinstance(selected,dict):
+        resources.verify_config(config,resources.plan(config))
+        require(m.get('pair',{}).get('core')==C117,'M7_CLINICAL_TIMELINE_SOURCE')
+        require(all((Path(d)/'core'/name).is_file() and sha(Path(d)/'core'/name)==digest for name,digest in C117_SOURCES.items()),'M7_CLINICAL_TIMELINE_SOURCE')
+    else:require(selected==resources.EVALUATOR250_MEMORY512_NAME,'M7_CLINICAL_TIMELINE_SCOPE')
+
+def install(config,d,m,selected,sender_binary=None,sender_receipt=None,targets_file=None):
     sender_selected=sender_binary is not None or sender_receipt is not None
     require(not sender_selected or (bool(sender_binary) and bool(sender_receipt) and selected==RAW_NAME),'M7_CLINICAL_SENDER_SELECTION')
+    require(targets_file is None or selected!='off','M7_CLINICAL_TIMELINE_TARGET_SCOPE')
     if selected=='off':return
-    require(selected in (NAME,RAW_NAME) and m.get('runPurpose')=='discovery' and config.get(resources.PROFILE_KEY)==resources.EVALUATOR250_MEMORY512_NAME,'M7_CLINICAL_TIMELINE_SCOPE')
+    requested=None
+    if targets_file is not None:
+        require(isinstance(config.get(resources.PROFILE_KEY),dict),'M7_CLINICAL_TIMELINE_TARGET_SCOPE')
+        data=Path(targets_file).read_bytes();require(len(data)<=256,'M7_CLINICAL_TIMELINE_TARGET_BOUND')
+        requested=json.loads(data);validate_ids(requested)
+    validate_scope(config,d,m)
+    require(selected in (NAME,RAW_NAME) and m.get('runPurpose')=='discovery','M7_CLINICAL_TIMELINE_SCOPE')
     e=config['services']['evaluator']
     require(e.get('command')==COMMAND and not e.get('entrypoint') and not e.get('environment',{}).get('NODE_OPTIONS'),'M7_CLINICAL_TIMELINE_COMMAND')
     directory=d/'state/clinical-timeline';directory.mkdir(mode=0o700)
@@ -41,6 +61,10 @@ def install(config,d,m,selected,sender_binary=None,sender_receipt=None):
     e.setdefault('volumes',[]).append({'type':'bind','source':str(directory),'target':DEST,'read_only':True})
     if selected==RAW_NAME:e['environment']['NS_M7_CLINICAL_RAW_TIMELINE']='1'
     m['clinicalTimeline']={'selection':selected,'preloadSha256':sha(target),'maxRows':4096,'maxBytes':2097152,'output':'state/ipc/clinical-intake-timeline.jsonl','targets':'UNPUBLISHED','instrumentDelta':'one readonly owned-state preload mount, --require argv, bounded target event observations; product files unchanged','timingScope':'not a pure configuration-only performance comparison'}
+    if requested is not None:m['clinicalTimeline']['targetIds']=requested
+    if isinstance(config.get(resources.PROFILE_KEY),dict):
+        m['clinicalTimeline']['sourceFiles']=dict(C117_SOURCES)
+        m['clinicalTimeline']['resourceSelectionSha256']=hashlib.sha256(json.dumps(config[resources.PROFILE_KEY],sort_keys=True).encode()).hexdigest()
     if sender_selected:install_sender(config,d,m,sender_binary,sender_receipt)
     if selected==RAW_NAME:m['clinicalTimeline']['raw']={'maxRows':32768,'maxBytes':8388608,'maxPending':128,'output':'state/ipc/clinical-intake-raw.jsonl','scope':'all private POST metadata, selected target joined after parse; not kernel arrival'}
 
@@ -51,24 +75,34 @@ def verify(config,d,m,teardown=False):
         e=config.get('services',{}).get('evaluator',{})
         require(e.get('environment',{}).get('NS_M7_CLINICAL_TIMELINE') is None and e.get('environment',{}).get('NS_M7_CLINICAL_RAW_TIMELINE') is None and DEST+'/preload.cjs' not in e.get('command',[]) and not any(v.get('target')==DEST for v in e.get('volumes',[])),'M7_CLINICAL_TIMELINE_RECORD_REQUIRED')
         return
-    require(record.get('selection') in (NAME,RAW_NAME) and config.get(resources.PROFILE_KEY)==resources.EVALUATOR250_MEMORY512_NAME,'M7_CLINICAL_TIMELINE_SCOPE')
+    validate_scope(config,d,m)
+    require(record.get('selection') in (NAME,RAW_NAME),'M7_CLINICAL_TIMELINE_SCOPE')
+    if isinstance(config.get(resources.PROFILE_KEY),dict):
+        require(record.get('sourceFiles')==C117_SOURCES,'M7_CLINICAL_TIMELINE_SOURCE')
+        require(record.get('resourceSelectionSha256')==hashlib.sha256(json.dumps(config[resources.PROFILE_KEY],sort_keys=True).encode()).hexdigest(),'M7_CLINICAL_TIMELINE_ALLOCATION')
+    if 'targetIds' in record:validate_ids(record['targetIds'])
     require(record.get('raw')=={'maxRows':32768,'maxBytes':8388608,'maxPending':128,'output':'state/ipc/clinical-intake-raw.jsonl','scope':'all private POST metadata, selected target joined after parse; not kernel arrival'} if record.get('selection')==RAW_NAME else 'raw' not in record,'M7_CLINICAL_RAW_RECORD')
     require(config['services']['evaluator'].get('environment',{}).get('NS_M7_CLINICAL_RAW_TIMELINE')==('1' if record.get('selection')==RAW_NAME else None),'M7_CLINICAL_RAW_SELECTION')
     e=config['services']['evaluator'];directory=d/'state/clinical-timeline'
     require(e.get('command')==SELECTED and e.get('environment',{}).get('NS_M7_CLINICAL_TIMELINE')=='1','M7_CLINICAL_TIMELINE_COMMAND')
     require([v for v in e.get('volumes',[]) if v.get('target')==DEST]==[{'type':'bind','source':str(directory),'target':DEST,'read_only':True}],'M7_CLINICAL_TIMELINE_MOUNT')
     require(sha(directory/'preload.cjs')==record.get('preloadSha256')==sha(Path(__file__).with_name('clinical-intake-timeline.cjs')),'M7_CLINICAL_TIMELINE_BYTES')
-    if record.get('targets')!='UNPUBLISHED':require(sha(directory/'targets.json')==record.get('targetsSha256'),'M7_CLINICAL_TIMELINE_TARGETS')
+    if record.get('targets')!='UNPUBLISHED':
+        require(sha(directory/'targets.json')==record.get('targetsSha256'),'M7_CLINICAL_TIMELINE_TARGETS')
+        selected=json.loads((directory/'targets.json').read_text())
+        require(selected.get('ids')==record.get('targetIds',[record['targets']['hotA'],record['targets']['comparisonB']]),'M7_CLINICAL_TIMELINE_TARGETS')
+        require(selected.get('sourceFiles')==record.get('sourceFiles'),'M7_CLINICAL_TIMELINE_SOURCE')
 
 def publish(d,m,roster):
     if not m.get('clinicalTimeline'):return
     require(len(roster)>=2 and len({r['id'] for r in roster})==len(roster),'M7_CLINICAL_TIMELINE_ROSTER')
-    ids=[roster[0]['id'],roster[-1]['id']]
+    ids=m['clinicalTimeline'].get('targetIds',[roster[0]['id'],roster[-1]['id']]);validate_ids(ids)
+    require(set(ids)<=set(r['id'] for r in roster),'M7_CLINICAL_TIMELINE_TARGET_ROSTER')
     target=d/'state/clinical-timeline/targets.json'
     require(not target.exists(),'M7_CLINICAL_TIMELINE_ALREADY_PUBLISHED')
-    target.write_text(json.dumps({'ids':ids})+'\n');target.chmod(0o600)
+    target.write_text(json.dumps({'ids':ids,**({'sourceFiles':m['clinicalTimeline']['sourceFiles']} if 'sourceFiles' in m['clinicalTimeline'] else {})})+'\n');target.chmod(0o600)
     if m.get('clinicalSender'):publish_sender(d,m,ids)
-    m['clinicalTimeline'].update(targets={'hotA':ids[0],'comparisonB':ids[1],'quietScope':'quiet only if independently unchanged writer clock; never assumed'},targetsSha256=sha(target))
+    m['clinicalTimeline'].update(targets={'hotA':ids[0],'comparisonB':ids[-1],'quietScope':'quiet only if independently unchanged writer clock; never assumed'},targetsSha256=sha(target))
 
 MAX_SAFE_INTEGER=9007199254740991
 STATUS_FIELDS={'rows','bytes','pending','written','dropped','failed','closed','qualification'}
@@ -189,7 +223,7 @@ def retain(d,m):
 def probe_environment(m):
     if not m.get('clinicalTimeline'):return {}
     targets=m['clinicalTimeline'].get('targets');require(isinstance(targets,dict),'M7_CLINICAL_TIMELINE_UNPUBLISHED')
-    return {'M7_CLINICAL_TIMELINE_IDS':json.dumps([targets['hotA'],targets['comparisonB']])}
+    return {'M7_CLINICAL_TIMELINE_IDS':json.dumps(m['clinicalTimeline'].get('targetIds',[targets['hotA'],targets['comparisonB']]))}
 
 # One explicit reviewed local sender experiment; no arbitrary command/plugin.
 SENDER_BINARY='/usr/local/bin/pgstream'

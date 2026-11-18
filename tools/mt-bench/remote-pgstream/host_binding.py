@@ -42,7 +42,7 @@ def freeze(directory):
  write(d/'orchestration-owner.json',m)
  metadata=core.image_metadata(stamped,a.command)
  spec={**metadata,'configFile':str(d/'frozen.compose.json'),'appRoles':[role for role,value in stamped['services'].items()if value['image']==m['imageId']],'pair':m['pair']}
- stages={name:{'epoch':'candidate','argv':args,'sourceFile':str(Path(producer.__file__).resolve())}for name,scope,args in producer.deployment_plan(stamped,True,m.get('primerConcurrency',1))if scope=='compose'and'run'in args}
+ stages={name:{'epoch':'candidate','argv':args,'sourceFile':str(Path(producer.__file__).resolve())}for name,scope,args in producer.deployment_plan(stamped,True,m.get('primerConcurrency',1),static_manifest=m if m.get('staticTopology') else None,platform_verification=bool(m.get('platformStartup')))if scope=='compose'and'run'in args}
  frozen=core.make_binding(d/'orchestration-owner.json',d/'env',{'candidate':spec},'candidate',d/'state',attempt,run_stages=stages)
  write(d/BINDING,frozen);core.begin_journal(frozen,[],d/JOURNAL,original_epoch='candidate');return frozen
 
@@ -64,7 +64,7 @@ def cleanup(directory):
 
 def run_stage(directory,name,args,file=None,timeout=1800):
  d,m,frozen=existing(directory)
- stages={n:(scope,argv)for n,scope,argv in producer.deployment_plan(a.document(d/'frozen.compose.json'),True,m.get('primerConcurrency',1))}
+ stages={n:(scope,argv)for n,scope,argv in producer.deployment_plan(a.document(d/'frozen.compose.json'),True,m.get('primerConcurrency',1),static_manifest=m if m.get('staticTopology') else None,platform_verification=bool(m.get('platformStartup')))}
  need(name in stages and stages[name]==('compose',args),'REMOTE_SOURCE_STAGE_CHANGED')
  values=list(args);action='run'if'run'in values else values[0];i=values.index(action);role_index=next(n for n in range(i+1,len(values))if values[n]in frozen['epochs']['candidate']['layouts'])
  roles=[values[role_index]]if action=='run'else values[role_index:];options=values[i+1:role_index]

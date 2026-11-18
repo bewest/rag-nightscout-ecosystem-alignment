@@ -36,6 +36,34 @@ function projection(status) {
 }
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto'), cp = require('node:child_process');
 const FILES = ['lib/api/status.js','lib/server/tenant-app/environment.js','lib/server/tenant-app/rest-context.js','lib/settings.js','lib/constants.json','lib/tenant-settings/catalogue.js','lib/tenant-registry/provision.js','lib/tenant-registry/rules.js','lib/tenant-registry/vault-keys.js'];
+// Structural diagnostics contain only a fixed classification, never seed values.
+// The complete fingerprint below still binds source and provisioning semantics.
+function validateSeed(primer, count) {
+  const fail = classification => {
+    const error = Error('M7_SETTINGS_SEED_INVALID');
+    error.seedCode = 'M7_SETTINGS_SEED_' + classification;
+    throw error;
+  };
+  let stat, seed;
+  try { stat = fs.lstatSync(primer); } catch { fail('FILE_READ'); }
+  if (!stat.isFile() || stat.isSymbolicLink()) fail('FILE_TYPE');
+  if (stat.size > 4194304) fail('FILE_SIZE');
+  let raw;
+  try { raw = fs.readFileSync(primer, 'utf8'); } catch { fail('FILE_READ'); }
+  try { seed = JSON.parse(raw); } catch { fail('JSON'); }
+  if (!seed || typeof seed !== 'object' || Array.isArray(seed) || seed.version !== 1 || !Array.isArray(seed.seed)) fail('SHAPE');
+  if (!Number.isInteger(count) || count < 1 || count > 10000 || seed.seed.length !== count) fail('COUNT');
+  const ids = new Set();
+  for (const row of seed.seed) {
+    if (!row || typeof row !== 'object' || Array.isArray(row) || Object.keys(row).sort().join(',') !== 'hosts,id,issueRootSecret') fail('ROW_KEYS');
+    if (typeof row.id !== 'string' || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(row.id)) fail('ID_FORMAT');
+    if (ids.has(row.id)) fail('ID_DUPLICATE');
+    if (row.issueRootSecret !== true) fail('ROOT_SECRET');
+    if (!Array.isArray(row.hosts) || row.hosts.length !== 1 || typeof row.hosts[0] !== 'string' || row.hosts[0].length > 253) fail('HOSTS');
+    ids.add(row.id);
+  }
+  return {schema: 1, tenants: count, status: 'STRUCTURE_VERIFIED'};
+}
 function expected(core, commit, primer, count) {
   const git = (...args) => cp.execFileSync('git',['-C',core,...args],{encoding:'utf8'}).trim();
   if (!/^[a-f0-9]{40}$/.test(commit) || git('rev-parse','HEAD') !== commit) throw Error('M7_SETTINGS_SOURCE_MISMATCH');
@@ -45,15 +73,7 @@ function expected(core, commit, primer, count) {
     if (git('hash-object',path.join(core,file)) !== blob) throw Error('M7_SETTINGS_SOURCE_DIRTY');
     blobs[file] = blob;
   }
-  const stat = fs.lstatSync(primer);
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 4194304) throw Error('M7_SETTINGS_SEED_INVALID');
-  const seed = JSON.parse(fs.readFileSync(primer,'utf8'));
-  if (seed.version !== 1 || !Array.isArray(seed.seed) || seed.seed.length !== count || count < 1 || count > 10000) throw Error('M7_SETTINGS_SEED_INVALID');
-  const ids = new Set();
-  for (const row of seed.seed) {
-    if (!row || Object.keys(row).sort().join(',') !== 'hosts,id,issueRootSecret' || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(row.id) || ids.has(row.id) || row.issueRootSecret !== true || !Array.isArray(row.hosts) || row.hosts.length !== 1 || typeof row.hosts[0] !== 'string' || row.hosts[0].length > 253) throw Error('M7_SETTINGS_SEED_INVALID');
-    ids.add(row.id);
-  }
+  validateSeed(primer, count);
   // Refuse a changed provisioning mechanism until this instrument is reviewed.
   const provision = fs.readFileSync(path.join(core,'lib/tenant-registry/provision.js'),'utf8');
   if (!provision.includes('" (tenant_id, version, values) VALUES ($1, 1, \'{}\'::jsonb)"')) throw Error('M7_SETTINGS_BLANK_PROVISION_UNREVIEWED');
@@ -66,8 +86,12 @@ function expected(core, commit, primer, count) {
     seedProof:{version:1,tenants:count,blankTenantSettings:true,source:'primer/config.json + pinned provisioning implementation'},
     transit:{schema:1,purposes,keyCountObservation:'UNMEASURED'}};
 }
-module.exports = {projection,expected,FILES};
+module.exports = {projection,expected,validateSeed,FILES};
 if (require.main === module) {
   try { console.log(JSON.stringify(expected(...process.argv.slice(2,5),Number(process.argv[5])))); }
-  catch (error) { console.error(/^M7_[A-Z_]+$/.test(error.message)?error.message:'M7_SETTINGS_REFUSED');process.exitCode=1; }
+  catch (error) {
+    console.error(/^M7_[A-Z_]+$/.test(error.message)?error.message:'M7_SETTINGS_REFUSED');
+    if (/^M7_SETTINGS_SEED_[A-Z_]+$/.test(error.seedCode || '')) console.error(error.seedCode);
+    process.exitCode=1;
+  }
 }

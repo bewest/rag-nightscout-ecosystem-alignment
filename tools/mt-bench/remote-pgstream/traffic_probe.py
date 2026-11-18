@@ -1,6 +1,7 @@
 """Generate a public-traffic-only variant of the exact joined stock probe."""
 from pathlib import Path
 import hashlib
+import re
 import sys
 import tempfile
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'm7-joined'))
@@ -87,7 +88,16 @@ def generate(root, target):
     begin = source.index('  const w0 = Date.now();')
     end = source.index('  const writers =', begin)
     source = source[:begin] + "  const w0 = Date.now(); const byTenant = {}; const writes = { ok: 0, failed: 0 };\n  const accounting=discovery?require('./probe-accounting.cjs').create({ids:tenants.map(t=>t.id),runId:args.runid,persist:value=>fs.writeFileSync(path.join(signalDir,'probe-accounting.json'),JSON.stringify(value)+'\\n')}):null;\n" + source[end:]
-    source = replace_once(source, "    const e = { date, sentMono:p.sentMono, tenant: t.id, sent: p.sent, acked: null, stamp: null, evaluatedAt: null }; evalPending.push(e);", '')
+    # Remove only the joined probe's private SQL witness. The current probe
+    # attaches the v2 viewer slots to that witness. Keep the historical anchor
+    # for a public probe generated from a historical joined instrument.
+    private_witness = (
+        r"    const e = \{ (?:clientProofVersion:2, expectedSockets:sockets\.flatMap\(\(s,i\)=>s\.index===tenants\.indexOf\(t\)\?\[i\]:\[\]\), )?"
+        r"date, sentMono:p\.sentMono, tenant: t\.id, sent: p\.sent, acked: null, stamp: null, evaluatedAt: null \}; evalPending\.push\(e\);"
+    )
+    source, removed = re.subn(private_witness, '', source)
+    if removed != 1:
+        raise RuntimeError('EXTERNAL_PROBE_SOURCE_ANCHOR_CHANGED')
     source = replace_once(source, ' e.acked = Date.now();', '')
     source = replace_once(source, ' e.evaluatedAt = -1;', '')
     source = replace_once(source, 'await sleep(10000); polling = false; await poller;', 'await sleep(10000);')
@@ -106,7 +116,7 @@ def generate(root, target):
     source = replace_once(source, 'const p = { sent: performance.now(),', 'const p = { tenant:t.id,date,acked:false,sent: performance.now(),')
     source = replace_once(source, 'writes.ok++;', 'p.acked=true;writes.ok++;')
     source = replace_once(source, "if(completionSource){const until=Date.now()+PROBE;while(Date.now()<until&&!fs.existsSync(path.join(signalDir,'.restart')))await sleep(Math.min(1000,until-Date.now()));}else await sleep(PROBE);", "{const until=Date.now()+PROBE;while(Date.now()<until&&!fs.existsSync(path.join(signalDir,'.restart')))await sleep(Math.min(1000,until-Date.now()));}")
-    source = replace_once(source, "  fs.writeFileSync(args.out,", "  out.clientWitnesses=[...pending.values()].map(p=>({tenant:p.tenant,date:p.date,acked:p.acked,clients:[...(p.clientFrames?.values()||[])]}));\n  if(args.restart==='0')for(const s of sockets)s.socket.close();\n  fs.writeFileSync(args.out,")
+    source = replace_once(source, "  fs.writeFileSync(args.out,", "  out.clientWitnesses=[...pending.values()].map(p=>({tenant:p.tenant,date:p.date,acked:p.acked,sentMono:p.sent,clients:[...(p.clientFrames?.values()||[])]}));\n  if(args.restart==='0')for(const s of sockets)s.socket.close();\n  fs.writeFileSync(args.out,")
     target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     target.write_text(source)
     return {'baseJoined': provenance, 'adaptedSha256': hashlib.sha256(source.encode()).hexdigest(),

@@ -5,7 +5,7 @@ import json
 import re
 import shlex
 import subprocess
-from protocol import prepared_cadence, need, private_ipv4, workload, discovery_mode
+from protocol import prepared_cadence, need, private_ipv4, workload, discovery_mode, native_mode, native_project, static_selection
 
 CORE = '5d305dd08f006b7956c5c9a647d5e541b307c9f1'
 DEPLOY = '0dcde57e1dd3959e3420a6e1e4ff2ef65a40902d'
@@ -56,11 +56,19 @@ def cell_contract(m, b=None):
     bound=b or m.get('preparedExternalBinding') or m.get('externalBinding') or {'tenants':m.get('tenants')}
     exploratory=discovery_mode(bound)
     need(m.get('pgstreamTopology','colocated-v1')==bound.get('pgstreamTopology','colocated-v1') and m.get('diagnosticResources',{}).get('profile')==bound.get('diagnosticResourceAllocation',bound.get('diagnosticResourceProfile')),'REMOTE_TOPOLOGY_CELL_CHANGED')
+    need(m.get('staticTopology')==static_selection(bound),'REMOTE_STATIC_CELL_CHANGED')
+    from commissioning_wal import remote_selection
+    startup=remote_selection(bound)
+    need(all(m.get(k)==startup.get(k)for k in ('commissioningSlotWalMiB','tenantReadiness')),'REMOTE_STARTUP_CELL_CHANGED')
     selected=workload(bound)
     if not exploratory:qualified_source(m.get('pair'),m.get('imageId'))
     performance_profile({**m,'reportMode':bound.get('reportMode','strict')},selected)
     if exploratory or m['pair']['core'] in (REPAIRED_CORE, MINIMUM_CORE, PERFORMANCE_CORE):
         need(m.get('completionContract') == 'evaluator-work-v2', 'REMOTE_REPAIRED_COMPLETION_V2_REQUIRED')
+    if native_mode(bound):
+        need(m.get('evaluatorOpportunities') == 'received-input-v1' and m.get('project') == native_project(bound),
+             'REMOTE_NATIVE_OBSERVER_REQUIRED')
+        need(m.get('namespacePreflight',{}).get('status')=='PASS','REMOTE_NATIVE_NETWORK_PREFLIGHT_REQUIRED')
     if b is not None:
         need(m.get('tenants') == b['tenants'] and m.get('pair') == b['pair'] and m.get('imageId') == b['imageId'], 'REMOTE_CELL_BINDING_CHANGED')
     need(m.get('postgresImageId') == POSTGRES, 'REMOTE_QUALIFIED_SOURCE_REQUIRED')

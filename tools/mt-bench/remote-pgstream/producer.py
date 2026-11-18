@@ -6,11 +6,17 @@ import adapter as a
 from transport import cell_contract
 from protocol import binding, discovery_mode, RESERVE
 
-def deployment_plan(config, pgstream=False, primer_concurrency=1):
+def deployment_plan(config, pgstream=False, primer_concurrency=1, static_manifest=None, platform_verification=False):
     a.require(pgstream, 'REMOTE_PGSTREAM_REQUIRED')
-    plan = a.deployment_plan(config, pgstream=True, primer_concurrency_value=primer_concurrency)
-    index = next(i for i, row in enumerate(plan) if row[0] == 'commission') + 1
-    plan.insert(index, ('pool-initialize', 'compose', ['--profile', 'ops', 'run', '--rm', '--no-deps', 'primer', 'node', 'deploy/multitenant/evaluator-pool.js', 'initialize']))
+    plan = a.deployment_plan(config, pgstream=True, primer_concurrency_value=primer_concurrency,platform_verification=platform_verification)
+    if static_manifest is not None:
+        a.require(static_manifest.get('staticTopology')=={'kind':'static-hash-v1','workers':1} and static_manifest.get('replicas')==1,'REMOTE_STATIC_K1_N1_ONLY')
+        a.static_topology.verify_config(static_manifest,config)
+    else:
+        a.require('socket-edge' not in config.get('services',{}),'REMOTE_STATIC_SELECTION_REQUIRED')
+        if not platform_verification:
+            index = next(i for i, row in enumerate(plan) if row[0] == 'commission') + 1
+            plan.insert(index, ('pool-initialize', 'compose', ['--profile', 'ops', 'run', '--rm', '--no-deps', 'primer', 'node', 'deploy/multitenant/evaluator-pool.js', 'initialize']))
     # Match the current canonical demo phase bounds and prohibit implicit pulls
     # or dependency starts; all infrastructure is started explicitly above.
     for name, scope, args in plan:
@@ -51,7 +57,7 @@ def _deploy(d, m):
     from host_binding import freeze,run_stage,existing,authorize
     freeze(d);m=a.document(d/'owner.json');config=a.document(d/'frozen.compose.json')
     stages = []
-    for name, scope, args in deployment_plan(config, pgstream=m.get('profile') == 'pgstream-sample', primer_concurrency=m.get('primerConcurrency', 1)):
+    for name, scope, args in deployment_plan(config, pgstream=m.get('profile') == 'pgstream-sample', primer_concurrency=m.get('primerConcurrency', 1),static_manifest=m if m.get('staticTopology') else None,platform_verification=bool(m.get('platformStartup'))):
         before = a.time.monotonic()
         with (d / (name + '.log')).open('wb') as output:
             if scope == 'local':
@@ -63,10 +69,12 @@ def _deploy(d, m):
         a.write(d / 'deployment-stages.json', stages)
         if name == 'infrastructure':
             a.psql(d, 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;')
+            a.commissioning_wal.runtime(a,d,m,'infrastructure')
         if name == 'prime' and m.get('primerConcurrency', 1) != 1:
             a.primer_counts(d, m)
         if name == 'bootstrap':
-            fingerprint = a.json.loads(a.command(['node', a.HERE / 'fingerprint.cjs', d / 'core', m['pair']['core'], d / 'state/primer/config.json', str(m['tenants'])], phase='settings-fingerprint'))
+            if m.get('staticTopology'):a.static_runtime_contract(d,m)
+            fingerprint = a.settings_fingerprint(d,m)
             m['settingsFingerprint'] = fingerprint
             m['profileSelection'] = a.profile_provenance.identity(fingerprint, m['diagnostics'], config)
             a.profile_provenance.state_environment(d / 'state', config, m['diagnostics'])
@@ -83,6 +91,7 @@ def _deploy(d, m):
     a.require(all((value == projections[0] for value in projections)), 'M7_PRIMER_OUTPUT_CONFLICT')
     a.write(d / 'tenants.private.json', projections[0])
     a.profile_provenance.runtime_environment(a.resources(m), m['diagnostics'], config, pgstream=m.get('profile') == 'pgstream-sample')
+    a.commissioning_wal.runtime(a,d,m,'after-startup')
     m['restartRoles'] = a.service_roster(config)
     a.write(d / 'owner.json', m)
     a.write(d / 'deployment.json', {'stages': stages, 'pair': m['pair'], 'imageId': m['imageId']})

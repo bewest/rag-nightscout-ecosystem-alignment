@@ -778,3 +778,402 @@ creation/mount/security qualification still permits cleanup of our actor with a
 wrong limit, while preserving that refusal and the primary error. The fixed
 readback file is beside the existing captured-CID record. Historical requests
 without an explicit allocation keep their launch and qualification behavior.
+
+For a fresh c117 discovery fixture, the existing clinical timeline also accepts
+the validated explicit `diagnostic-resource-allocation`. Keep that allocation
+unchanged when diagnosing its rate result. Select
+`--clinical-intake-timeline two-target-intake-timeline-v1` and
+`--clinical-intake-targets /absolute/private/targets.json`, containing a JSON
+list of one or two synthetic tenant UUIDs from the new fixture roster. Omission
+keeps the original first/last roster selection. New explicit-allocation traces
+require c117 and exact source hashes for the receiver, scheduler, evaluator
+runtime, materializer SQL and preview wiring; changed source refuses at prepare,
+verification and preload. This scope extension grants no resource authority.
+
+The selected trace avoids recording every unaddressed POST. The existing raw
+variant remains opt-in with its unchanged limit.
+
+The selected clock path observes materializer `clinical.accept`, preserving its
+original object, brand, arguments, Promise and error. Existing HTTP, receipt SQL,
+scheduler and durable begin/complete events retain their limits and format.
+This collector delta requires fresh receipts and a fresh fixture; it cannot
+change or relabel a frozen curve. The client trace and evaluator trace use
+different clocks. Raw arrival is an HTTP callback boundary, not kernel arrival;
+no sender binary is selected by this option.
+
+### Statements per unit, clinical sample size and driver shards
+
+`statement_units.py <point>` reduces one point folder (the folder with
+`owner.json`) from its existing load bookends. It reports pg_stat_statements
+calls and execution time by role, per evaluator cycle (completed work plus
+completed time), per REST scenario request attempt and per realtime delivery
+completion, and the top statements. A realtime delivery is one completed tenant
+update, not one client frame. Readers shared between services stay unattributed;
+the superuser role includes collectors and is outside the totals. The role read
+and the statement read run a measured gap apart while the system works, so the
+reducer requires summed statements to be within three times the role's mean
+rate over that gap; a larger disagreement refuses with
+`M7_UNITS_ROLE_STATEMENT_MISMATCH`. Smaller corruptions inside that band are not
+detected. Two point folders compare only when both use the same explicit
+allocation (`M7_UNITS_PROFILE_MISMATCH`, `M7_UNITS_PROFILE_NOT_EXPLICIT`) and the
+same workload (`M7_UNITS_WORKLOAD_MISMATCH`).
+
+The same reduction summarizes probe witnesses: accepted, durable-observed,
+120-second deadline misses (no ready observation within the budget, plus later
+observations), durable upper-bound and matched-frame distributions. A p95 from
+fewer than 30 accepted witnesses is reported with `p95Qualified: false`. Set
+`probe-every-ms` to 10000 for a 310-second window to write about 31 witnesses,
+about 0.1 extra request/s; each witness keeps its own 120-second observation
+budget after the window.
+
+`driver-shards` (2–16, default unsharded) runs that many k6 processes inside the
+one admitted k6 container, with the same native limits, labels and cleanup. Each
+process receives a contiguous roster slice and the offered-rate share of its
+slice weight; only roster index 0 keeps the hot factor. Each shard must offer at
+least 1 request/s. `k6-summary.json` is written only when every shard exits 0
+with a summary. Counts and rate sums, min/max and count-weighted means reduce
+the retained shard fields. A merged percentile is the largest shard statistic.
+The legacy `m7DriverShards.quantileBounds` field is its range across shards;
+it does not establish bounds for a pooled percentile. Pooled percentiles remain
+`UNMEASURED` without raw samples and a verified definition. Gauge extrema sum
+per-shard extrema and are not synchronized peak measurements. The existing
+native remote driver uses the same selected shard command and result contract.
+
+Use `workload-mix=realistic-v1` with local `pgstream-sample` discovery to keep
+the per-tenant schedule fixed as the roster grows. Keep `accel` and
+`hot-factor` at one and omit `offered-rps`. The workload generator owns the
+seven scenario intervals. The run summary gives nominal REST attempts by
+shape. JWT setup, stock polling sockets and clinical witness writes are
+separate traffic. Set the viewer count explicitly for each roster.
+
+Discovery records heavyweight PostgreSQL lock waiters and blocker roles from
+the same activity sample in `pg-blockers.tsv`. A sample with more than 32
+waiters, or with a lock or blocker that disappears between reads, has partial
+attribution. Run `python3 pg_waits.py FIXTURE --phase load` to reduce either
+the paired capture or a retained activity capture. The statement-units
+reducer normalizes sampled waiter observations by its existing REST,
+evaluator and delivery counts. The sampling cadence and resource bookends
+define the scope. Missing ticks, duration and causal attribution remain
+unmeasured where the observer cannot establish them.
+
+
+### Local k6 scheduling diagnostic
+
+The historical `trace-v1` and `preallocated-v1` driver selectors use the existing discovery runner
+and session observations. Its bounded scope is `pgstream-sample`, 1,000 tenants,
+one API replica, 180 offered requests/s, 310 traffic seconds, one driver shard,
+and no realistic mix, in-load restart, Node profile or warm-cause observer. The
+remote projection refuses this local selector. Regenerate the normal configuration
+projection and diagnostic receipt for each arm; entered fixtures remain immutable.
+
+Use `trace-v1`, then `preallocated-v1`, then restored `trace-v1` on the same
+selected source, resource allocation and workload schedule. All three arms select
+the same safe system tags and gzip CSV observation. The middle arm distributes
+extra VUs in arrival-rate proportions until at least 620 VUs are preallocated
+in aggregate. It preserves each original scenario budget and `maxVUs`. The
+`driver-vu-plan` setup marker records each scenario's rate, time unit, original
+and selected preallocation, maximum and the aggregate.
+
+`load/k6-scheduling.csv.gz` retains per-scenario elapsed drop/request/response
+counters and gauges. `load/driver-vu-assessment.json` reconciles those counters
+with the existing independent HTTP summary, retains ten-second drop buckets and
+response latency in the same buckets, and keeps HTTP and offered-work verdicts
+separate. Missing or inconsistent trace/plan data is UNMEASURED or refused; it
+does not replace the primary actor failure. The existing independent stored-write,
+clinical opportunity and client-frame oracles remain required. A sampled
+`vus_max` gauge minimum does not establish the initial preallocation.
+
+Reduce the three immutable observation fixture directories after collection:
+
+```bash
+python3 -B tools/mt-bench/m7-joined/driver_vu_diagnostic.py /absolute/new/comparison.json \
+  /absolute/trace-before/fixture /absolute/preallocated/fixture /absolute/trace-restored/fixture
+```
+
+The comparison refuses changed source, image, instrument or cadence, and verifies
+restored scenario budgets. It diagnoses driver scheduling; it grants no capacity
+and does not identify the backend cause of a historical drop. The existing
+`driver-shards` contract and retained 10,000-tenant driver proof are separate.
+
+#### Configuration-driven driver measurement
+
+For new local experiments, put a JSON string in the existing run configuration's
+`prepare.driver-plan` field. The adapter parses it through `--driver-plan`; it
+selects `configured-v1` automatically. No runner schema or source/image allow-list
+is added. For example, this selects one follower-read scenario at the existing
+`offered-rps`, with a delayed start and finite drain:
+
+```json
+{
+  "version": 1,
+  "observer": "scheduling-v1",
+  "maxAggregateVUs": 32,
+  "maxTraceBytes": 16777216,
+  "maxTraceRows": 500000,
+  "scenarios": {
+    "r_sgv": {
+      "preAllocatedVUs": 8,
+      "maxVUs": 16,
+      "startTimeSeconds": 2,
+      "durationSeconds": 178,
+      "gracefulStopSeconds": 10
+    }
+  }
+}
+```
+
+`load-seconds` bounds every scenario's start plus duration. Omitted start is zero;
+omitted duration is the remaining load window; omitted drain is 30 seconds. VU
+budgets apply **per scenario per driver shard**. `maxAggregateVUs` caps the sum of
+all scenario maxima across all shards, conservatively including non-overlapping
+windows. The existing driver CPU, memory, no-swap, process ownership and cleanup
+allocation remains in force. More VUs do not establish more application capacity.
+
+The supported executor is `constant-arrival-rate`. Rates and tenant selection
+come from the existing workload, `offered-rps`, `hot-factor`, `accel`, or
+`realistic-v1` with its uniform `workload-scale`. A selected subset of the seven
+existing shapes is supported for ordinary rate experiments. Realistic mix keeps
+all seven shapes and its existing equal-tenant cadence. Populations, rates,
+windows, API counts and shard counts do not have a driver-specific case filter;
+the existing source, topology, receipt and resource admission still applies.
+Shards use the existing contiguous roster split and per-shard offered-rate limit.
+The new mode is local only. Remote projection and remote launch refuse it;
+Kubernetes/remote equivalence is UNMEASURED and needs its owning runner's wiring.
+
+`summary-v1` retains bounded per-scenario counters and setup/schedule/drain markers.
+`scheduling-v1` also exports gzip CSV and independently reconciles its counters,
+phase tags and timestamps. The assessment compares the actual emitted k6 plan
+with the manifest-derived plan for **each shard**, checks every exit receipt and
+native summary, and checks the merged counters. Missing shards or plans cannot
+produce a pass. JWT exchanges have separate counts and elapsed time. Starts and
+completions are split at each scenario's scheduled end, so an iteration dispatched
+at the boundary or completed during drain is visible. Outer warmup and idle remain
+the existing runner's measured phases; this driver reports their configuration
+and marks their own observation UNMEASURED.
+
+The nominal offered count is `rate * duration / timeUnit`. The planned integer
+range is its ceiling through `floor(nominal) + 1`: at an exact endpoint, k6 can
+race its duration cancellation with one final timer dispatch. The minimum permits
+no missing nominal slot. Every observed scheduled slot is issued or dropped;
+issued requests must reconcile with responses, transport failures and finished
+iterations. Drops, under-delivery, excessive scheduling or incomplete requests
+fail offered-work eligibility independently of HTTP status. The pinned k6 1.3.0
+[executor source](https://github.com/grafana/k6/blob/v1.3.0/lib/executor/constant_arrival_rate.go#L300)
+and the native controls establish this boundary behavior. This is accounting,
+not a throughput target or capacity acceptance gate.
+
+Limits are explicit: 16 KiB configuration, 256 KiB generated workload, 12,800
+aggregate maximum VUs, 10,800-second load horizon, 60-second maximum drain,
+64 MiB per summary and 4 MiB per marker log. CSV defaults to 512 MiB compressed
+per file and five million rows; configuration can lower either bound. The Docker
+file-size limit caps each output file; the reducer also caps decoded bytes at
+16 times the compressed-file allowance and individual lines at 64 KiB. These are
+per-file bounds; shards multiply total retained storage. The existing allocation
+bounds runtime memory/CPU; a configured VU budget is not a memory estimate.
+
+The existing HTTP status, status-body fingerprint, stored-write, clinical and
+client-frame boundaries remain independent. Shard percentiles remain shard
+statistics; pooled percentiles and guaranteed pooled percentile bounds are
+UNMEASURED. The historical comparison and all original verdicts remain unchanged.
+
+Run the focused pure checks and, explicitly, the native qualification:
+
+```bash
+PYTHONPATH=tools/mt-bench/m7-joined python3 -B -m unittest test_driver_config test_driver_vu_diagnostic test_driver_shards
+python3 -B tools/mt-bench/m7-joined/qualify_driver_config.py \
+  --out /absolute/new/overflow/driver-qualification \
+  --k6-image sha256:EXISTING_LOCAL_K6_IMAGE_ID
+```
+
+The native command uses only owned synthetic loopback HTTP targets and the actual
+`workload.generate` → `discovery.k6_command` → shard launcher → reducer path. It
+requires an already-installed immutable k6 image ID. It runs at most two driver
+containers concurrently, each limited to one CPU and 1 GiB without swap. This
+qualifies driver mechanics, not Nightscout storage, topology, clinical delivery,
+remote transport or capacity. The [dated capability record](../../../reports/tenancy/capacity-driver-config-2026-11-17.md)
+owns the captured results and integration boundary.
+
+### Actual serving instances and observer cost
+
+Fresh manifests record `servingInstances` from the frozen Compose services. The
+collector maps `api`, `evaluator` and `realtime` plus their contiguous numbered
+services to their actual ordinals. Missing, duplicate, foreign and mismatched
+ordinals cannot count as complete coverage. Each snapshot keeps the per-instance
+process counters, cgroup CPU/memory and effective quota readback. A missing
+optional quota read remains UNMEASURED. The service-to-SQL coverage companion
+maps the actual read-only configuration mount for every instance; shared SQL
+users stay shared and are counted once. It grants no per-process SQL split.
+
+`--node-observation profile-v1` installs distinct CPU/ELU captures for each actual
+serving service, using the role's ordinary entrypoint argument. The record binds
+the full instance roster and process births. The cached selected M7 module's
+state and file hash accompany the captures. Missing or inconsistent M7 state
+leaves observer-cost eligibility UNMEASURED while retaining independent valid
+CPU/ELU captures. `--diagnostics off` disables the entire M7 observer; a matched
+ON/OFF/ON SUT comparison measures that total intervention, not exclusive query
+wrapper cost. SQL bookends, host/process counters and Node captures stay separate.
+
+`node query-wrapper-bench.cjs CORE_WORKTREE EXPECTED_HEAD OUTPUT_JSON` measures
+only the exact selected source's query-wrapper component using synthetic client
+calls. Checkout and wrapper installation happen before timing. Enabled observer
+and inert sink remain the same for default, direct-query bypass and restored
+arms, on Promise and callback paths. Counts and result identity are required;
+mislabeling a bypass as wrapped goes red. The finite repeated CPU/wall figures
+exclude network, database, log-worker and periodic serialization costs and imply
+no service throughput or capacity.
+
+### Selected static branch diagnostics
+
+`--static-workers K` explicitly selects the source-bound static profile in
+`static_topology.py`. The instrument bounds K to 1–4 and retains the existing
+API replica choices. Historical static receipts retain their original source pairs.
+For a new pair, pass the diagnostic publication's `imageReceipt` and
+`imageReceiptSha256` as `--static-build-receipt` and
+`--static-build-receipt-sha256`. Projection checks the build receipt's source
+revisions, image ID and labels, runtime revisions, producer digest and dependency
+lock against the selected inputs. Its digest becomes part of the authorized
+configuration. A compatible new source or image is configuration and receipt data;
+do not add its hashes to the historical source-pair set. The generated source
+contract, private role documents, role commands, resource limits and startup
+readiness still undergo their existing capability checks. An incompatible
+contract needs an explicit capability implementation; a new hash does not. Preparation verifies the local image and executes the source
+contract. Use the same options for a later observation on that fixture. Omitting this selector keeps the existing one-API
+pgstream restriction. Static mode requires an explicit complete resource
+allocation, including `socket-edge`, and a version-2 diagnostic receipt with
+`limits.staticWorkers=K`. The semantic configuration digest binds the selector,
+source, API count and all existing workload/resource/execution fields. Version-1
+authorization cannot admit static mode. Source acceptance may be PENDING for an
+attributed branch diagnostic; capacity remains NOT_GRANTED.
+
+Preparation uses the ordinary deployment `prepare.js`, `config.js`,
+`evaluator-workers.js` and `realtime-workers.js` with explicit matching K. The
+runner executes the real generated documents through the selected core plan
+checker before deployment. The historical convenience generator rejects static
+realtime, so static mode calls the same ordinary document construction used by
+bootstrap and retains the existing document-set translator. The prospective
+static planner is not a deployment path.
+
+Preparation passes the requested tenant count before the ordinary binding
+renders its static overlay. The frozen bootstrap count must match the manifest
+before deployment. After bootstrap, the settings fingerprint validates the
+actual primer file before provisioning or priming. A structural refusal retains
+`M7_SETTINGS_SEED_INVALID` and adds one fixed classification: `FILE_READ`,
+`FILE_TYPE`, `FILE_SIZE`, `JSON`, `SHAPE`, `COUNT`, `ROW_KEYS`, `ID_FORMAT`,
+`ID_DUPLICATE`, `ROOT_SECRET` or `HOSTS`, prefixed with `M7_SETTINGS_SEED_`.
+These classifications contain no seed values. Source, blank provisioning and
+settings fingerprint checks still apply.
+
+The runtime census also checks that the frozen evaluator and realtime rosters
+match the selected worker count. Each service needs its own physical identity;
+one container cannot cover another ordinal. Docker's environment alone cannot
+prove the loaded assignment: the ordinary binding loads mounted `env.json`.
+Mounted-file checks, source-parsed inspection and actual runtime collection
+retain their separate responsibilities. Configured completeness is not liveness.
+
+After bootstrap and before ordinary traffic, actual mounted files for every
+API/evaluator/realtime ordinal and admin role pass the real source plan checker.
+The runner separately checks the full participant census and private addresses,
+shared evaluator database/slot/generation/consumer, realtime source and ordered
+peers, actual producer source/targets, fixed restart shape and static edge map.
+Every API replica and socket edge joins the source/config/dependency context
+checks. Live service and cgroup checks retain actual container births and quotas.
+Inspection v3 binds the source-parsed static count and ordinal; configured K and
+`observed:null` remain distinct from peer liveness. Missing or mismatched source,
+participant, worker, edge or route refuses before ordinary traffic.
+
+The existing finite session may reuse a static fixture. Attachments require its
+original runtime-owner record and exact static selector, N, resource profile and
+frozen service roster. They retain original resource custody and counters. A
+new point or changed K uses a fresh fixture. Native remote discovery now admits
+only explicit K1/N1 with the same semantic selector, version-2 receipt/count
+mirrors, exact source pair and shared module hashes. Other remote K/N shapes
+refuse. The paired worker passes the selector to actual ordinary preparation;
+the SUT validates mounted role/producer plans, socket-edge/role runtime census
+and contexts before traffic. Actual remote transport remains a separate finite
+qualification. Build-only source admission retains PENDING truth.
+
+These tooling controls do not establish K2/N2 operating gains, clinical behavior,
+Compose replacement timing or capacity. Those need actual attributed runs on the
+selected image, and coherent source qualification remains the integration owner.
+
+
+### Bounded rate brackets for the realistic mix
+
+`workload-scale` is an optional finite factor from 0.25 through 8, accepted only
+with `workload-mix: realistic-v1`. Default factor one preserves every existing
+per-tenant cadence. Other factors are **uniform rate brackets**: factor two
+halves all seven per-tenant intervals while retaining the roster, viewer count,
+shape proportions, duration and resource allocation. A factor above one is not
+realistic sensor cadence. An aggregate `offered-rps` override remains incompatible
+with the mix. Unknown/nonfinite factors and out-of-range values refuse.
+
+The canonical cadence and receipt bind `workloadScale`. Local and remote k6
+commands mirror it as `M7_WORKLOAD_SCALE`, including every shard in the existing
+shared container. Each scenario time unit is rounded to integer milliseconds;
+`rate_offer` reports the actual rounded time units and resulting rates. It marks
+factor-one sensor cadence separately from a uniform rate bracket. This selector
+authorizes no run, expense or capacity. Select a justified bracket in a fresh
+configuration/receipt; never change an entered run.
+
+### Startup selection in a reused session
+
+A session attachment inherits the original `commissioningSlotWalMiB`,
+`tenantReadiness` and `platformStartup` proof. Its binding retains the exact
+runtime-owner path, SHA-256 and owner nonce. Admission checks the same source,
+image, roster, state path, frozen Compose and environment. Direct attachment
+requests cannot select a WAL allowance or readiness mode. Applying a WAL setting
+remains a fresh-preparation operation; attachment only verifies the existing
+selection. Fixture names, CIDRs and generator dependency selections also remain
+prepare-only inputs. Resources and dependencies retain their existing runtime
+owner checks.
+
+The optional Node observer arms at most once per physical fixture. Supported
+observation cadence changes can reuse its fixed setup and owner binding. The
+first successfully armed CPU/ELU window carries the actual observation cadence
+SHA-256 through its signal and raw captures. Later observations record
+`M7_NODE_OBSERVATION_ALREADY_ISSUED` as `UNMEASURED` and do not copy an earlier
+profile into another cadence. Each observation still retains its own cgroup,
+SQL, HTTP and clinical evidence. Profile coverage is separate from those counts.
+
+`test_startup_attach.py` exercises these boundaries without Docker, SQL or a
+traffic actor. Setting `M7_STARTUP_ATTACH_CAPTURE` to a retained closed startup
+run also checks real attachment admission against its original owner/config/
+receipt and unchanged ordinary Git source. Those controls model only the removed
+source/state existence observations and stop before image/resource access; they
+never recreate or adopt the closed fixture. Authored field omission reproduces
+the original configuration-digest refusal, then restoration passes.
+
+
+When the existing `platform-verify` deployment stage fails, the runner makes one
+bounded read-only GET of the owned admin operation before cleanup. The selected
+core classifies the retained role, check phase and cause code; private response
+fields are omitted. Missing or refused observation is `UNMEASURED`. The original
+deployment error remains primary, the POST is never retried, and the original
+execution and cleanup deadlines remain unchanged. This observation is optional
+and needs no per-run wrapper.
+
+### Integrated experiment inputs and terminal evidence
+
+The [common intent projection](../kubernetes/README.md#one-intent-for-compose-and-kubernetes)
+selects the existing runner from source receipts, population, cadence, viewers,
+finite schedules/VUs/shards and prospective resource data. Instance files supply
+fresh paths, namespaces, ports, subnets, custody and deadlines. Existing direct
+runner configurations remain supported. Compatible diagnostic source receipts
+remain PENDING. Local and Kubernetes role support is stated independently.
+
+The configurable local work guard supports up to 86,400 seconds of work and
+3,600 seconds of cleanup. These are instrument bounds. Actual subprocess and
+cleanup deadlines still apply. Larger allocations are valid for discovery and
+qualification when their measured hardware and spending authority fit. Named
+small profiles are historical examples. An explicit `diagnostic-resource-allocation`
+sets each service/driver and the combined ceiling; it does not establish a
+supported operating quota. Container CPU maxima remain hard quotas in this
+version; CPU bursting under a common Docker experiment cgroup is unsupported.
+
+Before teardown, `terminal-before-cleanup.json` retains an exact owned census,
+image/role/birth, exit/OOM/restart state, configured quotas and readable host cgroup
+CPU/memory/event/lifetime peaks. Deployment failure also attempts an immediate
+`terminal-<stage>.json`. Only fixed state fields are exported; environment and
+credential arguments are excluded. A stopped/removed cgroup remains UNMEASURED.
+The observer's lifetime RSS peak and collection CPU delta are separate. Missing
+optional counters do not erase retained termination facts or authorize replay.

@@ -11,6 +11,7 @@ import re
 import time
 import evaluator_opportunities as o
 import evaluator_progress as p
+import evaluator_idle as idle
 
 POLICY = {'version': 1, 'maxSeconds': 120, 'maxRounds': 16,
           'maxQueries': 1024, 'maxBytes': 67108864, 'roundSeconds': 20}
@@ -20,38 +21,65 @@ def decode(boundary, previous, current, ids, binding):
     return o.durable_rows([boundary, previous, current], ids, binding)
 
 
-def assess(boundary, previous, current, ids, binding):
-    """A stable writer frontier plus completed floors proves these fixed targets.
+def native_due(first,last,boundary_clock=None,current_clock=None):
+    """Discharge the boundary-known deadline only when it is actually due.
 
-    A later observed metadata frontier outside the frozen target invalidates the
-    quiet-input claim. Restore/reset/binding/coverage failures retain the existing
-    typed-reader refusal. Output content equality is deliberately not required:
-    coalesced input may retain an identical output at a higher completed floor.
+    Existing RPC readWindows bind wall time to the observer's monotonic clock.
+    No clock means no due verdict; a public history cursor is never a clock.
+    """
+    target=first['dueAt']
+    if target is None:return {'status':'NO_DECLARED_DUE','targetAt':None}
+    if boundary_clock is None or current_clock is None:return {'status':'UNMEASURED','targetAt':target}
+    clocks=[boundary_clock]
+    if current_clock is not None and current_clock!=boundary_clock:clocks.append(current_clock)
+    idle.clock_windows(clocks)
+    cutoff=max(window['end']['wallUs'] for window in clocks[-1]['readWindows'].values())/1000
+    if target>cutoff:return {'status':'NOT_YET_DUE','targetAt':target}
+    completed=(last['outputRevision']!='0' and last['completedAt'] is not None and last['completedAt']>=target and
+               (first['completedAt'] is None or last['completedAt']>first['completedAt']) and
+               (last['dueAt'] is None or last['dueAt']>target))
+    return {'status':'COMPLETED' if completed else 'PENDING','targetAt':target}
+
+
+def assess(boundary, previous, current, ids, binding, *, boundary_clock=None,current_clock=None):
+    """Freeze source-specific accepted work; never substitute history for input.
+
+    Legacy readers keep their writer-clock target. Native readers freeze their
+    actual accepted floor, metadata and boundary-known due obligation. Neither
+    that native result nor a stable public cursor proves all-writer intake.
     """
     p.validate_ids(ids)
+    selected_native=o.native_binding(binding)
     first, _, last = decode(boundary, previous, current, ids, binding)
     outcomes = {}
     for tenant in ids:
         a, b = first[tenant], last[tenant]
-        targets = {**a['observed'], 'clock': a['writerClock']}
-        changed = (b['writerClock'] != a['writerClock'] or
-                   any(k not in targets or o.revision(v) > o.revision(targets[k])
-                       for k, v in b['observed'].items()))
-        pending = {k: v for k, v in targets.items()
-                   if k not in b['completed'] or o.revision(b['completed'][k]) < o.revision(v)}
-        intake = [k for k, v in pending.items()
-                  if k not in b['observed'] or o.revision(b['observed'][k]) < o.revision(v)]
-        outcomes[tenant] = {'status': 'INPUT_CHANGED' if changed else 'PENDING' if pending else 'COMPLETED',
+        targets = {**a['observed'], **({'bootstrap':a['native']['inputFloor']} if selected_native else {'clock':a['writerClock']})}
+        if selected_native:
+            x,y=a['native'],b['native']
+            changed=(y['inputFloor']!=x['inputFloor'] or y['acceptedPosition']!=x['acceptedPosition'] or y['raw']!=x['raw'])
+        else:changed=b['writerClock']!=a['writerClock']
+        changed=changed or any(k not in targets or o.revision(v)>o.revision(targets[k]) for k,v in b['observed'].items())
+        pending=o.pending_targets(b,targets,selected_native)
+        intake=[k for k,v in pending.items() if k not in b['observed'] or o.revision(b['observed'][k])<o.revision(v)]
+        due=native_due(a,b,boundary_clock,current_clock) if selected_native else None
+        blocked=bool(pending) or selected_native and (b['pendingAt'] is not None or due['status']=='PENDING')
+        unknown=selected_native and due['status']=='UNMEASURED'
+        outcomes[tenant] = {'status': 'INPUT_CHANGED' if changed else 'PENDING' if blocked else 'UNMEASURED' if unknown else 'COMPLETED',
                             'targets': targets, 'pending': pending, 'awaitingObserved': intake,
                             'awaitingCompleted': [k for k in pending if k not in intake],
                             'outputRevision': b['outputRevision'],
                             'restoreGeneration': b['restoreGeneration']}
-    counts = {s: sum(row['status'] == s for row in outcomes.values())
-              for s in ('COMPLETED', 'PENDING', 'INPUT_CHANGED')}
-    return {'kind': 'evaluator-fixed-target-drain-v1',
-            'verdict': 'FAIL' if counts['INPUT_CHANGED'] else 'PASS' if not counts['PENDING'] else 'UNMEASURED',
-            'classifications': counts, 'byTenant': outcomes,
-            'scope': 'fixed writer clock and boundary-known metadata floors; no per-write, clinical, client, time-work or capacity qualification'}
+        if selected_native:outcomes[tenant].update(nativeInput={'targetFloor':a['native']['inputFloor'],'acceptedFloor':b['native']['inputFloor'],'completedFloor':b['native']['completedInputFloor'],'pendingAt':b['pendingAt']},due=due,publicHistoryClock={'boundary':a['writerClock'],'current':b['writerClock'],'changed':a['writerClock']!=b['writerClock']})
+    states=('COMPLETED','PENDING','INPUT_CHANGED')+(('UNMEASURED',) if selected_native else ())
+    counts={state:sum(row['status']==state for row in outcomes.values()) for state in states}
+    result={'kind':'evaluator-fixed-target-drain-v1',
+            'verdict':'FAIL' if counts['INPUT_CHANGED'] else 'PASS' if not counts['PENDING'] and not counts.get('UNMEASURED',0) else 'UNMEASURED',
+            'classifications':counts,'byTenant':outcomes,
+            'scope':'fixed writer clock and boundary-known metadata floors; no per-write, clinical, client, time-work or capacity qualification'}
+    if selected_native:
+        result.update(targetKind='native-accepted-input-v1',writerIntakeCoverage={'verdict':'UNMEASURED','reason':'No source-bound post-writer WAL high-watermark and configured-slot ACK fence is captured.'},scope='fixed native accepted-input floor, captured metadata and boundary-known due work only; public history is diagnostic; no all-writer intake, per-write clinical, client or capacity qualification')
+    return result
 
 
 def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns, seconds=60, interval=5,
@@ -67,7 +95,9 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
     """
     p.need(type(seconds) in (int, float) and math.isfinite(seconds) and 0 < seconds <= POLICY['maxSeconds'], 'M7_DRAIN_BOUND')
     p.need(type(interval) in (int, float) and math.isfinite(interval) and 0 < interval <= seconds, 'M7_DRAIN_BOUND')
-    initial = assess(boundary, boundary, boundary, ids, binding)
+    selected_native=o.native_binding(binding)
+    boundary_clock=(initial_cost or {}).get('inspection') if selected_native else None
+    initial = assess(boundary, boundary, boundary, ids, binding,**({'boundary_clock':boundary_clock,'current_clock':boundary_clock} if selected_native else {}))
     started = monotonic_ns(); deadline = started + int(seconds * 1e9)
     p.need(isinstance(boundary_window, dict) and set(boundary_window) == {'startNs', 'endNs'}
            and type(writer_stopped_ns) is int and writer_stopped_ns >= 0
@@ -92,6 +122,7 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
         while result['verdict'] == 'UNMEASURED':
             now = monotonic_ns(); remaining = (deadline - now) / 1e9
             if remaining <= 0: code = 'M7_DRAIN_DEADLINE'; break
+            if result['classifications'].get('UNMEASURED',0):code='M7_DRAIN_DUE_CLOCK_REQUIRED';break
             if len(history) + initial_rounds >= POLICY['maxRounds'] or queries + round_max_queries > POLICY['maxQueries']:
                 code = 'M7_DRAIN_QUERY_BOUND'; break
             if size + round_max_bytes > POLICY['maxBytes']:
@@ -105,7 +136,7 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
             p.need(used_queries <= round_max_queries and used_bytes <= round_max_bytes, 'M7_DRAIN_ROUND_COST')
             queries += used_queries; size += used_bytes
             p.need(size <= POLICY['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
-            current = assess(boundary, previous, snapshot, ids, binding)
+            current = assess(boundary, previous, snapshot, ids, binding,**({'boundary_clock':boundary_clock,'current_clock':cost.get('inspection')} if selected_native else {}))
             p.need(end <= deadline, 'M7_DRAIN_DEADLINE')
             for tenant, row in current['byTenant'].items():
                 if row['status'] == 'COMPLETED' and tenant not in bounds:
