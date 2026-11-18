@@ -13,7 +13,11 @@ LEGACY_POLICY={'version':1,'moduleVersion':2,'selectorRows':128,'maxTenants':100
         'responseMaxBytes':1048576,'rpcTimeoutMs':5000,'roundDeadlineMs':15000,
         'idleWitness':'successful-time-only-completion','loadWitness':'successful-work-progression',
         'recoveryCadenceMs':15000,'recoveryTimeoutMs':900000,'recoveryMaxRounds':60,'readinessMaxQueries':25600,'readinessMaxBytes':268435456,'readinessMaxRounds':80,'deadlineClaim':False,'workloadCohortChanged':False}
-POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':5,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
+REFERENCE_POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':5,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
+# Keep exact historical policy receipts readable. The current reader pages the
+# roster and retains its independent query/byte limits, not the reference size.
+PREVIOUS_POLICY={**REFERENCE_POLICY,'maxTenants':2**32-1}
+POLICY={**PREVIOUS_POLICY,'maxInstances':8}  # The pinned Compose worker roster supports 1–8.
 
 class Refused(RuntimeError):
     def __init__(self,code,verdict='UNMEASURED'):
@@ -23,6 +27,14 @@ def need(value,code,verdict='UNMEASURED'):
     if not value:raise Refused(code,verdict)
 
 def integer(value,minimum=0):return type(value) is int and minimum<=value<=9007199254740991
+
+
+def capture_policy(selected=None):
+    if selected is None:
+        return POLICY
+    need(isinstance(selected,dict) and set(selected)=={'maxQueriesPerPhase','maxBytesPerPhase'} and
+         all(integer(value,1) for value in selected.values()),'M7_EVALUATOR_PROGRESS_BUDGET_INPUT','FAIL')
+    return {**POLICY,**selected}
 
 def due_fields(row):
     need('dueAt' in row and 'dueReason' in row,'M7_EVALUATOR_PROGRESS_DUE_CONTRACT')
@@ -66,17 +78,18 @@ def _refusal_row(row,service,runtime_id):
         return {'evidence':'UNMEASURED','code':'M7_REFUSAL_ROW_BOUND'}
     return value
 
-def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False):
+def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False,*,policy=POLICY):
     """fetch(service,ids,query_budget,byte_budget) returns private JSONL bytes.
 
-    At most four actual instance execs run concurrently. The source helper
-    pages128 per request; bounds apply before decoding and across all instances.
+    The selected source roster sets the concurrent instance count. The source
+    helper pages 128 per request; bounds apply across all instances.
     """
     validate_ids(ids);need(1<=len(services)<=POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
     need(len(set(services))==len(services),'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
     started=time.monotonic();max_queries=math.ceil(len(ids)/128)
-    need(max_queries*len(services)*3<=POLICY['maxQueriesPerPhase'],'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
-    budget=POLICY['maxBytesPerPhase']//(3*len(services))
+    need(max_queries*len(services)*3<=policy['maxQueriesPerPhase'],'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
+    budget=policy['maxBytesPerPhase']//(3*len(services))
+    need(budget>0,'M7_EVALUATOR_PROGRESS_BYTE_BOUND')
     with ThreadPoolExecutor(max_workers=len(services)) as executor:
         futures={service:executor.submit(fetch,service,ids,max_queries,budget) for service in services}
         raw={service:future.result() for service,future in futures.items()}
@@ -84,7 +97,7 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
     for instance_index,(service,data) in enumerate(raw.items()):
         if isinstance(data,str):data=data.encode()
         need(isinstance(data,bytes) and len(data)<=budget,'M7_EVALUATOR_PROGRESS_BYTE_BOUND')
-        bytes_seen+=len(data);seen=set();runtime_id=None;ordinal=None;all_rows[service]={}
+        bytes_seen+=len(data);seen=set();runtime_id=None;ordinal=None;static_configuration=None;all_rows[service]={}
         for page_index,line in enumerate(data.splitlines()):
             queries+=1;need(len(line)<=POLICY['responseMaxBytes']+8192,'M7_EVALUATOR_PROGRESS_RESPONSE_BOUND')
             try:page=json.loads(line)
@@ -95,6 +108,19 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
             rid=view.get('runtimeId');position=view.get('configured',{}).get('ordinal')
             need(isinstance(rid,str) and UUID.fullmatch(rid) and integer(position),'M7_EVALUATOR_PROGRESS_CONTRACT')
             need(page.get('selfOrdinal')==position and page.get('selfMode')==view.get('configured',{}).get('mode'),'M7_EVALUATOR_PROGRESS_INSTANCE','FAIL')
+            if page.get('selfMode')=='static':
+                configured=view['configured']
+                match=re.fullmatch(r'evaluator(?:-([2-8]))?',service)
+                need(type(configured.get('count')) is int and type(page.get('selfCount')) is int
+                     and configured['count']==len(services)==page['selfCount'] and match is not None
+                     and position==int(match[1] or 1)-1 and position<len(services)
+                     and configured.get('rule')=='sha256-modulo-v1' and 'leaseMs' in configured and configured['leaseMs'] is None
+                     and 'observed' in view and view['observed'] is None
+                     and type(view.get('gate',{}).get('members')) is int and view['gate']['members']==len(services),
+                     'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
+                current_static={'count':configured['count'],'rule':configured['rule'],'observed':None}
+                need(static_configuration is None or static_configuration==current_static,'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
+                static_configuration=current_static
             need(runtime_id is None or runtime_id==rid,'M7_EVALUATOR_PROGRESS_RESET','FAIL');runtime_id=rid
             need(ordinal is None or ordinal==position,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL');ordinal=position
             need(view.get('kind')=='evaluator' and view.get('gate',{}).get('eligible') is True and view['gate'].get('reason') is None,'M7_EVALUATOR_PROGRESS_GATE','UNMEASURED' if warming else 'FAIL')
@@ -139,18 +165,18 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
                 contract(age is not None or first_release,'lastCompletedAgeMs','COMPLETION_AGE_OR_FIRST_RELEASE_REQUIRED')
                 owners[tenant]=value
         need(seen==known,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-        identities[service]={'runtimeId':runtime_id,'ordinal':ordinal}
+        identities[service]={'runtimeId':runtime_id,'ordinal':ordinal,**({'static':static_configuration} if static_configuration else {})}
     need(len({v['runtimeId'] for v in identities.values()})==len(services) and len({v['ordinal'] for v in identities.values()})==len(services),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(set(owners)==known,'M7_EVALUATOR_PROGRESS_COVERAGE','UNMEASURED' if warming else 'FAIL')
     need(queries==max_queries*len(services),'M7_EVALUATOR_PROGRESS_QUERY_BOUND')
     return {'instances':identities,'owners':owners,'allRows':all_rows,'queries':queries,'bytes':bytes_seen,'wallSeconds':time.monotonic()-started}
 
-def round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False):
+def round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False,*,policy=POLICY):
     captured={};started=time.monotonic()
     def measured(service,*args):
         value=fetch(service,*args);captured[service]=value.encode() if isinstance(value,str) else value
         return value
-    try:return _round_view(services,ids,measured,warming,allow_unavailable,allow_clinical_stall)
+    try:return _round_view(services,ids,measured,warming,allow_unavailable,allow_clinical_stall,policy=policy)
     except Refused as error:
         error.collection={'queries':sum(len(v.splitlines()) for v in captured.values() if isinstance(v,bytes)),
                           'bytes':sum(len(v) for v in captured.values() if isinstance(v,bytes)),
@@ -161,7 +187,7 @@ def round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_cl
 
 def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=False):
     need(phase in ('idle','load') and len(rounds)==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
-    need(sum(r['queries'] for r in rounds)<=POLICY['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=POLICY['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
+    need(sum(r['queries'] for r in rounds)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     first=rounds[0];minimum=None;time_tenants=0;failure_delta=0;work_delta=0;time_delta=0
     previous=first
     for current in rounds[1:]:
@@ -195,7 +221,7 @@ class Observer:
         self.assessor,self.policy=assessor,policy
         self.rounds=[];self.failure=None;self.stop=threading.Event()
     def observe(self):
-        try:self.rounds.append(round_view(self.services,self.ids,self.fetch))
+        try:self.rounds.append(round_view(self.services,self.ids,self.fetch,policy=self.policy))
         except Exception as error:self.failure=error
     def failed(self,error,extra=None):
         self.write({'version':self.policy['version'],'phase':self.phase,'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'policy':self.policy,'rounds':self.rounds,'failedCollection':getattr(error,'collection',None),**(extra or {})})
@@ -224,7 +250,7 @@ class Observer:
     def finish(self):
         try:
             if self.failure:raise self.failure
-            result=self.assessor(self.rounds,self.ids,self.phase)
+            result=self.assessor(self.rounds,self.ids,self.phase,policy=self.policy)
         except Exception as error:
             self.failed(error);raise
         self.write({**result,'rounds':self.rounds});self.result=result
@@ -240,12 +266,17 @@ def pack(value):
     return result
 
 
-def verify(value,tenants,services,phase):
+def verify(value,tenants,services,phase,*,budget=None):
     need(isinstance(value,dict),'M7_EVALUATOR_PROGRESS_PROOF')
     legacy=value.get('kind')=='evaluator-progress-phase-v1'
-    policy=LEGACY_POLICY if legacy else POLICY
+    policy=LEGACY_POLICY if legacy else value.get('policy')
     columns=LEGACY_COLUMNS if legacy else COLUMNS
-    need(value.get('kind')==('evaluator-progress-phase-v1' if legacy else 'evaluator-progress-phase-v2') and value.get('columns')==list(columns) and value.get('policy')==policy and value.get('verdict')=='PASS','M7_EVALUATOR_PROGRESS_PROOF')
+    supported=((capture_policy(budget),) if budget is not None else
+               (LEGACY_POLICY,) if legacy else (REFERENCE_POLICY,PREVIOUS_POLICY,POLICY))
+    need(not legacy or budget is None,'M7_EVALUATOR_PROGRESS_PROOF')
+    need(value.get('kind')==('evaluator-progress-phase-v1' if legacy else 'evaluator-progress-phase-v2') and value.get('columns')==list(columns) and value.get('policy')==policy and policy in supported and value.get('verdict')=='PASS','M7_EVALUATOR_PROGRESS_PROOF')
+    need(1<=len(services)<=policy['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
+    need(type(tenants) is int and 1<=tenants<=policy['maxTenants'],'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(isinstance(value.get('rounds'),list) and len(value['rounds'])==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
     decoded,ids=decode_rounds(value,tenants,services)
     result=assess(decoded,sorted(ids),phase,policy=policy)
@@ -263,6 +294,11 @@ def decode_rounds(value,tenants,services,*,allow_unavailable=False,allow_clinica
         need(isinstance(raw,dict) and isinstance(raw.get('instances'),dict) and set(raw['instances'])==set(services),'M7_EVALUATOR_PROGRESS_INSTANCE')
         need(len({r.get('runtimeId') for r in raw['instances'].values()})==len(services) and len({r.get('ordinal') for r in raw['instances'].values()})==len(services),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
         need(all(isinstance(r.get('runtimeId'),str) and UUID.fullmatch(r['runtimeId']) and integer(r.get('ordinal')) for r in raw['instances'].values()),'M7_EVALUATOR_PROGRESS_CONTRACT')
+        selected_static=value.get('attribution',{}).get('staticTopology')
+        if selected_static or any('static' in row for row in raw['instances'].values()):
+            count=len(services)
+            need(not selected_static or selected_static=={'kind':'static-hash-v1','workers':count},'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
+            need(all(row.get('static')=={'count':count,'rule':'sha256-modulo-v1','observed':None} for row in raw['instances'].values()),'M7_EVALUATOR_STATIC_CONFIGURATION','FAIL')
         need(integer(raw.get('queries')) and integer(raw.get('bytes')) and type(raw.get('wallSeconds')) in (int,float) and math.isfinite(raw['wallSeconds']) and raw['wallSeconds']>=0,'M7_EVALUATOR_PROGRESS_OVERHEAD')
         owners={};all_rows={service:{} for service in services};rows=raw.get('rows')
         need(isinstance(rows,list) and len(rows)==tenants*len(services) and 1<=tenants<=POLICY['maxTenants'],'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')

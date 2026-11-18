@@ -38,13 +38,15 @@ class OrdinaryBounded(unittest.TestCase):
             config={'version':1,'helperHead':'synthetic-head','prepare':options,'k6Image':'sha256:'+'1'*64,'workSeconds':1500,'cleanupSeconds':300}
             # Explicit duration is independent of the diagnostic CPU/RAM/heap caps.
             with patch.object(a,'git',return_value='synthetic-head'),patch.object(runner.os,'cpu_count',return_value=8):
-                for seconds in (1500,3600,10800):
+                for seconds in (1500,3600,10800,10801,86400):
                     with self.subTest(workSeconds=seconds):
                         config['workSeconds']=seconds;a.write(path,config)
                         read,argv=runner.load_config(path)
                         self.assertEqual(read,config)
-                for field,values in {'workSeconds':(29,10801,float('inf'),float('nan'),True),
-                                     'cleanupSeconds':(29,301,float('inf'),True)}.items():
+                for seconds in (301,600,3600):
+                    self.assertEqual(runner.validate_config({**config, 'cleanupSeconds':seconds})[0]['cleanupSeconds'], seconds)
+                for field,values in {'workSeconds':(29,86401,float('inf'),float('nan'),True),
+                                     'cleanupSeconds':(29,3601,float('inf'),True)}.items():
                     for value in values:
                         with self.subTest(field=field,value=value):
                             with self.assertRaisesRegex(RuntimeError,'M7_RUNNER_FINITE_LIMIT'):
@@ -86,8 +88,9 @@ class OrdinaryBounded(unittest.TestCase):
             def stage(directory,name,args):
                 self.assertTrue((directory/'execution.json').exists())
                 events.append(name)
-            with patch.object(runner,'load_config',return_value=({'workSeconds':1500},[])),patch.object(runner,'preflight_receipt'),patch.object(runner,'arm_window',side_effect=arm),patch.object(runner,'stage',side_effect=stage):
-                runner.prepare('/synthetic/config',root)
+            source=Path(tmp)/'config.json';a.write(source,{'workSeconds':1500})
+            with patch.object(runner,'validate_config',return_value=({'workSeconds':1500},[])),patch.object(runner,'preflight_receipt'),patch.object(runner,'arm_window',side_effect=arm),patch.object(runner,'stage',side_effect=stage):
+                runner.prepare(source,root)
             # Source/plan admission now runs before seeding for ordinary runners too.
             # This fixture isolates guard ordering after receipt admission.
             self.assertEqual(events,['guard','prepare','source-preflight'])

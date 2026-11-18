@@ -54,9 +54,10 @@ class SerialDiagnostic(unittest.TestCase):
     def save(self):pass
     def observe(self,name,fn):events.append(name);return fn()
     def failure(self,*args):raise AssertionError('unexpected failure')
-   fake=types.SimpleNamespace(frozen=Mock(),quiet=Mock(),verify=Mock(),image=Mock(),verify_generator=Mock(),readiness=Mock(),command=lambda *args: '[{"Id":"synthetic-k6"}]',write=a.write,sample_preflight=lambda *args:({},{}),psql=Mock(),phase_snapshot=Mock(),time=types.SimpleNamespace(sleep=lambda *args:None),enabled_idle=Mock())
+   fake=types.SimpleNamespace(frozen=Mock(),quiet=Mock(),verify=Mock(),image=Mock(),verify_generator=Mock(),readiness=Mock(),command=lambda *args: '[{"Id":"synthetic-k6"}]',write=a.write,sample_preflight=lambda *args:({},{}),psql=Mock(),phase_snapshot=Mock(),time=types.SimpleNamespace(sleep=lambda *args:None),enabled_idle=Mock(),diagnostic_resources=types.SimpleNamespace(discovery_driver=Mock(side_effect=lambda m:contextlib.nullcontext())))
    with patch.object(discovery,'Record',Record),patch.object(discovery,'serial_exchange_diagnostic',side_effect=lambda *args:events.append('paired')),patch.object(discovery,'discovery_load',side_effect=AssertionError('ordinary load released')),patch.object(discovery,'check_discovery',return_value=True):
     result=discovery.run_discovery(fake,d,m,'synthetic-k6')
+   fake.diagnostic_resources.discovery_driver.assert_called_once_with(m)
    self.assertEqual(events,['readiness','idle','paired']);self.assertEqual(result['status'],'PARTIAL');self.assertTrue(result['diagnosticOnly']);self.assertEqual(result['ordinaryTraffic'],'NOT_RUN');self.assertFalse(result['measurements']['complete'])
  def run_generated(self,mode,broken=False):
   with tempfile.TemporaryDirectory()as tmp:

@@ -248,7 +248,7 @@ class Resources(unittest.TestCase):
         m={'tenants':1,'generator':{'tools':{'node':{'path':'/qualified/node'}}},'port':18080,'cadence':{'loadSeconds':1}}
         namespace={'viewer_plan':__import__('viewer_plan'),'HERE':HERE,'str':str,'a':a,'subprocess':a.subprocess,'diagnostic_resources':r,'m':m,'d':Path('/synthetic'),
                    'out':Path('/synthetic/load'),'runid':'synthetic-run','spec':'synthetic-compose',
-                   'argv':['/qualified/node','/synthetic/probe.js'],'env':{},'probe_env':{},'probe_log':object(),'log':object(),'scope':{'trafficSeconds':1}}
+                   'argv':['/qualified/node','/synthetic/probe.js'],'windows':{},'env':{},'probe_env':{},'probe_log':object(),'log':object(),'scope':{'trafficSeconds':1}}
         # Evaluate each ACTUAL production launch expression with its launcher
         # recorded. No surrounding runner, DB, HTTP, file or process executes.
         found=0

@@ -172,4 +172,94 @@ class Opportunities(unittest.TestCase):
             with self.assertRaisesRegex(p.Refused,code):self.assess(captures=captures)
 
 
+NATIVE_BINDING={**BINDING,'nativeConfigurationSha256':'5'*64}
+
+
+def native_captures():
+    captures=[]
+    for step in range(3):
+        rows=[]
+        for tenant,floor in ((A,2+step),(B,2)):
+            rows.append({'tenant':tenant,'writerClock':str(1000+step),'observed':{'bootstrap':str(floor),'settings':'1'},
+                         'completed':{'bootstrap':str(floor),'settings':'1'},'outputRevision':'2','restoreGeneration':'1',
+                         'pendingAt':None,'dueAt':None,'completedAt':90000,
+                         'native':{'source':{'system_id':'123456','timeline':1,'database':'synthetic_test','slot':'synthetic_slot'},
+                                   'generation':'a'*32+':1','inputFloor':str(floor),'completedInputFloor':str(floor),
+                                   'snapshotPosition':'0/10','acceptedPosition':'0/'+format(16+floor,'X'),
+                                   'restoreGeneration':'1','raw':{'kind':'storage-events-v1','head':str(floor),'base':'0'}}})
+        captures.append({'kind':'evaluator-durable-progress-v1','reader':copy.deepcopy(NATIVE_BINDING),'rows':rows})
+    return captures
+
+
+class NativeOpportunities(unittest.TestCase):
+    def assess(self,captures=None,rounds=None):
+        return o.assess(rounds or Opportunities().rounds(),[A,B],'load',durable=captures or native_captures(),binding=NATIVE_BINDING)
+
+    def test_actual_native_bootstrap_completion_without_output_revision_or_public_clock_credit(self):
+        captures=native_captures()
+        value=self.assess(captures)
+        self.assertEqual(value['verdict'],'PASS')
+        self.assertEqual(value['byTenant'][A]['inputTargets'],{'bootstrap':'4'})
+        self.assertEqual(value['byTenant'][B]['classification'],'NO_KNOWN_OPPORTUNITY')
+        self.assertEqual(value['writerIntakeCoverage']['verdict'],'UNMEASURED')
+        self.assertEqual(value['inputSourceTenantCoverage']['clock'],0)
+        for capture,clock in zip(captures,('9000','1','0')):capture['rows'][0]['writerClock']=clock
+        captures[-1]['rows'][0]['native']['snapshotPosition']='0/0'
+        self.assertEqual(self.assess(captures)['byTenant'][A]['classification'],'KNOWN_COMPLETED')
+
+    def test_native_floor_and_bootstrap_and_pending_marker_each_remain_blocking(self):
+        for change in ('floor','bootstrap','pendingAt','settings'):
+            captures=native_captures();last=captures[-1]['rows'][0]
+            if change=='floor':last['native']['completedInputFloor']='3';last['completed']['bootstrap']='3'
+            elif change=='bootstrap':last['completed']['bootstrap']='3'
+            elif change=='pendingAt':last['pendingAt']=90001
+            else:last['observed']['settings']='2'
+            self.assertEqual(self.assess(captures)['byTenant'][A]['classification'],'KNOWN_PENDING',change)
+        rounds=Opportunities().rounds()
+        for step,round_ in enumerate(rounds):round_['owners'][A].update(completedAcquisitions=1+step,legacyCycles=1+step)
+        self.assertEqual(self.assess(captures,rounds)['byTenant'][A]['classification'],'KNOWN_PENDING')
+        self.assertEqual(self.assess()['verdict'],'PASS')
+
+    def test_initial_zero_floor_without_bootstrap_completion_is_real_pending_work(self):
+        captures=native_captures()
+        for capture in captures:
+            row=capture['rows'][0];row.update(observed={'bootstrap':'0'},completed={},outputRevision='0',restoreGeneration=None,pendingAt=0,completedAt=None)
+            row['native'].update(inputFloor='0',completedInputFloor='0',acceptedPosition=None)
+        self.assertEqual(self.assess(captures)['byTenant'][A]['inputTargets'],{'bootstrap':'0'})
+        self.assertEqual(self.assess(captures)['byTenant'][A]['classification'],'KNOWN_PENDING')
+
+    def test_actual_native_binding_source_restore_regression_and_metadata_guards(self):
+        mutations=[lambda r:r['native']['source'].update(slot='other_slot'),
+                   lambda r:r['native'].update(generation='b'*32+':1'),
+                   lambda r:r.update(restoreGeneration='2'),
+                   lambda r:r['native'].update(inputFloor='1',completedInputFloor='1'),
+                   lambda r:r['native'].update(completedInputFloor='1'),
+                   lambda r:r['native'].update(acceptedPosition='0/1'),
+                   lambda r:r['native']['raw'].update(head='1'),
+                   lambda r:r.pop('pendingAt')]
+        for mutate in mutations:
+            captures=native_captures();mutate(captures[-1]['rows'][0])
+            with self.assertRaises(p.Refused):self.assess(captures)
+        captures=native_captures();captures[-1]['reader']['nativeConfigurationSha256']='6'*64
+        with self.assertRaisesRegex(p.Refused,'BINDING'):self.assess(captures)
+        self.assertEqual(self.assess()['verdict'],'PASS')
+
+    def test_native_due_and_clinical_availability_remain_independent_required_guards(self):
+        captures=native_captures();captures[0]['rows'][1]['dueAt']=100001
+        self.assertEqual(self.assess(captures)['byTenant'][B]['timer'],'PENDING')
+        captures[-1]['rows'][1].update(completedAt=200000,dueAt=999999)
+        self.assertEqual(self.assess(captures)['byTenant'][B]['timer'],'COMPLETED')
+        rounds=Opportunities().rounds();rounds[-1]['owners'][B]['ready']=False
+        with self.assertRaises(p.Refused):self.assess(captures,rounds)
+
+    def test_disabling_actual_pending_floor_check_makes_semantic_criterion_red_then_restores(self):
+        captures=native_captures();last=captures[-1]['rows'][0]
+        last['native']['completedInputFloor']='3';last['completed']['bootstrap']='3'
+        def criterion():self.assertEqual(self.assess(captures)['byTenant'][A]['classification'],'KNOWN_PENDING')
+        criterion()
+        with mock.patch.object(o,'pending_targets',return_value={}):
+            with self.assertRaises(AssertionError):criterion()
+        criterion()
+
+
 if __name__=='__main__':unittest.main()

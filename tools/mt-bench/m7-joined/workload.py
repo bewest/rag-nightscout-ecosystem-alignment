@@ -1,15 +1,66 @@
 """Hash-recorded adaptations to existing payload/shape functions, no source mount."""
 import hashlib
+import json
+import math
 from pathlib import Path
 from contract import require
+
+
+REALISTIC_MIX = 'realistic-v1'
+# k6 durations use Go's signed int64 nanoseconds; this is representability,
+# rather than a reference workload rate or population ceiling.
+MAX_TIME_UNIT_MS = (2**63 - 1) // 1000000
+REALISTIC_CADENCE_MS = {
+    'w_sgv': 300000,
+    'w_devicestatus': 300000,
+    'w_treatments_v3': 1800000,
+    'r_sgv': 300000,
+    'r_devicestatus': 900000,
+    'r_treatments': 900000,
+    'r_status': 900000,
+}
+
+
+def realistic_cycle_ms(scale):
+    """Resolve finite k6 time units without a reference multiplier ceiling."""
+    try:
+        positive=type(scale) in (int,float) and scale>0 and math.isfinite(scale)
+    except OverflowError:
+        positive=False
+    require(positive,'M7_WORKLOAD_SCALE_CONFIGURATION')
+    result={}
+    for shape,interval in REALISTIC_CADENCE_MS.items():
+        value=interval*(5 if shape=='r_sgv' else 1)/scale
+        require(math.isfinite(value),'M7_WORKLOAD_SCALE_TIME_UNIT')
+        unit=math.floor(value+.5)
+        require(1<=unit<=MAX_TIME_UNIT_MS,'M7_WORKLOAD_SCALE_TIME_UNIT')
+        result[shape]=unit
+    return result
 
 
 def generate(root, target):
     baseline=Path(root)/'tools/mt-bench/capacity/k6/workload.js'
     source=baseline.read_text()
+    # The ordinary batch loop already bounds each list by the remaining roster.
+    # The capacity baseline keeps its historical range; discovery uses an exact
+    # positive integer without a reference concurrency ceiling.
+    setup_guard="!/^[1-9][0-9]*$/.test(setupConcurrency) || Number(setupConcurrency) > 64"
+    require(source.count(setup_guard)==1,'M7_WORKLOAD_SETUP_CONCURRENCY_ANCHOR')
+    source=source.replace(setup_guard,"!/^[1-9][0-9]*$/.test(setupConcurrency) || !Number.isSafeInteger(Number(setupConcurrency))")
+    source=source.replace('JWT_SETUP_CONCURRENCY=16 (range 1..64)', 'JWT_SETUP_CONCURRENCY=16 (positive safe integer)')
+    source=source.replace('JWT_SETUP_CONCURRENCY must be an integer from 1 to 64',
+                          'M7_JWT_SETUP_CONCURRENCY_INVALID')
+    population_anchor='// Weighted tenant wheel: the hot tenant appears HOT times.'
+    require(source.count(population_anchor)==1,'M7_WORKLOAD_POPULATION_ANCHOR')
+    source=source.replace(population_anchor,"""if (!Number.isSafeInteger(HOT) || HOT < 1 || !TENANTS.length ||
+    TENANTS.length - 1 + HOT > 0xffffffff) throw Error('M7_WORKLOAD_POPULATION_ARRAY_LIMIT');
+if (!Number.isSafeInteger(DURATION) || DURATION < 1 || DURATION > 9223372036) {
+  throw Error('M7_WORKLOAD_DURATION_TIME_UNIT');
+}
+"""+population_anchor)
     old='const stamp = () => START + exec.scenario.iterationInTest;'
     require(source.count(old)==1,'M7_WORKLOAD_TIMESTAMP_ANCHOR_CHANGED')
-    source=source.replace(old,'const stamp = () => START + Math.floor(exec.scenario.iterationInTest * ARRIVAL_CYCLE_MS / weight);')
+    source=source.replace(old,'const stamp = () => START + Math.floor(exec.scenario.iterationInTest * cycleMs(exec.scenario.name) / weight);')
     anchor="const writesRefused = new Counter('writes_refused');"
     require(source.count(anchor)==1,'M7_WORKLOAD_REFUSAL_ANCHOR_CHANGED')
     source=source.replace(anchor,anchor+"\nconst responsesRefused = new Counter('responses_refused');")
@@ -25,8 +76,26 @@ def generate(root, target):
   return response;""")
     arrival="const shapes = Object.fromEntries(Object.entries(ALL_SHAPES).filter(([name]) => SELECTED.includes(name)));"
     require(source.count(arrival)==1,'M7_WORKLOAD_ARRIVAL_ANCHOR_CHANGED')
-    source=source.replace(arrival,arrival+"\nconst offered = __ENV.OFFERED_RPS === undefined ? null : Number(__ENV.OFFERED_RPS);\nif(offered !== null && (!Number.isFinite(offered) || offered < 1 || offered > 10000)) throw Error('M7_OFFERED_RPS_RANGE');\nconst ARRIVAL_CYCLE_MS = offered === null ? Math.round(CYCLE * 1000) : Math.round(Object.values(shapes).reduce((a,b)=>a+b,0)*weight*1000/offered);\nif(ARRIVAL_CYCLE_MS < 1) throw Error('M7_OFFERED_RPS_TIME_UNIT');")
-    source=source.replace("Math.round(CYCLE * 1000) + 'ms'","ARRIVAL_CYCLE_MS + 'ms'").replace("Math.ceil(rate / CYCLE)","Math.ceil(rate * 1000 / ARRIVAL_CYCLE_MS)")
+    source=source.replace(arrival,arrival+"\nconst offered = __ENV.OFFERED_RPS === undefined ? null : Number(__ENV.OFFERED_RPS);\nif(offered !== null && (!Number.isFinite(offered) || offered <= 0)) throw Error('M7_OFFERED_RPS_RANGE');\nconst ARRIVAL_CYCLE_MS = offered === null ? Math.round(CYCLE * 1000) : Math.round(Object.values(shapes).reduce((a,b)=>a+b,0)*weight*1000/offered);\n")
+    scenario_anchor = "const scenarios = {};"
+    require(source.count(scenario_anchor) == 1, 'M7_WORKLOAD_SCENARIO_ANCHOR_CHANGED')
+    source = source.replace(scenario_anchor, f"""
+const mix = __ENV.M7_WORKLOAD_MIX;
+const workloadScale = __ENV.M7_WORKLOAD_SCALE === undefined ? 1 : Number(__ENV.M7_WORKLOAD_SCALE);
+if (!Number.isFinite(workloadScale) || workloadScale <= 0 ||
+    (__ENV.M7_WORKLOAD_SCALE !== undefined && mix !== '{REALISTIC_MIX}')) throw Error('M7_WORKLOAD_SCALE_CONFIGURATION');
+const realisticCadenceMs = {json.dumps(REALISTIC_CADENCE_MS)};
+if (mix !== undefined &&
+    (mix !== '{REALISTIC_MIX}' || offered !== null || ACCEL !== 1 || HOT !== 1 ||
+     Object.keys(realisticCadenceMs).some(name => !shapes[name]))) {{
+  throw Error('M7_REALISTIC_MIX_CONFIGURATION');
+}}
+const cycleMs = name => mix === undefined ? ARRIVAL_CYCLE_MS : Math.round(realisticCadenceMs[name] * shapes[name] / workloadScale);
+if (Object.keys(shapes).some(name => !Number.isSafeInteger(cycleMs(name)) || cycleMs(name) < 1 || cycleMs(name) > {MAX_TIME_UNIT_MS})) {{
+  throw Error('M7_OFFERED_RPS_TIME_UNIT');
+}}
+{scenario_anchor}""")
+    source=source.replace("Math.round(CYCLE * 1000) + 'ms'","cycleMs(name) + 'ms'").replace("Math.ceil(rate / CYCLE)","Math.ceil(rate * 1000 / cycleMs(name))")
     source=source.replace("const responsesRefused = new Counter('responses_refused');", "const responsesRefused = new Counter('responses_refused');\nconst scenarioAttempts = new Counter('scenario_request_attempts'), scenarioResponses = new Counter('scenario_http_responses'), scenarioTransport = new Counter('scenario_transport_failures');")
     source=source.replace("  const response = http.get(BASE + path", "  scenarioAttempts.add(1);\n  const response = http.get(BASE + path")
     source=source.replace("  if (response.status >= 400", "  (response.status > 0 ? scenarioResponses : scenarioTransport).add(1);\n  if (response.status >= 400")
@@ -77,6 +146,30 @@ def generate(root, target):
     projection=helper[helper.index('function projection('):helper.index("const fs = require(")]
     source="import { sha256 } from 'k6/crypto';\n"+source
     source+= "\n"+projection+"\n"
+    source += """
+// An authored remaining setup window replaces the historical default. The
+// surrounding runner still enforces its original absolute work cutoff.
+if (__ENV.M7_SETUP_SECONDS !== undefined) {
+  const seconds = Number(__ENV.M7_SETUP_SECONDS);
+  const until = Number(__ENV.M7_SETUP_UNTIL_MS);
+  if (!/^[1-9][0-9]*$/.test(__ENV.M7_SETUP_SECONDS) ||
+      !Number.isSafeInteger(seconds * 1000) || seconds > 9223372036 || !/^[1-9][0-9]*$/.test(__ENV.M7_SETUP_UNTIL_MS || '') ||
+      !Number.isSafeInteger(until)) throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
+  options.setupTimeout = seconds + 's';
+} else if (__ENV.M7_SETUP_UNTIL_MS !== undefined) {
+  throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
+}
+function setupRemainingMs () {
+  if (__ENV.M7_SETUP_UNTIL_MS === undefined) return 60000;
+  const remaining = Number(__ENV.M7_SETUP_UNTIL_MS) - Date.now();
+  if (remaining <= 0) throw Error('M7_PHASE_WINDOW_EXHAUSTED:setup');
+  return remaining;
+}
+"""
+    account("export function setup () {", "export function setup () {\n  setupRemainingMs();")
+    account("responseType: 'text', timeout: '60s'", "responseType: 'text', timeout: Math.min(60000,setupRemainingMs()) + 'ms'")
+    account("    for (let j = 0; j < requests.length; j++) {", "    setupRemainingMs();\n    for (let j = 0; j < requests.length; j++) {")
+    account("  return { jwts };", "  setupRemainingMs();\n  return { jwts };")
     source+= "const fingerprintObserved = new Counter('settings_fingerprint_observed');\nconst fingerprintInvalid = new Counter('settings_fingerprint_invalid');\nconst fingerprintMismatch = new Counter('settings_fingerprint_mismatch');\n"
     old="export function r_status () { const { t } = pick(); get(t, '/api/v1/status.json', 'GET v1 status'); }"
     require(source.count(old)==1,'M7_WORKLOAD_STATUS_ANCHOR_CHANGED')
@@ -93,4 +186,4 @@ def generate(root, target):
     target=Path(target);target.parent.mkdir(parents=True,exist_ok=True);target.write_text(source)
     return {'baseline':'tools/mt-bench/capacity/k6/workload.js','baselineSha256':hashlib.sha256(baseline.read_bytes()).hexdigest(),
             'adaptedSha256':hashlib.sha256(target.read_bytes()).hexdigest(),
-            'changes':['exact bounded per-shape HTTP status and outcome counters, JWT setup separate, main-context-only histogram metadata; unexpected mutation responses remain uncertain','explicit optional scenario arrival rate with current-clock stamps and separate request-attempt/HTTP-response/transport counters','current nominal arrival timestamps with deterministic uniqueness','explicit read 4xx counter blocks functional advancement','bounded allowlisted JWT setup refusal provenance without credentials, raw URL or response body; first refusal still aborts without retry','existing status GET retains text body for fixed whitelist fingerprint under global discard; no extra request']}
+            'changes':['exact bounded per-shape HTTP status and outcome counters, JWT setup separate, main-context-only histogram metadata; unexpected mutation responses remain uncertain','explicit optional scenario arrival rate with current-clock stamps and separate request-attempt/HTTP-response/transport counters','current nominal arrival timestamps with deterministic uniqueness','opt-in realistic-v1 per-shape cadence with equal tenant weights and bounded optional uniform rate bracket; scale1 preserves sensor cadence','explicit read 4xx counter blocks functional advancement','bounded allowlisted JWT setup refusal provenance without credentials, raw URL or response body; first refusal still aborts without retry','existing status GET retains text body for fixed whitelist fingerprint under global discard; no extra request']}

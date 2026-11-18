@@ -22,12 +22,19 @@ from test_evaluator_progress import A, B
 
 @unittest.skipUnless(fixtures.NODE.is_file(), 'qualified Node reader required')
 class Caller(unittest.TestCase):
-    def run_tail(self, *, writer_live=False, generation=False, deadline=True, invalid_ledger=False, boundary_complete=False, thread_rpc=False):
+    def run_tail(self, *, writer_live=False, generation=False, deadline=True, invalid_ledger=False, boundary_complete=False, thread_rpc=False, phase_seconds=None):
         owner = fixtures.Caller(); self.addCleanup(owner.doCleanups)
         directory, output, manifest, _, error, _, _ = owner.exercise()
         self.assertIsNone(error)
         manifest.update(evaluatorCatchup='fixed-target-v1')
         manifest['cadence']['restart'] = False
+        if phase_seconds is not None:
+            import phase_windows
+            manifest['owner']='c'*32
+            manifest['cadence']['drainSeconds']=phase_seconds
+            window=phase_windows.start(manifest,time.monotonic_ns(),int(time.time()*1000))
+            window['drainStartedMonoNs']=time.monotonic_ns()
+            a.write(output/'phase-windows.json',window)
         original = a.document(output/'evaluator-progress.json')
         saved = (output/'evaluator-progress.json').read_bytes()
         rounds, _ = idle._decode(original, 2, ['evaluator'])
@@ -54,7 +61,10 @@ class Caller(unittest.TestCase):
         def rpc(*args, **kwargs):
             self.rpc_calls.append({'deadlineContext': a._COMMAND_DEADLINE.get(), **kwargs})
             return ''
-        def view(services, ids, fetch):
+        def view(services, ids, fetch, *, allow_unavailable=False):
+            # The actual tail retains unavailable rows for classification. This
+            # mock must accept that caller contract instead of raising TypeError.
+            self.assertTrue(allow_unavailable)
             if thread_rpc:
                 with ThreadPoolExecutor(max_workers=1) as executor:
                     executor.submit(fetch, 'evaluator', ids, 1, 1024).result()
@@ -123,6 +133,19 @@ class Caller(unittest.TestCase):
         self.assertEqual(value['code'], 'M7_PROBE_COUNTS_METADATA'); self.assertEqual(calls, [])
         value, calls = self.run_tail(deadline=False)
         self.assertEqual(value['code'], 'M7_DRAIN_WORK_DEADLINE_REQUIRED'); self.assertEqual(calls, [])
+
+    def test_owner_monitored_run_uses_finite_phase_deadline_and_retains_join_checks(self):
+        value,calls=self.run_tail(deadline=False,phase_seconds=600,thread_rpc=True)
+        self.assertEqual(value['verdict'],'PASS')
+        self.assertGreater(value['observationWindow']['effectiveSeconds'],590)
+        self.assertLessEqual(value['observationWindow']['effectiveSeconds'],600)
+        self.assertTrue(calls)
+        self.assertTrue(all(0<row['timeout']<=20 for row in calls))
+        self.assertTrue(all(0<row['timeout']<=20 for row in self.rpc_calls))
+        self.assertIsNone(a._COMMAND_DEADLINE.get(),'phase deadline leaked into caller')
+        refused,calls=self.run_tail(deadline=False,phase_seconds=600,writer_live=True)
+        self.assertEqual(refused['code'],'M7_DRAIN_WRITERS_NOT_JOINED')
+        self.assertEqual(calls,[])
 
     def test_actual_failed_collection_projection_is_retained_and_omission_is_red(self):
         def criterion():

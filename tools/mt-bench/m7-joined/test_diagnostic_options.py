@@ -119,16 +119,22 @@ class DiagnosticOptions(unittest.TestCase):
         r.configure()
         with tempfile.TemporaryDirectory() as temp:
             d=Path(temp);(d/'core').mkdir()
-            m={'owner':'a'*32,'prepared':True,'diagnosticResources':{'invalid':'selected'},'hostIdentity':'synthetic',
+            m={'owner':'a'*32,'project':'synthetic-owned','prepared':True,'diagnosticResources':{'invalid':'selected'},'hostIdentity':'synthetic',
                'pair':{'core':'b'*40},'composeSha256':'same','restartHelperSha256':'same',
                'probe':{'adaptedSha256':'same','recoveryHelpers':{'helper':'same'}},'workload':{'adaptedSha256':'same'},
                'sourceCompose':{},'diagnostics':{},'coreRepository':'/synthetic/core'}
             recorded=[]
-            with patch.object(a,'assert_owned'),patch.object(a,'fixture_inventory',return_value={}),patch.object(a,'host_identity',return_value='synthetic'),patch.object(a,'git',return_value='b'*40),patch.object(a,'digest',return_value='same'),patch.object(a,'document',return_value={'services':{}}),patch.object(a,'measurement_topology'),patch.object(a.profile_provenance,'verify_environment'),patch.object(a.profile_provenance,'state_environment'),patch.object(a.profile_provenance,'capture_logs',return_value={}),patch.object(a,'compose'),patch.object(a,'resources',return_value=[]),patch.object(a,'_command',side_effect=lambda argv,**kw:recorded.append(argv)):
+            def command(argv,**kwargs):
+                recorded.append(argv)
+                return ''
+            with patch.object(a,'assert_owned'),patch.object(a,'fixture_inventory',return_value={}),patch.object(a,'host_identity',return_value='synthetic'),patch.object(a,'git',return_value='b'*40),patch.object(a,'digest',return_value='same'),patch.object(a,'document',return_value={'services':{}}),patch.object(a,'measurement_topology'),patch.object(a.profile_provenance,'verify_environment'),patch.object(a.profile_provenance,'state_environment'),patch.object(a.profile_provenance,'capture_logs',return_value={}),patch.object(a,'compose'),patch.object(a,'resources',return_value=[]),patch.object(a,'_command',side_effect=command):
                 a.down(d,m)
-            self.assertEqual(len(recorded),1)
+            # Teardown now proves exact network/volume absence as well as
+            # source identity. Return empty inventories, never error text.
+            self.assertEqual(recorded[1:],[['docker',kind,'ls','-q','--filter','label=com.docker.compose.project=synthetic-owned'] for kind in ('network','volume')])
             self.assertEqual(recorded[0][:3],['node','--max-heap-size=128','-e'])
             self.assertIn('assertCleanSource',recorded[0][3])
+            self.assertEqual(a.document(d/'cleanup-absence.json')['status'],'ABSENT')
             self.assertIsNone(r._ACTIVE)
 
     def test_selected_images_are_cached_immutable_and_no_build_recipe_survives(self):

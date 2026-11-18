@@ -21,12 +21,12 @@ def permitted(a,d,m):
     p.need(not result(value) or value.get('sourceBinding')==binding(m),'M7_OPPORTUNITY_BINDING','FAIL')
     return result(value)
 
-def assess_rest(rounds,ids,phase,durable,binding):
-    opportunities.all_roster(rounds,ids,phase,allow_clinical_stall=True)
+def assess_rest(rounds,ids,phase,durable,binding,*,policy=p.POLICY):
+    opportunities.all_roster(rounds,ids,phase,allow_clinical_stall=True,policy=policy)
     idle.clock_windows(rounds)
     for current in rounds:
         for rows in current['allRows'].values():
             for row in rows.values():
                 if not row['admitted']:p.need(not any(idle.jobs(row['jobs']).values()),'M7_EVALUATOR_IDLE_FOREIGN_PENDING','FAIL')
     opportunities.durable_rows(durable,ids,binding)
-    return {'version':p.POLICY['version'],'phase':phase,'policy':p.POLICY,'verdict':'FAIL','code':'M7_EVALUATOR_PROGRESS_ERROR','clinicalVerdict':'FAIL','clinicalCode':CODE,'restCollectionPermitted':True,'capacityAcceptance':'NOT_GRANTED','scope':'independent REST observations alongside an explicit clinical stall; no clinical or capacity acceptance'}
+    return {'version':policy['version'],'phase':phase,'policy':policy,'verdict':'FAIL','code':'M7_EVALUATOR_PROGRESS_ERROR','clinicalVerdict':'FAIL','clinicalCode':CODE,'restCollectionPermitted':True,'capacityAcceptance':'NOT_GRANTED','scope':'independent REST observations alongside an explicit clinical stall; no clinical or capacity acceptance'}

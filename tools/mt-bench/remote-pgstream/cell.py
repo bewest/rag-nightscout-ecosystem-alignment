@@ -7,7 +7,7 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import app
 import producer
-from protocol import prepared_cadence, binding, need, workload, discovery_mode, topology_dependencies, jwt_setup_concurrency
+from protocol import prepared_cadence, binding, need, workload, discovery_mode, topology_dependencies, jwt_setup_concurrency, native_mode, native_project, source_admission, static_selection
 from transport import POSTGRES, REPAIRED_CORE, MINIMUM_CORE, PERFORMANCE_CORE
 
 def main():
@@ -46,6 +46,22 @@ def main():
             need(prep.completion_contract == 'evaluator-work-v2', 'REMOTE_REPAIRED_COMPLETION_V2_REQUIRED')
         # Validate the genuine authorization before even preparing source/state.
         receipt = app.a.document(prep.freeze)
+        if native_mode(b):
+            need(receipt.get('version') == 2 and receipt.get('functionalAcceptanceAtAuthorization') == source_admission(b)
+                 and prep.fixture_project == native_project(b) and prep.evaluator_opportunities == 'received-input-v1',
+                 'REMOTE_NATIVE_PREPARE_AUTHORIZATION')
+            need(receipt.get('remoteNativeSourceAdmission')==b.get('nativeSourceAdmission'),'REMOTE_NATIVE_SOURCE_ADMISSION_RECEIPT')
+            if source_admission(b)=='PENDING':need(receipt.get('sourceAcceptance')=={'status':'PENDING'},'REMOTE_NATIVE_PENDING_TRUTH')
+            need(b['fixtureNetworks']=={'backend':prep.backend_subnet,'edge':prep.edge_subnet}
+                 and receipt.get('remoteFixtureNetworks')==b['fixtureNetworks'],'REMOTE_NATIVE_NETWORKS')
+        from commissioning_wal import remote_selection
+        startup=remote_selection(b)
+        need(app.a.commissioning_wal.option(prep).get('commissioningSlotWalMiB')==startup.get('commissioningSlotWalMiB') and
+             prep.tenant_readiness==startup.get('tenantReadiness') and
+             receipt.get('remoteCommissioningSlotWalMiB')==startup.get('commissioningSlotWalMiB') and
+             receipt.get('remoteTenantReadiness')==startup.get('tenantReadiness'),'REMOTE_STARTUP_PREPARE_MIRROR')
+        need(app.a.static_topology.option(prep).get('staticTopology')==static_selection(b) and receipt.get('remoteStaticTopology')==b.get('staticTopology'),'REMOTE_STATIC_PREPARE_MIRROR')
+        if b.get('staticTopology'):need(receipt.get('limits',{}).get('staticWorkers')==1 and receipt['limits'].get('apiReplicas')==1,'REMOTE_STATIC_RECEIPT')
         if args.run_config:
             from run_configuration import validate_execution
             validate_execution(run_config,receipt)

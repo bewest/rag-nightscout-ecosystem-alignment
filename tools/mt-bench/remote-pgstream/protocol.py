@@ -33,6 +33,51 @@ def private_ipv4(value):
     return addr.version == 4 and any(addr in ipaddress.ip_network(cidr) for cidr in ('10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'))
 
 SUPPORTED_COHORTS = (10, 1000, 3000, 5000, 10000)
+NATIVE_PROFILE = 'external-service-native-v1'
+NATIVE_DEPENDENCIES = {
+    'tools/mt-bench/m7-joined/' + name for name in (
+        'completed-oracle.cjs', 'native-observation.cjs', 'client-delivery.cjs',
+        'evaluator_opportunities.py', 'evaluator_progress.py', 'evaluator_idle.py',
+        'discovery_rest.py', 'discovery_counts.py', 'probe.py',
+    )
+} | {'tools/mt-bench/capacity/probe.js'}
+
+def native_mode(value):
+    return (value.get('helperDependencies') or {}).get('profile') == NATIVE_PROFILE
+
+def source_admission(value):
+    selected=value.get('nativeSourceAdmission')
+    need(selected is None or selected=='diagnostic-build-v1','REMOTE_NATIVE_SOURCE_ADMISSION')
+    need(selected is None or native_mode(value) and discovery_mode(value),'REMOTE_NATIVE_BUILD_DISCOVERY_ONLY')
+    return 'PENDING' if selected is not None else 'PASS'
+
+def static_selection(value):
+    selected=value.get('staticTopology');services=(value.get('diagnosticResourceAllocation')or{}).get('services',{})
+    if selected is None:
+        need('socket-edge' not in services,'REMOTE_STATIC_SELECTION_REQUIRED')
+        return None
+    need(selected=={'kind':'static-hash-v1','workers':1} and type(selected.get('workers')) is int,
+         'REMOTE_STATIC_K1_N1_ONLY')
+    need(native_mode(value) and discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1'
+         and isinstance(value.get('diagnosticResourceAllocation'),dict),'REMOTE_STATIC_NATIVE_SCOPE')
+    need('socket-edge' in services
+         and not any(re.fullmatch(r'(api|evaluator|realtime)-[0-9]+',name)for name in services),'REMOTE_STATIC_ALLOCATION')
+    return selected
+
+def native_project(value):
+    return 'nsremote-' + value['nonce'][:12]
+
+def native_networks(value):
+    networks=value.get('fixtureNetworks')
+    need(isinstance(networks,dict) and set(networks)=={'backend','edge'},'REMOTE_NATIVE_NETWORKS')
+    admitted=[]
+    for cidr in networks.values():
+        need(isinstance(cidr,str) and cidr.endswith('.0/24') and private_ipv4(cidr[:-3]),'REMOTE_NATIVE_NETWORKS')
+        subnet=ipaddress.ip_network(cidr)
+        need(all(ipaddress.ip_address(value[key]) not in subnet for key in ('appAddress','generatorAddress')),'REMOTE_NATIVE_NETWORKS')
+        admitted.append(subnet)
+    need(admitted[0]!=admitted[1],'REMOTE_NATIVE_NETWORKS')
+    return networks
 
 def discovery_mode(value):
     mode=value.get('reportMode','strict')
@@ -50,7 +95,7 @@ def workload(value):
         return dict(cadence=dict(CADENCE), primerConcurrency=1, resourcePlan=None)
     need(isinstance(selected, dict) and set(selected) in ({'cadence', 'primerConcurrency', 'resourcePlan'}, {'cadence', 'primerConcurrency', 'resourcePlan', 'jwtSetupConcurrency'}), 'REMOTE_WORKLOAD_SHAPE')
     cadence = selected['cadence']
-    need(isinstance(cadence, dict) and set(CADENCE) <= set(cadence) and set(cadence)-set(CADENCE) <= ({'offeredRps','logicalPollingClients','restartDuringLoadAfterSeconds'} if exploratory else {'offeredRps'}), 'REMOTE_CADENCE_SHAPE')
+    need(isinstance(cadence, dict) and set(CADENCE) <= set(cadence) and set(cadence)-set(CADENCE) <= ({'offeredRps','logicalPollingClients','restartDuringLoadAfterSeconds','workloadMix','workloadScale','driverShards'} if exploratory else {'offeredRps'}), 'REMOTE_CADENCE_SHAPE')
     for key, default in CADENCE.items():
         if exploratory and key in ('warmupSeconds','idleSeconds','loadSeconds','accel','hotFactor','samplerIntervalSeconds','probeEveryMs','socketsPerTenant'):
             maximum={'samplerIntervalSeconds':60,'socketsPerTenant':8}.get(key,10800 if key!='probeEveryMs' else 3600000)
@@ -65,6 +110,22 @@ def workload(value):
     if 'offeredRps' in cadence:
         rate = cadence['offeredRps']
         need(type(rate) in (int, float) and math.isfinite(rate) and 1 <= rate <= 10000, 'REMOTE_OFFERED_RATE_RANGE')
+    if 'workloadMix' in cadence:
+        need(exploratory and cadence['workloadMix']=='realistic-v1' and 'offeredRps' not in cadence
+             and cadence['accel']==cadence['hotFactor']==1,'REMOTE_REALISTIC_MIX_CONFIGURATION')
+    if 'workloadScale' in cadence:
+        scale=cadence['workloadScale']
+        need(cadence.get('workloadMix')=='realistic-v1' and type(scale) in (int,float) and math.isfinite(scale)
+             and 0.25<=scale<=8,'REMOTE_WORKLOAD_SCALE_CONFIGURATION')
+    if 'driverShards' in cadence:
+        shards=cadence['driverShards']
+        need(exploratory and type(shards) is int and 1<=shards<=16 and shards<=value['tenants'], 'REMOTE_DRIVER_SHARDS_RANGE')
+        if shards>1:
+            need(value.get('pgstreamTopology')=='external-service-v1' and isinstance(value.get('helperDependencies'),dict)
+                 and not value.get('componentCases'), 'REMOTE_DRIVER_SHARDS_TOPOLOGY')
+            if 'offeredRps' in cadence:
+                smallest=value['tenants']//shards
+                need(cadence['offeredRps']*smallest/(value['tenants']-1+cadence['hotFactor'])>=1,'REMOTE_DRIVER_SHARDS_RATE')
     jwt = selected.get('jwtSetupConcurrency', 1)
     need(type(jwt) is int and 1 <= jwt <= 64, 'REMOTE_JWT_SETUP_CONCURRENCY_RANGE')
     concurrency = selected['primerConcurrency']
@@ -111,14 +172,24 @@ def resource_selection(value):
 def allocation_boundary(value,hosts=None):
     """Transport admission; canonical SUT verifier independently binds native quotas."""
     need(isinstance(value,dict) and set(value)=={'version','services','driver','ceiling','edge'} and type(value['version']) is int and value['version']==1,'REMOTE_ALLOCATION_SHAPE')
-    need(isinstance(value['services'],dict) and 1<=len(value['services'])<=32 and {'evaluator','pgstream','nginx'}<=set(value['services']),'REMOTE_ALLOCATION_ROSTER')
+    need(isinstance(value['services'],dict) and {'evaluator','pgstream','nginx'}<=set(value['services']),'REMOTE_ALLOCATION_ROSTER')
     for role in value['services']:
-        need(isinstance(role,str) and re.fullmatch(r'(postgres|vault|bootstrap|admin|primer|api|realtime|evaluator|tenant-admin|ui|nginx|placement-operator|demo|feed-reader|pgstream|(?:api|realtime|evaluator)-(?:[2-9]|1[0-6]))',role),'REMOTE_ALLOCATION_ROLE')
-    for limit in [*value['services'].values(),value['driver']]:
-        need(isinstance(limit,dict) and set(limit)=={'millicpus','memoryBytes'} and type(limit['millicpus']) is int and 1<=limit['millicpus']<=64000 and type(limit['memoryBytes']) is int and 1048576<=limit['memoryBytes']<=128*1024*1048576,'REMOTE_ALLOCATION_LIMIT')
+        need(isinstance(role,str) and re.fullmatch(r'(postgres|vault|bootstrap|admin|primer|api|realtime|evaluator|tenant-admin|ui|nginx|placement-operator|demo|feed-reader|pgstream|socket-edge|(?:api|realtime|evaluator)-(?:[2-9]|1[0-6]))',role),'REMOTE_ALLOCATION_ROLE')
+    for role,limit in [*value['services'].items(),('driver',value['driver'])]:
+        # Services use exact integer quota/period; standalone --cpus uses the
+        # engine's NanoCpus field. Match each signed-int64 carrier separately.
+        field='driver' if role=='driver' else 'services.'+role
+        need(isinstance(limit,dict) and set(limit)=={'millicpus','memoryBytes'},'REMOTE_ALLOCATION_LIMIT:'+field)
+        maximum=((1<<63)-1)//1000000 if role=='driver' else (1<<(64-20))-1
+        need(type(limit['millicpus']) is int and 1<=limit['millicpus']<=maximum,'REMOTE_ALLOCATION_LIMIT:'+field+'.millicpus')
+        need(type(limit['memoryBytes']) is int and 1048576<=limit['memoryBytes']<=(1<<63)-1,'REMOTE_ALLOCATION_LIMIT:'+field+'.memoryBytes')
     ceiling=value['ceiling']
-    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and 1<=ceiling['millicpus']<=64000 and type(ceiling['memoryBytes']) is int and 1048576<=ceiling['memoryBytes']<=128*1024*1048576,'REMOTE_ALLOCATION_CEILING')
-    need(value['edge']=={'workerProcesses':1,'workerConnections':16384} and all(type(x) is int for x in value['edge'].values()),'REMOTE_ALLOCATION_EDGE')
+    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and ceiling['millicpus']>=1 and type(ceiling['memoryBytes']) is int and ceiling['memoryBytes']>=1048576,'REMOTE_ALLOCATION_CEILING')
+    edge=value['edge']
+    # nginx process table and the retained source actor's descriptor budget;
+    # these are implementation boundaries, not workload acceptance sizes.
+    need(isinstance(edge,dict) and set(edge)=={'workerProcesses','workerConnections'} and type(edge['workerProcesses']) is int and 1<=edge['workerProcesses']<=1024 and type(edge['workerConnections']) is int and edge['workerConnections']>=1,'REMOTE_ALLOCATION_EDGE')
+    need(edge['workerConnections']<=65536,'REMOTE_ALLOCATION_EDGE_DESCRIPTOR_LIMIT:workerConnections exceeds retained worker_rlimit_nofile=65536; a larger configured/read-back descriptor budget is required')
     totals={key:sum(v[key]*(2 if role in ('bootstrap','primer') else 1) for role,v in value['services'].items()) for key in ('millicpus','memoryBytes')}
     need(all(totals[k]+value['driver'][k]<=ceiling[k] for k in totals),'REMOTE_ALLOCATION_AGGREGATE')
     if hosts is not None:
@@ -133,9 +204,18 @@ def topology(value):
     need(discovery_mode(value) and value.get('pgstreamTopology')=='external-service-v1' and (isinstance(selection,dict) or selection in ('local-diagnostic-external-pgstream-4cpu-8g-v1','local-qualification-external-pgstream-6cpu-10g-v1')),'REMOTE_EXPLICIT_TOPOLOGY')
     if isinstance(selection,dict):allocation_boundary(selection,workload(value)['resourcePlan']['hosts'])
     deps=value.get('helperDependencies')
-    need(isinstance(deps,dict) and set(deps)=={'version','profile','files'} and deps['version']==1 and deps['profile'] in ('external-service-v1','external-service-batch-v1'),'REMOTE_TOPOLOGY_DEPENDENCIES')
+    need(isinstance(deps,dict) and set(deps)=={'version','profile','files'} and type(deps['version']) is int and deps['version']==1 and deps['profile'] in ('external-service-v1','external-service-batch-v1',NATIVE_PROFILE),'REMOTE_TOPOLOGY_DEPENDENCIES')
     names={'tools/mt-bench/m7-joined/stream_topology.py','tools/mt-bench/m7-joined/diagnostic_resources.py'}
-    if deps['profile']=='external-service-batch-v1':names.add('tools/mt-bench/m7-joined/experiment_batch.py')
+    if deps['profile'] in ('external-service-batch-v1',NATIVE_PROFILE):names.add('tools/mt-bench/m7-joined/experiment_batch.py')
+    if workload(value)['cadence'].get('driverShards',1)>1:
+        names.update({'tools/mt-bench/m7-joined/driver_shards.py','tools/mt-bench/m7-joined/contract.py'})
+    if value.get('staticTopology') is not None:
+        names.update({'tools/mt-bench/m7-joined/static_topology.py','tools/mt-bench/m7-joined/role_instances.py'})
+    if value.get('commissioningSlotWalMiB')is not None:
+        names.update({'tools/mt-bench/m7-joined/commissioning_wal.py','tools/mt-bench/m7-joined/contract.py'})
+    if native_mode(value):
+        need(isinstance(selection,dict) and not value.get('componentCases') and viewer_total(value)>0,'REMOTE_NATIVE_PROFILE')
+        names.update(NATIVE_DEPENDENCIES)
     need(isinstance(deps['files'],dict) and set(deps['files'])==names and all(isinstance(h,str) and re.fullmatch('[a-f0-9]{64}',h) for h in deps['files'].values()),'REMOTE_TOPOLOGY_DEPENDENCIES')
     return deps
 
@@ -150,12 +230,12 @@ def topology_dependencies(value,root):
         need(file.is_file() and not file.is_symlink() and file.resolve()==file and hashlib.sha256(file.read_bytes()).hexdigest()==expected,'REMOTE_TOPOLOGY_DEPENDENCY_BYTES')
     source=ast.parse((root/'tools/mt-bench/m7-joined/diagnostic_resources.py').read_text())
     uses_batch=any((isinstance(n,ast.ImportFrom) and n.module=='experiment_batch') or (isinstance(n,ast.Import) and any(a.name=='experiment_batch' for a in n.names)) for n in ast.walk(source))
-    need(uses_batch==(deps['profile']=='external-service-batch-v1'),'REMOTE_TOPOLOGY_DEPENDENCY_PROFILE')
+    need(uses_batch==(deps['profile'] in ('external-service-batch-v1',NATIVE_PROFILE)),'REMOTE_TOPOLOGY_DEPENDENCY_PROFILE')
 
 
 def binding(value, now=None):
     now = time.time() if now is None else now
-    need(isinstance(value, dict) and FIELDS <= set(value) and set(value)-FIELDS <= {'workload','componentCases','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','helperDependencies'}, 'EXTERNAL_BINDING_SHAPE')
+    need(isinstance(value, dict) and FIELDS <= set(value) and set(value)-FIELDS <= {'workload','componentCases','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','helperDependencies','fixtureNetworks','nativeSourceAdmission','staticTopology','commissioningSlotWalMiB','tenantReadiness'}, 'EXTERNAL_BINDING_SHAPE')
     if 'componentCases' in value:
         from component_cases import plan
         plan(value['componentCases'],value['tenants'])
@@ -167,9 +247,14 @@ def binding(value, now=None):
          and type(value['tenants']) is int and (1<=value['tenants']<=10000 if discovery_mode(value) else value['tenants'] in SUPPORTED_COHORTS), 'EXTERNAL_CELL')
     workload(value)
     topology(value)
+    source_admission(value);static_selection(value)
+    from commissioning_wal import remote_selection
+    remote_selection(value)
     need(private_ipv4(value['appAddress']) and private_ipv4(value['generatorAddress'])
          and value['appAddress'] != value['generatorAddress'] and type(value['port']) is int
          and 1024 <= value['port'] <= 65535, 'EXTERNAL_PRIVATE_INGRESS')
+    if native_mode(value):native_networks(value)
+    else:need('fixtureNetworks' not in value,'REMOTE_NATIVE_NETWORKS')
     need(type(value['expiresAt']) in (int, float) and now + RESERVE < value['expiresAt'] <= now + 10800, 'EXTERNAL_DEADLINE')
     need(set(value['pair']) == {'core', 'deploy'} and all(re.fullmatch('[a-f0-9]{40}', x) for x in value['pair'].values())
          and re.fullmatch('sha256:[a-f0-9]{64}', value['imageId'])

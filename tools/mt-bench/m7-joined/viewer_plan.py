@@ -1,10 +1,11 @@
 """Declared total stock viewers, assigned in roster order; no runtime authority."""
 from contract import require
+import workload_inputs
 
 def total(m):
     cadence=m.get('cadence',{})
     value=cadence.get('logicalPollingClients',cadence.get('socketsPerTenant',2)*m['tenants'])
-    require(type(value) is int and 0<=value<=80000,'M7_VIEWER_TOTAL_RANGE')
+    require(workload_inputs.polling_clients(value),'M7_VIEWER_TOTAL_RANGE')
     return value
 
 def counts(m,roster):

@@ -1,6 +1,6 @@
 """Strict cached inspection companion; never treats runtime counts as detector polls."""
 import json,re,time
-from contract import require
+from contract import DISCOVERY_MAX_WORKERS, require
 COUNTERS=('ticks','refreshes','detected','detectFailures')
 DELIVERY_COUNTERS=('received','completed','retries','workQueries','metadataUpdates','metadataRows')
 DELIVERY_FIELDS=(*DELIVERY_COUNTERS,'maxMetadataBatch')
@@ -21,12 +21,12 @@ def parse(v):
         require(s['runtime']is None and s['watchedCount']is None,'M7_REALTIME_COST_UNAVAILABLE_NOT_ZERO')
         return {'status':'NO-INSTRUMENT','reason':'M7_REALTIME_COST_UNAVAILABLE'}
     require(isinstance(s['runtime'],dict) and set(s['runtime'])==set(COUNTERS) and all(number(s['runtime'][k]) for k in COUNTERS),'M7_REALTIME_COST_COUNTER')
-    require(number(s['watchedCount']) and s['watchedCount']<=10000,'M7_REALTIME_COST_WATCHED_BOUND')
+    require(number(s['watchedCount']),'M7_REALTIME_COST_WATCHED_BOUND')
     if v.get('phase')!='booted' or v.get('ownerAvailable')is not True:return {'status':'NO-INSTRUMENT','reason':'M7_REALTIME_COST_OWNER_UNAVAILABLE'}
     return {'status':'MEASURED','processIncarnation':v['processIncarnation'],'stats':s}
 
 def capture(out,name,owner,services,fetch):
-    require(len(services)<=4 and len(set(services))==len(services),'M7_REALTIME_COST_INSTANCE_BOUND')
+    require(len(services)<=DISCOVERY_MAX_WORKERS and len(set(services))==len(services),'M7_REALTIME_COST_INSTANCE_BOUND')
     result={'version':1,**{k:owner.get(k) for k in ('owner','hostIdentity','pair','imageId')},'scope':'cached private RPC only; watchedCount is a gauge, no tenant scan; runtime detected is not detector polls','services':{}}
     for service in services:
         start=time.monotonic_ns()

@@ -2,7 +2,7 @@
 // Finite host-probe event writes. No request, listener, polling or timer here.
 const fs=require('node:fs'),path=require('node:path');
 function create({directory,ids,maxRows=32,io=fs}){
- if(!Array.isArray(ids)||ids.length!==2||new Set(ids).size!==2||ids.some(id=>typeof id!=='string'||!/^[0-9a-f-]{36}$/.test(id)))throw Error('M7_CLINICAL_TIMELINE_IDS');
+ if(!Array.isArray(ids)||ids.length<1||ids.length>2||new Set(ids).size!==ids.length||ids.some(id=>typeof id!=='string'||!/^[0-9a-f-]{36}$/.test(id)))throw Error('M7_CLINICAL_TIMELINE_IDS');
  const targets=new Set(ids);let rows=0,pending=0,written=0,dropped=0,failed=null;
  const status=()=>({rows,pending,written,dropped,failed,qualification:pending||dropped||failed?'UNMEASURED':'COMPLETE'});
  return Object.freeze({status,record(phase,tenant,value){

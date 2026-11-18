@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "kind": "k8s-m7-workload-profile",
+  "name": "representative-mix",
+  "basis": "proposed diagnostic inputs; resource sizing and live operation UNMEASURED",
+  "population": {
+    "provisionedTenants": 2,
+    "ordinaryRosterTenants": 2,
+    "hotFactor": 1
+  },
+  "workload": {
+    "loadSeconds": 330,
+    "offeredRps": 1,
+    "logicalPollingClients": 4,
+    "probeEveryMs": 300000
+  },
+  "history": {
+    "mode": "existing-provisioner-only",
+    "additionalSeedRows": 0,
+    "retention": "UNMEASURED"
+  },
+  "phases": {
+    "workSeconds": 1200,
+    "cleanupSeconds": 600,
+    "restart": false,
+    "reconnectBurstClients": 0
+  },
+  "proposedEnvelope": {
+    "clusterLimits": {
+      "millicpus": 1800,
+      "memoryBytes": 3221225472,
+      "ephemeralStorageBytes": 3489660928
+    },
+    "imageCacheReserveBytes": 2147483648,
+    "nativeLimits": {
+      "millicpus": 1200,
+      "memoryBytes": 1342177280
+    }
+  },
+  "capacityAcceptance": "NOT_GRANTED",
+  "referencePins": {
+    "core": "6463f24eea02a9e4355d988b1353f238f21d3609",
+    "deploy": "89ee1bbb654096970788774fbe8d2b52e0bb27e7",
+    "bindingCommit": "1e8cd247ee2f26d1b4f5b21424dd8a5385585c8c"
+  }
+}

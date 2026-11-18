@@ -1,0 +1,175 @@
+# Apply only to a NEW commissioning source copy; retained instruments stay unchanged.
+# Base preflight.py SHA256: 8d49056b33569957efd9e62e335ca14839481de30eab6e2de1242671ca33eaa2
+--- a/bin/preflight.py
++++ b/bin/preflight.py
+@@ -1,31 +1,72 @@
+ #!/usr/bin/env python3
+ """Offline/read-only admission. This program has no cluster mutation path."""
+ import argparse, datetime, json, math, pathlib, re, sys
++from decimal import Decimal, DecimalException, ROUND_CEILING, localcontext
+ CONTEXT='do-sfo2-do-helloworld'
+ DIMS=('cpu','memory','ephemeral-storage')
+ class Refused(ValueError): pass
+ def need(ok, text):
+  if not ok: raise Refused(text)
++def exact_quantity(value):
++ text=str(value)
++ match=re.fullmatch(r'([+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)(Ki|Mi|Gi|Ti|Pi|Ei|[numkKMGTPE])?',text)
++ need(match is not None,'invalid resource quantity')
++ suffix=match[2] or ''
++ factors={'':1,'n':Decimal('1e-9'),'u':Decimal('1e-6'),'m':Decimal('1e-3'),'k':1000,'K':1000,
++          **{s:1000**i for i,s in enumerate('MGTPE',2)},**{s+'i':1024**i for i,s in enumerate('KMGTPE',1)}}
++ try:
++  with localcontext() as context:
++   context.prec=max(80,len(text)+20)
++   result=Decimal(match[1])*factors[suffix]
++   need(result.is_finite() and 0<=result<=2**63-1,'invalid or nonfinite resource quantity')
++   return result
++ except (DecimalException,OverflowError,ValueError):raise Refused('invalid resource quantity')
+ def quantity(value):
+- s=str(value or '0'); m=re.fullmatch(r'([0-9.]+)([a-zA-Z]*)',s)
+- need(m is not None,'invalid resource quantity')
+- n=float(m[1]); suffix=m[2]
+- scale={'':1,'m':.001,'n':1e-9,'u':1e-6,'Ki':1024,'Mi':1024**2,'Gi':1024**3,'Ti':1024**4,'k':1000,'M':1e6,'G':1e9,'T':1e12}
+- need(suffix in scale,'unsupported resource suffix'); return n*scale[suffix]
++ result=exact_quantity(value)
++ if result==result.to_integral_value():return int(result)
++ number=float(result)
++ need(math.isfinite(number) and number>0,'resource quantity cannot be represented')
++ return number
++def scheduling_quantity(value,dimension):
++ result=exact_quantity(value)
++ with localcontext() as context:
++  context.prec=max(80,len(result.as_tuple().digits)+20)
++  units=result*(1000 if dimension=='cpu' else 1)
++  need(units<=2**63-1,'invalid resource quantity')
++  rounded=int(units.to_integral_value(rounding=ROUND_CEILING))
++ return rounded/1000 if dimension=='cpu' else rounded
+ def resources(c, which):
+- return {d:quantity(c.get('resources',{}).get(which,{}).get(d,0)) for d in DIMS}
+-def add(a,b): return {d:a[d]+b[d] for d in DIMS}
+-def maximum(a,b): return {d:max(a[d],b[d]) for d in DIMS}
++ budget=c.get('resources',{})
++ need(isinstance(budget,dict) and isinstance(budget.get(which,{}),dict),'invalid container resource budget')
++ return {d:(None if which=='limits' and d not in budget.get(which,{}) else scheduling_quantity(budget.get(which,{}).get(d,0),d)) for d in DIMS}
++def add(a,b): return {d:None if a[d] is None or b[d] is None else a[d]+b[d] for d in DIMS}
++def maximum(a,b): return {d:None if a[d] is None or b[d] is None else max(a[d],b[d]) for d in DIMS}
+ def zero(): return {d:0.0 for d in DIMS}
++def accounting(value):
++ mode=value.get('resourceAccounting','limits-v1')
++ need(mode in ('limits-v1','requests-v1'),'unsupported resource accounting mode')
++ return mode
++def accounting_fields(mode,req,lim):
++ return {'resourceAccounting':mode,'requests':req,'limits':lim,
++         'accounted':req if mode=='requests-v1' else lim,
++         'accountingScope':('Scheduling requests only; optional or missing limits do not establish a hard usage bound.' if mode=='requests-v1' else 'Declared container limits across init and steady phases; not measured usage.'),
++         'missingLimits':'UNBOUNDED; null is never a measured zero'}
++def accounted_budget(trial):
++ mode=accounting(trial);which='requests' if mode=='requests-v1' else 'limits'
++ budget=trial.get(which)
++ need(isinstance(budget,dict) and set(budget)==set(DIMS) and all(type(n) in (int,float) and math.isfinite(n) and n>=0 for n in budget.values()),'missing or invalid accounted resource budget')
++ need(('accounted' not in trial and mode=='limits-v1') or trial.get('accounted')==budget,'resource accounting budget mismatch')
++ return mode,budget
+ def effective(spec, which='requests'):
+  # Scheduler rule includes native sidecars during each later init and steady state.
++ need(not spec.get('resources'),'Pod-level resource budgets unsupported')
+  side=zero(); peak=zero(); steady=zero()
+  for c in spec.get('containers') or []: steady=add(steady,resources(c,which))
+  for c in spec.get('initContainers') or []:
+   r=resources(c,which)
+   if c.get('restartPolicy')=='Always': side=add(side,r); peak=maximum(peak,side)
+   else: peak=maximum(peak,add(side,r))
+- return add(maximum(peak,add(steady,side)),{d:quantity((spec.get('overhead') or {}).get(d,0)) for d in DIMS})
++ return add(maximum(peak,add(steady,side)),{d:scheduling_quantity((spec.get('overhead') or {}).get(d,0),d) for d in DIMS})
+ def objects(tree):
+  if isinstance(tree,list):
+   for v in tree: yield from objects(v)
+@@ -39,6 +80,7 @@
+  if obj['kind']=='Pod': return obj['spec']
+  return obj['spec']['template']['spec']
+ def placement_envelopes(env,workloads):
++ mode=accounting(env)
+  plans={};overrides=env.get('placementByWorkload',{});names={w['metadata']['name'] for w in workloads}
+  need(set(overrides)<=names,'unknown workload placement')
+  for name,value in overrides.items():need(set(value)=={'nodeName'} and isinstance(value['nodeName'],str) and bool(value['nodeName']),'invalid existing-node placement')
+@@ -46,6 +88,7 @@
+   spec=podspec(w);node=spec['nodeName']
+   value=plans.setdefault(node,{'podsUpperBound':0,'requests':zero(),'limits':zero(),'workloads':[],'imageCacheReserveBytes':env['imageCacheReserveBytes']})
+   value['podsUpperBound']+=1;value['requests']=add(value['requests'],effective(spec));value['limits']=add(value['limits'],effective(spec,'limits'));value['workloads'].append(w['metadata']['name'])
++ for plan in plans.values():plan.update(accounting_fields(mode,plan['requests'],plan['limits']))
+  return plans
+
+ def placed_headroom(snapshot,trial):
+@@ -57,6 +100,7 @@
+  return rows
+
+ def static(env,tree):
++ mode=accounting(env)
+  need(env['context']==CONTEXT,'wrong kube context')
+  need(env['namespace'].startswith('ns-synth-'),'namespace must be synthetic lane owned')
+  need(bool(re.fullmatch(r'[a-zA-Z0-9._-]+',env.get('cleanupOwner',''))),'missing cleanup ownership')
+@@ -88,7 +132,7 @@
+  workloads=[]; required=set(); quotas=0; trust=0
+  for obj in docs:
+   k=obj['kind']; m=obj['metadata']; name=m['name']; anns=m.get('annotations',{})
+-  need(k in ('Namespace','ClusterRoleBinding','ResourceQuota','ServiceAccount','ConfigMap','NetworkPolicy','Service','StatefulSet','Deployment','Job'),'unexpected resource kind')
++  need(k in ('Namespace','ClusterRoleBinding','ResourceQuota','ServiceAccount','ConfigMap','NetworkPolicy','Service','StatefulSet','Deployment','Job') or mode=='requests-v1' and k=='LimitRange','unexpected resource kind')
+   need(m.get('labels',{}).get('nightscout.org/run-id')==env['runId'] and anns.get('nightscout.org/cleanup-owner')==env['cleanupOwner'],'missing cleanup ownership')
+   need(anns.get('nightscout.org/source-commit',env['sourceCommit'])==env['sourceCommit'],'rendered source mismatch')
+   need(anns.get('nightscout.org/binding-identity',env['bindingCommit'])==env['bindingCommit'],'rendered binding mismatch')
+@@ -102,7 +146,10 @@
+   if k=='Service':
+    need(obj['spec'].get('type','ClusterIP')=='ClusterIP' and not obj['spec'].get('externalIPs'),'public Service refused')
+    need(not any(p.get('nodePort') for p in obj['spec'].get('ports',[])),'NodePort refused')
++  if k=='LimitRange':
++   need(not any(item.get('default') for item in obj['spec'].get('limits',[])),'LimitRange default limits would change authored resources')
+   if k=='ResourceQuota':
++   if mode=='requests-v1':need(not any(key.startswith('limits.') for key in obj['spec']['hard']),'limits quota forces limits in requests accounting')
+    h=obj['spec']['hard']; need(all(str(h.get(key))=='0' for key in ('persistentvolumeclaims','services.loadbalancers','services.nodeports')),'cost quota missing');quotas+=1
+   if k not in ('StatefulSet','Deployment','Job','Pod'): continue
+   spec=podspec(obj); workloads.append(obj)
+@@ -118,9 +165,12 @@
+    expected=env['images']['postgres' if c['name']=='postgres' else 'vault' if c['name'] in ('vault','vault-agent') else 'nginx' if c['name']=='nginx' else 'app']
+    need(c['image']==expected,'source/image mismatch for '+c['name'])
+    need(bool(re.fullmatch(r'[^\s@]+@sha256:[0-9a-f]{64}',c['image'])),'image is not a registry manifest digest')
++   resources(c,'requests');resources(c,'limits')
++   need(all(set(c.get('resources',{}).get(group,{}))<=set(DIMS) for group in ('requests','limits')),'unsupported resource dimension for '+c['name'])
+    for d in DIMS:
+-    req=resources(c,'requests')[d]; lim=resources(c,'limits')[d]
+-    need(req>0 and lim>=req,'omitted limits or requests for '+c['name'])
++    req=exact_quantity(c.get('resources',{}).get('requests',{}).get(d,0))
++    values=c.get('resources',{}).get('limits',{});lim=exact_quantity(values[d]) if d in values else None
++    need(req>0 and (lim is None and mode=='requests-v1' or lim is not None and lim>=req),'omitted limits or requests for '+c['name'])
+    for entry in c.get('env',[]):
+     key=entry['name']
+     if re.search('PASSWORD|SECRET|TOKEN|DATABASE_URL|PG_URL',key) and not key.endswith(('_FILE','_PATH','_TOKEN_TTL','_TOKEN_MAX_TTL')):
+@@ -139,9 +189,10 @@
+  quota=next(x['spec']['hard'] for x in docs if x['kind']=='ResourceQuota')
+  need(len(workloads)<=int(quota['pods']),'pod quota too small')
+  for d in DIMS:
+-  need(req[d]<=quantity(quota['requests.'+d]) and lim[d]<=quantity(quota['limits.'+d]),'resource quota too small')
+- return {'objects':len(docs),'podsUpperBound':len(workloads),'requests':req,'limits':lim,'requiredSecrets':sorted(required),'trustObjects':trust,'imageCacheReserveBytes':env['imageCacheReserveBytes'],'placementEnvelopes':placement_envelopes(env,workloads)}
++  need('requests.'+d in quota and req[d]<=quantity(quota['requests.'+d]) and (mode=='requests-v1' or 'limits.'+d in quota and lim[d]<=quantity(quota['limits.'+d])),'resource quota too small')
++ return {'objects':len(docs),'podsUpperBound':len(workloads),**accounting_fields(mode,req,lim),'requiredSecrets':sorted(required),'trustObjects':trust,'imageCacheReserveBytes':env['imageCacheReserveBytes'],'placementEnvelopes':placement_envelopes(env,workloads)}
+ def headroom(snapshot,trial,target=None):
++ mode,budget=accounted_budget(trial)
+  p=pathlib.Path(snapshot);nodes=json.loads((p/'nodes.json').read_text())['items'];pods=json.loads((p/'pods.json').read_text())['items']
+  usage={}
+  for file in sorted(p.glob('usage*.txt')):
+@@ -168,12 +219,12 @@
+   if actual is None:reasons.append('usage UNMEASURED')
+   else:
+    for d in ('cpu','memory'):
+-    if max(req[d],actual[d])+trial['limits'][d]+reserve[d]>a[d]:reasons.append(d+' headroom')
++    if max(req[d],actual[d])+budget[d]+reserve[d]>a[d]:reasons.append(d+' headroom')
+   if df is None: reasons.append('disk UNMEASURED')
+-  elif df['node_filesystem_avail_bytes']<trial['limits']['ephemeral-storage']+reserve['ephemeral-storage']+trial.get('imageCacheReserveBytes',0):reasons.append('disk headroom')
+-  if req['ephemeral-storage']+trial['limits']['ephemeral-storage']+reserve['ephemeral-storage']>a['ephemeral-storage']: reasons.append('allocated ephemeral headroom')
++  elif df['node_filesystem_avail_bytes']<budget['ephemeral-storage']+reserve['ephemeral-storage']+trial.get('imageCacheReserveBytes',0):reasons.append('disk headroom')
++  if req['ephemeral-storage']+budget['ephemeral-storage']+reserve['ephemeral-storage']>a['ephemeral-storage']: reasons.append('allocated ephemeral headroom')
+   if len(assigned)+trial['podsUpperBound']>int(node['status']['allocatable']['pods']):reasons.append('pod slots')
+-  result.append({'nodeAlias':f'worker-{index+1:02d}','allocatable':a,'peerRequests':req,'peerLimits':lim,'usagePeak':actual,'diskAvailableBytes':df and df['node_filesystem_avail_bytes'],'peerPods':len(assigned),'unboundedPeerMemoryContainers':unbounded,'reserve':reserve,'trialFits':not reasons,'refusals':reasons})
++  result.append({'resourceAccounting':mode,'accounted':budget,'accountingScope':accounting_fields(mode,budget,budget)['accountingScope'],'nodeAlias':f'worker-{index+1:02d}','allocatable':a,'peerRequests':req,'peerLimits':lim,'usagePeak':actual,'diskAvailableBytes':df and df['node_filesystem_avail_bytes'],'peerPods':len(assigned),'unboundedPeerMemoryContainers':unbounded,'reserve':reserve,'trialFits':not reasons,'refusals':reasons})
+  if target:
+   need(target in names,'target node absent');need(result[names.index(target)]['trialFits'],'insufficient headroom: '+', '.join(result[names.index(target)]['refusals']))
+  return result

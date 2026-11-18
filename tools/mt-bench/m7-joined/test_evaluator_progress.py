@@ -15,6 +15,17 @@ A='11111111-1111-4111-8111-111111111111'
 B='22222222-2222-4222-8222-222222222222'
 R='33333333-3333-4333-8333-333333333333'
 S='44444444-4444-4444-8444-444444444444'
+
+class ReadinessClock:
+    now = 0
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
+
+
 class Progress(unittest.TestCase):
     def refused_frame(self):
         value=self.frame(ids=[A]);row=value['view']['tenants'][0]
@@ -67,6 +78,53 @@ class Progress(unittest.TestCase):
                 saved=json.loads((d/'runtime-readiness.json').read_text())
                 self.assertEqual(saved['verdict'],'PASS' if discovery else 'FAIL')
                 if discovery:self.assertEqual(saved['observations'][0]['causeAttribution'],'UNMEASURED')
+
+    def test_selected_readiness_window_reaches_late_strict_confirmation(self):
+        import adapter as a
+        ready=self.frame(ids=[A])
+        warming=copy.deepcopy(ready)
+        warming['view']['tenants'][0].update(ready=False,code='EVALUATOR_STARTING')
+        budget={'maxQueriesPerPhase':9,'maxBytesPerPhase':12000}
+        for selection,code in (({},'M7_RUNTIME_NOT_READY'),({'evaluatorReadySeconds':1500},None)):
+            with self.subTest(selection=selection), tempfile.TemporaryDirectory() as name:
+                clock=ReadinessClock()
+                d=Path(name);a.write(d/'tenants.private.json',[{'id':A}])
+                cadence={'startupWindows':selection,'evaluatorProgressBudget':budget}
+                def fetch(*args, timeout):
+                    return json.dumps(warming if clock.now<1215 else ready)
+                with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=fetch):
+                    if code:
+                        with self.assertRaisesRegex(p.Refused,code):
+                            a.readiness(d,{'runPurpose':'discovery','cadence':cadence},clock=clock)
+                    else:
+                        result=a.readiness(d,{'runPurpose':'discovery','cadence':cadence},clock=clock)
+                saved=a.document(d/'runtime-readiness.json')
+                if code:
+                    self.assertEqual((clock.now,saved['code']),(1200,'M7_RUNTIME_NOT_READY'))
+                else:
+                    self.assertEqual((clock.now,result['verdict']),(1215.25,'PASS'))
+                    self.assertNotIn('code',saved)
+                    self.assertEqual(saved['observations'][0]['code'],'M7_EVALUATOR_PROGRESS_ERROR')
+                    self.assertEqual(saved['capture']['limits'],{'attempts':100,'queries':200,'bytes':800000})
+                    used=saved['capture']['used']
+                    self.assertEqual((used['attempts'],used['queries']),(82,83))
+                    self.assertGreater(used['bytes'],0)
+                    self.assertEqual(saved['policy']['maxBytesPerPhase'],budget['maxBytesPerPhase'])
+
+    def test_readiness_reports_capture_exhaustion_and_preserves_a_strict_refusal(self):
+        import adapter as a
+        for confirmation,code,verdict in ((self.frame(ids=[A]),'M7_EVALUATOR_PROGRESS_READINESS_BUDGET','UNMEASURED'),
+                                          (self.refused_frame(),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')):
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as name:
+                clock=ReadinessClock()
+                d=Path(name);a.write(d/'tenants.private.json',[{'id':A}])
+                frames=[json.dumps(value) for value in (self.frame(ids=[A]),confirmation)]
+                with patch.dict(p.POLICY,{'readinessMaxQueries':1}), patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=frames):
+                    with self.assertRaisesRegex(p.Refused,code) as caught:
+                        a.readiness(d,{'runPurpose':'discovery'},clock=clock)
+                saved=a.document(d/'runtime-readiness.json')
+                self.assertEqual((clock.now,caught.exception.verdict,saved['code'],saved['capture']['used']['queries']),
+                                 (.25,verdict,code,2))
 
     def test_refusal_evidence_bounds_malformed_fields_without_losing_refusal(self):
         frame=self.refused_frame();row=frame['view']['tenants'][0]
@@ -175,7 +233,58 @@ class Progress(unittest.TestCase):
         with self.assertRaisesRegex(p.Refused,'BYTE_BOUND'):
             p.round_view(['evaluator'],[A],lambda *_:b'x'*(p.POLICY['maxBytesPerPhase']//3+1))
         with self.assertRaisesRegex(p.Refused,'INSTANCE_BOUND'):
-            p.round_view(['a','b','c','d','e'],[A],lambda *_:b'')
+            p.round_view([f'evaluator-{i}' for i in range(1,10)],[A],lambda *_:b'')
+
+    def test_eight_static_instances_require_exact_worker_ordinals(self):
+        services=['evaluator', *(f'evaluator-{i}' for i in range(2,9))]
+        ids=[f'00000000-0000-4000-8000-{i:012x}' for i in range(8)]
+        def fetch(service, *_):
+            index=services.index(service)
+            ordinal=index+int(broken and index==7)
+            value=self.frame(ids,ordinal=ordinal,runtime=f'99999999-9999-4999-8999-{index:012x}')
+            value.update(selfMode='static',selfCount=len(services))
+            view=value['view']
+            view['configured'].update(mode='static',count=len(services),rule='sha256-modulo-v1',leaseMs=None)
+            view['gate']['members']=len(services)
+            view['observed']=None
+            for i,row in enumerate(view['tenants']):
+                if i!=index: row.update(admitted=False,ready=False)
+            return json.dumps(value).encode()
+        broken=False
+        for restored in (False, True):
+            value=p.round_view(services,ids,fetch)
+            self.assertEqual([value['owners'][tenant]['service'] for tenant in ids],services)
+            self.assertEqual(value['queries'],8)
+            if not restored:
+                broken=True
+                with self.assertRaisesRegex(p.Refused,'STATIC_CONFIGURATION'):p.round_view(services,ids,fetch)
+                broken=False
+
+    def test_selected_capture_budget_reaches_wide_query_and_is_required_on_retained_proof(self):
+        services=['evaluator', *(f'evaluator-{i}' for i in range(2,9))]
+        wide=[f'00000000-0000-4000-8000-{i:012x}' for i in range(10000)]
+        native=[]
+        def read(service,ids,queries,byte_budget):
+            native.append((service,len(ids),queries,byte_budget))
+            raise p.Refused('SYNTHETIC_CAPTURE_BOUNDARY')
+        with self.assertRaisesRegex(p.Refused,'QUERY_BOUND'):p.round_view(services,wide,read)
+        self.assertEqual(native,[])
+        selected={'maxQueriesPerPhase':1896,'maxBytesPerPhase':128*1024*1024}
+        policy=p.capture_policy(selected)
+        with self.assertRaisesRegex(p.Refused,'SYNTHETIC_CAPTURE_BOUNDARY'):
+            p.round_view(services,wide,read,policy=policy)
+        self.assertEqual(sorted(native),[(service,10000,79,selected['maxBytesPerPhase']//24) for service in services])
+        exhausted=p.capture_policy({**selected,'maxBytesPerPhase':3})
+        with self.assertRaisesRegex(p.Refused,'BYTE_BOUND') as caught:
+            p.round_view(['evaluator'],[A],lambda *_:json.dumps(self.frame(ids=[A])).encode(),policy=exhausted)
+        self.assertEqual(caught.exception.verdict,'UNMEASURED')
+        rounds=[self.round(i) for i in range(3)]
+        expected=p.assess(rounds,[A,B],'load',policy=policy)
+        record=p.pack({**expected,'rounds':rounds})
+        self.assertEqual(p.verify(record,2,['evaluator'],'load',budget=selected),expected)
+        with self.assertRaisesRegex(p.Refused,'PROOF'):p.verify(record,2,['evaluator'],'load')
+        with self.assertRaisesRegex(p.Refused,'PROOF'):
+            p.verify(record,2,['evaluator'],'load',budget={**selected,'maxQueriesPerPhase':1895})
     def partitioned(self,step=0):
         def fetch(service,*_):
             ordinal=0 if service=='a' else 1;frame=self.frame(ordinal=ordinal,runtime=R if ordinal==0 else S,increment=step)
@@ -204,7 +313,12 @@ class Progress(unittest.TestCase):
     def test_due_fields_retained_without_changing_progress_policy(self):
         rounds=[self.round(i) for i in range(3)];result=p.assess(rounds,[A,B],'idle');record=p.pack({**result,'rounds':rounds})
         self.assertEqual(record['kind'],'evaluator-progress-phase-v2')
-        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState','moduleVersion','cacheGeneration','idleWitness')},{k:v for k,v in p.LEGACY_POLICY.items() if k not in ('version','moduleVersion','idleWitness')})
+        # The source roster grows within the same observation budgets.
+        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState','moduleVersion','cacheGeneration','idleWitness','maxTenants','maxInstances')},{k:v for k,v in p.LEGACY_POLICY.items() if k not in ('version','moduleVersion','idleWitness','maxTenants','maxInstances')})
+        self.assertEqual(p.POLICY['maxTenants'],2**32-1)
+        for policy in (p.REFERENCE_POLICY,p.PREVIOUS_POLICY):
+            old=p.assess(rounds,[A,B],'idle',policy=policy)
+            self.assertEqual(p.verify(p.pack({**old,'rounds':rounds}),2,['evaluator'],'idle'),old)
         decoded,ids=p.decode_rounds(record,2,['evaluator'])
         self.assertEqual(decoded[0]['owners'][A]['dueAt'],1700000008572.4285)
         self.assertEqual(decoded[0]['owners'][A]['dueReason'],'pump-clock-warn')

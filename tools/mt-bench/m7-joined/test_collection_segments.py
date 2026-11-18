@@ -103,7 +103,10 @@ class Segments(unittest.TestCase):
         a.write(d/'frozen.compose.json',{'services':{'synthetic':{}}});(d/'restart.cjs').unlink()
         with self.assertRaisesRegex(RuntimeError,'M7_COLLECTION_COMPANION_REQUIRED'):c.preflight(d,m)
         (d/'restart.cjs').write_text('synthetic');self.assertEqual(c.preflight(d,m)['status'],'CHECKED')
-        for changed,code in (({**m,'owner':'b'*32},'M7_COLLECTION_OWNER_SOURCE_CHANGED'),({**m,'tenants':10001},'M7_COLLECTION_ACTOR_BOUND')):
+        # Only the array representation bound remains; exact owner/source and
+        # output checks apply equally above the former reference population.
+        self.assertEqual(c.preflight(d,{**m,'tenants':12001})['status'],'CHECKED')
+        for changed,code in (({**m,'owner':'b'*32},'M7_COLLECTION_OWNER_SOURCE_CHANGED'),({**m,'tenants':2**32},'M7_COLLECTION_ACTOR_BOUND')):
             with self.assertRaisesRegex(RuntimeError,code):c.preflight(d,changed)
         original=Path.open
         def refuse_output(path,*args,**kwargs):

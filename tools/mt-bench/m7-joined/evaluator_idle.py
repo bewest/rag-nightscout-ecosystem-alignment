@@ -52,13 +52,13 @@ def clock_windows(rounds):
     p.need(lower is not None and lower<=upper,'M7_EVALUATOR_IDLE_CLOCK')
     return {'offsetLowerUs':lower,'offsetUpperUs':upper}
 
-def round_view(services,ids,fetch,*,allow_unavailable=False,allow_clinical_stall=False):
+def round_view(services,ids,fetch,*,allow_unavailable=False,allow_clinical_stall=False,policy=p.POLICY):
     captured={};windows={};started=time.monotonic()
     def measured(service,*args):
         a=stamp();raw=fetch(service,*args);b=stamp()
         raw=raw.encode() if isinstance(raw,str) else raw;captured[service]=raw
         windows[service]={'start':a,'end':b,'observedAt':[]};return raw
-    value=p.round_view(services,ids,measured,allow_unavailable=allow_unavailable,allow_clinical_stall=allow_clinical_stall)
+    value=p.round_view(services,ids,measured,allow_unavailable=allow_unavailable,allow_clinical_stall=allow_clinical_stall,policy=policy)
     for service,raw in captured.items():
         for line in raw.splitlines():
             page=json.loads(line);windows[service]['observedAt'].append(page.get('observedAt'))
@@ -67,9 +67,9 @@ def round_view(services,ids,fetch,*,allow_unavailable=False,allow_clinical_stall
     value['readWindows']=windows;value['wallSeconds']=time.monotonic()-started
     clock_windows([value]);return value
 
-def stability(rounds,ids):
+def stability(rounds,ids,*,policy=p.POLICY):
     p.need(len(rounds)==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
-    p.need(sum(r['queries'] for r in rounds)<=p.POLICY['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=p.POLICY['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
+    p.need(sum(r['queries'] for r in rounds)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     first=rounds[0];previous=first
     for current in rounds:
         p.need(current['instances']==first['instances'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
@@ -91,9 +91,9 @@ def stability(rounds,ids):
             p.need(b['completedAcquisitions']>=a['completedAcquisitions'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
         previous=current
 
-def final_obligations(rounds,ids):
+def final_obligations(rounds,ids,*,policy=p.POLICY):
     """Validate the original global window before selecting any point tail."""
-    stability(rounds,ids);clock_windows(rounds)
+    stability(rounds,ids,policy=policy);clock_windows(rounds)
     end=max(v['end']['wallUs'] for v in rounds[-1]['readWindows'].values())/1000
     pending=[]
     for tenant in ids:
@@ -105,7 +105,7 @@ def final_obligations(rounds,ids):
     p.need(len(pending)<=TAIL_POLICY['maxOwners'],'M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND')
     return sorted(pending)
 
-def validate_tail(rounds,ids,tail,pending):
+def validate_tail(rounds,ids,tail,pending,*,policy=p.POLICY):
     p.need(isinstance(tail,dict) and set(tail)=={'selected','round','elapsedSeconds'},'M7_EVALUATOR_IDLE_TAIL_REQUIRED')
     p.need(tail['selected']==pending and 1<=len(pending)<=TAIL_POLICY['maxOwners'],'M7_EVALUATOR_IDLE_TAIL_COVERAGE')
     elapsed=tail['elapsedSeconds']
@@ -114,7 +114,7 @@ def validate_tail(rounds,ids,tail,pending):
     p.need(point['instances']==last['instances'],'M7_EVALUATOR_PROGRESS_RESET','FAIL')
     p.need(set(point['owners'])==set(pending) and set(point['allRows'])==set(last['allRows']),'M7_EVALUATOR_IDLE_TAIL_COVERAGE','FAIL')
     p.need(point['queries']==len(point['instances']),'M7_EVALUATOR_IDLE_TAIL_QUERY_BOUND')
-    p.need(sum(r['queries']for r in rounds)+point['queries']<=p.POLICY['maxQueriesPerPhase'] and sum(r['bytes']for r in rounds)+point['bytes']<=p.POLICY['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
+    p.need(sum(r['queries']for r in rounds)+point['queries']<=policy['maxQueriesPerPhase'] and sum(r['bytes']for r in rounds)+point['bytes']<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     clock_windows(rounds+[point])
     windows=point['readWindows'].values()
     span=(max(v['end']['monoAfterUs']for v in windows)-min(v['start']['monoBeforeUs']for v in point['readWindows'].values()))/1e6
@@ -133,10 +133,11 @@ def validate_tail(rounds,ids,tail,pending):
                 p.need(work(b)>work(a) and b['legacyCycles']>=a['legacyCycles'],'M7_EVALUATOR_IDLE_TAIL_COMPLETION')
     return point
 
-def assess(rounds,ids,phase='idle',*,tail=None):
+def assess(rounds,ids,phase='idle',*,tail=None,policy=POLICY):
     p.need(phase=='idle','M7_EVALUATOR_IDLE_PHASE')
-    pending=final_obligations(rounds,ids);clock=clock_windows(rounds)
-    if pending:point=validate_tail(rounds,ids,tail,pending)
+    work_policy=policy['workPolicy']
+    pending=final_obligations(rounds,ids,policy=work_policy);clock=clock_windows(rounds)
+    if pending:point=validate_tail(rounds,ids,tail,pending,policy=work_policy)
     else:p.need(tail is None,'M7_EVALUATOR_IDLE_TAIL_UNEXPECTED');point=None
     outcomes={};completed=0
     end=max(v['end']['wallUs']for v in rounds[-1]['readWindows'].values())/1000
@@ -146,7 +147,7 @@ def assess(rounds,ids,phase='idle',*,tail=None):
         if tenant in pending:outcomes[tenant]={'classification':'DUE_WORK_COMPLETED_AFTER_WINDOW'}
         elif any(r['owners'][tenant]['dueAt'] is not None and r['owners'][tenant]['dueAt']<=end for r in rounds):outcomes[tenant]={'classification':'DUE_WORK_COMPLETED'}
         else:outcomes[tenant]={'classification':'TIME_NOT_EXERCISED','scheduledState':'NO_TIMER_DECLARED'if last['dueAt']is None else'FUTURE_DUE'}
-    return {'version':2,'phase':'idle','verdict':'PASS','policy':POLICY,'scope':'sampled work safety, not durable clinical completion; selected post-window completion is not measured throughput or global tail quiescence',
+    return {'version':2,'phase':'idle','verdict':'PASS','policy':policy,'scope':'sampled work safety, not durable clinical completion; selected post-window completion is not measured throughput or global tail quiescence',
             'tenants':len(ids),'instances':rounds[0]['instances'],'classifications':{key:sum(row.get('classification')==key or row.get('scheduledState')==key for row in outcomes.values()) for key in ('DUE_WORK_COMPLETED','DUE_WORK_COMPLETED_AFTER_WINDOW','TIME_NOT_EXERCISED','NO_TIMER_DECLARED','FUTURE_DUE')},
             'completedTimeDelta':completed,'timeWitness':False,'clockGuard':clock,'queries':sum(r['queries']for r in rounds),'responseBytes':sum(r['bytes']for r in rounds),'collectorWallSeconds':sum(r['wallSeconds']for r in rounds),
             'completionTail':None if point is None else {'selected':pending,'completedWorkDelta':sum(work(point['owners'][t])-work(rounds[-1]['owners'][t]) for t in pending),'completedTimeDelta':sum(point['owners'][t]['completedTimeCycles']-rounds[-1]['owners'][t]['completedTimeCycles'] for t in pending),'queries':point['queries'],'responseBytes':point['bytes'],'collectorWallSeconds':point['wallSeconds'],'elapsedSeconds':tail['elapsedSeconds'],'clockGuard':clock_windows(rounds+[point]),'costScope':'outside original metric window; selected owners only; no global tail quiescence'}}
@@ -172,27 +173,32 @@ def _decode(value,tenants,services,*,allow_unavailable=False,allow_clinical_stal
             p.need(job_state is None or job_state==current['allRows'][row[1]][row[0]]['jobs'],'M7_EVALUATOR_IDLE_JOBS','FAIL')
     return rounds,ids
 
-def verify(value,tenants,services,phase='idle'):
-    p.need(isinstance(value,dict) and value.get('kind')==ARTIFACT_KIND and value.get('columns')==list(COLUMNS) and value.get('policy')==POLICY and value.get('verdict')=='PASS','M7_EVALUATOR_IDLE_VERSION')
+def verify(value,tenants,services,phase='idle',*,budget=None):
+    p.need(isinstance(value,dict) and value.get('kind')==ARTIFACT_KIND and value.get('columns')==list(COLUMNS) and value.get('verdict')=='PASS','M7_EVALUATOR_IDLE_VERSION')
+    policy=value.get('policy')
+    candidates=(p.capture_policy(budget),) if budget is not None else (p.REFERENCE_POLICY,p.PREVIOUS_POLICY,p.POLICY)
+    supported=[{**POLICY,'workPolicy':candidate} for candidate in candidates]
+    p.need(policy in supported and 1<=len(services)<=policy['workPolicy']['maxInstances'] and
+           1<=tenants<=policy['workPolicy']['maxTenants'],'M7_EVALUATOR_IDLE_VERSION')
     rounds,ids=_decode(value,tenants,services);tail=value.get('tailRound')
     if tail is not None:
         p.need(isinstance(tail,dict) and set(tail)=={'selected','round','elapsedSeconds'} and isinstance(tail['selected'],list) and 1<=len(tail['selected'])<=TAIL_POLICY['maxOwners'],'M7_EVALUATOR_IDLE_TAIL_COVERAGE')
         points,selected=_decode({'rounds':[tail['round']]},len(tail['selected']),services)
         p.need(set(tail['selected'])==selected,'M7_EVALUATOR_IDLE_TAIL_COVERAGE');tail={**tail,'round':points[0]}
-    result=assess(rounds,sorted(ids),phase,tail=tail)
+    result=assess(rounds,sorted(ids),phase,tail=tail,policy=policy)
     p.need({k:v for k,v in value.items()if k not in ('kind','columns','rounds','attribution','tailRound')}==result,'M7_EVALUATOR_IDLE_ASSESSMENT')
     return result
 
 class Observer(p.Observer):
-    def __init__(self,*args,tail_fetch=None):
-        super().__init__(*args,assessor=assess,policy=POLICY);self.tail_fetch=tail_fetch;self.pending=[];self.tail=None
+    def __init__(self,*args,tail_fetch=None,policy=p.POLICY):
+        super().__init__(*args,assessor=assess,policy={**POLICY,'workPolicy':policy});self.tail_fetch=tail_fetch;self.pending=[];self.tail=None
     def observe(self):
-        try:self.rounds.append(round_view(self.services,self.ids,self.fetch))
+        try:self.rounds.append(round_view(self.services,self.ids,self.fetch,policy=self.policy['workPolicy']))
         except Exception as error:self.failure=error
     def finish(self):
         try:
             if self.failure:raise self.failure
-            self.pending=final_obligations(self.rounds,self.ids)
+            self.pending=final_obligations(self.rounds,self.ids,policy=self.policy['workPolicy'])
         except Exception as error:self.failed(error);raise
         if self.pending:
             # Persist a nonterminal original-window observation; no tail may run
@@ -204,14 +210,15 @@ class Observer(p.Observer):
         started=time.monotonic();deadline=started+TAIL_POLICY['deadlineMs']/1000
         services=self.services;queries=sum(r['queries']for r in self.rounds);used=sum(r['bytes']for r in self.rounds)
         try:
-            p.need(self.tail_fetch is not None and queries+len(services)<=p.POLICY['maxQueriesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
-            budget=min(p.POLICY['responseMaxBytes']+8192,(p.POLICY['maxBytesPerPhase']-used)//len(services));p.need(budget>0,'M7_EVALUATOR_PROGRESS_BUDGET')
+            work_policy=self.policy['workPolicy']
+            p.need(self.tail_fetch is not None and queries+len(services)<=work_policy['maxQueriesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
+            budget=min(work_policy['responseMaxBytes']+8192,(work_policy['maxBytesPerPhase']-used)//len(services));p.need(budget>0,'M7_EVALUATOR_PROGRESS_BUDGET')
             def fetch(service,selected,unused_queries,unused_budget):
                 remaining=deadline-time.monotonic();p.need(remaining>0,'M7_EVALUATOR_IDLE_TAIL_DEADLINE')
                 return self.tail_fetch(service,selected,1,budget,min(remaining,p.POLICY['rpcTimeoutMs']/1000))
-            point=round_view(services,self.pending,fetch);elapsed=time.monotonic()-started
+            point=round_view(services,self.pending,fetch,policy=work_policy);elapsed=time.monotonic()-started
             self.tail={'selected':self.pending,'round':point,'elapsedSeconds':elapsed}
-            result=assess(self.rounds,self.ids,self.phase,tail=self.tail)
+            result=assess(self.rounds,self.ids,self.phase,tail=self.tail,policy=self.policy)
             p.need(time.monotonic()<=deadline,'M7_EVALUATOR_IDLE_TAIL_DEADLINE')
         except Exception as error:
             self.failed(error,{'tailRound':self.tail,'tailAttempted':True,'tailElapsedSeconds':time.monotonic()-started,'tailCollection':getattr(error,'collection',None)});raise

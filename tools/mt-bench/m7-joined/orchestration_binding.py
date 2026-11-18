@@ -7,6 +7,7 @@ environments remain private; journal layouts retain hashes, never env values.
 """
 from pathlib import Path
 import copy,datetime,hashlib,json,os,re,time
+import workload_inputs
 from contract import require,OWNER
 ATTEMPT='org.nightscout.m7.attempt'
 PROJECT='com.docker.compose.project'
@@ -173,7 +174,7 @@ def _options(action,options):
  while i<len(options):
   value=options[i];require(value in allowed[action]and value!='never','M7_BINDING_COMPOSE_OPTION_REFUSED')
   if value in('--pull','--wait-timeout'):
-   require(i+1<len(options),'M7_BINDING_COMPOSE_OPTION_REFUSED');argument=options[i+1];require(argument=='never'if value=='--pull'else argument.isdigit()and 1<=int(argument)<=1200,'M7_BINDING_COMPOSE_OPTION_REFUSED');i+=2
+   require(i+1<len(options),'M7_BINDING_COMPOSE_OPTION_REFUSED');argument=options[i+1];require(argument=='never'if value=='--pull'else re.fullmatch(r'[0-9]{1,10}',argument)and workload_inputs.seconds(int(argument)),'M7_BINDING_COMPOSE_OPTION_REFUSED');i+=2
   else:i+=1
  return options
 
@@ -345,9 +346,13 @@ def _oneoff_intent(binding,kind,argv,scope,runner,cidfile):
  require(i<len(argv),'M7_BINDING_ONEOFF_IMAGE_CHANGED');command=argv[i+1:];require(labels.get(OWNER)==scope['owner']and labels.get(PROJECT)==binding['project'],'M7_BINDING_ONEOFF_OWNER_PROJECT_CHANGED');require(set(labels)==({OWNER,PROJECT,SERVICE}if kind=='k6-load'else{OWNER,PROJECT}),'M7_BINDING_ONEOFF_LABEL_REFUSED')
  if kind=='k6-load':
   require(labels[SERVICE]=='k6'and network=='host'and name==binding['project']+'-k6'and re.fullmatch('[0-9]+:[0-9]+',user or'')and sorted(mounts)==sorted([['bind',directory+'/k6','/scripts',False],['bind',directory+'/load','/out',True],['bind',directory+'/tenants.private.json','/tenants.private.json',False]]),'M7_BINDING_ONEOFF_LOAD_LAYOUT_CHANGED')
-  require(command==['run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js']and set(env)=={'BASE_URL','TENANTS_FILE','RUN_ID','SETTINGS_FINGERPRINT','RUN_START','DURATION','ACCEL','HOT_FACTOR','SHAPES'}|({'OFFERED_RPS'}if'OFFERED_RPS'in env else set())|({'JWT_SETUP_CONCURRENCY'}if'JWT_SETUP_CONCURRENCY'in env else set()),'M7_BINDING_ONEOFF_LOAD_COMMAND_CHANGED')
+  require(command==['run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js']and set(env)=={'BASE_URL','TENANTS_FILE','RUN_ID','SETTINGS_FINGERPRINT','RUN_START','DURATION','ACCEL','HOT_FACTOR','SHAPES'}|({'OFFERED_RPS'}if'OFFERED_RPS'in env else set())|({'JWT_SETUP_CONCURRENCY'}if'JWT_SETUP_CONCURRENCY'in env else set())|({'M7_SETUP_SECONDS','M7_SETUP_UNTIL_MS'}if'M7_SETUP_SECONDS'in env or'M7_SETUP_UNTIL_MS'in env else set()),'M7_BINDING_ONEOFF_LOAD_COMMAND_CHANGED')
+  if 'M7_SETUP_SECONDS'in env or 'setupSeconds'in owner.get('cadence',{}):
+   import phase_windows
+   selected=phase_windows.selection(owner.get('cadence',{}));window=load(Path(directory)/'load/phase-windows.json')
+   require('setupSeconds'in selected and re.fullmatch('[1-9][0-9]*',env.get('M7_SETUP_SECONDS',''))is not None and 1<=int(env['M7_SETUP_SECONDS'])<=selected['setupSeconds']and window.get('owner')==scope['owner']and window.get('setupSeconds')==selected['setupSeconds']and env.get('M7_SETUP_UNTIL_MS')==str(window.get('setupUntilUnixMs')),'M7_BINDING_ONEOFF_SETUP_WINDOW_CHANGED')
   if 'JWT_SETUP_CONCURRENCY'in env or 'jwtSetupConcurrency'in owner:
-   concurrency=owner.get('jwtSetupConcurrency',1);require(type(concurrency)is int and 1<=concurrency<=64 and env.get('JWT_SETUP_CONCURRENCY')==str(concurrency),'M7_BINDING_ONEOFF_JWT_SETUP_CHANGED')
+   concurrency=owner.get('jwtSetupConcurrency',1);require(workload_inputs.concurrency(concurrency) and (owner.get('runPurpose')=='discovery' or concurrency<=64) and env.get('JWT_SETUP_CONCURRENCY')==str(concurrency),'M7_BINDING_ONEOFF_JWT_SETUP_CHANGED')
  else:require(command==(['version']if kind=='k6-version'else['run','--help'])and network=='none'and not mounts and not env and user is None and name is None,'M7_BINDING_ONEOFF_PROBE_COMMAND_CHANGED')
  meta=json.loads(runner(['docker','image','inspect',scope['imageId']]))[0];require(meta['Id']==scope['imageId'],'M7_BINDING_ONEOFF_IMAGE_CHANGED');default=meta['Config'];merged=dict(x.split('=',1)for x in default.get('Env',[])if'='in x);merged.update(env)
  layout={'imageId':scope['imageId'],'command':command,'entrypoint':default.get('Entrypoint'),'environmentHashes':{k:sha(v.encode())for k,v in merged.items()},'mounts':sorted(mounts),'network':network,'user':user or default.get('User',''),'owner':scope['owner'],'labels':{**labels,ATTEMPT:binding['attempt']}}

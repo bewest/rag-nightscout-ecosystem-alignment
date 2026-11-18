@@ -73,7 +73,7 @@ assert.throws(()=>o.progressSnapshot([row,row],config,[tenant,tenant]),/COVERAGE
 // Remove the actual accessor's strict typed-state call: the wrong-digest
 // expected-refusal criterion must go red, then the original export restores it.
 const fs=require('node:fs'),text=fs.readFileSync(require.resolve('./completed-oracle.cjs'),'utf8');
-const needle="!typedState(row,config,chosen,true)";
+const needle="!typedState(row,config,true)";
 assert.equal(text.split(needle).length,2,'EXACT_ACCESSOR_ABLATION_TARGET');
 const altered={exports:{}};Function('require','module',text.replace(needle,'false'))(require,altered);
 const badDigest=structuredClone(row);badDigest.typed.contractDigest='0'.repeat(64);
@@ -126,7 +126,8 @@ assert.equal(o.assessDurable(partial,witness,config).ready,false);
 assert(progressQuery.includes("jsonb_typeof(c.projection->0->'output') IN ('object','null')"),'SCALAR_OR_ABSENT_BODY_MUST_NOT_LOOK_INITIAL');
 // Reintroduce the old completed-only reader: the canonical startup criterion
 // fails with the historical error, then the actual implementation restores it.
-const oldReader={exports:{}};Function('require','module',text.replace('typedState(row,config,chosen,true)','typedState(row,config,chosen)'))(require,oldReader);
+const completedOnlyNeedle='typedState(row,config,true)';assert.equal(text.split(completedOnlyNeedle).length,2,'EXACT_INITIAL_ACCESSOR_ABLATION_TARGET');
+const oldReader={exports:{}};Function('require','module',text.replace(completedOnlyNeedle,'typedState(row,config)'))(require,oldReader);
 const initialCriterion=api=>assert.equal(api.progressSnapshot([initial],config,[tenant]).rows[0].outputRevision,'0');
 initialCriterion(o);assert.throws(()=>initialCriterion(oldReader.exports),/M7_COMPLETION_TYPED_STATE/);initialCriterion(o);
 console.log('RESTORED_GREEN canonical initial/partial/pending metadata, corrupt floors/output refused, completed-only regression red; no clinical completion manufactured');

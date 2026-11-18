@@ -1,11 +1,26 @@
 """Source/ownership and independent count contracts for the joined M7 adapter."""
 import hashlib
 import json
+import workload_inputs
 import re
 from pathlib import Path
 
 COUNTS = (1000, 3000, 5000, 10000)
 REPLICAS = (1, 2, 4)
+# The acceptance grid above is fixed. Discovery follows the selected synthetic
+# binding and role-instance names, which currently represent api through api-16.
+DISCOVERY_MAX_API_REPLICAS = 16
+DISCOVERY_MAX_WORKERS = 8
+
+
+def discovery_api_replicas(value):
+    return type(value) is int and 1 <= value <= DISCOVERY_MAX_API_REPLICAS
+
+
+def discovery_workers(value):
+    return type(value) is int and 1 <= value <= DISCOVERY_MAX_WORKERS
+
+
 PILOT_COUNTS = (500, 750, 1000)
 CADENCE = {"pgstream-sample":{"accel":1,"hotFactor":1,"socketsPerTenant":2,"idleSeconds":120,"loadSeconds":600,"probeEveryMs":300000,"restart":False},
            "capacity":{"accel":1,"hotFactor":10,"socketsPerTenant":2,"idleSeconds":600,"loadSeconds":900},
@@ -165,9 +180,12 @@ def receipt_scope(manifest,receipt,operation):
         if manifest.get('cadence',{}).get('restartDuringLoadAfterSeconds') is not None:
             require(receipt.get('version')==2,'M7_DEMAND_RECOVERY_V2_RECEIPT_REQUIRED')
         limits=receipt.get('limits',{})
-        require(type(manifest.get('tenants')) is int and type(limits.get('tenants')) is int and 1<=manifest['tenants']<=limits['tenants']<=10000
-                and type(manifest.get('replicas')) is int and manifest['replicas']==1 and type(limits.get('apiReplicas')) is int and limits['apiReplicas']==1
-                and type(limits.get('trafficSeconds')) is int and 1<=limits['trafficSeconds']==manifest.get('cadence',CADENCE['pgstream-sample'])['loadSeconds']<=10800,'M7_DIAGNOSTIC_LIMIT_INVALID')
+        import static_topology
+        selected_static=static_topology.receipt(manifest,receipt)
+        api_ok=(discovery_api_replicas(manifest.get('replicas')) and type(limits.get('apiReplicas')) is int and manifest['replicas']==limits['apiReplicas']) if selected_static else (type(manifest.get('replicas')) is int and manifest['replicas']==1 and type(limits.get('apiReplicas')) is int and limits['apiReplicas']==1)
+        require(workload_inputs.tenants(manifest.get('tenants')) and workload_inputs.tenants(limits.get('tenants')) and manifest['tenants']<=limits['tenants']
+                and api_ok
+                and workload_inputs.seconds(limits.get('trafficSeconds')) and limits['trafficSeconds']==manifest.get('cadence',CADENCE['pgstream-sample'])['loadSeconds'],'M7_DIAGNOSTIC_LIMIT_INVALID')
         return {'kind':'diagnostic-discovery',**discovery_authorization(manifest,receipt)}
     measurement_request(manifest)
     if manifest.get("measurementMode")=="unaccepted":
@@ -276,23 +294,51 @@ def unaccepted_check(document):
 
 def discovery_authorization(manifest, receipt):
     """Version 1 preserves the original PENDING contract; v2 binds projections."""
+    import stream_topology
+    import preload_convergence
     version=receipt.get('version',1)
     require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
+    require('commissioningSlotWalMiB' not in manifest or version==2,
+            'M7_COMMISSIONING_SLOT_WAL_BOUND_RECEIPT_REQUIRED')
+    ack_budget = stream_topology.ack_selection(manifest)
+    require(not ack_budget or version==2, 'M7_PGSTREAM_ACK_BOUND_RECEIPT_REQUIRED')
+    preload = preload_convergence.receipt(manifest, receipt)
+    selected_budgets={'probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
+    require(not selected_budgets or version==2,'M7_WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED')
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
+    import static_topology
+    static_topology.receipt(manifest,receipt)
     resolved=manifest.get('runConfiguration')
     require(isinstance(resolved,dict) and receipt.get('configurationSha256')==sha(resolved),
             'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(preload_convergence.selection(resolved) == preload, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(resolved.get('staticTopology') == manifest.get('staticTopology') and
+            resolved.get('staticBuildReceiptSha256') == manifest.get('staticBuildReceiptSha256'),
+            'M7_STATIC_CONFIGURATION_MISMATCH')
     require(all(resolved.get(k)==manifest.get(k) for k in ('pair','imageId','tenants','replicas','cadence'))
             and resolved.get('instrument')==manifest['instrument']['sha256'], 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    import commissioning_wal
+    commissioning_wal.from_manifest(manifest)
+    require((commissioning_wal.FIELD in resolved)==(commissioning_wal.FIELD in manifest)
+            and resolved.get(commissioning_wal.FIELD)==manifest.get(commissioning_wal.FIELD),
+            'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(receipt.get('purpose')=='BOUNDED_DISCOVERY' and resolved.get('runPurpose')=='discovery',
             'M7_DIAGNOSTIC_PURPOSE_REQUIRED')
     execution=receipt.get('execution')
-    require(isinstance(execution,dict) and set(execution)=={'workSeconds','cleanupSeconds','k6Image'}
-            and type(execution['workSeconds']) is int and 30<=execution['workSeconds']<=10800
-            and type(execution['cleanupSeconds']) is int and 30<=execution['cleanupSeconds']<=300
-            and re.fullmatch('sha256:[a-f0-9]{64}',execution.get('k6Image',''))
-            and sum(resolved.get('cadence',{}).get(k,10800) for k in ('warmupSeconds','idleSeconds','loadSeconds'))<execution['workSeconds'],
+    require(isinstance(execution, dict) and set(execution) == {'workSeconds', 'cleanupSeconds', 'k6Image'},
+            'M7_DIAGNOSTIC_EXECUTION_LIMIT')
+    work = execution['workSeconds']
+    cadence = resolved.get('cadence', {})
+    selected_phases = [cadence.get(key) for key in ('warmupSeconds','idleSeconds','loadSeconds')]
+    selected_phases += [cadence[key] for key in ('setupSeconds','drainSeconds') if key in cadence]
+    require(all(workload_inputs.seconds(value) for value in selected_phases),'M7_DIAGNOSTIC_EXECUTION_LIMIT')
+    phase_seconds = sum(selected_phases)
+    work_ok = (receipt.get('executionScope') == 'LOCAL_OWNED_TO_COMPLETION' if work is None
+               else type(work) is int and 30 <= work <= workload_inputs.MAX_SECONDS and phase_seconds < work)
+    require(work_ok and workload_inputs.seconds(execution['cleanupSeconds']) and execution['cleanupSeconds'] >= 30
+            and re.fullmatch('sha256:[a-f0-9]{64}', execution.get('k6Image', '')),
             'M7_DIAGNOSTIC_EXECUTION_LIMIT')
     acceptance=receipt.get('sourceAcceptance')
     require(isinstance(acceptance,dict) and acceptance.get('status') in ('PENDING','PASS')
@@ -312,7 +358,8 @@ def discovery_authorization(manifest, receipt):
                 and re.fullmatch('[a-f0-9]{64}',value.get('evidenceSha256','')), 'M7_DIAGNOSTIC_ACCEPTANCE_TUPLE')
     return {'authorizationVersion':2,'measurementMode':'diagnostic','functionalAcceptance':acceptance['status'],
             'functionalAcceptanceAtAuthorization':acceptance['status'],'sourceAcceptance':acceptance,
-            'configurationSha256':receipt['configurationSha256'],'capacityAcceptance':'NOT_GRANTED'}
+            'configurationSha256':receipt['configurationSha256'],'capacityAcceptance':'NOT_GRANTED',
+            **({'executionScope': 'LOCAL_OWNED_TO_COMPLETION'} if work is None else {})}
 
 
 def discovery_scope(manifest):

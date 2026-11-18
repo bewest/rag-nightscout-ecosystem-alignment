@@ -64,6 +64,25 @@ class Configuration(unittest.TestCase):
     def setUp(self):
         self.pin=patch.object(a,'instrument',return_value={'sha256':'d'*64});self.pin.start();self.addCleanup(self.pin.stop)
 
+    def test_api_cause_observer_is_bound_in_both_configuration_projections(self):
+        cfg=config();plain=rc.from_args(parsed(cfg),'d'*64)
+        cfg['prepare']['api-cause-observation']='on';observed=rc.from_args(parsed(cfg),'d'*64)
+        self.assertNotIn('apiCauseObservation',plain);self.assertEqual(observed['apiCauseObservation'],'on')
+        self.assertNotEqual(rc.sha(plain),rc.sha(observed))
+        manifest={**observed,'instrument':{'sha256':'d'*64},'apiCause':{'roles':['api']}}
+        self.assertEqual(rc.from_manifest(manifest),observed)
+        manifest.pop('apiCause');self.assertNotIn('apiCauseObservation',rc.from_manifest(manifest))
+
+    def test_readiness_changes_configuration_hash_and_has_no_unbound_remote_projection(self):
+        cfg=config();cfg['prepare']['tenant-readiness']='serve'
+        serve=rc.from_args(parsed(cfg),'d'*64)
+        cfg['prepare']['tenant-readiness']='all';all_tenants=rc.from_args(parsed(cfg),'d'*64)
+        self.assertNotEqual(rc.sha(serve),rc.sha(all_tenants))
+        manifest={**serve,'instrument':{'sha256':'d'*64}}
+        self.assertEqual(rc.from_manifest(manifest),serve)
+        with self.assertRaisesRegex(RuntimeError,'REMOTE_STARTUP_SELECTION'):
+            rc.remote_projection(cfg,overlay())
+
     def test_legacy_pending_and_strict_acceptance_stay_compatible(self):
         m,r=packet(config());r.pop('version');r.pop('sourceAcceptance');r.pop('configurationSha256');r.pop('purpose')
         self.assertEqual(c.receipt_scope(m,r,'run')['functionalAcceptance'],'UNACCEPTED')
@@ -99,7 +118,7 @@ class Configuration(unittest.TestCase):
 
     def test_actual_runner_refuses_tamper_before_output_guard_or_effects(self):
         for key,value in (('load-seconds',31),('core-commit','0'*40),('logical-polling-clients',5),
-                          ('diagnostic-resource-profile',a.diagnostic_resources.EXTERNAL_NAME)):
+                          ('diagnostic-resource-profile',a.diagnostic_resources.EXTERNAL_NAME),('tenant-readiness','all')):
             with self.subTest(key=key),tempfile.TemporaryDirectory() as tmp:
                 cfg=config();m,r=packet(cfg);root=Path(tmp);receipt=root/'receipt.json';a.write(receipt,r)
                 cfg['prepare']['receipt']=str(receipt);cfg['prepare'][key]=value
@@ -111,7 +130,9 @@ class Configuration(unittest.TestCase):
                     self.assertFalse(target.exists());guard.assert_not_called();effects.assert_not_called()
 
     def test_invalid_bounds_and_cross_fields_before_output(self):
-        for changes in ({'tenants':10001},{'replicas':2},{'logical-polling-clients':80001},
+        # Discovery reference sizes are overridable; array representation
+        # overflow remains invalid instead of the former 10000/80000 examples.
+        for changes in ({'tenants':2**32},{'replicas':2},{'logical-polling-clients':2**32},
                         {'offered-rps':float('inf')},{'probe-every-ms':0},
                         {'backend-subnet':'10.247.237.0/24'},{'sampler-interval':61},
                         {'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME}):
@@ -119,6 +140,34 @@ class Configuration(unittest.TestCase):
             with self.subTest(changes=changes),self.assertRaises((RuntimeError,ValueError)):runner.validate_config(cfg)
         cfg=config();cfg['workSeconds']=38
         with self.assertRaisesRegex(RuntimeError,'WORK_WINDOW'):runner.validate_config(cfg)
+
+    def test_remote_realistic_shards_derive_exact_shared_dependency_hashes(self):
+        cfg=config();cfg['workSeconds']=3600
+        cfg['prepare'].pop('offered-rps')
+        cfg['prepare'].update({'tenants':1000,'load-seconds':1800,'logical-polling-clients':100,
+                              'sockets-per-tenant':1,'workload-mix':'realistic-v1','workload-scale':2,'driver-shards':8,
+                              'pgstream-topology':'external-service-v1',
+                              'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME,
+                              'generator-dependencies':'/synthetic'})
+        o=overlay();o['binding']['helperDependencies']={'version':1,'profile':'external-service-batch-v1',
+            'files':{name:a.digest(a.ROOT/name) for name in (
+                'tools/mt-bench/m7-joined/stream_topology.py',
+                'tools/mt-bench/m7-joined/diagnostic_resources.py',
+                'tools/mt-bench/m7-joined/experiment_batch.py')}}
+        original=copy.deepcopy(o)
+        value=rc.remote_projection(cfg,o);bound=value['binding']
+        self.assertEqual(o,original)
+        self.assertEqual(bound['workload']['cadence']['workloadMix'],'realistic-v1')
+        self.assertEqual(bound['workload']['cadence']['workloadScale'],2)
+        self.assertEqual(bound['workload']['cadence']['driverShards'],8)
+        for name in ('driver_shards.py','contract.py'):
+            name='tools/mt-bench/m7-joined/'+name
+            self.assertEqual(bound['helperDependencies']['files'][name],a.digest(a.ROOT/name))
+        protocol.topology_dependencies(bound,a.ROOT)
+        o['binding']['helperDependencies']['files']['tools/mt-bench/m7-joined/driver_shards.py']='0'*64
+        with self.assertRaisesRegex(RuntimeError,'M7_CONFIG_REMOTE_SHARD_DEPENDENCY_CHANGED'):rc.remote_projection(cfg,o)
+        o=copy.deepcopy(original)
+        self.assertEqual(rc.remote_projection(cfg,o),value)
 
     def test_remote_projection_equivalence_and_actual_consumer(self):
         cfg=config();o=overlay();before=list(sys.path);p=rc.remote_projection(cfg,o);b=p['binding']

@@ -1,11 +1,13 @@
 """Actual supported-helper prepare/generate path; external effects are file seams."""
 import contextlib
 import json
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 import adapter as a
+from test_offered_rps import JS as OFFERED_PROGRAM
 
 
 def prepare_fixture(target, concurrency=1, overlay_kind="directory"):
@@ -62,7 +64,20 @@ class GeneratorPreparation(unittest.TestCase):
                 source=(target/'k6/workload.js').read_text()
                 for retained in ('ARRIVAL_CYCLE_MS','M7_OFFERED_RPS_RANGE','scenario_request_attempts','scenario_http_responses','scenario_transport_failures','M7_SETUP_REFUSAL','requestOrdinal:tenantIndex+1','startedAtMs','finishedAtMs','settings_fingerprint_observed','SharedArray','exchangeResponse(responses[j], offset + j, exchangeStartedAtMs)'):
                     self.assertIn(retained,source)
-                self.assertIn('START + Math.floor(exec.scenario.iterationInTest * ARRIVAL_CYCLE_MS / weight)',source)
+                # Execute the emitted schedule; per-scenario cadence no longer
+                # has one literal ARRIVAL_CYCLE_MS expression for every mix.
+                generated=target/'k6/workload.js'
+                def observe():
+                    return json.loads(subprocess.check_output(['node','-e',OFFERED_PROGRAM,str(generated),'6','120','200'],text=True))
+                def assert_clock(value):
+                    period=float(value['options']['scenarios']['w_sgv']['timeUnit'][:-2])
+                    self.assertEqual(value['calls'][0][0]['date'],1800000000000+period,'GENERATED_ARRIVAL_CLOCK')
+                assert_clock(observe())
+                anchor='const stamp = () => '
+                self.assertEqual(source.count(anchor),1)
+                generated.write_text(source.replace(anchor,anchor+'0 && '))
+                with self.assertRaisesRegex(AssertionError,'GENERATED_ARRIVAL_CLOCK'):assert_clock(observe())
+                generated.write_text(source);assert_clock(observe())
                 self.assertEqual(m['workload']['adaptedSha256'],a.digest(target/'k6/workload.js'))
 
 

@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+from subprocess import TimeoutExpired
 import threading
 from types import MappingProxyType
 
@@ -30,6 +31,31 @@ MIB = 1024 * 1024
 MAX_CPU = 4000  # millicpus; integral accounting avoids float undercounts
 MAX_MEMORY = 8192 * MIB
 MAX_HEAP = 1024
+# Docker's quota, NanoCpus and memory-byte fields are signed int64 values.
+# Authored service CPU uses integer quota/period, avoiding Compose CPUS float32.
+NATIVE_INT64_MAX = (1 << 63) - 1
+CPU_PERIOD = 100000
+CPU_QUOTA_PER_MILLICPU = CPU_PERIOD // 1000
+# Linux CFS MAX_BW=(1<<(64-BW_SHIFT))-1 with BW_SHIFT=20 bounds quota
+# microseconds. At the minimum legal 1000us period, quota equals millicpus.
+# https://github.com/torvalds/linux/blob/v6.18/kernel/sched/core.c
+# https://github.com/torvalds/linux/blob/v6.18/kernel/sched/sched.h
+MAX_CFS_QUOTA_US = (1 << (64 - 20)) - 1
+MAX_ALLOCATION_MILLICPUS = MAX_CFS_QUOTA_US
+MAX_DRIVER_MILLICPUS = NATIVE_INT64_MAX // 1000000
+# runc v1.3.3's systemd conversion multiplies signed quota microseconds by
+# 1,000,000 before division. Keep fresh ordinary periods within that carrier.
+MAX_RUNC_SYSTEMD_QUOTA_US = NATIVE_INT64_MAX // 1000000
+RUNC_SYSTEMD_VERSIONS = frozenset(('1.3.3', '1.3.3-0ubuntu1~24.04.3'))
+# nginx's Unix process table has NGX_MAX_PROCESSES slots (workers and cache
+# helpers share it; reload generations can coexist). This necessary maximum
+# does not promise that every slot is free or that workers have started.
+# https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process.h
+# https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process_cycle.c
+# The existing mounted source config retains worker_rlimit_nofile 65536;
+# larger budgets need their own configured/read-back descriptor capability.
+NGINX_MAX_WORKERS = 1024
+EDGE_NOFILE = 65536
 
 
 def need(condition, code):
@@ -69,30 +95,134 @@ HOST = MappingProxyType({'probe': (512, 1), 'generator': (256, 1), 'helper': (12
 
 class AllocationLimit(Limit):
     def __post_init__(self):
-        need(type(self.cpu) is int and 1<=self.cpu<=64000,'CPU_INVALID')
-        need(type(self.memory) is int and MIB<=self.memory<=128*1024*MIB,'MEMORY_INVALID')
+        need(type(self.cpu) is int and 1<=self.cpu<=MAX_ALLOCATION_MILLICPUS,'CPU_INVALID')
+        need(type(self.memory) is int and MIB<=self.memory<=NATIVE_INT64_MAX,'MEMORY_INVALID')
+
+
+def service_cpu_settings(millicpus):
+    """Exact Linux CFS quota/period; preserve 100ms for ordinary allocations.
+
+    A 1s period gives 1..9millicpu the kernel's minimum 1ms quota. Very large
+    allocations use a 1ms period before runc's signed quota*1e6 can overflow.
+    This integer projection alone does not qualify a runtime's precision.
+    Fresh preflight separately checks the observed systemd/runc conversion.
+    """
+    period=1000000 if millicpus<10 else 1000 if millicpus>MAX_RUNC_SYSTEMD_QUOTA_US//CPU_QUOTA_PER_MILLICPU else CPU_PERIOD
+    return millicpus*(period//1000),period
+
+
+def frozen_cpu_settings(millicpus, quota, period):
+    """Validate the exact frozen pair without selecting a replacement period."""
+    need(type(quota) is int and type(period) is int and 1000<=quota<=MAX_CFS_QUOTA_US
+         and 1000<=period<=1000000 and quota*1000==millicpus*period, 'EXISTING_LIMIT_CONFLICT')
+    return quota,period
+
+
+def fresh_cpu_preflight(profile, read=None, *, roles=None, observation=None):
+    """Check only a known observed runtime; plans and unknown runtimes stay unmeasured.
+
+    The caller opts in at actual fresh prepare, before effects, and supplies its
+    existing read-only command wrapper. No daemon access occurs without it.
+    Upstream runc v1.3.3 vendor/opencontainers/cgroups/systemd/common.go:264-296
+    rounds CPUQuotaPerSecUSec to 10,000us/sec, then writes the rounded quota.
+    https://github.com/opencontainers/runc/blob/v1.3.3/vendor/github.com/opencontainers/cgroups/systemd/common.go
+    """
+    if not isinstance(profile,dict):return {'verdict':'NOT_APPLICABLE'}
+    selection(profile)
+    chosen=set(profile['services']) if roles is None else set(roles)
+    need(chosen<=set(profile['services']),'CPU_EXECUTION_ROLES')
+    result={'verdict':'UNMEASURED','runtimePrecision':'UNMEASURED','qualifiedRoles':[],
+            'deferredRoles':sorted(profile['services']),
+            'scope':'selected execution roles only; dormant roles and native readback remain unqualified'}
+    runtime=(observation or {}).get('runtime')
+    if runtime is None:
+        if read is None:return result
+        try:
+            info=json.loads(read(['docker','info','--format',
+                '{"CgroupDriver":{{json .CgroupDriver}},"CgroupVersion":{{json .CgroupVersion}},"DefaultRuntime":{{json .DefaultRuntime}},"ServerVersion":{{json .ServerVersion}}}']))
+            components=json.loads(read(['docker','version','--format','{{json .Server.Components}}']))
+            runtime={'cgroupDriver':info['CgroupDriver'],'cgroupVersion':info['CgroupVersion'],
+                     'defaultRuntime':info['DefaultRuntime'],'engineVersion':info['ServerVersion'],
+                     'runcVersion':next(row['Version'] for row in components if row['Name']=='runc')}
+        except (RuntimeError,ValueError,KeyError,TypeError,StopIteration,OSError,TimeoutExpired):return result
+    if not (isinstance(runtime,dict) and set(runtime)=={'cgroupDriver','cgroupVersion','defaultRuntime','engineVersion','runcVersion'}
+            and all(isinstance(value,str) and re.fullmatch(r'[A-Za-z0-9_.~+-]{1,160}',value) for value in runtime.values())):return result
+    result['runtime']=runtime
+    if not (runtime['cgroupDriver']=='systemd' and runtime['cgroupVersion']=='2'
+            and runtime['defaultRuntime']=='runc' and runtime['runcVersion'] in RUNC_SYSTEMD_VERSIONS):return result
+    result['runtimePrecision']='runc-systemd-whole-percent-v1'
+    for role in sorted(chosen):
+        limit=profile['services'][role]
+        cpu=limit['millicpus'];quota,period=service_cpu_settings(cpu)
+        reason='WHOLE_PERCENT_CPU_REQUIRED' if cpu%10 else \
+               'SIGNED_QUOTA_PRODUCT_OVERFLOW' if quota>MAX_RUNC_SYSTEMD_QUOTA_US else None
+        if reason:
+            error=RuntimeError('M7_DIAGNOSTIC_RESOURCE_CPU_UNREPRESENTABLE:services.'+role+'.millicpus')
+            error.diagnostic={'field':'services.'+role+'.millicpus','millicpus':cpu,'runtime':runtime,
+                              'quotaMicros':quota,'periodMicros':period,'reason':reason,
+                              'exactMillicpuStep':10,'maximumConversionQuotaMicros':MAX_RUNC_SYSTEMD_QUOTA_US}
+            raise error
+    return {**result,'verdict':'PASS' if chosen else 'UNMEASURED',
+            'qualifiedRoles':sorted(chosen),'deferredRoles':sorted(set(profile['services'])-chosen),
+            'scope':'known runtime integer CPU representation for selected execution roles only; dormant roles, native admission/readback and host fit remain unqualified'}
+
+
+def compose_actor_roles(args, config):
+    """Use the existing argv authority, then select exact targets/dependencies."""
+    import orchestration_binding as binding
+    services=config['services'];values=list(map(str,args))
+    action=binding._action(values,services)
+    if action not in ('up','run','create','start','restart'):return []
+    index=0;profiles=set()
+    while values[index]=='--profile':profiles.add(values[index+1]);index+=2
+    tail=values[index+1:]
+    first=next((i for i,value in enumerate(tail) if value in services),len(tail))
+    options=tail[:first]
+    if action in ('up','run','create'):binding._options(action,options)
+    if action=='run':
+        need(first<len(tail),'COMPOSE_ROLE_REQUIRED');chosen={tail[first]}
+    elif first<len(tail):
+        need(all(value in services for value in tail[first:]),'COMPOSE_ROLE_REQUIRED');chosen=set(tail[first:])
+    else:
+        chosen={role for role,spec in services.items() if not spec.get('profiles') or profiles.intersection(spec['profiles'])}
+    if '--no-deps' not in options:
+        pending=list(chosen)
+        while pending:
+            dependencies=services[pending.pop()].get('depends_on',{})
+            need(isinstance(dependencies,(dict,list)) and set(dependencies)<=set(services),'COMPOSE_DEPENDENCY_REQUIRED')
+            for role in set(dependencies)-chosen:chosen.add(role);pending.append(role)
+    return sorted(chosen)
 
 
 def explicit_allocation(value):
     """One finite authored allocation, not a new named profile or permission grant."""
     need(isinstance(value,dict) and set(value)=={'version','services','driver','ceiling','edge'} and type(value['version']) is int and value['version']==1,'ALLOCATION_SHAPE')
-    need(isinstance(value['services'],dict) and 1<=len(value['services'])<=32,'ALLOCATION_ROSTER')
+    need(isinstance(value['services'],dict) and bool(value['services']),'ALLOCATION_ROSTER')
     for role,limit in value['services'].items():
-        need(isinstance(role,str) and (role in LIMITS and role!='k6' or role=='pgstream' or re.fullmatch(r'(api|realtime|evaluator)-(?:[2-9]|1[0-6])',role)),'UNKNOWN_ROLE')
-        allocation_limit(limit)
-    allocation_limit(value['driver'])
+        need(isinstance(role,str) and (role in LIMITS and role!='k6' or role in ('pgstream','socket-edge') or re.fullmatch(r'(api|realtime|evaluator)-(?:[2-9]|1[0-6])',role)),'UNKNOWN_ROLE')
+        allocation_limit(limit,field='services.'+role)
+    allocation_limit(value['driver'],driver=True,field='driver')
     ceiling=value['ceiling']
-    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and 1<=ceiling['millicpus']<=64000 and type(ceiling['memoryBytes']) is int and MIB<=ceiling['memoryBytes']<=128*1024*MIB,'ALLOCATION_CEILING')
-    need(value['edge']=={'workerProcesses':1,'workerConnections':16384} and all(type(x) is int for x in value['edge'].values()) and 'nginx' in value['services'],'ALLOCATION_EDGE')
+    # This is an accounting ceiling, not one native container field. Its
+    # caller-selected aggregate may exceed any individual container quota.
+    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and ceiling['millicpus']>=1 and type(ceiling['memoryBytes']) is int and ceiling['memoryBytes']>=MIB,'ALLOCATION_CEILING')
+    edge=value['edge']
+    need(isinstance(edge,dict) and set(edge)=={'workerProcesses','workerConnections'} and 'nginx' in value['services'] and type(edge['workerProcesses']) is int and 1<=edge['workerProcesses']<=NGINX_MAX_WORKERS and type(edge['workerConnections']) is int and edge['workerConnections']>=1,'ALLOCATION_EDGE')
+    need(edge['workerConnections']<=EDGE_NOFILE,'ALLOCATION_EDGE_DESCRIPTOR_LIMIT:workerConnections exceeds retained worker_rlimit_nofile=65536; a larger configured/read-back descriptor budget is required')
     cpu=sum(limit['millicpus']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+value['driver']['millicpus']
     memory=sum(limit['memoryBytes']*(2 if role in ('bootstrap','primer') else 1) for role,limit in value['services'].items())+value['driver']['memoryBytes']
     need(cpu<=ceiling['millicpus'] and memory<=ceiling['memoryBytes'],'ALLOCATION_AGGREGATE_EXCEEDED')
     return value
 
 
-def allocation_limit(value):
-    need(isinstance(value,dict) and set(value)=={'millicpus','memoryBytes'},'ALLOCATION_LIMIT')
-    return AllocationLimit(value['millicpus'],value['memoryBytes'])
+def allocation_limit(value, *, driver=False, field='allocation'):
+    need(isinstance(value,dict) and set(value)=={'millicpus','memoryBytes'},'ALLOCATION_LIMIT:'+field)
+    try:limit=AllocationLimit(value['millicpus'],value['memoryBytes'])
+    except RuntimeError as error:
+        key='millicpus' if 'CPU_INVALID' in str(error) else 'memoryBytes'
+        raise RuntimeError(str(error)+':'+field+'.'+key) from error
+    need(not driver or limit.cpu<=MAX_DRIVER_MILLICPUS,'CPU_INVALID:'+field+'.millicpus exceeds standalone NanoCpus signed-int64 representation')
+    return limit
 
 
 def external_selection(value):
@@ -100,7 +230,7 @@ def external_selection(value):
 
 
 def driver_limit(profile):
-    return allocation_limit(profile['driver']) if isinstance(profile,dict) else LIMITS['k6']
+    return allocation_limit(profile['driver'],driver=True,field='driver') if isinstance(profile,dict) else LIMITS['k6']
 
 
 def selection(name=None):
@@ -151,12 +281,15 @@ def role_limit(role, profile=NAME):
     need(False, 'UNKNOWN_ROLE')
 
 
-def verify_evaluator_cgroup(profile, cpu_max, memory_max, memory_swap_max):
+def verify_evaluator_cgroup(profile, cpu_max, memory_max, memory_swap_max, *, expected_cpu=None):
     """Validate captured cgroup-v2 values; caller owns identity and capture I/O."""
     limit=role_limit('evaluator',profile)
     need(isinstance(cpu_max,str) and re.fullmatch(r'[1-9][0-9]* [1-9][0-9]*\n?',cpu_max) is not None,'EFFECTIVE_CPU_INVALID')
     quota,period=map(int,cpu_max.split())
     need(quota*1000==limit.cpu*period,'EFFECTIVE_CPU_CHANGED')
+    if isinstance(profile,dict):
+        expected=service_cpu_settings(limit.cpu) if expected_cpu is None else frozen_cpu_settings(limit.cpu,*expected_cpu)
+        need((quota,period)==expected,'EFFECTIVE_CPU_PERIOD_CHANGED')
     need(str(memory_max).strip()==str(limit.memory),'EFFECTIVE_MEMORY_CHANGED')
     need(str(memory_swap_max).strip()=='0','EFFECTIVE_SWAP_CHANGED')
     return {'millicpus':limit.cpu,'memoryBytes':limit.memory,'swapBytes':0}
@@ -168,6 +301,7 @@ class Plan:
     # when idle, ops-only or used only during preparation. No stage subtraction.
     services: tuple
     profile: object = NAME  # Named selector or exact explicit allocation JSON.
+    cpu_enforcement: tuple = ()  # (role, quota microseconds, period microseconds)
 
     def __post_init__(self):
         need(selection(self.profile) is not None,'PROFILE_CHANGED')
@@ -176,14 +310,19 @@ class Plan:
         for role, limit, count in self.services:
             need(isinstance(role, str) and role_limit(role,self.profile) == limit, 'LIMIT_CHANGED')
             need(type(count) is int and count == (2 if role in ('bootstrap', 'primer') else 1), 'MULTIPLICITY_CHANGED')
+        need(type(self.cpu_enforcement) is tuple and len({role for role,_,_ in self.cpu_enforcement})==len(self.cpu_enforcement),'CPU_ENFORCEMENT_CHANGED')
+        for role,quota,period in self.cpu_enforcement:
+            need(isinstance(self.profile,dict) and role in {r for r,_,_ in self.services},'CPU_ENFORCEMENT_CHANGED')
+            frozen_cpu_settings(role_limit(role,self.profile).cpu,quota,period)
         cpu = sum(limit.cpu * count for _, limit, count in self.services) + driver_limit(self.profile).cpu
         memory = sum(limit.memory * count for _, limit, count in self.services) + driver_limit(self.profile).memory
         need(cpu <= cpu_ceiling(self.profile) and memory <= memory_ceiling(self.profile), 'AGGREGATE_EXCEEDED')
         need(sum(heap * count for heap, count in HOST.values()) <= MAX_HEAP, 'HOST_AGGREGATE_EXCEEDED')
 
     def record(self):
+        native={role:{'kind':'cfs-quota-period-v1','quotaMicros':quota,'periodMicros':period} for role,quota,period in self.cpu_enforcement}
         return {'version': 1, 'profile': self.profile,
-                'services': {r: {'millicpus': l.cpu, 'memoryBytes': l.memory, 'maximumConcurrent': n} for r, l, n in self.services},
+                'services': {r: {'millicpus': l.cpu, 'memoryBytes': l.memory, 'maximumConcurrent': n, **({'cpuEnforcement':native[r]} if r in native else {})} for r, l, n in self.services},
                 'standalone': {'k6': {'millicpus': driver_limit(self.profile).cpu, 'memoryBytes': driver_limit(self.profile).memory, 'maximumConcurrent': 1}},
                 'host': {r: {'heapMiB': h, 'maximumConcurrent': n} for r, (h, n) in HOST.items()},
                 'aggregate': {'millicpus': sum(l.cpu*n for _, l, n in self.services)+driver_limit(self.profile).cpu,
@@ -193,17 +332,72 @@ class Plan:
                 'hostRss': 'SEPARATELY_OBSERVED_NOT_HEAP_BOUNDED'}
 
 
-def plan(config):
+def plan(config, *, freeze_cpu=True):
     services = config.get('services', {})
     need(isinstance(services, dict) and bool(services), 'SERVICES_REQUIRED')
     need('k6' not in services, 'K6_COMPOSE_STANDALONE_AMBIGUOUS')
     profile=config.get(PROFILE_KEY,NAME);need(selection(profile) is not None,'PROFILE_CHANGED')
     if isinstance(profile,dict):need(set(profile['services'])==set(services),'ALLOCATION_ROSTER_CHANGED')
     need(not external_selection(profile) or 'pgstream' in services and 'evaluator' in services,'EXTERNAL_ROSTER_REQUIRED')
-    return Plan(tuple((r, role_limit(r,profile), 2 if r in ('bootstrap', 'primer') else 1) for r in sorted(services)),profile)
+    native=tuple((role,*frozen_cpu_settings(role_limit(role,profile).cpu,services[role].get('cpu_quota'),services[role].get('cpu_period'))) for role in sorted(services) if freeze_cpu and isinstance(profile,dict) and any(key in services[role] for key in ('cpu_quota','cpu_period')))
+    return Plan(tuple((r, role_limit(r,profile), 2 if r in ('bootstrap', 'primer') else 1) for r in sorted(services)),profile,native)
 
 
-def overlay(config, selected):
+
+COMPOSE_CPU_LIMITS = ('cpus', 'cpu_quota', 'cpu_period', 'cpu_count', 'cpu_percent')
+COMPOSE_MEMORY_LIMITS = ('mem_limit', 'memswap_limit', 'mem_reservation')
+NATIVE_CPU_LIMITS = ('NanoCpus', 'CpuQuota', 'CpuPeriod', 'CpuCount', 'CpuPercent')
+NATIVE_MEMORY_LIMITS = ('Memory', 'MemorySwap', 'MemoryReservation')
+
+
+def compose_limit_mode(config, selected):
+    if selected is not None:
+        return 'configured'
+    for role, spec in config['services'].items():
+        alternate = spec.get('deploy', {}).get('resources', {})
+        need(not any(spec.get(key) for key in (*COMPOSE_CPU_LIMITS, *COMPOSE_MEMORY_LIMITS))
+             and not any(alternate.get(kind, {}).get(key) for kind in ('limits', 'reservations')
+                         for key in ('cpus', 'memory')),
+             'IMPLICIT_SERVICE_LIMIT:' + role)
+    return 'uncapped-services'
+
+
+def uncapped_compose(config):
+    """Project reference sizing out of the diagnostic runtime, preserving source files."""
+    result = copy.deepcopy(config)
+    removed = {}
+    for role, spec in result['services'].items():
+        fields = [key for key in (*COMPOSE_CPU_LIMITS, *COMPOSE_MEMORY_LIMITS) if key in spec]
+        for key in fields:
+            del spec[key]
+        alternate = spec.get('deploy', {}).get('resources', {})
+        for kind in ('limits', 'reservations'):
+            block = alternate.get(kind, {})
+            for key in ('cpus', 'memory'):
+                if key in block:
+                    del block[key]
+                    fields.append('deploy.resources.' + kind + '.' + key)
+        if fields:
+            removed[role] = fields
+    return result, removed
+
+
+def uncapped_readback(rows, services):
+    evidence = []
+    for row in rows:
+        role = row['Config']['Labels'].get('com.docker.compose.service')
+        if role not in services:
+            continue
+        config = row['HostConfig']
+        observed = {key: config.get(key) for key in (*NATIVE_CPU_LIMITS, *NATIVE_MEMORY_LIMITS)}
+        need(all(type(value) is int and value == 0 for value in observed.values()),
+             'UNEXPECTED_NATIVE_SERVICE_LIMIT:' + role)
+        evidence.append({'role': role, 'containerId': row['Id'], 'limits': observed})
+    need(bool(evidence), 'NATIVE_SERVICE_LIMITS_UNMEASURED')
+    return evidence
+
+
+def overlay(config, selected, *, applying=True):
     """Return a full JSON Compose document; never mutate source/default config."""
     if selected is None:
         return config
@@ -211,25 +405,38 @@ def overlay(config, selected):
     result = copy.deepcopy(config)
     if external_selection(selected):result[PROFILE_KEY]=selected
     need(result.get(PROFILE_KEY,NAME)==selected,'PROFILE_CHANGED')
-    budget = plan(result)
+    budget = plan(result,freeze_cpu=not applying)
     for role, limit, _ in budget.services:
         spec = result['services'][role]
+        # Entered explicit fixtures can retain their frozen legacy cpus field.
+        # Fresh explicit services always use integer quota/period. Never accept
+        # simultaneous CPU mechanisms or round the selected millicpu quantity.
+        quota=isinstance(selected,dict) and (applying or 'cpus' not in spec)
         # Conflicting alternate resource knobs can change native enforcement.
-        need(not any(k in spec for k in ('cpu_quota', 'cpu_period', 'cpu_count', 'cpu_percent', 'mem_reservation')),
+        need(not any(k in spec for k in ('cpu_count', 'cpu_percent', 'cpu_rt_period', 'cpu_rt_runtime', 'mem_reservation'))
+             and (quota or not any(k in spec for k in ('cpu_quota','cpu_period'))),
              'ALTERNATE_LIMITS')
         need(not spec.get('deploy', {}).get('resources'), 'ALTERNATE_LIMITS')
-        for key, value in (('cpus', float(limit.cpus)), ('mem_limit', limit.memory), ('memswap_limit', limit.memory)):
+        if quota:
+            need(not ('cpus' in spec and any(k in spec for k in ('cpu_quota','cpu_period'))),'ALTERNATE_LIMITS')
+            if 'cpus' in spec:del spec['cpus']
+            quota_value,period=service_cpu_settings(limit.cpu) if applying else frozen_cpu_settings(limit.cpu,spec.get('cpu_quota'),spec.get('cpu_period'))
+            cpu_values=(('cpu_period',period),('cpu_quota',quota_value))
+        else:cpu_values=(('cpus',float(limit.cpus)),)
+        for key, value in (*cpu_values, ('mem_limit', limit.memory), ('memswap_limit', limit.memory)):
             same=key not in spec or str(spec[key])==str(value) or key=='cpus' and type(spec[key]) in (int,float) and spec[key]==value
-            need(same, 'EXISTING_LIMIT_CONFLICT')
+            # An authored allocation replaces reference sizing during fresh
+            # preparation. Readback validation never reapplies that override.
+            need(same or applying and isinstance(selected,dict), 'EXISTING_LIMIT_CONFLICT')
             # Compose JSON preserves byte limits as strings and normalizes 1.0
             # CPU to integer 1. Preserve equivalent existing representations.
-            if key not in spec:spec[key] = value
+            if key not in spec or not same:spec[key] = value
     return result
 
 
 def verify_config(config, budget):
     need(plan(config) == budget, 'PLAN_CHANGED')
-    need(overlay(config, budget.profile) == config, 'CONFIG_LIMITS_CHANGED')
+    need(overlay(config, budget.profile, applying=False) == config, 'CONFIG_LIMITS_CHANGED')
 
 
 def standalone_limit():
@@ -307,6 +514,7 @@ class Runtime:
             need(self.budget is not None and record == self.budget.record(), 'RECORD_CHANGED')
             verify_config(config, self.budget)
         self.observe = observe
+        self.quota_roles={role for role,spec in (config or {}).get('services',{}).items() if 'cpu_quota' in spec}
         self.driver_limit = driver_limit(self.budget.profile) if self.budget else LIMITS['k6']
         self.lock = threading.RLock()
         self.host = Counter()
@@ -353,6 +561,7 @@ class Runtime:
         self.budget = plan(config)
         self.driver_limit = driver_limit(self.budget.profile)
         verify_config(config, self.budget)
+        self.quota_roles={role for role,spec in config['services'].items() if 'cpu_quota' in spec}
         return self.budget.record()
 
     @contextmanager
@@ -392,7 +601,11 @@ class Runtime:
             need(role in allowances, 'RUNTIME_ROLE_UNKNOWN')
             limit, _ = allowances[role]
             native = row.get('HostConfig', {})
-            need(native.get('NanoCpus') == limit.cpu * 1000000 and native.get('Memory') == limit.memory and native.get('MemorySwap') == limit.memory,
+            if role in self.quota_roles:
+                quota,period=next((q,p) for r,q,p in self.budget.cpu_enforcement if r==role)
+                cpu_matches=all(type(native.get(key)) is int for key in ('NanoCpus','CpuQuota','CpuPeriod')) and native['NanoCpus']==0 and native['CpuQuota']==quota and native['CpuPeriod']==period and all(native.get(key,0)==0 for key in ('CpuCount','CpuPercent','CpuRealtimePeriod','CpuRealtimeRuntime'))
+            else:cpu_matches=native.get('NanoCpus')==limit.cpu*1000000
+            need(cpu_matches and native.get('Memory') == limit.memory and native.get('MemorySwap') == limit.memory,
                  'NATIVE_LIMITS_CHANGED')
             counts[role] += 1
         for role, count in (additions or {}).items():
@@ -406,7 +619,7 @@ class Runtime:
         need(cpu <= cpu_ceiling(self.budget.profile)+self.driver_limit.cpu-driver_limit(self.budget.profile).cpu and memory <= memory_ceiling(self.budget.profile)+self.driver_limit.memory-driver_limit(self.budget.profile).memory, 'RUNTIME_AGGREGATE_EXCEEDED')
         return counts
 
-    def compose(self, args, config):
+    def compose(self, args, config, cpu_preflight=None):
         # Teardown and read-only commands must remain available after a refusal.
         args = list(args)
         need(not any(x in ('build', 'pull') for x in args), 'BUILD_PULL_REFUSED')
@@ -419,6 +632,14 @@ class Runtime:
         if action is None:
             return
         current = self.containers()
+        # Legacy NanoCpus records retain their existing admission path. New
+        # quota actors, including later activation of a dormant role, must be
+        # representable on the observed runtime before any actor command.
+        if self.quota_roles:
+            observation=fresh_cpu_preflight(self.budget.profile,roles=(),observation=cpu_preflight)
+            if observation.get('runtimePrecision')=='runc-systemd-whole-percent-v1':
+                roles=compose_actor_roles(args,config)
+                fresh_cpu_preflight(self.budget.profile,roles=(set(roles)|set(current))&self.quota_roles,observation=observation)
         if action == 'run':
             index = args.index('run')
             role = next((x for x in args[index+1:] if x in config['services']), None)
@@ -520,9 +741,9 @@ def bounded_standalone(argv):
     return result
 
 
-def before_compose(args, config):
+def before_compose(args, config, cpu_preflight=None):
     if _ACTIVE is not None:
-        _ACTIVE.compose(args, config)
+        _ACTIVE.compose(args, config,cpu_preflight)
 
 
 def selected_record(config, selected):

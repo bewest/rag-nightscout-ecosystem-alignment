@@ -51,7 +51,29 @@ function install({file,ids,http,pg,receiver,scheduler,runtime,maxRows=4096,maxBy
   const store=Object.create(options.store);Object.defineProperty(store,'observe',{value:function(...args){const m=context.getStore();const active=m?.target&&targets.has(args[0])&&args[1]==='clock';if(active){m.observing=true;emit('observe-call',m);}let result;
    try{result=Reflect.apply(options.store.observe,options.store,args);}catch(e){if(active)emit('observe-throw',m,{code:/^[A-Z0-9_]{1,64}$/.test(e?.code||'')?e.code:'ERROR'});throw e;}
    if(active){settle(result,m,'observe-commit');result.finally(()=>{m.observing=false;}).catch(()=>{});}return result;}});
-  const receive=Reflect.apply(originalCreate,this,[{...options,store,onInput:function(...args){const m=context.getStore();if(m?.target&&targets.has(args[0]))emit('hint-call',m);const result=Reflect.apply(options.onInput,this,args);if(m?.target&&targets.has(args[0]))emit('hint-return',m);return result;}}]);
+  // c117's materializer accepts the clock and raw cohort atomically through
+  // clinical.accept; it does not call the older store.observe port.
+  let clinical=options.clinical;
+  if(clinical){
+   const originalClinical=clinical,descriptors=Object.getOwnPropertyDescriptors(originalClinical);
+   const invoke=originalClinical.accept;
+   if(typeof invoke!=='function')throw Error('M7_CLINICAL_TIMELINE_ACCEPT_PORT');
+   const forward=function(...args){const m=context.getStore(),active=m?.target&&targets.has(args[0])&&args[2]===undefined;
+    if(active){m.observing=true;emit('observe-call',m);}let result;
+    try{result=Reflect.apply(invoke,originalClinical,args);}catch(e){if(active){m.observing=false;emit('observe-throw',m,{code:/^[A-Z0-9_]{1,64}$/.test(e?.code||'')?e.code:'ERROR'});}throw e;}
+    if(active){settle(result,m,'observe-commit');if(result&&typeof result.then==='function')result.then(()=>{m.observing=false;},()=>{m.observing=false;}).catch(()=>{});else m.observing=false;}return result;
+   };
+   // A descriptor facade leaves the original port untouched, including frozen
+   // containers. Calls retain the original brand/this and original Promise.
+   for(const key of Reflect.ownKeys(descriptors)){const d=descriptors[key];
+    if('value' in d&&typeof d.value==='function'){const fn=d.value;d.value=key==='accept'?forward:new Proxy(fn,{apply:(_f,_this,args)=>Reflect.apply(fn,originalClinical,args)});}
+    else if(!('value'in d)){const get=d.get,set=d.set;if(get)d.get=()=>Reflect.apply(get,originalClinical,[]);if(set)d.set=value=>Reflect.apply(set,originalClinical,[value]);}
+   }
+   if(!Object.hasOwn(descriptors,'accept'))throw Error('M7_CLINICAL_TIMELINE_ACCEPT_PORT');
+   clinical=Object.create(Object.getPrototypeOf(originalClinical),descriptors);
+   if(Object.isFrozen(originalClinical))Object.freeze(clinical);else if(Object.isSealed(originalClinical))Object.seal(clinical);else if(!Object.isExtensible(originalClinical))Object.preventExtensions(clinical);
+  }
+  const receive=Reflect.apply(originalCreate,this,[{...options,store:clinical?options.store:store,clinical,onInput:function(...args){const m=context.getStore();if(m?.target&&targets.has(args[0]))emit('hint-call',m);const result=Reflect.apply(options.onInput,this,args);if(m?.target&&targets.has(args[0]))emit('hint-return',m);return result;}}]);
   return function(event){const m=context.getStore();
    // Inspection never replaces the receiver's own validation or rejection.
    try{const data=event?.Data,columns=data?.columns,identity=data?.identity;
@@ -98,8 +120,9 @@ function install({file,ids,http,pg,receiver,scheduler,runtime,maxRows=4096,maxBy
 }
 // Observe canonical loads only; resolving paths does not initialize app modules.
 function arm({root,targetsFile,traceFile,statusFile,rawFile=null,rawStatusFile=null,moduleLoader=require('node:module')}){
- const path=require('node:path'),ids=JSON.parse(fs.readFileSync(targetsFile,'utf8')).ids;
- if(ids.length!==2||new Set(ids).size!==2||ids.some(id=>!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)))throw Error('M7_CLINICAL_TIMELINE_BINDING');
+ const path=require('node:path'),selected=JSON.parse(fs.readFileSync(targetsFile,'utf8')),ids=selected.ids;
+ if(selected.sourceFiles){const files=selected.sourceFiles;if(Object.keys(files).length!==5||Object.entries(files).some(([file,hash])=>!['lib/pgstream/receiver.js','lib/pgstream/activity-scheduler.js','lib/server/serve/evaluator-runtime.js','lib/storage/clinical-stream-sql.js','lib/server/serve/evaluator-preview.js'].includes(file)||require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')!==hash))throw Error('M7_CLINICAL_TIMELINE_SOURCE');}
+ if(!Array.isArray(ids)||ids.length<1||ids.length>2||new Set(ids).size!==ids.length||ids.some(id=>!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)))throw Error('M7_CLINICAL_TIMELINE_BINDING');
  const files={receiver:path.join(root,'lib/pgstream/receiver.js'),scheduler:path.join(root,'lib/pgstream/activity-scheduler.js'),runtime:path.join(root,'lib/server/serve/evaluator-runtime.js'),pg:require.resolve('pg',{paths:[root]})};
  const byFile=new Map(Object.entries(files).map(([kind,file])=>[fs.realpathSync(file),kind]));
  if(!!rawFile!==!!rawStatusFile)throw Error('M7_CLINICAL_RAW_BINDING');
