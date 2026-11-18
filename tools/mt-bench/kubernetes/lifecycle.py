@@ -209,7 +209,12 @@ try:
     (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
     for role in ('evaluator','realtime'):
         (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
-    command(['bash',secret_script,'publish',ns,'unused'],timeout=185,private=True)
+    published=command(['bash',secret_script,'publish',ns,'unused'],timeout=185,private=True)
+    ack_wire=None
+    if frozen.ACK_BUDGET in selected_source:
+        ack_wire=json.loads(published.splitlines()[-2])
+        assert ack_wire['effectiveTimeoutMs']==selected_source[frozen.ACK_BUDGET], 'K8S_PGSTREAM_ACK_PUBLISH_CHANGED'
+        put('producer-ack-published.json',ack_wire)
     install('private-admin');workload_ready('private-admin')
     install('primer');pobj=get('job','primer')
     assert pobj['spec']['suspend'] is True
@@ -231,6 +236,18 @@ try:
         except RuntimeError:time.sleep(2)
     else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
     install('serving');workload_ready('serving')
+    if ack_wire is not None:
+        latest=read(live/'latest-pgstream.json')
+        pod=get('pod',latest['name']);assert pod['metadata']['uid']==latest['uid'], 'POD_OWNERSHIP_CHANGED'
+        container=next(row for row in pod['status']['containerStatuses'] if row['name']=='pgstream' and row['ready'])
+        wire='/run/ns-stream/pgstream.yaml'
+        actual=execpod(pod,'pgstream',['sha256sum',wire]).decode().strip().split()
+        current=get('pod',latest['name'])
+        assert any(row['name']=='pgstream' and row['containerID']==container['containerID'] and row['ready']
+                   for row in current['status']['containerStatuses']), 'K8S_PGSTREAM_ACK_CONTAINER_CHANGED'
+        assert actual==[ack_wire['effectiveWireSha256'],wire], 'K8S_PGSTREAM_ACK_WIRE_CHANGED'
+        put('producer-ack-readback.json',{**ack_wire,'runId':rid,'namespace':ns,'namespaceUid':nsuid,
+                                        'podUid':latest['uid'],'containerId':container['containerID']})
     step('attach released runtime')
     limits=cfg['nativeLimits']
     command(['systemd-run','--user','--scope','--quiet','--unit=ns-'+rid+'-native',

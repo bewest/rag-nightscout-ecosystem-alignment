@@ -5,6 +5,9 @@ from pathlib import Path
 import re
 import subprocess
 
+ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
+ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
+
 
 class Refused(ValueError):
     verdict = 'FAIL'
@@ -68,6 +71,11 @@ def source(manifest):
         chosen.update(imageSourceAcceptance=status, sourceAcceptance='PENDING',
                       runtimeBootstrapHelper={**BOOTSTRAP_HELPER, 'baseSha256': BOOTSTRAP_ORIGINAL,
                                               'sourcePath': BOOTSTRAP_PATH, 'mountPath': BOOTSTRAP_TARGET})
+    if ACK_BUDGET in manifest:
+        budget = manifest[ACK_BUDGET]
+        require(tier == 'discovery' and type(budget) is int and 0 < budget <= (2**63 - 1) // 1_000_000,
+                'PGSTREAM_ACK_BUDGET')
+        chosen[ACK_BUDGET] = budget
     return chosen
 
 
@@ -76,6 +84,7 @@ def contract(manifest, observed):
     require(all(observed.get(k) == v for k, v in chosen.items()), 'CONTRACT_SOURCE_CHANGED')
     require(all((key in observed) == (key in chosen) for key in ('runtimeBootstrapHelper','imageSourceAcceptance')),
             'BOOTSTRAP_HELPER_UNDECLARED')
+    require((ACK_BUDGET in observed) == (ACK_BUDGET in chosen), 'PGSTREAM_ACK_UNDECLARED')
     if 'bootstrapHelper' in manifest:
         require(observed.get('sourceFilesSha256', {}).get('bootstrap.js') == BOOTSTRAP_ORIGINAL, 'BOOTSTRAP_BASE_CHANGED')
     require(re.fullmatch('[a-f0-9]{64}', observed['nativeCatalogueSha256']), 'CATALOGUE_ID')
@@ -109,6 +118,8 @@ def rendered_contract(manifest, raw, binding_ref):
     selected = contract(manifest, json.loads(raw))
     require(binding['files'].get('assets/bootstrap-helper.js') == selected.get('runtimeBootstrapHelper', {}).get('sha256'),
             'BOOTSTRAP_HELPER_PACKAGE_CHANGED')
+    require(all((name in binding['files']) == (ACK_BUDGET in selected) for name in ACK_PACKAGE),
+            'PGSTREAM_ACK_PACKAGE_CHANGED')
     return selected
 
 

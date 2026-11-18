@@ -66,6 +66,15 @@ Job, actual Pod and bootstrap container. When the read guard masks words in
 this public file, kubectl compares its known source, UID and resource version
 locally and emits a Boolean. A missing or changed readback stops the check.
 
+For a discovery fixture with an external producer, the optional manifest field
+`pgstreamNotifierAckTimeoutMs` selects a positive acknowledgment budget in
+milliseconds. The publisher projects the one field from the private bootstrap
+wire file before creating `ns-config-pgstream`. The selected package, source
+wire hash, effective wire hash and live producer incarnation are bound into
+the run. The controller verifies the wire hash in the owned Pod before native
+attachment. The producer binary, retry cadence, and clinical observation
+windows keep their selected source behavior.
+
 Supply the existing runtime config, inventory, render, and two independently
 pinned receipts as a fresh instance file in this form.
 

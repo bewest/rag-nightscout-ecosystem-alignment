@@ -1,6 +1,8 @@
 """Frozen owner inputs and per-allocation preflight are independent contracts."""
 import copy
+import json
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 from types import SimpleNamespace
@@ -48,6 +50,55 @@ class Frozen(unittest.TestCase):
             self.assertEqual(frozen.source(self.manifest),baseline)
         with self.assertRaisesRegex(ValueError, 'EVIDENCE_CHANGED'):
             frozen.source(dict(self.manifest, sourceReceipt=dict(self.manifest['sourceReceipt'],sha256='0'*64)))
+
+    def test_ack_budget_binds_package_and_changes_only_ack_field(self):
+        manifest = {**self.manifest, frozen.ACK_BUDGET: 60000}
+        selected = frozen.source(manifest)
+        baseline = frozen.source(self.manifest)
+        self.assertEqual(selected, {**baseline, frozen.ACK_BUDGET: 60000})
+        for invalid in (0, True, 1.5, 2**63):
+            with self.assertRaisesRegex(ValueError, 'PGSTREAM_ACK_BUDGET'):
+                frozen.source({**manifest, frozen.ACK_BUDGET: invalid})
+        selected['nativeCatalogueSha256'] = '7'*64
+        with self.assertRaisesRegex(ValueError, 'PGSTREAM_ACK_UNDECLARED'):
+            frozen.contract(self.manifest, selected)
+        wrong = {**selected, frozen.ACK_BUDGET: 10000}
+        with self.assertRaisesRegex(ValueError, 'CONTRACT_SOURCE_CHANGED'):
+            frozen.contract(manifest, wrong)
+        script = self.root/'scripts/secrets.sh'
+        script.parent.mkdir()
+        script.write_text('''#!/usr/bin/env bash
+publish() {
+  test -f "$work/primer/expected-verification.json"
+  k create secret generic ns-config-pgstream --from-file=pgstream.yaml="$work/pgstream/pgstream.yaml" >/dev/null
+  k wait --for=condition=complete job/provision --timeout=30s >/dev/null
+}
+''')
+        experiment.bind_ack_publisher(self.root, selected)
+        subprocess.run(['bash', '-n', script], check=True)
+        self.assertIn('pgstream.effective.yaml', script.read_text())
+        with self.assertRaisesRegex(k.Refused, 'PGSTREAM_ACK_PUBLISHER_CHANGED'):
+            experiment.bind_ack_publisher(self.root, selected)
+        source = self.root/'wire.json'
+        config = dict(source=dict(publicSyntheticFixture=True),target=dict(webhooks=dict(notifier=dict(
+            client_timeout=2000, worker_count=1, strict_mode=True,
+            backoff=dict(constant=dict(max_retries=1,interval=50)),transaction_batch=dict(max_rows=4000)))))
+        k.write(source, config)
+        contract = self.ref('contract.json', selected)
+        output = self.root/'effective.yaml'
+        command = ['python3', '-B', str(self.root/frozen.ACK_PACKAGE[0]), contract['path'], str(source), str(output)]
+        evidence = json.loads(subprocess.check_output(command))
+        self.assertEqual(evidence, {'sourceTimeoutMs': 2000, 'effectiveTimeoutMs': 60000,
+                                   'sourceWireSha256': k.digest(source), 'effectiveWireSha256': k.digest(output),
+                                   'sourceContractSha256': contract['sha256']})
+        result = k.document(output)
+        result['target']['webhooks']['notifier']['client_timeout'] = 2000
+        self.assertEqual(result, config)
+        self.assertEqual(k.document(source), config)
+        self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+        duplicate = subprocess.run(command, capture_output=True)
+        self.assertNotEqual(duplicate.returncode, 0)
+        self.assertEqual(duplicate.stderr.strip(), b'K8S_PGSTREAM_ACK_PUBLISH_FAILED')
 
     def test_independent_registry_bytes(self):
         receipts = {name:self.ref(name, dict(schemaVersion=2,mediaType='application/vnd.oci.image.manifest.v1+json',

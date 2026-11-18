@@ -20,7 +20,7 @@ DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tena
 def legacy(m,target='kubernetes'):
     if m.get('kind')=='k8s-frozen-experiment':return copy.deepcopy(m)
     frozen.require(m.get('kind')=='multitenant-experiment' and m.get('version')==1 and
-        set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','tier'},'MANIFEST')
+        set(m)<= {'version','kind','application','profile','topology','deploymentJobs','local','tier',frozen.ACK_BUDGET},'MANIFEST')
     app=m['application']
     frozen.require(set(app)<= {'sourceReceipt','buildReceipt','bindingCommit','postgresImageId','bootstrapHelper'},'APPLICATION_FIELDS')
     topology=m['topology']
@@ -32,6 +32,7 @@ def legacy(m,target='kubernetes'):
         frozen.require(topology=={'apiReplicas':1,'evaluatorWorkers':1,'pgstreamTopology':'external'},'KUBERNETES_TOPOLOGY_UNSUPPORTED')
     return dict(version=1,kind='k8s-frozen-experiment',**copy.deepcopy(app),profile=copy.deepcopy(m['profile']),
                 **({'tier': m['tier']} if 'tier' in m else {}),
+                **({frozen.ACK_BUDGET: m[frozen.ACK_BUDGET]} if frozen.ACK_BUDGET in m else {}),
                 **({'deploymentJobs':copy.deepcopy(m['deploymentJobs'])} if 'deploymentJobs'in m else {}))
 
 def local(m,instance):
@@ -41,6 +42,10 @@ def local(m,instance):
     frozen.require(not (set(options)&(DERIVED|FRESH)),'DUPLICATE_LOCAL_FACT')
     fresh=instance['prepare'];frozen.require(set(fresh)<=FRESH,'INSTANCE_FIELDS')
     options.update(fresh)
+    if frozen.ACK_BUDGET in selected:
+        frozen.require(m['topology']['pgstreamTopology']=='external', 'PGSTREAM_ACK_TOPOLOGY')
+        frozen.require('pgstream-notifier-ack-timeout-ms' not in options, 'DUPLICATE_LOCAL_FACT')
+        options['pgstream-notifier-ack-timeout-ms'] = selected[frozen.ACK_BUDGET]
     p=profile.validate(dict(original['profile'],referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=original['bindingCommit'])))
     w=p['workload'];t=m['topology']
     options.update({'core-commit':selected['coreCommit'],'deploy-commit':selected['deployCommit'],

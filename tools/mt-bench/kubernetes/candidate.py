@@ -1,8 +1,10 @@
 """Downstream proof for a candidate that requires private admin verification."""
 from datetime import datetime, timezone
+import hashlib
 import json
 import re
 import time
+from producer_wire import ACK_BUDGET, WIRE_DIRECTORY, WIRE_NAME, valid_timeout
 
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
@@ -26,6 +28,17 @@ def pins(k, c, inventory, objects):
     k.need(contract.get('coreCommit') == runtime['pair']['core'] and contract.get('deployCommit') == runtime['pair']['deploy'] and
            contract.get('localImageId') == runtime['appImageId'] and all(contract.get(key) == selected[key] for key in FIELDS),
            'CANDIDATE_SOURCE_IMAGE_CHANGED')
+    k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
+    if ACK_BUDGET in contract:
+        receipt = c['producerAckReadback']
+        k.need(isinstance(receipt, dict) and valid_timeout(contract[ACK_BUDGET])
+               and valid_timeout(receipt.get('sourceTimeoutMs'))
+               and receipt.get('sourceContractSha256') == hashlib.sha256(overlay['source-contract.json'].encode()).hexdigest()
+               and receipt.get('effectiveTimeoutMs') == contract[ACK_BUDGET]
+               and all(isinstance(receipt.get(key), str) and k.HEX.fullmatch(receipt[key])
+                       for key in ('sourceWireSha256', 'effectiveWireSha256'))
+               and receipt.get('runId') == c['runId'] and receipt.get('namespace') == c['namespace'],
+               'PGSTREAM_ACK_READBACK_CHANGED')
     k.need(re.fullmatch(r'sha256:[a-f0-9]{64}', runtime.get('postgresImageId', '')) and
            re.fullmatch(r'[^\s@]+@sha256:[a-f0-9]{64}', runtime.get('postgresImage', '')) and
            runtime['postgresImage'] == inventory.get('images', {}).get('postgres'), 'CANDIDATE_POSTGRES_IMAGE_CHANGED')
@@ -86,6 +99,12 @@ def observe(k, d, c, objects, client):
     file = d / 'candidate-verification.json'
     k.need('candidate' in c['pins'] and not file.exists(), 'CANDIDATE_PROOF_CAPTURE_REQUIRED')
     before = k.observe(c, objects, client, k.active_baseline(d))
+    if 'producerAckReadback' in c:
+        name, container = verify_ack_owner(k, c, before)
+        wire = WIRE_DIRECTORY + '/' + WIRE_NAME
+        digest = client.call(['exec', name, '-c', container, '--', 'sha256sum', wire], read=False)
+        expected = [c['producerAckReadback']['effectiveWireSha256'].encode(), wire.encode()]
+        k.need(digest.split() == expected, 'PGSTREAM_ACK_WIRE_CHANGED')
     primer = [p for p in before['pods'].values() if p['workload'] == 'Job/primer' and p['containers'].get('done', {}).get('ready')]
     k.need(len(primer) == 1, 'CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED')
     pod = primer[0]
@@ -116,9 +135,21 @@ def require(k, d, c):
     k.need(file.is_file(), 'CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED')
     value = k.document(file)
     baseline = k.active_baseline(d)
+    verify_ack_owner(k, c, baseline)
     prim = [p for p in baseline['pods'].values() if p['workload'] == 'Job/primer']
     k.need(len(prim) == 1 and value.get('namespaceUid') == baseline['namespace']['uid'] and
            value.get('runSha256') == k.digest(d / 'run.json') and value.get('primerPodUid') == prim[0]['uid'] and
            value.get('primerContainerId') == prim[0]['containers']['done']['containerID'] and
            value.get('adminServiceUid') == baseline['objects']['Service/admin']['uid'], 'CANDIDATE_FIXTURE_CHANGED')
     proof(k, c, value.get('proof'), now=k.timestamp(value.get('capturedAt', '')))
+
+
+def verify_ack_owner(k, c, observed):
+    receipt = c.get('producerAckReadback')
+    if receipt is None:
+        return
+    name, container = k.selected_pod(c, observed, 'pgstream')
+    pod = observed['pods'][name]
+    k.need(receipt['namespaceUid'] == observed['namespace']['uid'] and receipt['podUid'] == pod['uid']
+           and receipt['containerId'] == pod['containers'][container]['containerID'], 'PGSTREAM_ACK_OWNER_CHANGED')
+    return name, container

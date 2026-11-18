@@ -1,6 +1,10 @@
 import copy
 import json
+from pathlib import Path
+import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import kube_adapter as k
 import candidate
@@ -8,6 +12,22 @@ from test_adapter import fixture
 
 
 class CandidateControls(unittest.TestCase):
+    def test_ack_readback_binds_the_owned_running_container(self):
+        c = {'pins': {'candidate': {}}, 'roles': {'pgstream': {'workload': 'Deployment/pgstream', 'container': 'pgstream'}},
+             'producerAckReadback': {'namespaceUid': 'owned', 'podUid': 'pod', 'containerId': 'stream',
+                                     'effectiveWireSha256': 'a'*64}}
+        observed = {'namespace': {'uid': 'owned'}, 'pods': {'stream-pod': {
+            'name': 'stream-pod', 'uid': 'pod', 'workload': 'Deployment/pgstream',
+            'containers': {'pgstream': {'ready': True, 'containerID': 'stream'}}}}}
+        self.assertEqual(candidate.verify_ack_owner(k, c, observed), ('stream-pod', 'pgstream'))
+        with tempfile.TemporaryDirectory() as tmp, patch.object(k, 'observe', return_value=observed), \
+                patch.object(k, 'active_baseline', return_value=observed):
+            with self.assertRaisesRegex(k.Refused, 'PGSTREAM_ACK_WIRE_CHANGED'):
+                candidate.observe(k, Path(tmp), c, {}, SimpleNamespace(call=lambda *a, **kw: b'wrong'))
+        observed['pods']['stream-pod']['containers']['pgstream']['containerID'] = 'replacement'
+        with self.assertRaisesRegex(k.Refused, 'PGSTREAM_ACK_OWNER_CHANGED'):
+            candidate.verify_ack_owner(k, c, observed)
+
     def test_source_config_and_actual_image(self):
         c, inv, *_ = fixture()
         p = c['pins']
