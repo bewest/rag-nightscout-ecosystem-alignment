@@ -2169,8 +2169,17 @@ def sample_context(d,m):
     write(d/'image-dependency-contexts.json',contexts)
     if m.get('staticTopology'):static_runtime_contract(d,m)
     evaluator=document(d/'state/evaluator/config.json');realtime=document(d/'state/realtime/config.json')
-    code="const o=require(process.argv[1]);const fs=require('fs');console.log(JSON.stringify(o.source(JSON.parse(fs.readFileSync(process.argv[2])),JSON.parse(fs.readFileSync(process.argv[3])),JSON.parse(process.argv[4]))));"
-    completion=json.loads(command(['node','-e',code,HERE/'completed-oracle.cjs',d/'state/evaluator/config.json',d/'state/realtime/config.json',json.dumps({'kind':m.get('completionContract'),'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']})]))
+    receipt=None
+    if evaluator.get('pgstream',{}).get('generation'):
+        inputs={'evaluator':evaluator,'realtime':realtime,'operation':document(d/'state/evaluator/operation.json'),
+                'checkpoints':document(d/'state/admin/config.json')['provisioning']['checkpoints']}
+        receipt_code=(HERE/'native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.capture('/opt/app',"+json.dumps(inputs)+")));"
+        role=next((name for name,row in m.get('servingInstances',{}).items() if row['role']=='evaluator'),'evaluator')
+        receipt=json.loads(compose(d,'exec','-T','--workdir','/opt/app',role,'node','-',input=receipt_code.encode()))
+        require(isinstance(receipt,dict),'M7_COMPLETION_RECEIPT_REQUIRED')
+        write(d/'native-receipt-source.json',receipt)
+    code="const o=require(process.argv[1]);const fs=require('fs');console.log(JSON.stringify(o.source(JSON.parse(fs.readFileSync(process.argv[2])),JSON.parse(fs.readFileSync(process.argv[3])),JSON.parse(process.argv[4]),JSON.parse(process.argv[5]))));"
+    completion=json.loads(command(['node','-e',code,HERE/'completed-oracle.cjs',d/'state/evaluator/config.json',d/'state/realtime/config.json',json.dumps({'kind':m.get('completionContract'),'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']}),json.dumps(receipt)]))
     sql_roles=sql_attribution.identities(evaluator,[document(d/'state'/role/'env.json') for role in ('evaluator','realtime')])
     observed_roles=psql(d,'SELECT rolname FROM pg_roles;').splitlines()
     require({role for values in sql_roles.values() for role in values}<=set(observed_roles),'M7_SQL_ROLE_MISSING')

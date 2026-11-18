@@ -276,6 +276,8 @@ try:
         (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
         for role in ('evaluator','realtime'):
             (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
+        receipt_code=(inst/'tools/mt-bench/m7-joined/native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.captureFiles('/opt/app','/state')));"
+        (live/'native-receipt-source.private.json').write_bytes(execpod(provision,'done',['node','-e',receipt_code]))
     with startup_window('secret-publish',waits['secretPublishSeconds']):
         published=command(['bash',secret_script,'publish',ns,'unused'],timeout=waits['secretPublishSeconds'],private=True)
     if frozen.PRIMER_STORAGE in selected_source:
