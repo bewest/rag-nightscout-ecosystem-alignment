@@ -30,6 +30,7 @@ M7 = HERE.parent / 'm7-joined'
 sys.modules.setdefault('kube_adapter', sys.modules[__name__])
 sys.path.insert(0, str(M7))
 import candidate
+import owned_worker
 import frozen
 import discovery_counts
 import evaluator_progress
@@ -240,6 +241,7 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         preload.selection(c['preloadConvergence'])
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
+    owned_worker.packet(c, inventory, objs, need, cleanup=cleanup)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
         need(isinstance(c.get('edgeConfiguration'),dict),'EDGE_CONFIGURATION_CHANGED')
         edge=edge_configuration.check({'edge':c['edgeConfiguration'].get('requested')},inventory,objs,need)
@@ -320,7 +322,7 @@ class Client:
         self.c, self.run = c, run
 
     def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024,
-             response_sink=None):
+             response_sink=None, owned_worker_view=False):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -330,6 +332,11 @@ class Client:
         binary = 'kubectl' if read else c['kubectl']
         argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout=15s', *args]
         env = dict(os.environ, PATH=str(Path(c['kubectl']).parent) + os.pathsep + os.environ.get('PATH', ''), RO_ALLOW_SENSITIVE='1')
+        if owned_worker_view:
+            need(read and owned_worker.FIELD in c, 'OWNED_WORKER_VIEW_SCOPE')
+            env.update(RO_OWNED_WORKER_VIEW='1', RO_NO_LOG='1')
+        else:
+            env.pop('RO_OWNED_WORKER_VIEW', None)
         need(Path(shutil.which('kubectl', path=env['PATH']) or '/missing').resolve() == Path(c['kubectl']).resolve(), 'PINNED_KUBECTL_REQUIRED')
         try:
             result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -647,6 +654,13 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         if baseline is not None:
             need(baseline.get('bootstrapHelper', {}).get('configMapUid') == result['bootstrapHelper']['configMapUid'],
                  'BOOTSTRAP_HELPER_UID_CHANGED')
+    if not cleanup and (worker := c.get(owned_worker.FIELD)):
+        need(worker['namespaceUid'] == result['namespace']['uid'], 'OWNED_WORKER_NAMESPACE_UID_CHANGED')
+        selection = worker['selection']
+        def guarded_worker_get(argv):
+            return json.loads(client.call(argv, owned_worker_view=True))
+        result[owned_worker.FIELD] = owned_worker.live(selection, worker['infrastructure'],
+            [owned_worker.identity(pod, need) for pod in pods], guarded_worker_get, need)
     if not cleanup and phase_fit.FIELD in c:
         try:
             import phase_source_private

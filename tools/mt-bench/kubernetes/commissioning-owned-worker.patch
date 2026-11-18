@@ -1,0 +1,185 @@
+--- a/ops/bin/ro
++++ b/ops/bin/ro
+@@ -173,6 +173,11 @@
+   | perl -0777 -pe 's/("name"\s*:\s*"[^"]*(?:SECRET|PASSWORD|PASSWD|TOKEN|KEY|CONNECTION|MONGO|DATABASE_URL|_URI)[^"]*"\s*,\s*"value"\s*:\s*")(?:[^"\\]|\\.)*/$1<redacted>/gi'
+ }
+
++if [ "${RO_OWNED_WORKER_VIEW:-}" = 1 ]; then
++  [ "$tool" = kubectl ] && [ "${RO_NO_LOG:-}" = 1 ] || die "owned worker projection requires a private kubectl read"
++  exec python3 -B "$ops/staging-k8s/bin/owned_worker_view.py" "$@"
++fi
++
+ ctx=""
+ case "$tool" in
+   kubectl|tk)
+--- a/ops/staging-k8s/bin/collect.py
++++ b/ops/staging-k8s/bin/collect.py
+@@ -1,9 +1,9 @@
+ #!/usr/bin/env python3
+ """Read-only, private staging snapshot; all API calls cross ops/bin/ro."""
+-import argparse, concurrent.futures, datetime, json, os, pathlib, subprocess, time
++import argparse, concurrent.futures, datetime, json, os, pathlib, re, subprocess, time
+ ROOT = pathlib.Path(__file__).resolve().parents[2]
+ CTX = 'do-sfo2-do-helloworld'
+-p=argparse.ArgumentParser(); p.add_argument('--out',required=True); p.add_argument('--kubectl-dir',required=True); a=p.parse_args()
++p=argparse.ArgumentParser(); p.add_argument('--out',required=True); p.add_argument('--kubectl-dir',required=True); p.add_argument('--owned-worker-node'); a=p.parse_args()
+ out=pathlib.Path(a.out); out.mkdir(parents=True,exist_ok=False); out.chmod(0o700)
+ env={**os.environ,'RO_NO_LOG':'1','RO_ALLOW_SENSITIVE':'1','PATH':a.kubectl_dir+os.pathsep+os.environ['PATH']}
+ k=['kubectl','--context',CTX,'--request-timeout=30s']
+@@ -23,10 +23,15 @@
+  'pools':['doctl','kubernetes','cluster','node-pool','list','do-helloworld','--context','default','-o','json'],
+  'registry':['doctl','registry','get','--context','default','-o','json'],
+ }
++env.pop('RO_OWNED_WORKER_VIEW',None)
++if a.owned_worker_node is not None:
++ if not re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?',a.owned_worker_node):
++  p.error('invalid owned worker node name')
++ queries['owned-node']=k+['get','node',a.owned_worker_node,'-o','json']
+ def run(item):
+  name,args=item
+  try:
+-  r=subprocess.run([str(ROOT/'bin/ro'),*args],env=env,text=True,capture_output=True,timeout=70)
++  r=subprocess.run([str(ROOT/'bin/ro'),*args],env=dict(env,RO_OWNED_WORKER_VIEW='1') if name=='owned-node' else env,text=True,capture_output=True,timeout=70)
+   text=r.stdout; data=None
+   if r.returncode==0:
+    try: data=json.loads(text)
+--- a/ops/staging-k8s/overlay.libsonnet
++++ b/ops/staging-k8s/overlay.libsonnet
+@@ -3,6 +3,14 @@
+ local own = { 'nightscout.org/run-id': e.runId };
+ local cleanup = { 'nightscout.org/cleanup-owner': e.cleanupOwner };
+ local mode = if std.objectHas(e, 'resourceAccounting') then e.resourceAccounting else 'limits-v1';
++local ownsWorker = std.objectHas(e, 'ownedWorkerPlacement');
++local workerSpec(spec) =
++  assert !std.objectHas(spec, 'nodeSelector') || spec.nodeSelector == {} : 'AUTHORED_NODE_SELECTOR';
++  assert !std.objectHas(spec, 'tolerations') || spec.tolerations == [] : 'AUTHORED_TOLERATIONS';
++  {
++    nodeSelector: { 'nightscout.org/staging-run': e.ownedWorkerPlacement.runId },
++    tolerations: [{ key: 'nightscout.org/staging-run', operator: 'Equal', value: e.ownedWorkerPlacement.runId, effect: 'NoSchedule' }],
++  };
+ local base = binding.new({
+   namespace: e.namespace,
+   sourceCommit: e.sourceCommit,
+@@ -28,11 +36,11 @@
+   else if std.objectHas(x, 'apiVersion') && std.objectHas(x, 'kind') then
+     x + { metadata+: { labels+: own, annotations+: cleanup } } +
+     (if std.member(['StatefulSet','Deployment','Job'], x.kind) then
+-      { spec+: { template+: { metadata+: { labels+: own, annotations+: cleanup } } } }
++      { spec+: { template+: { metadata+: { labels+: own, annotations+: cleanup } } + (if ownsWorker then { spec+: workerSpec(x.spec.template.spec) } else {}) } }
+      else {})
+   else { [k]: mark(x[k]) for k in std.objectFields(x) };
+ mark(base) + {
+-  inventory:: base.inventory + { cleanupOwner: e.cleanupOwner, targetNode: e.targetNode, workDeadlineSeconds: e.workDeadlineSeconds, cleanupDeadlineSeconds: e.cleanupDeadlineSeconds },
++  inventory:: base.inventory + { cleanupOwner: e.cleanupOwner, targetNode: e.targetNode, workDeadlineSeconds: e.workDeadlineSeconds, cleanupDeadlineSeconds: e.cleanupDeadlineSeconds } + (if ownsWorker then { ownedWorkerPlacement: e.ownedWorkerPlacement } else {}),
+   quota: {
+     apiVersion: 'v1', kind: 'ResourceQuota',
+     metadata: { name: 'commissioning-envelope', namespace: e.namespace, labels: own, annotations: cleanup },
+--- a/ops/staging-k8s/bin/preflight.py
++++ b/ops/staging-k8s/bin/preflight.py
+@@ -101,6 +101,11 @@
+
+ def static(env,tree):
+  mode=accounting(env)
++ worker=None
++ if 'ownedWorkerPlacement' in env:
++  import owned_worker
++  worker=owned_worker.placement(env['ownedWorkerPlacement'],env['runId'],need)
++  need(env['targetNode']==worker['nodeName'] and not env.get('placementByWorkload'),'OWNED_WORKER_SINGLE_NODE')
+  need(env['context']==CONTEXT,'wrong kube context')
+  need(env['namespace'].startswith('ns-synth-'),'namespace must be synthetic lane owned')
+  need(bool(re.fullmatch(r'[a-zA-Z0-9._-]+',env.get('cleanupOwner',''))),'missing cleanup ownership')
+@@ -180,6 +185,7 @@
+   need(tm.get('labels',{}).get('nightscout.org/run-id')==env['runId'] and tm.get('annotations',{}).get('nightscout.org/cleanup-owner')==env['cleanupOwner'],'missing Pod cleanup ownership')
+   expected_node=env.get('placementByWorkload',{}).get(name,{}).get('nodeName',env['targetNode'])
+   need(spec.get('nodeName')==expected_node and bool(expected_node),'existing node binding omitted')
++  if worker is not None:owned_worker.pod_spec(worker,spec,need)
+   need(not spec.get('hostNetwork') and not spec.get('hostPID') and not spec.get('hostIPC'),'host access refused')
+   if k in ('Deployment','StatefulSet'):need(obj['spec']['replicas']==1,'cohort/workload must have one replica')
+   need(not obj['spec'].get('volumeClaimTemplates'),'dynamic storage refused')
+@@ -218,13 +224,20 @@
+   import phase_fit
+   phase_fit.decorate(trial,env,docs,need)
+  return trial
+-def headroom(snapshot,trial,target=None):
++def headroom(snapshot,trial,target=None,*,owned=None):
+  mode,budget=accounted_budget(trial)
+  full_budget=budget
+  if 'phaseAdmission' in trial:
+   import phase_fit
+   budget=phase_fit.fit_budget(trial,full_budget,need)
+- p=pathlib.Path(snapshot);nodes=json.loads((p/'nodes.json').read_text())['items'];pods=json.loads((p/'pods.json').read_text())['items']
++ p=pathlib.Path(snapshot)
++ if owned is None:
++  nodes=json.loads((p/'nodes.json').read_text())['items'];pods=json.loads((p/'pods.json').read_text())['items']
++ else:
++  import owned_worker
++  after=owned_worker.document_ref(owned['selection']['proof'],need)['after']
++  nodes=owned_worker.listed(owned_worker.document_ref(after['nodes'],need),need)
++  pods=owned_worker.listed(owned_worker.document_ref(after['pods'],need),need)
+  usage={}
+  for file in sorted(p.glob('usage*.txt')):
+   for line in file.read_text().splitlines():
+@@ -246,7 +259,8 @@
+    unbounded+=sum(not c.get('resources',{}).get('limits',{}).get('memory') for c in pod['spec'].get('containers',[]))
+   reserve={'cpu':max(.25,a['cpu']*.15),'memory':max(512*1024**2,a['memory']*.2),'ephemeral-storage':max(10*1024**3,a['ephemeral-storage']*.2)}
+   actual=usage.get(name);df=disk.get(name); reasons=[]
+-  if cond.get('Ready')!='True' or any(cond.get(c)!='False' for c in ('MemoryPressure','DiskPressure','PIDPressure','NetworkUnavailable')) or node['spec'].get('unschedulable') or node['spec'].get('taints'):reasons.append('node health/pressure/taint')
++  if cond.get('Ready')!='True' or any(cond.get(c)!='False' for c in ('MemoryPressure','DiskPressure','PIDPressure','NetworkUnavailable')) or node['spec'].get('unschedulable') or (node['spec'].get('taints') and not
++     (owned is not None and name==owned['selection']['nodeName'] and node['metadata']['uid']==owned['selection']['nodeUid'])):reasons.append('node health/pressure/taint')
+   if actual is None:reasons.append('usage UNMEASURED')
+   else:
+    for d in ('cpu','memory'):
+@@ -273,8 +287,20 @@
+ def main():
+  p=argparse.ArgumentParser();p.add_argument('--environment',required=True);p.add_argument('--rendered',required=True);p.add_argument('--snapshot',required=True);p.add_argument('--mode',choices=('offline','commission'),default='offline');p.add_argument('--image-receipt');p.add_argument('--out');a=p.parse_args()
+  try:
+-  e=json.loads(pathlib.Path(a.environment).read_text());tree=json.loads(pathlib.Path(a.rendered).read_text());trial=static(e,tree);rows=placed_headroom(a.snapshot,trial) if len(trial['placementEnvelopes'])>1 else headroom(a.snapshot,trial,e['targetNode'] if a.mode=='commission' else None)
++  e=json.loads(pathlib.Path(a.environment).read_text());tree=json.loads(pathlib.Path(a.rendered).read_text());trial=static(e,tree)
++  proof=None
++  if 'ownedWorkerPlacement' in e:
++   import owned_worker
++   proof=owned_worker.prove(e['ownedWorkerPlacement'],e,a.snapshot,need,fresh=True)
++  rows=placed_headroom(a.snapshot,trial) if len(trial['placementEnvelopes'])>1 else headroom(
++      a.snapshot,trial,e['targetNode'] if a.mode=='commission' or proof else None,owned=proof)
+   verdict={'offline':'PASS','trialEnvelope':trial,'workers':rows,'commissioning':'UNMEASURED','limits':['No capacity reservation. Peer bursts remain possible.','Backing-store Pod replacement durability is UNMEASURED.','Cluster network-policy enforcement remains UNMEASURED.']}
++  if proof is not None:
++   selected=pathlib.Path(__file__).resolve()
++   stage=selected.parents[1]
++   pins=owned_worker.source_pins(stage.parent/'bin/ro',selected,stage/'overlay.libsonnet',
++                                selected.with_name('owned_worker.py'),selected.with_name('owned_worker_view.py'))
++   verdict['ownedWorkerAdmission']={'proof':proof,'source':pins}
+   if 'experimentManifest' in e:
+    import frozen
+    manifest=frozen.read_ref(e['experimentManifest'])
+@@ -292,6 +318,6 @@
+   output=json.dumps(verdict,indent=2)
+   if a.out:pathlib.Path(a.out).write_text(output+'\n')
+   print(output);return 0
+- except (Refused,KeyError,ValueError,FileNotFoundError) as ex:
++ except (Refused,KeyError,ValueError,FileNotFoundError,ImportError) as ex:
+   print(json.dumps({'status':'REFUSED','reason':str(ex)}));return 3
+ if __name__=='__main__':sys.exit(main())
+--- a/prepare-private-case.py
++++ b/prepare-private-case.py
+@@ -16,6 +16,7 @@
+ parser.add_argument('--provision',type=int,required=True)
+ parser.add_argument('--cleanup',type=int,required=True)
+ parser.add_argument('--commissioner',type=Path)
++parser.add_argument('--owned-worker-placement',type=Path)
+ parser.add_argument('--requests-v1',action='store_true')
+ parser.add_argument('--requests-file',type=Path)
+ parser.add_argument('--receiver-trace',action='store_true')
+@@ -72,6 +73,13 @@
+                    experimentManifest=ref(out/'intent.json'),experimentBindingReceipt=ref(binding),
+                    workDeadlineSeconds=args.work,provisionDeadlineSeconds=args.provision,cleanupDeadlineSeconds=args.cleanup,
+                    tenantCount=intent['profile']['population']['provisionedTenants'])
++if args.owned_worker_placement:
++    import owned_worker
++    worker = owned_worker.placement(read(args.owned_worker_placement), name)
++    assert not environment.get('placementByWorkload'), 'OWNED_WORKER_SINGLE_NODE'
++    environment.update(ownedWorkerPlacement=worker, targetNode=worker['nodeName'])
++else:
++    assert 'ownedWorkerPlacement' not in environment, 'OWNED_WORKER_UNDECLARED'
+ environment['images']['app']=delivery['targetReference'] if args.planned_delivery else delivery['app']
+ assert delivery['appImageId']==selected['localImageId']
+ assert args.work>intent['profile']['phases']['workSeconds'], 'INSUFFICIENT_ATTACH_WINDOW'

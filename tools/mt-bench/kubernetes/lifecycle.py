@@ -11,6 +11,7 @@ import frozen
 import primer_storage
 import producer_startup
 import phase_fit
+import owned_worker
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 cfg=fixture_config(Path(sys.argv[1]))
@@ -25,13 +26,13 @@ assert e['runId']==d.name and ns.startswith('ns-synth-'),'INSTANCE_IDENTITY_CHAN
 live=d/'runtime';live.mkdir(mode=0o700,exist_ok=True);assert not any(live.iterdir()),'ENTERED_OUTPUT_EXISTS'
 def put(n,obj):(live/n).write_text(json.dumps(obj,indent=2)+'\n')
 def timestamp():return dt.datetime.now(dt.timezone.utc).isoformat()
-def command(argv,data=None,timeout=None,private=False):
+def command(argv,data=None,timeout=None,private=False,worker_view=False):
     rem=cleanup-time.time() if cleaning else work-time.time()
     if not cleaning and phase_cutoff is not None:
         rem=min(rem,phase_cutoff-time.time())
     assert rem>0,'CUTOFF'
     if timeout is None:timeout=18 if cleaning else waits['commandSeconds']
-    q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,timeout=min(timeout,rem),env=env)
+    q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,timeout=min(timeout,rem),env=dict(env, RO_OWNED_WORKER_VIEW='1') if worker_view else env)
     if q.returncode:
         import re
         codes=sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b',q.stderr+q.stdout)))
@@ -39,6 +40,9 @@ def command(argv,data=None,timeout=None,private=False):
         raise RuntimeError('PRIVATE_STEP_FAILED' if private else 'STAGE_COMMAND_FAILED')
     return q.stdout
 env={**os.environ,'PATH':str(tool)+':'+os.environ['PATH'],'TMPDIR':str(live),'NS_KUBE_CONTEXT':ctx,'NS_RUN_ID':rid,'RO_NO_LOG':'1','PYTHONDONTWRITEBYTECODE':'1'}
+env.pop('RO_OWNED_WORKER_VIEW', None)
+if cfg.get('ownedWorkerPreflight'):
+    env['RO_ALLOW_SENSITIVE'] = '1'
 rpc=[tool/'kubectl','--context',ctx,'--request-timeout='+str(waits['requestSeconds'])+'s']
 start=time.time();work=start+e['workDeadlineSeconds'];cleanup=start+e['cleanupDeadlineSeconds'];cleaning=False
 phase_cutoff=None
@@ -78,8 +82,31 @@ def step(stage):
     global current
     current=stage
     events.append({'stage':stage,'time':timestamp()});put('stages.json',events)
+def check_worker():
+    worker = cfg.get('ownedWorkerPreflight')
+    if worker is None:
+        return
+    def guarded_get(argv, worker_view=True):
+        prefix = [cfg['readonlyGuard'], 'kubectl', '--context', ctx,
+                  '--request-timeout='+str(waits['requestSeconds'])+'s']
+        return json.loads(command(prefix+argv, private=True, worker_view=worker_view))
+    selection = worker['proof']['selection']
+    fixture = []
+    if nsuid is not None:
+        owned()
+        all_pods = guarded_get(['get','pods','-n',ns,'--chunk-size=0','-o','json'], False)
+        replicas = guarded_get(['get','replicasets','-n',ns,'--chunk-size=0','-o','json'], False)
+        fixture = owned_worker.stage_pods(selection, ns, all_pods, replicas, uids)
+    observation = owned_worker.live(selection, worker['proof']['infrastructure'], fixture, guarded_get)
+    if nsuid is not None:
+        owned()
+    put('owned-worker-last.json', {**observation, 'stage': current, 'namespaceUid': nsuid, 'time': timestamp()})
+
+
 def install(stage):
     step(stage);owned()
+    if cfg.get('ownedWorkerPreflight'):
+        check_worker()
     if cfg.get('resourcePhasePreflight') and stage in ('private-admin','primer','serving'):
         confirm_provision_retirement()
     for obj in objects(stage):
@@ -217,6 +244,9 @@ def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signu
 signal.signal(signal.SIGTERM,interrupted)
 put('deadlines.json',{'workUntil':dt.datetime.fromtimestamp(work,dt.timezone.utc).isoformat(),'cleanupUntil':dt.datetime.fromtimestamp(cleanup,dt.timezone.utc).isoformat()})
 try:
+    if worker := cfg.get('ownedWorkerPreflight'):
+        owned_worker.prove(worker['proof']['selection'], e, raw, fresh=True)
+        check_worker()
     node=create(objects('namespace')[0]);nsuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid})
     owned();node=create(trust);trustuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid,'trustName':tn,'trustUid':trustuid})
     install('foundation')
@@ -282,6 +312,7 @@ try:
     install('private-admin');workload_ready('private-admin')
     install('primer');pobj=get('job','primer')
     assert pobj['spec']['suspend'] is True
+    check_worker()
     k(['patch','job','primer','-n',ns,'--type=json','-p',json.dumps([{'op':'test','path':'/metadata/uid','value':pobj['metadata']['uid']},{'op':'test','path':'/spec/suspend','value':True},{'op':'replace','path':'/spec/suspend','value':False}])])
     primer_seconds=min(waits['primerReadySeconds'],pobj['spec']['activeDeadlineSeconds'])
     with startup_window('primer',primer_seconds):
@@ -315,6 +346,7 @@ try:
         put('producer-ack-readback.json',{**ack_wire,'runId':rid,'namespace':ns,'namespaceUid':nsuid,
                                         'podUid':latest['uid'],'containerId':container['containerID']})
     step('attach released runtime')
+    check_worker()
     if cfg.get('resourcePhasePreflight'):confirm_provision_retirement()
     limits=cfg['nativeLimits']
     command(['systemd-run','--user','--scope','--quiet','--unit=ns-'+rid+'-native',
