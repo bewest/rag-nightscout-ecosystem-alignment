@@ -43,8 +43,12 @@ Local signal coverage includes sparse client and durable-output latency,
 fixed-boundary evaluator drain, PostgreSQL statements and execution time per
 unit, sampled lock-wait fraction and load-window CPU as a fraction of the
 configured role quota. Kubernetes catalog coverage depends on the retained
-packet's instruments. Pooled scenario latency remains `UNMEASURED` where the
-retained output contains shard percentiles without a pooled distribution.
+packet's instruments. The catalog pools retained configured k6 scenario
+samples from every shard when each shard's timing sample count reconciles with
+its completed HTTP accounting. The histogram reports the 1 ms upper bound
+of the nearest-rank p95 and includes scenario completions during the configured
+drain. JWT setup is excluded. Pooled latency remains `UNMEASURED` when trace
+data is missing, cannot be reconciled, or exceeds the catalog's trace budget.
 
 ```bash
 python3 -m unittest discover -s tools/mt-bench/run-catalog -v

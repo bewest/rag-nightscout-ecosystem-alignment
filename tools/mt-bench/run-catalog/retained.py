@@ -1,10 +1,14 @@
 """Project allowlisted aggregates from retained local and Kubernetes run files."""
 
+import csv
 import hashlib
 import json
 import math
-import re
 from pathlib import Path
+import re
+import zlib
+
+import latency
 
 SHA = re.compile(r"[a-f0-9]{64}")
 COMMIT = re.compile(r"[a-f0-9]{40}")
@@ -244,7 +248,7 @@ def local_sql(signals, evidence, windows, scenario, summary, info):
                 [info, rt_file] if role == "realtime" else [info], size)
 
 
-def local_signals(evidence, summary, owner):
+def local_signals(evidence, summary, owner, driver):
     signals = {}
     info = "fixture/summary.json"
     probe_path = "fixture/load/probe.json"
@@ -288,6 +292,8 @@ def local_signals(evidence, summary, owner):
                 get(latency, "p95"), "ms", "per-shape scenario HTTP timing sample",
                 "local single-generator retained k6 summary", [info], size)
     local_sql(signals, evidence, windows, get(summary, "httpAccounting", "scenario"), summary, info)
+    add_pooled(evidence, signals, driver, get(summary, "cadence") or owner.get("cadence"),
+               "fixture/load", "fixture/load/driver-vu-assessment.json")
     return signals
 
 
@@ -303,6 +309,8 @@ def local(evidence):
     http = get(summary, "httpAccounting") or evidence.obj("fixture/load/http-accounting.json")
     raw_k6 = evidence.obj("fixture/load/k6-summary.json")
     scenario = get(http, "scenario")
+    driver = evidence.obj("fixture/load/driver-vu-assessment.json")
+    totals = get(driver, "totals") if driver.get("kind") == "m7-configured-driver-accounting" else None
     checks = get(summary, "strictChecks") or get(partial, "strictChecks")
     phase = token(str(result.get("phase", "")).upper())
     traffic_phase = token(get(partial, "trafficPhase"))
@@ -323,6 +331,8 @@ def local(evidence):
                          ("fixture/summary.json", summary))
     else:
         source_conflicts(evidence, ("fixture/owner.json", owner), ("fixture/summary.json", summary))
+    if driver:
+        source_conflicts(evidence, ("fixture/owner.json", owner), ("fixture/load/driver-vu-assessment.json", driver))
     for name in ("cleanup.json", "fixture/deployment-stages.json", "fixture/runtime-readiness.json",
                  "fixture/terminal-before-cleanup.json", "fixture/terminal-capture-unavailable.json"):
         evidence.file(name)
@@ -355,12 +365,13 @@ def local(evidence):
         "history": journal_history(evidence, result),
         "work": {
             "scope": "scenario HTTP attempts; JWT setup and probe writes excluded",
-            "planned": None,
+            "planned": count(get(totals, "planned")),
+            **({"offeredExpectedIterations": number(get(totals, "offered"))} if totals else {}),
             "offeredRatePerSecond": number(first_known(get(offered, "effectiveScenarioRps"),
                                                       get(configured, "offeredRps"))),
-            "issued": count(first_known(get(scenario, "attempts"), get(partial, "scenarioAttempts"))),
-            "completed": count(get(scenario, "completed")),
-            "dropped": count(get(raw_k6, "metrics", "dropped_iterations", "count")),
+            "issued": count(first_known(get(totals, "issued"), get(scenario, "attempts"), get(partial, "scenarioAttempts"))),
+            "completed": count(first_known(get(totals, "completed"), get(scenario, "completed"))),
+            "dropped": count(first_known(get(totals, "dropped"), get(raw_k6, "metrics", "dropped_iterations", "count"))),
         },
         "oracles": {
             "cleanup": "PASS" if evidence.obj("cleanup.json").get("status") == "ABSENT" else "UNMEASURED",
@@ -376,10 +387,65 @@ def local(evidence):
             "idle": verdict(get(checks, "idle")),
             "load": verdict(get(checks, "load")),
             "http": verdict(get(http, "httpVerdict")),
-            "offeredWork": verdict(get(http, "offeredWorkVerdict")),
+            "offeredWork": verdict(first_known(get(driver, "offeredWorkVerdict"), get(http, "offeredWorkVerdict"))),
         },
-        "signals": local_signals(evidence, summary, owner),
+        "signals": local_signals(evidence, summary, owner, driver),
     }
+
+
+
+def pooled_signal(evidence, driver, configured, directory):
+    # Scope comes from the same completed scenario counts used by the driver
+    # reducer. JWT setup has an empty scenario and is excluded.
+    shard_count = count(get(configured, "driverShards")) or 1
+    shards = get(driver, "shards")
+    if not isinstance(shards, list) or len(shards) != shard_count or shard_count > 16:
+        return None
+    paths = []
+    inputs = []
+    total_bytes = 0
+    for index, shard in enumerate(shards):
+        plan = get(shard, "plan")
+        if get(plan, "observer") != "scheduling-v1" or get(plan, "shardIndex") != index:
+            return None
+        by_scenario = get(shard, "byScenario")
+        if not isinstance(by_scenario, dict) or not set(by_scenario) <= set(HTTP_SHAPES):
+            return None
+        expected = {key: count(get(row, "completed")) for key, row in by_scenario.items()}
+        if sum_known(expected.values()) is None:
+            return None
+        for suffix in (f"-{index}", "") if shard_count == 1 else (f"-{index}",):
+            name = f"{directory}/k6-scheduling{suffix}.csv.gz"
+            path = evidence.file(name)
+            if path:
+                break
+        if not path:
+            return None
+        try:
+            total_bytes += path.stat().st_size
+        except OSError:
+            return None
+        if total_bytes > latency.MAX_TRACE_BYTES:
+            evidence.note(name, "LATENCY_TRACE_BUDGET")
+            return None
+        paths.append(name)
+        inputs.append((path, expected))
+    try:
+        upper, size = latency.pooled_histogram(inputs)
+        return upper, size, paths
+    except (OSError, ValueError, TypeError, EOFError, KeyError, csv.Error, zlib.error):
+        evidence.note(directory, "LATENCY_SAMPLES_UNRECONCILED")
+        return None
+
+
+def add_pooled(evidence, signals, driver, configured, path, source):
+    pooled = pooled_signal(evidence, driver, configured, path)
+    if pooled:
+        upper, size, paths = pooled
+        signals["http.pooled.p95"] = observation(
+            upper, "ms", "scenario HTTP latency sample",
+            "configured k6 scenario starts through drain completions; nearest-rank 1 ms upper bound",
+            [source, *paths], size)
 
 
 def kube(evidence):
@@ -420,6 +486,7 @@ def kube(evidence):
     totals = get(driver, "totals")
     signals = {}
     percentiles(signals, get(reduction, "backlog", "recordedProbe"), [reduction_path])
+    add_pooled(evidence, signals, driver, configured, "load", reduction_path if reduction else load_path)
     for name in ("load/before.json", "load/after.json", "load/driver.json", "load/window.json",
                  "experiment/observations/first-failure.json", "experiment/cleanup.json"):
         evidence.file(name)
