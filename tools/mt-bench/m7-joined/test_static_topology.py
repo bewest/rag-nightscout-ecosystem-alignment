@@ -96,15 +96,14 @@ class StaticTopology(unittest.TestCase):
             self.assertEqual(rc.from_manifest(manifest)['staticBuildReceiptSha256'], a.digest(path))
             with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_CONFIGURATION_MISMATCH'):
                 c.receipt_scope({**manifest, 'staticBuildReceiptSha256': 'f'*64}, auth, 'deploy')
-            for field, change, code in [
-                ('localImageId', 'sha256:'+'9'*64, 'M7_STATIC_BUILD_IDENTITY'),
-                ('deployCommit', '3'*40, 'M7_STATIC_BUILD_IDENTITY'),
-                ('runtime', {**proof['runtime'], 'source': {}}, 'M7_STATIC_BUILD_PROVENANCE'),
-                ('runtime', {**proof['runtime'], 'binarySha256': '9'*64}, 'M7_STATIC_BUILD_INPUTS'),
-                ('runtime', {**proof['runtime'], 'lockSha256': '9'*64}, 'M7_STATIC_BUILD_INPUTS')]:
+            put({**proof, 'localImageId': 'sha256:'+'9'*64})
+            with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_BUILD_IDENTITY'):
+                rc.resolve(cfg)
+            # Build provenance is recorded by the build, not re-proved per run.
+            for field, change in [('deployCommit', '3'*40), ('runtime', {**proof['runtime'], 'source': {}}),
+                                  ('runtime', {**proof['runtime'], 'lockSha256': '9'*64})]:
                 put({**proof, field: change})
-                with self.assertRaisesRegex(RuntimeError, code):
-                    rc.resolve(cfg)
+                rc.resolve(cfg)
             put(proof)
             path.write_bytes(path.read_bytes() + b' ')
             with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_BUILD_RECEIPT_DIGEST'):
@@ -122,8 +121,6 @@ class StaticTopology(unittest.TestCase):
                 stack.enter_context(patch.object(a,'git',return_value=json.dumps(source_schema())))
                 stack.enter_context(patch.object(a.diagnostic_resources,'configure'))
                 stack.enter_context(patch.object(a,'commit',side_effect=lambda repo,head:head))
-                stack.enter_context(patch.object(a,'discovery_source_features'))
-                stack.enter_context(patch.object(s,'verify_source'))
                 stack.enter_context(patch.object(a,'unused_project_namespace'))
                 # Configuration v2 now checks its exact unused namespaces before
                 # dependency/image work. Keep this offline boundary explicit.

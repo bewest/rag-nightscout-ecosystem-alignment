@@ -100,7 +100,7 @@ class CommissioningWal(unittest.TestCase):
             root=Path(tmp);cfg=selected();_,receipt=packet(cfg);a.write(root/'receipt.json',receipt)
             cfg['prepare']['receipt']=str(root/'receipt.json');args=parsed(cfg);args.directory=str(root/'never')
             with contextlib.ExitStack() as stack:
-                for name in ('commit','discovery_source_features'):stack.enter_context(patch.object(a,name))
+                for name in ('commit',):stack.enter_context(patch.object(a,name))
                 stack.enter_context(patch.object(rc,'namespace_preflight'))
                 stack.enter_context(patch.object(a.os,'getuid',return_value=1000));stack.enter_context(patch.object(a.os,'getgid',return_value=1000))
                 effect=stack.enter_context(patch.object(a,'qualified_dependencies',side_effect=RuntimeError('CONTROL_PREFLIGHT_COMPLETE')))

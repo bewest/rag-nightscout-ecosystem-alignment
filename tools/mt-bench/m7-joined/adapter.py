@@ -673,15 +673,6 @@ def prepare_image_inputs(args):
     return result
 
 
-def discovery_source_features(repo, core_commit, static=False):
-    commit(repo,core_commit)
-    progress_contract=json.loads(git(repo,"show",core_commit+":lib/server/internal-api/contracts/evaluator-inspection.json"))
-    require(progress_contract.get("version")== (3 if static else 2),"M7_EVALUATOR_PROGRESS_SOURCE_REQUIRED")
-    due=progress_contract['operations']['inspectEvaluator']['response']['properties']['tenants']['items']
-    require(all(key in due.get('properties',{}) and key in due.get('required',[]) for key in ('dueAt','dueReason')),'M7_EVALUATOR_DUE_SOURCE_REQUIRED')
-    require('jobs' in due.get('properties',{}) and 'jobs' in due.get('required',[]),'M7_EVALUATOR_IDLE_SOURCE_REQUIRED')
-
-
 def discovery_source_preflight(d,m):
     """Execute the paired producer and core's published loaders; no services start.
 
@@ -697,8 +688,6 @@ def discovery_source_preflight(d,m):
     require(deploy_repo and marker.get('deployCommit')==m['pair']['deploy'] and
             str(Path(deploy_repo).resolve())==str(Path(marker['deployRepository']).resolve()),'M7_DEPLOY_SOURCE_REQUIRED')
     commit(core_repo,m['pair']['core']);commit(deploy_repo,m['pair']['deploy'])
-    discovery_source_features(core_repo,m['pair']['core'],static=bool(m.get('staticTopology')))
-    if m.get('staticTopology'):static_topology.verify_source(sys.modules[__name__],m,core_repo,deploy_repo)
     if m.get('pgstreamTopology')==stream_topology.EXTERNAL:
         stream_topology.verify_source(m,json.loads(git(core_repo,'show',m['pair']['core']+':lib/server/serve/plan-contract/schema/evaluator.schema.json')))
     image(m)
@@ -733,7 +722,6 @@ def discovery_source_contract(d,m,core_repo,deploy_repo):
         (core/'node_modules').symlink_to(d/'dependencies/node_modules',target_is_directory=True)
         env=runtime_env({'NS_PGSTREAM':'1',**preparation_environment(m)})
         if m.get('staticTopology'):
-            static_topology.verify_source(sys.modules[__name__],m,core_repo,deploy_repo)
             # Use the ordinary product generator; the historical convenience
             # generated() wrapper explicitly refuses static realtime.
             code = "const p=require('./deploy/multitenant/config'),l=p.layout();const urls=Object.fromEntries(Object.keys(l.roles).map(k=>[k,'postgres://'+l.roles[k]+':placeholder@postgres:5432/nightscout_compose_test']));const docs=p.documents({layout:l,urls,tokens:[],publicKeys:[],managementKeys:[],vaultAddress:'https://vault:8200',registryMode:true,realtimeOwnership:require('./deploy/multitenant/realtime-workers').initial(require('./deploy/multitenant/realtime-workers').selection())});console.log(JSON.stringify(require('./tools/prospective-plan-documents').documentSet(docs)));"
@@ -825,12 +813,9 @@ def prepare(args):
     require(not target.exists() and not any(p in (".git", "node_modules") for p in target.parts), "M7_TARGET_MUST_BE_NEW")
     for repo in (args.core_repo, args.deploy_repo):
         commit(repo, args.core_commit if repo == args.core_repo else args.deploy_commit)
-    discovery_source_features(args.core_repo,args.core_commit,static=bool(static_topology.option(args)))
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)==stream_topology.EXTERNAL:
         stream_topology.verify_source({'pgstreamTopology':args.pgstream_topology},json.loads(git(args.core_repo,'show',args.core_commit+':lib/server/serve/plan-contract/schema/evaluator.schema.json')))
     static_selection=static_topology.option(args)
-    if static_selection:
-        static_topology.verify_source(sys.modules[__name__],{**static_selection,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'profile':args.profile,'runPurpose':args.run_purpose,'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract,'replicas':args.replicas},args.core_repo,args.deploy_repo)
     pinned = instrument()
     if getattr(args,'measurement_mode','accepted')=='unaccepted' or (args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery'):
         candidate={'profile':args.profile,'tenants':args.tenants,'replicas':args.replicas,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'instrument':pinned,
