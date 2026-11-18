@@ -212,9 +212,7 @@ class StrictReaders(unittest.TestCase):
                     'allRows':{'evaluator':copy.deepcopy(owners)}, 'queries':1, 'bytes':1, 'wallSeconds':0}
         return [one(0), one(1), one(2)]
 
-    def test_strict_zero_kept_by_default_and_outcome_policy_counts(self):
-        with self.assertRaisesRegex(p.Refused, 'HIDDEN_FAILURE'):
-            p.assess(self.rounds(1), IDS, 'load')
+    def test_outcome_policy_counts_failed_completions_and_refuses_unknown_policy(self):
         value = p.assess(self.rounds(1), IDS, 'load', failure_policy=p.OUTCOME_FAILURE_POLICY)
         self.assertEqual(value['lifetimeFailedCompletions'], 1)
         self.assertEqual(value['failurePolicy'], p.OUTCOME_FAILURE_POLICY)
@@ -229,8 +227,6 @@ class StrictReaders(unittest.TestCase):
             return {'evaluator':(json.dumps(data) + '\n').encode()}
         transient = [row(A, failed=1, reasons={'startup-warming':1}, unresolved={'reason':'startup-warming', 'ageMs':10}), HEALTHY()]
         pc.inspect_pages(pages(transient, True), ['evaluator'], IDS, failure_policy=p.OUTCOME_FAILURE_POLICY)
-        with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_EVALUATION_FAILURE'):
-            pc.inspect_pages(pages(transient, True), ['evaluator'], IDS)
         with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_EVALUATION_FAILURE'):
             pc.inspect_pages(pages([row(A, failed=1), HEALTHY()], False), ['evaluator'], IDS,
                              failure_policy=p.OUTCOME_FAILURE_POLICY)

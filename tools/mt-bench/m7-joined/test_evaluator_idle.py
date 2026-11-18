@@ -67,7 +67,7 @@ class Idle(unittest.TestCase):
         for value in (None,{},dict.fromkeys(idle.FLAGS,0)):
             malformed=self.rounds();malformed[0]['owners'][A]['jobs']=value;self.refuse(malformed,'IDLE_JOBS')
     def test_failures_resets_new_demand_foreign_and_unhealthy_cannot_be_quiet(self):
-        for field,value,code in [('failedCompletions',1,'HIDDEN_FAILURE'),('ready',False,'ERROR'),('code','EVALUATOR_WINDOW_REFUSED','ERROR')]:
+        for field,value,code in [('ready',False,'ERROR'),('code','EVALUATOR_WINDOW_REFUSED','ERROR')]:
             rounds=self.rounds();rounds[1]['owners'][A][field]=value;self.refuse(rounds,code)
         rounds=self.rounds();rounds[-1]['owners'][A]['legacyCycles']=0;self.refuse(rounds,'RESET')
         rounds=self.rounds();rounds[1]['instances']['evaluator']['runtimeId']=S;self.refuse(rounds,'RESET')

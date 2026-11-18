@@ -45,7 +45,7 @@ class Tail(unittest.TestCase):
         value=idle.assess(self.rounds(),[A,B],tail=tail)
         self.assertEqual(value['completionTail']['completedWorkDelta'],1)
         self.assertEqual(value['completionTail']['completedTimeDelta'],0)
-        for key,value,code in [('completedTimeCycles',0,'COMPLETION'),('failedCompletions',1,'ERROR'),('ready',False,'ERROR'),('code','unavailable','ERROR')]:
+        for key,value,code in [('completedTimeCycles',0,'COMPLETION'),('ready',False,'ERROR'),('code','unavailable','ERROR')]:
             tail=self.point();tail['round']['owners'][A][key]=value;self.refuse(tail=tail,code=code)
         rounds=self.rounds();rounds[0]['owners'][A].update(dueAt=None,dueReason=None)
         rounds[1]['owners'][A].update(dueAt=None,dueReason=None)

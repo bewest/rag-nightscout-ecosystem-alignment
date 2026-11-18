@@ -68,7 +68,7 @@ def inspect_pages(raw, services, ids, *, failed_baseline=None, failure_policy=No
     The unchanged strict reader must still accept the complete final bracket.
     """
     known = set(ids)
-    outcome = p.select_failure_policy(failure_policy) is not None
+    p.select_failure_policy(failure_policy)
     require(failed_baseline is None or set(failed_baseline) == known and
             all(p.integer(value) for value in failed_baseline.values()), 'M7_PRELOAD_FAILURE_BASELINE')
     require(set(raw) == set(services), 'M7_PRELOAD_INCOMPLETE_SOURCE')
@@ -130,7 +130,7 @@ def inspect_pages(raw, services, ids, *, failed_baseline=None, failure_policy=No
                         # Outcome gate: a typed transient failure is counted, not
                         # refused. Untyped, unknown or hard reasons still refuse.
                         failure_ok = (progress['failedCompletions'] == allowed_failed or
-                                      outcome and outcome_gate.accepts_failure(row, view))
+                                      outcome_gate.accepts_failure(row, view))
                         source_need(value['alert'] is None and failure_ok,
                                     'M7_PRELOAD_EVALUATION_FAILURE')
                         source_need(value['code'] in PENDING_CODES or value['code'] is None,

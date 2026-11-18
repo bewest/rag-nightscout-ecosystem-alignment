@@ -32,7 +32,7 @@ class Warming(unittest.TestCase):
         # c621 separates historical uncredited attempts from earned work.
         frame=self.frame();frame['view']['tenants'][0]['progress']['failedCompletions']=1
         observed=self.collect(frame);self.assertEqual(observed['owners'][A]['failedCompletions'],1)
-        with self.assertRaisesRegex(p.Refused,'HIDDEN_FAILURE'):p.assess([observed]*3,[A],'load')
+        with self.assertRaisesRegex(p.Refused,'NOT_OBSERVED'):p.assess([observed]*3,[A],'load')
 
     def test_missing_fields_and_bad_status_still_refuse(self):
         for field in ('generation','completedAcquisitions','completedTimeCycles','failedCompletions','lastCompletedAgeMs'):
