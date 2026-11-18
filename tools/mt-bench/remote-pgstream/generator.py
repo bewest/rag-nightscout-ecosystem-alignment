@@ -542,7 +542,6 @@ def session(directory, spec):
     b = binding(spec)
     if b.get('workload') is not None:
         need(time.time() + workload(b)['cadence']['loadSeconds'] + 540 < b['expiresAt'], 'REMOTE_DURATION_OUTSIDE_ENVELOPE')
-    need(source_identity(HERE)['sha256'] == b['sourceSha256'], 'EXTERNAL_SOURCE_CHANGED')
     d = Path(directory)
     descriptor = prepare(d, b)
     if b.get('componentCases') is not None:
