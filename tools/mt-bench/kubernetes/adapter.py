@@ -306,7 +306,8 @@ class Client:
     def __init__(self, c, run=subprocess.run):
         self.c, self.run = c, run
 
-    def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024):
+    def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024,
+             response_sink=None):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -322,15 +323,24 @@ class Client:
                               timeout=min(20, deadline(c, cleanup)), check=False, env=env)
         except (OSError, subprocess.TimeoutExpired):
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
+        def bounded_response():
+            raw = result.stdout
+            if isinstance(raw, str):
+                raw = raw.encode()
+            need(isinstance(raw, bytes) and len(raw) <= output_limit, 'OBSERVATION_BOUND', 'UNMEASURED')
+            return raw
+        # Only an explicit private observer sink receives bounded returned bytes
+        # before the original deadline/exit refusal. Partial timeout output and
+        # oversized output are never presented as a complete returned response.
+        raw = None
+        if response_sink is not None:
+            raw = bounded_response()
+            response_sink(raw, result.returncode)
         deadline(c, cleanup)
         if result.returncode and re.search(rb'(?<![A-Z_])EVALUATOR_SCOPE_UNSAFE(?![A-Z_])', getattr(result, 'stderr', b'') or b''):
             raise Refused('EVALUATOR_SCOPE_UNSAFE', 'FAIL')
         need(result.returncode == 0, 'OBSERVATION_LOST', 'UNMEASURED')
-        raw = result.stdout
-        if isinstance(raw, str):
-            raw = raw.encode()
-        need(isinstance(raw, bytes) and len(raw) <= output_limit, 'OBSERVATION_BOUND', 'UNMEASURED')
-        return raw
+        return bounded_response() if raw is None else raw
 
     def get(self, kind, name=None, cleanup=False):
         argv = ['get', kind] + ([name] if name else []) + ['-o', 'json']

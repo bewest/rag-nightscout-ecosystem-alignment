@@ -229,25 +229,32 @@ def progress(d, c, objects, client, *, raw_output=None, until=None, warming=Fals
         selected=c.get('workload',{}).get('evaluatorProgressBudget')
         policy=k.evaluator_progress.capture_policy(selected)
         helper = (k.M7 / 'evaluator-progress.cjs').read_text()
-        response, response_path = {}, None
+        response, response_path = {'captureStatus':'UNAVAILABLE'}, None
         if raw_output is not None:
             response_path = raw_output.with_name(raw_output.name.removesuffix('.private.jsonl')+'-response.json')
         def fetch(role, selected, queries, budget):
             prefix = 'const M7_PROGRESS_IDS=' + json.dumps(selected) + ';const M7_PROGRESS_QUERY_BUDGET=' + str(queries) + ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) + ';\n'
+            def retain(raw, returncode, boundary='client-response-sink'):
+                fd = os.open(raw_output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                with os.fdopen(fd, 'wb') as stream:
+                    stream.write(raw)
+                identity = before['pods'][pod]
+                response.update(observedAt=time.time(), bytes=len(raw), sha256=k.digest(raw_output),
+                    namespaceUid=before['namespace']['uid'], podUid=identity['uid'],
+                    containerId=identity['containers'][container]['containerID'], pins=c['pins'], capturePolicy=policy,
+                    captureStatus='BOUNDED_RETURNED_STDOUT', captureBoundary=boundary,
+                    processReturnCode=returncode, transportSucceeded=returncode == 0)
+                k.write(response_path, response)
             # ThreadPoolExecutor does not inherit the caller's ContextVars.
             with k.observation_deadline(until):
                 k.deadline(c)
                 raw = client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'],
-                                  data=(prefix + helper).encode(), read=False, output_limit=budget)
-                if raw_output is not None:
-                    fd = os.open(raw_output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-                    with os.fdopen(fd, 'wb') as stream:
-                        stream.write(raw)
-                    identity = before['pods'][pod]
-                    response.update(observedAt=time.time(), bytes=len(raw), sha256=k.digest(raw_output),
-                        namespaceUid=before['namespace']['uid'], podUid=identity['uid'],
-                        containerId=identity['containers'][container]['containerID'], pins=c['pins'], capturePolicy=policy)
-                    k.write(response_path, response)
+                                  data=(prefix + helper).encode(), read=False, output_limit=budget,
+                                  response_sink=retain if raw_output is not None else None)
+                if raw_output is not None and response['captureStatus'] == 'UNAVAILABLE':
+                    # Inert test transports can return without calling the sink.
+                    k.need(isinstance(raw, bytes) and len(raw) <= budget, 'OBSERVATION_BOUND', 'UNMEASURED')
+                    retain(raw, 0, boundary='caller-return')
                 k.deadline(c)  # A late successful fetch cannot become a pass.
                 return raw
         value, primary, post = None, None, None
@@ -263,7 +270,8 @@ def progress(d, c, objects, client, *, raw_output=None, until=None, warming=Fals
             post = error
         if response_path is not None:
             response.update(postObservation='VERIFIED' if post is None else 'REFUSED',
-                            responseRetained=raw_output.is_file())
+                            responseRetained=raw_output.is_file(), sourceDecode='REFUSED' if
+                            isinstance(primary, k.evaluator_progress.Refused) else 'UNMEASURED' if primary else 'PASS')
             if primary is not None: response['sourceRefusal'] = progress_refusal(primary)
             if post is not None: response['postRefusal'] = progress_refusal(post)
             k.write(response_path, response)
