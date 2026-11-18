@@ -1949,56 +1949,101 @@ def opportunity_collector(d,m,ids):
     return capture
 
 
-def readiness(d, m):
+def readiness(d, m, *, clock=time):
     reserve_output(d,m,'readiness',('readiness-attempt.json','runtime-readiness.json'))
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'));services=progress_services(d)
-    authored=m.get('cadence',{}).get('startupWindows',{})
+    cadence=m.get('cadence',{})
+    authored=cadence.get('startupWindows',{})
     seconds=workload_inputs.startup_windows(authored,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)['evaluatorReadySeconds']
     effective=remaining_seconds(seconds)
-    deadline=time.monotonic()+effective;observations=[];queries=0;bytes_seen=0
+    deadline=clock.monotonic()+effective
     window={'selectedSeconds':seconds,'effectiveSeconds':effective}
-    policy=evaluator_progress.capture_policy(m.get('cadence',{}).get('evaluatorProgressBudget'))
+    progress_budget=cadence.get('evaluatorProgressBudget')
+    policy=evaluator_progress.capture_policy(progress_budget)
+    discovery=m.get('runPurpose')=='discovery'
+    clinical_stall=discovery_rest.selected(m)
+    interval=15
+    limits={'attempts':policy['readinessMaxRounds'],'queries':policy['readinessMaxQueries'],'bytes':policy['readinessMaxBytes']}
+    if 'evaluatorReadySeconds' in authored or progress_budget is not None:
+        attempts=math.ceil(effective/interval)
+        captures=attempts*(2 if discovery else 1)
+        pages=len(services)*math.ceil(len(ids)/policy['selectorRows'])
+        limits={'attempts':attempts,'queries':captures*pages,'bytes':captures*(policy['maxBytesPerPhase']//policy['roundsPerPhase'])}
+    used={'attempts':0,'queries':0,'bytes':0}
+    observations=[]
+    result={'policy':policy,'observations':observations,'window':window,'capture':{'limits':limits,'used':used}}
+    not_ready='M7_RUNTIME_NOT_READY'
+    exhausted='M7_EVALUATOR_PROGRESS_READINESS_BUDGET'
+
     def fetch(*args):
-        left=deadline-time.monotonic()
-        evaluator_progress.need(left>0,'M7_RUNTIME_NOT_READY')
-        raw=progress_fetch(d,*args,timeout=min(left,20))
-        evaluator_progress.need(time.monotonic()<deadline,'M7_RUNTIME_NOT_READY')
+        left=deadline-clock.monotonic()
+        evaluator_progress.need(left>0,not_ready)
+        try:
+            raw=progress_fetch(d,*args,timeout=min(left,20))
+        except evaluator_progress.Refused:
+            evaluator_progress.need(clock.monotonic()<deadline,not_ready)
+            raise
+        evaluator_progress.need(clock.monotonic()<deadline,not_ready)
         return raw
-    while time.monotonic()<deadline and len(observations)<evaluator_progress.POLICY['readinessMaxRounds']:
+
+    def capture():
+        try:
+            value=evaluator_progress.round_view(services,ids,fetch,warming=True,allow_unavailable=discovery,
+                                                allow_clinical_stall=clinical_stall,policy=policy)
+        except evaluator_progress.Refused as error:
+            for key in ('queries','bytes'):
+                used[key]+=getattr(error,'collection',{}).get(key,0)
+            raise
+        for key in ('queries','bytes'):
+            used[key]+=value[key]
+        return value
+
+    def publish(verdict, **fields):
+        outcome={**result,'verdict':verdict,**fields}
+        write(d/'runtime-readiness.json',outcome)
+        return outcome
+
+    while clock.monotonic()<deadline and used['attempts']<limits['attempts']:
+        used['attempts']+=1
         value=None
         try:
-            value=evaluator_progress.round_view(services,ids,fetch,warming=True,allow_unavailable=m.get('runPurpose')=='discovery',allow_clinical_stall=discovery_rest.selected(m),policy=policy)
-            queries+=value['queries'];bytes_seen+=value['bytes']
-            evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
-            if m.get('runPurpose')!='discovery':evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
-            if m.get('runPurpose')=='discovery':
-                time.sleep(min(.25,max(0,deadline-time.monotonic())))
-                confirmed=evaluator_progress.round_view(services,ids,fetch,warming=True,allow_unavailable=True,allow_clinical_stall=discovery_rest.selected(m),policy=policy)
-                queries+=confirmed['queries'];bytes_seen+=confirmed['bytes']
-                evaluator_progress.need(queries<=evaluator_progress.POLICY['readinessMaxQueries'] and bytes_seen<=evaluator_progress.POLICY['readinessMaxBytes'],'M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
-                admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids,allow_clinical_stall=discovery_rest.selected(m))
+            value=capture()
+            evaluator_progress.need(all(used[key]<=limits[key] for key in ('queries','bytes')),exhausted)
+            if discovery:
+                clock.sleep(min(.25,max(0,deadline-clock.monotonic())))
+                confirmed=capture()
+                evaluator_progress.need(all(used[key]<=limits[key] for key in ('queries','bytes')),exhausted)
+                admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids,allow_clinical_stall=clinical_stall)
                 write(d/'readiness-stable-baseline.private.json',evaluator_progress.pack({'rounds':[value,confirmed]}))
                 observations.append({'verdict':admission['availability']['verdict'],**admission})
+                verdict=admission['availability']['verdict']
             else:
+                evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
                 evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
+                verdict='PASS'
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
-            result={'verdict':admission['availability']['verdict'] if m.get('runPurpose')=='discovery' else 'PASS','policy':policy,'observations':observations,'window':window,'meaning':'sampled evaluator availability; UNMEASURED availability does not stop discovery REST; durable completion is separate'}
-            if result['verdict']=='FAIL' and discovery_rest.selected(m):
+            if verdict=='FAIL' and clinical_stall:
                 result.update(clinicalVerdict='FAIL',clinicalCode=discovery_rest.CODE,restCollectionPermitted=True,capacityAcceptance='NOT_GRANTED',sourceBinding=discovery_rest.binding(m))
-            write(d/'runtime-readiness.json',result)
-            return result
+            return publish(verdict,meaning='sampled evaluator availability; UNMEASURED availability does not stop discovery REST; durable completion is separate')
         except evaluator_progress.Refused as error:
             cost=getattr(error,'collection',{})
-            if value is None:queries+=cost.get('queries',0);bytes_seen+=cost.get('bytes',0)
-            else:cost={k:value[k] for k in ('queries','bytes','wallSeconds')}
+            if not cost and value is not None:
+                cost={k:value[k] for k in ('queries','bytes','wallSeconds')}
             observations.append({'verdict':error.verdict,'code':str(error),'collection':cost,
                                  'diagnostic':getattr(error,'diagnostic',None) or ({'predicate':'COMPLETED_ACQUISITION_REQUIRED','field':'completedAcquisitions'} if str(error)=='M7_EVALUATOR_PROGRESS_WARMING' else None)})
-            if queries>evaluator_progress.POLICY['readinessMaxQueries'] or bytes_seen>evaluator_progress.POLICY['readinessMaxBytes']:
-                error=evaluator_progress.Refused('M7_EVALUATOR_PROGRESS_READINESS_BUDGET')
-            write(d/'runtime-readiness.json',{'verdict':error.verdict,'policy':policy,'observations':observations,'window':window})
-            if error.verdict=='FAIL' or str(error) not in ('M7_EVALUATOR_PROGRESS_WARMING','M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_GATE','M7_EVALUATOR_PROGRESS_COVERAGE'):raise
-        time.sleep(min(15,max(0,deadline-time.monotonic())))
-    raise evaluator_progress.Refused('M7_RUNTIME_NOT_READY')
+            if error.verdict=='FAIL':
+                publish(error.verdict,code=str(error))
+                raise
+            if any(used[key]>limits[key] for key in ('queries','bytes')):
+                publish('UNMEASURED',code=exhausted)
+                raise evaluator_progress.Refused(exhausted) from error
+            publish(error.verdict,code=str(error))
+            if str(error) not in ('M7_EVALUATOR_PROGRESS_WARMING','M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_GATE','M7_EVALUATOR_PROGRESS_COVERAGE'):
+                raise
+        clock.sleep(min(interval,max(0,deadline-clock.monotonic())))
+    code=not_ready if clock.monotonic()>=deadline else exhausted
+    publish('UNMEASURED',code=code)
+    raise evaluator_progress.Refused(code)
 
 
 @contextlib.contextmanager
