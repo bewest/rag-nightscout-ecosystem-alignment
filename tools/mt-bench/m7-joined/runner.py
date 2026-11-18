@@ -521,6 +521,17 @@ def session_close(directory, owner):
     return subprocess.run([sys.executable,'-B',original,'down',str(root)],check=True)
 
 
+def local_batch_allocation(config):
+    """Use the adapter's resource selection for planning and configuration help."""
+    import experiment_batch as batch
+    options = config['prepare']
+    explicit = options.get('diagnostic-resource-allocation')
+    selected = a.selected_resources_profile(argparse.Namespace(
+        diagnostic_resource_profile=options.get('diagnostic-resource-profile'),
+        diagnostic_resource_allocation=json.loads(explicit) if explicit is not None else None))
+    return selected, batch.local_resource_plan(selected)
+
+
 def local_batch_plan(spec, payload_root):
     import experiment_batch as batch
     planned=batch.plan(spec)
@@ -538,10 +549,10 @@ def local_batch_plan(spec, payload_root):
             next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=cell_plan
             batch.need(cell['config']['helperInstrument']==a.instrument()['sha256'],'VAULT_HELPER_CHANGED')
             continue
-        # The current typed producer reserves its complete maximum, including
-        # oneoffs/k6 and host heaps. Smaller policies need producer controls.
-        batch.need(cell['resources']==batch.LOCAL_RESOURCES,'LOCAL_RESERVATION_CHANGED')
         config=cell['config'];validate_config(config);options=config['prepare']
+        selected, allocation = local_batch_allocation(config)
+        batch.check_local_reservation(cell['resources'], allocation['resources'])
+        next(c for c in planned['cells'] if c['id']==cell['id'])['allocationBreakdown']=allocation['allocationBreakdown']
         receipt=Path(options.get('receipt',''))
         batch.need(receipt.is_absolute() and receipt.is_relative_to(Path(payload_root).resolve()),'RECEIPT_ALLOWLIST')
         batch.need(str(receipt.relative_to(Path(payload_root).resolve())) in allowlist,'RECEIPT_ALLOWLIST')
@@ -549,11 +560,8 @@ def local_batch_plan(spec, payload_root):
         batch.need(options.get('core-commit')==spec['payload']['source']['core'] and
                    options.get('deploy-commit')==spec['payload']['source']['deploy'],'SOURCE_CHANGED')
         batch.need(options.get('image-id')==options.get('image')==spec['payload']['image'],'IMAGE_CHANGED')
-        selected=options.get('diagnostic-resource-profile')
-        batch.need(selected in a.diagnostic_resources.PROFILES,'LOCAL_PROFILE_REQUIRED')
-        batch.need(a.diagnostic_resources.memory_ceiling(selected)<=batch.LOCAL_RESOURCES['memoryBytes'],'LOCAL_PROFILE_RESERVATION_UNSUPPORTED')
         external=options.get('pgstream-topology','colocated-v1')=='external-service-v1'
-        batch.need(external==(selected in a.diagnostic_resources.EXTERNAL_PROFILES),'LOCAL_TOPOLOGY_PROFILE')
+        batch.need(external==a.diagnostic_resources.external_selection(selected),'LOCAL_TOPOLOGY_PROFILE')
         batch.need(options.get('fixture-project')==cell['namespace'] and cell['subnets']==[options.get('backend-subnet'),options.get('edge-subnet')], 'ISOLATION_CHANGED')
         batch.need(cell['ports']==[], 'LOCAL_PORTS_UNSUPPORTED')
         batch.need(config['workSeconds']==cell['workSeconds'] and config['cleanupSeconds']==cell['cleanupSeconds'] and options.get('offered-rps')==cell['offeredRps'],'WORKLOAD_CHANGED')
@@ -564,11 +572,6 @@ def local_batch_plan(spec, payload_root):
             batch.need(batch.number(value) and axes[key][0]<=value<=axes[key][1],'WORKLOAD_OUTSIDE_ENVELOPE')
         # Ordinary runner only; fault profiles must first gain a typed adapter.
         batch.need(not axes['faultCases'], 'LOCAL_FAULT_UNSUPPORTED')
-    for cell in planned['cells']:
-        if cell['config'].get('producer')=='vault-component-v1':continue
-        cell['allocationBreakdown']={'sutAndOneoffs':{'millicpus':3500,'memoryBytes':7*1024**3},
-            'driverK6':{'millicpus':500,'memoryBytes':1024**3},'hostV8':{'heapMiB':1024},
-            'hostRss':'SEPARATELY_OBSERVED_NOT_HEAP_BOUNDED','generatorHeadroom':'UNMEASURED_UNLESS_RETAINED'}
     return planned
 
 
@@ -648,6 +651,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     sub.add_parser('identity')
+    sub.add_parser('batch-resources', help='Explain the selected local cell reservation without starting actors').add_argument('config')
     project=sub.add_parser('project');project.add_argument('config');project.add_argument('--remote-overlay');project.add_argument('--source-acceptance')
     for mode in ('batch-plan','batch-run'):
         command=sub.add_parser(mode);command.add_argument('config');command.add_argument('--payload-root',required=True)
@@ -682,6 +686,9 @@ def main():
             elif cell['id'] not in retained['cells']:retained['cells'][cell['id']]={'status':'UNMEASURED'}
         return print(json.dumps(retained,indent=2))
     if args.action == '_batch-cell':return batch_cell(args.config,args.directory)
+    if args.action == 'batch-resources':
+        config, _ = load_config(args.config)
+        return print(json.dumps(local_batch_allocation(config)[1], indent=2))
     if args.action == 'batch-plan':
         return print(json.dumps(local_batch_plan(a.document(args.config),args.payload_root),indent=2))
     if args.action == 'batch-run':return batch_run(args.config,args.directory,args.payload_root)

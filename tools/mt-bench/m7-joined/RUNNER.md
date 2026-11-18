@@ -216,6 +216,18 @@ executes that same admitted specification. `batch-result <private-output>` reads
 completed and partial per-cell results, including after an interrupted batch.
 The ordinary single-point commands and their defaults stay available.
 
+Before copying a cell's resource fields, run:
+
+```bash
+python3 -B tools/mt-bench/m7-joined/runner.py batch-resources /absolute/private/run.json
+```
+
+This validates the ordinary runner configuration and prints `resources` plus the
+allocation breakdown without starting actors. Copy `resources` to the cell and
+set the batch envelope for the desired concurrency. Then `batch-plan` checks the
+complete payload, workload, isolation and aggregate bounds. These commands grant
+no infrastructure or spending authority.
+
 Start from [the local batch template](examples/local-batch.json). Replace its
 source/helper/receipt paths and hashes, project/CIDRs and zero cleanup cutoff
 with the reviewed inputs and original absolute cutoff; the template is inert.
@@ -250,22 +262,31 @@ For local cells, `target` is `{"kind":"local"}`, ports are empty (no host-port
 configuration is supported by this runner), and subnets exactly match the
 configuration's backend and edge CIDRs. Names and CIDRs cannot overlap another
 cell, even when cells run sequentially. The existing adapter performs its fresh
-host census before effects. Local cells require the existing
-`local-diagnostic-4cpu-8g-v1` producer or explicit
-`local-diagnostic-external-pgstream-4cpu-8g-v1` with
-`pgstream-topology: external-service-v1`, reserving 4000 millicpus, 8589934592 memory
-bytes, 1024 MiB host V8 heaps, zero money and a conservative 64 live resources.
-This profile reserves 500 millicpus/1 GiB for k6 and the remaining 3500
-millicpus/7 GiB for SUT roles and declared oneoffs. Host heaps include helper,
-generator and probe overlaps. Host RSS/native memory remains separately observed;
-a V8 heap limit does not bound RSS. Plans expose this allocation breakdown.
-The aggregate envelope is configurable independently of those per-cell limits.
-Two simultaneous full cells require at least 8000 millicpus, 17179869184 memory
-bytes, 2048 MiB host heaps and 128 live resources, plus their summed offered rate
-and two execution slots. The caller must keep that envelope within its allocated
-host resources. A smaller per-cell quota still needs a typed producer and controls.
-Concurrent cells share the host: record contention in comparison evidence; the
-scheduler does not reserve a quiet machine or bound host RSS.
+host census before effects. Local cells use any existing named diagnostic profile or an explicit
+`diagnostic-resource-allocation`, with the same adapter selection and topology
+checks as a direct run. A cell must reserve at least the selected CPU/memory
+ceiling, host V8 heaps and managed-resource allowance. Larger authored
+reservations are valid; the batch envelope remains the aggregate bound. An
+explicit allocation supplies its own driver limits and is not capped by the
+old local reference reservation.
+
+Named profiles retain their server limits, while discovery replaces their old
+500-millicpu/1-GiB k6 default with the existing 2000-millicpu/4-GiB driver. The
+planner includes that delta. For example, the named 4-CPU/8-GiB profile requires
+5500 millicpus and 11811160064 memory bytes for the complete discovery cell,
+plus 1024 MiB host V8 heaps, zero money and a conservative 64 managed resources.
+Use `batch-resources` for the selected configuration instead of repeating this
+arithmetic. Profile names describe their original reference allocation.
+
+The allocation breakdown uses the selected ceiling as a conservative upper
+bound for SUT roles and declared oneoffs; it does not claim they consume that
+amount simultaneously. Host heaps include helper, generator and probe overlaps.
+Host RSS/native memory remains separately observed; a V8 heap limit does not
+bound RSS. The caller keeps the aggregate envelope within its lane allocation.
+Concurrent cells share the host: record contention in comparisons. The scheduler
+accounts declared maxima; it does not reserve a quiet machine, establish physical
+CPU demand or bound host RSS. Phase-specific lower reservations require matching
+producer enforcement and focused controls.
 
 Each batch holds the original UID-global driver lock and atomically reserves
 whole cells in a private ledger. Only a live exact-birth coordinator and matching
@@ -376,8 +397,9 @@ has 128 GiB. Address space, RSS and V8 heap are different measurements. The seve
 logical actors are not an OS PID/thread maximum. In-container shell/storage
 collector descendants share the native Vault cgroup; timing out a Docker CLI
 does not prove an exec child ended. Exact container cleanup owns those children.
-Ordinary producer CPU semantics are unchanged, and the 8448 MiB ordinary variant
-still refuses the legacy 8192 MiB batch claim.
+Ordinary cells use the selected allocation and effective discovery driver above.
+The 8448 MiB variant therefore needs a larger reservation than the legacy 8192 MiB
+claim; `batch-resources` exposes it before preparation.
 
 A typed child must match the live exact-birth parent, private ticket/ledger,
 batch digest, complete config and resource claim. It then acquires the existing

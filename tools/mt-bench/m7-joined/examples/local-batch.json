@@ -17,8 +17,8 @@
   },
   "envelope": {
     "maxConcurrent": 2,
-    "millicpus": 8000,
-    "memoryBytes": 17179869184,
+    "millicpus": 11000,
+    "memoryBytes": 23622320128,
     "heapMiB": 2048,
     "hourlyMicrousd": 0,
     "totalMicrousd": 0,
@@ -62,8 +62,8 @@
         "kind": "local"
       },
       "resources": {
-        "millicpus": 4000,
-        "memoryBytes": 8589934592,
+        "millicpus": 5500,
+        "memoryBytes": 11811160064,
         "heapMiB": 1024,
         "hourlyMicrousd": 0,
         "totalMicrousd": 0,
@@ -122,8 +122,8 @@
         "kind": "local"
       },
       "resources": {
-        "millicpus": 4000,
-        "memoryBytes": 8589934592,
+        "millicpus": 5500,
+        "memoryBytes": 11811160064,
         "heapMiB": 1024,
         "hourlyMicrousd": 0,
         "totalMicrousd": 0,

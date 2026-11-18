@@ -158,31 +158,90 @@ class Batch(unittest.TestCase):
             self.assertEqual([c[0] for c in calls],['receipt-preflight','prepare','source-preflight'])
             self.assertEqual(calls[2][1],['source-preflight',str(root/'fixture')])
 
-    def test_local_whole_cell_limits_and_configurable_aggregate(self):
+    def local_fixture(self, tmp, selected=resources.NAME):
         spec=fixture(1)
+        (Path(tmp)/'fixture').write_bytes(b'synthetic')
+        cell=spec['cells'][0];cell['ports']=[]
+        options={'receipt':str(Path(tmp)/'fixture'),'core-commit':'a'*40,'deploy-commit':'b'*40,
+                 'image-id':spec['payload']['image'],'image':spec['payload']['image'],
+                 'fixture-project':cell['namespace'],'backend-subnet':cell['subnets'][0],
+                 'edge-subnet':'10.241.0.0/24','offered-rps':10,'tenants':3,'load-seconds':10}
+        if isinstance(selected,dict):options['diagnostic-resource-allocation']=json.dumps(selected)
+        else:options['diagnostic-resource-profile']=selected
+        if resources.external_selection(selected):options['pgstream-topology']='external-service-v1'
+        cell['config']={'helperInstrument':spec['payload']['helper'],'workSeconds':30,'cleanupSeconds':30,'prepare':options}
+        cell['subnets'].append('10.241.0.0/24')
+        cell['resources']=b.local_resource_plan(selected)['resources']
+        spec['envelope'].update({b.CAP_KEYS[k]:v for k,v in cell['resources'].items()})
+        return spec
+
+    def explicit_allocation(self):
+        return {'version':1,'services':{'nginx':{'millicpus':1000,'memoryBytes':1024**3},
+                                       'evaluator':{'millicpus':4000,'memoryBytes':4*1024**3}},
+                'driver':{'millicpus':3000,'memoryBytes':6*1024**3},
+                'ceiling':{'millicpus':16000,'memoryBytes':32*1024**3},
+                'edge':{'workerProcesses':1,'workerConnections':16384}}
+
+    def test_local_profiles_and_authored_allocations_use_same_resource_plan(self):
         with tempfile.TemporaryDirectory() as tmp,patch.object(runner,'validate_config'):
-            (Path(tmp)/'fixture').write_bytes(b'synthetic')
-            spec['envelope'].update({k:v for k,v in b.LOCAL_RESOURCES.items() if k in spec['envelope']})
-            spec['envelope']['hourlyMicrousd']=spec['envelope']['totalMicrousd']=0;spec['envelope']['maxLiveResources']=64
-            cell=spec['cells'][0];cell['resources']=dict(b.LOCAL_RESOURCES);cell['ports']=[]
-            cell['config']={'helperInstrument':spec['payload']['helper'],'workSeconds':30,'cleanupSeconds':30,'prepare':{'receipt':str(Path(tmp)/'fixture'),'core-commit':'a'*40,'deploy-commit':'b'*40,'image-id':spec['payload']['image'],'image':spec['payload']['image'],'diagnostic-resource-profile':resources.NAME,'fixture-project':cell['namespace'],'backend-subnet':cell['subnets'][0],'edge-subnet':'10.241.0.0/24','offered-rps':10,'tenants':3,'load-seconds':10}}
-            cell['subnets'].append('10.241.0.0/24');runner.local_batch_plan(spec,tmp)
-            options=cell['config']['prepare']
-            options['diagnostic-resource-profile']=resources.EXTERNAL_NAME
+            for selected in (*resources.PROFILES,self.explicit_allocation()):
+                with self.subTest(profile=selected):
+                    spec=self.local_fixture(tmp,selected)
+                    result=runner.local_batch_plan(spec,tmp)
+                    breakdown=result['cells'][0]['allocationBreakdown']
+                    driver=resources.driver_limit(selected) if isinstance(selected,dict) else resources.DISCOVERY_K6
+                    self.assertEqual(breakdown['driverK6'],{'millicpus':driver.cpu,'memoryBytes':driver.memory})
+                    self.assertEqual(result['capacityAcceptance'],'NOT_GRANTED')
+                    spec['cells'][0]['resources']['millicpus']+=1000
+                    spec['envelope']['millicpus']+=1000
+                    runner.local_batch_plan(spec,tmp)
+            spec=self.local_fixture(tmp,resources.EXTERNAL_NAME)
+            spec['cells'][0]['config']['prepare']['pgstream-topology']='colocated-v1'
             with self.assertRaisesRegex(RuntimeError,'LOCAL_TOPOLOGY_PROFILE'):runner.local_batch_plan(spec,tmp)
-            options['pgstream-topology']='external-service-v1';runner.local_batch_plan(spec,tmp)
-            options['diagnostic-resource-profile']=resources.EVALUATOR250_NAME
-            runner.local_batch_plan(spec,tmp)
-            options['diagnostic-resource-profile']=resources.EVALUATOR250_MEMORY512_NAME
-            with self.assertRaisesRegex(RuntimeError,'LOCAL_PROFILE_RESERVATION_UNSUPPORTED'):runner.local_batch_plan(spec,tmp)
-            options['diagnostic-resource-profile']=resources.EVALUATOR250_NAME
-            runner.local_batch_plan(spec,tmp)
-            cell['resources']['millicpus']=3999
-            with self.assertRaisesRegex(RuntimeError,'LOCAL_RESERVATION_CHANGED'):runner.local_batch_plan(spec,tmp)
-            cell['resources']['millicpus']=4000;spec['envelope']['millicpus']=8000
-            runner.local_batch_plan(spec,tmp)
-            spec['envelope']['millicpus']=3999
+            spec=self.local_fixture(tmp,self.explicit_allocation())
+            spec['cells'][0]['config']['prepare']['diagnostic-resource-profile']=resources.NAME
+            with self.assertRaisesRegex(RuntimeError,'SELECTION_AMBIGUOUS'):runner.local_batch_plan(spec,tmp)
+
+    def test_underreservation_refuses_before_actors_by_dimension(self):
+        with tempfile.TemporaryDirectory() as tmp,patch.object(runner,'validate_config'):
+            for selected in (resources.NAME,resources.QUALIFICATION_NAME,self.explicit_allocation()):
+                for key in ('millicpus','memoryBytes','heapMiB','liveResources'):
+                    with self.subTest(profile=selected,dimension=key):
+                        spec=self.local_fixture(tmp,selected)
+                        spec['cells'][0]['resources'][key]-=1
+                        with self.assertRaisesRegex(RuntimeError,'LOCAL_RESERVATION_UNDERSIZED:'+key):runner.local_batch_plan(spec,tmp)
+            spec=self.local_fixture(tmp)
+            spec['cells'][0]['resources']=dict(b.LOCAL_RESOURCES)
+            with self.assertRaisesRegex(RuntimeError,'LOCAL_RESERVATION_UNDERSIZED:millicpus'):runner.local_batch_plan(spec,tmp)
+            spec=self.local_fixture(tmp)
+            spec['envelope']['memoryBytes']-=1
             with self.assertRaisesRegex(RuntimeError,'CELL_OVERCOMMIT'):runner.local_batch_plan(spec,tmp)
+
+    def test_authored_allocation_queues_peer_until_exact_cleanup(self):
+        with tempfile.TemporaryDirectory() as tmp,patch.object(runner,'validate_config'):
+            spec=self.local_fixture(tmp,self.explicit_allocation())
+            peer=copy.deepcopy(spec['cells'][0]);peer.update(id='c1',namespace='ns-cell-1',subnets=['10.242.0.0/24','10.243.0.0/24'])
+            peer['config']['prepare'].update({'fixture-project':peer['namespace'],'backend-subnet':peer['subnets'][0],'edge-subnet':peer['subnets'][1]})
+            spec['cells'].append(peer)
+            runner.local_batch_plan(spec,tmp)
+            ledger=self.ledger(tmp,spec)
+            ticket=ledger.reserve(spec['cells'][0])
+            self.assertIsNotNone(ticket)
+            self.assertIsNone(ledger.reserve(peer))
+            with self.assertRaisesRegex(RuntimeError,'ABSENCE_REQUIRED'):ledger.release(ticket,{'status':'UNMEASURED'})
+            self.assertIsNone(ledger.reserve(peer))
+            ledger.release(ticket,{'status':'ABSENT','id':ticket['id'],'nonce':ticket['nonce']})
+            self.assertIsNotNone(ledger.reserve(peer))
+
+    def test_batch_resources_cli_reports_same_plan_without_runtime(self):
+        import contextlib
+        import io
+        with tempfile.TemporaryDirectory() as tmp:
+            spec=self.local_fixture(tmp,self.explicit_allocation());config=spec['cells'][0]['config']
+            file=Path(tmp)/'config.json';b.write(file,config);output=io.StringIO()
+            with patch.object(sys,'argv',['runner.py','batch-resources',str(file)]),patch.object(runner,'load_config',return_value=(config,[])),patch.object(runner,'prepare',side_effect=AssertionError('unexpected runtime')),contextlib.redirect_stdout(output):
+                runner.main()
+            self.assertEqual(json.loads(output.getvalue()),b.local_resource_plan(self.explicit_allocation()))
 
     def test_real_legacy_lock_and_stale_marker(self):
         with tempfile.TemporaryDirectory() as tmp:
