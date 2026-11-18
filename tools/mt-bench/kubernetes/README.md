@@ -643,6 +643,43 @@ retain the original. `test_phase_fit.py` and the selected commissioner controls
 exercise the stage, fit, terminal proof and changed-input boundaries without
 cluster actors.
 
+## Outcome evaluator gate on Kubernetes
+
+Decision [outcome-evaluator-gate](../../../docs/30-design/tenancy/multitenancy-decisions.md#outcome-evaluator-gate)
+replaces the lifetime `failedCompletions == 0` rule and the instant midpoint
+readiness rule. [outcome_gate.py](../m7-joined/outcome_gate.py) is the one frozen gate; its
+identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
+`deadlineMs` (default 120000) are configuration under the same identity.
+
+| component | FAIL | UNMEASURED |
+|---|---|---|
+| failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason; a transient reason resolved or still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
+| isolation | runtime reset, foreign row ready, foreign counters changed, duplicate owner | one point only |
+| readiness | preload refused; an owner not ready, with a code or with an alert at the end point | preload not selected or not retained; no end point |
+| storage | count oracle RED | oracle missing or not GREEN |
+| sampled oracle | probe `completedOutput` FAIL | missing |
+| all-tenant catch-up | a tenant pending once the window after writer join exceeds the deadline; a completion whose lower bound exceeds it; input changed | not captured; pending inside the deadline |
+
+A declared transient reason (`verification-pending`, `startup-warming`) that
+completed inside the deadline is counted by reason and passes. Until the
+source declares `view.failureReasonContract = evaluator-failure-reasons-v1`
+with `progress.failureReasons`, `unresolvedFailure` and
+`maxFailureResolutionMs`, every failed completion is untyped and fails.
+
+The midpoint is a signal. The runner records ``load/progress-midpoint-signal.json`` and stops
+the driver only for a hard reason (a FAIL above, or an evaluation alert). A
+not-ready owner at the midpoint continues. Raw responses are written before
+any decoder reads them (`progress-*.private.jsonl`; after an early load stop, `progress-stop.private.jsonl`, then `stored-counts.json`, recorded in `stop-evidence.json`). The verdict is ``load/outcome-gate.json`, summarised in `result.json`; a FAIL refuses the stage as `OUTCOME_GATE_FAIL` after both are written`; HTTP
+latency over every k6 shard summary is reported beside it (exact pooled
+count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
+`outcome_rereduce.py` re-reduces a retained run into a new file beside it and
+refuses if any original file changes.
+
+Run configuration `outcomeGate: {"midpointStop": "never"}` records the midpoint
+without stopping the driver; `deadlineMs` is also configuration. The Kubernetes
+path has no all-tenant catch-up collector yet, so that component is UNMEASURED
+there and a Kubernetes run cannot reach PASS until one exists.
+
 ## One intent for Compose and Kubernetes
 
 `toolchain.py` projects a version 1 `multitenant-experiment` into the existing

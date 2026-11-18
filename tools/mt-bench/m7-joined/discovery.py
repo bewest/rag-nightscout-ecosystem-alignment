@@ -426,6 +426,8 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         record.save()
         if not known:record.value['strictChecks']['counts']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING'}
 
+    outcome_record(a,d,m,record)
+
     if (record.value.get('probe') or {}).get('window') and (out/'fanout.json').is_file():
         from viewer_plan import check
         record.value['viewerFrames']=check(m,a.document(d/'tenants.private.json'),record.value['probe'],a.document(out/'fanout.json')['probeWrites']['byTenant'])
@@ -479,6 +481,7 @@ def observed_load(a,d,m,out,work,record=None,oneoff=None):
         require(record is not None,'M7_DEMAND_RECOVERY_RECORD_REQUIRED')
         return demand_recovery.run(a,d,m,out,work,record,lambda:stop_k6(a,m,record,oneoff))
     observer=a.observe_progress(d,m,out,'load')
+    observer.on_hard_midpoint=lambda:hard_midpoint_stop(a,m,oneoff)
     try:observer.__enter__()
     except Exception as error:
         if not incomplete(error):raise
@@ -531,6 +534,37 @@ def stop_k6(a,m,record,oneoff=None):
         a.owned(row,m['owner']);require(re.fullmatch(r'[a-f0-9]{64}',row.get('Id','')),'M7_DISCOVERY_LOADGEN_CUSTODY')
         a.command(['docker','stop','--time','10',row['Id']],timeout=20)
     record.value['processes']['k6']['ownedContainerStopCompleted']=True;record.save()
+
+
+def hard_midpoint_stop(a,m,oneoff=None):
+    """A hard outcome reason at the midpoint stops the owned driver early."""
+    try:
+        if oneoff is not None:oneoff.stop();return
+        a.assert_owned(m)
+        for row in a.resources(m):
+            if (row.get('Config',{}).get('Labels') or {}).get('com.docker.compose.service')=='k6':
+                a.owned(row,m['owner'])
+                if re.fullmatch(r'[a-f0-9]{64}',row.get('Id','')):a.command(['docker','stop','--time','10',row['Id']],timeout=20)
+    except Exception:pass  # The phase failure stays authoritative.
+
+
+def outcome_record(a,d,m,record):
+    """Outcome gate verdict from retained files; a FAIL is a hard failure."""
+    import outcome_gate
+    try:
+        ids=sorted(row['id'] for row in a.document(d/'tenants.private.json'))
+        value=outcome_gate.judge_compose_run(d,ids,attribution={'pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']})
+    except Exception as error:
+        # Missing inputs never become a pass, and never replace the run's own refusal.
+        record.value['strictChecks']['outcomeGate']={'verdict':'UNMEASURED','code':'M7_OUTCOME_GATE_INPUT_UNAVAILABLE','errorType':type(error).__name__,'hardFailure':False}
+        record.save();return None
+    value['httpLatencyAllShards']=outcome_gate.http_latency(d/'load')
+    a.write(d/'load'/'outcome-gate.json',value)
+    row={'verdict':value['verdict'],'codes':sorted({c for x in value['components'].values() for c in x.get('codes',[])}),
+         'hardFailure':value['verdict']=='FAIL','artifact':'load/outcome-gate.json','sha256':a.digest(d/'load'/'outcome-gate.json')}
+    record.value['strictChecks']['outcomeGate']=row
+    if row['hardFailure']:record.value['hardFailures'].append({'stage':'outcomeGate','code':'M7_OUTCOME_GATE_FAIL'})
+    record.save();return value
 
 
 def hard_recovery(value):return value.get('verdict')=='FAIL' and value.get('code') not in SOFT_WORK_FAILURES

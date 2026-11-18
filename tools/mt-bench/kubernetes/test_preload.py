@@ -130,6 +130,22 @@ class Preload(unittest.TestCase):
         self.assertEqual(self.result()['evaluationProgressQualification']['verdict'], 'FAIL')
         self.assertEqual(self.result()['status'], 'EXECUTION_READY')
 
+    def test_typed_transient_increase_is_counted_and_untyped_increase_refused(self):
+        import outcome_gate
+        typed = page(failed=(1, 0))
+        typed['view']['failureReasonContract'] = outcome_gate.TYPED_CONTRACT
+        typed['view']['tenants'][0]['progress'].update(failureReasons={'startup-warming':1},
+                                                       unresolvedFailure=None, maxFailureResolutionMs=900)
+        for row in typed['view']['tenants'][1:]:
+            row['progress'].update(failureReasons={}, unresolvedFailure=None, maxFailureResolutionMs=None)
+        preload.compare_failed({A:0, B:0}, {A:1, B:0}, (json.dumps(typed)+'\n').encode())
+        with self.assertRaisesRegex(k.Refused, 'FAILED_COUNTER_INCREASED'):
+            preload.compare_failed({A:0, B:0}, {A:1, B:0}, (json.dumps(page(failed=(1, 0)))+'\n').encode())
+        hard = copy.deepcopy(typed)
+        hard['view']['tenants'][0]['progress']['failureReasons'] = {'worker-unavailable':1}
+        with self.assertRaisesRegex(k.Refused, 'FAILED_COUNTER_INCREASED'):
+            preload.compare_failed({A:0, B:0}, {A:1, B:0}, (json.dumps(hard)+'\n').encode())
+
     def test_per_tenant_increase_decrease_and_offset_cannot_hide(self):
         for second, code in (((4, 1), 'INCREASED'), ((2, 0), 'DECREASED'), ((2, 2), 'DECREASED')):
             with self.subTest(second=second):

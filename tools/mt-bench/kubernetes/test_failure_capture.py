@@ -62,10 +62,12 @@ export default function () {
 
 
 class FailureCapture(unittest.TestCase):
-    def trial(self, fail):
+    def trial(self, fail, signal=False):
+        """fail: a hard midpoint (untyped failed completion) stops the driver.
+        signal: a not-ready midpoint without a hard reason is recorded; the run continues."""
         capture = os.environ.get('K8S_TEST_CAPTURE_DIR')
         if capture:
-            retained = Path(capture) / ('refusal' if fail else 'delayed-setup')
+            retained = Path(capture) / ('refusal' if fail else 'midpoint-signal' if signal else 'delayed-setup')
             retained.mkdir(mode=0o700, parents=True)
             scratch = nullcontext(retained)
         else:
@@ -82,7 +84,7 @@ class FailureCapture(unittest.TestCase):
                                           'instrument':c['pins']['instrument']}}
             launch = os.environ.get('K8S_TEST_NATIVE_K6')
             driver = Path(launch) if launch else d/'driver'
-            setup, run = (0.15, 8) if fail else (2.0, 0.2)
+            setup, run = (0.15, 8) if fail else (0.15, 2) if signal else (2.0, 0.2)
             script = (K6_DRIVER if launch else f'#!{sys.executable}\n' + DRIVER)
             script = script.replace('SETUP', str(setup)).replace('RUN', str(run))
             workload = d/'workload.js'
@@ -107,11 +109,11 @@ class FailureCapture(unittest.TestCase):
             midpoint_logs = []
             out = d/'load'
             def run_rpc(argv, **kwargs):
-                ready = not (fail and len(captures) == 1)
+                ready = not ((fail or signal) and len(captures) == 1)
                 if not ready:
                     log = out/'k6.log'
                     midpoint_logs.append(log.read_bytes() if log.is_file() else b'')
-                value = json.dumps(page(ready)).encode()+b'\n'
+                value = json.dumps(page(ready, failed=(1, 0) if fail and not ready else (0, 0))).encode()+b'\n'
                 captures.append(value)
                 return SimpleNamespace(returncode=0, stdout=value, stderr=b'')
             client = k.Client(c, run=run_rpc)
@@ -134,7 +136,16 @@ class FailureCapture(unittest.TestCase):
             self.assertEqual(raw.read_bytes(), captures[1])
             self.assertEqual(raw.stat().st_mode & 0o777, 0o600)
             response = k.document(out/'progress-midpoint-response.json')
-            self.assertEqual(response['sourceDecode'], 'REFUSED' if fail else 'PASS')
+            self.assertEqual(response['sourceDecode'], 'REFUSED' if fail or signal else 'PASS')
+            decision = k.document(out/'progress-midpoint-signal.json')
+            self.assertEqual(decision['action'], 'stop' if fail else 'continue')
+            if signal:
+                self.assertEqual(decision['strictRefusal']['code'], 'M7_EVALUATOR_PROGRESS_ERROR')
+                self.assertEqual(decision['classification']['readiness']['NOT_READY'],
+                                 {'EVALUATOR_CLINICAL_PROGRESS_STALLED': 2})
+                self.assertTrue((out/'.restart').exists(), 'a midpoint signal stopped the driver')
+                print('Midpoint signal recorded; driver continued to completion')
+                return
             self.assertEqual(response['postObservation'], 'VERIFIED')
             self.assertEqual(response['captureBoundary'], 'client-response-sink')
             self.assertEqual(response['sha256'], k.digest(raw))
@@ -147,6 +158,11 @@ class FailureCapture(unittest.TestCase):
                                  'EVALUATOR_CLINICAL_PROGRESS_STALLED')
                 self.assertFalse((out/'progress-after.json').exists())
                 self.assertFalse((out/'.restart').exists())
+                self.assertEqual(decision['classification']['classes'].get('UNTYPED'), 1)
+                stop = k.document(out/'stop-evidence.json')
+                self.assertTrue(stop['progressRetained'], 'raw progress at the stop point was not retained')
+                self.assertTrue((out/'progress-stop.private.jsonl').is_file())
+                self.assertIn('storage', stop)
                 self.assertIn(b'scenario-first-iteration', midpoint_logs[0],
                               'scenario marker was unavailable before process-group TERM')
                 has_summary = (out/'k6-summary.json').is_file()
@@ -203,6 +219,9 @@ class FailureCapture(unittest.TestCase):
 
     def test_midpoint_failure_keeps_private_raw_and_partial_driver_evidence(self):
         self.trial(fail=True)
+
+    def test_not_ready_midpoint_is_a_signal_and_driver_continues(self):
+        self.trial(fail=False, signal=True)
 
     def test_healthy_midpoint_capture_runs_during_delayed_driver_setup(self):
         self.trial(fail=False)

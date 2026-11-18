@@ -555,6 +555,38 @@ missing files or malformed reads remain UNMEASURED. It never subtracts peaks or
 sums independent role peaks as a concurrent total. Existing raw cgroup counters,
 current memory and configured-limit checks keep their separate meanings.
 
+## Outcome evaluator gate
+
+Decision [outcome-evaluator-gate](../../../docs/30-design/tenancy/multitenancy-decisions.md#outcome-evaluator-gate)
+replaces the lifetime `failedCompletions == 0` rule and the instant midpoint
+readiness rule. [outcome_gate.py](outcome_gate.py) is the one frozen gate; its
+identity is the SHA-256 of that file. Tenants, rate, windows, budgets and
+`deadlineMs` (default 120000) are configuration under the same identity.
+
+| component | FAIL | UNMEASURED |
+|---|---|---|
+| failed completions (lifetime counters at the end point) | untyped, `unknown`, hard or unrecognised reason; a transient reason resolved or still open past the deadline | typed rows without reasons or resolution fields; a transient still open at the end inside the deadline; no end point |
+| isolation | runtime reset, foreign row ready, foreign counters changed, duplicate owner | one point only |
+| readiness | preload refused; an owner not ready, with a code or with an alert at the end point | preload not selected or not retained; no end point |
+| storage | count oracle RED | oracle missing or not GREEN |
+| sampled oracle | probe `completedOutput` FAIL | missing |
+| all-tenant catch-up | a tenant pending once the window after writer join exceeds the deadline; a completion whose lower bound exceeds it; input changed | not captured; pending inside the deadline |
+
+A declared transient reason (`verification-pending`, `startup-warming`) that
+completed inside the deadline is counted by reason and passes. Until the
+source declares `view.failureReasonContract = evaluator-failure-reasons-v1`
+with `progress.failureReasons`, `unresolvedFailure` and
+`maxFailureResolutionMs`, every failed completion is untyped and fails.
+
+The midpoint is a signal. The runner records ``load/evaluator-midpoint-signal.json`` and stops
+the driver only for a hard reason (a FAIL above, or an evaluation alert). A
+not-ready owner at the midpoint continues. Raw responses are written before
+any decoder reads them (`load/evaluator-progress-raw/`). The verdict is ``load/outcome-gate.json` and the discovery check `outcomeGate``; HTTP
+latency over every k6 shard summary is reported beside it (exact pooled
+count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
+`outcome_rereduce.py` re-reduces a retained run into a new file beside it and
+refuses if any original file changes.
+
 ## Planned evaluator restart during local discovery demand
 
 For a **new local capture**, `restart-during-load-after-seconds` selects a planned

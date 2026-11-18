@@ -310,6 +310,68 @@ def retained_progress(d, out, c, objects, client, name, *, until=None, warming=F
     return value
 
 
+def midpoint_signal(out, c, ids, refusal):
+    """Midpoint is a recorded signal; only a hard outcome reason stops the driver."""
+    import outcome_gate
+    raw = out/'progress-midpoint.private.jsonl'
+    try:
+        point = outcome_gate.from_pages({'evaluator':raw.read_bytes()}) if raw.is_file() else None
+        classification = outcome_gate.classify_point(point, ids, final=False, config=gate_config(c)) if point else None
+    except Exception:
+        classification = None
+    decision = outcome_gate.midpoint_decision(classification)
+    if gate_mode(c)['midpointStop'] == 'never' and decision['action'] == 'stop':
+        decision = {**decision, 'action':'continue', 'configured':'midpointStop=never'}
+    decision.update(rawRetained=raw.is_file(), instrument=outcome_gate.instrument(),
+                    strictRefusal=None if refusal is None else progress_refusal(refusal),
+                    classification=classification)
+    k.write(out/'progress-midpoint-signal.json', decision)
+    return decision
+
+
+def gate_mode(c):
+    value = dict(c.get('outcomeGate') or {})
+    value.setdefault('midpointStop', 'hard')
+    k.need(set(value) <= {'midpointStop', 'deadlineMs'} and value['midpointStop'] in ('hard', 'never'),
+           'OUTCOME_GATE_CONFIGURATION')
+    return value
+
+
+def gate_config(c):
+    mode = gate_mode(c)
+    return {'deadlineMs':mode['deadlineMs']} if 'deadlineMs' in mode else None
+
+
+def stop_process(process):
+    if process is not None and process.poll() is None:
+        os.killpg(process.pid, signal.SIGTERM)
+        try:
+            process.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            os.killpg(process.pid, signal.SIGKILL)
+            process.wait(timeout=2)
+
+
+def stop_evidence(d, out, c, objects, client, namespace_uid):
+    """Early stop: retain raw final progress, then storage counts, before decoding."""
+    receipt = {'version':1, 'scope':'raw-first capture after an early load stop; each step best effort and recorded'}
+    if not (out/'progress-after.private.jsonl').exists():
+        raw = out/'progress-stop.private.jsonl'
+        try:
+            k.write(out/'progress-stop.json', progress(d, c, objects, client, raw_output=raw))
+            receipt['progress'] = {'verdict':'DECODED'}
+        except Exception as error:
+            receipt['progress'] = progress_refusal(error)
+        receipt['progressRetained'] = raw.is_file()
+    else:
+        receipt['progress'] = 'TERMINAL_CAPTURE_PRESENT'
+    if (out/'runid').is_file() and not (out/'storage-readback.json').exists():
+        storage_after_progress_failure(d, out, c, objects, client, (out/'runid').read_text().strip(), namespace_uid)
+    receipt['storage'] = k.document(out/'storage-readback.json').get('verdict') if (out/'storage-readback.json').is_file() else 'NOT_CAPTURED'
+    k.write(out/'stop-evidence.json', receipt)
+    return receipt
+
+
 def warmup_counts(row):
     return (isinstance(row,dict) and type(row.get('attempts')) is type(row.get('refused403')) is type(row.get('elapsedMs')) is int
             and 0 <= row['refused403'] <= row['attempts'] and row['elapsedMs'] >= 0)
@@ -499,10 +561,18 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 break
         if cancel.wait(settings['loadSeconds'] / 2 if load else .5):
             return
+        refusal = None
         try:
             retained_progress(d, out, c, objects, client, 'progress-midpoint')
         except Exception as error:
-            midpoint_failure.append(error)
+            refusal = error
+        try:
+            decision = midpoint_signal(out, c, [row['id'] for row in tenants], refusal)
+        except Exception as error:
+            midpoint_failure.append(refusal or error)
+            return
+        if decision['action'] == 'stop':
+            midpoint_failure.append(refusal or k.Refused('M7_OUTCOME_MIDPOINT_HARD', 'FAIL'))
     log = (out / 'probe.log').open('xb')
     try:
         bound = k.deadline(c)
@@ -559,7 +629,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
         midpoint.join(timeout=min(60, k.deadline(c)))
         if midpoint_failure:
             raise midpoint_failure[0]
-        k.need(not midpoint.is_alive() and (out / 'progress-midpoint.json').is_file(), 'MIDPOINT_UNMEASURED', 'UNMEASURED')
+        k.need(not midpoint.is_alive() and ((out / 'progress-midpoint.json').is_file() or
+               (out / 'progress-midpoint-signal.json').is_file()), 'MIDPOINT_UNMEASURED', 'UNMEASURED')
         k.write(out / 'after.json', k.observe(c, objects, client, baseline))
         k.write(out / 'window.json', {'startedAt': started, 'endedAt': time.time(), 'loadStartedAt': load_started,
                                      'loadEndedAt': load_ended, 'loadProcessStartedAt': load_process_started,
@@ -571,16 +642,18 @@ def execute(d, c, objects, client, load=False, recovery=False):
         return assess_stage(d, out, c, objects, client)
     except Exception as error:
         k.write(out / 'failure.json', {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': str(error) if str(error) == 'EVALUATOR_SCOPE_UNSAFE' or str(error).startswith(('K8S_', 'M7_')) else 'K8S_STAGE_FAILED', 'capacityAcceptance': 'NOT_GRANTED'})
+        if load and not (out / 'result.json').exists():
+            cancel.set()
+            stop_process(process)
+            try:
+                stop_evidence(d, out, c, objects, client, baseline['namespace']['uid'])
+            except Exception as secondary:
+                k.write(out / 'stop-evidence.json', {'version':1, 'code':'K8S_STOP_EVIDENCE_REFUSED',
+                        'errorType':type(secondary).__name__})
         raise
     finally:
         cancel.set()
-        if process is not None and process.poll() is None:
-            os.killpg(process.pid, signal.SIGTERM)
-            try:
-                process.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.wait(timeout=2)
+        stop_process(process)
         log.close()
 
 
@@ -699,19 +772,34 @@ def assess_stage(d, out, c, objects, client):
                                  k.document(out / 'fanout.json')['probeWrites']['byTenant'])
     k.need(frames['verdict'] == 'PASS' or c['workload']['logicalPollingClients'] == 0 and
            frames['verdict'] == 'NOT_EXERCISED', 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
-    rounds = [k.document(out / (name + '.json')) for name in ('progress-before', 'progress-midpoint', 'progress-after')]
+    names = [name for name in ('progress-before', 'progress-midpoint', 'progress-after') if (out / (name + '.json')).is_file()]
+    k.need(names[0] == 'progress-before' and names[-1] == 'progress-after', 'EVALUATOR_PROGRESS_BOOKENDS', 'UNMEASURED')
+    rounds = [k.document(out / (name + '.json')) for name in names]
     # Keep existing progress assessment separate from durable clinical proof.
     selected=c.get('workload',{}).get('evaluatorProgressBudget')
     policy=k.evaluator_progress.capture_policy(selected)
     k.need(all(row.get('capturePolicy')==(policy if selected is not None else None) for row in rounds),
            'EVALUATOR_PROGRESS_BUDGET_CHANGED')
-    progress = k.evaluator_progress.assess(rounds, [r['id'] for r in tenants], 'load',policy=policy)
+    # A midpoint is a signal: when only its signal was retained, the strict
+    # counter/foreign/reset/work checks run over the two bookends.
+    strict = rounds if len(rounds) == 3 else [rounds[0], rounds[-1], rounds[-1]]
+    progress = k.evaluator_progress.assess(strict, [r['id'] for r in tenants], 'load',policy=policy,
+                                           failure_policy=k.evaluator_progress.OUTCOME_FAILURE_POLICY)
+    import outcome_gate
+    outcome = outcome_gate.judge_kubernetes_load(out, [r['id'] for r in tenants], config=gate_config(c),
+                                                 attribution={'pins':c['pins'], 'runId':runid})
+    k.write(out / 'outcome-gate.json', outcome)
     functional = load_checks(out, c) if out.name == 'load' else 'NOT_SELECTED'
     summary = {'version': 1, 'verdict': 'OBSERVED', 'runId': runid, 'pins': c['pins'], 'storedWrites': counts,
                'clinical': clinical, 'frames': frames, 'evaluatorProgress': progress,
+               'outcomeGate': {'verdict':outcome['verdict'], 'instrument':outcome['instrument'],
+                               'components':{name:{'verdict':row['verdict'], 'codes':row.get('codes', [])}
+                                             for name, row in outcome['components'].items()}},
+               'httpLatencyAllShards': outcome_gate.http_latency(out) if out.name == 'load' else 'NOT_SELECTED',
                'loadFunctionalChecks': functional,
                'authority': 'UNMEASURED until access.json', 'performance': 'signals only; no promotion threshold', 'capacityAcceptance': 'NOT_GRANTED'}
     k.write(out / 'result.json', summary)
+    k.need(outcome['verdict'] != 'FAIL', 'OUTCOME_GATE_FAIL', 'FAIL')
     return summary
 
 

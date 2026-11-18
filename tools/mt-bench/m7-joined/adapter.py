@@ -31,6 +31,7 @@ from workload import REALISTIC_CADENCE_MS, REALISTIC_MIX, realistic_cycle_ms, ge
 import profile_provenance
 import orchestration_binding
 import evaluator_progress
+import outcome_gate
 import clinical_timeline
 import revision_witness
 import api_cause
@@ -1965,22 +1966,49 @@ def progress_summary(out):
     return {**result,'rawSha256':digest(out/'evaluator-progress.json'),'gzipSha256':digest(out/'evaluator-progress.json.gz')}
 
 
+def retain_raw(out,phase,fetch):
+    """Raw-first: write each response before any decoder reads it."""
+    folder=out/'evaluator-progress-raw';folder.mkdir(mode=0o700,exist_ok=True)
+    counts={};lock=threading.Lock()
+    def retained(service,*args):
+        with lock:index=counts.get(service,0);counts[service]=index+1
+        raw=fetch(service,*args)
+        data=raw.encode() if isinstance(raw,str) else raw
+        if isinstance(data,bytes):
+            path=folder/('%s-%02d-%s.private.jsonl'%(phase,index,service))
+            with path.open('xb') as stream:stream.write(data)
+            path.chmod(0o600)
+        return raw
+    return retained
+
+
+def midpoint_judge(ids):
+    def judge(raw):
+        point=outcome_gate.from_pages({service:value for service,value in raw.items() if value is not None})
+        return outcome_gate.midpoint_decision(outcome_gate.classify_point(point,ids,final=False))
+    return judge
+
+
 def observe_progress(d,m,out,phase):
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
     until=_COMMAND_DEADLINE.get()
     def fetch(*args):
         # Executor threads do not inherit ContextVars. Keep the original cutoff.
         with command_deadline(until):return progress_fetch(d,*args)
+    fetch=retain_raw(out,phase,fetch)
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
+    observer={'midpoint_judge':midpoint_judge(ids),'signal_write':lambda value:write(out/'evaluator-midpoint-signal.json',{**value,'instrument':outcome_gate.instrument()})}
     policy=evaluator_progress.capture_policy(m['cadence'].get('evaluatorProgressBudget'))
     if 'evaluatorOpportunities' in m:
         opportunity_contract(m)
         if phase in ('idle','load'):
             collector=opportunity_collector(d,m,ids)
-            observer=evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256,policy=policy)
+            observer=evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256,policy=policy,**observer)
             observer.rest_only=discovery_rest.permitted(sys.modules[__name__],d,m)
             return observer
-    return evaluator_idle.Observer(*args,tail_fetch=fetch,policy=policy) if phase=='idle' else evaluator_progress.Observer(*args,policy=policy)
+    if phase=='idle':return evaluator_idle.Observer(*args,tail_fetch=fetch,policy=policy,failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY,**observer)
+    value=evaluator_progress.Observer(*args,policy=policy,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
+    return value
 
 
 def opportunity_contract(m):

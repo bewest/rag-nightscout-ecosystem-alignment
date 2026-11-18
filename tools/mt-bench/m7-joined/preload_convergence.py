@@ -8,6 +8,7 @@ import time
 
 from contract import require
 import evaluator_progress as p
+import outcome_gate
 import phase_windows
 
 FIELD = 'preloadConvergence'
@@ -59,7 +60,7 @@ def receipt(manifest, authorization):
     return chosen
 
 
-def inspect_pages(raw, services, ids, *, failed_baseline=None):
+def inspect_pages(raw, services, ids, *, failed_baseline=None, failure_policy=None):
     """Validate all returned source rows, without changing their strict verdict.
 
     This only classifies what may be observed during the selected pre-load
@@ -67,6 +68,7 @@ def inspect_pages(raw, services, ids, *, failed_baseline=None):
     The unchanged strict reader must still accept the complete final bracket.
     """
     known = set(ids)
+    outcome = p.select_failure_policy(failure_policy) is not None
     require(failed_baseline is None or set(failed_baseline) == known and
             all(p.integer(value) for value in failed_baseline.values()), 'M7_PRELOAD_FAILURE_BASELINE')
     require(set(raw) == set(services), 'M7_PRELOAD_INCOMPLETE_SOURCE')
@@ -125,7 +127,11 @@ def inspect_pages(raw, services, ids, *, failed_baseline=None):
                                 error.diagnostic = p._refusal_row(row, service, current['runtimeId'])
                                 raise error
                         allowed_failed = 0 if failed_baseline is None else failed_baseline[row['tenant']]
-                        source_need(value['alert'] is None and progress['failedCompletions'] == allowed_failed,
+                        # Outcome gate: a typed transient failure is counted, not
+                        # refused. Untyped, unknown or hard reasons still refuse.
+                        failure_ok = (progress['failedCompletions'] == allowed_failed or
+                                      outcome and outcome_gate.accepts_failure(row, view))
+                        source_need(value['alert'] is None and failure_ok,
                                     'M7_PRELOAD_EVALUATION_FAILURE')
                         source_need(value['code'] in PENDING_CODES or value['code'] is None,
                                     'M7_PRELOAD_SOURCE_REFUSAL')
@@ -258,7 +264,7 @@ def run(a, directory, manifest, *, clock=time):
                 a.write(out/'result.json', result)
                 # Validate/classify every original source row, including rows
                 # after the strict reader's first refusal. Never edit its values.
-                observed = inspect_pages(raw, services, ids)
+                observed = inspect_pages(raw, services, ids, failure_policy=p.OUTCOME_FAILURE_POLICY)
                 owners = list(observed['owners'].values())
                 sample['sourceIdentities'] = observed['identities']
                 sample['cohortCompletion'] = {

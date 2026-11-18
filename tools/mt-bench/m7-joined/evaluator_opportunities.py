@@ -214,8 +214,8 @@ def collection_cost(value,windows,tenants):
 
 class Observer(p.Observer):
     """Explicit idle/load caller. Three SQL-before-inspection captures, one clock."""
-    def __init__(self,*args,durable_fetch,binding,preparation_cost,source_sha256,query_sha256,policy=p.POLICY):
-        super().__init__(*args,policy=policy)
+    def __init__(self,*args,durable_fetch,binding,preparation_cost,source_sha256,query_sha256,policy=p.POLICY,**observer):
+        super().__init__(*args,policy=policy,**observer)
         p.need(self.phase in ('idle','load'),'M7_OPPORTUNITY_PHASE')
         self.durable_fetch,self.binding=durable_fetch,binding
         self.preparation_cost=preparation_cost;self.durable=[];self.windows=[];self.costs=[]

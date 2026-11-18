@@ -21,6 +21,8 @@ PROGRESS_RESPONSE PROGRESS_RESPONSE_BOUND PROGRESS_SELECTOR PROGRESS_TENANTS'''.
 HARD={'M7_EVALUATOR_'+code for code in HARD}
 # Bound refusal rows are structural evidence failures, never partial observations.
 HARD.add('M7_REFUSAL_ROW_BOUND')
+# Outcome gate (2026-11-18): a hard midpoint reason and an invalid policy selection.
+HARD.update(('M7_OUTCOME_MIDPOINT_HARD','M7_EVALUATOR_FAILURE_POLICY'))
 
 class Classification(unittest.TestCase):
     def error(self,fn):

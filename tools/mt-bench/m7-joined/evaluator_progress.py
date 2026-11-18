@@ -18,6 +18,12 @@ REFERENCE_POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-oppo
 # roster and retains its independent query/byte limits, not the reference size.
 PREVIOUS_POLICY={**REFERENCE_POLICY,'maxTenants':2**32-1}
 POLICY={**PREVIOUS_POLICY,'maxInstances':8}  # The pinned Compose worker roster supports 1–8.
+# Decision outcome-evaluator-gate: failed completions are judged by
+# outcome_gate from raw typed reasons, not by a lifetime zero here. None keeps
+# the original strict-zero rule, so retained artifacts verify unchanged.
+OUTCOME_FAILURE_POLICY='outcome-evaluator-gate-v1'
+def select_failure_policy(value):
+    need(value in (None,OUTCOME_FAILURE_POLICY),'M7_EVALUATOR_FAILURE_POLICY');return value
 
 class Refused(RuntimeError):
     def __init__(self,code,verdict='UNMEASURED'):
@@ -185,7 +191,8 @@ def round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_cl
         raise
 
 
-def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=False):
+def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=False,failure_policy=None):
+    outcome=select_failure_policy(failure_policy) is not None
     need(phase in ('idle','load') and len(rounds)==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
     need(sum(r['queries'] for r in rounds)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in rounds)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     first=rounds[0];minimum=None;time_tenants=0;failure_delta=0;work_delta=0;time_delta=0
@@ -197,7 +204,7 @@ def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=Fa
             a=previous['owners'][tenant];b=current['owners'][tenant]
             need((a['service'],a['runtimeId'])==(b['service'],b['runtimeId']) and (policy!=LEGACY_POLICY or a['generation']==b['generation']),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
             need(all(b[k]>=a[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
-            if not discovery_unclassified_rejections:need(b['failedCompletions']==a['failedCompletions'],'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
+            if not discovery_unclassified_rejections and not outcome:need(b['failedCompletions']==a['failedCompletions'],'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         for service,rows in previous['allRows'].items():
             need(set(current['allRows'].get(service,{}))==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
             for tenant,a in rows.items():
@@ -208,18 +215,51 @@ def assess(rounds,ids,phase,*,policy=POLICY,discovery_unclassified_rejections=Fa
         previous=current
     for tenant in ids:
         a=first['owners'][tenant];b=rounds[-1]['owners'][tenant]
-        if not discovery_unclassified_rejections or policy==LEGACY_POLICY:need(a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
+        if (not discovery_unclassified_rejections or policy==LEGACY_POLICY) and not outcome:need(a['failedCompletions']==0,'M7_EVALUATOR_PROGRESS_HIDDEN_FAILURE','FAIL')
         failure_delta+=b['failedCompletions']-a['failedCompletions']
         work=b['completedAcquisitions']-a['completedAcquisitions']+b['completedTimeCycles']-a['completedTimeCycles'];delta=b['completedTimeCycles']-a['completedTimeCycles']
         need(work>0 and (policy!=LEGACY_POLICY or phase!='idle' or delta>0),'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
         minimum=work if minimum is None else min(minimum,work);work_delta+=work;time_delta+=delta;time_tenants+=delta>0
-    return {'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; failedCompletionDelta counts unclassified rejected attempts, including superseded windows, not clinical failures; no strict deadline or true cold load cohort claim' if discovery_unclassified_rejections else 'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
+    judged={'failurePolicy':failure_policy,'lifetimeFailedCompletions':sum(rounds[-1]['owners'][t]['failedCompletions'] for t in ids)} if outcome else {}
+    return {**judged,'version':policy['version'],'phase':phase,'verdict':'PASS','policy':policy,'tenants':len(ids),'instances':first['instances'],'completedWorkDelta':work_delta,'completedTimeDelta':time_delta,'tenantsWithTimeProgress':time_tenants,'minimumCompletedWorkDelta':minimum,'failedCompletionDelta':failure_delta,'queries':sum(r['queries'] for r in rounds),'responseBytes':sum(r['bytes'] for r in rounds),'collectorWallSeconds':sum(r['wallSeconds'] for r in rounds),'scope':'bookend/midpoint successful work; failedCompletionDelta counts unclassified rejected attempts, including superseded windows, not clinical failures; no strict deadline or true cold load cohort claim' if discovery_unclassified_rejections else 'bookend/midpoint successful work; no strict deadline or true cold load cohort claim'}
+
+def readiness_refusal(error):
+    diagnostic=getattr(error,'diagnostic',None)
+    return str(error)=='M7_EVALUATOR_PROGRESS_ERROR' and isinstance(diagnostic,dict) and diagnostic.get('field') in ('ready','code')
+
 
 class Observer:
-    def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY):
-        self.services,self.ids,self.fetch,self.seconds,self.phase,self.write=services,ids,fetch,seconds,phase,write
+    def __init__(self,services,ids,fetch,seconds,phase,write,*,assessor=assess,policy=POLICY,midpoint_judge=None,signal_write=None,on_hard_midpoint=None):
+        self.services,self.ids,self.seconds,self.phase,self.write=services,ids,seconds,phase,write
         self.assessor,self.policy=assessor,policy
         self.rounds=[];self.failure=None;self.stop=threading.Event()
+        # Raw-first: keep each service's latest response bytes before decoding,
+        # so a midpoint refusal can still be classified from the source rows.
+        self.last_raw={};self.midpoint_judge=midpoint_judge;self.signal_write=signal_write
+        self.on_hard_midpoint=on_hard_midpoint;self.midpoint_signal=None
+        def retained(service,*args):
+            value=fetch(service,*args);self.last_raw[service]=value;return value
+        self.fetch=retained
+    def midpoint(self):
+        """Midpoint is a signal; only a hard outcome reason stops the driver."""
+        self.last_raw={};self.observe()
+        if self.midpoint_judge is None:return
+        refusal=self.failure
+        try:decision=self.midpoint_judge(dict(self.last_raw))
+        except Exception as error:decision={'action':'continue','reason':'judge-error','signal':'UNMEASURED','judgeError':type(error).__name__}
+        decision={**decision,'strictRefusal':None if refusal is None else {'code':str(refusal),'verdict':getattr(refusal,'verdict','UNMEASURED')}}
+        self.midpoint_signal=decision
+        if self.signal_write is not None:
+            try:self.signal_write(decision)
+            except Exception:decision['publicationFailed']=True
+        if decision['action']=='stop':
+            if refusal is None:self.failure=Refused('M7_OUTCOME_MIDPOINT_HARD','FAIL')
+            if self.on_hard_midpoint is not None:self.on_hard_midpoint()
+        elif refusal is not None and readiness_refusal(refusal):
+            # Midpoint readiness is a recorded signal, not a phase failure. The
+            # phase then has two strict rounds; the outcome gate judges from the
+            # retained raw pages. Other strict refusals keep their verdict.
+            self.failure=None
     def observe(self):
         try:self.rounds.append(round_view(self.services,self.ids,self.fetch,policy=self.policy))
         except Exception as error:self.failure=error
@@ -230,7 +270,7 @@ class Observer:
         if self.failure:
             self.failed(self.failure);raise self.failure
         def midpoint():
-            if not self.stop.wait(self.seconds/2):self.observe()
+            if not self.stop.wait(self.seconds/2):self.midpoint()
         self.thread=threading.Thread(target=midpoint,daemon=True);self.thread.start();return self
     def __exit__(self,kind,value,traceback):
         self.stop.set();self.thread.join(timeout=20)
@@ -250,7 +290,8 @@ class Observer:
     def finish(self):
         try:
             if self.failure:raise self.failure
-            result=self.assessor(self.rounds,self.ids,self.phase,policy=self.policy)
+            extra={'failure_policy':self.failure_policy} if getattr(self,'failure_policy',None) else {}
+            result=self.assessor(self.rounds,self.ids,self.phase,policy=self.policy,**extra)
         except Exception as error:
             self.failed(error);raise
         self.write({**result,'rounds':self.rounds});self.result=result
@@ -279,7 +320,7 @@ def verify(value,tenants,services,phase,*,budget=None):
     need(type(tenants) is int and 1<=tenants<=policy['maxTenants'],'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(isinstance(value.get('rounds'),list) and len(value['rounds'])==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
     decoded,ids=decode_rounds(value,tenants,services)
-    result=assess(decoded,sorted(ids),phase,policy=policy)
+    result=assess(decoded,sorted(ids),phase,policy=policy,failure_policy=value.get('failurePolicy'))
     need({k:v for k,v in value.items() if k not in ('kind','columns','rounds','attribution')}==result,'M7_EVALUATOR_PROGRESS_ASSESSMENT')
     return result
 
