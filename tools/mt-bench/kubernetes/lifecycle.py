@@ -7,6 +7,7 @@ import signal
 from pathlib import Path
 from lifecycle_config import fixture_config
 import frozen
+import producer_startup
 cfg=fixture_config(Path(sys.argv[1]))
 d=Path(cfg['caseDirectory']); inst=Path(cfg['instrumentDirectory']); tool=Path(cfg['toolsDirectory'])
 read=lambda p:json.loads(p.read_bytes())
@@ -65,40 +66,75 @@ def summary(pod):
     return {'name':pod['metadata']['name'],'uid':pod['metadata']['uid'],'node':pod['spec'].get('nodeName'),'phase':sts.get('phase'),
             'resources':[{k:v.get(k) for k in ('name','resources')} for v in pod['spec'].get('initContainers',[])+pod['spec'].get('containers',[])],
             'containers':[{k:c.get(k) for k in ('name','imageID','restartCount','ready')}|{'state':c.get('state',{}),'previousTermination':c.get('lastState',{}).get('terminated')} for c in sts.get('initContainerStatuses',[])+sts.get('containerStatuses',[])]}
-def failure_codes(pod,container):
-    # Retain classified identifiers from this synthetic scope. Do not export role files or secret values.
-    import re
+def failure_codes(pod,container,uid,previous=False):
+    owned()
+    require_pod_uid(pod,uid)
+    args=['logs',pod,'-n',ns,'-c',container,'--tail=60']
+    if previous:args.append('--previous')
     try:
-        args=['logs',pod,'-n',ns,'-c',container,'--tail=60']
         output=command(rpc+args,private=True)
-        tokens=sorted(set(re.findall(rb'\b(?:K8S_CANDIDATE_|EVALUATOR_|CLINICAL_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|ECONN|VAULT_)[A-Z0-9_]{1,90}\b',output)))
-        return [v.decode() for v in tokens]
-    except Exception:return []
-def ready(label,typ,timeout):
+        observed={'status':'CAPTURED','codes':producer_startup.log_codes(output)}
+    except (RuntimeError, OSError, subprocess.TimeoutExpired):
+        observed={'status':'UNMEASURED','codes':[]}
+    require_pod_uid(pod,uid)
+    return observed
+
+def require_pod_uid(name,uid):
+    row=get('pod',name)
+    if row is None or row['metadata']['uid']!=uid:
+        raise RuntimeError('POD_OWNERSHIP_CHANGED')
+
+def ready(label,typ,timeout,convergence=None):
     step('wait-'+typ)
     until=min(time.time()+timeout,work)
+    stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
+    failures={}
     while time.time()<until:
         owned()
         found=pods(label)
         if any(x['metadata']['labels'].get('nightscout.org/run-id')!=rid for x in found):raise RuntimeError('FOREIGN_POD')
+        ready_pod=None
+        identity=None
         for pod in found:
             s=summary(pod);put('latest-'+typ+'.json',s)
-            failed=[]
             for v in s['containers']:
-                state=v['state']
-                if state.get('terminated',{}).get('exitCode',0)!=0 or state.get('waiting',{}).get('reason') in ('ImagePullBackOff','ErrImagePull','ErrImageNeverPull','CrashLoopBackOff','CreateContainerConfigError'):
-                    failed.append({'container':v['name'],'codes':failure_codes(s['name'],v['name']),'state':state})
-            if failed:
-                put('failure-'+typ+'.json',{'pod':s['name'],'uid':s['uid'],'failed':failed})
-                raise RuntimeError('STARTUP_CONTAINER_FAILED_'+typ)
+                disposition=producer_startup.disposition(v,convergence)
+                if disposition is None:
+                    continue
+                key=(s['uid'],v['name'],v['restartCount'],disposition)
+                if key not in failures:
+                    current=failure_codes(s['name'],v['name'],s['uid'])
+                    previous=(failure_codes(s['name'],v['name'],s['uid'],previous=True)
+                              if v['previousTermination'] else {'status':'NOT_EXERCISED','codes':[]})
+                    codes=sorted(set(current['codes']+previous['codes']))
+                    hard=disposition=='HARD' or bool(producer_startup.TERMINAL_CODES.intersection(codes))
+                    finding={'pod':s['name'],'uid':s['uid'],'failed':[{'container':v['name'],
+                             'codes':codes,'state':v['state'],'priorTermination':v['previousTermination'],
+                             'restartCount':v['restartCount'],'currentLog':current,'previousLog':previous}],
+                             'disposition':'HARD' if hard else 'RETRY','at':timestamp()}
+                    failures[key]=finding
+                    if len(failures)==1:put('failure-'+typ+'.json',finding)
+                    put('startup-attempts-'+typ+'.json',list(failures.values()))
+                if failures[key]['disposition']=='HARD':
+                    raise RuntimeError('STARTUP_CONTAINER_FAILED_'+typ)
             if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
-                return pod
+                ready_pod=pod
+                identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
+        if stable.observe(identity,time.monotonic()):
+            if convergence:
+                put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
+                    'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
+                    'recordedFailures':len(failures)})
+            return ready_pod
         time.sleep(2)
     raise RuntimeError('READY_DEADLINE_'+typ)
+
 def workload_ready(stage):
     for obj in objects(stage):
         nm=obj['metadata']['name']; sel=obj['spec']['selector']['matchLabels']
-        ready(','.join(k+'='+v for k,v in sel.items()),nm,300)
+        convergence=producer_policy if nm=='pgstream' else None
+        ready(','.join(k+'='+v for k,v in sel.items()),nm,
+              convergence['maxSeconds'] if convergence else 300,convergence)
 def execpod(pod,container,args,seconds=35):
     uid=pod['metadata']['uid']; nm=pod['metadata']['name']
     owned();assert get('pod',nm)['metadata']['uid']==uid
@@ -119,6 +155,7 @@ trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
 assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-delegator' and trust['subjects']==[{'kind':'ServiceAccount','name':'vault','namespace':ns}] and get('clusterrolebinding',tn,False) is None
 assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 intent=read(d/'intent.json')
+producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
 frozen.check_bootstrap_render(intent, [row for stage in
     ('foundation','stores','provision','private-admin','primer','serving') for row in objects(stage)])
@@ -160,7 +197,7 @@ try:
             owned()
             uid=row['metadata']['uid']
             assert get('pod',row['metadata']['name'])['metadata']['uid']==uid
-            codes=failure_codes(row['metadata']['name'],'done')
+            codes=failure_codes(row['metadata']['name'],'done',uid)['codes']
             assert get('pod',row['metadata']['name'])['metadata']['uid']==uid
             put('failure-role-export.json',{'podUid':uid,'container':'done','codes':codes,'classification':'CAPTURED' if codes else 'UNCLASSIFIED'})
             raise RuntimeError('SOURCE_ROLE_EXPORT_POD_FAILED')
@@ -184,7 +221,7 @@ try:
         assert row['metadata']['uid']==primer['metadata']['uid']
         cons=row['status'].get('containerStatuses',[])
         if any(c['state'].get('terminated',{}).get('exitCode',0)!=0 for c in cons):
-            put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done')})
+            put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done',row['metadata']['uid'])['codes']})
             raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED')
         try:
             execpod(primer,'done',['test','-s','/run/ns-primer/verified.json'])
