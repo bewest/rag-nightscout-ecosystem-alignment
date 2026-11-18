@@ -47,6 +47,18 @@ class Toolchain(unittest.TestCase):
             for count in (0,17,True):
                 m=self.manifest();m['topology']['apiReplicas']=count
                 with self.assertRaisesRegex(ValueError,'TOPOLOGY'):t.legacy(m,'compose')
+
+    def test_shared_primer_selections_project_once(self):
+        selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')
+        m=self.manifest()
+        selection={'concurrency':64,'maxTenants':20000}
+        m['profile']['phases']['primerOptions']=selection
+        with patch.object(t.frozen,'source',return_value=selected):
+            projected=t.local(m,dict(prepare={}))['prepare']
+            self.assertEqual((projected['primer-concurrency'],projected['primer-max-tenants']),(64,20000))
+            self.assertEqual(t.legacy(m)['profile']['phases']['primerOptions'],selection)
+            m['local']['prepare']['primer-concurrency']=64
+            with self.assertRaisesRegex(ValueError,'DUPLICATE_LOCAL_FACT'):t.local(m,dict(prepare={}))
     def test_job_actual_tool_identity_and_changed_projection_refuse_then_restore(self):
         with TemporaryDirectory() as tmp:
             p=Path(tmp);(p/'ns-job-offline-config').mkdir();(p/'ns-job-offline-request').mkdir()

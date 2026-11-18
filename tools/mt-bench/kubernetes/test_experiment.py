@@ -11,6 +11,7 @@ from test_adapter import fixture
 import kube_adapter as k
 import experiment
 import frozen
+import primer_options
 
 
 class Frozen(unittest.TestCase):
@@ -50,6 +51,37 @@ class Frozen(unittest.TestCase):
             self.assertEqual(frozen.source(self.manifest),baseline)
         with self.assertRaisesRegex(ValueError, 'EVIDENCE_CHANGED'):
             frozen.source(dict(self.manifest, sourceReceipt=dict(self.manifest['sourceReceipt'],sha256='0'*64)))
+
+    def test_selected_primer_requires_new_source_proof_and_preserves_exact_inputs(self):
+        options={'concurrency':64,'maxTenants':20000}
+        manifest={**self.manifest,'profile':{'phases':{'primerOptions':options}}}
+        selected=frozen.source(manifest)
+        self.assertEqual(selected['primerOptions'],options)
+        fit={**selected,'nativeCatalogueSha256':'7'*64,'sourceFilesSha256':{'prime.js':'8'*64}}
+        with self.assertRaisesRegex(ValueError,'PRIMER_OPTION_SOURCE_UNSUPPORTED'):
+            frozen.contract(manifest,fit)
+        fit['primerOptionProtocol']=primer_options.PROTOCOL
+        self.assertEqual(frozen.contract(manifest,fit),selected)
+        from unittest.mock import patch
+        with patch.object(experiment,'workload',return_value=manifest['profile']):
+            with self.assertRaisesRegex(k.Refused,'PRIMER_OPTIONS_AWAIT_PRIMER_REQUIRED'):
+                experiment.prepare(self.ref('primer-intent',manifest)['path'],{},self.root/'new-packet')
+        self.assertFalse((self.root/'new-packet').exists())
+        with self.assertRaisesRegex(ValueError,'CONTRACT_SOURCE_CHANGED'):
+            frozen.contract(manifest,{**fit,'primerOptions':{'concurrency':33,'maxTenants':20000}})
+        self.assertEqual(frozen.contract(manifest,fit),selected)
+
+    def test_only_reviewed_primer_option_bytes_may_differ(self):
+        previous=b'the original data protocol\n'+primer_options._LEGACY_VALIDATOR+b'\nmodule.exports = { parsePrimeOptions };\n'
+        changed=primer_options._DECLARATION+previous.replace(primer_options._LEGACY_VALIDATOR,primer_options._VALIDATOR)
+        changed=changed.replace(b'parsePrimeOptions };',b'parsePrimeOptions, PRIMER_OPTION_PROTOCOL };')
+        expected={'prime.js':frozen.digest(previous),'layout.js':'unmodified'}
+        measured={**expected,'prime.js':frozen.digest(changed)}
+        self.assertTrue(frozen.compatible_deployment_inputs({},expected,measured,prime_source=changed))
+        foreign=changed.replace(b'original data',b'altered data')
+        self.assertFalse(frozen.compatible_deployment_inputs({},expected,{**measured,'prime.js':frozen.digest(foreign)},prime_source=foreign))
+        self.assertFalse(frozen.compatible_deployment_inputs({},expected,{**measured,'layout.js':'altered'},prime_source=changed))
+        self.assertTrue(frozen.compatible_deployment_inputs({},expected,measured,prime_source=changed))
 
     def test_ack_budget_binds_package_and_changes_only_ack_field(self):
         manifest = {**self.manifest, frozen.ACK_BUDGET: 60000}

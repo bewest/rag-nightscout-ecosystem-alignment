@@ -9,6 +9,7 @@ import sys
 import kube_adapter as k
 import frozen
 import edge_configuration
+import primer_options
 from workloads import profile
 from contract import discovery_api_replicas, discovery_workers
 
@@ -56,6 +57,11 @@ def local(m,instance):
         options['pgstream-notifier-ack-timeout-ms'] = selected[frozen.ACK_BUDGET]
     p=profile.validate(dict(original['profile'],referencePins=dict(core=selected['coreCommit'],deploy=selected['deployCommit'],bindingCommit=original['bindingCommit'])))
     w=p['workload'];t=m['topology']
+    primer=primer_options.from_profile(p,frozen.require)
+    if primer is not None:
+        frozen.require(not {'primer-concurrency','primer-max-tenants'} & options.keys(), 'DUPLICATE_LOCAL_FACT')
+        names={'concurrency':'primer-concurrency','maxTenants':'primer-max-tenants'}
+        options.update({names[key]:value for key,value in primer.items()})
     options.update({'core-commit':selected['coreCommit'],'deploy-commit':selected['deployCommit'],
         'image':selected['localImageId'],'image-id':selected['localImageId'],'postgres-image':original['postgresImageId'],
         'tenants':p['population']['provisionedTenants'],'replicas':t['apiReplicas'],

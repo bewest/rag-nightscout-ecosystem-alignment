@@ -296,6 +296,7 @@ def discovery_authorization(manifest, receipt):
     """Version 1 preserves the original PENDING contract; v2 binds projections."""
     import stream_topology
     import preload_convergence
+    import primer_options
     version=receipt.get('version',1)
     require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
     require('commissioningSlotWalMiB' not in manifest or version==2,
@@ -305,6 +306,9 @@ def discovery_authorization(manifest, receipt):
     preload = preload_convergence.receipt(manifest, receipt)
     selected_budgets={'probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
     require(not selected_budgets or version==2,'M7_WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED')
+    primer=primer_options.selection(primer_options.from_manifest(manifest),lambda ok,code:require(ok,'M7_'+code))
+    require(not ('maxTenants' in primer or primer_options.requires_extended(primer)) or version==2,
+            'M7_PRIMER_OPTIONS_BOUND_RECEIPT_REQUIRED')
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
     import static_topology
@@ -314,6 +318,7 @@ def discovery_authorization(manifest, receipt):
             'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(preload_convergence.selection(resolved) == preload, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(primer_options.from_manifest(resolved)==primer,'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(resolved.get('staticTopology') == manifest.get('staticTopology') and
             resolved.get('staticBuildReceiptSha256') == manifest.get('staticBuildReceiptSha256'),
             'M7_STATIC_CONFIGURATION_MISMATCH')

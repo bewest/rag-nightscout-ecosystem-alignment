@@ -117,6 +117,16 @@ waiting Pod and uses its private admin and DATA Services. It bounds execution
 by the earlier of the packet and Job deadlines. Set the Job's finite
 `provisionDeadlineSeconds` at commissioning to cover setup and waiting.
 `--concurrency N` selects the source implementation's bounded concurrency.
+For fresh discovery, set `profile.phases.primerOptions` with `concurrency` and
+optionally `maxTenants`. For example, `{"concurrency":64,"maxTenants":20000}`
+selects up to 64 workers for a chunk of up to 20,000 pending tenants. The source
+starts no more workers than the pending chunk contains. With the extended
+source, both fields accept positive JavaScript safe integers. The defaults are
+one worker and 10,000 pending tenants per invocation. The image constructor
+checks the pinned parser and exact bytes before binding the selection. Legacy
+images refuse options beyond their supported range before resource creation.
+The waiting actor takes the bound selection automatically. Explicit arguments
+must match it. A partial DATA result stays incomplete and keeps its custody.
 The successful receipt binds the privately exported DATA roster to the run,
 namespace, Job, Pod and container. Access and load verify this receipt.
 Preserve the source lock and uncertain-write journal after an interrupted

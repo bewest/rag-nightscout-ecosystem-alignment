@@ -55,6 +55,7 @@ import dependency_reuse
 import collection_segments
 import vault_refusal
 import workload_inputs
+import primer_options
 import phase_windows
 BASE = ROOT / "tools/mt-bench/compose-baseline"
 REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/workload.js",
@@ -579,7 +580,11 @@ def attach(args):
     # This is provisional read-only metadata; canonical owner/dependency/resource
     # validation below remains mandatory before a usable attachment is written.
     m['postgresImageId']=getattr(args,'postgres_image',None)
-    m['primerConcurrency']=primer_concurrency(getattr(args,'primer_concurrency',1))
+    selected_primer=prepare_primer_options(args)
+    bound_primer='maxTenants' in selected_primer or primer_options.requires_extended(selected_primer)
+    require(not bound_primer or getattr(args,'runtime_owner',None),'M7_PRIMER_OPTIONS_RUNTIME_OWNER_REQUIRED')
+    m['primerConcurrency']=selected_primer['concurrency']
+    if 'maxTenants' in selected_primer:m['primerMaxTenants']=selected_primer['maxTenants']
     if getattr(args,'runtime_owner',None):
         runtime=document(args.runtime_owner)
         owner_path=Path(args.runtime_owner).resolve()
@@ -587,6 +592,9 @@ def attach(args):
         require(owner_path==runtime_directory/'owner.json' and runtime.get('prepared') is True
                 and runtime.get('project')==m['project'] and runtime.get('pair')==m['pair']
                 and runtime.get('imageId')==m['imageId'], 'M7_ATTACH_RUNTIME_OWNER_MISMATCH')
+        if bound_primer or 'primerMaxTenants' in runtime or primer_options.requires_extended(primer_options.from_manifest(runtime)):
+            require(runtime.get('primerConcurrency',1)==m['primerConcurrency'] and
+                    runtime.get('primerMaxTenants')==m.get('primerMaxTenants'),'M7_PRIMER_OPTIONS_RUNTIME_CHANGED')
         if static_selection or runtime.get('staticTopology'):
             require(runtime.get('staticTopology')==m.get('staticTopology') and runtime.get('replicas')==m['replicas'],'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
         if static_selection:
@@ -656,11 +664,21 @@ def prepare_image_inputs(args):
     # candidates before creating a worktree or installing its dependencies.
     # Build-after-prepare profiles retain their existing admission at deploy.
     if args.profile!='pgstream-sample' or getattr(args,'run_purpose','acceptance')!='discovery':return None
+    options=prepare_primer_options(args)
+    primer_raw=None
+    if primer_options.requires_extended(options):
+        primer_raw=command(['git','-C',args.deploy_repo,'show',args.deploy_commit+':'+primer_options.SOURCE_PATH],binary=True)
+        primer_options.require_source(options,primer_options.source_protocol(primer_raw),primer_need)
     selected=image({'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'image':args.image,
                     'imageId':getattr(args,'image_id',None) or args.image})
     postgres=json.loads(command(['docker','image','inspect',args.postgres_image]))[0]
     require(postgres['Id']==args.postgres_image,'M7_POSTGRES_IMAGE_CHANGED')
-    return {'appImageId':selected,'postgresImageId':postgres['Id'],'scope':'existing image identity and source labels only; runtime preflight still required'}
+    result={'appImageId':selected,'postgresImageId':postgres['Id'],'scope':'existing image identity and source labels only; runtime preflight still required'}
+    if primer_raw is not None:
+        result['primerSource']=primer_options.probe_image(
+            lambda argv,timeout:command(argv,timeout=timeout,phase='primer-source-preflight'),
+            selected,primer_raw,options,primer_need)
+    return result
 
 
 def discovery_source_features(repo, core_commit, static=False):
@@ -787,8 +805,15 @@ def prepare(args):
     local_observer = bool(node_observation.option(args) or api_warm_cause.option(args))
     require(not local_observer or (selected and document(args.freeze).get('version')==2),
             'M7_LOCAL_OBSERVER_RECEIPT')
+    options=prepare_primer_options(args)
+    extended_primer=primer_options.requires_extended(options)
+    if extended_primer:
+        # The fixture-specific resource driver receives its container budget
+        # after Compose is rendered. Check the isolated cached-image parser
+        # before arming that driver, without borrowing any runtime one-off.
+        commit(args.deploy_repo,args.deploy_commit)
+        args.image_input_preflight=prepare_image_inputs(args)
     diagnostic_resources.configure(selected)
-    primer_concurrency(getattr(args,"primer_concurrency",1))
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
     ack_budget=stream_topology.ack_option(args)
@@ -818,7 +843,8 @@ def prepare(args):
     if getattr(args,'measurement_mode','accepted')=='unaccepted' or (args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery'):
         candidate={'profile':args.profile,'tenants':args.tenants,'replicas':args.replicas,'pair':{'core':args.core_commit,'deploy':args.deploy_commit},'instrument':pinned,
                    'cadence':cadence_options(args),'runPurpose':getattr(args,'run_purpose','acceptance'),'measurementMode':args.measurement_mode,'runId':getattr(args,'run_id',None),'imageId':getattr(args,'image_id',None) or args.image,'maximumRunMinutes':getattr(args,'maximum_run_minutes',180),
-                   'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**({'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract} if static_selection else {})}
+                   'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**({'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract} if static_selection else {}),
+                   'primerConcurrency':options['concurrency'],**({'primerMaxTenants':options['maxTenants']} if 'maxTenants' in options else {})}
         candidate.update(commissioning_wal.option(args))
         candidate.update(ack_budget)
         candidate.update(preload)
@@ -838,7 +864,8 @@ def prepare(args):
             from run_configuration import namespace_preflight
             args.namespace_preflight=namespace_preflight(args)
     args.dependency_qualification=qualified_dependencies(args)
-    args.image_input_preflight=prepare_image_inputs(args)
+    if not extended_primer:
+        args.image_input_preflight=prepare_image_inputs(args)
     target.mkdir(parents=True, mode=0o700)
     try:
         with private_commands(target/'prepare-commands'):
@@ -867,7 +894,9 @@ def prepare_staged(args,target,pinned):
     selection=serial_exchange_selection(args)
     if selection is not None:m['serialExchangeDiagnostic']=selection
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
-    m["primerConcurrency"]=primer_concurrency(getattr(args,"primer_concurrency",1))
+    options=prepare_primer_options(args)
+    m["primerConcurrency"]=options['concurrency']
+    if 'maxTenants' in options:m['primerMaxTenants']=options['maxTenants']
     m.update(commissioning_wal.option(args))
     m.update(stream_topology.ack_option(args))
     m.update(preload_convergence.option(args))
@@ -966,7 +995,7 @@ def prepare_staged(args,target,pinned):
             observation=getattr(args,'diagnostic_cpu_preflight',None))
         if observation.get('runtimePrecision')=='runc-systemd-whole-percent-v1':
             planned=deployment_plan(config,pgstream=m.get('profile')=='pgstream-sample',
-                primer_concurrency_value=m.get('primerConcurrency',1),platform_verification=bool(m.get('platformStartup')))
+                primer_concurrency_value=m.get('primerConcurrency',1),platform_verification=bool(m.get('platformStartup')),primer_max_tenants=m.get('primerMaxTenants'))
             roles=set().union(*(diagnostic_resources.compose_actor_roles(argv,config)
                                 for _,kind,argv in planned if kind=='compose'))
             observation=resource_cpu_preflight(selected_resources,roles=roles,observation=observation)
@@ -1005,6 +1034,14 @@ def verify(d, m, teardown=False):
     require(host_identity(fixture_inventory(m))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
+    if not teardown and not m.get('attached') and primer_options.requires_extended(primer_options.from_manifest(m)):
+        reference=m.get('imageInputPreflight',{})
+        source=reference.get('primerSource',{})
+        chosen=primer_options.from_manifest(m)
+        require(reference.get('appImageId')==m['imageId'] and source.get('protocol')==primer_options.PROTOCOL
+                and source.get('options')==chosen and
+                source.get('sha256')==digest(d/'core/deploy/multitenant/prime.js'),
+                'M7_PRIMER_OPTION_IMAGE_SOURCE_CHANGED')
     if m.get('composeLimitMode') == 'uncapped-services':
         diagnostic_resources.compose_limit_mode(document(d/'frozen.compose.json'), None)
     if m.get("environmentSha256"):
@@ -1050,9 +1087,19 @@ def service_roster(config):
             if isinstance(spec.get("command"), list) and spec["command"][-1:] and (spec["command"][-1] in ("api", "realtime", "evaluator", "tenant-admin") or name=="pgstream" and spec["command"]==stream_topology.EXTERNAL_COMMAND or name=="socket-edge" and spec["command"]==static_topology.EDGE_COMMAND)]
 
 
-def primer_concurrency(value):
-    require(type(value) is int and 1<=value<=32,"M7_PRIMER_CONCURRENCY_INVALID")
-    return value
+def primer_need(ok, code):
+    require(ok, 'M7_'+code)
+
+
+def prepare_primer_options(args):
+    chosen={'concurrency':getattr(args,'primer_concurrency',1)}
+    maximum=getattr(args,'primer_max_tenants',None)
+    if maximum is not None:chosen['maxTenants']=maximum
+    primer_options.selection(chosen,primer_need)
+    require(not (maximum is not None or primer_options.requires_extended(chosen)) or
+            (getattr(args,'run_purpose','acceptance')=='discovery' and args.profile=='pgstream-sample'),
+            'M7_PRIMER_OPTIONS_BOUND_DISCOVERY_ONLY')
+    return chosen
 
 
 def application_database(d):
@@ -1121,9 +1168,10 @@ def platform_startup_config(config,d,m,readiness=None,verify=False):
     require(set(roles)=={'api','evaluator','realtime'},'M7_PLATFORM_STARTUP_ROLES_REQUIRED')
 
 
-def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_verification=False,compose_ready_seconds=1200):
-    concurrency=primer_concurrency(primer_concurrency_value)
-    prime_options=["--concurrency",str(concurrency)] if concurrency!=1 else []
+def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_verification=False,compose_ready_seconds=1200,*,primer_max_tenants=None):
+    selected={'concurrency':primer_concurrency_value}
+    if primer_max_tenants is not None:selected['maxTenants']=primer_max_tenants
+    prime_options=primer_options.argv(primer_options.selection(selected,primer_need))
     roster=service_roster(config)
     apis=[name for name in roster if config["services"][name]["command"][-1]=="api"]
     remaining=[name for name in roster if name not in apis]
@@ -1403,7 +1451,7 @@ def deploy(d, m):
     stages=[]
     authored=m.get('cadence',{}).get('startupWindows',{})
     startup=workload_inputs.startup_windows(authored,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)
-    for name,scope,args in deployment_plan(config,pgstream=m.get("profile")=="pgstream-sample",primer_concurrency_value=m.get("primerConcurrency",1),platform_verification=bool(m.get("platformStartup")),compose_ready_seconds=startup['composeReadySeconds']):
+    for name,scope,args in deployment_plan(config,pgstream=m.get("profile")=="pgstream-sample",primer_concurrency_value=m.get("primerConcurrency",1),platform_verification=bool(m.get("platformStartup")),compose_ready_seconds=startup['composeReadySeconds'],primer_max_tenants=m.get('primerMaxTenants')):
         with deployment_stage(d, stages, name) as stage:
             timeout = remaining_seconds(authored['stageSeconds']) if 'stageSeconds' in authored else discovery_seconds(m, startup['stageSeconds'])
             if ('stageSeconds' not in authored and name in ("provision", "prime") and
@@ -1419,7 +1467,10 @@ def deploy(d, m):
             write(d/'deployment-stages.json',stages)
             if name=="prime":
                 prior=d/"state/primer/tenants.json"
-                write(d/"primer-start.json",{"concurrency":m.get("primerConcurrency",1),"reusedTenants":len(document(prior)["tenants"]) if prior.exists() else 0,"requestedTenants":m["tenants"],"stageTimeoutSeconds":timeout})
+                write(d/"primer-start.json",{"concurrency":m.get("primerConcurrency",1),
+                    **({'maxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
+                    "reusedTenants":len(document(prior)["tenants"]) if prior.exists() else 0,
+                    "requestedTenants":m["tenants"],"stageTimeoutSeconds":timeout})
             observer=(api_warm_cause.observe(sys.modules[__name__],d,m) if name=='prime'
                       else contextlib.nullcontext())
             with observer, (d/(name+".log")).open("wb") as output:
@@ -2484,7 +2535,8 @@ def parser():
     prep.add_argument('--preload-convergence-interval-seconds', type=int,
                       help='Interval between original strict pre-load source snapshots')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
-    prep.add_argument("--primer-concurrency",type=int,choices=range(1,33),default=1,help="Bounded commissioning workers on a qualified NEXT image; default serial")
+    prep.add_argument("--primer-concurrency",type=int,default=1,help="Native DATA primer worker limit; default serial")
+    prep.add_argument("--primer-max-tenants",type=int,help="Native DATA primer maximum pending tenants per invocation")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, required=True, help="Discovery API count 1..16; acceptance retains its fixed grid");prep.add_argument("--quiet-load", type=float, default=3)
     attached=sub.add_parser('attach',parents=[prep],add_help=False)
     for name in ('project','source-root','state','env-file'):attached.add_argument('--'+name,required=True)

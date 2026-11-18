@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import primer_options
 
 ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
 ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
@@ -85,6 +86,10 @@ def source(manifest):
                 and type(storage['stateMiB']) is int and 0 < storage['stateMiB'] <= (2**53-1)//1048576
                 and storage['secretCodec'] in ('raw-v1','gzip-v1'), 'PRIMER_STORAGE_SELECTION')
         chosen[PRIMER_STORAGE] = storage
+    primer = primer_options.from_profile(manifest.get('profile',{}), require)
+    if primer is not None:
+        require(tier == 'discovery', 'PRIMER_OPTIONS_DISCOVERY_ONLY')
+        chosen[primer_options.FIELD] = primer
     startup = manifest.get('profile',{}).get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
     if 'jobCompleteSeconds' in startup:
         seconds=startup['jobCompleteSeconds']
@@ -101,6 +106,13 @@ def contract(manifest, observed):
     require((ACK_BUDGET in observed) == (ACK_BUDGET in chosen), 'PGSTREAM_ACK_UNDECLARED')
     require((PRIMER_STORAGE in observed) == (PRIMER_STORAGE in chosen), 'PRIMER_STORAGE_UNDECLARED')
     require((JOB_COMPLETE in observed) == (JOB_COMPLETE in chosen),'STARTUP_JOB_COMPLETE_UNDECLARED')
+    require((primer_options.FIELD in observed) == (primer_options.FIELD in chosen), 'PRIMER_OPTIONS_UNDECLARED')
+    if primer_options.PROTOCOL_FIELD in observed:
+        require(observed[primer_options.PROTOCOL_FIELD] == primer_options.PROTOCOL and
+                re.fullmatch('[a-f0-9]{64}', observed.get('sourceFilesSha256', {}).get('prime.js', '')),
+                'PRIMER_OPTION_SOURCE_UNSUPPORTED')
+    if primer_options.FIELD in chosen:
+        primer_options.require_source(chosen[primer_options.FIELD], observed.get(primer_options.PROTOCOL_FIELD), require)
     if 'bootstrapHelper' in manifest:
         require(observed.get('sourceFilesSha256', {}).get('bootstrap.js') == BOOTSTRAP_ORIGINAL, 'BOOTSTRAP_BASE_CHANGED')
     require(re.fullmatch('[a-f0-9]{64}', observed['nativeCatalogueSha256']), 'CATALOGUE_ID')
@@ -155,7 +167,10 @@ HELPER_ANNOTATIONS = {'nightscout.org/bootstrap-helper-commit': BOOTSTRAP_HELPER
 
 
 
-def compatible_deployment_inputs(manifest, expected, measured):
+def compatible_deployment_inputs(manifest, expected, measured, *, prime_source=None):
+    if ('prime.js' in expected and prime_source is not None and digest(prime_source) == measured.get('prime.js') and
+            primer_options.legacy_source_digest(prime_source) == expected['prime.js']):
+        measured = {**measured, 'prime.js': expected['prime.js']}
     if expected == measured:
         return True
     # The previously controlled registry-admin lifetime correction can be

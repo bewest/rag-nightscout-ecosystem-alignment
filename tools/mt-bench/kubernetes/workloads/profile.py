@@ -15,6 +15,7 @@ sys.path.insert(0, str(HERE.parent))
 sys.path.append(str(ROOT / 'tools/mt-bench/m7-joined'))
 import workload_runtime
 import preload
+import primer_options
 SHAPES = workload_runtime.SHAPES
 
 
@@ -57,6 +58,7 @@ def validate(p):
     if 'cohortReadySeconds' in p['phases']:
         need(workload_runtime.workload_inputs.seconds(p['phases']['cohortReadySeconds']), 'COHORT_READY_WINDOW')
     workload_runtime.workload_inputs.startup_selection(p['phases'],need)
+    primer_options.from_profile(p,need)
     pre_load = preload.selection(p['phases'].get('preloadConvergence'))
     access_window = access_setup + 60 if access_setup is not None else 0
     work = p['phases']['workSeconds']
@@ -81,6 +83,7 @@ def describe(p):
     startup=inputs.startup_selection(p['phases'],need)
     return {'version': 1, 'profile': p['name'], 'basis': 'read-derived equations from generated M7 workload',
             'preloadConvergence':preload.selection(p['phases'].get('preloadConvergence')),
+            **({primer_options.FIELD:p['phases'][primer_options.FIELD]} if primer_options.FIELD in p['phases'] else {}),
             'workload': w, 'arrivalCycleMs': cycle_ms, 'shapeCycleMs': cycles, 'shapeRequestsPerSecond': rates,
             'effectivePhaseWindows': {
                 key: {'seconds': w.get(key, default), 'origin': 'authored' if key in w else 'legacy default'}
@@ -141,6 +144,10 @@ def bind(p, config):
     need(config.get('dataPrimerSeconds',data_seconds)==data_seconds,'DATA_PRIMER_WINDOW_CHANGED')
     if data_seconds is not None:
         result['dataPrimerSeconds']=data_seconds
+    primer = primer_options.from_profile(p,need)
+    need(config.get(primer_options.FIELD,primer)==primer,'PRIMER_OPTIONS_CHANGED')
+    if primer is not None:
+        result[primer_options.FIELD]=primer
     pre_load = preload.selection(p['phases'].get('preloadConvergence'))
     need(config.get('preloadConvergence', pre_load) == pre_load, 'PRELOAD_CONVERGENCE_CHANGED')
     if pre_load is not None:
