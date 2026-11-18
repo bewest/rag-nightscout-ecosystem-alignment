@@ -189,7 +189,7 @@ Evidence: this record; lane handoff `externals/work/HANDOFF-consumer-refusal-202
 
 ## Addendum 2026-11-10: revision-on-content-change stopped at the reader inventory
 
-Decision [`evaluator-revision-on-content-change`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change)
+Decision [`evaluator-revision-on-content-change`](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-revision-on-content-change)
 (alignment `main` `b9e78338`). Lane head unchanged at `1adb17f8`, tree clean. No code was changed: one reader relies on
 the per-cycle bump, so the lane stopped and reported, as instructed.
 
@@ -233,8 +233,8 @@ once per second per tenant, against legacy's once per heartbeat (60 s default).
 
 ## Addendum 2026-11-10 (second): revision on content change and the alarm repeat clock
 
-Decisions [`evaluator-revision-on-content-change`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change)
-and [`alarm-repeat-clock`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock) (alignment `main`
+Decisions [`evaluator-revision-on-content-change`](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-revision-on-content-change)
+and [`alarm-repeat-clock`](../../../docs/30-design/tenancy/multitenancy-decisions.md#alarm-repeat-clock) (alignment `main`
 `fee6e40e`). Lane `codex/consumer-refusal-20261110`: `1adb17f8` → `1d39c924` (telemetry) → **`956d0940`** (behaviour).
 PostgreSQL 16.15 disposable container (same digest), removed afterwards.
 

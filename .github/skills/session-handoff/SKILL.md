@@ -26,7 +26,9 @@ coordination contract in `AGENTS.md` and the applicable batch plan.
 ## 1. Record the programme state (tracked)
 
 Append a dated Update table to `releases/<product>-<version>/contents.md` and any decision rows to
-`decisions.md` (the `release-record` skill). Hashes come from `git log` run now, not from a brief.
+`decisions.md` (the `release-record` skill). Multitenant work instead appends to
+`docs/30-design/tenancy/execution-log.md` and `docs/30-design/tenancy/multitenancy-decisions.md`
+("Programme decisions after D23"); a release directory carries only what that release ships. Hashes come from `git log` run now, not from a brief.
 
 ## 2. Write the lane handoff (local)
 

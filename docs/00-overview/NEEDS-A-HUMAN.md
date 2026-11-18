@@ -171,9 +171,9 @@ maintainer's actions.
 On 2026-11-09 the maintainer split M6 into M6a–M6d and M7, moved the deployment tree to
 `nightscout-deploy`, chose a Vault Agent sidecar over a hand-written service-login
 adapter, and retired the agent-invented grant ceremony in favour of a disposable harness
-([decisions](../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09)).
+([decisions](../30-design/tenancy/multitenancy-decisions.md#plan-restructuring-and-process-simplification-2026-11-09)).
 
-Settled 2026-11-10 ([decisions](../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-companion-internal-listener-activity-policy-and-8898-timing-2026-11-10)): the internal listener shape (Ory pattern, socket default, graceful shutdown), the operator activity policy (pause/suspend; owner may pause), the `nightscout-deploy` home (pushed to the nightscout organisation; it owns the Compose tree) and #8898 timing (draft until the next batch joins).
+Settled 2026-11-10 ([decisions](../30-design/tenancy/multitenancy-decisions.md#deploy-companion-internal-listener-activity-policy-and-8898-timing-2026-11-10)): the internal listener shape (Ory pattern, socket default, graceful shutdown), the operator activity policy (pause/suspend; owner may pause), the `nightscout-deploy` home (pushed to the nightscout organisation; it owns the Compose tree) and #8898 timing (draft until the next batch joins).
 
 What still needs a person:
 

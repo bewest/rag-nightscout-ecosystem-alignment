@@ -1,8 +1,8 @@
 # Evaluator per-evaluation cost: candidates C, D, E, B and A (2026-11-11)
 
 *Contributor-facing measurement record for decisions
-[evaluation-cost-candidates](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluation-cost-candidates) and
-[view-reads-total-order](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#view-reads-total-order). Multitenant
+[evaluation-cost-candidates](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluation-cost-candidates) and
+[view-reads-total-order](../../../docs/30-design/tenancy/multitenancy-decisions.md#view-reads-total-order). Multitenant
 only. Captured 2026-11-11 06:47–08:20 local time; not edited after capture. Synthetic tenants and data, plus the
 alignment corpus sets read in place and reported by position and count only. Figures are **reproduced** (run here,
 output in [`runs/`](runs/)) unless labelled otherwise. Other lanes shared the host; each run quotes its load average.*

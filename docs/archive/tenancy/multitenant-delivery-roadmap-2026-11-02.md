@@ -40,7 +40,7 @@ R63 client measurements retain their historical scope. The maintainer has
 a tenant's own legacy `api-secret` must retain authorized200. Removed in the local candidate; comprehensive verification is pending. Headless owner
 `config.ownerPolicy` is writer policy and stays.
 
-The [promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+The [promotion decisions](../../30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06)
 keep M2 to the roadmap cell (tenant-local config/versioned writes, unknown-tenant
 refusal, A token refused on B by signature, no environment/root/key leakage,
 separate owner/data/operator routes). Human issuer/refresh, existing-grant lifecycle
@@ -606,7 +606,7 @@ deliverables ran in parallel from accepted `c527fb7e`: actual entries CRUD
 in `workspace/entries-crud-20261104`, and runnable
 `nightscout multitenant api` in `workspace/runnable-multitenant-20261104`.
 Each delivered code, tests/controls and one handoff. The
-[approved continuation contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#runnable-preview-and-parallel-crud-delivery-2026-11-04)
+[approved continuation contracts](../../30-design/tenancy/multitenancy-decisions.md#runnable-preview-and-parallel-crud-delivery-2026-11-04)
 settle current-name/refusal policy and explicit config/environment-bound API
 preview boot. A real child-process CLI test, not another injected-app-only
 fixture, is the runtime acceptance target. R38 joins both clean heads with the

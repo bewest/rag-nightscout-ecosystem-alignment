@@ -75,7 +75,7 @@ projected into a fresh object of primitives. The status route shows the projecti
 settings. No owner catalogue entry was added; see §6.
 
 Owner surface reading: the 16.0.0 decision
-[owner-settings-projected-catalogue](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-settings-projected-catalogue)
+[owner-settings-projected-catalogue](../../../docs/30-design/tenancy/multitenancy-decisions.md#owner-settings-projected-catalogue)
 limits owner-writable names to the projected client keys, `enable` and thresholds, and "every other
 name is unsupported on the owner surface and refuses by name". The same row records the rest as
 "operator-static JSON per tenant". The fix therefore carries plugin extended settings from the operator's

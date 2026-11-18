@@ -564,7 +564,7 @@ of any release, and it does not show how well each part of the server enforces i
 **As proposed** (multitenant; a self-hosted single-tenant site keeps `API_SECRET` as it is, D1).
 The decisions are in the [tenancy decisions](../../30-design/tenancy/multitenancy-decisions.md#operator-owner-and-data-authority),
 the [owner-authority contract](../../30-design/tenancy/owner-authority.md) and the
-[release decisions of 2026-11-10](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-root-single-site-parity):
+[release decisions of 2026-11-10](../../30-design/tenancy/multitenancy-decisions.md#tenant-root-single-site-parity):
 - **D13, with the 2026-11-10 root-parity decision**: there is no deployment-wide secret. Each tenant has its own
   `API_SECRET`, which works as on a single site: all data, subjects, roles and the admin tools. It
   never carries owner or operator authority.

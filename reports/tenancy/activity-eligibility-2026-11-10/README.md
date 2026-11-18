@@ -2,8 +2,8 @@
 
 *Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Lane
 `codex/activity-eligibility-20261110`; local, unpushed. Implements the 16.0.0 decisions
-[`activity-is-pause-suspend`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend)
-and [`owner-may-pause`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-pause), against the
+[`activity-is-pause-suspend`](../../../docs/30-design/tenancy/multitenancy-decisions.md#activity-is-pause-suspend)
+and [`owner-may-pause`](../../../docs/30-design/tenancy/multitenancy-decisions.md#owner-may-pause), against the
 adopted [suspension and lifecycle](../../../docs/30-design/tenancy/multitenancy-decisions.md#suspension-and-lifecycle)
 semantics and the [admission and activity proposal](../../../docs/30-design/tenancy/tenant-admission-and-activity.md#focused-future-acceptance).*
 
@@ -182,9 +182,9 @@ is UNMEASURED.
 
 ## Addendum, 2026-11-10 (second capture): adopted semantics, always-provisioned rows, deletion auto-pause
 
-Implements [`activity-adopted-semantics-wiring`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-adopted-semantics-wiring),
-[`activity-row-always-provisioned`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned) and
-[`deletion-request-auto-pauses`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deletion-request-auto-pauses)
+Implements [`activity-adopted-semantics-wiring`](../../../docs/30-design/tenancy/multitenancy-decisions.md#activity-adopted-semantics-wiring),
+[`activity-row-always-provisioned`](../../../docs/30-design/tenancy/multitenancy-decisions.md#activity-row-always-provisioned) and
+[`deletion-request-auto-pauses`](../../../docs/30-design/tenancy/multitenancy-decisions.md#deletion-request-auto-pauses)
 (alignment `main` `c7370e961` when briefed). The consumer refusal at 150 ms timers is left to its own lane.
 
 | tree | ref | commit |

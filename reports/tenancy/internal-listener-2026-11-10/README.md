@@ -3,9 +3,9 @@
 Queue item `MT-INTERNAL-LISTENER`, lane branch `codex/internal-listener-20261110`
 (local worktree `externals/work/crm-internal-listener-20261110`, not pushed).
 It implements the decisions
-[internal-listener-ory-pattern](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern)
+[internal-listener-ory-pattern](../../../docs/30-design/tenancy/multitenancy-decisions.md#internal-listener-ory-pattern)
 and
-[internal-listener-graceful-shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
+[internal-listener-graceful-shutdown](../../../docs/30-design/tenancy/multitenancy-decisions.md#internal-listener-graceful-shutdown).
 Status: **fixed** on a local branch. Focused tests, a Compose run and break-it
 controls are recorded below. Full, browser and corpus acceptance is left to the
 joined candidate.

@@ -53,7 +53,8 @@ place to go stale.
 | an item's claimed state, gates, blockers | `queue/work-queue.yaml` | editing the YAML, then `make queue-validate && make queue` |
 | a decision that shapes a release | `releases/<product>-<version>/decisions.md` | one row per decision, stated as it stands |
 | what merged, what was tested, what is left | `releases/<product>-<version>/contents.md` update tables | appending a dated table; the file is the state of record for a cycle |
-| a tenancy decision (D1–D23) | `docs/30-design/tenancy/multitenancy-decisions.md` | editing the decision; the roadmap links to it |
+| a tenancy decision (D1–D23, and every later multitenant decision) | `docs/30-design/tenancy/multitenancy-decisions.md` | editing D1–D23; later decisions are one row each under "Programme decisions after D23" |
+| multitenant progress: what joined, what was tested, what is left, who owns it | `docs/30-design/tenancy/execution-log.md` | appending a dated table per coherent batch. Multitenant work stays out of `releases/` until a release carries a multitenant role |
 | a measurement summary and provenance | a compact dated record under `docs/60-research/<horizon>/` or `reports/` | never edited after capture |
 
 `progress.md` is the dated journal of the **research** facets (section 1, second row). Programme
@@ -231,7 +232,8 @@ A handoff is for a reader with none of your context, possibly a different tool. 
 6. **Who owns what** among the open lanes, and where to send notes.
 
 Record the programme-level state in `releases/<product>-<version>/contents.md` (a dated "Update"
-table) and `decisions.md`. Write new lane-level detail to
+table) and `decisions.md`; for multitenant work, in `docs/30-design/tenancy/execution-log.md` and
+`docs/30-design/tenancy/multitenancy-decisions.md`. Write new lane-level detail to
 `/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>-<date>.md`
 (local, untracked: it names worktrees and ports on this machine). Keep an existing
 lane handoff at its current path, including legacy `externals/work/` handoffs. Link the second from the first.

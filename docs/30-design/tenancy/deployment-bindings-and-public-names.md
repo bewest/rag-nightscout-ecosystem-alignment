@@ -114,7 +114,7 @@ and [joined acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-ac
 retain their tested scope; current deployment qualification is recorded separately
 in [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md).
 
-Bindings render the adopted [`serve.internal` listener](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+Bindings render the adopted [`serve.internal` listener](multitenancy-decisions.md#internal-listener-ory-pattern).
 Each role process has one private listener. Its default is a Unix socket.
 Network exposure uses explicit `NS_SERVE_INTERNAL_HOST`/`_PORT` settings.
 Callers use peer addresses such as `NS_API_INTERNAL_URL`.
@@ -122,7 +122,7 @@ A dial service name may differ from the bind
 interface. Public/management listeners remain separate. Code selects the contract
 modules; configuration cannot move them between authority planes. The binding's
 termination grace must exceed the listener's
-[graceful-shutdown deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
+[graceful-shutdown deadline](multitenancy-decisions.md#internal-listener-graceful-shutdown).
 
 The current adapter supports `http:`, not direct `https:`. The deployment owns
 network reachability and any selected standard TLS proxy/mesh boundary; contract

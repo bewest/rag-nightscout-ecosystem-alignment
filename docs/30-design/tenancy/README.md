@@ -2,10 +2,11 @@
 
 *Contributor-facing living reading guide, current with the release decisions of
 2026-11-16. Each document below owns one kind of fact; it links to the others
-rather than restating them. [Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md)
-own adopted policy, the [queue](../../../queue/work-queue.yaml) owns claimed item
-state and the [release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md)
-own merges, acceptance and publication. Retired journals, answered packets and
+rather than restating them. [Multitenancy decisions](multitenancy-decisions.md)
+own adopted policy (D1–D23 and the later programme rows), the [queue](../../../queue/work-queue.yaml) owns claimed item
+state and the [execution log](execution-log.md)
+owns joins, acceptance, measurement and ownership. Release directories carry only what a
+release ships; 16.0.0 ships no multitenant role. Retired journals, answered packets and
 superseded analyses are in the [tenancy archive](../../archive/tenancy/README.md);
 a date in a filename does not establish currency.*
 
@@ -62,7 +63,7 @@ guide below.
 
 | Document | Owns |
 |---|---|
-| `nightscout-deploy` (sibling repository; local `/home/bewest/src/nightscout-deploy`) | The Compose tree, edge, identity-provider profiles and Vault Agent overlay, [from the next #8898 batch on](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-home-now); see the [scope split](claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private). |
+| `nightscout-deploy` (sibling repository; local `/home/bewest/src/nightscout-deploy`) | The Compose tree, edge, identity-provider profiles and Vault Agent overlay, [from the next #8898 batch on](multitenancy-decisions.md#deploy-tree-home-now); see the [scope split](claimed-public-names-and-deploy-companion-2026-11-09.md#2-scope-split-core-sibling-repository-hoster-private). |
 | [Deployment and rig testing](deployment-and-rig-testing.md) | Fault domains, the ed2 Compose runbook, client and rig setup, restore/restart scenarios. |
 | [Deployment bindings and public names](deployment-bindings-and-public-names.md) | Kubernetes/Jsonnet resource translation, public-name lifetimes, transports and load-herd experiments. |
 

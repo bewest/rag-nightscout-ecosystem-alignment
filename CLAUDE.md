@@ -14,7 +14,7 @@
 ## Resuming paused multitenant or capacity work
 
 Before restarting a prior test, read the latest updates in
-`releases/cgm-remote-monitor-16.0.0/contents.md` and the local resume handoff
+`docs/30-design/tenancy/execution-log.md` and the local resume handoff
 `externals/work/HANDOFF-capacity-coordination-2026-11-12.md` in the main checkout.
 It records collected runs, cleanup, current owners and superseded instructions.
 Confirm your source head and that your task remains open. Coordinate cloud work

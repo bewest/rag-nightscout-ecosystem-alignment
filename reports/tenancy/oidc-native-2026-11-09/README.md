@@ -1,6 +1,6 @@
 # Owner/OIDC native acceptance matrix, disposable harness run (2026-11-09)
 
-*Contributor-facing measurement record. Queue item `MT-OIDC-NATIVE` (milestone M6a). Decision of record: `releases/cgm-remote-monitor-16.0.0/decisions.md#disposable-native-harness`. Written from the run output in this directory; nothing here is quoted from memory.*
+*Contributor-facing measurement record. Queue item `MT-OIDC-NATIVE` (milestone M6a). Decision of record: `docs/30-design/tenancy/multitenancy-decisions.md#disposable-native-harness`. Written from the run output in this directory; nothing here is quoted from memory.*
 
 ## What ran, on what
 

@@ -2,8 +2,8 @@
 
 *Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Queue item
 `MT-ROOT-ADMIN-PARITY`. Lane `codex/root-admin-parity-20261110`; local, unpushed. Decisions
-[`tenant-root-single-site-parity`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-root-single-site-parity)
-and [`root-may-edit-owner-subjects`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#root-may-edit-owner-subjects);
+[`tenant-root-single-site-parity`](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-root-single-site-parity)
+and [`root-may-edit-owner-subjects`](../../../docs/30-design/tenancy/multitenancy-decisions.md#root-may-edit-owner-subjects);
 amended paragraph in [owner authority](../../../docs/30-design/tenancy/owner-authority.md#management-authentication-and-lifetime-policy).*
 
 ## Anchors

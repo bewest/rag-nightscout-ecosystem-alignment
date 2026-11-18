@@ -2,8 +2,8 @@
 
 *Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Lane
 `codex/admin-lifecycle-20261110`; local, unpushed. Implements the 16.0.0 decisions
-[`restore-census-and-ownership-phase`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase)
-and [`admin-plane-same-address-different-port`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-plane-same-address-different-port).*
+[`restore-census-and-ownership-phase`](../../../docs/30-design/tenancy/multitenancy-decisions.md#restore-census-and-ownership-phase)
+and [`admin-plane-same-address-different-port`](../../../docs/30-design/tenancy/multitenancy-decisions.md#admin-plane-same-address-different-port).*
 
 ## Anchors
 
@@ -206,7 +206,7 @@ so after the census rewrite it no longer applied; it now asserts its mutation ap
 
 ## Addendum 2026-11-10 (second pass): counter writers, export, logical restore
 
-Decision [`restore-census-counter-writers`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-counter-writers)
+Decision [`restore-census-counter-writers`](../../../docs/30-design/tenancy/multitenancy-decisions.md#restore-census-counter-writers)
 (alignment `main` `c7370e9618748b9844774e36ab80cf4b05f7df52`) answers both decision questions above.
 Started from `26b5349d`, worktree clean.
 

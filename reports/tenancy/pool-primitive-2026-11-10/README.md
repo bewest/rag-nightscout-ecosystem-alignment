@@ -1,8 +1,8 @@
 # Pool-membership primitive (MT-POOL-PRIMITIVE), 2026-11-10
 
 *Contributor-facing evidence record for lane P. Captured 2026-11-10; not edited after capture.
-Decisions implemented: [evaluator-static-partition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition)
-and [pool-primitive-shared](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-primitive-shared).*
+Decisions implemented: [evaluator-static-partition](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-static-partition)
+and [pool-primitive-shared](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-primitive-shared).*
 
 ## Anchors
 
@@ -48,7 +48,7 @@ membership.grants({ namespace, member: role, inspector: role });  // the grant p
 membership.catalogue;                     // the reviewed migration catalogue for `migrate up`
 ```
 
-Connector tenants are hashed by tenant ID ([pool-primitive-shared](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-primitive-shared)),
+Connector tenants are hashed by tenant ID ([pool-primitive-shared](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-primitive-shared)),
 so the vcpool lane calls `slice.includes(tenantId)` and never passes a source ID. The caller owns the heartbeat
 schedule.
 

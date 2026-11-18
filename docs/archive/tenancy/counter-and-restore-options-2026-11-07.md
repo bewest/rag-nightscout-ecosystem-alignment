@@ -15,12 +15,12 @@ clinical/isolation/authority/durability obligations remain required.*
 
 *Living contributor-facing design analysis, 2026-11-07. Read-derived from the
 published f0fac99a application unless a linked experiment says reproduced.
-[Release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#allocator-preserving-restore-first)
+[Release decisions](../../30-design/tenancy/multitenancy-decisions.md#allocator-preserving-restore-first)
 own the adopted experiment direction and conditional preview pause allowance.
 This analysis adopts no schema, new cursor format or runtime admission.*
 
 *2026-11-10: the restore census now also [refuses a connected non-participant
-whose identity can write the insertion-order or write-clock tables](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-counter-writers);
+whose identity can write the insertion-order or write-clock tables](../../30-design/tenancy/multitenancy-decisions.md#restore-census-counter-writers);
 read-only identities stay exempt, and only the restore of the tenant being
 restored refuses. In the current design only `api` writes those counters.*
 
@@ -88,7 +88,7 @@ physical restore keeps its separate fidelity contract.
 
 A logical prototype must sort captured rows explicitly by BigInt ordinal;
 export array order is not an ordering contract. Preserve public IDs and typed
-clinical values. The later adopted [forward history correction policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
+clinical values. The later adopted [forward history correction policy](../../30-design/tenancy/multitenancy-decisions.md#restore-history-forward-correction)
 supersedes exact history-timestamp copying for same-ID logical restore: retain
 the live issued floor, advertise changed/restored values and deletions above it,
 and publish effects only after the actual restore commit. Exact raw metadata
@@ -118,7 +118,7 @@ incremental architecture options, not prerequisites silently added to the previe
 
 ## Fault isolation and the selected next step
 
-The maintainer [selected per-tenant insertion semantics and a tenant-local state prototype](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics). Cross-tenant ordering is not required; same-deployment restore must preserve other tenants' current state. The global
+The maintainer [selected per-tenant insertion semantics and a tenant-local state prototype](../../30-design/tenancy/multitenancy-decisions.md#tenant-local-insertion-semantics). Cross-tenant ordering is not required; same-deployment restore must preserve other tenants' current state. The global
 counter concern is shared mutable state under faulty or malicious behavior, not
 an observed requirement for cross-tenant ordinal values.
 

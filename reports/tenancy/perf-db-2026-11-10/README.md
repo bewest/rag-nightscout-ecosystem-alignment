@@ -1,7 +1,7 @@
 # MT-PERF-DB: cheap restore-fence admission, bounded startup warm, configurable pools (2026-11-10)
 
 *Contributor-facing measurement record for perf lane DB, decision
-[cost-proportional-to-activity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#cost-proportional-to-activity)
+[cost-proportional-to-activity](../../../docs/30-design/tenancy/multitenancy-decisions.md#cost-proportional-to-activity)
 item 3. Captured 2026-11-10 20:48–21:45 PST; not edited after capture. Multitenant only. Synthetic
 tenants and data only. Every figure is labelled **reproduced** (read from tool output of a run listed
 here) or **derived** (arithmetic on reproduced figures, or read from source).*
@@ -224,8 +224,8 @@ initialized.
 
 ## Resumed, 2026-11-10 (late): serve-then-warm readiness and the epoch everywhere
 
-Decisions [readiness-serve-then-warm](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#readiness-serve-then-warm)
-and [admission-epoch-everywhere](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admission-epoch-everywhere).
+Decisions [readiness-serve-then-warm](../../../docs/30-design/tenancy/multitenancy-decisions.md#readiness-serve-then-warm)
+and [admission-epoch-everywhere](../../../docs/30-design/tenancy/multitenancy-decisions.md#admission-epoch-everywhere).
 Captured 22:00–23:30 PST; appended, the sections above are unchanged.
 
 ### Anchors
@@ -451,7 +451,7 @@ Not verified:
 
 ## Resumed, 2026-11-11 (morning): the write clock is complete
 
-Decision [write-clock-complete](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#write-clock-complete). Captured 2026-11-11 06:00–07:00 PST; appended, the sections above are unchanged.
+Decision [write-clock-complete](../../../docs/30-design/tenancy/multitenancy-decisions.md#write-clock-complete). Captured 2026-11-11 06:00–07:00 PST; appended, the sections above are unchanged.
 
 ### Anchors
 

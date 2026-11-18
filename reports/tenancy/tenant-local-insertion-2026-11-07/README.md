@@ -9,7 +9,7 @@ This is a standalone SQL primitive proof, not deployment/M6 admission.*
 
 ## Contract and source
 
-[Adopted direction](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics):
+[Adopted direction](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-local-insertion-semantics):
 only per-tenant/collection relative order is required. No examined public/client
 consumer requires global insertion numbers. Public record IDs, stored documents,
 history timestamps and supported first-match behavior remain separate contracts.

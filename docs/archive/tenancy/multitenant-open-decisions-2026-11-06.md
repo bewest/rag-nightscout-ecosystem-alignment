@@ -2,7 +2,7 @@
 
 *Retained record, archived 2026-11-10 from alignment
 `c53105eeeb04225910e3c6871629fed5c7b78853`. The captured text below preserves
-its five critical-path questions as asked. Each item has a recorded decision or deferral in [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06), and the [M5/M6 decision list](../../30-design/tenancy/m5-m6-decision-list.md) is the current index. Do not act on its “next” or open questions.*
+its five critical-path questions as asked. Each item has a recorded decision or deferral in [release decisions](../../30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06), and the [M5/M6 decision list](../../30-design/tenancy/m5-m6-decision-list.md) is the current index. Do not act on its “next” or open questions.*
 
 *What this is: a decision note for the maintainer (contributor-facing), written 2026-11-06
 against alignment `main` `2efaa3a89` and the published candidate `83582e87` on draft PR #8898

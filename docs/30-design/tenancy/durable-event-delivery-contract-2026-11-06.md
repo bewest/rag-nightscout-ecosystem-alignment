@@ -9,7 +9,7 @@ evaluator or realtime wiring. It promotes no milestone, selects no provider,
 admits nothing to a release candidate, and infers no consistency stronger than
 what the cited records reproduced.*
 
-**Current direction, 2026-11-16:** the [stream-fed clinical materializer decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#stream-fed-clinical-materializer)
+**Current direction, 2026-11-16:** the [stream-fed clinical materializer decision](multitenancy-decisions.md#stream-fed-clinical-materializer)
 supersedes routine D6 polling and snapshot rediscovery for the maintained default
 evaluator. The [current architecture](evaluator-realtime-communication.md#stream-fed-clinical-materializer--adopted-target-2026-11-16)
 owns row intake, recoverable acceptance, cohorts, scheduling and output delivery.
@@ -175,7 +175,7 @@ keys them apart; the port corpus preserves typed forms in delete records,
 | **raw writers that bypass `write(intent)`** (a direct MongoDB upload, an independent SQL client) | **outside the contract**, by decision: writers that go straight to the database are unsupported and xDrip+'s MongoDB upload is deprecated (D-EVENT question 1 row, decisions.md). R50's fixture used exactly such raw writes to show they "emit no process event" (**reproduced**); under the clock they also carry no stamp allocated by the fence | |
 
 A consumer never infers a hard delete from a missing event. Strict stamped replay
-retains the limits above. The later [bounded snapshot reconciliation decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation)
+retains the limits above. The later [bounded snapshot reconciliation decision](multitenancy-decisions.md#m5-bounded-snapshot-reconciliation)
 selects full admitted current-identity/absence reconciliation in a consistent tenant
 snapshot, independent of floor movement. An arbitrary recent-time window is not
 sufficient. It preserves existing hard deletes and unstamped activity behavior;
@@ -240,7 +240,7 @@ says so in its health report; it does not invent one.
 [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) owns current functional M5 acceptance. The historical source inventory below
 remains anchored to the earlier source in §0; it is not a current code inventory.
 
-The later [tenant-wide suppression decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-wide-alarm-suppression)
+The later [tenant-wide suppression decision](multitenancy-decisions.md#tenant-wide-alarm-suppression)
 settles first-preview ack/snooze effects: shared within the tenant for the alarm
 group/level, original absolute expiry retained through restart, and no extension
 from repeats during the active window. Preserve the existing default duration and
@@ -295,7 +295,7 @@ and the seams plan's identity rule:
 
 ### Durable notification request handoff
 
-The maintainer adopted [durable requests and retries](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#durable-notification-requests-and-retries)
+The maintainer adopted [durable requests and retries](multitenancy-decisions.md#durable-notification-requests-and-retries)
 for the explicit multitenant preview after reviewing actual-component/synthetic-
 provider ambiguity evidence on `57d54963`. That evidence models lost process-local
 state through component recreation; it is not a measured process crash, live
@@ -409,7 +409,7 @@ sentence the entry bar in §8 can falsify:
 
 ## 11. Maintainer acceptance and experiments
 
-The [bounded snapshot reconciliation decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation)
+The [bounded snapshot reconciliation decision](multitenancy-decisions.md#m5-bounded-snapshot-reconciliation)
 selects the initial M5 current-state recovery path. It preserves existing writer
 contracts and requires explicit row/byte refusal. R73 records bounded functional
 implementation/native acceptance for the first reference; scan cadence/capacity
@@ -420,7 +420,7 @@ The maintainer adopted B7's design direction on 2026-11-06 in the B7 approval
 chat: proceed with tenant-local durable checkpoints, commit-coupled ordering,
 at-least-once replay and idempotent consumers, and use experiments to inform
 scalability and performance. The decision is recorded in the
-[release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#b7-durable-multitenant-delivery-2026-11-06).
+[release decisions](multitenancy-decisions.md#b7-durable-multitenant-delivery-2026-11-06).
 This accepts the direction and the executable entry bar, not measured distributed
 recovery, a performance budget, a provider, milestone promotion or release admission.
 R73 supplies the functional M5 disposition and recorded instruments. The queue

@@ -113,14 +113,14 @@ list. The schedule below governs further work.
 
 ## 5. Current completion schedule (adopted 2026-11-06)
 
-**Current order, 2026-11-15:** the [single-host streaming decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#single-host-streaming-first) governs the immediate baseline. Use the existing runnable UDS composition and existing performance lane; finish supported-path qualification and bounded operating-envelope experiments without waiting for optional topology or platform expansion. Preserve their research checkpoints and gates, but do not add them to the baseline critical path. One outcome, existing evidence homes and one final coherent candidate campaign are sufficient.
+**Current order, 2026-11-15:** the [single-host streaming decision](multitenancy-decisions.md#single-host-streaming-first) governs the immediate baseline. Use the existing runnable UDS composition and existing performance lane; finish supported-path qualification and bounded operating-envelope experiments without waiting for optional topology or platform expansion. Preserve their research checkpoints and gates, but do not add them to the baseline critical path. One outcome, existing evidence homes and one final coherent candidate campaign are sufficient.
 
 | Completion stage | Accepted capability and evidence | Remaining integration boundary |
 |---|---|---|
 | **A — data, control and clients (M0–M4)** | [R72](../remedial/rc-16.0.0-integration-record.md#r72---admitted-entries-and-owner-configuration-completion-batch-2026-11-06) retains M0 and promotes M1/M2, then M3/M4, at the adopted bounded scope. The later [pinned-client campaign](../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json) belongs to its own source/instrument. | Preserve legacy root/subject behavior and supported PG differences. Android emulator and measured operating limits remain C; no all-client claim. A's closed criteria are not new prerequisites to re-run for the documentation refresh. |
 | **B — durable runtime (M5)** | [R73](../remedial/rc-16.0.0-integration-record.md#r73-durable-runtime-operations-batch) accepts the functional separate-role reference on one host: current-state/evaluator recovery, current socket authority, durable suppression/request handoff and reference consumers. | Keep the accepted reference distinct from live external delivery, retained every-transition history, multi-node ownership and capacity. Changes to a consumed runtime contract need affected checks and coherent joined acceptance. |
 | **C — synthetic operational preview (M6, now M6a–M6d)** | [Operation-window acceptance](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md) records separate-process tenant-local restore, ordinary forward history/client convergence and B continuity, plus cold Compose/UI/restore acceptance. Earlier SQL backup/upgrade/deletion evidence retains its captured scope. | Split on 2026-11-09 into the capability items below. Accepted one-host recovery is not multi-host/HA admission. |
-| **M6a — identity and owner API** | [MT-M6A-JOIN acceptance](../../../reports/tenancy/m6a-join-2026-11-09/README.md) on the joined candidate, including the [internal service contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-service-contracts) and the disposable-harness [OIDC matrix](../../../reports/tenancy/oidc-native-2026-11-09/README.md). | Real identity-provider interoperability is synthetic only. Publication and CI state: the release contents and the queue item. |
+| **M6a — identity and owner API** | [MT-M6A-JOIN acceptance](../../../reports/tenancy/m6a-join-2026-11-09/README.md) on the joined candidate, including the [internal service contracts](multitenancy-decisions.md#internal-service-contracts) and the disposable-harness [OIDC matrix](../../../reports/tenancy/oidc-native-2026-11-09/README.md). | Real identity-provider interoperability is synthetic only. Publication and CI state: the release contents and the queue item. |
 | **M6b — lifecycle, keys and the joined candidate** | [MT-M6B-JOIN acceptance](../../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md) joins listener composition, key retention, ownership operations and single-site OIDC provisioning. | Ownership in a serving role and its deploy grants, real role processes over Compose and the production key custodian remain open; the release contents carry the full list. |
 | **M6c — deployment trust** (in `nightscout-deploy`) | [Vault Agent sidecar](../../../reports/tenancy/vault-agent-2026-11-09/README.md) and the core `tokenFile` read. | Identity-provider profile and live trust probes (`DEPLOY-IDP-PROFILE`, `DEPLOY-TRUST-PROBES`). |
 | **M6d — connector sync** | [MT-CONNECTOR-SYNC lab](../../../reports/tenancy/connector-sync-2026-11-10/README.md). | Other collections, cadence, token refresh and real ingress remain UNMEASURED. |
@@ -130,7 +130,7 @@ list. The schedule below governs further work.
 
 Stage C above is now four milestones and a production milestone, M6a–M6d and M7
 ([roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration),
-[decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)).
+[decision](multitenancy-decisions.md#m6-split-and-queue-collapse)).
 Each has one to four queue items with one gate each; the
 [dashboard](multitenant-delivery-dashboard.md) lists them with their claimed state.
 Native acceptance runs through a disposable harness; no lead reservation or grant is
@@ -166,7 +166,7 @@ The programme coordinator owns criterion closure, source freeze, queue/status
 integration. Each capability has one source owner and one next integration
 boundary. Native acceptance runs in a disposable harness that records the source
 head, requires a clean tree and removes its containers
-([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#plan-restructuring-and-process-simplification-2026-11-09));
+([decision](multitenancy-decisions.md#plan-restructuring-and-process-simplification-2026-11-09));
 the earlier grant/reservation ceremony is retired.
 
 Local evolving handoffs remain under `externals/work/HANDOFF-<lane>-<date>.md`.

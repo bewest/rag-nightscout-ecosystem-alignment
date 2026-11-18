@@ -14,7 +14,7 @@ edited after capture.*
 
 Worktree: `externals/work/crm-key-retention-20261110`. 17 files changed, +889/−59. Local, unpushed.
 
-Decision implemented: [`tenant-deletion-key-retention`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention)
+Decision implemented: [`tenant-deletion-key-retention`](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-deletion-key-retention)
 (option (a), 30 days).
 
 ## 2. What the change does

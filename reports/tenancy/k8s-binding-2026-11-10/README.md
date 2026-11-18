@@ -3,14 +3,14 @@
 *Contributor-facing evidence record. Captured 2026-11-10; not edited after capture. Figures are
 from tool output in this session. Status words as in AGENTS.md section 4.*
 
-Decision of record: [tanka-binding-parallel](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tanka-binding-parallel)
+Decision of record: [tanka-binding-parallel](../../../docs/30-design/tenancy/multitenancy-decisions.md#tanka-binding-parallel)
 (Tanka/Jsonnet in nightscout-deploy, local cluster, in parallel with the Compose bench; the
 equivalence claim still waits on `DEPLOY-TRUST-PROBES`). Also applied:
-[internal-listener-ory-pattern](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern),
-[admin-plane-same-address-different-port](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-plane-same-address-different-port),
-[evaluator-static-partition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition),
-[pool-primitive-shared](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-primitive-shared),
-[vault-agent-sidecar](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-agent-sidecar).
+[internal-listener-ory-pattern](../../../docs/30-design/tenancy/multitenancy-decisions.md#internal-listener-ory-pattern),
+[admin-plane-same-address-different-port](../../../docs/30-design/tenancy/multitenancy-decisions.md#admin-plane-same-address-different-port),
+[evaluator-static-partition](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-static-partition),
+[pool-primitive-shared](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-primitive-shared),
+[vault-agent-sidecar](../../../docs/30-design/tenancy/multitenancy-decisions.md#vault-agent-sidecar).
 
 ## Anchors
 
@@ -233,7 +233,7 @@ The table is in `bindings/kubernetes/README.md` at `65f55c1`. Of 23 rows:
 
 *Appended; earlier sections stand as recorded. Branch `k8s/cluster-smoke-20261110` head `b9af14c` (local, unpushed).*
 
-- **Two-Pod row replaced.** Decision [cohort-pod-not-scaled](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#cohort-pod-not-scaled): the one-Pod cohort is a monolith that scales vertically only. For horizontal scale or HA, operators use per-role placement, and the two placements never run against the same database at once. The binding, not core, holds the cohort to one replica.
+- **Two-Pod row replaced.** Decision [cohort-pod-not-scaled](../../../docs/30-design/tenancy/multitenancy-decisions.md#cohort-pod-not-scaled): the one-Pod cohort is a monolith that scales vertically only. For horizontal scale or HA, operators use per-role placement, and the two placements never run against the same database at once. The binding, not core, holds the cohort to one replica.
   - The smoke's red two-Pod control is now this rule, enforced at render time.
   - New invariant `cohort-single-replica`: a rendered `replicas: 2` gives `FAIL cohort-single-replica: StatefulSet/cohort replicas is 2; the one-Pod cohort is a monolith and scales vertically only; for horizontal scale or HA use per-role placement (decision cohort-pod-not-scaled)`. It is restored to green after the control.
   - The README explains cohort and per-role placement for operators.

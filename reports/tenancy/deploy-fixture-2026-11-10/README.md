@@ -2,7 +2,7 @@
 
 *Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Both lane
 branches are local and unpushed. Implements the 16.0.0 decision
-[`deploy-tree-home-now`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-home-now).*
+[`deploy-tree-home-now`](../../../docs/30-design/tenancy/multitenancy-decisions.md#deploy-tree-home-now).*
 
 ## Anchors
 

@@ -103,11 +103,11 @@ digest, wall clock 00:02:49 to 00:02:59 UTC, free disk 77,813,408 KB before and 
 
 ## Adopted decisions and remaining questions
 
-- [Key/artifact retention policy is adopted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention).
+- [Key/artifact retention policy is adopted](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-deletion-key-retention).
   R69 measures retained keys and artifact decryptability. Operator key destruction
   and restore-after-window refusal remain UNMEASURED; request-tombstone retention
   remains a separate policy question.
-- [Restore identity and cloning policy is adopted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning).
+- [Restore identity and cloning policy is adopted](../../../docs/30-design/tenancy/multitenancy-decisions.md#restore-identity-and-cloning).
   This probe exercises original-tenant restore. Cloning implementation and native
   acceptance remain UNMEASURED.
 - DECISION: artifact size and transaction bounds; one transaction, no numeric cap here.

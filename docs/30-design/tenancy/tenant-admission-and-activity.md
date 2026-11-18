@@ -2,13 +2,13 @@
 
 *Contributor-facing living guide, current with the release decisions of 2026-11-10.
 **Activity policy adopted 2026-11-10:** pause and suspend are the operator
-activity policy ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend)), with the rows listed
+activity policy ([decision](multitenancy-decisions.md#activity-is-pause-suspend)), with the rows listed
 under [adopted activity policy](#adopted-activity-policy). Implementation is
 `MT-ACTIVITY-ELIGIBILITY` (fixed on its lane, not joined to #8898; the
 [queue](../../../queue/work-queue.yaml) owns its state and the
 [lane record](../../../reports/tenancy/activity-eligibility-2026-11-10/README.md)
 its measurements). The REST component direction below is recorded in the
-[release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#rest-api-component-and-replica-placement-2026-11-08).
+[release decisions](multitenancy-decisions.md#rest-api-component-and-replica-placement-2026-11-08).
 Mechanism assessment in the first three sections is **read-derived** from application
 `ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364`; later acceptance stays attributed to
 its actual heads in the [operation-window acceptance family](../../../reports/tenancy/operation-window-acceptance-2026-11-07/README.md).
@@ -130,10 +130,10 @@ reason:
 
 | Fact | Owner and use | Boundary |
 |---|---|---|
-| Activity state (active, paused, suspended) | Durable per-tenant row, written by authorized owner (pause only) or operator action with audit. [Every tenant has one](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned): a migration backfills existing tenants as active and provisioning writes the row in the same transaction. | Neither a successful restore nor a process restart changes it. An unreadable row stops the evaluator for that tenant only, with a per-tenant health code. |
+| Activity state (active, paused, suspended) | Durable per-tenant row, written by authorized owner (pause only) or operator action with audit. [Every tenant has one](multitenancy-decisions.md#activity-row-always-provisioned): a migration backfills existing tenants as active and provisioning writes the row in the same transaction. | Neither a successful restore nor a process restart changes it. An unreadable row stops the evaluator for that tenant only, with a per-tenant health code. |
 | Maintenance/recovery state | The existing operation-window/controller owns exclusion, claims, uncertainty and safe maintenance completion. | Finishing restore clears only its own maintenance claim; it never clears pause or suspend. Unknown maintenance outcome is not success. |
 | Current authority | Tenant/client/session/key/grants and owner/operator policy decide whether the actor may perform the operation. | Unpausing grants no permission, revives no revoked key or session and overrides no RLS. Clinical restoration does not rewind current authority. |
-| Worker assignment | Configuration (and later [evaluator partitioning](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition)) names which worker may own a tenant's task. | Assignment does not make a paused or suspended tenant eligible. |
+| Worker assignment | Configuration (and later [evaluator partitioning](multitenancy-decisions.md#evaluator-static-partition)) names which worker may own a tenant's task. | Assignment does not make a paused or suspended tenant eligible. |
 | Observed health/readiness | Runtime reports dependencies, last acquisition, freshness and refusal reasons. | A green probe cannot override pause, suspend or recovery refusal; an outage is never reported as an intentional state. |
 
 Effective admission for an operation is the intersection of **activity state,
@@ -142,12 +142,12 @@ assignment. Dependency health may refuse work and never expands permission.
 
 | Decision (2026-11-10) | What it fixes |
 |---|---|
-| [Pause and suspend are the activity policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend) | Workers build work lists from eligible tenants. Paused: uploads and connector polling continue, the evaluator stops, and on unpause it recomputes from current data before publishing. Suspended: nothing runs. Restore and restart preserve the state. |
-| [Adopted semantics in full](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-adopted-semantics-wiring) | Suspend refuses ingest and reads and disconnects sockets; pause blocks UI and reads while uploads continue. |
-| [Owner may pause](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-pause) | Owner-API pause/unpause with audit. Only the operator suspends and deletes (delete requires suspend). Single-site behaviour is unchanged. |
-| [Deletion request pauses](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deletion-request-auto-pauses) | Request pauses; cancel restores the earlier state; operator execution suspends. An owner may pause or unpause during a pending ceremony; ownership changes still refuse. |
-| [Refusal status](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#suspended-refusal-423) | Suspended: every refused request, uploads included, returns 423 `TENANT_SUSPENDED`. Paused reads return 423 `TENANT_PAUSED`. Uploaders are not invited to retry. |
-| [Activity row always provisioned](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned) | A missing row is a provisioning defect, not an operating state. |
+| [Pause and suspend are the activity policy](multitenancy-decisions.md#activity-is-pause-suspend) | Workers build work lists from eligible tenants. Paused: uploads and connector polling continue, the evaluator stops, and on unpause it recomputes from current data before publishing. Suspended: nothing runs. Restore and restart preserve the state. |
+| [Adopted semantics in full](multitenancy-decisions.md#activity-adopted-semantics-wiring) | Suspend refuses ingest and reads and disconnects sockets; pause blocks UI and reads while uploads continue. |
+| [Owner may pause](multitenancy-decisions.md#owner-may-pause) | Owner-API pause/unpause with audit. Only the operator suspends and deletes (delete requires suspend). Single-site behaviour is unchanged. |
+| [Deletion request pauses](multitenancy-decisions.md#deletion-request-auto-pauses) | Request pauses; cancel restores the earlier state; operator execution suspends. An owner may pause or unpause during a pending ceremony; ownership changes still refuse. |
+| [Refusal status](multitenancy-decisions.md#suspended-refusal-423) | Suspended: every refused request, uploads included, returns 423 `TENANT_SUSPENDED`. Paused reads return 423 `TENANT_PAUSED`. Uploaders are not invited to retry. |
+| [Activity row always provisioned](multitenancy-decisions.md#activity-row-always-provisioned) | A missing row is a provisioning defect, not an operating state. |
 
 **What operators and owners notice.** No alarms are computed or delivered while a
 site is paused, including the pause that starts with a deletion request. The pause

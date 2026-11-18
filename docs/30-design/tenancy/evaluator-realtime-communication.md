@@ -184,7 +184,7 @@ owns the other roles' scaling semantics.
 ## Transaction coverage and mechanism retirement
 
 **Direction for evaluation, 2026-11-16; replacement proposed, unimplemented and
-unqualified.** The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#stream-native-coverage-direction)
+unqualified.** The [release decision](multitenancy-decisions.md#stream-native-coverage-direction)
 directs internal ordering and coverage toward the PostgreSQL committed stream.
 Evaluator still owns recoverable accepted versus completed work, clinically
 sufficient bounded state and actual due obligations. Realtime consumes completed
@@ -250,7 +250,7 @@ The existing evaluator checkpoint consumer retains observed and completed
 versions, completed result/frame, content revision, next due instant and
 ownership/restore generation. Acquisition and clinical completion remain separate.
 
-The [platform restart decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-platform-restart)
+The [platform restart decision](multitenancy-decisions.md#evaluator-platform-restart)
 places pgstream in an independently managed service. It sends webhooks to the
 evaluator's private receiver. The platform owns the pinned process and its restart
 policy; the evaluator owns durable receipt, clinical completion and application
@@ -513,12 +513,12 @@ acknowledgement or provider/device delivery. External exactly-once delivery is
 not claimed.
 
 Content-identical clinical cycles keep their output revision under the
-[content-revision decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change).
+[content-revision decision](multitenancy-decisions.md#evaluator-revision-on-content-change).
 Durable completed coverage may advance without changing the frame. An active,
 unacknowledged, unsnoozed alarm repeats on its own
-[heartbeat clock](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock).
+[heartbeat clock](multitenancy-decisions.md#alarm-repeat-clock).
 Paused or suspended tenants neither compute nor deliver alarms; resuming requires
-current eligible output under the [activity policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend).
+current eligible output under the [activity policy](multitenancy-decisions.md#activity-is-pause-suspend).
 
 <a id="alarm-repeat-and-targeted-wake-diagram"></a>
 ```mermaid

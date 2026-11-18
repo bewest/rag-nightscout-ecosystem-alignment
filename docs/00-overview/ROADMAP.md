@@ -165,7 +165,7 @@ The [published one-host reference](../../reports/tenancy/operation-window-accept
 now includes cold Compose/UI/restore/client acceptance; native shared-role restart
 and the functional M5 runtime retain their exact source scope. This evidence can
 inform component and recovery decisions. M6 is split into M6a–M6d and M7
-([decision](../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)):
+([decision](../30-design/tenancy/multitenancy-decisions.md#m6-split-and-queue-collapse)):
 the M6a and M6b joined candidates have acceptance records on draft #8898
 ([M6a](../../reports/tenancy/m6a-join-2026-11-09/README.md),
 [M6b](../../reports/tenancy/m6b-join-2026-11-10/b70ad83f-acceptance/README.md)), with

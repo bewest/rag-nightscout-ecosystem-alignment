@@ -14,7 +14,7 @@ maps are retained; local links are rebased for this archive.*
 ## Event-driven target and first proof
 
 **Direction adopted 2026-11-13; current local integration and recovery evidence retain their exact source and limits.**
-The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
+The [release decision](../../30-design/tenancy/multitenancy-decisions.md#event-driven-reset)
 owns this priority. The ownership and placement model below is proposed for the
 proof; it is not implementation acceptance. Evaluate maintained pgstream CDC (change data capture) before
 further tuning or benchmarking the polling implementation described below.
@@ -28,7 +28,7 @@ The proposed ownership model gives evaluator raw inputs for clinical computation
 committed outputs; it does not independently sweep raw inputs. Keep these as two
 logical modules and initially co-locate them where that simplifies the local
 proof. This changes the prototype placement priority of the earlier
-[separate-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes).
+[separate-process decision](../../30-design/tenancy/multitenancy-decisions.md#restore-service-processes).
 Independent physical scaling remains possible, subject to evidence.
 
 “Stateless evaluator” means caches can disappear without losing correctness.
@@ -80,7 +80,7 @@ not enable a shipping role or establish production delivery guarantees.
 *Execution plan, 2026-11-13; read-derived from core prototype
 `aba583199e9ab8a4bb907adc46dc9262a3dcedf5` and deployment reference
 `84accb33c3daccebfdf886300c3ba6c638e003c6`. Final joined acceptance remains open. Focused current-source results are recorded in
-the [switch-over release update](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--coherent-switch-over-candidate-2026-11-15); each criterion keeps its measured scope.*
+the [switch-over release update](../../30-design/tenancy/execution-log.md#update--coherent-switch-over-candidate-2026-11-15); each criterion keeps its measured scope.*
 
 **Objective:** the actual multitenant evaluator and realtime roles process
 committed changes and due clinical work, recover after process loss, and refuse
@@ -108,7 +108,7 @@ completed versions, completed result/frame, content revision, next due instant
 and ownership/restore generation. Keep acquisition separate from clinical
 completion. Add only the schema necessary to make this recovery state durable.
 
-The [platform restart decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-platform-restart)
+The [platform restart decision](../../30-design/tenancy/multitenancy-decisions.md#evaluator-platform-restart)
 places pgstream in an independently managed service. It sends webhooks to the
 evaluator's private receiver. The platform owns the pinned process and its restart
 policy; the evaluator owns durable receipt, clinical completion and application
@@ -242,7 +242,7 @@ notification delivery.
 These are application modules wired by explicit preview role configuration.
 Separate processes/containers can share a private directory containing Unix-domain
 sockets (UDS): an endpoint is a transport address, not shared JavaScript memory.
-The [adopted separate-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes)
+The [adopted separate-process decision](../../30-design/tenancy/multitenancy-decisions.md#restore-service-processes)
 retains this deployment boundary. A local `EventEmitter` does not become a durable
 cross-process event bus merely because the processes share a host.
 
@@ -258,15 +258,15 @@ an admitted tenant operation for `last(tenant)` to expose it.
 and [durable snapshot/checkpoint][replay] implement these separate stages.
 
 **Adopted 2026-11-10, not in the inspected tree.** The [output revision changes
-only when the output content changes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change)
+only when the output content changes](../../30-design/tenancy/multitenancy-decisions.md#evaluator-revision-on-content-change)
 (time-driven changes included); an identical cycle keeps its revision, and the
 realtime consumer is woken on real changes only for tenants with a pending alarm.
 The inspected code bumps the revision on every cycle (read-derived, cited in the
 decision). Alarm repetition is separate: an active, unacknowledged, unsnoozed alarm
-[repeats on its own clock equal to the single-site heartbeat](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock)
+[repeats on its own clock equal to the single-site heartbeat](../../30-design/tenancy/multitenancy-decisions.md#alarm-repeat-clock)
 (same setting, 60 s by default) and on new data, as on a single site. Both are
 BF-231 / `MT-CONSUMER-STALE-RESELECT` work. The evaluator only works tenants
-eligible under the [activity policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend): while a site
+eligible under the [activity policy](../../30-design/tenancy/multitenancy-decisions.md#activity-is-pause-suspend): while a site
 is paused or suspended no alarms are computed or delivered.
 
 ```mermaid
@@ -367,8 +367,8 @@ suppression state; the evaluator subsequently reads that state.
 receipt acknowledging an evaluator-to-realtime handoff.
 
 <a id="alarm-repeat-and-targeted-wake-diagram"></a>The diagrams above follow the inspected tree. The 2026-11-10 decisions
-([evaluator-revision-on-content-change](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change),
-[alarm-repeat-clock](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock), [activity-is-pause-suspend](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend))
+([evaluator-revision-on-content-change](../../30-design/tenancy/multitenancy-decisions.md#evaluator-revision-on-content-change),
+[alarm-repeat-clock](../../30-design/tenancy/multitenancy-decisions.md#alarm-repeat-clock), [activity-is-pause-suspend](../../30-design/tenancy/multitenancy-decisions.md#activity-is-pause-suspend))
 change when the consumer is woken and how an active alarm repeats. Built on lanes `956d0940` and `07981b55`,
 in the batch join that is in acceptance; [evidence](../../../reports/tenancy/consumer-refusal-2026-11-10/README.md).
 
@@ -467,7 +467,7 @@ browser frame. Durable notification requests survive and retain their retry
 identity. Current credentials/configuration are checked again; retained process
 memory does not authorize a new connection.
 
-The [logical restore policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
+The [logical restore policy](../../30-design/tenancy/multitenancy-decisions.md#restore-history-forward-correction)
 requires forward changes and deletion records for known captured/current clinical
 identities, preserving public IDs and clinical fields. It retains current
 nonclinical authority, consumer state and the authoritative live clock; physical

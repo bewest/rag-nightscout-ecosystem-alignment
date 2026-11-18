@@ -1,18 +1,18 @@
 # Evaluator partitioning (MT-EVALUATOR-PARTITION, M7), lane EP: stopped at the overlap premise, 2026-11-10
 
 *Contributor-facing evidence record for lane EP. Captured 2026-11-10; not edited after capture.
-Decisions read: [evaluator-static-partition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition),
-[pool-primitive-shared](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-primitive-shared),
-[evaluator-partition-now](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-partition-now),
-[evaluator-revision-on-content-change](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-revision-on-content-change) and
-[alarm-repeat-clock](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-repeat-clock).
+Decisions read: [evaluator-static-partition](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-static-partition),
+[pool-primitive-shared](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-primitive-shared),
+[evaluator-partition-now](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-partition-now),
+[evaluator-revision-on-content-change](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-revision-on-content-change) and
+[alarm-repeat-clock](../../../docs/30-design/tenancy/multitenancy-decisions.md#alarm-repeat-clock).
 Synthetic data only.*
 
 ## Outcome
 
 The lane stopped before implementation, on the condition its brief named: **the evaluator's
 notification output is not idempotent across two overlapping members.** The
-[evaluator-static-partition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition)
+[evaluator-static-partition](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-static-partition)
 decision accepts duplicate evaluation "bounded to one heartbeat interval after a membership change"
 because "the evaluator's outputs are idempotent by contract (... notification intent with stable
 identity and suppression)". The shipping producer gives a new alarm effect, and so a new delivery
@@ -156,8 +156,8 @@ The store-level step of the finding (a new key becomes a delivered request) is r
 
 ## Resumed, 2026-11-10: implemented and measured
 
-*Appended after the maintainer's decisions [alarm-output-idempotent-by-content](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#alarm-output-idempotent-by-content)
-(option b) and [pool-desired-count-in-table](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-desired-count-in-table).
+*Appended after the maintainer's decisions [alarm-output-idempotent-by-content](../../../docs/30-design/tenancy/multitenancy-decisions.md#alarm-output-idempotent-by-content)
+(option b) and [pool-desired-count-in-table](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-desired-count-in-table).
 The sections above are the stop record and stay as captured; the figures above that say UNMEASURED are
 superseded by this section only where it gives a measurement.*
 
@@ -299,7 +299,7 @@ for all six files.
 ## Pool member hygiene, 2026-11-10
 
 *Appended after the maintainer adopted the three follow-ups above
-([pool-member-hygiene](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-member-hygiene)).*
+([pool-member-hygiene](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-member-hygiene)).*
 
 Lane head: `codex/evaluator-partition-20261110` at **`d6560468`**, one commit on `cb1b751d`. It touches 4 files:
 `lib/server/internal-api/transport.js`, `lib/server/serve/vcpool-preview.js`,

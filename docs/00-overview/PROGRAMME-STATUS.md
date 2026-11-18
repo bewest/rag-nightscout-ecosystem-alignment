@@ -110,11 +110,11 @@ optional HA, multihost and fleet placement retain separate scope. The
 criteria without making them prerequisites for independent experiments.
 
 The [delivery dashboard](../30-design/tenancy/multitenant-delivery-dashboard.md)
-owns milestone claims and the [release contents](../../releases/cgm-remote-monitor-16.0.0/contents.md)
-own integration and publication. Local source qualification, alignment records
+owns milestone claims and the [multitenant execution log](../30-design/tenancy/execution-log.md)
+owns integration and publication. Local source qualification, alignment records
 integration, application dev merge and an operator release are different events.
 No milestone is promoted by this documentation reconciliation.
-Decisions D1–D23 live in the
+Decisions D1–D23 and the later multitenant programme decisions live in the
 [tenancy decisions reference](../30-design/tenancy/multitenancy-decisions.md),
 with the adopted [owner-authority amendment](../30-design/tenancy/owner-authority.md)
 and the [durable event delivery contract](../30-design/tenancy/durable-event-delivery-contract-2026-11-06.md) (B7).

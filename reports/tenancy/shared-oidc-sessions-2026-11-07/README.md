@@ -4,7 +4,7 @@ The shared optional human-login/session capability is **fixed on a local branch*
 and frozen for bounded acceptance. It is not merged or released. Actual signed
 MongoDB/PostgreSQL, Vault, HTTPS and browser acceptance remain **UNMEASURED**.
 The adopted [shared identity contract](../../../docs/30-design/tenancy/owner-authority.md#shared-oidc-integration)
-and [session decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-human-session-effects-2026-11-07)
+and [session decisions](../../../docs/30-design/tenancy/multitenancy-decisions.md#m6-human-session-effects-2026-11-07)
 remain authoritative; no policy exception, M6 promotion or production identity
 admission follows from source checks.
 

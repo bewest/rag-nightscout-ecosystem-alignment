@@ -1,12 +1,12 @@
 # Tenant-side Nightscout connector (MT-CONNECTOR-REVERSE, M6d), 2026-11-10
 
 *Contributor-facing evidence record for lane R. Captured 2026-11-10. Not edited after capture.
-Decisions implemented: [first-preview-no-push-provider](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#first-preview-no-push-provider),
-[owner-integrations-none-first-preview](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-integrations-none-first-preview),
-[pool-primitive-shared](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-primitive-shared),
-[evaluator-static-partition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition),
-[vcpool-egress-capacity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vcpool-egress-capacity) and
-[activity-is-pause-suspend](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend).
+Decisions implemented: [first-preview-no-push-provider](../../../docs/30-design/tenancy/multitenancy-decisions.md#first-preview-no-push-provider),
+[owner-integrations-none-first-preview](../../../docs/30-design/tenancy/multitenancy-decisions.md#owner-integrations-none-first-preview),
+[pool-primitive-shared](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-primitive-shared),
+[evaluator-static-partition](../../../docs/30-design/tenancy/multitenancy-decisions.md#evaluator-static-partition),
+[vcpool-egress-capacity](../../../docs/30-design/tenancy/multitenancy-decisions.md#vcpool-egress-capacity) and
+[activity-is-pause-suspend](../../../docs/30-design/tenancy/multitenancy-decisions.md#activity-is-pause-suspend).
 Synthetic data only. Credentials were held in process memory and child environments.*
 
 ## Anchors
@@ -29,12 +29,12 @@ This record does not change the queue, `decisions.md`, `contents.md` or the regi
 The connector writes through the tenant's own API over HTTP to the api role. It does not use an internal service
 contract. The decisions point to this path:
 
-- [first-preview-no-push-provider](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#first-preview-no-push-provider)
+- [first-preview-no-push-provider](../../../docs/30-design/tenancy/multitenancy-decisions.md#first-preview-no-push-provider)
   says the connector is "writing through the tenant's own API as a tenant-bound subject".
 - D23 (`lib/server/serve/roles.js` header) says "On the data path api is the only writer".
-- [internal-service-contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-service-contracts)
+- [internal-service-contracts](../../../docs/30-design/tenancy/multitenancy-decisions.md#internal-service-contracts)
   covers realtime authority and writes, alarm delivery and lifecycle coordination. It has no data-ingest contract.
-- [internal-listener-ory-pattern](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern)
+- [internal-listener-ory-pattern](../../../docs/30-design/tenancy/multitenancy-decisions.md#internal-listener-ory-pattern)
   says serve.internal trusts its network and has no authentication of its own. A write sent there would not carry
   the subject's authority.
 

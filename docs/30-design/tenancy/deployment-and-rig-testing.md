@@ -25,11 +25,11 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 
 The [application Compose guide](https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/README.md)
 owns runnable packaging instructions at the ed2 reference. The Compose tree
-[lives in the sibling repository `nightscout-deploy`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-lives-in-nightscout-deploy)
-and is [its home from the next #8898 batch on](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deploy-tree-home-now); core
+[lives in the sibling repository `nightscout-deploy`](multitenancy-decisions.md#deploy-tree-lives-in-nightscout-deploy)
+and is [its home from the next #8898 batch on](multitenancy-decisions.md#deploy-tree-home-now); core
 then keeps only the fixture its own tests boot. The commands below describe the
 ed2 reference as accepted; run current packaging from `nightscout-deploy`. The
-[service-process decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-service-processes)
+[service-process decision](multitenancy-decisions.md#restore-service-processes)
 owns the deployment requirement. Compose is implemented; a Jsonnet generator is
 an optional way to produce configuration, not another runtime component or a
 selected prerequisite.
@@ -43,7 +43,7 @@ layout and access-policy extensions need their own acceptance.
 
 Agents may run isolated synthetic branch experiments before the branch has full
 acceptance, alongside implementation and other experiments. The maintainer's
-[experiment decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#concurrent-branch-experiments)
+[experiment decision](multitenancy-decisions.md#concurrent-branch-experiments)
 governs this workflow. Acceptance qualifies a selected candidate and its claims;
 it is not a prerequisite for discovering that candidate's faults.
 
@@ -59,7 +59,7 @@ Keep strict/default acceptance separate. The existing
 [fresh-image diagnostic](../../../tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.md)
 is a small functional profile; its limits do not define every discovery workload.
 The reusable runner's current local qualification and remaining remote boundary
-are recorded in the [release update](../../../releases/cgm-remote-monitor-16.0.0/contents.md#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15).
+are recorded in the [release update](execution-log.md#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15).
 
 Give each concurrent lane its own worktree, project identity, database/state,
 ports, networks and cleanup custody. Record contention on shared hosts. Reserve
@@ -291,7 +291,7 @@ and internal storage identifiers need not be identical.
 
 The [pinned client lab](../../../tools/lab/m4-client-binaries/README.md) owns
 supported headless client execution. Android emulator and physical-device runs
-remain separately attributed; [promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+remain separately attributed; [promotion decisions](multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06)
 define their milestone scope. Avoid replacing a real client execution with a
 handwritten request and describing the result as that client's acceptance.
 
@@ -306,7 +306,7 @@ Run the synthetic restore demonstration only in its prepared disposable instance
 The [demo implementation](https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/demo.js#L60)
 captures A, changes A, restores A using the real lifecycle/controller, writes B
 during the held A operation and checks forward history correction/deletion.
-The [restore-history decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
+The [restore-history decision](multitenancy-decisions.md#restore-history-forward-correction)
 owns client convergence semantics. B's preexisting state must remain unchanged;
 its explicitly authored new writes are expected differences.
 
@@ -319,7 +319,7 @@ its explicitly authored new writes are expected differences.
 | Missing/restarted participant | Changed incarnation, missing acknowledgement or unresolved operation | Old restore pins cannot activate using replacement processes. |
 | Database/Vault/shared-host outage | Which shared dependency failed and what each tenant can still do | Tenant-local restore does not promise tenant-local infrastructure failures or HA. |
 
-The [startup-admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission)
+The [startup-admission decision](multitenancy-decisions.md#tenant-local-startup-admission)
 and [application recovery contract](https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#failure-recovery-and-shared-role-restart-boundary)
 own restart behavior. Process/control liveness and each tenant's readiness are
 different observations. Realtime `/health` retains strict aggregate readiness;
@@ -348,9 +348,9 @@ refusal and restart evidence does not establish a recovery-time bound.
 The lab Vault credentials expire after 24 hours and restart does not renew them.
 The generated CA expires after 30 days. Preserve verification and prepare a fresh
 synthetic instance when appropriate; do not disable TLS checks. Vault sealing,
-key custody and production Vault connectivity (a [Vault Agent sidecar](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-agent-sidecar),
+key custody and production Vault connectivity (a [Vault Agent sidecar](multitenancy-decisions.md#vault-agent-sidecar),
 maintained in `nightscout-deploy`) remain governed by the
-[adopted trust contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07).
+[adopted trust contracts](multitenancy-decisions.md#m6-deployment-and-trust-2026-11-07).
 
 ## Stop, retain and report
 

@@ -1,7 +1,7 @@
 # Perf lane EV: the evaluator works on change and due time, not a per-tenant one-second poll (2026-11-10)
 
 *Contributor-facing measurement record for decision
-[cost-proportional-to-activity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#cost-proportional-to-activity),
+[cost-proportional-to-activity](../../../docs/30-design/tenancy/multitenancy-decisions.md#cost-proportional-to-activity),
 stage 1. Captured 2026-11-10 20:48–23:20 local time; not edited after capture. Synthetic tenants and data only.
 Figures are labelled **reproduced** (run here, output in [`runs/`](runs/)) or **derived** (arithmetic on
 reproduced figures). Every run shared the host with other lanes; load averages are quoted per run.*
@@ -52,7 +52,7 @@ The existing proof `tests/tenant-current-state-recovery-proof.integration.test.j
 absence and unstamped activity through the explicit recovery backstop") deletes an entry and inserts an activity
 row: floor unchanged **and** row count unchanged. A floor-plus-count signature failed it (reproduced during this
 lane). Hence the per-row version digest. Decision
-[m5-bounded-snapshot-reconciliation](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation)
+[m5-bounded-snapshot-reconciliation](../../../docs/30-design/tenancy/multitenancy-decisions.md#m5-bounded-snapshot-reconciliation)
 already requires recovery "independent of floor movement"; this is the same fact seen from the backstop.
 
 Cost of that coverage: the signature scans the tenant's admitted rows (bounded by `maxRows`): 0.25–0.79 DB-ms
@@ -207,8 +207,8 @@ stage.
 ## Conflicts with decisions recorded after this lane started (stop-and-report)
 
 The coordinator relayed
-[change-stamp-definer-function](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#change-stamp-definer-function)
-and [incremental-refresh](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#incremental-refresh) while this
+[change-stamp-definer-function](../../../docs/30-design/tenancy/multitenancy-decisions.md#change-stamp-definer-function)
+and [incremental-refresh](../../../docs/30-design/tenancy/multitenancy-decisions.md#incremental-refresh) while this
 lane ran. Neither is built here; both conflict with what was reproduced:
 
 1. **A definer function returning `(tenant_id, last_stamp)` does not see hard deletes or unstamped (activity)
@@ -244,7 +244,7 @@ lane ran. Neither is built here; both conflict with what was reproduced:
 
 *Appended after the coordinator relayed perf-db's restart-gap measurement (`codex/perf-db-20261110` `540d3998`,
 [perf-db record, "Resumed"](../perf-db-2026-11-10/README.md)) and the readiness seam for
-[readiness-serve-then-warm](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#readiness-serve-then-warm). The
+[readiness-serve-then-warm](../../../docs/30-design/tenancy/multitenancy-decisions.md#readiness-serve-then-warm). The
 sections above are unchanged.*
 
 ### Anchors
@@ -348,10 +348,10 @@ Checks: see the table appended below this section.
 
 ## Round 3, 2026-11-11 (06:00–07:00 local): consumers on change, gate at deployed settings, CPU profile
 
-*Decisions [write-clock-complete](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#write-clock-complete) (the
+*Decisions [write-clock-complete](../../../docs/30-design/tenancy/multitenancy-decisions.md#write-clock-complete) (the
 digest scan retires once perf-db's complete clock lands; the signature stays opaque: `evaluator-runtime.js`
 `validSignature`/`same`, read through `component.signature()` → `postgres-durable-replay.js` `signature()`) and
-[incremental-refresh-realtime-only](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#incremental-refresh-realtime-only)
+[incremental-refresh-realtime-only](../../../docs/30-design/tenancy/multitenancy-decisions.md#incremental-refresh-realtime-only)
 (no incremental read for the evaluator) are noted; nothing in this round depends on them.*
 
 | what | value |
@@ -398,7 +398,7 @@ Controls (each red, then restored):
 Every tenant within 70.7 s: inside the 60–90 s target. Steady state after the gate (inspection): every tenant confirmed
 within 1,116 ms (p50 579, p90 1,019), no alert, no refusal; consumer passes 1–2 per tenant over the gate (not ~300);
 evaluator 81% CPU, 509 MiB; PostgreSQL 558% CPU, which is the per-tenant digest signature check once a second (the
-scan [write-clock-complete](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#write-clock-complete) retires).
+scan [write-clock-complete](../../../docs/30-design/tenancy/multitenancy-decisions.md#write-clock-complete) retires).
 
 ### Where an evaluation's CPU goes (reproduced, `runs/profile-{deploy,full}.txt`; measurement only)
 

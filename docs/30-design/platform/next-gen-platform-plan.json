@@ -413,7 +413,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
    "ref_href": "https://github.com/nightscout/cgm-remote-monitor/pull/8898"
@@ -758,7 +758,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     },
     {
      "label": "Unified v1/v2/v3 REST/API modules and headless workers",
@@ -825,7 +825,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ]
   },
@@ -862,7 +862,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     },
     {
      "label": "Proposed activity policy vs existing recovery admission",
@@ -923,7 +923,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
    "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
@@ -997,7 +997,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
    "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
@@ -1076,7 +1076,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     }
    ],
    "check": "R72 owns the final source/instrument attribution, comprehensive acceptance, pending classes and criterion disposition."
@@ -1295,7 +1295,7 @@
     },
     {
      "label": "Adopted promotion bars and reader-mode withdrawal",
-     "href": "../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06"
+     "href": "../../../docs/30-design/tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06"
     },
     {
      "label": "Current topology and workload ownership",

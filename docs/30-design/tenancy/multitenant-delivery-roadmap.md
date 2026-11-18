@@ -61,9 +61,9 @@ dormant slice remains separate from enabling its roles.
 Initial lifecycle operations are private-operator actions: provision, suspend,
 export and delete, without public signup. An owner may export or request deletion;
 the operator authorizes and executes deletion. A request never bypasses
-confirmation, retention or recovery policy. The [preview deletion ceremony](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-deletion-confirmation)
+confirmation, retention or recovery policy. The [preview deletion ceremony](multitenancy-decisions.md#preview-deletion-confirmation)
 requires explicit operator confirmation, allows cancellation before execution starts,
-and imposes no mandatory waiting period. [Ownership changes are operator-assisted](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-operator-assisted-ownership)
+and imposes no mandatory waiting period. [Ownership changes are operator-assisted](multitenancy-decisions.md#preview-operator-assisted-ownership)
 for the first preview; self-service co-owner addition and transfer follow separately.
 Operator execution still preserves last-owner protection and owner-secret boundaries.
 
@@ -103,7 +103,7 @@ owner management or delegation authority. Audit records name the verified
 subject/root principal rather than inventing a human identity. Human login uses
 an interchangeable reviewed identity provider, not a new password/recovery system.
 
-The [promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+The [promotion decisions](multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06)
 drop the incompatible optional subject-reader clamping mode. Any replacement must
 preserve existing tenant-root credentials. Proposed-grant management enforcement
 and full lifecycle authority are separate contracts.
@@ -118,10 +118,10 @@ encrypted development/small-operator option remains adopted; production adapters
 must meet the same contract. A disposable Vault lab does not establish TLS,
 unseal/recovery, production identity, HA or operational suitability. Failures
 never fall back to plaintext, another tenant's key or an unapproved signer.
-The [deployment and trust decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07)
+The [deployment and trust decisions](multitenancy-decisions.md#m6-deployment-and-trust-2026-11-07)
 keep Vault Transit at every stage and admit a deployment by trust record plus live
-probes. Connectivity is a [Vault Agent sidecar](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-agent-sidecar) with
-[one AppRole per deployment](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#vault-one-approle-per-deployment); core reads the
+probes. Connectivity is a [Vault Agent sidecar](multitenancy-decisions.md#vault-agent-sidecar) with
+[one AppRole per deployment](multitenancy-decisions.md#vault-one-approle-per-deployment); core reads the
 token from the sink file per call (`MT-VAULT-TOKEN-FILE`) instead of carrying a
 service-login adapter.
 
@@ -141,7 +141,7 @@ consistency require explicit contracts before operator-writer admission. Consul,
 Kubernetes and vendor discovery are optional adapters, not dependencies adopted
 by this roadmap. Public domains, certificates and private edge implementation
 remain deployment concerns. The reference deployment [trusts its edge by immediate
-peer address, one list for tenant selection and client IP](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-ingress-peer-list-trust).
+peer address, one list for tenant selection and client IP](multitenancy-decisions.md#deployment-ingress-peer-list-trust).
 
 Multitenant schema migration is **explicit operator execution**. Serving checks
 compatibility read-only and refuses stale/unsafe schema; it never migrates at
@@ -160,7 +160,7 @@ and refuse ambiguous repeated textual IDs; accept JSONB logical equality without
 claiming BSON field-order fidelity. This importer is not a raw backup.
 `nightscout-connect` remains the separate ongoing synchronization path.
 
-Apply the [restore identity and cloning decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning).
+Apply the [restore identity and cloning decision](multitenancy-decisions.md#restore-identity-and-cloning).
 Operational restore labs retain original-tenant bindings. Clinical API population
 and synchronization do not migrate credential authority. Cloning implementation
 and native acceptance remain UNMEASURED.
@@ -173,7 +173,7 @@ records M0–M4; R73 records functional M5. The later
 records restore/restart and packaged reference acceptance; the [dashboard](multitenant-delivery-dashboard.md)
 displays milestone claims. The criteria below retain their adopted scope.
 
-The [release promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+The [release promotion decisions](multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06)
 fix the scope of these bars. In particular, M2 is its table cell; human
 issuer/refresh, existing-grant clamping, full lifecycle and production-resolution
 trust belong to M6. Numeric resource/performance budgets are deferred to C;
@@ -192,9 +192,9 @@ an intentional PG-only difference. No threshold is invented by a passing lab.
 | M6b: lifecycle and keys | M6a | Operator-assisted ownership add/transfer/recovery (tenant-bound, audited, no orphan, no silent replacement); retained-key destruction after the 30-day window and after-window refusal; export/delete ceremony as adopted. One SQL/HTTP family each, each with a red control. |
 | M6c: deployment trust (nightscout-deploy) | M6a; core `tokenFile` change | Vault Agent sidecar with auto-auth, sink and renewal; Authentik profile over HTTPS with synthetic people; live spoof, host/selector conflict and outage probes against the Compose edge and Vault; written trust record from the template. Admission is per deployment by record plus probes. |
 | M6d: connector sync | M6a | nightscout-connect pulls from a tenant with a pre-issued reader credential; independent stored/history outcomes; revocation stops the pull. Outbound first; inbound tenant-side connector is a later contract. |
-| M7: production readiness | M6a–M6d | Measured, not declared ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-envelope-measured-not-declared)): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove each component scales horizontally or vertically as intended with a binding inventory (any binding is a `file:line` finding); evaluator partitioning by member count and ordinal with a pool-membership table ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#evaluator-static-partition)). [Realtime tenant sharding and controlled recovery](realtime-sharding-plan.md), including checkpoint and complete participant coverage; larger single-tenant connection fanout remains separately bounded. Android emulator lab; selectable endpoints and fixed-roster API scaling; Kubernetes binding equivalence. Limits follow the measurements. Required before a production cohort, not before the dormant alpha release. |
+| M7: production readiness | M6a–M6d | Measured, not declared ([decision](multitenancy-decisions.md#m7-envelope-measured-not-declared)): benchmark the one-host reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove each component scales horizontally or vertically as intended with a binding inventory (any binding is a `file:line` finding); evaluator partitioning by member count and ordinal with a pool-membership table ([decision](multitenancy-decisions.md#evaluator-static-partition)). [Realtime tenant sharding and controlled recovery](realtime-sharding-plan.md), including checkpoint and complete participant coverage; larger single-tenant connection fanout remains separately bounded. Android emulator lab; selectable endpoints and fixed-roster API scaling; Kubernetes binding equivalence. Limits follow the measurements. Required before a production cohort, not before the dormant alpha release. |
 
-M6 was split into M6a–M6d and M7 on 2026-11-09 ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-split-and-queue-collapse)). The acceptance families below keep their text; the family-to-milestone mapping is: bounded owner API → M6a; operator-assisted ownership, lifecycle and trust (keys, deletion) → M6b; deployment trust rows → M6c; operations and clients → M7 (Android) with populated backup/restore retained in M6b; operating envelope and final review → M7.
+M6 was split into M6a–M6d and M7 on 2026-11-09 ([decision](multitenancy-decisions.md#m6-split-and-queue-collapse)). The acceptance families below keep their text; the family-to-milestone mapping is: bounded owner API → M6a; operator-assisted ownership, lifecycle and trust (keys, deletion) → M6b; deployment trust rows → M6c; operations and clients → M7 (Android) with populated backup/restore retained in M6b; operating envelope and final review → M7.
 
 CI is cumulative: keep default single/Mongo tests green and run explicit PG suites
 as they become applicable. Publish pending/unsupported inventory. Each isolation
@@ -206,7 +206,7 @@ for D6/D-EVENT reconciliation. A process-local event is not a durable bus. Befor
 consumer admission, prove commit coupling, durable checkpoints, ordering, complete
 cohorts, duplication/deletion/config invalidation and crash/replay boundaries.
 The event carries the transaction's **final floor**, as decided in the
-[B7 record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#b7-durable-multitenant-delivery-2026-11-06).
+[B7 record](multitenancy-decisions.md#b7-durable-multitenant-delivery-2026-11-06).
 Time-only ticks drive time-based alarms. The separately scheduled bounded snapshot
 reconciliation recovers current rows and absence after missed wakes; neither
 mechanism promises recovery of every intermediate transition.
@@ -218,7 +218,7 @@ no acknowledgement so the existing client no-ack retry applies.
 For deletion, the adopted retention decision keeps Transit keys and the export
 artifact for a 30-day window, then an operator destroys the keys. The artifact
 must contain every ciphertext/key reference before secret/audit rows are removed.
-The decision is in the [promotion record](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06);
+The decision is in the [promotion record](multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06);
 implementation and destroy/after-window refusal evidence remain separate.
 
 ## Current bounded proof and remaining admission
@@ -262,16 +262,16 @@ A deferred enhancement is named explicitly; it does not silently lower another b
 | M5 evaluator recovery | The actual evaluator consumes recovered inputs. Acquisition or commit failure preserves last good state; downstream clinical failure may leave newer committed inputs while retaining the prior clinical result/time. A later cycle retries computation even at an unchanged floor. Settings/plugin-version changes cannot reuse an incompatible result. Do not claim atomic input-plus-clinical-output persistence. |
 | M5 live reference | Separate roles on one machine exercise subscription startup races, missed/duplicate wakes, process death/restart and explicit scheduling. Time-only alarm ticks and current-state reconciliation are distinct work. A transport wake is not delivery evidence; a checkpoint lock is not a multi-node lease. |
 | M5 socket compatibility and authority | Actual D23 API forwarding preserves namespace, source, replies and ack/no-ack retry behavior; realtime has no storage-write authority. Current authorization covers operations, reconnect and protected delivery. Tenant rooms/caches and settings invalidation remain isolated. |
-| M5 durable alarm state | Apply the [adopted tenant-wide group/level suppression contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-wide-alarm-suppression): API-persisted state and original expiry survive restart, active-window repeats do not extend suppression, and existing default/level effects remain. No indefinite post-expiry deduplication is inferred from the unchanged client protocol. Exercise persistence failure and restart boundaries against actual client behavior. Live external notification delivery remains a separate gate; enabled durable request handoff needs its own crash/retry oracle. |
-| M5 durable notification handoff | Apply the [durable request/retry decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#durable-notification-requests-and-retries): tenant-bound intent persisted before dispatch, stable identity across restart/ambiguous retry, no new ordinary/alarm request from a failed clinical cycle. Independently committed authorized ACK/snooze controls may produce a control-clear. Verify joined notification consumers for ordinary alarm, snooze/repeat window, restart, ambiguous acceptance, foreign authority/configuration and shutdown. Preserve normal dedup/suppression and single behavior. Distinguish possible duplicate external effects from duplicate clinical records; uploader compatibility is not notification acceptance. Live provider/device delivery remains separate. |
-| M6 bounded owner API | Implement the [adopted first-preview catalogue and refusals](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#first-preview-owner-surface-2026-11-07): projected display settings, bounded owner thresholds, single-tenant-equivalent credentials (wildcards accepted as single tenant does) under the ceiling, no owner integrations. Shared optional OIDC/provider-backed renewal provides equivalent single/multitenant human authentication with separate authority adapters; single opt-in prefers `ENABLE=oidc`. Human issuer/renewal implements adopted lifetimes, current authority, reauthentication and cross-worker revocation through synthetic identities. Enabled/disabled parity and legacy-client controls are required. Apply the [adopted session contracts](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-human-session-effects-2026-11-07): management-only idle scope, local-first logout, fenced renewal, cookie-default dual transport; outage behavior follows the provider-outage row. Operator-provisioned credentials alone do not close human identity. |
+| M5 durable alarm state | Apply the [adopted tenant-wide group/level suppression contract](multitenancy-decisions.md#tenant-wide-alarm-suppression): API-persisted state and original expiry survive restart, active-window repeats do not extend suppression, and existing default/level effects remain. No indefinite post-expiry deduplication is inferred from the unchanged client protocol. Exercise persistence failure and restart boundaries against actual client behavior. Live external notification delivery remains a separate gate; enabled durable request handoff needs its own crash/retry oracle. |
+| M5 durable notification handoff | Apply the [durable request/retry decision](multitenancy-decisions.md#durable-notification-requests-and-retries): tenant-bound intent persisted before dispatch, stable identity across restart/ambiguous retry, no new ordinary/alarm request from a failed clinical cycle. Independently committed authorized ACK/snooze controls may produce a control-clear. Verify joined notification consumers for ordinary alarm, snooze/repeat window, restart, ambiguous acceptance, foreign authority/configuration and shutdown. Preserve normal dedup/suppression and single behavior. Distinguish possible duplicate external effects from duplicate clinical records; uploader compatibility is not notification acceptance. Live provider/device delivery remains separate. |
+| M6 bounded owner API | Implement the [adopted first-preview catalogue and refusals](multitenancy-decisions.md#first-preview-owner-surface-2026-11-07): projected display settings, bounded owner thresholds, single-tenant-equivalent credentials (wildcards accepted as single tenant does) under the ceiling, no owner integrations. Shared optional OIDC/provider-backed renewal provides equivalent single/multitenant human authentication with separate authority adapters; single opt-in prefers `ENABLE=oidc`. Human issuer/renewal implements adopted lifetimes, current authority, reauthentication and cross-worker revocation through synthetic identities. Enabled/disabled parity and legacy-client controls are required. Apply the [adopted session contracts](multitenancy-decisions.md#m6-human-session-effects-2026-11-07): management-only idle scope, local-first logout, fenced renewal, cookie-default dual transport; outage behavior follows the provider-outage row. Operator-provisioned credentials alone do not close human identity. |
 | M6 operator-assisted ownership | Private-operator addition/transfer/recovery is tenant-bound, explicit and audited. Concurrent changes cannot orphan a tenant or silently replace an owner; unauthorized operations have no effect. Recovery grants no automatic secret reveal. Self-service co-owner/transfer is not a preview gate. |
-| M6 lifecycle and trust | Provision/suspend/export/delete and restore respect current authority and trusted tenant resolution. Artifact fidelity is independently checked; capture required ciphertext/key references before deletion. Exercise retained-key recovery, operator destruction and after-window refusal. Same-ID restore and new-secret cloning remain distinct. Apply the [adopted request/operator-confirmation/cancellation/no-wait policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#preview-deletion-confirmation). Verify confirmation bound to tenant/request/artifact; committed cancellation prevents execution, and cancellation/execution cannot both win. Refused or interrupted execution cannot leave partial deletion. |
+| M6 lifecycle and trust | Provision/suspend/export/delete and restore respect current authority and trusted tenant resolution. Artifact fidelity is independently checked; capture required ciphertext/key references before deletion. Exercise retained-key recovery, operator destruction and after-window refusal. Same-ID restore and new-secret cloning remain distinct. Apply the [adopted request/operator-confirmation/cancellation/no-wait policy](multitenancy-decisions.md#preview-deletion-confirmation). Verify confirmation bound to tenant/request/artifact; committed cancellation prevents execution, and cancellation/execution cannot both win. Refused or interrupted execution cannot leave partial deletion. |
 | M6 operations and clients | Populated backup/restore and upgrade/rollback cover interruption, supported schema/catalogue and failure recovery on the assembled tree. Retain the Android emulator acceptance and the explicit iOS/all-client exclusions. A representative entries/clock lab does not cover the whole catalogue. |
 | M6 operating envelope and final review | Declare synthetic workload and freshness/recovery expectations, then measure shared-pool/hot-tenant interference, row/byte limits, scan cadence, latency and egress refusal before approving bounds. Complete the final criterion matrix and review. Functional passes do not establish capacity. |
 
 The accepted M5 reference does not select a live external notification provider
-or promise retained every-transition history; the [first-preview channel decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#first-preview-no-push-provider)
+or promise retained every-transition history; the [first-preview channel decision](multitenancy-decisions.md#first-preview-no-push-provider)
 admits no push provider and makes Nightscout-to-Nightscout synchronization the first external channel. Multi-node failover,
 every-transition history and self-service ownership are separate enhancements.
 Real identities/data, production/default role enablement and release admission keep

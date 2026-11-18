@@ -49,6 +49,6 @@ suite, registered case or fake-client result counts as native evidence.
 
 The [representative native proof](../../../reports/tenancy/backup-upgrade-native-f77-2026-11-06.md)
 records the executed entries/clock boundary. Apply the
-[restore identity and cloning decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-identity-and-cloning):
+[restore identity and cloning decision](../../../docs/30-design/tenancy/multitenancy-decisions.md#restore-identity-and-cloning):
 this laboratory exercises original-tenant recovery. Cloning implementation/native
 acceptance, the full selected catalogue and durable backup storage remain unmeasured.

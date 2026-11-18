@@ -1,12 +1,12 @@
 # Realtime publishes on change (perf lane RT), 2026-11-10
 
 *Contributor-facing evidence record for perf lane RT (multitenant only). Captured 2026-11-10/11 (UTC); not
-edited after capture. Decisions read: [cost-proportional-to-activity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#cost-proportional-to-activity),
-[activity-is-pause-suspend](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend),
-[suspended-refusal-423](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#suspended-refusal-423),
-[tenant-devicestatus-status-parity](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-devicestatus-status-parity),
+edited after capture. Decisions read: [cost-proportional-to-activity](../../../docs/30-design/tenancy/multitenancy-decisions.md#cost-proportional-to-activity),
+[activity-is-pause-suspend](../../../docs/30-design/tenancy/multitenancy-decisions.md#activity-is-pause-suspend),
+[suspended-refusal-423](../../../docs/30-design/tenancy/multitenancy-decisions.md#suspended-refusal-423),
+[tenant-devicestatus-status-parity](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-devicestatus-status-parity),
 D6 and the [durable event delivery contract](../../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md);
-[m7-capacity-gate](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate) for the marginal-cost section.
+[m7-capacity-gate](../../../docs/30-design/tenancy/multitenancy-decisions.md#m7-capacity-gate) for the marginal-cost section.
 Synthetic data only. Every figure is labelled **reproduced** (read from a run file here) or **derived**
 (arithmetic on reproduced figures, stated).*
 
@@ -83,7 +83,7 @@ had no commits when this lane started, so nothing was reconciled yet.
 warm (`tenant-startup.js` warm). perf-db reads `NS_TENANT_STARTUP_CONCURRENCY` (default 4) for warm and
 realtime's first refresh and makes pool sizes configurable; this lane hard-codes 2 for warm, startup
 and change ticks. At the join take perf-db's setting for startup and derive the tick concurrency from
-`NS_POOL_REALTIME_MAX`. The new [readiness-serve-then-warm](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#readiness-serve-then-warm)
+`NS_POOL_REALTIME_MAX`. The new [readiness-serve-then-warm](../../../docs/30-design/tenancy/multitenancy-decisions.md#readiness-serve-then-warm)
 decision (recorded after this lane started) is not implemented for realtime here: realtime still
 refuses the boot if any tenant's startup fails, and `/health` stays 503 until all are ready.
 
@@ -233,9 +233,9 @@ the session scratch directory.
 ## Update 2026-11-11: BF-233, change-stamp function, incremental refresh, serve-then-warm
 
 *Appended 2026-11-11 (UTC); the sections above are unchanged. Brief: BF-233 (filed from this lane's
-finding), decisions [change-stamp-definer-function](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#change-stamp-definer-function),
-[incremental-refresh](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#incremental-refresh) and
-[readiness-serve-then-warm](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#readiness-serve-then-warm).
+finding), decisions [change-stamp-definer-function](../../../docs/30-design/tenancy/multitenancy-decisions.md#change-stamp-definer-function),
+[incremental-refresh](../../../docs/30-design/tenancy/multitenancy-decisions.md#incremental-refresh) and
+[readiness-serve-then-warm](../../../docs/30-design/tenancy/multitenancy-decisions.md#readiness-serve-then-warm).
 The coordinator then put the change-stamp function and incremental refresh **on hold** pending the
 maintainer's answer on how the write clock should cover deletes; what was built before the hold is
 committed and described below, and nothing further was added to those two after it, except where a

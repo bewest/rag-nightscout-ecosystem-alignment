@@ -3,7 +3,7 @@
 *Contributor-facing living architecture guide, reconciled 2026-11-16.
 Current implementation is **read-derived** from qualified core
 `c31c6e0b69a2a2f2a5320b9e4d32195f1b3e1878`; reproduced evidence retains the source
-named in each linked record. The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#stream-native-coverage-direction)
+named in each linked record. The [release decision](multitenancy-decisions.md#stream-native-coverage-direction)
 owns the direction to evaluate stream-native internal coverage. A replacement
 for current clock-event sealing is **proposed, unimplemented and unqualified**.
 No new cursor, CDC engine, event log or replication-slot topology is adopted.*
@@ -54,7 +54,7 @@ public history cursors. Do not promote the ordinal into a universal progress cou
 Restore must preserve current authority, exclude stale effects and establish
 consistent accepted/completed/pending/due state before reopening. Logical restore
 and whole-deployment physical backup retain their distinct fidelity contracts.
-The [forward history policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
+The [forward history policy](multitenancy-decisions.md#restore-history-forward-correction)
 preserves supported history continuity; independent tenant progress and bounded
 failure recovery remain required. The existing implementation is qualified only
 for the source and scenarios in the

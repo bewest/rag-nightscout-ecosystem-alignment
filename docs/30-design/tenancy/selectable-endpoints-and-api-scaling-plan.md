@@ -1,8 +1,8 @@
 # Private API composition, deployment bindings and fixed-roster scaling
 
 *Living contributor-facing implementation plan, refreshed 2026-11-10 for the
-adopted [internal listener shape](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern) and
-[graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown). Current
+adopted [internal listener shape](multitenancy-decisions.md#internal-listener-ory-pattern) and
+[graceful shutdown](multitenancy-decisions.md#internal-listener-graceful-shutdown). Current
 mechanisms are **read-derived** from joined application `dc795bd1`; carried
 measurements retain their original source/instrument in the linked evidence.
 Remaining criteria are **UNMEASURED** until their instruments run. Queue homes:
@@ -38,7 +38,7 @@ version adapters inside one logical request-serving component.
 
 ## Endpoint and compatibility contract
 
-**Adopted configuration ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern), 2026-11-10,
+**Adopted configuration ([decision](multitenancy-decisions.md#internal-listener-ory-pattern), 2026-11-10,
 multitenant only).** Each role process has one private listener, `serve.internal`,
 configured in the style of Ory Kratos/Hydra's `serve.public`/`serve.admin`:
 `host`/`port` or `socket`, each overridable from the environment
@@ -62,7 +62,7 @@ Credentials in URLs, unexpected paths/query/fragment components, unsupported
 schemes and implicit trust/fallback refuse, and the adopted shape keeps those
 refusals.
 
-**Shutdown ([decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)).** On SIGTERM the
+**Shutdown ([decision](multitenancy-decisions.md#internal-listener-graceful-shutdown)).** On SIGTERM the
 internal listener stops accepting connections, lets in-flight calls finish and
 send their responses up to a configurable deadline below the platform's
 termination grace, then force-closes what remains; callers still treat a

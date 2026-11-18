@@ -144,7 +144,7 @@ Every track changes what happens when a record is written:
 | Loop's `syncIdentifier` and Trio's `id` stored and returned untouched | write-contract matrix |
 | v1 treatment upsert on `created_at` + `eventType` | write-contract matrix |
 
-The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT decided 2026-10-31: one in-process event per write, named from WriteResult.items[], and the per-database-call event kept as backend instrumentation; delivery between processes is decided with the serve roles; its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name. The later [B7 recovery direction](../tenancy/durable-event-delivery-contract-2026-11-06.md) uses a durable feed and the adopted [bounded full current-state snapshot backstop](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m5-bounded-snapshot-reconciliation); the time-only alarm tick remains separate from that reconciliation schedule.
+The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT decided 2026-10-31: one in-process event per write, named from WriteResult.items[], and the per-database-call event kept as backend instrumentation; delivery between processes is decided with the serve roles; its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name. The later [B7 recovery direction](../tenancy/durable-event-delivery-contract-2026-11-06.md) uses a durable feed and the adopted [bounded full current-state snapshot backstop](../tenancy/multitenancy-decisions.md#m5-bounded-snapshot-reconciliation); the time-only alarm tick remains separate from that reconciliation schedule.
 
 ## 3. The map
 
@@ -251,7 +251,7 @@ owner/data/operator routes. R72 accepts that bounded versioned-write and
 route-separation bar; wider catalogue and human-session acceptance remain M6. M4's bar is executed headless clients
 plus source-pattern replay for the rest, with **no all-client claim**; Android
 emulator work moves to C and iOS is outside the automated lab. M4 still depends on M3.
-The [promotion decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#multitenant-promotion-bars-2026-11-06)
+The [promotion decisions](../tenancy/multitenancy-decisions.md#multitenant-promotion-bars-2026-11-06)
 own these scope changes. Headless owner `config.ownerPolicy` is retained writer
 policy, distinct from the withdrawn authorization reader option.
 

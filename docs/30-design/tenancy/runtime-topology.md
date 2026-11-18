@@ -135,7 +135,7 @@ OIDC, network transport, scaling or production measurements.
 
 [PNG preview](diagrams/current-internal-api-topology.png) · [SVG source](diagrams/current-internal-api-topology.svg)
 
-The plate illustrates the [adopted listener composition](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+The plate illustrates the [adopted listener composition](multitenancy-decisions.md#internal-listener-ory-pattern).
 In this composition, each process that serves private contracts has one private listener.
 Explicit contract modules select its operations. The [listener evidence](../../../reports/tenancy/internal-listener-2026-11-10/README.md)
 and [shared-transport acceptance](../../../reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance/)
@@ -160,11 +160,11 @@ lifecycle-participant; realtime serves alarm-delivery and lifecycle-participant;
 tenant-admin serve lifecycle-participant. The selected stream evaluator also
 serves its private receiver; realtime serves completed-output hints. A process with no contract (UI) opens none. The default is a
 unix socket under the runtime directory; host/port is set explicitly by environment. On shutdown the
-listener finishes in-flight calls up to a deadline ([graceful shutdown](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown)).
+listener finishes in-flight calls up to a deadline ([graceful shutdown](multitenancy-decisions.md#internal-listener-graceful-shutdown)).
 The `admin` role serves ownership operations on its operator listener
 (`ADMIN_HOSTNAME`/`ADMIN_PORT`). It uses the `ownership_operator` database identity.
-It is not a lifecycle participant ([restore census](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
-[same address, different port](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admin-plane-same-address-different-port)). Evaluator's in-process
+It is not a lifecycle participant ([restore census](multitenancy-decisions.md#restore-census-and-ownership-phase),
+[same address, different port](multitenancy-decisions.md#admin-plane-same-address-different-port)). Evaluator's in-process
 `health()` result is not a remote metrics endpoint.
 
 The private arrows show specific calls.
@@ -183,10 +183,10 @@ read-derived; its latency, load and failure effects need measurement.
 
 Bind public, management and private interfaces separately.
 Each process that serves private contracts has one `serve.internal` listener under the
-[adopted decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-ory-pattern).
+[adopted decision](multitenancy-decisions.md#internal-listener-ory-pattern).
 The role's code selects its contract modules. Configuration selects a socket or
 host/port; it cannot move or merge contracts. The default is a Unix socket.
-On SIGTERM, the listener [drains in-flight calls up to a deadline](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#internal-listener-graceful-shutdown).
+On SIGTERM, the listener [drains in-flight calls up to a deadline](multitenancy-decisions.md#internal-listener-graceful-shutdown).
 Operational inspection is another explicit private contract; its existence does
 not imply a public metrics endpoint or complete production monitoring.
 

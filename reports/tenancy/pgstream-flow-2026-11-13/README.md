@@ -2,7 +2,7 @@
 
 *Contributor-facing retained measurement, 2026-11-13. Reproduced on the frozen
 prototype source below. This closes a bounded local capability, not M7 production
-acceptance, autonomous recovery or capacity. The [release decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#event-driven-reset)
+acceptance, autonomous recovery or capacity. The [release decision](../../../docs/30-design/tenancy/multitenancy-decisions.md#event-driven-reset)
 owns priority; the [communication guide](../../../docs/archive/tenancy/evaluator-realtime-reference-2026-11-16.md#event-driven-target-and-first-proof)
 owns the proposed architecture.*
 

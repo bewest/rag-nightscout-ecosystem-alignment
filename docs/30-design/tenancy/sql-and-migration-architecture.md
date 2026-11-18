@@ -88,7 +88,7 @@ own admitted port behavior.
 
 ## Supported database ownership contract
 
-The [exclusive application ownership decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership)
+The [exclusive application ownership decision](multitenancy-decisions.md#exclusive-application-postgres-ownership)
 defines supported writers. Nightscout collectively owns its selected namespaces:
 multiple internal processes and controlled maintenance tools may use PostgreSQL,
 but every supported participant follows the relevant application contract.
@@ -155,7 +155,7 @@ The existing claim/generation-bound maintenance window determines whether an
 operation can run safely during recovery. Operator-controlled resource/activity
 policy asks which serving, ingestion, evaluation or connector work should run at
 all. That policy is decided as two durable flags, pause and suspend
-([activity-is-pause-suspend](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-is-pause-suspend)),
+([activity-is-pause-suspend](multitenancy-decisions.md#activity-is-pause-suspend)),
 and stored in `tenant_activity` beside, not inside, the maintenance window; see
 [tenant activity](#tenant-activity-pause-and-suspend). A maintenance phase named
 `active` is not evidence of activity eligibility, and clearing the restore hold
@@ -407,8 +407,8 @@ works without opting into the history-clock decorator. Counter-row contention
 serializes same-tenant inserts for that collection; history-clock composition
 serializes admitted stamped writes across that tenant's domains. Pools, storage,
 CPU and DDL locks remain shared resources. The adopted
-[insertion semantics](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics)
-and [history-forward restore policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-history-forward-correction)
+[insertion semantics](multitenancy-decisions.md#tenant-local-insertion-semantics)
+and [history-forward restore policy](multitenancy-decisions.md#restore-history-forward-correction)
 own compatibility decisions; the [counter analysis](counter-and-restore-options.md)
 owns current distinctions and links retained alternatives; the connector-framed
 internal replacement remains proposed.
@@ -477,7 +477,7 @@ The [startup helper][startup-helper] defers only actual-window suspension errors
 not arbitrary errors with a matching string. Lazy initialization runs under the
 actual later tenant admission; invalidation rejects stale initializer completion.
 A suspended A therefore need not prevent B startup in the new source. The
-[startup decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-startup-admission)
+[startup decision](multitenancy-decisions.md#tenant-local-startup-admission)
 requires fresh-process native proof. The [c23 native matrix](../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/README.md)
 reproduces the bounded shared-role restart criterion on its exact later source;
 this guide retains the inspected source attribution above.
@@ -580,7 +580,7 @@ migration and ledger entry are one transaction (see
 [upgrade and readiness](#upgrade-and-readiness-sequence)). New tenants get their
 row from [`provisionInTransaction`][activity-provision], which the Compose
 bootstrap calls [in the same transaction][bootstrap-activity] that inserts the
-window row ([activity-row-always-provisioned](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#activity-row-always-provisioned)).
+window row ([activity-row-always-provisioned](multitenancy-decisions.md#activity-row-always-provisioned)).
 
 **Two flags, three states.** The [policy module][activity-policy] defines
 `active`, `paused` and `suspended`, with suspended taking precedence. Paused
@@ -592,7 +592,7 @@ sets which flag ([grant set][activity-grants]): the owner identity may update
 [ceremony effects][activity-deletion] pause on a deletion request, restore the
 earlier pause state on cancel, and suspend on execution, each inside the
 ceremony's transaction
-([deletion-request-auto-pauses](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deletion-request-auto-pauses)).
+([deletion-request-auto-pauses](multitenancy-decisions.md#deletion-request-auto-pauses)).
 
 **Where it is read.** Each consumer reads the row afresh through a `reader`
 store, after a `check` of the control catalogue ledger:
@@ -630,8 +630,8 @@ record reports the recorded outcome without retrying. The
 private directory and the recorded digest (`tenant-artifact-<digest>`), and
 refuses a symlink or non-directory at that name. Copies outside that directory
 are the operator's responsibility
-([key-destruction-removes-export](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#key-destruction-removes-export),
-[export-removal-no-retry](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#export-removal-no-retry)).
+([key-destruction-removes-export](multitenancy-decisions.md#key-destruction-removes-export),
+[export-removal-no-retry](multitenancy-decisions.md#export-removal-no-retry)).
 
 ### Restore census and non-clinical identities
 
@@ -646,8 +646,8 @@ participant's PID, birth and role passes. Any other backend is
 `RESTORE_COHORT_UNKNOWN_BACKEND`. Grants read from the catalogue in the census
 statement decide; role names and `application_name` do not. Read-only identities
 and the admin role's `ownership_operator` are therefore accepted while connected
-([restore-census-and-ownership-phase](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-and-ownership-phase),
-[restore-census-counter-writers](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#restore-census-counter-writers)).
+([restore-census-and-ownership-phase](multitenancy-decisions.md#restore-census-and-ownership-phase),
+[restore-census-counter-writers](multitenancy-decisions.md#restore-census-counter-writers)).
 The exemption is a configuration check of connected identities, not a check of
 live writes. The disposable-PostgreSQL integration test
 [`admin-lifecycle-fit`][admin-lifecycle-fit] exercises the admin role beside a
@@ -678,10 +678,10 @@ statistics snapshot on the same operator client before reading actors; at
 `16a1fc2d` it also [accepts non-clinical identities](#restore-census-and-non-clinical-identities). It remains
 a diagnostic/refusal check, not a physical database fence against a newly opened
 raw client with already-authorized DATA credentials. Such external writers are
-unsupported under the [application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership);
+unsupported under the [application ownership contract](multitenancy-decisions.md#exclusive-application-postgres-ownership);
 arbitrary-writer exclusion is not a supported-topology admission gate. A trusted
 all-tenant worker or DBA remains within the deployment trust
-boundary. See the [deployment/trust decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m6-deployment-and-trust-2026-11-07).
+boundary. See the [deployment/trust decision](multitenancy-decisions.md#m6-deployment-and-trust-2026-11-07).
 
 Tenant-local state removes cross-tenant counter maintenance during restore; it
 does not partition database capacity or remove shared service failure. Restarts,

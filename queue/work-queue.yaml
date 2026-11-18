@@ -26786,7 +26786,7 @@ items:
       - reports/tenancy/core-h-acceptance-2026-11-12/README.md
       - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/README.md
       - reports/tenancy/m7-unaccepted-measurement-2026-11-12/independent-review/README.md
-      - releases/cgm-remote-monitor-16.0.0/decisions.md#m7-parallel-unaccepted-measurement
+      - docs/30-design/tenancy/multitenancy-decisions.md#m7-parallel-unaccepted-measurement
       - docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.md
       - docs/30-design/tenancy/m5-m6-decision-list.md
     notes: >
@@ -26843,7 +26843,7 @@ items:
     blocks_on:
       - MT-BENCH-BASELINE
     evidence:
-      - releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate
+      - docs/30-design/tenancy/multitenancy-decisions.md#m7-capacity-gate
     notes: >
       2026-11-10: retired by the M7 capacity decision. Measure marginal resource
       cost and confirm at the claimed tenant count; no equal-load deployment-shape
@@ -26964,7 +26964,7 @@ items:
       - reports/tenancy/core-h-acceptance-2026-11-12/README.md
       - reports/tenancy/evaluator-trusted-scheduling-2026-11-12/native-9db-d76-fresh-ingestion/README.md
       - reports/tenancy/m7-unaccepted-measurement-2026-11-12/independent-review/README.md
-      - releases/cgm-remote-monitor-16.0.0/decisions.md#m7-parallel-unaccepted-measurement
+      - docs/30-design/tenancy/multitenancy-decisions.md#m7-parallel-unaccepted-measurement
       - reports/tenancy/m7-unit-repairs-2026-11-12/admin-secrets-permissions/README.md
       - reports/tenancy/m7-unit-repairs-2026-11-12/fixture-source-closure/README.md
       - reports/tenancy/core-g-acceptance-2026-11-12/README.md

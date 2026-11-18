@@ -39,7 +39,7 @@ Anchors verified before writing:
 | alignment `main` | `4714b1a7409403c91ec2c0f812cd0a21611491f6` |
 | this plan's alignment base | `3982d589a2d28da4bf831f1182e93858e7eb4c59` |
 
-The [release decisions](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#runnable-preview-and-parallel-crud-delivery-2026-11-04)
+The [release decisions](multitenancy-decisions.md#runnable-preview-and-parallel-crud-delivery-2026-11-04)
 authorize a bounded runnable preview and entries CRUD in parallel. They do not authorize
 an all-REST capability claim. Candidate 16.0.0 release acceptance is a separate process.
 The [delivery roadmap](multitenant-delivery-roadmap.md),

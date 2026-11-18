@@ -23,7 +23,7 @@ Containers: PostgreSQL `postgres:16` (the suite fixture names the tag; it resolv
 The intended behaviour comes from [owner authority](../../../docs/30-design/tenancy/owner-authority.md#owner-permissions-and-ceilings):
 "last-owner removal must not orphan the tenant", and "last-owner protection, current authority
 and audit remain required for the operator path"; and from the 16.0.0 decision
-[`owner-may-revoke-subjects`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#owner-may-revoke-subjects).
+[`owner-may-revoke-subjects`](../../../docs/30-design/tenancy/multitenancy-decisions.md#owner-may-revoke-subjects).
 A usable owner is an active `tenant_owner_actors` row with `can_update` whose principal is an
 existing subject of the tenant (`lib/tenant-ownership/README.md`).
 
@@ -128,7 +128,7 @@ below.
 
 ## Item 3: export-file expiry (unsettled, decision question)
 
-**What is stated.** Decision [`tenant-deletion-key-retention`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-deletion-key-retention)
+**What is stated.** Decision [`tenant-deletion-key-retention`](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-deletion-key-retention)
 keeps the Transit keys and the export artifact for 30 days, then an operator destroys the keys,
 which cryptographically erases the artifact's secrets. `lib/tenant-lifecycle/README.md` says
 "Expiry of the export artifact file itself is not automated by this module", and the

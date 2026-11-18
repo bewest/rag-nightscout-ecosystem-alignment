@@ -19,6 +19,10 @@ record format. This skill is the procedure for keeping a cycle's records current
 | an item's state moved | `queue/work-queue.yaml` | see the `queue-item` skill; switch the gate to `official/dev` ancestry when it merges |
 | a new queue id named in the records | `verification-selection.txt` | one id per line, same commit |
 
+Multitenant implementation, acceptance and capacity work is not release content until a release
+carries a multitenant role. Record it in `docs/30-design/tenancy/execution-log.md` (dated tables) and
+`docs/30-design/tenancy/multitenancy-decisions.md` ("Programme decisions after D23"), not here.
+
 ## Procedure
 
 1. **Anchor first.** Read the current tree from the remote, not from a brief:

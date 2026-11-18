@@ -9,7 +9,7 @@ figures, method stated) or **read-derived** (from reading code, not run).*
 
 | question | answer |
 |---|---|
-| **1,000-tenant milestone** ([`m7-capacity-gate`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate)) | **Met on both heads.** Every 1,000-tenant run (8) finished with every role healthy, the stored-count oracle GREEN with zero uncertain writes, all probe writes delivered, and all tenants evaluated after the full restart. Socket caps differ by run (table below). |
+| **1,000-tenant milestone** ([`m7-capacity-gate`](../../../docs/30-design/tenancy/multitenancy-decisions.md#m7-capacity-gate)) | **Met on both heads.** Every 1,000-tenant run (8) finished with every role healthy, the stored-count oracle GREEN with zero uncertain writes, all probe writes delivered, and all tenants evaluated after the full restart. Socket caps differ by run (table below). |
 | **3,000-tenant gate** | **Not met** on core `5c60aec6` + deploy `d1c7aca` on this host. Deploy and the idle window succeed at 3,000; under the real cadence with 2 sockets per tenant, 99.8% of HTTP requests fail (p50 10.2 s) and 134 of 6,000 sockets prime in 300 s (r1, measured). |
 | **What runs out first at 3,000** | The **api's single JavaScript main thread**, driven by realtime's socket-authorize path, with heavy allocation. With sockets present (x2, x3) the api's event-loop utilisation is 0.993–0.995 and its process uses 4.4–4.5 cores, of which 0.94–0.96 is the main thread and 3.4–3.5 V8 worker (GC/compiler) threads; authorize throughput stays at about 140–215/s whatever the pool size (measured). With HTTP only (x1) the api's 8-client operation pool binds first: requests wait their 5 s pool timeout while the main thread runs at 0.74 (measured). PostgreSQL is not the limit (1.8–4.5 cores, 3–5 active backends on average; measured). |
 | **Where the api main thread saturates** | About **1,350–1,400 tenants** under this workload (real cadence + 2 sockets per tenant). **Derived, an extrapolation:** b4's api main-thread utilisation of 0.73 at 1,000 tenants, scaled linearly to 1.0. No run was made at that N. |
@@ -179,7 +179,7 @@ failure count far more than the control comparison does: b1–b4 show a failed p
    realtime's 1 s counter): sessions at exactly 2,000 from +27.5 to +50.6 s, then 2,000 → 1,501 by
    +55.6 s; `invalidated` and `primeRefreshFailures` 0. b4 at cap 4N (measured): zero server
    disconnects, 2000/2000 back unaided, sessions peaked at 2,455, above 2N. Decision:
-   [`realtime-no-socket-cap`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#realtime-no-socket-cap)
+   [`realtime-no-socket-cap`](../../../docs/30-design/tenancy/multitenancy-decisions.md#realtime-no-socket-cap)
    (no per-process cap, plus cause codes).
 
 ## Findings
@@ -192,7 +192,7 @@ failure count far more than the control comparison does: b1–b4 show a failed p
 | Bootstrap failures carried no detail | closed, deploy `8f9a97e` | deploy fixes record §1 |
 | Role config bound 1 MiB (api config 641 B per tenant indented) | closed, core `5517cb6c` (`MULTITENANT_CONFIG_MAX_BYTES`) + deploy compact JSON | 3,000 deploys at 4 MiB, bootstrap 58.6–60.5 s |
 | ui refused more than 1,000 tenants | closed, core `5c60aec6` (`PREVIEW_MAX_TENANTS` 10,000) + deploy d1c7aca | 3,000 deploys with ui healthy |
-| Socket cap 2N drops reconnecting clients after a restart | decided: [`realtime-no-socket-cap`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#realtime-no-socket-cap); runs here used cap 4N as a bench setting | Correction 3 |
+| Socket cap 2N drops reconnecting clients after a restart | decided: [`realtime-no-socket-cap`](../../../docs/30-design/tenancy/multitenancy-decisions.md#realtime-no-socket-cap); runs here used cap 4N as a bench setting | Correction 3 |
 | api main thread saturates on the socket-authorize path (about 5 ms main thread and heavy GC per authorize) | **open** (core) | x2, x3 |
 | api operation pool of 8 binds first under HTTP-only load at 3,000 | **open** (core default; pool size is operator-settable) | x1 |
 | Change-detector stamp scan grows with N: 71–76 ms per call at 3,000 (evaluator and realtime, about once a second each); not among the top statements at 1,000 | **open** (core) | x1 `load-pg-top.tsv`; idle marginal cost table |

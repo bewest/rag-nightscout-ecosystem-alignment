@@ -17,7 +17,7 @@ to testing an independently ready capability.
 
 ## Immediate M7 priority
 
-The [single-host streaming decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#single-host-streaming-first)
+The [single-host streaming decision](multitenancy-decisions.md#single-host-streaming-first)
 sets the current order: use the existing evaluator/realtime composition and UDS
 interfaces, measure a bounded local workload, and qualify the supported candidate.
 Explore toward 10,000 synthetic tenants as measured resources permit. Keep actual
@@ -55,7 +55,7 @@ proofs of availability. Specify which dependency or failure domain may be lost,
 what continues serving, and what recovery must establish before service resumes.
 
 The capacity campaign's tenant levels are experimental points. The
-[adopted capacity gate](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate)
+[adopted capacity gate](multitenancy-decisions.md#m7-capacity-gate)
 defines its current milestone and stretch target; it does not select a production
 node type or an ultimate fleet size. Small-group efficiency and a larger fleet's
 bounded growth must be evaluated separately. Multiple independently admitted
@@ -99,13 +99,13 @@ UNMEASURED.
 
 | Boundary | Design question | Closing evidence and canonical home |
 |---|---|---|
-| Workload and resource envelope | How much useful work fits, including interference and recovery? | Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow [M7 measurement policy](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-envelope-measured-not-declared) and the [capacity gate](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#m7-capacity-gate). The latter closes the separate single-site contrast requirement. Historical counts or node density are assumptions until reproduced on comparable inputs. |
+| Workload and resource envelope | How much useful work fits, including interference and recovery? | Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow [M7 measurement policy](multitenancy-decisions.md#m7-envelope-measured-not-declared) and the [capacity gate](multitenancy-decisions.md#m7-capacity-gate). The latter closes the separate single-site contrast requirement. Historical counts or node density are assumptions until reproduced on comparable inputs. |
 | Human identity and owner authority | Does the selected identity provider preserve current tenant authority throughout sessions and streams? | Actual provider/HTTPS login, renewal, logout, revocation and outage behavior, owner settings consumed by roles, legacy-client compatibility and strict audience separation. [Owner authority](owner-authority.md), M6a criteria in the [roadmap](multitenant-delivery-roadmap.md#milestones-and-continuous-integration). |
-| Provisioning, ingress and secrets | Are storage, authority and keys ready before serving; are private controls actually private? | Operator provisioning and recoverable partial failures; current grants/RLS; TLS/host/selector/client-IP/socket probes; service credential renewal, expiry, revocation and outage/recovery, CA verification/rotation and recoverable Vault unseal custody. A disposable lab bootstrap is not an operator provisioner. Existing Agent proofs retain their scope; the selected deployment needs a [trust record and probes](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-admission-probes-and-trust-record). |
+| Provisioning, ingress and secrets | Are storage, authority and keys ready before serving; are private controls actually private? | Operator provisioning and recoverable partial failures; current grants/RLS; TLS/host/selector/client-IP/socket probes; service credential renewal, expiry, revocation and outage/recovery, CA verification/rotation and recoverable Vault unseal custody. A disposable lab bootstrap is not an operator provisioner. Existing Agent proofs retain their scope; the selected deployment needs a [trust record and probes](multitenancy-decisions.md#deployment-admission-probes-and-trust-record). |
 | Lifecycle, keys and recovery | Can supported operations finish or stop safely, and can an operator recover? | Provision/pause/suspend/export/delete/ownership, retained-key destruction, production key-custodian responsibilities and artifact fidelity; interrupted restore/upgrade, lost acknowledgement, participant death and dependency/host replacement. Verify the affected tenant and an independent tenant's progress. Use [M6 acceptance families](multitenant-delivery-roadmap.md#m5m6-acceptance-families) and the [recovery boundaries](deployment-and-rig-testing.md#credential-and-recovery-boundaries). Safe refusal is distinct from eventual recovery. |
 | Connectors and supported clients | Which actual journeys work through the selected ingress and credentials? | Declared collection coverage, independent stored/history outcomes, cadence/retry/revocation and supported credential renewal; required Android and pinned client journeys. Source-pattern replay is distinct from executing a client binary. [Roadmap](multitenant-delivery-roadmap.md) and current release evidence own the supported scope; do not infer an all-client claim or treat an old entries-only run as the latest result. |
 | Shared-fault and operating behavior | What happens when bursts or outages affect many tenants together? | Hot tenant, reconnect flood, large history, active-alarm work, backlog, slow/down dependencies, restores/upgrades and storage/backup growth. Measure other-tenant progress and authorized effects while queues fill and recover. [Experiment contract](durable-event-delivery-contract-2026-11-06.md#11-maintainer-acceptance-and-experiments). |
-| Release and deployment admission | Are the actual source, configuration, image and operational procedure qualified together? | Applicable full/browser/enabled-corpus/native/client acceptance, named pending cases, final prcheck, deployment trust and recovery rehearsal, rollback and explicit operator admission. [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md), [deployment admission decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#deployment-admission-probes-and-trust-record). |
+| Release and deployment admission | Are the actual source, configuration, image and operational procedure qualified together? | Applicable full/browser/enabled-corpus/native/client acceptance, named pending cases, final prcheck, deployment trust and recovery rehearsal, rollback and explicit operator admission. [Release contents](../../../releases/cgm-remote-monitor-16.0.0/contents.md), [deployment admission decision](multitenancy-decisions.md#deployment-admission-probes-and-trust-record). |
 
 Do not reopen completed capability work merely because this guide names its
 production criterion. Conversely, ancestry or an old green report does not prove
@@ -113,7 +113,7 @@ new inputs. Reuse evidence through an explicit affected-input assessment and kee
 its original source/instrument attribution.
 
 The supported application cohort follows the
-[exclusive application ownership contract](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#exclusive-application-postgres-ownership).
+[exclusive application ownership contract](multitenancy-decisions.md#exclusive-application-postgres-ownership).
 External direct SQL writers are outside that contract. Every supported participant
 still follows its authority, write and lifecycle rules; current connections alone
 do not prove complete membership or credential custody. A load-balanced address

@@ -1,13 +1,13 @@
 # Tenant registry and provisioning: design and lane record (MT-TENANT-REGISTRY)
 
 *Contributor-facing lane record, 2026-11-11. Living until the lane hands off. Decisions implemented:
-[tenant-registry](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-registry),
-[provisioning-split](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#provisioning-split) (as refined
+[tenant-registry](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-registry),
+[provisioning-split](../../../docs/30-design/tenancy/multitenancy-decisions.md#provisioning-split) (as refined
 on alignment `3b841112c`). Patterns reused:
-[change-stamp-definer-function](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#change-stamp-definer-function),
-[admission-epoch-everywhere](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#admission-epoch-everywhere),
-[readiness-serve-then-warm](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#readiness-serve-then-warm),
-[pool-primitive-shared](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#pool-primitive-shared).*
+[change-stamp-definer-function](../../../docs/30-design/tenancy/multitenancy-decisions.md#change-stamp-definer-function),
+[admission-epoch-everywhere](../../../docs/30-design/tenancy/multitenancy-decisions.md#admission-epoch-everywhere),
+[readiness-serve-then-warm](../../../docs/30-design/tenancy/multitenancy-decisions.md#readiness-serve-then-warm),
+[pool-primitive-shared](../../../docs/30-design/tenancy/multitenancy-decisions.md#pool-primitive-shared).*
 
 ## Anchors
 

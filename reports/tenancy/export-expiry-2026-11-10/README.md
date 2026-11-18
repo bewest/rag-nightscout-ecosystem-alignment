@@ -12,7 +12,7 @@
 | base (draft #8898 head, `refs/pull/8898/head` read from `ls-remote` at start) | `b70ad83f` | `b70ad83fa4cdaeb7e6023137a05bd811d7db606a` |
 | `official/dev` at start | | `4a482627` |
 
-Worktree `externals/work/crm-export-expiry-20261110`, local, unpushed. Item `MT-EXPORT-EXPIRY` was `not-started` in `make queue-status` at start. Decision implemented: [`key-destruction-removes-export`](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#key-destruction-removes-export), refining `tenant-deletion-key-retention`.
+Worktree `externals/work/crm-export-expiry-20261110`, local, unpushed. Item `MT-EXPORT-EXPIRY` was `not-started` in `make queue-status` at start. Decision implemented: [`key-destruction-removes-export`](../../../docs/30-design/tenancy/multitenancy-decisions.md#key-destruction-removes-export), refining `tenant-deletion-key-retention`.
 
 ## 2. What the change does
 

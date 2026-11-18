@@ -4,7 +4,7 @@
 `df7215ac4abfc2ce16514db584d745429c787e02`, tree
 `9255ae114ac54cf804a60f22b5784740241acfca`; PostgreSQL 16.15.
 [Observations](observations.json), [exact instrument](instrument.cjs),
-[closure](closure.json). The subsequent [tenant-local insertion decision](../../../releases/cgm-remote-monitor-16.0.0/decisions.md#tenant-local-insertion-semantics)
+[closure](closure.json). The subsequent [tenant-local insertion decision](../../../docs/30-design/tenancy/multitenancy-decisions.md#tenant-local-insertion-semantics)
 owns target architecture; this remains evidence of a read-only approach, not a
 requirement to integrate global-allocator maintenance.*
 
