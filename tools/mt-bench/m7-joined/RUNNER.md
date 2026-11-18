@@ -486,7 +486,8 @@ acceptance remains separate and failed correctness remains failed.
 | `probe-every-ms` | Positive whole milliseconds up to 2,147,483,647. The planned write count must stay below the probe ledger's entry ceiling. |
 | `sampler-interval` | Compose sampler interval of 1–60 seconds. Native Kubernetes has its own observer settings. |
 | `accel`, `hot-factor` | Compose acceleration uses positive integers within the shared input representation. Both transports require the roster plus hot weight to fit the generated array. |
-| `primer-concurrency`, `jwt-setup-concurrency` | The current deployment primer accepts 1–32 workers. Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
+| `primer-concurrency`, `primer-max-tenants` | The bound DATA primer accepts positive JavaScript safe integers when the selected source supports them. Defaults are one worker and at most 10,000 pending tenants per invocation. Both settings are bounded by the actual pending roster. |
+| `jwt-setup-concurrency` | Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
 | `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Compose accepts named profiles and explicit per-service CPU and memory. Native Kubernetes binds requests and selected limits in its own fixture and allocation. |
 
 The [legacy remote protocol](../remote-pgstream/protocol.py) still uses a
@@ -496,6 +497,13 @@ tenant, 0–80,000 total viewers, acceleration and hot weight up to 10,800, prim
 concurrency 1–32 and JWT setup concurrency 1–64. The external static binding
 accepts one API and one evaluator/realtime worker. The projection checks these
 limits before launch.
+
+Fresh Compose discovery binds an explicit primer maximum or concurrency above
+32 into a version-2 run receipt. Source preflight checks the pinned deployment
+and image for the extended range. Legacy source refuses an unsupported value
+before fixture preparation. A smaller maximum can produce a partial DATA
+result and leave its saved custody for the owner. The owned deployment requires
+complete priming before publishing the roster.
 
 The remote overlay has exactly `binding`, `hostInventory`, and
 `resourceReference`. `binding` contains existing controller protocol identity,

@@ -9,12 +9,13 @@ import sys
 from producer_startup import cohort_ready_seconds
 sys.path.append(str(Path(__file__).resolve().parent.parent/'m7-joined'))
 import workload_inputs
+import primer_options
 import phase_fit
 
 FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bindingDirectory',
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
-          'startupWindowPreflight','resourcePhasePreflight'}
+          'startupWindowPreflight','resourcePhasePreflight','primerOptionsPreflight'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def need(ok, code):
@@ -60,7 +61,6 @@ def fixture_config(path, capture=False):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_dir(), 'DIRECTORY')
     for key in ('k6','readonlyGuard','observerScript'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_file(), 'TOOL')
-    need(type(c['primerConcurrency']) is int and 1<=c['primerConcurrency']<=32, 'PRIMER_CONCURRENCY')
     limits=c['nativeLimits'];need(set(limits)=={'millicpus','memoryBytes'} and all(type(x)is int and x>0 for x in limits.values()), 'FINITE_NATIVE_LIMITS')
     need(type(c.get('edgePort',8080))is int and 1<=c.get('edgePort',8080)<=65535,'EDGE_PORT')
     if c.get('pullSecretCommand') is not None:
@@ -68,6 +68,14 @@ def fixture_config(path, capture=False):
              all(isinstance(x,str) and x and '\x00' not in x for x in c['pullSecretCommand']), 'PULL_COMMAND')
     files=[reference(c[key]) for key in ('runTemplate','delivery','cacheAbsence')]
     d=Path(c['caseDirectory']);e=read(d/'environment.json');m=read(d/'intent.json');pre=read(d/'preflight.json')
+    primer = primer_options.from_profile(m['profile'],need)
+    if primer is None:
+        legacy = primer_options.selection({'concurrency':c.get('primerConcurrency')},need)
+        primer_options.require_source(legacy, None, need)
+    else:
+        concurrency = primer.get('concurrency',primer_options.DEFAULT_CONCURRENCY)
+        need(type(c.get('primerConcurrency',concurrency)) is int and c.get('primerConcurrency',concurrency)==concurrency,
+             'PRIMER_OPTIONS_CHANGED')
     need(re.fullmatch(r'[a-z0-9][a-z0-9-]{0,62}',e['runId']) and e['runId']==d.name and e['namespace'].startswith('ns-synth-'), 'INSTANCE_IDENTITY')
     need(e['tenantCount']==m['profile']['population']['provisionedTenants'], 'POPULATION')
     need(pre.get('commissioning')=='PREFLIGHT_ONLY' and pre['experiment']['renderSha256']==sha(d/'render.json'), 'PREFLIGHT')
@@ -87,7 +95,7 @@ def fixture_config(path, capture=False):
     need(identity['sha256']==c['instrumentSha256'],'INSTRUMENT_CHANGED')
     package=Path(c['bindingDirectory']);binding=read(package/'binding.json')
     authored_startup=m['profile'].get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
-    if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup:
+    if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None:
         files.append(package/'binding.json')
     for name,expected in binding['files'].items():
         p=package/'bindings/kubernetes'/name
@@ -104,6 +112,19 @@ def fixture_config(path, capture=False):
             need(kind in ('Namespace','ClusterRoleBinding') or meta['namespace']==e['namespace'],'STAGE_NAMESPACE')
             need(kind!='Service' or obj['spec'].get('type','ClusterIP')=='ClusterIP','NEW_BILLABLE_RESOURCE')
     startup=startup_preflight(m,e,rendered)
+    primer_preflight=None
+    if primer is not None:
+        contract_path=package/'bindings/kubernetes/assets/source-contract.json'
+        data=contract_path.read_bytes()
+        contract=json.loads(data)
+        rendered_proof=[obj['data']['source-contract.json'].encode() for obj in stage_objects['foundation']
+                        if obj['kind']=='ConfigMap' and obj['metadata']['name']=='provision-scripts']
+        need(rendered_proof==[data] and binding.get('sourceContractSha256')==sha(contract_path)
+             and binding['files'].get('assets/source-contract.json')==sha(contract_path)
+             and contract.get(primer_options.FIELD)==primer,'PRIMER_OPTIONS_BINDING_CHANGED')
+        protocol=contract.get(primer_options.PROTOCOL_FIELD)
+        primer_options.require_source(primer,protocol,need)
+        primer_preflight={'selection':primer,'sourceContractSha256':sha(contract_path),'sourceProtocol':protocol}
     phase=phase_fit.staged_projection(e,list(phase_fit.objects(read(d/'render.json'))),stage_objects,need)
     phase_preflight=None
     if phase is not None:
@@ -126,11 +147,13 @@ def fixture_config(path, capture=False):
     if capture:
         c['inputs']=expected
         c['startupWindowPreflight']=startup
+        if primer_preflight is not None:c['primerOptionsPreflight']=primer_preflight
         if phase_preflight is not None:c['resourcePhasePreflight']=phase_preflight
     else:
         need(c.get('inputs')==expected,'INPUT_CHANGED')
         need(c.get('startupWindowPreflight')==startup or
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
+        need(c.get('primerOptionsPreflight')==primer_preflight,'PRIMER_OPTIONS_PREFLIGHT_CHANGED')
         need(c.get('resourcePhasePreflight')==phase_preflight,'RESOURCE_PHASE_PREFLIGHT_CHANGED')
     return c
 

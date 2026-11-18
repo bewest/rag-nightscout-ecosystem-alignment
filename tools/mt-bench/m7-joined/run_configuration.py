@@ -32,7 +32,7 @@ def validate_prepare(args):
             and (args.replicas == 1 or static),
             'M7_CONFIG_SINGLE_API_TENANT_RANGE')
     a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)
-    a.primer_concurrency(args.primer_concurrency)
+    a.prepare_primer_options(args)
     a.jwt_setup_concurrency(args.jwt_setup_concurrency, args.run_purpose=='discovery')
     a.fixture_project(args, '0'*32)
     networks = [ipaddress.ip_network(getattr(args, key), strict=True) for key in ('backend_subnet', 'edge_subnet')]
@@ -60,6 +60,7 @@ def from_args(args, instrument):
             'postgresImageId': args.postgres_image, 'profile': args.profile,
             'runPurpose': args.run_purpose, 'tenants': args.tenants, 'replicas': args.replicas,
             'cadence': cadence, 'primerConcurrency': args.primer_concurrency,
+            **({'primerMaxTenants': args.primer_max_tenants} if getattr(args,'primer_max_tenants',None) is not None else {}),
             'jwtSetupConcurrency': args.jwt_setup_concurrency,
             'pgstreamTopology': args.pgstream_topology, 'resources': resources,
             'completionContract': args.completion_contract,
@@ -80,6 +81,7 @@ def from_manifest(m):
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),
             'primerConcurrency': m.get('primerConcurrency',1), 'jwtSetupConcurrency': m.get('jwtSetupConcurrency',1),
+            **({'primerMaxTenants':m['primerMaxTenants']} if 'primerMaxTenants' in m else {}),
             'pgstreamTopology': m.get('pgstreamTopology',a.stream_topology.COLOCATED), 'resources': resources,
             'diagnostics':m.get('diagnostics',a.profile_provenance.selection())}
 
@@ -125,6 +127,9 @@ def remote_projection(config, overlay, source_acceptance=None):
         sys.path[:]=previous
     require(config['workSeconds'] is not None, 'M7_REMOTE_TO_COMPLETION_UNSUPPORTED')
     result = resolve(config,source_acceptance); r = result['configuration']
+    import primer_options
+    require('primerMaxTenants' not in r and not primer_options.requires_extended(primer_options.from_manifest(r)),
+            'M7_REMOTE_PRIMER_OPTIONS_UNSUPPORTED')
     if r.get('staticTopology'):
         require(r['staticTopology']=={'kind':'static-hash-v1','workers':1} and r['replicas']==1 and isinstance((r.get('resources')or{}).get('profile'),dict),'M7_STATIC_REMOTE_K1_N1_ONLY')
     require(not (r.get('nodeObservationMode') or r.get('apiWarmCauseMode') or r['cadence'].get('driverVuDiagnostic')),

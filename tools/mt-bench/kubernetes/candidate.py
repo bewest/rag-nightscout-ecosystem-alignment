@@ -6,6 +6,7 @@ import re
 import time
 from producer_wire import ACK_BUDGET, WIRE_DIRECTORY, WIRE_NAME, valid_timeout
 import primer_storage
+import primer_options
 
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
@@ -17,6 +18,7 @@ def pins(k, c, inventory, objects):
     runtime = c['pins']
     overlay = objects.get('ConfigMap/provision-scripts', {}).get('data', {})
     if selected is None and 'candidate' not in runtime and 'candidate-documents.cjs' not in overlay:
+        k.need(primer_options.FIELD not in c, 'PRIMER_OPTION_SOURCE_UNSUPPORTED')
         return
     k.need(selected == runtime.get('candidate') and isinstance(selected, dict), 'CANDIDATE_CONTRACT_CHANGED')
     # Qualification is provenance. A diagnostic runs on the exact admitted bytes.
@@ -32,6 +34,10 @@ def pins(k, c, inventory, objects):
     k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
     k.need(contract.get(primer_storage.FIELD)==c.get(primer_storage.FIELD) and
            (primer_storage.FIELD in contract)==('primerStorageReceipt' in c), 'PRIMER_STORAGE_PUBLISH_SCOPE')
+    k.need(contract.get(primer_options.FIELD)==c.get(primer_options.FIELD), 'PRIMER_OPTIONS_CHANGED')
+    if primer_options.FIELD in c:
+        chosen = primer_options.selection(c[primer_options.FIELD], k.need)
+        primer_options.require_source(chosen, contract.get(primer_options.PROTOCOL_FIELD), k.need)
     if primer_storage.FIELD in contract:
         primer_storage.verify_receipt(c[primer_storage.FIELD],c['primerStorageReceipt'])
     if ACK_BUDGET in contract:

@@ -11,6 +11,7 @@ import time
 import kube_adapter as k
 from contract import tenant_projection
 import primer_storage
+import primer_options
 
 
 STATE_READBACK = '''const fs=require('node:fs'),crypto=require('node:crypto');
@@ -47,20 +48,33 @@ def require_roster(d, c, baseline):
            receipt.get('jobUid') == baseline['objects']['Job/primer']['uid'] and
            receipt.get('podUid') == pods[0]['uid'] and
            receipt.get('containerId') == pods[0]['containers']['done']['containerID'] and
+           receipt.get(primer_options.FIELD) == c.get(primer_options.FIELD) and
            receipt.get('sourceResult') == {'state':'synthetic-data-primed', 'tenants':c['tenants']} and
            receipt.get('dataTenants') == c['tenants'] and
            path.is_file() and not path.is_symlink() and receipt.get('rosterSha256') == k.digest(path),
            'PRIMER_ROSTER_CHANGED')
 
 
-def prime(directory, output, concurrency):
+def prime(directory, output, concurrency=None, max_tenants=None):
     d, c, objects = k.load(directory)
-    k.need('candidate' in c['pins'] and 1 <= concurrency <= 32, 'PRIMER_INPUT')
+    k.need('candidate' in c['pins'], 'PRIMER_INPUT')
+    declared=c.get(primer_options.FIELD)
+    supplied={key:value for key,value in (('concurrency',concurrency),('maxTenants',max_tenants)) if value is not None}
+    if supplied:primer_options.selection(supplied,k.need)
+    if declared is None:
+        k.need(max_tenants is None and not primer_options.requires_extended(supplied), 'PRIMER_OPTIONS_UNBOUND')
+        selected=supplied
+    else:
+        selected=primer_options.selection(declared,k.need)
+        effective={'concurrency':primer_options.DEFAULT_CONCURRENCY, **selected}
+        k.need(all(effective.get(key)==value for key,value in supplied.items()), 'PRIMER_OPTIONS_CHANGED')
     k.need(output.is_absolute(), 'NEW_ABSOLUTE_OUTPUT_REQUIRED')
     if 'primerOutput' in c:
         k.need(str(output) == c['primerOutput'] == str(d / 'primer'), 'PRIMER_OUTPUT_CHANGED')
     output.mkdir(mode=0o700, exist_ok=False)
     result = {'verdict': 'UNMEASURED', 'capacityAcceptance': 'NOT_GRANTED'}
+    if declared is not None:
+        result[primer_options.FIELD]=selected
     try:
         k.candidate.require(k, d, c)
         client = k.Client(c)
@@ -93,12 +107,14 @@ def prime(directory, output, concurrency):
         cutoff = min(k.timestamp(c['deadlines']['workUntil']),
                      k.timestamp(job['status']['startTime']) + job['spec']['activeDeadlineSeconds'])
         if 'dataPrimerSeconds' in c:
-            selected=c['dataPrimerSeconds']
-            k.need(k.workload_inputs.seconds(selected),'DATA_PRIMER_WINDOW')
-            cutoff=min(cutoff,time.time()+selected)
-            result['selectedDataPrimerSeconds']=selected
+            seconds=c['dataPrimerSeconds']
+            k.need(k.workload_inputs.seconds(seconds),'DATA_PRIMER_WINDOW')
+            cutoff=min(cutoff,time.time()+seconds)
+            result['selectedDataPrimerSeconds']=seconds
         args = [c['namespace'], c['runId'], hashlib.sha256(contract).hexdigest(),
-                hashlib.sha256(proof).hexdigest(), str(int(cutoff*1000)), str(c['tenants']), str(concurrency)]
+                hashlib.sha256(proof).hexdigest(), str(int(cutoff*1000)), str(c['tenants']),
+                str(selected.get('concurrency',primer_options.DEFAULT_CONCURRENCY))]
+        if 'maxTenants' in selected:args.append(str(selected['maxTenants']))
         result['cutoffEpochMs'] = int(cutoff*1000)
         remaining = cutoff - time.time()
         k.need(remaining > 0, 'PRIMER_DEADLINE', 'UNMEASURED')
@@ -157,11 +173,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('commissioning_packet')
     parser.add_argument('new_output', type=Path)
-    parser.add_argument('--concurrency', type=int, default=1)
+    parser.add_argument('--concurrency', type=int)
+    parser.add_argument('--max-tenants', type=int)
     args = parser.parse_args()
     try:
-        status = prime(args.commissioning_packet, args.new_output, args.concurrency)
+        status = prime(args.commissioning_packet, args.new_output, args.concurrency, args.max_tenants)
         print(json.dumps(status))
         sys.exit(0 if status['verdict'] == 'OBSERVED' else 1)
-    except (k.Refused, OSError, ValueError, KeyError):
+    except k.Refused as error:
+        sys.exit(str(error))
+    except (OSError, ValueError, KeyError):
         sys.exit('K8S_PRIMER_ENTRY_REFUSED')

@@ -87,7 +87,8 @@ try:
     execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet,'--await-primer'])
     observe_selected_bootstrap(packet, live, uid, ad, execute)
     startup=control.get('startupWindowPreflight',{}).get('selectedSeconds',{})
-    execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer','--concurrency',str(control['primerConcurrency'])],
+    primer_args=[] if control.get('primerOptionsPreflight') else ['--concurrency',str(control['primerConcurrency'])]
+    execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer',*primer_args],
             startup.get('dataPrimerSeconds',3600))
     assert read(packet/'primer/result.json')['verdict']=='OBSERVED'
     # Capture read-only SQL independently of optional client measurements.

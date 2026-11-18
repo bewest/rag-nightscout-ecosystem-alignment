@@ -62,11 +62,27 @@ test('selected primer reaches both Service origins, uses DATA credentials, class
       return net.createConnection({...options,host:'127.0.0.1',port:server.address().port}, callback);
     };
     const env = {NS_FIXTURE_NAMESPACE:fixture.namespace,NS_FIXTURE_RUN_ID:fixture.runId};
-    const args = [fixture.namespace,fixture.runId,sha(fs.readFileSync(contractFile)),sha(fs.readFileSync(path.join(dir,'verified.json'))),String(Date.now()+30000),'1','1'];
+    const options = contract.primerOptions || {};
+    const args = [fixture.namespace,fixture.runId,sha(fs.readFileSync(contractFile)),sha(fs.readFileSync(path.join(dir,'verified.json'))),String(Date.now()+30000),'1',
+      String(options.concurrency ?? 1), ...(options.maxTenants === undefined ? [] : [String(options.maxTenants)])];
     const run = (overrides={}) => commission({app,dir,contractFile,env,args,...overrides});
     await assert.rejects(run({env:{...env,NS_FIXTURE_RUN_ID:'other'}}), {code:'K8S_PRIMER_FIXTURE_CHANGED'});
-    await assert.rejects(run({args:[...args.slice(0,4),'1','1','1']}), {code:'K8S_PRIMER_DEADLINE'});
+    await assert.rejects(run({args:[...args.slice(0,4),'1',...args.slice(5)]}), {code:'K8S_PRIMER_DEADLINE'});
     await assert.rejects(run({args:[args[0],args[1],'0'.repeat(64),...args.slice(3)]}), {code:'K8S_PRIMER_FIXTURE_CHANGED'});
+    if (contract.primerOptions) {
+      const changed = [...args]; changed[6] = '2';
+      await assert.rejects(run({args:changed}), {code:'K8S_PRIMER_OPTIONS_CHANGED'});
+      changed[6] = args[6]; changed[7] = '9007199254740992';
+      await assert.rejects(run({args:changed}), {code:'K8S_PRIMER_OPTIONS_CHANGED'});
+      const legacy = {...contract}; delete legacy.primerOptionProtocol;
+      const legacyFile = path.join(dir, 'without-source-protocol.json');
+      fs.writeFileSync(legacyFile,JSON.stringify(legacy),{mode:0o600});
+      const unproved = [...args]; unproved[2] = sha(fs.readFileSync(legacyFile));
+      if (Number(args[6])>32 || Number(args[7])>10000)
+        await assert.rejects(run({contractFile:legacyFile,args:unproved}), {code:'K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED'});
+      assert.equal(calls,0);
+      assert.equal(fs.existsSync(path.join(dir,'prime.lock')),false);
+    }
     write('config.json',{...config,adminOrigin:'http://127.0.0.1:1342'});
     await assert.rejects(run(), {code:'PRIMER_ORIGIN_INVALID'}); write('config.json',config);
     assert.equal(calls,0);

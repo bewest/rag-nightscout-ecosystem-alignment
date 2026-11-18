@@ -89,12 +89,32 @@ else:
                     primer.require_roster(d,bound,observation)
                 k.write(d/'primer/tenants.json', rows)
                 primer.require_roster(d,bound,observation)
+                for value in (0,1.5,True,2**53):
+                    with self.assertRaisesRegex(k.Refused,'PRIMER_CONCURRENCY_INVALID'):
+                        primer.prime(d,d/'invalid',value)
+                    with self.assertRaisesRegex(k.Refused,'PRIMER_MAX_TENANTS_INVALID'):
+                        primer.prime(d,d/'invalid',max_tenants=value)
+                with self.assertRaisesRegex(k.Refused,'PRIMER_OPTIONS_UNBOUND'):
+                    primer.prime(d,d/'invalid',33)
+                self.assertFalse((d/'invalid').exists())
+                for workers in (1,32,33,64):
+                    c['primerOptions']={'concurrency':workers,'maxTenants':20000}
+                    selected=primer.prime(d,d/('selected-'+str(workers)))
+                    self.assertEqual(selected['primerOptions'],c['primerOptions'])
+                    self.assertEqual(actor.call_args.args[0][-4:],
+                                     [str(int((utc.timestamp()+120)*1000)),'1',str(workers),'20000'])
+                with self.assertRaisesRegex(k.Refused,'PRIMER_OPTIONS_CHANGED'):
+                    primer.prime(d,d/'invalid',63,20000)
+                self.assertEqual(actor.call_count,5)
+                self.assertFalse((d/'invalid').exists())
+                c.pop('primerOptions')
+                fetched.clear()
                 reply.stdout = b'{"error":"SOCKET_IPC_UNAVAILABLE","requestClass":"internal-ownership","notReady":true}'
                 reply.returncode = 1
                 failure=primer.prime(d,d/'failure',2)
                 self.assertEqual(failure['sourceResult']['error'],'SOCKET_IPC_UNAVAILABLE')
                 self.assertFalse((d/'failure/tenants.json').exists())
-                self.assertEqual(fetched.count('/run/ns-primer/tenants.json'),1)
+                self.assertEqual(fetched.count('/run/ns-primer/tenants.json'),0)
                 job['metadata']['uid']='other'
                 self.assertEqual(primer.prime(d,d/'changed',2)['code'],'K8S_PRIMER_JOB_INACTIVE')
-                self.assertEqual(actor.call_count,2)
+                self.assertEqual(actor.call_count,6)

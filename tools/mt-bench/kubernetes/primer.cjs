@@ -17,6 +17,7 @@ const known = new Set((
   'PRIMER_OWNERSHIP_ALREADY_ASSIGNED PRIMER_MANAGEMENT_SESSION_REFUSED SOCKET_IPC_UNAVAILABLE ' +
   'SOCKET_IPC_CONFIG_REFUSED SOCKET_IPC_REQUEST_REFUSED SOCKET_IPC_RESPONSE_REFUSED EVALUATOR_SCOPE_UNSAFE ' +
   'K8S_PRIMER_SOURCE_CHANGED K8S_PRIMER_FIXTURE_CHANGED K8S_PRIMER_ROSTER_CHANGED K8S_PRIMER_DEADLINE ' +
+  'K8S_PRIMER_OPTIONS_CHANGED K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED ' +
   'ENOENT EIO ENOSPC EACCES EROFS EEXIST'
 ).split(' '));
 
@@ -45,11 +46,11 @@ function diagnostic(error, source) {
 }
 
 async function commission({ app, dir, contractFile, env, args }) {
-  const [namespace, runId, contractHash, proofHash, cutoff, count, concurrency] = args;
+  const [namespace, runId, contractHash, proofHash, cutoff, count, concurrency, maxTenants] = args;
   const stop = Number(cutoff), expectedCount = Number(count);
   const remaining = stop - Date.now();
   if (!Number.isSafeInteger(stop) || remaining <= 0 || remaining > 2147483647) fail('K8S_PRIMER_DEADLINE');
-  if (args.length !== 7 || !Number.isInteger(expectedCount) || expectedCount < 1 || expectedCount > 10000 ||
+  if (![7,8].includes(args.length) || !/^[1-9][0-9]*$/.test(count) || !Number.isSafeInteger(expectedCount) ||
       env.NS_FIXTURE_NAMESPACE !== namespace || env.NS_FIXTURE_RUN_ID !== runId ||
       fs.existsSync(path.join(dir, '.exported'))) fail('K8S_PRIMER_FIXTURE_CHANGED');
   const contractBytes = fs.readFileSync(contractFile);
@@ -62,6 +63,23 @@ async function commission({ app, dir, contractFile, env, args }) {
       proof.fixture?.namespace !== namespace || proof.fixture?.runId !== runId ||
       proof.credentialBoundary !== 'admin-private-api') fail('K8S_PRIMER_SOURCE_CHANGED');
   const source = require(primePath);
+  const declared = contract.primerOptions;
+  if (declared === undefined) {
+    if (maxTenants !== undefined || Number(concurrency) > 32) fail('K8S_PRIMER_OPTIONS_CHANGED');
+  } else if (!declared || typeof declared !== 'object' || Array.isArray(declared) || !Object.keys(declared).length ||
+             Object.entries(declared).some(([key,value]) => !['concurrency','maxTenants'].includes(key) ||
+                                                            !Number.isSafeInteger(value) || value < 1) ||
+             String(declared.concurrency ?? 1) !== concurrency ||
+             (declared.maxTenants === undefined ? undefined : String(declared.maxTenants)) !== maxTenants) {
+    fail('K8S_PRIMER_OPTIONS_CHANGED');
+  }
+  if (contract.primerOptionProtocol !== undefined &&
+      (contract.primerOptionProtocol !== 'positive-safe-integer-v1' ||
+       source.PRIMER_OPTION_PROTOCOL !== contract.primerOptionProtocol)) fail('K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED');
+  if ((Number(concurrency) > 32 || Number(maxTenants) > 10000) && contract.primerOptionProtocol === undefined) {
+    fail('K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED');
+  }
+  const options = source.parsePrimeOptions(['--concurrency', concurrency, ...(maxTenants === undefined ? [] : ['--max-tenants', maxTenants])]);
   const config = source.load(path.join(dir, 'config.json'));
   if (config.apiOrigin !== 'http://api:1337' || config.adminOrigin !== 'http://admin:1342') fail('PRIMER_ORIGIN_INVALID');
   const saved = read(dir, 'provisioned.json');
@@ -69,7 +87,6 @@ async function commission({ app, dir, contractFile, env, args }) {
   if (expected.size !== expectedCount || config.seed.length !== expectedCount || !Array.isArray(saved) ||
       saved.length !== expectedCount || new Set(saved.map(row => row.id)).size !== expectedCount ||
       saved.some(row => !row.hosts?.[0] || expected.get(row.id) !== row.hosts[0])) fail('K8S_PRIMER_ROSTER_CHANGED');
-  const options = source.parsePrimeOptions(['--concurrency', concurrency]);
   const signal = new AbortController();
   const cancel = () => signal.abort();
   process.once('SIGTERM', cancel);

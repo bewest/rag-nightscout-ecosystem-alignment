@@ -16,6 +16,7 @@ import frozen
 import edge_configuration
 import matrix
 import primer_storage
+import primer_options
 from workloads import profile, reduce
 
 
@@ -90,6 +91,10 @@ def materialize(manifest, binding_repo, deploy_repo, out):
         return subprocess.check_output(['git', '-C', repo, *args])
     k.need(git(deploy_repo, 'rev-parse', 'HEAD').decode().strip() == selected['deployCommit']
            and not git(deploy_repo, 'status', '--porcelain', '--', 'bindings/compose'), 'IMAGE_DEPLOY_CHANGED')
+    prime_source = git(deploy_repo, 'show', selected['deployCommit']+':'+primer_options.SOURCE_PATH)
+    options = selected.get(primer_options.FIELD, {})
+    protocol = primer_options.source_protocol(prime_source)
+    primer_options.require_source(options, protocol, k.need)
     archive = git(binding_repo, 'archive', manifest['bindingCommit'], 'bindings/kubernetes')
     out.mkdir(mode=0o700, parents=True, exist_ok=False)
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
@@ -110,8 +115,13 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     # The package embeds deployment assets and a static role/provisioning protocol.
     # A changed deployment input needs a reviewed binding compatibility update.
     k.need(frozen.compatible_deployment_inputs(manifest, supported['sourceFilesSha256'],
-                                               measured['sourceFilesSha256']),
+                                               measured['sourceFilesSha256'], prime_source=prime_source),
            'UNSUPPORTED_BINDING_DEPLOYMENT_INPUT')
+    if protocol:
+        proof = primer_options.probe_image(
+            lambda argv:subprocess.check_output(argv, timeout=30),selected['localImageId'],prime_source,options,k.need)
+        k.need(proof['sha256']==measured['sourceFilesSha256']['prime.js'], 'PRIMER_OPTION_IMAGE_SOURCE_CHANGED')
+        measured[primer_options.PROTOCOL_FIELD] = protocol
     frozen.install_bootstrap_helper(manifest, deploy_repo, package, measured)
     measured.update(selected)
     k.write(asset, measured)
@@ -154,6 +164,8 @@ def render_checks(instance):
 def prepare(manifest_path, instance, out, *, await_primer=False):
     m = k.document(manifest_path)
     p = workload(m)
+    k.need(await_primer or primer_options.from_profile(p,k.need) is None,
+           'PRIMER_OPTIONS_AWAIT_PRIMER_REQUIRED')
     config = k.document(instance['config'])
     inventory = k.document(instance['inventory'])
     render = k.document(instance['render'])

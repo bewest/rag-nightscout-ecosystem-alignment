@@ -58,6 +58,30 @@ class Lifecycle(unittest.TestCase):
                 refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 stage=case/'stages/stores.json'
                 refusal('STAGE_NAMESPACE',lambda:put(stage,{'items':[dict(kind='ConfigMap',metadata={'namespace':'foreign'})]}),lambda:put(stage,{'items':[]}))
+                options={'concurrency':64,'maxTenants':20000}
+                intent['profile']['phases']['primerOptions']=options
+                put(files['intent'],intent)
+                contract=dict(primerOptions=options,primerOptionProtocol='positive-safe-integer-v1')
+                asset=p/'binding/bindings/kubernetes/assets/source-contract.json'
+                asset.parent.mkdir(parents=True)
+                bound_manifest=p/'binding/binding.json'
+                def materialize(value):
+                    put(asset,value)
+                    put(bound_manifest,{'files':{'assets/source-contract.json':l.sha(asset)},'sourceContractSha256':l.sha(asset)})
+                    put(case/'stages/foundation.json',{'items':[dict(kind='ConfigMap',metadata={'name':'provision-scripts','namespace':e['namespace']},
+                                                                    data={'source-contract.json':asset.read_text()})]})
+                materialize(contract)
+                cfg.pop('primerConcurrency')
+                put(path,cfg)
+                selected=l.fixture_config(path,capture=True)
+                self.assertEqual(selected['primerOptionsPreflight']['selection'],options)
+                put(path,{**selected,'primerConcurrency':33})
+                with self.assertRaisesRegex(ValueError,'PRIMER_OPTIONS_CHANGED'):l.fixture_config(path)
+                put(path,selected)
+                materialize({'primerOptions':options})
+                with self.assertRaisesRegex(ValueError,'PRIMER_OPTION_SOURCE_UNSUPPORTED'):l.fixture_config(path)
+                materialize(contract)
+                self.assertEqual(l.fixture_config(path),selected)
 
 
 class BootstrapReadback(unittest.TestCase):
