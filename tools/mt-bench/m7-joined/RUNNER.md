@@ -1384,6 +1384,11 @@ the same object in `profile.phases.startupWindows.compose`. Plans show the
 selected values and their reference defaults. Commands and waits use the lesser
 of the selected window and remaining authorized work. Owner-monitored priming
 and provision use their completion path when `stageSeconds` is omitted.
+An explicit evaluator window or progress budget derives the readiness capture
+allowance from the effective window, roster, and per-round byte bound. Each
+discovery attempt allows a second capture to confirm readiness. The result
+records capture limits and usage and identifies exhaustion separately from an
+elapsed readiness window.
 Explicit startup, progress and probe ledger budgets require a version-2 receipt.
 A larger requested population can exceed an observer budget; that observation
 stays `UNMEASURED` or `PARTIAL`, without a capacity grant. The numeric resolver

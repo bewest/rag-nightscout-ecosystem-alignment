@@ -15,6 +15,17 @@ A='11111111-1111-4111-8111-111111111111'
 B='22222222-2222-4222-8222-222222222222'
 R='33333333-3333-4333-8333-333333333333'
 S='44444444-4444-4444-8444-444444444444'
+
+class ReadinessClock:
+    now = 0
+
+    def monotonic(self):
+        return self.now
+
+    def sleep(self, seconds):
+        self.now += seconds
+
+
 class Progress(unittest.TestCase):
     def refused_frame(self):
         value=self.frame(ids=[A]);row=value['view']['tenants'][0]
@@ -67,6 +78,51 @@ class Progress(unittest.TestCase):
                 saved=json.loads((d/'runtime-readiness.json').read_text())
                 self.assertEqual(saved['verdict'],'PASS' if discovery else 'FAIL')
                 if discovery:self.assertEqual(saved['observations'][0]['causeAttribution'],'UNMEASURED')
+
+    def test_selected_readiness_window_reaches_late_strict_confirmation(self):
+        import adapter as a
+        ready=self.frame(ids=[A])
+        warming=copy.deepcopy(ready)
+        warming['view']['tenants'][0].update(ready=False,code='EVALUATOR_STARTING')
+        budget={'maxQueriesPerPhase':9,'maxBytesPerPhase':12000}
+        for selection,code in (({},'M7_RUNTIME_NOT_READY'),({'evaluatorReadySeconds':1500},None)):
+            with self.subTest(selection=selection), tempfile.TemporaryDirectory() as name:
+                clock=ReadinessClock()
+                d=Path(name);a.write(d/'tenants.private.json',[{'id':A}])
+                cadence={'startupWindows':selection,'evaluatorProgressBudget':budget}
+                def fetch(*args, timeout):
+                    return json.dumps(warming if clock.now<1215 else ready)
+                with patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=fetch):
+                    if code:
+                        with self.assertRaisesRegex(p.Refused,code):
+                            a.readiness(d,{'runPurpose':'discovery','cadence':cadence},clock=clock)
+                    else:
+                        result=a.readiness(d,{'runPurpose':'discovery','cadence':cadence},clock=clock)
+                saved=a.document(d/'runtime-readiness.json')
+                if code:
+                    self.assertEqual((clock.now,saved['code']),(1200,'M7_RUNTIME_NOT_READY'))
+                else:
+                    self.assertEqual((clock.now,result['verdict']),(1215.25,'PASS'))
+                    self.assertEqual(saved['capture']['limits'],{'attempts':100,'queries':200,'bytes':800000})
+                    used=saved['capture']['used']
+                    self.assertEqual((used['attempts'],used['queries']),(82,83))
+                    self.assertGreater(used['bytes'],0)
+                    self.assertEqual(saved['policy']['maxBytesPerPhase'],budget['maxBytesPerPhase'])
+
+    def test_readiness_reports_capture_exhaustion_and_preserves_a_strict_refusal(self):
+        import adapter as a
+        for confirmation,code,verdict in ((self.frame(ids=[A]),'M7_EVALUATOR_PROGRESS_READINESS_BUDGET','UNMEASURED'),
+                                          (self.refused_frame(),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')):
+            with self.subTest(code=code), tempfile.TemporaryDirectory() as name:
+                clock=ReadinessClock()
+                d=Path(name);a.write(d/'tenants.private.json',[{'id':A}])
+                frames=[json.dumps(value) for value in (self.frame(ids=[A]),confirmation)]
+                with patch.dict(p.POLICY,{'readinessMaxQueries':1}), patch.object(a,'progress_services',return_value=['evaluator']), patch.object(a,'progress_fetch',side_effect=frames):
+                    with self.assertRaisesRegex(p.Refused,code) as caught:
+                        a.readiness(d,{'runPurpose':'discovery'},clock=clock)
+                saved=a.document(d/'runtime-readiness.json')
+                self.assertEqual((clock.now,caught.exception.verdict,saved['code'],saved['capture']['used']['queries']),
+                                 (.25,verdict,code,2))
 
     def test_refusal_evidence_bounds_malformed_fields_without_losing_refusal(self):
         frame=self.refused_frame();row=frame['view']['tenants'][0]
