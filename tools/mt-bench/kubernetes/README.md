@@ -543,6 +543,26 @@ or overlapping provision actor refuses. Absence alone is insufficient; a retaine
 terminal proof can outlive its exact Pod while the same Job remains complete.
 Existing downstream Pod-roster checks still apply.
 
+Runtime display reads remain redacted. The selected phase captures a private
+0600 source scope during attach and uses `phase_source_private.py` to compare
+the current raw source in memory. This fixed port can only GET the bound
+namespace, `Job/provision` and the captured provision Pod. Its output contains
+typed results, identities and hashes. A nonce and pre/post identity checks bind
+each proof to the current guarded whole-namespace observation. Missing tools or
+unavailable evidence refuse as `UNMEASURED`; observed source, identity or proof
+changes refuse as `FAIL`. Redaction never acts as a source wildcard. The retained
+terminal receipt still permits verified Pod garbage collection with the same
+Complete Job and no other provision owner Pod.
+
+Lifecycle configuration captures and checks the helper and existing tool hashes
+before actors. Keep the runtime helper with its frozen instrument; the private
+commissioner below still requires only its two named modules. The port retains
+the existing per-GET timeout and original phase/work deadlines. It adds six
+private GETs and three guarded reads per observation; SQL brackets each read
+with two observations. `test_phase_source_private.py` uses a retained raw pair,
+the exact display redactor and inert API transport to check this boundary. Its
+timing measures fixture overhead, not cluster latency.
+
 Copy `phase_fit.py` and `resource_budget.py` from the same frozen helper into the
 new commissioner's `bin/` directory. The complete
 `commissioning-accounting.patch` includes this opt-in path for its declared base.

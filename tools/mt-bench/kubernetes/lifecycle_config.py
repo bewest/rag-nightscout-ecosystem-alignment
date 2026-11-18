@@ -112,7 +112,13 @@ def fixture_config(path, capture=False):
         phase_preflight={'plan':phase,'publisherSha256':sha(publisher),
                          'lifecycleSha256':sha(Path(__file__).with_name('lifecycle.py')),
                          'moduleSha256':sha(Path(phase_fit.__file__))}
+        try:
+            import phase_source_private
+            phase_preflight['privateSource']=phase_source_private.preflight(c)
+        except (ImportError,OSError,ValueError,KeyError,RuntimeError):
+            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE')
         files += [publisher,Path(phase_fit.__file__),Path(phase_fit.resource_budget.__file__)]
+        files.append(Path(phase_source_private.__file__))
     files += [Path(c[key]) for key in ('k6','readonlyGuard','observerScript')]
     files += [Path(c['toolsDirectory'])/'kubectl']
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]

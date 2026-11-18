@@ -348,11 +348,14 @@ class PhaseFit(unittest.TestCase):
 
     def test_actual_adapter_observe_cannot_skip_the_runtime_phase_guard(self):
         from test_adapter import fixture as adapter_fixture, k
+        import phase_source_private
         c, inventory, rendered, client = adapter_fixture()
         objects = k.validate(c, inventory, rendered)
         c[p.FIELD] = {'selected': 'deliberate wiring control'}
-        with patch.object(p, 'runtime', side_effect=ValueError('K8S_PHASE_TEST_TERMINAL_REFUSAL')) as guard:
-            with self.assertRaisesRegex(ValueError, 'TEST_TERMINAL_REFUSAL'):
+        with patch.object(phase_source_private, 'observe', side_effect=ValueError('K8S_PHASE_TEST_TERMINAL_REFUSAL')) as guard:
+            # Runtime source equality now uses its scoped private proof port;
+            # a refused proof remains an entry refusal before any driver.
+            with self.assertRaisesRegex(k.Refused, 'PHASE_PRIVATE_PROOF_UNAVAILABLE'):
                 k.observe(c, objects, client)
             guard.assert_called_once()
         c.pop(p.FIELD)

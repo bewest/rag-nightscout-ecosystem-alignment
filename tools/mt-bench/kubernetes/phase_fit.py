@@ -384,7 +384,8 @@ def runtime_binding(c, docs, need=require):
     if FIELD not in c:
         return None
     binding = c[FIELD]
-    need(isinstance(binding, dict) and set(binding) == {'plan', 'retirement'}, 'RUNTIME_BINDING')
+    need(isinstance(binding, dict) and set(binding) in
+         ({'plan', 'retirement'}, {'plan', 'retirement', 'privateSource'}), 'RUNTIME_BINDING')
     environment = {FIELD: {'contract': CONTRACT}, 'resourceAccounting': c.get('resourceAccounting', 'limits-v1')}
     plan = projection(environment, docs, need)
     need(binding['plan'] == plan, 'RUNTIME_PLAN_CHANGED')

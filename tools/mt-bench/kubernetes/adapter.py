@@ -301,6 +301,17 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
              'BOOTSTRAP_HELPER_SCOPE')
     candidate.pins(sys.modules[__name__], c, inventory, by_key)
     phase_fit.runtime_binding(c,objs,need)
+    if phase_fit.FIELD in c:
+        try:
+            import phase_source_private
+        except ImportError:
+            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
+        try:
+            phase_source_private.binding(c,by_key)
+        except phase_source_private.Refused as error:
+            raise Refused(str(error),error.verdict)
+        except (ImportError,OSError,ValueError,KeyError):
+            need(False,'PHASE_PRIVATE_PROOF_REQUIRED','UNMEASURED')
     return by_key
 
 
@@ -350,6 +361,36 @@ class Client:
             return json.loads(self.call(argv, cleanup=cleanup))
         except ValueError:
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
+
+    def phase_source_proof(self, request):
+        """Fixed private equality helper; this port never accepts kubectl argv."""
+        import phase_source_private
+        c=self.c
+        deadline(c)
+        helper=HERE/'phase_source_private.py'
+        need(helper.is_file(),'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
+        env={k:v for k,v in os.environ.items() if k not in ('PYTHONPATH','PYTHONHOME')}
+        env['PYTHONDONTWRITEBYTECODE']='1'
+        try:
+            need(request.get('scope')==c.get(phase_fit.FIELD,{}).get('privateSource'),
+                 'PHASE_PRIVATE_SCOPE_CHANGED')
+            request['until']=min(request['until'],time.time()+deadline(c))
+            result=self.run([sys.executable,'-B',str(helper)],input=json.dumps(request,allow_nan=False).encode(),
+                            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=deadline(c),check=False,
+                            env=env,cwd=str(HERE))
+            deadline(c)
+            need(isinstance(result.stdout,bytes) and len(result.stdout)<=phase_source_private.MAX_BYTES,
+                 'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
+            answer=json.loads(result.stdout)
+        except (OSError,subprocess.TimeoutExpired,ValueError):
+            raise Refused('K8S_PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
+        if result.returncode:
+            need(isinstance(answer,dict) and set(answer)=={'code','verdict'} and
+                 answer['verdict'] in ('FAIL','UNMEASURED') and
+                 answer['code'] in phase_source_private.ERROR_CODES,
+                 'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
+            raise Refused(answer['code'],answer['verdict'])
+        return answer
 
 
 def meta(obj):
@@ -607,7 +648,19 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
             need(baseline.get('bootstrapHelper', {}).get('configMapUid') == result['bootstrapHelper']['configMapUid'],
                  'BOOTSTRAP_HELPER_UID_CHANGED')
     if not cleanup and phase_fit.FIELD in c:
-        result['resourcePhasePlan']=phase_fit.runtime(c,by_key,result['namespace']['uid'],phase_job,pods,need)
+        try:
+            import phase_source_private
+        except ImportError:
+            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
+        try:
+            result['resourcePhasePlan']=phase_source_private.observe(c,by_key,result,ns,phase_job,pods,client,
+                                                                     lambda:deadline(c))
+        except phase_source_private.Refused as error:
+            raise Refused(str(error),error.verdict)
+        except (ImportError,OSError,ValueError,KeyError) as error:
+            if isinstance(error,ValueError) and str(error) in phase_source_private.SOURCE_CODES:
+                raise Refused(str(error),'FAIL')
+            need(False,'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
     candidate.images(sys.modules[__name__], c, result)
     for role, selection in c['roles'].items():
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
