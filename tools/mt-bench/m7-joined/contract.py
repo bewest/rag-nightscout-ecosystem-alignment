@@ -297,7 +297,6 @@ def discovery_authorization(manifest, receipt):
     import stream_topology
     import preload_convergence
     import primer_options
-    import population_ceiling
     version=receipt.get('version',1)
     require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
     require('commissioningSlotWalMiB' not in manifest or version==2,
@@ -310,9 +309,6 @@ def discovery_authorization(manifest, receipt):
     primer=primer_options.selection(primer_options.from_manifest(manifest),lambda ok,code:require(ok,'M7_'+code))
     require(not ('maxTenants' in primer or primer_options.requires_extended(primer)) or version==2,
             'M7_PRIMER_OPTIONS_BOUND_RECEIPT_REQUIRED')
-    require(population_ceiling.FIELD not in manifest or version==2,'M7_POPULATION_BOUND_RECEIPT_REQUIRED')
-    population_ceiling.selection(manifest.get(population_ceiling.FIELD),manifest.get('tenants'),
-                                 lambda ok,code:require(ok,'M7_'+code))
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
     import static_topology
@@ -323,7 +319,6 @@ def discovery_authorization(manifest, receipt):
     require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(preload_convergence.selection(resolved) == preload, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(primer_options.from_manifest(resolved)==primer,'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
-    require(resolved.get(population_ceiling.FIELD)==manifest.get(population_ceiling.FIELD),'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(resolved.get('staticTopology') == manifest.get('staticTopology') and
             resolved.get('staticBuildReceiptSha256') == manifest.get('staticBuildReceiptSha256'),
             'M7_STATIC_CONFIGURATION_MISMATCH')
