@@ -1102,15 +1102,6 @@ CPU/ELU captures. `--diagnostics off` disables the entire M7 observer; a matched
 ON/OFF/ON SUT comparison measures that total intervention, not exclusive query
 wrapper cost. SQL bookends, host/process counters and Node captures stay separate.
 
-`node query-wrapper-bench.cjs CORE_WORKTREE EXPECTED_HEAD OUTPUT_JSON` measures
-only the exact selected source's query-wrapper component using synthetic client
-calls. Checkout and wrapper installation happen before timing. Enabled observer
-and inert sink remain the same for default, direct-query bypass and restored
-arms, on Promise and callback paths. Counts and result identity are required;
-mislabeling a bypass as wrapped goes red. The finite repeated CPU/wall figures
-exclude network, database, log-worker and periodic serialization costs and imply
-no service throughput or capacity.
-
 ### Selected static branch diagnostics
 
 `--static-workers K` explicitly selects the source-bound static profile in

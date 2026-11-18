@@ -144,7 +144,7 @@ def generate(root, target, *, serial_exchange=False):
     target = Path(target)
     target.write_text(source)
     helpers={}
-    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','clinical-timeline-client.cjs','revision-witness.cjs','revision-witness-preload.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs'):
+    for name in ('evaluator_recovery.py','evaluator_progress.py','evaluator-progress.cjs','probe-accounting.cjs','completed-oracle.cjs','native-observation.cjs','client-delivery.cjs','durable-lag.cjs'):
         data=Path(__file__).with_name(name).read_bytes();target.with_name(name).write_bytes(data)
         helpers[name]=hashlib.sha256(data).hexdigest()
     if serial_exchange:

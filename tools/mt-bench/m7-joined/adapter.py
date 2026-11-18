@@ -32,14 +32,11 @@ import profile_provenance
 import orchestration_binding
 import evaluator_progress
 import outcome_gate
-import clinical_timeline
-import revision_witness
 import api_cause
 import driver_vu_diagnostic
 import api_warm_cause
 import commissioning_wal
 import node_observation
-import source_access
 import discovery_rest
 import evaluator_idle
 import evaluator_opportunities
@@ -304,7 +301,6 @@ def compose(d, *args, file=None, input=None, timeout=120):
             else:args[i+1:i+1]=['--pull','never']
     argv=orchestration_binding.fixture_argv(d,args)
     if orchestration_binding.mutation(args):
-        clinical_timeline.before_sender_effect(Path(d),args,document(Path(d)/'frozen.compose.json'),document(Path(d)/'owner.json'))
         orchestration_binding.fixture_mutation_preflight(d,argv,command)
     if diagnostic_resources._ACTIVE is not None:
         try:
@@ -559,7 +555,7 @@ def attach(args):
     stream_topology.ack_option(args)
     preload_convergence.option(args)
     require(not api_warm_cause.option(args),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
-    require(not selected_resources_profile(args) and not getattr(args,'revision_witness_targets',None) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
+    require(not selected_resources_profile(args) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
     # Bind only instrumentation metadata to the runtime owner's exact existing
     # fixture. Never deploy, restart, install, relabel or assume cleanup custody.
@@ -1028,8 +1024,6 @@ def prepare_staged(args,target,pinned):
                                 for _,kind,argv in planned if kind=='compose'))
             observation=resource_cpu_preflight(selected_resources,roles=roles,observation=observation)
         m['cpuPrecisionPreflight']=observation
-    clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'),getattr(args,'clinical_sender_binary',None),getattr(args,'clinical_sender_receipt',None),getattr(args,'clinical_intake_targets',None))
-    revision_witness.install(config,target,m,getattr(args,'revision_witness_targets',None))
     api_cause.install(config,target,m,getattr(args,'api_cause_observation','off')=='on')
     api_warm_cause.install(config,target,m,api_warm_cause.option(args).get('apiWarmCauseMode','off'))
     m['servingInstances'] = role_instances.roster(config,m['replicas'])
@@ -1086,8 +1080,6 @@ def verify(d, m, teardown=False):
         stream_topology.verify_ack_budget(d,m,document(d/'frozen.compose.json')['services']['pgstream']['volumes'])
     commissioning_wal.verify(document(d/"frozen.compose.json"),m)
     platform_startup_config(document(d/"frozen.compose.json"),d,m,verify=True)
-    clinical_timeline.verify(document(d/"frozen.compose.json"),d,m,teardown=teardown)
-    revision_witness.verify(document(d/"frozen.compose.json"),d,m)
     api_cause.verify(document(d/"frozen.compose.json"),d,m)
     api_warm_cause.verify(document(d/"frozen.compose.json"),d,m)
     node_observation.verify(document(d/"frozen.compose.json"),d,m)
@@ -1520,9 +1512,6 @@ def deploy(d, m):
                 else:compose(d,*args,file=output,timeout=timeout)
             if name=="commission" and m.get("vaultRefusalControl"):vault_control(d,m,"deny")
             if name=="prime" and m.get("primerConcurrency",1)!=1:primer_counts(d,m)
-            if name=="publish-primer" and m.get("clinicalTimeline"):
-                clinical_timeline.publish(d,m,tenant_projection(document(d/"state/primer/tenants.json"),m["tenants"]))
-                write(d/"owner.json",m)
             if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
             if name=="bootstrap":
                 population_readback=population_ceiling.local_readback(d,m,primer_need)
@@ -1732,18 +1721,6 @@ def phase_snapshot(d, out, name):
             with segments.capture(kind,[name+'-'+kind+'.json']):collect()
         except Exception as error:
             write(out/(name+'-'+kind+'-failure.json'),{'status':'UNMEASURED','code':collection_segments.code(error),'failureType':type(error).__name__})
-
-
-    # Exact new native configurations expose a runtime source-access census.
-    # Optional observation is independent of mandatory SQL/cgroup captures.
-    completion_path=d/'completion-source.json'
-    if completion_path.is_file() and document(completion_path).get('native'):
-        try:
-            with segments.capture('source-access',[name+'-source-access.json']):
-                ids=sorted(row['id'] for row in document(d/'tenants.private.json'))[:128]
-                write(out/(name+'-source-access.json'),source_access.collect(sys.modules[__name__],d,snapshot_owner,ids))
-        except Exception as error:
-            write(out/(name+'-source-access-failure.json'),{'status':'UNMEASURED','code':collection_segments.code(error),'failureType':type(error).__name__})
 
 
 def sql_counter_rate_bounds(before,after,delta,kind='pg-role'):
@@ -2311,8 +2288,6 @@ def sample_preflight(d,m,k6_id,oneoff=None):
             sql_attribution.statements(attempt/'readability-pg-statements.tsv')
             snapshots=document(attempt/'readability-cgroups.json')['roles']
             stream_topology.readable_processes(snapshots,m)
-            sender=clinical_timeline.sender_runtime(d,m,diagnostic_resource_rows(m),snapshots.get('pgstream',{})) if m.get('clinicalSender') else None
-            if sender is not None:write(attempt/'clinical-sender-runtime.json',sender)
             version=(lambda argv,**kw:oneoff('k6-version',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'version']),timeout=30)
             require('k6' in version.lower(),'M7_SAMPLE_LOADGEN_CONTEXT')
             help_text=(lambda argv,**kw:oneoff('k6-help',argv,**kw)if oneoff else command(argv,**kw))(bounded_k6_argv(['docker','run','--rm','--network','none','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],k6_id,'run','--help']),timeout=30)
@@ -2373,8 +2348,6 @@ def run_cell(d, m, k6_image):
     runid = "m7-" + m["owner"][:12];(out / "runid").write_text(runid)
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
     probe_env = runtime_env({"M7_GENERATOR_ROOT": str(d / "dependencies"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "M7_EVALUATOR_SERVICES": json.dumps(progress_services(d)), "M7_PROGRESS_PYTHON": sys.executable, "M7_PROGRESS_ATTRIBUTION":json.dumps(progress_attribution(m)), "STOCK_MS": "300000", "RECOVERY_MS": "120000", **({"M7_COMPLETION_SOURCE":json.dumps(completion)} if completion else {})})
-    probe_env.update(clinical_timeline.probe_environment(m))
-    probe_env.update(revision_witness.probe_environment(d,m))
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
@@ -2514,8 +2487,6 @@ def _down(d, m):
     if m.get("prepared"):
         verify(d, m, teardown=True)
         config=document(d/"frozen.compose.json")
-        sender_cleanup=clinical_timeline.sender_cleanup_observation(config,d,m)
-        if sender_cleanup is not None:write(d/("clinical-sender-cleanup-observation-"+uuid.uuid4().hex+".json"),sender_cleanup)
         try:captured=profile_provenance.capture_logs(d/"role-logs",config,lambda role:["docker","compose","-p",m["project"],"--env-file",str(d/"env"),"-f",str(d/"frozen.compose.json"),"logs","--no-color","--no-log-prefix","--timestamps","--tail","1000",role],seconds=remaining_seconds(5*len(config['services']))/max(1,len(config['services'])))
         except Exception:captured={"version":1,"scope":"PRIVATE","error":"capture-failed","complete":False}
         write(d/"role-logs/manifest.json",captured)
@@ -2525,9 +2496,6 @@ def _down(d, m):
     else:
         require(not resources(m), "M7_PARTIAL_PREPARE_HAS_RESOURCES")
     write(d/'cleanup-absence.json',assert_absent(m))
-    if m.get('clinicalTimeline'):
-        try:clinical_timeline.retain(d,m)
-        except Exception as error:write(d/'clinical-timeline-retain-refusal.json',{'status':'UNMEASURED','type':type(error).__name__,'code':'M7_CLINICAL_TIMELINE_RETAIN_REFUSED'})
     core = d / "core"
     if core.exists():
         require(git(core,"rev-parse","HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
@@ -2573,11 +2541,6 @@ def parser():
     prep.add_argument('--vault-refusal-control',choices=('api-policy-deny-v1',))
     prep.add_argument('--diagnostic-resource-profile',choices=diagnostic_resources.PROFILES)
     prep.add_argument('--diagnostic-resource-allocation',type=json.loads,help='Explicit finite JSON service/driver allocation and ceiling; exclusive with named profile')
-    prep.add_argument('--clinical-sender-binary',help='Explicit reviewed sender binary staged only for the opt-in raw external diagnostic')
-    prep.add_argument('--clinical-sender-receipt',help='Immutable reviewed twin CLI build receipt; no command or version fallback')
-    prep.add_argument('--revision-witness-targets',help='Private JSON list of one or two synthetic tenant/storedId targets; discovery sample only')
-    prep.add_argument('--clinical-intake-targets',help='Private JSON list of one or two synthetic roster tenant IDs for the selected timeline')
-    prep.add_argument('--clinical-intake-timeline',choices=('off',clinical_timeline.NAME,clinical_timeline.RAW_NAME),default='off')
     prep.add_argument('--generator-dependencies')
     prep.add_argument('--generator-dependency-receipt')
     prep.add_argument('--generator-dependency-receipt-sha256')

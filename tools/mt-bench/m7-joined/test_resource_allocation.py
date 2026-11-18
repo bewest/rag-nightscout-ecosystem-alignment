@@ -131,7 +131,7 @@ class ExplicitAllocation(unittest.TestCase):
             with patch.object(r,'_ACTIVE',runtime),patch.object(a,'document',side_effect=document), \
                  patch.object(a.orchestration_binding,'fixture_argv',return_value=['docker','compose','run',role]), \
                  patch.object(a.orchestration_binding,'fixture_mutation_preflight'), \
-                 patch.object(a.clinical_timeline,'before_sender_effect'),patch.object(a,'command') as launch, \
+                 patch.object(a,'command') as launch, \
                  contextlib.redirect_stdout(output):
                 with self.assertRaisesRegex(RuntimeError,'CPU_UNREPRESENTABLE:services.'+role+'.millicpus'):
                     a.compose(Path('/synthetic'),'--profile','ops','run','--rm','--no-deps',role)

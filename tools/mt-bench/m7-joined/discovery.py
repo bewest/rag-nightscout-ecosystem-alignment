@@ -306,8 +306,6 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
     env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
     env.update(workload_inputs.probe_ledger_env(m['cadence']))
-    env.update(a.clinical_timeline.probe_environment(m))
-    env.update(a.revision_witness.probe_environment(d,m))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
     windows=phase_windows.start(m,time.monotonic_ns(),int(time.time()*1000))
     if windows:a.write(out/'phase-windows.json',windows)
@@ -444,12 +442,6 @@ def retain_load(a,d,m,record):
             a.write(out/'api-cause-assessment.json',result)
         except Exception as error:
             record.value.setdefault('retentionFailures',{})['apiCause']={'verdict':'UNMEASURED','code':safe_code(error)}
-    if m.get('revisionWitness'):
-        try:
-            result=a.revision_witness.retain(d,m);record.value['revisionWitness']=result
-            a.write(out/'revision-witness-assessment.json',result)
-        except Exception as error:
-            record.value.setdefault('retentionFailures',{})['revisionWitness']={'verdict':'UNMEASURED','code':safe_code(error)}
     for name,key in (('k6-summary.json','metrics'),('probe.json','probe')):
         if not (out/name).is_file():continue
         try:

@@ -18,17 +18,17 @@ const {create}=require('./probe-accounting.cjs');
   const requestSource=source.slice(source.indexOf('function request ('),source.indexOf('async function exchange ('));
   const context={http,base:new URL('http://127.0.0.1:'+server.address().port),agent,Buffer,Promise};vm.createContext(context);vm.runInContext(requestSource,context);
   const begin=source.indexOf('    const attempt=accounting?'),end=source.indexOf('    if(completionSource){const until=',begin);assert(begin>=0&&end>begin);
-  const body=source.slice(begin,end);let statuses=[];const timelineAcks=[],clinicalTimeline={record:(...args)=>timelineAcks.push(args)};
+  const body=source.slice(begin,end);let statuses=[];
   for(const id of ['a','b','c','d']){
    const date=Date.now(),writers=[],writes={ok:0,failed:0},byTenant={},e={date,sent:Date.now()};
    // Same actual generated callback. Only the request deadline is fixture-sized.
    const request=(...args)=>context.request(...args,40).then(r=>{statuses.push(r.status);return r;});
    const before=snapshots.length;
-   vm.runInNewContext(body,{accounting,clinicalTimeline,t:{id,host:id,token:'SYNTHETIC'},writers,writes,byTenant,e,args:{runid:'synthetic-loopback'},date,request,encodeURIComponent,Date});
+   vm.runInNewContext(body,{accounting,t:{id,host:id,token:'SYNTHETIC'},writers,writes,byTenant,e,args:{runid:'synthetic-loopback'},date,request,encodeURIComponent,Date});
    assert(snapshots.length>before);assert.equal(snapshots.at(-1).byTenant[id].pending,1); // BEFORE async HTTP
    await Promise.all(writers);
   }
-  accounting.close();const ledger=accounting.snapshot();assert.equal(timelineAcks.length,1);assert.equal(timelineAcks[0][0],'writer-ack');assert.equal(timelineAcks[0][1],'c');assert(Number.isFinite(timelineAcks[0][2].acked));
+  accounting.close();const ledger=accounting.snapshot();
   assert.deepEqual(statuses,[503,0,200,403]);assert.equal(ledger.byTenant.a.uncertain,1);assert.equal(ledger.byTenant.b.uncertain,1);assert.equal(ledger.byTenant.c.accepted,1);assert.equal(ledger.byTenant.d.refused,1);
   assert.throws(()=>accounting.begin('a'),/ACCOUNTING_INVALID/);assert.throws(()=>accounting.settle(1,200),/ACCOUNTING_INVALID/);
   assert.equal(ledger.attempts,4);assert(Object.values(ledger.byTenant).every(r=>r.pending===0));

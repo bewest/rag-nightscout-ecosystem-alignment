@@ -8,7 +8,6 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from workloads import profile as profiles
 from workloads import reduce as reduction
-import loopback
 
 
 class Coverage(unittest.TestCase):

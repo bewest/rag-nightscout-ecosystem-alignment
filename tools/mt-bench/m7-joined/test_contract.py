@@ -13,7 +13,6 @@ import adapter
 from contract import *
 from probe import generate
 from workload import generate as generate_workload
-import campaign
 from reduce import measurements
 
 A='11111111-1111-4111-8111-111111111111'
@@ -78,18 +77,6 @@ class Contract(unittest.TestCase):
             self.assertEqual(len([r for r in calls if r.get('counter')=='responses_refused']),8)
             dates=[r['body'][0]['date'] for r in calls if r.get('method')=='POST' and isinstance(r.get('body'),list) and '/entries?' in r['url']]
             self.assertEqual(dates,[1800000000000,1800000150000])
-    def test_replica_ladder_never_overrides_functional_block_and_requires_ceiling_evidence(self):
-        with tempfile.TemporaryDirectory(prefix='m7-ladder-test-') as scratch:
-            root=Path(scratch);master={'pair':{'core':'a'*40,'deploy':'b'*40},'instrument':'c'*64,'hostIdentity':'d'*64}
-            campaign.authorize_profile(1,master,root,None)
-            with self.assertRaisesRegex(RuntimeError,'FIRST_PROFILE'):campaign.authorize_profile(2,master,root,None)
-            prior={'status':'FAIL','failureClass':'diagnosis-required'};adapter.write(root/'profile-1.json',prior)
-            with self.assertRaisesRegex(RuntimeError,'NEEDS_DIAGNOSIS'):campaign.authorize_profile(2,master,root,None)
-            receipt={**master,'kind':'measured-profile-ceiling','classification':'performance','profileArtifactSha256':digest(root/'profile-1.json'),'diagnosisEvidenceSha256':'e'*64}
-            adapter.write(root/'receipt.json',receipt);campaign.authorize_profile(2,master,root,root/'receipt.json')
-            master['functionalBlock']=True
-            with self.assertRaisesRegex(RuntimeError,'GLOBAL_FUNCTIONAL_BLOCK'):campaign.authorize_profile(2,master,root,root/'receipt.json')
-            self.assertEqual(campaign.failure_class('M7_ORACLE_CLIENT_TOTAL_MISMATCH'),'functional-block')
     def test_resource_reducer_distinguishes_missing_samples_and_process_rss_from_heap(self):
         with tempfile.TemporaryDirectory(prefix='m7-reduce-test-') as scratch:
             root=Path(scratch)
@@ -121,16 +108,6 @@ class Contract(unittest.TestCase):
         self.assertTrue(pilot_check(doc));doc['cells'].pop(1)
         with self.assertRaisesRegex(RuntimeError,'MISSING_CELL'):pilot_check(doc)
         self.assertEqual(CADENCE['remote-pilot']['accel'],1);self.assertEqual(CADENCE['remote-pilot']['loadSeconds'],300)
-    def test_pilot_orchestrator_routes_explicit_counts_and_profile_without_duplicate_args(self):
-        with tempfile.TemporaryDirectory(prefix='m7-orchestrator-test-') as scratch:
-            root=Path(scratch);seen=[];pair={'core':'a'*40,'deploy':'b'*40};master={'pair':pair,'instrument':'c'*64,'hostIdentity':'d'*64,'cells':[]}
-            args=SimpleNamespace(mode='pilot',replicas=None,ceiling_receipt=None,k6_image='not-run')
-            def prepare(options):
-                seen.append((options.tenants,options.replicas,options.profile));folder=Path(options.directory);folder.mkdir();adapter.write(folder/'owner.json',{})
-            def run(folder,manifest,image):adapter.write(folder/'summary.json',{'pair':pair,'hostIdentity':'d'*64,'imageId':'sha256:'+'e'*64,'instrument':'c'*64,'profileSelection':PROFILE})
-            with patch.object(adapter,'prepare',prepare),patch.object(adapter,'load',lambda folder:(Path(folder),{})),patch.object(adapter,'deploy'),patch.object(adapter,'run',run),patch.object(adapter,'down'):
-                campaign.ladder(args,1,root,master)
-            self.assertEqual(seen,[(500,1,'remote-pilot'),(750,1,'remote-pilot'),(1000,1,'remote-pilot')])
     def test_owned_host_job_cannot_kill_a_reused_identity(self):
         with tempfile.TemporaryDirectory(prefix='m7-job-test-') as scratch:
             process=subprocess.Popen(['sleep','30'],start_new_session=True);file=Path(scratch)/'job.json'
