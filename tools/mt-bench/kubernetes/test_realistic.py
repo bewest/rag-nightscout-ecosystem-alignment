@@ -64,7 +64,7 @@ class Realistic(unittest.TestCase):
         print('RED_RESTORED K8S_WORKLOAD_ENVIRONMENT_CONFLICT; sparse/zero/full assignments')
 
     def test_normal_prepare_rejects_override_before_output_or_actor(self):
-        c,inv,render,_=fixture();c['workload']={**self.settings(), 'offeredRps':18}
+        c,inv,render,_=fixture();c['tenants']=2;c['workload']={**self.settings(), 'offeredRps':18}
         with self.assertRaisesRegex(k.Refused,'REALISTIC_MIX_CONFIGURATION'):k.validate(c,inv,render)
         del c['workload']['offeredRps'];k.validate(c,inv,render)
         print('RED_RESTORED K8S_REALISTIC_MIX_CONFIGURATION prepare validation')

@@ -2,7 +2,7 @@ import copy
 import json
 import unittest
 
-import adapter as k
+import kube_adapter as k
 import candidate
 from test_adapter import fixture
 

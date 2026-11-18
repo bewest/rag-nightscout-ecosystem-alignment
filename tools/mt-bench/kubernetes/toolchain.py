@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import sys
 
-import adapter as k
+import kube_adapter as k
 import frozen
 from workloads import profile
 

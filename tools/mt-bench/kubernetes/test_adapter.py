@@ -1,7 +1,6 @@
 """Synthetic API replies and real finite subprocesses; no kube/cloud/Docker."""
 import copy
 from datetime import datetime, timezone
-import importlib.util
 import json
 from pathlib import Path
 import subprocess
@@ -12,13 +11,10 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
 
-HERE = Path(__file__).resolve().parent
-spec = importlib.util.spec_from_file_location('kube_adapter', HERE / 'adapter.py')
-k = importlib.util.module_from_spec(spec)
-sys.modules['kube_adapter'] = k
-spec.loader.exec_module(k)
-sys.path.insert(0, str(HERE))
+import kube_adapter as k
 import execute
+
+HERE = Path(__file__).resolve().parent
 
 A='11111111-1111-4111-8111-111111111111'
 B='22222222-2222-4222-8222-222222222222'

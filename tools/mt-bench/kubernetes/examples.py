@@ -4,7 +4,7 @@ import argparse
 import copy
 import json
 from pathlib import Path
-import adapter as k
+import kube_adapter as k
 import toolchain
 import workload_runtime
 from workloads import profile

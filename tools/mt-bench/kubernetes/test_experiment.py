@@ -6,7 +6,7 @@ import unittest
 from types import SimpleNamespace
 from test_adapter import fixture
 
-import adapter as k
+import kube_adapter as k
 import experiment
 import frozen
 

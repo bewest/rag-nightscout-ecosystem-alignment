@@ -8,7 +8,7 @@ import subprocess
 import sys
 import time
 
-import adapter as k
+import kube_adapter as k
 from contract import tenant_projection
 
 

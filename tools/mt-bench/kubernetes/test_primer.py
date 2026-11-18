@@ -2,6 +2,8 @@
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -11,6 +13,30 @@ import primer
 
 
 class PrimeEntry(unittest.TestCase):
+    def test_fresh_cli_keeps_kubernetes_roster_separate_from_m7_adapter(self):
+        here = Path(__file__).resolve().parent
+        code = """
+import sys
+from pathlib import Path
+site = Path(sys.argv[1])
+sys.path[:0] = [str(site.parent/'m7-joined'), str(site)]
+import adapter as m7
+import primer
+import experiment
+assert Path(m7.__file__).parent.name == 'm7-joined'
+assert Path(primer.k.__file__).parent == site
+assert primer.k is experiment.k is experiment.execute.k
+try:
+    primer.require_roster(Path('/synthetic/packet'), {'primerOutput': None}, {})
+except primer.k.Refused as error:
+    assert str(error) == 'K8S_PRIMER_RECEIPT_REQUIRED'
+else:
+    raise AssertionError('Missing primer receipt did not fail')
+"""
+        subprocess.run([sys.executable, '-B', '-c', code, str(here)], check=True, capture_output=True)
+        for entrypoint in ('primer.py', 'experiment.py', 'adapter.py'):
+            subprocess.run([sys.executable, '-B', str(here/entrypoint), '--help'], check=True, capture_output=True)
+
     def test_owned_exec_and_private_export(self):
         k = primer.k
         utc = datetime.now(timezone.utc)

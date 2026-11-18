@@ -8,7 +8,7 @@ import subprocess
 import sys
 import tarfile
 
-import adapter as k
+import kube_adapter as k
 from auto_catalog import auto_catalog
 import execute
 import frozen

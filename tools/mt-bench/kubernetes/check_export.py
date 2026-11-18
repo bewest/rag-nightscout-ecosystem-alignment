@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Offline join to an immutable binding export; no Kubernetes command calls."""
-import importlib.util
 import json
 from pathlib import Path
 import shutil
@@ -8,11 +7,7 @@ import sys
 import time
 from datetime import datetime, timezone
 
-HERE=Path(__file__).resolve().parent
-spec=importlib.util.spec_from_file_location('kube_adapter',HERE/'adapter.py')
-k=importlib.util.module_from_spec(spec)
-sys.modules['kube_adapter']=k
-spec.loader.exec_module(k)
+import kube_adapter as k
 
 
 def check(export, output, environment=None):
