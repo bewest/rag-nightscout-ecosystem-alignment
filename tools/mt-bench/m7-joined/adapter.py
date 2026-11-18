@@ -43,6 +43,7 @@ import discovery_rest
 import evaluator_idle
 import evaluator_opportunities
 import evaluator_catchup
+import preload_convergence
 import sql_attribution
 import cost_companion
 import realtime_costs
@@ -524,6 +525,7 @@ def attach(args):
     require(not static_selection or getattr(args,'runtime_owner',None),'M7_STATIC_ATTACH_OWNER_REQUIRED')
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     stream_topology.ack_option(args)
+    preload_convergence.option(args)
     require(not api_warm_cause.option(args),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     require(not selected_resources_profile(args) and not getattr(args,'revision_witness_targets',None) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
@@ -741,6 +743,7 @@ def prepare(args):
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
     ack_budget=stream_topology.ack_option(args)
+    preload=preload_convergence.option(args)
     profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000))
     require(bool(getattr(args,"backend_subnet",None))==bool(getattr(args,"edge_subnet",None)),"M7_EXPLICIT_SUBNET_PAIR_REQUIRED")
     require(os.getuid()==1000 and os.getgid()==1000,"M7_HOST_RUNTIME_UID_REQUIRED")
@@ -769,6 +772,9 @@ def prepare(args):
                    'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**({'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract} if static_selection else {})}
         candidate.update(commissioning_wal.option(args))
         candidate.update(ack_budget)
+        candidate.update(preload)
+        if preload:
+            candidate['completionContract'] = args.completion_contract
         if ack_budget:
             candidate['pgstreamTopology']=args.pgstream_topology
         selection=serial_exchange_selection(args)
@@ -813,6 +819,7 @@ def prepare_staged(args,target,pinned):
     m["primerConcurrency"]=primer_concurrency(getattr(args,"primer_concurrency",1))
     m.update(commissioning_wal.option(args))
     m.update(stream_topology.ack_option(args))
+    m.update(preload_convergence.option(args))
     if getattr(args,'image_input_preflight',None):m['imageInputPreflight']=args.image_input_preflight
     if getattr(args,"run_purpose","acceptance")=="discovery":m["runPurpose"]="discovery"
     select_opportunities(args,m)
@@ -2314,6 +2321,10 @@ def parser():
     prep.add_argument("--commissioning-slot-wal-mib",type=int,choices=commissioning_wal.VALUES,help="Explicit finite local commissioning WAL retention; omitted keeps deployment default")
     prep.add_argument('--pgstream-notifier-ack-timeout-ms', type=int,
                       help='Explicit acknowledgment budget for a fresh external pgstream Compose discovery run')
+    prep.add_argument('--preload-convergence-seconds', type=int,
+                      help='Opt-in finite pre-load source convergence before unchanged normal readiness; local owned-to-completion discovery only')
+    prep.add_argument('--preload-convergence-interval-seconds', type=int,
+                      help='Interval between original strict pre-load source snapshots')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,choices=range(1,33),default=1,help="Bounded commissioning workers on a qualified NEXT image; default serial")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)

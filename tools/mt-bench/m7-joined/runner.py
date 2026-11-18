@@ -180,6 +180,8 @@ def validate_config(config):
     validate_prepare(parsed)
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
     cadence = a.cadence_options(parsed)
+    require(not a.preload_convergence.option(parsed) or local_to_completion,
+            'M7_PRELOAD_LOCAL_OWNED_TO_COMPLETION_REQUIRED')
     require(not local_to_completion or {'setupSeconds', 'drainSeconds'} <= cadence.keys(),
             'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED')
     authored_windows = ('warmupSeconds', 'idleSeconds', 'loadSeconds', 'setupSeconds', 'drainSeconds')

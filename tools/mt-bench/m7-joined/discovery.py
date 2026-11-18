@@ -113,6 +113,9 @@ class Record:
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'settingsFingerprint':m['settingsFingerprint'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
         self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json','host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
+        preload = self.d/'preload-convergence/result.json'
+        if preload.is_file():
+            self.value['artifacts']['preload-convergence/result.json'] = self.a.digest(preload)
         self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle-disabled','idle','load') for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
@@ -176,7 +179,13 @@ def _run_discovery(a,d,m,k6_image,oneoff=None):
         a.frozen(m,'run');a.quiet(d,m,'run-before',check_load=False);a.verify(d,m);a.image(m)
         record.value['ownershipVerified']=True;record.save()
         require((d/'deploy-before-host.json').is_file(),'M7_DEPLOY_QUIET_RECORD_REQUIRED')
-        a.verify_generator(d,m);record.observe('readiness',lambda:a.readiness(d,m))
+        a.verify_generator(d,m)
+        if a.preload_convergence.selection(m):
+            result = record.observe('preloadConvergence', lambda: a.preload_convergence.run(a,d,m))
+            record.value['preloadConvergence'] = result
+            record.save()
+        # Fresh and unchanged: pre-load history never supplies this readiness result.
+        record.observe('readiness',lambda:a.readiness(d,m))
         k6_id=json.loads(a.command(['docker','image','inspect',k6_image]))[0]['Id'];a.write(d/'loadgen-image.json',{'k6':k6_id,'generator':m['generator']})
         if m['profile']=='pgstream-sample':completion,sql_roles=a.sample_preflight(d,m,k6_id,**({'oneoff':oneoff}if oneoff else{}))
         out=d/'idle-disabled';out.mkdir();a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before')

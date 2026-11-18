@@ -1205,6 +1205,33 @@ optional counters do not erase retained termination facts or authorize replay.
 
 ## Run tiers and effective settings
 
+### Explicit local pre-load convergence
+
+For a fresh `tier: discovery` run with `workSeconds: null`, the preparation
+options `preload-convergence-seconds` and
+`preload-convergence-interval-seconds` select a finite observation phase before
+ordinary traffic. For example, select 900 and 15 seconds. The version 2 receipt
+binds the phase configuration and `LOCAL_OWNED_TO_COMPLETION` scope. Omission
+preserves the existing readiness path. This phase is implemented for fresh local
+owned-to-completion discovery; it is not a product or remote-capacity limit.
+
+The phase keeps each original complete strict source snapshot and its actual
+PASS, FAIL or UNMEASURED verdict under `preload-convergence/`. It can continue
+observing the source-defined starting, acquisition-required or pending-input-aged
+signals while their failed-completion counters remain zero. A failed snapshot
+remains failed; this does not declare its cause benign or allow ordinary work.
+Permanent source errors, failed evaluations, changed ownership/runtime identity,
+counter rewind and incomplete observations refuse the phase.
+
+Only two complete stable whole-cohort strict ready views with completed
+acquisition credit and nonnull completion age close convergence. The existing
+normal readiness check then runs fresh and unchanged. The selected clinical
+120-second deadline, source pending threshold, workload and clinical/storage/
+client oracles remain unchanged. The finite pre-load deadline ends with this
+phase and does not become a whole-run cutoff. Expiry refuses the run and retains
+its source history. Capture budgets scale with the declared duration, interval,
+cohort and source-page bounds; they are observation budgets, not reservations.
+
 Add `"tier": "smoke"`, `"tier": "discovery"` or `"tier": "acceptance"` to
 the existing runner configuration. Existing version 1 configurations that
 omit `tier` retain their receipt-based workflow.
