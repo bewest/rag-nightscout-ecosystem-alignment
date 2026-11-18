@@ -143,20 +143,28 @@
     for entry in c.get('env',[]):
      key=entry['name']
      if re.search('PASSWORD|SECRET|TOKEN|DATABASE_URL|PG_URL',key) and not key.endswith(('_FILE','_PATH','_TOKEN_TTL','_TOKEN_MAX_TTL')):
-@@ -139,9 +189,10 @@
+@@ -139,9 +189,18 @@
   quota=next(x['spec']['hard'] for x in docs if x['kind']=='ResourceQuota')
   need(len(workloads)<=int(quota['pods']),'pod quota too small')
   for d in DIMS:
 -  need(req[d]<=quantity(quota['requests.'+d]) and lim[d]<=quantity(quota['limits.'+d]),'resource quota too small')
 - return {'objects':len(docs),'podsUpperBound':len(workloads),'requests':req,'limits':lim,'requiredSecrets':sorted(required),'trustObjects':trust,'imageCacheReserveBytes':env['imageCacheReserveBytes'],'placementEnvelopes':placement_envelopes(env,workloads)}
 +  need('requests.'+d in quota and req[d]<=quantity(quota['requests.'+d]) and (mode=='requests-v1' or 'limits.'+d in quota and lim[d]<=quantity(quota['limits.'+d])),'resource quota too small')
-+ return {'objects':len(docs),'podsUpperBound':len(workloads),**accounting_fields(mode,req,lim),'requiredSecrets':sorted(required),'trustObjects':trust,'imageCacheReserveBytes':env['imageCacheReserveBytes'],'placementEnvelopes':placement_envelopes(env,workloads)}
++ trial={'objects':len(docs),'podsUpperBound':len(workloads),**accounting_fields(mode,req,lim),'requiredSecrets':sorted(required),'trustObjects':trust,'imageCacheReserveBytes':env['imageCacheReserveBytes'],'placementEnvelopes':placement_envelopes(env,workloads)}
++ if 'resourcePhasePlan' in env:
++  import phase_fit
++  phase_fit.decorate(trial,env,docs,need)
++ return trial
  def headroom(snapshot,trial,target=None):
 + mode,budget=accounted_budget(trial)
++ full_budget=budget
++ if 'phaseAdmission' in trial:
++  import phase_fit
++  budget=phase_fit.fit_budget(trial,full_budget,need)
   p=pathlib.Path(snapshot);nodes=json.loads((p/'nodes.json').read_text())['items'];pods=json.loads((p/'pods.json').read_text())['items']
   usage={}
   for file in sorted(p.glob('usage*.txt')):
-@@ -168,12 +219,12 @@
+@@ -168,12 +227,12 @@
    if actual is None:reasons.append('usage UNMEASURED')
    else:
     for d in ('cpu','memory'):
@@ -169,7 +177,7 @@
 +  if req['ephemeral-storage']+budget['ephemeral-storage']+reserve['ephemeral-storage']>a['ephemeral-storage']: reasons.append('allocated ephemeral headroom')
    if len(assigned)+trial['podsUpperBound']>int(node['status']['allocatable']['pods']):reasons.append('pod slots')
 -  result.append({'nodeAlias':f'worker-{index+1:02d}','allocatable':a,'peerRequests':req,'peerLimits':lim,'usagePeak':actual,'diskAvailableBytes':df and df['node_filesystem_avail_bytes'],'peerPods':len(assigned),'unboundedPeerMemoryContainers':unbounded,'reserve':reserve,'trialFits':not reasons,'refusals':reasons})
-+  result.append({'resourceAccounting':mode,'accounted':budget,'accountingScope':accounting_fields(mode,budget,budget)['accountingScope'],'nodeAlias':f'worker-{index+1:02d}','allocatable':a,'peerRequests':req,'peerLimits':lim,'usagePeak':actual,'diskAvailableBytes':df and df['node_filesystem_avail_bytes'],'peerPods':len(assigned),'unboundedPeerMemoryContainers':unbounded,'reserve':reserve,'trialFits':not reasons,'refusals':reasons})
++  result.append({'resourceAccounting':mode,'accounted':budget,'fullFixtureAccounted':full_budget,'phaseAdmission':trial.get('phaseAdmission'),'accountingScope':accounting_fields(mode,budget,budget)['accountingScope'],'nodeAlias':f'worker-{index+1:02d}','allocatable':a,'peerRequests':req,'peerLimits':lim,'usagePeak':actual,'diskAvailableBytes':df and df['node_filesystem_avail_bytes'],'peerPods':len(assigned),'unboundedPeerMemoryContainers':unbounded,'reserve':reserve,'trialFits':not reasons,'refusals':reasons})
   if target:
    need(target in names,'target node absent');need(result[names.index(target)]['trialFits'],'insufficient headroom: '+', '.join(result[names.index(target)]['refusals']))
   return result

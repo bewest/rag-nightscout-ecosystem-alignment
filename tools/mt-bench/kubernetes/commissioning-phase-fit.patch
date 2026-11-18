@@ -1,0 +1,33 @@
+# Apply only to a NEW copy of the exact operator commissioner; preserve retained originals.
+# Base preflight.py SHA256: 4461fd0dc54dc9b21608ae541463ce7bec9bc773a525c4511d7087adce32f469
+# Copy phase_fit.py and resource_budget.py from the SAME frozen helper into bin/.
+--- a/bin/preflight.py
++++ b/bin/preflight.py
+@@ -213,9 +213,17 @@
+  need(len(workloads)<=int(quota['pods']),'pod quota too small')
+  for d in DIMS:
+   need('requests.'+d in quota and req[d]<=quantity(quota['requests.'+d]) and (mode=='requests-v1' or 'limits.'+d in quota and lim[d]<=quantity(quota['limits.'+d])),'resource quota too small')
+- return {'objects':len(docs),'podsUpperBound':len(workloads),**accounting_fields(mode,req,lim),'requiredSecrets':sorted(required),'trustObjects':trust,'imageCacheReserveBytes':env['imageCacheReserveBytes'],'placementEnvelopes':placement_envelopes(env,workloads)}
++ trial={'objects':len(docs),'podsUpperBound':len(workloads),**accounting_fields(mode,req,lim),'requiredSecrets':sorted(required),'trustObjects':trust,'imageCacheReserveBytes':env['imageCacheReserveBytes'],'placementEnvelopes':placement_envelopes(env,workloads)}
++ if 'resourcePhasePlan' in env:
++  import phase_fit
++  phase_fit.decorate(trial,env,docs,need)
++ return trial
+ def headroom(snapshot,trial,target=None):
+  mode,budget=accounted_budget(trial)
++ full_budget=budget
++ if 'phaseAdmission' in trial:
++  import phase_fit
++  budget=phase_fit.fit_budget(trial,full_budget,need)
+  p=pathlib.Path(snapshot);nodes=json.loads((p/'nodes.json').read_text())['items'];pods=json.loads((p/'pods.json').read_text())['items']
+  usage={}
+  for file in sorted(p.glob('usage*.txt')):
+@@ -247,7 +255,7 @@
+   elif df['node_filesystem_avail_bytes']<budget['ephemeral-storage']+reserve['ephemeral-storage']+trial.get('imageCacheReserveBytes',0):reasons.append('disk headroom')
+   if req['ephemeral-storage']+budget['ephemeral-storage']+reserve['ephemeral-storage']>a['ephemeral-storage']: reasons.append('allocated ephemeral headroom')
+   if len(assigned)+trial['podsUpperBound']>int(node['status']['allocatable']['pods']):reasons.append('pod slots')
+-  result.append({'resourceAccounting':mode,'accounted':budget,'accountingScope':accounting_fields(mode,budget,budget)['accountingScope'],'nodeAlias':f'worker-{index+1:02d}','allocatable':a,'peerRequests':req,'peerLimits':lim,'usagePeak':actual,'diskAvailableBytes':df and df['node_filesystem_avail_bytes'],'peerPods':len(assigned),'unboundedPeerMemoryContainers':unbounded,'reserve':reserve,'trialFits':not reasons,'refusals':reasons})
++  result.append({'resourceAccounting':mode,'accounted':budget,'fullFixtureAccounted':full_budget,'phaseAdmission':trial.get('phaseAdmission'),'accountingScope':accounting_fields(mode,budget,budget)['accountingScope'],'nodeAlias':f'worker-{index+1:02d}','allocatable':a,'peerRequests':req,'peerLimits':lim,'usagePeak':actual,'diskAvailableBytes':df and df['node_filesystem_avail_bytes'],'peerPods':len(assigned),'unboundedPeerMemoryContainers':unbounded,'reserve':reserve,'trialFits':not reasons,'refusals':reasons})
+  if target:
+   need(target in names,'target node absent');need(result[names.index(target)]['trialFits'],'insufficient headroom: '+', '.join(result[names.index(target)]['refusals']))
+  return result
