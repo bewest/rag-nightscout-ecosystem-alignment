@@ -1,0 +1,66 @@
+# Exact base ops/staging-k8s/bin/preflight.py SHA256 42c1f8c3e6fbd539b166ba82e7fb9eeeb1922cf5221e186429d7ba978513aa68
+--- a/ops/staging-k8s/bin/preflight.py
++++ b/ops/staging-k8s/bin/preflight.py
+@@ -135,7 +135,10 @@
+  if 'experimentManifest' in env:
+   selected=frozen.source(manifest)
+   count=manifest['profile']['population']['provisionedTenants']
+-  need(type(count) is int and 2<=count<=10000 and count==env['tenantCount'],'experiment tenant count mismatch')
++  population=selected.get('populationCeiling')
++  need(('maxTenants' in manifest['profile']['population'])==(population is not None),'population ceiling unsupported by private source')
++  need(('populationCeiling' in env)==(population is not None) and env.get('populationCeiling')==population,'experiment population ceiling changed')
++  need(type(count) is int and 2<=count<=(10000 if population is None else population) and count==env['tenantCount'],'experiment tenant count mismatch')
+   need(env.get('trialPurpose') in (('commissioning','scale-diagnostic') if count==2 else ('scale-diagnostic',)),'experiment purpose mismatch')
+   need((env['sourceCommit'],env['imageDeployCommit'],env['bindingCommit'])==(selected['coreCommit'],selected['deployCommit'],manifest['bindingCommit']),'experiment source/image tuple mismatch')
+   configs=[o['data'] for o in objects(tree) if o['kind']=='ConfigMap' and o['metadata']['name']=='provision-scripts']
+@@ -143,6 +146,7 @@
+   frozen.rendered_contract(manifest,configs[0]['source-contract.json'],env['experimentBindingReceipt'])
+   boots=[c for o in objects(tree) if o['kind']=='Job' and o['metadata']['name']=='provision' for c in podspec(o).get('initContainers',[]) if c['name']=='bootstrap']
+   need(len(boots)==1 and [v.get('value') for v in boots[0]['env'] if v['name']=='NS_DEMO_TENANTS']==[str(count)],'rendered tenant count mismatch')
++  need([v.get('value') for v in boots[0]['env'] if v['name']=='NS_DEMO_POPULATION_CEILING']==([] if population is None else [str(population)]),'rendered population ceiling mismatch')
+   phases=manifest['profile']['phases']
+   need(0<env['workDeadlineSeconds'] and env['workDeadlineSeconds']>=phases['workSeconds'] and 0<phases['cleanupSeconds']<=env['cleanupDeadlineSeconds']-env['workDeadlineSeconds']<=3600,'invalid experiment window')
+  else:
+# Exact base ops/staging-k8s/overlay.libsonnet SHA256 10b70e4070a20e551025c7f8226f879e0f67465ccd5e106d28590dc3069aeec4
+--- a/ops/staging-k8s/overlay.libsonnet
++++ b/ops/staging-k8s/overlay.libsonnet
+@@ -21,7 +21,7 @@
+   placementByWorkload: if std.objectHas(e, 'placementByWorkload') then e.placementByWorkload else {},
+   storage: { mode: 'disposable', postgres: '1Gi', vault: '256Mi', provisionState: '64Mi' },
+   provisionDeadlineSeconds: if std.objectHas(e, 'provisionDeadlineSeconds') then e.provisionDeadlineSeconds else 900,
+-});
++} + (if std.objectHas(e, 'populationCeiling') then { populationCeiling: e.populationCeiling } else {}));
+ local mark(x) =
+   if std.isArray(x) then [mark(v) for v in x]
+   else if !std.isObject(x) then x
+# Exact base prepare-private-case.py SHA256 5e0a23e4b45f8adbd7d4099215c1df3e8168fe8a840ad05077b9676e8d957c10
+--- a/prepare-private-case.py
++++ b/prepare-private-case.py
+@@ -23,6 +23,7 @@
+ parser.add_argument('--evaluator-failure-limit',type=int)
+ parser.add_argument('--resource-phase-plan',choices=('provision-before-serving-v1',))
+ parser.add_argument('--planned-delivery',action='store_true')
++parser.add_argument('--jsonnet',type=Path)
+ args=parser.parse_args()
+ os.umask(0o077)
+ root=Path(__file__).resolve().parent
+@@ -65,6 +66,10 @@
+     assert ref(package/asset)['sha256']==sha
+ assert binding_doc['bindingCommit']==intent['bindingCommit']
+ environment=read(args.base_case/'environment.json')
++if 'populationCeiling' in selected:
++    environment['populationCeiling']=selected['populationCeiling']
++else:
++    assert 'populationCeiling' not in environment, 'POPULATION_CEILING_UNDECLARED'
+ delivery=read(args.delivery)
+ environment.update(runId=name,namespace='ns-synth-'+name,cleanupOwner='k8s-operating-evp81a',
+                    sourceCommit=selected['coreCommit'],imageDeployCommit=selected['deployCommit'],
+@@ -97,7 +102,7 @@
+     assert args.requests_v1
+     environment['resourcePhasePlan']={'contract':args.resource_phase_plan}
+ write(out/'environment.json',environment)
+-compiler=art/'staging-k8s-environment-20261117/tools/jsonnet-0.21.0/jsonnet'
++compiler=args.jsonnet or art/'staging-k8s-environment-20261117/tools/jsonnet-0.21.0/jsonnet'
+ compile_args=[str(compiler),'-J',str(package),'-J',str(stage),'--ext-code-file','PRIVATE_ENV='+str(out/'environment.json'),'-e']
+ expression="local b=import 'lib/ns/nightscout.libsonnet'; local o=import 'overlay.libsonnet'; o(b,std.extVar('PRIVATE_ENV'))"
+ render=json.loads(subprocess.check_output(compile_args+[expression],timeout=35))
