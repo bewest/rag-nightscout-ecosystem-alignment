@@ -60,17 +60,21 @@ class TerminalEvidence(unittest.TestCase):
                     self.assertFalse((path/'storage-readback.json').exists())
                     sql.assert_not_called()
                 else:
-                    refusal = k.Refused if missing_response else k.evaluator_progress.Refused
-                    with self.assertRaisesRegex(refusal,'K8S_OBSERVATION_LOST' if missing_response else 'M7_EVALUATOR_PROGRESS_ERROR') as caught:
+                    refusal = k.Refused if missing_response or storage in ('expired','identity') else k.evaluator_progress.Refused
+                    code = ('K8S_OBSERVATION_LOST' if missing_response else 'K8S_WORK_DEADLINE' if storage=='expired'
+                            else 'K8S_NAMESPACE_UID_CHANGED' if storage=='identity' else 'M7_EVALUATOR_PROGRESS_ERROR')
+                    with self.assertRaisesRegex(refusal,code) as caught:
                         execute.terminal_progress(path,path,config,{},client,'synthetic-run',True,'owned-ns')
                     failure = k.document(path/'progress-after-failure.json')
-                    self.assertEqual(failure['responseRetained'],not missing_response)
+                    captured = not missing_response and storage!='expired'
+                    self.assertEqual(failure['responseRetained'],captured)
                     self.assertEqual(failure['verdict'],caught.exception.verdict)
                     self.assertEqual(failure['code'],str(caught.exception))
                     self.assertFalse((path/'progress-after.json').exists())
-                    if not missing_response:
-                        self.assertEqual(failure['diagnostic']['failedRow']['code'],'SYNTHETIC_REFUSAL')
-                        self.assertNotIn('omitted',failure['diagnostic']['failedRow'])
+                    if captured:
+                        diagnostic = failure.get('diagnostic',failure.get('sourceRefusal',{}).get('diagnostic'))
+                        self.assertEqual(diagnostic['failedRow']['code'],'SYNTHETIC_REFUSAL')
+                        self.assertNotIn('omitted',diagnostic['failedRow'])
                     storage_result = k.document(path/'storage-readback.json')
                     if storage is None:
                         self.assertEqual(storage_result['verdict'],'OBSERVED')
@@ -87,7 +91,7 @@ class TerminalEvidence(unittest.TestCase):
                         self.assertFalse((path/'stored-counts.json').exists())
                         if storage in ('expired','identity'):
                             sql.assert_not_called()
-            if not missing_response:
+            if not missing_response and storage!='expired':
                 raw = path/'progress-after.private.jsonl'
                 response = k.document(path/'progress-after-response.json')
                 self.assertEqual(raw.read_bytes(),payload)

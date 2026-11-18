@@ -206,31 +206,85 @@ def completion(c):
     k.need(b.get('kind') == 'evaluator-work-v2' and b.get('pair') == c['pins']['pair'] and b.get('imageId') == c['pins']['appImageId'] and b.get('instrument') == c['pins']['instrument'], 'COMPLETION_SOURCE_CHANGED')
 
 
-def progress(d, c, objects, client, *, raw_output=None):
-    ids = [r['id'] for r in roster(c)]
-    baseline = k.active_baseline(d)
-    before = k.observe(c, objects, client, baseline)
-    pod, container = k.selected_pod(c, before, 'evaluator')
-    selected=c.get('workload',{}).get('evaluatorProgressBudget')
-    policy=k.evaluator_progress.capture_policy(selected)
-    helper = (k.M7 / 'evaluator-progress.cjs').read_text()
-    def fetch(role, selected, queries, budget):
-        prefix = 'const M7_PROGRESS_IDS=' + json.dumps(selected) + ';const M7_PROGRESS_QUERY_BUDGET=' + str(queries) + ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) + ';\n'
-        options={'output_limit':budget} if selected is not None else {}
-        raw = client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'], data=(prefix + helper).encode(), read=False, **options)
+def progress_refusal(error):
+    code = str(error)
+    result = {'verdict':getattr(error, 'verdict', 'UNMEASURED'),
+              'code':code if code == 'EVALUATOR_SCOPE_UNSAFE' or
+                     k.re.fullmatch(r'(?:K8S|M7)_[A-Z0-9_]+', code) else 'K8S_PROGRESS_CAPTURE_FAILED',
+              'errorType':type(error).__name__}
+    if isinstance(error, k.evaluator_progress.Refused) and getattr(error, 'diagnostic', None):
+        # The actual strict reader owns this bounded, allowlisted projection.
+        result['diagnostic'] = error.diagnostic
+    return result
+
+
+def progress(d, c, objects, client, *, raw_output=None, until=None, warming=False):
+    with k.observation_deadline(until):
+        k.deadline(c)
+        ids = [r['id'] for r in roster(c)]
+        baseline = k.active_baseline(d)
+        before = k.observe(c, objects, client, baseline)
+        k.deadline(c)
+        pod, container = k.selected_pod(c, before, 'evaluator')
+        selected=c.get('workload',{}).get('evaluatorProgressBudget')
+        policy=k.evaluator_progress.capture_policy(selected)
+        helper = (k.M7 / 'evaluator-progress.cjs').read_text()
+        response, response_path = {}, None
         if raw_output is not None:
-            fd = os.open(raw_output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            with os.fdopen(fd, 'wb') as stream:
-                stream.write(raw)
-            identity = before['pods'][pod]
-            k.write(raw_output.with_name('progress-after-response.json'), {
-                'observedAt':time.time(), 'bytes':len(raw), 'sha256':k.digest(raw_output),
-                'namespaceUid':before['namespace']['uid'], 'podUid':identity['uid'],
-                'containerId':identity['containers'][container]['containerID'], 'pins':c['pins'], 'capturePolicy':policy})
-        return raw
-    value = k.evaluator_progress.round_view(['evaluator'], ids, fetch,policy=policy)
-    k.observe(c, objects, client, baseline)
-    if selected is not None:value['capturePolicy']=policy
+            response_path = raw_output.with_name(raw_output.name.removesuffix('.private.jsonl')+'-response.json')
+        def fetch(role, selected, queries, budget):
+            prefix = 'const M7_PROGRESS_IDS=' + json.dumps(selected) + ';const M7_PROGRESS_QUERY_BUDGET=' + str(queries) + ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) + ';\n'
+            # ThreadPoolExecutor does not inherit the caller's ContextVars.
+            with k.observation_deadline(until):
+                k.deadline(c)
+                raw = client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'],
+                                  data=(prefix + helper).encode(), read=False, output_limit=budget)
+                if raw_output is not None:
+                    fd = os.open(raw_output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                    with os.fdopen(fd, 'wb') as stream:
+                        stream.write(raw)
+                    identity = before['pods'][pod]
+                    response.update(observedAt=time.time(), bytes=len(raw), sha256=k.digest(raw_output),
+                        namespaceUid=before['namespace']['uid'], podUid=identity['uid'],
+                        containerId=identity['containers'][container]['containerID'], pins=c['pins'], capturePolicy=policy)
+                    k.write(response_path, response)
+                k.deadline(c)  # A late successful fetch cannot become a pass.
+                return raw
+        value, primary, post = None, None, None
+        try:
+            value = k.evaluator_progress.round_view(['evaluator'], ids, fetch, warming=warming, policy=policy)
+        except BaseException as error:
+            primary = error
+        try:
+            # Verify UID/container/source binding even when decoding refused.
+            k.observe(c, objects, client, baseline)
+            k.deadline(c)
+        except BaseException as error:
+            post = error
+        if response_path is not None:
+            response.update(postObservation='VERIFIED' if post is None else 'REFUSED',
+                            responseRetained=raw_output.is_file())
+            if primary is not None: response['sourceRefusal'] = progress_refusal(primary)
+            if post is not None: response['postRefusal'] = progress_refusal(post)
+            k.write(response_path, response)
+        if post is not None:
+            if primary is not None: post.source_refusal = progress_refusal(primary)
+            raise post
+        if primary is not None: raise primary
+        if selected is not None:value['capturePolicy']=policy
+        return value
+
+
+def retained_progress(d, out, c, objects, client, name, *, until=None, warming=False):
+    raw = out/(name+'.private.jsonl')
+    try:
+        value = progress(d, c, objects, client, raw_output=raw, until=until, warming=warming)
+    except Exception as error:
+        evidence = {**progress_refusal(error), 'responseRetained':raw.is_file(), 'pins':c['pins']}
+        if getattr(error, 'source_refusal', None): evidence['sourceRefusal'] = error.source_refusal
+        k.write(out/(name+'-failure.json'), evidence)
+        raise
+    k.write(out/(name+'.json'), value)
     return value
 
 
@@ -391,7 +445,13 @@ def execute(d, c, objects, client, load=False, recovery=False):
     out.mkdir(mode=0o700)
     k.write(out / 'before.json', before)
     k.write(out / 'driver.json', readback)
-    k.write(out / 'progress-before.json', progress(d, c, objects, client))
+    import preload
+    convergence = preload.run(d, out, c, objects, client, ids=[row['id'] for row in tenants],
+                              collect=retained_progress) if load else None
+    initial = retained_progress(d, out, c, objects, client, 'progress-before',
+                                until=convergence['until'] if convergence is not None else None)
+    if convergence is not None:
+        preload.fresh(out, c, initial, convergence)
     runid = stage_runid(c, name)
     (out / 'runid').write_text(runid)
     node = c['driver']['node']
@@ -515,6 +575,8 @@ def terminal_progress(d, out, c, objects, client, runid, load, namespace_uid):
                     'namespaceUid':namespace_uid, 'pins':c['pins']}
         if diagnostic := getattr(error,'diagnostic',None):
             evidence['diagnostic'] = diagnostic  # Bounded, allowlisted row projection from round_view.
+        if getattr(error, 'source_refusal', None):
+            evidence['sourceRefusal'] = error.source_refusal
         k.write(out / 'progress-after-failure.json', evidence)
         if load:
             storage_after_progress_failure(d, out, c, objects, client, runid, namespace_uid)

@@ -155,6 +155,29 @@ Set optional `workload.evaluatorProgressBudget` with `maxQueriesPerPhase` and
 `maxBytesPerPhase` to select a different three-round evaluator capture budget.
 The packet retains the exact policy and keeps an exhausted capture `UNMEASURED`.
 
+For a fresh discovery workload, opt into an observation phase before ordinary
+traffic with `profile.phases.preloadConvergence`:
+
+```json
+{"contract":"strict-preload-convergence-v1","seconds":1800,"intervalSeconds":15}
+```
+
+Include this selected time in `profile.phases.workSeconds`. The phase observes
+the real source without dispatching work, retains every strict sample and saves
+exact source bytes privately before decoding. It requires two complete strict
+whole-cohort ready views with completed acquisition credit, then runs the normal
+initial strict check fresh before creating the driver. The selected phase,
+original work, cleanup and active Job cutoffs bound all observations. A late
+response cannot admit traffic. The packet records the effective window, stop
+reason, raw bytes, capture policy, source identities and command bound.
+
+Historical failed-completion counts remain visible and prevent a qualification
+pass. Unchanged valid historical counts can admit execution; an increase,
+decrease, reset, poison, unknown source code or identity change refuses it.
+This phase does not change the later clinical or load assessment. Omit the
+selection to retain immediate initial readiness behavior; that check now also
+retains its raw response and bounded refusal evidence.
+
 Set `profile.phases.accessSetupSeconds` to give the first and last selected
 socket witnesses an explicit warm-up window. The native client connects to
 both exact hosts without credentials first. It may retry HTTP 403 while it

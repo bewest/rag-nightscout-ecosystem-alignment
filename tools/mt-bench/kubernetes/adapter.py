@@ -20,6 +20,9 @@ import time
 from datetime import datetime, timezone
 from types import SimpleNamespace
 import traceback
+import contextlib
+import contextvars
+import math
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -41,6 +44,7 @@ import edge_configuration
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
+_OBSERVATION_DEADLINE = contextvars.ContextVar('k8s_observation_deadline', default=None)
 NAME = re.compile(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?')
 WORKLOADS = {'StatefulSet', 'Deployment', 'Job'}
 PLURALS = {'StatefulSet': ('apps/v1', 'statefulsets'), 'Deployment': ('apps/v1', 'deployments'),
@@ -108,9 +112,30 @@ def timestamp(value):
 
 def deadline(c, cleanup=False, now=None):
     until = timestamp(c['deadlines']['cleanupUntil' if cleanup else 'workUntil'])
+    observation = None if cleanup else _OBSERVATION_DEADLINE.get()
+    phase_clipped = observation is not None and observation < until
+    if observation is not None:
+        until = min(until, observation)
     remaining = until - (time.time() if now is None else now)
-    need(remaining > 0, 'CLEANUP_DEADLINE' if cleanup else 'WORK_DEADLINE', 'UNMEASURED')
+    need(remaining > 0, 'CLEANUP_DEADLINE' if cleanup else
+         'OBSERVATION_DEADLINE' if phase_clipped else 'WORK_DEADLINE', 'UNMEASURED')
     return remaining
+
+
+@contextlib.contextmanager
+def observation_deadline(until):
+    """A read-only phase can shorten, never extend, existing work custody."""
+    previous = _OBSERVATION_DEADLINE.get()
+    if until is not None:
+        need(type(until) in (int, float) and math.isfinite(until), 'OBSERVATION_DEADLINE_INPUT')
+        until = min(previous, until) if previous is not None else until
+    else:
+        until = previous
+    token = _OBSERVATION_DEADLINE.set(until)
+    try:
+        yield
+    finally:
+        _OBSERVATION_DEADLINE.reset(token)
 
 
 def manifests(value):
@@ -208,6 +233,10 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
     if 'dataPrimerSeconds' in c:
         need(workload_inputs.seconds(c['dataPrimerSeconds']), 'DATA_PRIMER_WINDOW')
+    if 'preloadConvergence' in c:
+        import preload
+        need(c.get('tier', 'discovery') == 'discovery', 'PRELOAD_DISCOVERY_ONLY')
+        preload.selection(c['preloadConvergence'])
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:

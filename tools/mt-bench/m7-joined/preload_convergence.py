@@ -23,12 +23,17 @@ def selection(manifest):
     require(manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'
             and manifest.get('completionContract') == 'evaluator-work-v2',
             'M7_PRELOAD_LOCAL_DISCOVERY_REQUIRED')
+    return {FIELD: configuration(value)}
+
+
+def configuration(value):
+    """One phase-options resolver, independent of execution transport/custody."""
     require(isinstance(value, dict) and set(value) == {'contract', 'seconds', 'intervalSeconds'}
             and value['contract'] == CONTRACT, 'M7_PRELOAD_SELECTION')
     require(all(type(value[key]) is int and 1 <= value[key] <= phase_windows.MAX_SECONDS
                 for key in ('seconds', 'intervalSeconds'))
             and value['intervalSeconds'] < value['seconds'], 'M7_PRELOAD_WINDOW')
-    return {FIELD: dict(value)}
+    return dict(value)
 
 
 def option(args):
@@ -54,7 +59,7 @@ def receipt(manifest, authorization):
     return chosen
 
 
-def inspect_pages(raw, services, ids):
+def inspect_pages(raw, services, ids, *, failed_baseline=None):
     """Validate all returned source rows, without changing their strict verdict.
 
     This only classifies what may be observed during the selected pre-load
@@ -62,6 +67,8 @@ def inspect_pages(raw, services, ids):
     The unchanged strict reader must still accept the complete final bracket.
     """
     known = set(ids)
+    require(failed_baseline is None or set(failed_baseline) == known and
+            all(p.integer(value) for value in failed_baseline.values()), 'M7_PRELOAD_FAILURE_BASELINE')
     require(set(raw) == set(services), 'M7_PRELOAD_INCOMPLETE_SOURCE')
     identities, owners, rows_by_service = {}, {}, {}
     for service in services:
@@ -117,7 +124,8 @@ def inspect_pages(raw, services, ids):
                                 error = RuntimeError(code)
                                 error.diagnostic = p._refusal_row(row, service, current['runtimeId'])
                                 raise error
-                        source_need(value['alert'] is None and progress['failedCompletions'] == 0,
+                        allowed_failed = 0 if failed_baseline is None else failed_baseline[row['tenant']]
+                        source_need(value['alert'] is None and progress['failedCompletions'] == allowed_failed,
                                     'M7_PRELOAD_EVALUATION_FAILURE')
                         source_need(value['code'] in PENDING_CODES or value['code'] is None,
                                     'M7_PRELOAD_SOURCE_REFUSAL')
