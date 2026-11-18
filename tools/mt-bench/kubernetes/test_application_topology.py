@@ -199,8 +199,13 @@ class ApplicationTopology(unittest.TestCase):
         self.assertFalse(topology.readiness_signal(scope['intent'], 'pgstream', k.need))
 
     def test_startup_proof_has_no_lease_but_keeps_generation_and_native_checks(self):
+        for protocol in ('startup-v2', 'startup-v3'):
+            with self.subTest(protocol=protocol):
+                self.check_startup_proof(protocol)
+
+    def check_startup_proof(self, protocol):
         config = self.c
-        config['pins']['candidate'] = {'diagnosticSha256': '1'*64, 'platformVerification': 'startup-v2'}
+        config['pins']['candidate'] = {'diagnosticSha256': '1'*64, 'platformVerification': protocol}
         proof = {'version': 1, 'credentialBoundary': 'admin-private-api',
                  'coreCommit': config['pins']['pair']['core'], 'deployCommit': config['pins']['pair']['deploy'],
                  'diagnosticSha256': '1'*64, 'fixture': {'namespace': config['namespace'], 'runId': config['runId']},
@@ -216,14 +221,24 @@ class ApplicationTopology(unittest.TestCase):
         config['pins']['candidate'].pop('platformVerification')
         with self.assertRaisesRegex(k.Refused, 'DEADLINE_FORMAT'):
             candidate.proof(k, config, proof, now=10)
-        config['pins']['candidate']['platformVerification'] = 'startup-v2'
+        config['pins']['candidate']['platformVerification'] = protocol
+        candidate.proof(k, config, proof, now=10)
+        config['pins']['candidate']['platformVerification'] = 'startup-v4'
+        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
+            candidate.proof(k, config, proof, now=10)
+        config['pins']['candidate']['platformVerification'] = protocol
         candidate.proof(k, config, proof, now=10)
 
     def test_startup_protocol_marker_is_bound_to_source_contract(self):
+        for protocol in ('startup-v2', 'startup-v3'):
+            with self.subTest(protocol=protocol):
+                self.check_startup_pins(protocol)
+
+    def check_startup_pins(self, protocol):
         config = self.c
         p = config['pins']
         selection = dict(diagnosticSha256='0'*64, producerBinarySha256='1'*64, nativeCatalogueSha256='2'*64,
-                         imageConfigId=p['appImageId'], sourceAcceptance='PENDING', platformVerification='startup-v2')
+                         imageConfigId=p['appImageId'], sourceAcceptance='PENDING', platformVerification=protocol)
         p.update(candidate=selection, postgresImage='example.invalid/postgres@sha256:'+'7'*64,
                  postgresImageId='sha256:'+'8'*64)
         self.inventory.update(candidateContract=copy.deepcopy(selection), images={'postgres': p['postgresImage']})
@@ -234,7 +249,20 @@ class ApplicationTopology(unittest.TestCase):
         objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
         with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
             candidate.pins(k, config, self.inventory, objects)
-        contract['platformVerification'] = 'startup-v2'
+        contract['platformVerification'] = 'startup-v3' if protocol == 'startup-v2' else 'startup-v2'
+        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
+        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
+            candidate.pins(k, config, self.inventory, objects)
+        contract['platformVerification'] = protocol
+        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
+        candidate.pins(k, config, self.inventory, objects)
+        selection['platformVerification'] = contract['platformVerification'] = 'startup-v4'
+        self.inventory['candidateContract'] = copy.deepcopy(selection)
+        objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
+        with self.assertRaisesRegex(k.Refused, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED'):
+            candidate.pins(k, config, self.inventory, objects)
+        selection['platformVerification'] = contract['platformVerification'] = protocol
+        self.inventory['candidateContract'] = copy.deepcopy(selection)
         objects['ConfigMap/provision-scripts']['data']['source-contract.json'] = json.dumps(contract)
         candidate.pins(k, config, self.inventory, objects)
 

@@ -11,6 +11,7 @@ import population_ceiling
 
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
+STARTUP_PROTOCOLS = ('startup-v2', 'startup-v3')
 
 
 def pins(k, c, inventory, objects):
@@ -33,7 +34,7 @@ def pins(k, c, inventory, objects):
     k.need(contract.get('coreCommit') == runtime['pair']['core'] and contract.get('deployCommit') == runtime['pair']['deploy'] and
            contract.get('localImageId') == runtime['appImageId'] and all(contract.get(key) == selected[key] for key in FIELDS),
            'CANDIDATE_SOURCE_IMAGE_CHANGED')
-    k.need(selected.get('platformVerification') in (None, 'startup-v2') and
+    k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS) and
            selected.get('platformVerification') == contract.get('platformVerification'),
            'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
     k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
@@ -98,6 +99,8 @@ def images(k, c, observation):
 def proof(k, c, value, now=None):
     p = c['pins']
     selected = p['candidate']
+    k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS),
+           'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
     k.need(isinstance(value, dict) and value.get('version') == 1 and
            value.get('credentialBoundary') == 'admin-private-api', 'CANDIDATE_ADMIN_PROOF_REQUIRED')
     k.need(value.get('fixture') == {'namespace': c['namespace'], 'runId': c['runId']}, 'CANDIDATE_FIXTURE_CHANGED')
@@ -117,7 +120,7 @@ def proof(k, c, value, now=None):
            [row.get('role') for row in roster] == ROLES, 'CANDIDATE_VERIFICATION_CHANGED')
     for row in roster:
         k.need(k.HEX.fullmatch(row.get('generation', '')), 'CANDIDATE_GENERATION_CHANGED')
-        startup = selected.get('platformVerification') == 'startup-v2'
+        startup = selected.get('platformVerification') in STARTUP_PROTOCOLS
         if startup:
             k.need(set(row) == {'role', 'generation'}, 'CANDIDATE_VERIFICATION_CHANGED')
         elif now is not None:
