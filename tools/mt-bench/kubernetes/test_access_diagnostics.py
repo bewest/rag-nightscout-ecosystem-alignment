@@ -4,8 +4,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import adapter
-import execute
+from test_adapter import k as adapter, execute
 
 
 class AccessDiagnostics(unittest.TestCase):
