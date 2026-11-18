@@ -60,7 +60,7 @@ class PhaseWindows(unittest.TestCase):
             port=port.replace("'--per','2'","...(setupSeconds===undefined?[]:['--setupSeconds',String(setupSeconds)]),'--per','2'")
             port += "\n(async()=>{const s=fs.readFileSync(process.argv[2],'utf8');console.log(JSON.stringify({old:(await run(s,{exchange:200})).out.prime,custom:(await run(s,{exchange:200,setupSeconds:900})).out.prime}));})().catch(e=>{console.error(e);process.exitCode=1});"
             def measure():
-                result=subprocess.run(['node','-e',port,'unused',str(file)],capture_output=True,text=True,timeout=10)
+                result=subprocess.run(['node','-e',port,'unused',str(file)],cwd=a.HERE,capture_output=True,text=True,timeout=10)
                 self.assertEqual(result.returncode,0,result.stderr);return json.loads(result.stdout)
             def criterion():
                 result=measure();self.assertGreaterEqual(result['custom']['ms'],899000,'AUTHORED_PROBE_SETUP_NOT_APPLIED')

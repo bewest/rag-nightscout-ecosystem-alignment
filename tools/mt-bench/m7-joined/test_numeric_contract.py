@@ -193,7 +193,7 @@ console.log(JSON.stringify(vm.runInNewContext(s+'\n({jwts:setup().jwts.length,ba
             port=port.replace('foreign=false}={}','foreign=false,clients}={}')
             port=port.replace("'--per','2'","...(clients===undefined?[]:['--clients',String(clients)]),'--per','2'")
             port+="\n(async()=>{const s=fs.readFileSync(process.argv[2],'utf8');const v=await run(s,{clients:80001});assert.equal(v.code,0);assert(!v.out.hardFailure);await assert.rejects(run(s,{clients:4294967296}),/M7_VIEWER_TOTAL_RANGE/);console.log('LARGE_VIEWERS_EXACT_NO_ACTORS');})().catch(e=>{console.error(e);process.exitCode=1});"
-            result=subprocess.run(['node','-e',port,'unused',str(file)],capture_output=True,text=True,timeout=10)
+            result=subprocess.run(['node','-e',port,'unused',str(file)],cwd=a.HERE,capture_output=True,text=True,timeout=10)
             self.assertEqual(result.returncode,0,result.stderr)
             code="const a=require('./probe-accounting.cjs');const ids=Array.from({length:12001},(_,i)=>'tenant-'+i);const l=a.create({ids,runId:'synthetic',persist(){}});const n=l.begin(ids.at(-1));l.settle(n,200);l.close();if(l.snapshot().attempts!==1)throw Error('COUNT');"
             subprocess.run(['node','-e',code],cwd=a.HERE,check=True)
