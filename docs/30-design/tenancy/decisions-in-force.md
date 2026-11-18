@@ -48,6 +48,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 ### Platform/application boundary, startup and simplification
 
 - [platform-application-boundary](multitenancy-decisions.md#platform-application-boundary) — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.
+- [brittle-check-removal](multitenancy-decisions.md#brittle-check-removal) — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.
 - [architecture-justified-removal](multitenancy-decisions.md#architecture-justified-removal) — Machinery from an obsolete design is removed on architecture grounds with correctness controls, no measurement.
 - [serial-machinery-retirement](multitenancy-decisions.md#serial-machinery-retirement) — Remove serial machinery the streaming design no longer needs, rather than tune it.
 - [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first) — Simplified, runnable, operable architecture first; performance work is lower priority meanwhile.
@@ -186,7 +187,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [evaluator-settings-error-shape](multitenancy-decisions.md#evaluator-settings-error-shape) — Settings-read failures reach the evaluator as `SETTINGS_POLICY_UNAVAILABLE` with a cause code.
 - [alarm-output-idempotent-by-content](multitenancy-decisions.md#alarm-output-idempotent-by-content) — Alarm output freshness and origins derive from content, so overlapping evaluators produce one request.
 - [alarm-repeat-clock](multitenancy-decisions.md#alarm-repeat-clock) — Active alarms repeat on the single-site heartbeat clock, independent of evaluator revisions.
-- [versioned-output-not-owner-lock](multitenancy-decisions.md#versioned-output-not-owner-lock) — **Proposed, held**: versioned conditional output commits; adoption needs conditions (a)–(d).
+- [versioned-output-not-owner-lock](multitenancy-decisions.md#versioned-output-not-owner-lock) — **Proposed, deferred** by [versioned-output-deferred](multitenancy-decisions.md#versioned-output-deferred): versioned conditional output commits.
+- [versioned-output-deferred](multitenancy-decisions.md#versioned-output-deferred) — W not joined; xdripjs keeps its in-memory notification interval in both modes, documented.
 - [realtime-connection-driven](multitenancy-decisions.md#realtime-connection-driven) — Realtime loads a tenant only while it has sockets (narrowed by [static-hash-ownership](multitenancy-decisions.md#static-hash-ownership): placement).
 - [realtime-move-alarm-parity](multitenancy-decisions.md#realtime-move-alarm-parity) — Reconnects do not replay alarms; they return on the heartbeat (narrowed by [static-hash-ownership](multitenancy-decisions.md#static-hash-ownership): no dynamic moves).
 - [realtime-no-socket-cap](multitenancy-decisions.md#realtime-no-socket-cap) — No per-process socket cap; disconnects carry cause codes; flood control belongs to the edge.
