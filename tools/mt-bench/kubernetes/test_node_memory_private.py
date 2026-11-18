@@ -1,6 +1,7 @@
 """Real private CLI/caller with pinned inert tools; no cluster access."""
 import copy
 from datetime import datetime, timezone
+from decimal import localcontext
 import json
 import os
 from pathlib import Path
@@ -160,6 +161,38 @@ os.execv(str(Path(__file__).with_name('kubectl')),['kubectl',*sys.argv[2:]])
         self.assertEqual(answer['policy']['thresholds'], [])
         self.config.pop('kubeletconfig')
         with self.assertRaises(p.Refused): self.collect()
+
+    def test_long_quantity_goldens_through_actual_caller_and_cli(self):
+        # Independent integer goldens from positive Kubernetes Value() ceiling.
+        # This does not execute Go or reuse the collector's conversion arithmetic.
+        cases = [('1.00000000000000000000000000001', 2),
+                 ('1.00000000000000000000000000001Gi', 1073741825),
+                 ('1.'+'0'*31+'1', 2), ('1.'+'0'*31+'1Gi', 1073741825),
+                 ('1.'+'0'*255+'1', 2), ('1.'+'0'*255+'1Gi', 1073741825),
+                 ('1.00000000000000000000000000001e3', 1001),
+                 ('0.'+'0'*40+'1', 1), ('0.'+'0'*40+'e30', 0)]
+        for value, expected in cases:
+            with self.subTest(quantity=value):
+                self.config['kubeletconfig']['kubeReserved']['memory'] = value
+                answer = self.collect()
+                self.assertEqual(answer['status'], 'MEASURED')
+                self.assertEqual(answer['policy']['reservedMemoryBytes']['kubeReserved'], expected)
+                self.assertNotIn('RAW-', json.dumps(answer))
+
+    def test_quantity_precision_is_independent_of_decimal_context(self):
+        with localcontext() as context:
+            context.prec = 3
+            self.assertEqual(p.quantity('1.00000000000000000000000000001Gi'), 1073741825)
+            self.assertEqual(p.quantity('1024Mi'), 1073741824)
+            self.assertEqual(p.quantity('0.00000000000000000000000000001'), 1)
+
+    def test_unsupported_quantity_arithmetic_size_is_unmeasured(self):
+        for value in ('1e1000000000', '1e-1000000000', '1.'+'0'*5000+'1'):
+            self.config['kubeletconfig']['kubeReserved']['memory'] = value
+            with self.assertRaises(p.Refused) as found:
+                self.collect()
+            self.assertEqual(found.exception.code, 'POLICY_UNSUPPORTED')
+            self.assertEqual(found.exception.verdict, 'UNMEASURED')
 
     def test_usage_and_unrelated_status_refresh_are_positive(self):
         for fault in ('usage_refresh', 'status_refresh'):

@@ -1,6 +1,7 @@
 """Fixed Node memory/policy observation; MEASURED is never admission."""
 from datetime import datetime
-from decimal import Decimal, ROUND_CEILING
+from decimal import Decimal
+from fractions import Fraction
 import hashlib
 import json
 import math
@@ -18,6 +19,8 @@ KIND = 'node-memory-policy-proof-v1'
 SOURCE = 'ecd15669b09d030e499502d37e5ee9ca5314f4b8de761ca6f1f990b3bf8bab8e'
 VERSION = 'v1.34.12'
 MAX_BYTES = 32 * 1024 * 1024
+QUANTITY_TEXT_BOUND = 4096
+QUANTITY_EXPONENT_BOUND = 4096
 SIGNALS = ('memory.available', 'allocatableMemory.available')
 ERRORS = {'REQUEST', 'SCOPE', 'REFERENCE', 'PRIVATE_FILE', 'REFERENCE_CHANGED',
           'SOURCE_CHANGED', 'TOOL_CHANGED', 'IDENTITY_CHANGED', 'CENSUS_CHANGED',
@@ -63,15 +66,22 @@ def number(value, *, positive=False):
 
 def quantity(value):
     """Positive Kubernetes quantity Value() subset; unsupported syntax refuses."""
-    need(isinstance(value, str), 'POLICY_UNSUPPORTED', 'UNMEASURED')
+    need(isinstance(value, str) and len(value) <= QUANTITY_TEXT_BOUND,
+         'POLICY_UNSUPPORTED', 'UNMEASURED')
     match = re.fullmatch(r'([+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)([numkMGTPE]|[KMGTPE]i)?', value)
     need(match is not None, 'POLICY_UNSUPPORTED', 'UNMEASURED')
     suffix = match[2] or ''
     need(not suffix or not re.search(r'[eE]', match[1]), 'POLICY_UNSUPPORTED', 'UNMEASURED')
-    scales = {'': 1, 'n': Decimal('1e-9'), 'u': Decimal('1e-6'), 'm': Decimal('.001'),
+    exponent = re.search(r'[eE]([+-]?\d+)$', match[1])
+    need(exponent is None or abs(int(exponent[1])) <= QUANTITY_EXPONENT_BOUND,
+         'POLICY_UNSUPPORTED', 'UNMEASURED')
+    scales = {'': 1, 'n': Fraction(1, 10**9), 'u': Fraction(1, 10**6), 'm': Fraction(1, 1000),
               **{k: 10**v for k, v in zip(('k', 'M', 'G', 'T', 'P', 'E'), (3, 6, 9, 12, 15, 18))},
               **{k+'i': 1024**i for i, k in enumerate('KMGTPE', 1)}}
-    return number(int((Decimal(match[1]) * scales[suffix]).to_integral_value(rounding=ROUND_CEILING)))
+    amount = Fraction(match[1]) * scales[suffix]
+    # Positive Value() rounds away from zero. Exact integer arithmetic must not
+    # lose a fractional byte through Decimal's ambient precision context.
+    return number((amount.numerator + amount.denominator - 1) // amount.denominator)
 
 
 def threshold(value, capacity, *, reclaim=False):

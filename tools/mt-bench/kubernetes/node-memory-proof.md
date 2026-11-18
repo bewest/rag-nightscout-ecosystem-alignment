@@ -42,6 +42,15 @@ should be reconstructed. A missing loaded-config object or missing summary
 memory pointer remains unknown. Source-valid minimum-reclaim percentages above
 100% stay representable; they do not create capacity.
 
+Positive quantities use exact rational arithmetic and integer ceiling, independent
+of Decimal's ambient precision. The implemented quantity parser accepts at most
+4096 text characters and decimal exponent magnitude 4096; larger arithmetic
+inputs refuse as `UNMEASURED` rather than silently rounding down. This is a parser
+capability bound, not a memory allocation or application quota. Long-fraction
+integer goldens follow Kubernetes v1.34.12
+[`Quantity.Value()` source semantics](https://github.com/kubernetes/kubernetes/blob/v1.34.12/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go);
+the focused controls do not claim to execute the Go package.
+
 ## Fixed interface
 
 A caller creates a private 0600 scope from its reviewed controller authority:
@@ -61,6 +70,10 @@ a streaming process-memory bound. Raw oversized output can consume memory before
 the collector refuses it. This leaf does not claim a stricter streaming limit.
 Node heartbeat versions and Pod readiness refresh may change; UID/boot,
 allocation, policy, resources, roster and container incarnation may not.
+The census consumes pinned kubectl's aggregated `get pods` result. It is not a
+raw paginated PodList client and does not process API continuation tokens itself.
+A continuation-bearing inert response alone does not demonstrate incomplete
+aggregation by the pinned kubectl transport; that reachability is unmeasured.
 
 Both root and Pod-root samples retain source time, working set, usage, available
 and derived local limit. Policy retains actual reserved memory, cgroup/enforcement
