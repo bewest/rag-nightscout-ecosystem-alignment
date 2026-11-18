@@ -1,5 +1,6 @@
 """Classify bounded startup convergence for the owned producer Deployment."""
 
+import json
 import re
 
 HARD_WAITING = {
@@ -44,6 +45,22 @@ def log_codes(raw):
             if b'connection refused' in line:
                 codes.add('OBSERVED_PRODUCER_RECEIVER_CONNECTION_REFUSED')
     return sorted(codes)
+
+
+def role_diagnostics(raw):
+    """Keep the source's coded startup diagnosis without the log body."""
+    found = []
+    for match in re.finditer(rb'^(?:API|Evaluator|Realtime) startup refused (\{[^\n]*\})$', raw, re.M):
+        try:
+            row = json.loads(match[1])
+        except (UnicodeDecodeError, ValueError):
+            continue
+        if (isinstance(row, dict) and set(row) == {'targetRole', 'checkPhase', 'causeCode'}
+                and row['targetRole'] in (None, 'api', 'evaluator', 'realtime')
+                and all(isinstance(row[key], str) and re.fullmatch('[A-Z0-9_]{1,90}', row[key])
+                        for key in ('checkPhase', 'causeCode')) and row not in found):
+            found.append(row)
+    return found
 
 
 def disposition(container, convergence):

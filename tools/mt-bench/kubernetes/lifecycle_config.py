@@ -19,7 +19,7 @@ FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bi
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
           'startupWindowPreflight','resourcePhasePreflight','primerOptionsPreflight',
-          'ownedWorkerPreflight','populationCeilingPreflight'}
+          'ownedWorkerPreflight','populationCeilingPreflight','schedulerPlacement'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def need(ok, code):
@@ -72,7 +72,11 @@ def fixture_config(path, capture=False):
     if c.get('pullSecretCommand') is not None:
         need(isinstance(c['pullSecretCommand'],list) and c['pullSecretCommand'] and
              all(isinstance(x,str) and x and '\x00' not in x for x in c['pullSecretCommand']), 'PULL_COMMAND')
-    files=[reference(c[key]) for key in ('runTemplate','delivery','cacheAbsence')]
+    scheduler = c.get('schedulerPlacement', False)
+    need(type(scheduler) is bool, 'SCHEDULER_PLACEMENT')
+    files=[reference(c[key]) for key in ('runTemplate','delivery')]
+    if not scheduler:
+        files.append(reference(c['cacheAbsence']))
     d=Path(c['caseDirectory']);e=read(d/'environment.json');m=read(d/'intent.json');pre=read(d/'preflight.json')
     primer = primer_options.from_profile(m['profile'],need)
     population=population_ceiling.from_profile(m['profile'],need)
@@ -87,6 +91,8 @@ def fixture_config(path, capture=False):
     need(re.fullmatch(r'[a-z0-9][a-z0-9-]{0,62}',e['runId']) and e['runId']==d.name and e['namespace'].startswith('ns-synth-'), 'INSTANCE_IDENTITY')
     need(e['tenantCount']==m['profile']['population']['provisionedTenants'], 'POPULATION')
     need(pre.get('commissioning')=='PREFLIGHT_ONLY' and pre['experiment']['renderSha256']==sha(d/'render.json'), 'PREFLIGHT')
+    need(scheduler == (pre.get('trialEnvelope', {}).get('placementMode') == 'scheduler'),
+         'SCHEDULER_PREFLIGHT_CHANGED')
     need(all(limits[k]<=m['profile']['proposedEnvelope']['nativeLimits'][k] for k in limits), 'ALLOCATION_EXCEEDED')
     template=read(c['runTemplate']['path'])
     inventory=read(d/'inventory.json')
@@ -121,6 +127,8 @@ def fixture_config(path, capture=False):
             need(kind in ('Namespace','ClusterRoleBinding','ConfigMap','Service','Secret','ServiceAccount','Role','RoleBinding','NetworkPolicy','ResourceQuota','LimitRange','Deployment','StatefulSet','Job'),'RESOURCE_UNSUPPORTED')
             need(kind in ('Namespace','ClusterRoleBinding') or meta['namespace']==e['namespace'],'STAGE_NAMESPACE')
             need(kind!='Service' or obj['spec'].get('type','ClusterIP')=='ClusterIP','NEW_BILLABLE_RESOURCE')
+            if scheduler and kind in ('Deployment','StatefulSet','Job'):
+                need(not obj['spec']['template']['spec'].get('nodeName'), 'SCHEDULER_BYPASSED')
     startup=startup_preflight(m,e,rendered)
     worker_preflight = None
     if owned_worker.FIELD in e:
@@ -196,6 +204,8 @@ def fixture_config(path, capture=False):
     files += [Path(c[key]) for key in ('k6','readonlyGuard','observerScript')]
     files += [Path(c['toolsDirectory'])/'kubectl']
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]
+    if scheduler:
+        files.append(Path(__file__).with_name('scheduler_placement.py'))
     expected={str(p.resolve()):sha(p) for p in files}
     if capture:
         c['inputs']=expected

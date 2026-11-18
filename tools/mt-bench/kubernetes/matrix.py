@@ -28,6 +28,22 @@ def ceiling(total, limits, code):
                for n in total), code)
 
 
+def node_requests(objects, baseline, accounting):
+    """Take one budget per rendered workload at its observed node."""
+    nodes = {}
+    accounted = set()
+    for pod in baseline['pods'].values():
+        workload = pod['workload']
+        k.need(workload in objects and workload not in accounted, 'MATRIX_WORKLOAD_CENSUS')
+        accounted.add(workload)
+        spec = k.template(objects[workload])['spec']
+        total = nodes.setdefault(pod['nodeName'], dict.fromkeys(DIMS, 0))
+        add(total, k.resource_budget.pod_budget(spec, accounting, k.need))
+    k.need(accounted == {name for name, obj in objects.items() if obj['kind'] in k.WORKLOADS},
+           'MATRIX_WORKLOAD_CENSUS')
+    return nodes
+
+
 def identity(c, baseline, current):
     """Keep the entire observed peer roster and incarnations unchanged."""
     k.need(current.get('context') == c['context'] and current.get('runId') == c['runId']
@@ -77,17 +93,8 @@ def allocation(value, entries):
                'MATRIX_FIXTURE_DEADLINE_EXCEEDS_ALLOCATION')
         expected.append({'runId': c['runId'], 'namespace': c['namespace'],
                          'namespaceUid': baseline['namespace']['uid'], 'runSha256': k.digest(d / 'run.json')})
-        accounted = set()
-        for pod in baseline['pods'].values():
-            workload = pod['workload']
-            k.need(workload in objects and workload not in accounted, 'MATRIX_WORKLOAD_CENSUS')
-            accounted.add(workload)
-            spec = k.template(objects[workload])['spec']
-            # Reserve the peak for each placed workload, including setup Jobs.
-            total = nodes.setdefault(pod['nodeName'], dict.fromkeys(DIMS, 0))
-            add(total, k.resource_budget.pod_budget(spec, accounting, k.need))
-        k.need(accounted == {name for name, obj in objects.items() if obj['kind'] in k.WORKLOADS},
-               'MATRIX_WORKLOAD_CENSUS')
+        for node, request in node_requests(objects, baseline, accounting).items():
+            add(nodes.setdefault(node, dict.fromkeys(DIMS, 0)), request)
         for role in ('driver', 'observer'):
             actor = c[role]
             total = actors.setdefault(actor['hostId'], {'millicpus': 0, 'memoryBytes': 0})

@@ -37,7 +37,10 @@ def command(argv,data=None,timeout=None,private=False,worker_view=False):
     if q.returncode:
         import re
         codes=sorted(set(re.findall(rb'\b(?:K8S_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|VAULT_|EVALUATOR_)[A-Z0-9_]{2,90}\b',q.stderr+q.stdout)))
-        put('last-command-error.json',{'program':Path(str(argv[0])).name,'returncode':q.returncode,'codes':[x.decode() for x in codes]})
+        error = {'program':Path(str(argv[0])).name,'returncode':q.returncode,'codes':[x.decode() for x in codes]}
+        if cfg.get('schedulerPlacement') and not private:
+            error['stderr'] = q.stderr[-1500:].decode(errors='replace')
+        put('last-command-error.json',error)
         raise RuntimeError('PRIVATE_STEP_FAILED' if private else 'STAGE_COMMAND_FAILED')
     return q.stdout
 env={**os.environ,'PATH':str(tool)+':'+os.environ['PATH'],'TMPDIR':str(live),'NS_KUBE_CONTEXT':ctx,'NS_RUN_ID':rid,'RO_NO_LOG':'1','PYTHONDONTWRITEBYTECODE':'1'}
@@ -137,9 +140,14 @@ def confirm_provision_retirement():
     return proof
 def summary(pod):
     sts=pod.get('status',{})
-    return {'name':pod['metadata']['name'],'uid':pod['metadata']['uid'],'node':pod['spec'].get('nodeName'),'phase':sts.get('phase'),
+    record = {'name':pod['metadata']['name'],'uid':pod['metadata']['uid'],'node':pod['spec'].get('nodeName'),'phase':sts.get('phase'),
             'resources':[{k:v.get(k) for k in ('name','resources')} for v in pod['spec'].get('initContainers',[])+pod['spec'].get('containers',[])],
             'containers':[{k:c.get(k) for k in ('name','imageID','restartCount','ready')}|{'state':c.get('state',{}),'previousTermination':c.get('lastState',{}).get('terminated')} for c in sts.get('initContainerStatuses',[])+sts.get('containerStatuses',[])]}
+    if cfg.get('schedulerPlacement'):
+        record['createdAt'] = pod['metadata'].get('creationTimestamp')
+        record['scheduled'] = next((row for row in sts.get('conditions', ())
+                                    if row['type'] == 'PodScheduled'), None)
+    return record
 def failure_codes(pod,container,uid,previous=False):
     owned()
     require_pod_uid(pod,uid)
@@ -148,6 +156,9 @@ def failure_codes(pod,container,uid,previous=False):
     try:
         output=command(rpc+args,private=True)
         observed={'status':'CAPTURED','codes':producer_startup.log_codes(output)}
+        diagnostics = producer_startup.role_diagnostics(output)
+        if diagnostics:
+            observed['roleDiagnostics'] = diagnostics
     except (RuntimeError, OSError, subprocess.TimeoutExpired):
         observed={'status':'UNMEASURED','codes':[]}
     require_pod_uid(pod,uid)
@@ -228,16 +239,18 @@ def execpod(pod,container,args,seconds=None):
 raw=Path(cfg['snapshotDirectory']);src=read(raw/'capture.json')
 assert dt.datetime.now(dt.timezone.utc).timestamp()-dt.datetime.fromisoformat(src['capturedAt']).timestamp()<300,'REFRESH_BEFORE_ENTRY'
 pre=read(d/'preflight.json');assert pre['commissioning']=='PREFLIGHT_ONLY'
-selected=pre['trialEnvelope']['placementEnvelopes']
-if len(selected)>1:assert all(v['trialFits'] for v in pre['workers'])
-else:
-    ordered=[n['metadata']['name'] for n in read(raw/'nodes.json')['items']]
-    assert pre['workers'][ordered.index(e['targetNode'])]['trialFits']
+scheduler = cfg.get('schedulerPlacement', False)
+if not scheduler:
+    selected=pre['trialEnvelope']['placementEnvelopes']
+    if len(selected)>1:assert all(v['trialFits'] for v in pre['workers'])
+    else:
+        ordered=[n['metadata']['name'] for n in read(raw/'nodes.json')['items']]
+        assert pre['workers'][ordered.index(e['targetNode'])]['trialFits']
 assert pre['experiment']['renderSha256']==hashlib.sha256((d/'render.json').read_bytes()).hexdigest()
 assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
 assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-delegator' and trust['subjects']==[{'kind':'ServiceAccount','name':'vault','namespace':ns}] and get('clusterrolebinding',tn,False) is None
-assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
+if not scheduler:assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
 if frozen.JOB_COMPLETE in selected_source:
@@ -259,14 +272,15 @@ try:
     node=create(objects('namespace')[0]);nsuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid})
     owned();node=create(trust);trustuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid,'trustName':tn,'trustUid':trustuid})
     install('foundation')
-    # All private application/DB containers are cache-only in these final, hashed stages.
-    for stage in ('stores','provision','private-admin','primer','serving'):
-        for obj in objects(stage):
-            spec=obj['spec']['template']['spec']
-            for actor in spec.get('initContainers',[])+spec.get('containers',[]):
-                if actor['image'] in (e['images']['app'],e['images']['postgres']):assert actor['imagePullPolicy']=='Never'
-    # The owner may select its existing short-lived read-only pull credential.
-    # Cache-only private image execution requires no registry operation here.
+    # Legacy fixtures expect prewarmed images. Scheduler fixtures leave the
+    # digest-pinned image pull policy to Kubernetes and the authored manifest.
+    if not scheduler:
+        for stage in ('stores','provision','private-admin','primer','serving'):
+            for obj in objects(stage):
+                spec=obj['spec']['template']['spec']
+                for actor in spec.get('initContainers',[])+spec.get('containers',[]):
+                    if actor['image'] in (e['images']['app'],e['images']['postgres']):
+                        assert actor['imagePullPolicy']=='Never'
     if cfg.get('pullSecretCommand'):
         pull=command(cfg['pullSecretCommand'],private=True)
         command(rpc+['create','secret','generic',e['imagePullSecret'],'-n',ns,'--type=kubernetes.io/dockerconfigjson','--from-file=.dockerconfigjson=/dev/stdin','-o','name'],pull,private=True)

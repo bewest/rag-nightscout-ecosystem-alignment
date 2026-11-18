@@ -12,6 +12,14 @@ import frozen
 
 
 class Startup(unittest.TestCase):
+    def test_role_diagnostic_keeps_only_the_source_contract(self):
+        raw = b'Evaluator startup refused {"targetRole":"evaluator","checkPhase":"STREAM_STARTUP","causeCode":"UNCLASSIFIED"}'
+        self.assertEqual(startup.role_diagnostics(raw), [
+            {'targetRole': 'evaluator', 'checkPhase': 'STREAM_STARTUP', 'causeCode': 'UNCLASSIFIED'},
+        ])
+        extra = raw[:-1] + b',"message":"ignored"}'
+        self.assertEqual(startup.role_diagnostics(extra), [])
+
     def test_cohort_window_selects_only_serving_cohort_and_keeps_ready_and_work_gates(self):
         source=Path(__file__).with_name('lifecycle.py')
         nodes=[n for n in ast.parse(source.read_text()).body if isinstance(n,ast.FunctionDef) and n.name in ('ready','workload_ready','startup_window')]

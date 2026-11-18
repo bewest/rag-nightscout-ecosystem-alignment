@@ -557,6 +557,21 @@ the existing `cohortReadySeconds` serving window; an elapsed readiness window
 inside the work deadline produces a role-specific UNMEASURED signal. Clinical
 completion, authority and isolation gates retain their existing requirements.
 
+For a scheduler-placed fixture, set `schedulerPlacement` in the lifecycle
+configuration and record `placementMode` as `scheduler` in the bound preflight
+envelope. Use the binding's `placement` and `placementByWorkload` inputs for
+native affinity, spread preferences and any existing-worker restrictions.
+The four serving roles can use preferred anti-affinity on their existing
+component and run labels. Their private Services stay stable across workers.
+Use digest-pinned images with the fixture's private pull credential.
+
+The lifecycle records the scheduler's Pod conditions. Before ordinary traffic,
+the attachment retains the actual Pod UIDs and assigned nodes in
+`scheduler-placement.json`. The deploy fit check uses current node usage
+and a complete Pod request census. Bound fixture Pods already count toward
+that census. The finite grant follows the observed placement and the normal
+roster checks reject changes before traffic.
+
 Current P platform receipts select `platformVerification: "startup-v2"` in both
 the source contract and candidate inventory. Their role rows contain exactly
 `role` and `generation`, without an expiry lease. Legacy candidate contracts
