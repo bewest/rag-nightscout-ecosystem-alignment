@@ -216,8 +216,12 @@ run configuration, not a new approval or reporting step. See the
 Milestones run with background agents without asking each time. Give each lane a complete
 capability or an explicit milestone criterion, one owner and one integration boundary. Keep its
 helper changes, fixture repairs and authored controls in that lane; use another agent when the
-work is independently deliverable or resolves a material unknown. Reuse an ongoing chat through
-its fixes rather than starting a new one for each test or commit.
+work is independently deliverable or resolves a material unknown. Keep entered tests with their
+current owner. Use fresh context and a suitable model for a new phase, or when context pressure,
+repeated churn or difficulty finishing warrants a successor. Transfer ownership explicitly and
+archive the predecessor only after accepted handoff and an idle, released resource boundary; see
+the [phase ownership decision](docs/30-design/tenancy/multitenancy-decisions.md#fresh-context-phase-ownership).
+An individual test or commit does not require a new chat.
 
 Every brief is self-contained: the outcome/criterion, relevant measured findings and source head,
 expected focused checks and meaningful break-it controls, remaining decision boundaries, and the
