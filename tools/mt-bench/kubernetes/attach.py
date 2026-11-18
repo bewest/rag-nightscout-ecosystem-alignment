@@ -71,8 +71,10 @@ try:
     assert edge_id()==edgeuid
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
     if control.get('resourcePhasePreflight'):
+        import phase_source_private
         cfg['resourcePhasePlan']={'plan':control['resourcePhasePreflight']['plan'],
-                                  'retirement':ref(live/'provision-retirement.json')}
+                                  'retirement':ref(live/'provision-retirement.json'),
+                                  'privateSource':phase_source_private.write_scope(control,cfg,e,live)}
     write(live/'input.json',cfg)
     instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
               'bindingReceipt':ref(Path(control['bindingDirectory'])/'binding.json'),'delivery':control['delivery'],
