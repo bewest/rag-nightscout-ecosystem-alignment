@@ -31,7 +31,12 @@ class Startup(unittest.TestCase):
             with scope['startup_window']('cohort',window):
                 if pass_:
                     self.assertTrue(scope['ready']('cohort','cohort',window)['status']['conditions'])
+                elif work>window:
+                    # Window elapsed inside the work window: recorded signal, run continues.
+                    self.assertIsNone(scope['ready']('cohort','cohort',window))
+                    self.assertEqual(records['readiness-signal-cohort.json']['verdict'],'UNMEASURED')
                 else:
+                    # The run's own work deadline is still a hard stop.
                     with self.assertRaisesRegex(RuntimeError,'READY_DEADLINE_cohort'):
                         scope['ready']('cohort','cohort',window)
             self.assertEqual(records['startup-window-cohort.json']['effectiveWindowSeconds'],min(window,work))

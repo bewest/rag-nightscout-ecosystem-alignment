@@ -73,6 +73,13 @@ def tier_plan(config):
         'sourceAdmission': ('frozen acceptance receipt' if tier == 'acceptance' else
                             'runner-materialized PENDING tuple' if parsed.freeze == GENERATED_RECEIPT
                             else 'supplied diagnostic receipt'),
+        'effectiveLimits': {
+            'workSeconds': {'value': config['workSeconds'], 'maximum': None if config['workSeconds'] is None else (workload_inputs.MAX_SECONDS if tier == 'discovery' else 86400),
+                            'origin': 'authored' if config['workSeconds'] is not None else 'to-completion'},
+            'cleanupSeconds': {'value': config['cleanupSeconds'], 'maximum': workload_inputs.MAX_SECONDS if tier == 'discovery' else 3600,
+                               'origin': 'authored; a finite cleanup is always required'},
+            'drainSeconds': {'value': effective.get('cadence', {}).get('drainSeconds'),
+                             'origin': 'authored' if 'drainSeconds' in effective.get('cadence', {}) else 'run work deadline'}},
         'resourceOrigin': ('configured diagnostic allocation' if effective['resources'] else
                            'uncapped Compose services; host limits may apply'),
         'coverage': {
@@ -184,6 +191,10 @@ def validate_config(config):
     cadence = a.cadence_options(parsed)
     require(not a.preload_convergence.option(parsed) or local_to_completion,
             'M7_PRELOAD_LOCAL_OWNED_TO_COMPLETION_REQUIRED')
+    # The run stage gets no work deadline in a to-completion run, so a catch-up
+    # drain needs its own authored window. Refused here, before any actor exists.
+    require(parsed.evaluator_catchup is None or not local_to_completion or 'drainSeconds' in cadence,
+            'M7_DRAIN_WORK_DEADLINE_REQUIRED')
     require(not local_to_completion or {'setupSeconds', 'drainSeconds'} <= cadence.keys(),
             'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED')
     authored_windows = ('warmupSeconds', 'idleSeconds', 'loadSeconds', 'setupSeconds', 'drainSeconds')

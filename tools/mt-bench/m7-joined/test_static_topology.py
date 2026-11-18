@@ -177,8 +177,6 @@ class StaticTopology(unittest.TestCase):
                                  ('pgstream-topology','colocated-v1','M7_STATIC_DIAGNOSTIC_SCOPE'),('completion-contract','evaluator-work-v1','M7_STATIC_DIAGNOSTIC_SCOPE')):
             bad=config();bad['prepare'][field]=value
             with self.assertRaisesRegex(RuntimeError,code):parsed(bad)
-        bad=config();bad['prepare'].pop('diagnostic-resource-allocation')
-        with self.assertRaisesRegex(RuntimeError,'M7_STATIC_EXPLICIT_ALLOCATION'):parsed(bad)
         good=config();parsed(good)
 
     def test_single_worker_and_api_do_not_require_selected_service_caps(self):
@@ -188,10 +186,12 @@ class StaticTopology(unittest.TestCase):
         args = parsed(cfg)
         self.assertEqual(s.option(args)['staticTopology'], {'kind': s.KIND, 'workers': 1})
         self.assertIsNone(rc.from_args(args, a.instrument()['sha256'])['resources'])
+        # Multi-worker or multi-API without an allocation is an explained
+        # default (uncapped Compose services), not a refusal.
         for changes in ({'static-workers': 2}, {'replicas': 2}):
             other = {**cfg, 'prepare': {**cfg['prepare'], **changes}}
-            with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_EXPLICIT_ALLOCATION'):
-                parsed(other)
+            self.assertEqual(s.option(parsed(other))['staticTopology']['kind'], s.KIND)
+            self.assertIsNone(rc.from_args(parsed(other), a.instrument()['sha256'])['resources'])
         self.assertEqual(s.option(parsed(cfg))['staticTopology']['workers'], 1)
 
     def test_each_published_exact_pair_has_config_receipt_and_unknown_pair_refusal(self):

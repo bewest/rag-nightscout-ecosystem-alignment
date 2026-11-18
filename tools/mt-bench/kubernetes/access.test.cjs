@@ -17,7 +17,17 @@ const assert=require('node:assert/strict'),http=require('node:http'),{EventEmitt
  try{
   await green();leakHttp=true;await assert.rejects(green,/K8S_CROSS_TENANT_AUTHORITY/);leakHttp=false;await green();
   leakFrame=true;await assert.rejects(green,/K8S_FOREIGN_SOCKET_FRAME/);leakFrame=false;await green();
-  connected=false;await assert.rejects(green,/K8S_SOCKET_REFUSAL_UNMEASURED/);connected=true;await green();
-  console.log('RED_RESTORED HTTP cross-authority, foreign socket frame, lost socket observation; loopback HTTP and synthetic socket boundary');
+  connected=false;
+  const lost=await run(tenants,new URL('http://127.0.0.1:'+server.address().port),io,{observeMs:20});
+  assert.equal(lost.verdict,'UNMEASURED');assert.equal(lost.unmeasuredCases,2);
+  assert.ok(lost.records.some(r=>r.case==='cross-token-socket'&&r.verdict==='UNMEASURED'));
+  // The socket-free isolation checks still ran and stayed red-capable.
+  assert.ok(lost.records.some(r=>r.case==='cross-token-host'));
+  leakHttp=true;await assert.rejects(()=>run(tenants,new URL('http://127.0.0.1:'+server.address().port),io,{observeMs:20}),/K8S_CROSS_TENANT_AUTHORITY/);leakHttp=false;
+  // Warm-up: an untyped 403 for the whole warm window is UNMEASURED, never PASS; the run continues.
+  const refused=await run(tenants,new URL('http://127.0.0.1:'+server.address().port),()=>{const s=new EventEmitter();s.close=()=>{};queueMicrotask(()=>s.emit('connect_error',{description:403}));return s;},{observeMs:20,warmupMs:1500});
+  assert.equal(refused.verdict,'UNMEASURED');assert.equal(refused.warmup.observations[0].verdict,'UNMEASURED');assert.ok(refused.warmup.observations[0].attempts>1);
+  connected=true;await green();
+  console.log('RED_RESTORED HTTP cross-authority, foreign socket frame; lost or warming socket is UNMEASURED and continues; loopback HTTP and synthetic socket boundary');
  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

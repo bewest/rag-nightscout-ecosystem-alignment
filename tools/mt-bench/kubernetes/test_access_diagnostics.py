@@ -9,33 +9,6 @@ from test_adapter import k as adapter, execute
 
 
 class AccessDiagnostics(unittest.TestCase):
-    def test_socket_warmup_failure_retains_original_refusal_and_bounded_prior_witness(self):
-        code = 'K8S_SOCKET_PREWARM_UNMEASURED'
-        before = {'tenantIndex': 0, 'attempts': 1, 'refused403': 0, 'elapsedMs': 8, 'verdict': 'CONNECTED'}
-        row = {'tenantIndex': 1, 'stage': 'warmup', 'engineOpened': False, 'elapsedMs': 6000,
-               'firstError': {'errorClass': 'TransportError', 'status': 403, 'code': None},
-               'attempts': 4, 'refused403': 4, 'prior': [before]}
-        payload = {'socketEvidence': row}
-        self.assertEqual(execute.socket_failure(code, json.dumps(payload).encode()), payload)
-        before['credential'] = 'private marker'
-        self.assertEqual(execute.socket_failure(code, json.dumps(payload).encode()), {})
-
-    def test_spawned_socket_refusal_retains_only_eligible_transport_fields(self):
-        sample = {'socketEvidence': {'tenantIndex': 0, 'stage': 'connect', 'engineOpened': False, 'elapsedMs': 5000,
-                                     'firstError': {'errorClass': 'TransportError', 'status': 502, 'code': None}}}
-        code = 'K8S_SOCKET_REFUSAL_UNMEASURED'
-        def invoke(value):
-            stdout = json.dumps(value)
-            script = f'import sys; print({stdout!r}); print({code!r}, file=sys.stderr); sys.exit(1)'
-            captured = {}
-            with patch.object(adapter, 'deadline', return_value=5), self.assertRaisesRegex(adapter.Refused, code):
-                execute.finite({}, [sys.executable, '-B', '-c', script], seconds=5,
-                               failure_stdout=lambda name, raw: captured.update(execute.socket_failure(name, raw)))
-            return captured
-        self.assertEqual(invoke(sample), sample)
-        sample['socketEvidence']['firstError']['message'] = 'private marker'
-        self.assertEqual(invoke(sample), {})
-
     def test_retains_fixed_phase_type_and_source_frames_without_input_values(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -80,3 +53,28 @@ class AccessDiagnostics(unittest.TestCase):
                 result = execute.access(root, c, {}, object())
             self.assertEqual(steps, ['observe', 'actor', 'witness', 'observe'])
             self.assertEqual(result['namespaceUid'], 'owned')
+
+            # Warm-up that never connected is a recorded UNMEASURED signal; the stage continues.
+            (root/'access.json').unlink()
+            warm = {'verdict': 'UNMEASURED', 'tenantRosterSize': 2, 'witnessTenants': ['first', 'last'],
+                    'warmup': {'budgetMs': 5000, 'observations': [
+                        {'tenantIndex': i, 'attempts': 3, 'refused403': 3, 'elapsedMs': 5000, 'verdict': 'UNMEASURED'} for i in (0, 1)]}}
+            with patch.object(adapter.candidate, 'require'), \
+                 patch.object(adapter, 'active_baseline', return_value=baseline), \
+                 patch.object(execute, 'roster', return_value=roster), \
+                 patch.object(execute, 'actor'), patch.object(execute, 'environment', return_value={}), \
+                 patch.object(adapter, 'observe'), \
+                 patch.object(execute, 'finite', return_value=json.dumps(warm).encode()):
+                signal = execute.access(root, {**c, 'accessSetupSeconds': 5}, {}, object())
+            self.assertEqual(signal['verdict'], 'UNMEASURED')
+            # A malformed warm-up report is still refused, never read as PASS.
+            (root/'access.json').unlink()
+            warm['warmup']['observations'][0]['verdict'] = 'PASS'
+            with patch.object(adapter.candidate, 'require'), \
+                 patch.object(adapter, 'active_baseline', return_value=baseline), \
+                 patch.object(execute, 'roster', return_value=roster), \
+                 patch.object(execute, 'actor'), patch.object(execute, 'environment', return_value={}), \
+                 patch.object(adapter, 'observe'), \
+                 patch.object(execute, 'finite', return_value=json.dumps(warm).encode()):
+                with self.assertRaisesRegex(adapter.Refused, 'ACCESS_REPORT_INVALID'):
+                    execute.access(root, {**c, 'accessSetupSeconds': 5}, {}, object())

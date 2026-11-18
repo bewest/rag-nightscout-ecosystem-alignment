@@ -553,7 +553,7 @@ def rate_offer(m):
 
 
 def attach(args):
-    static_selection=static_topology.option(args,require_allocation=False)
+    static_selection=static_topology.option(args)
     require(not static_selection or getattr(args,'runtime_owner',None),'M7_STATIC_ATTACH_OWNER_REQUIRED')
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     stream_topology.ack_option(args)
@@ -610,10 +610,6 @@ def attach(args):
         if static_selection:
             require(m.get('staticBuildReceiptSha256') == runtime.get('staticBuildReceiptSha256'),
                     'M7_STATIC_ATTACH_RUNTIME_MISMATCH')
-            topology = static_selection['staticTopology']
-            if topology['workers'] > 1 or m['replicas'] > 1:
-                require(isinstance(runtime.get('diagnosticResources',{}).get('profile'),dict),
-                        'M7_STATIC_EXPLICIT_ALLOCATION')
         if 'diagnosticResources' in runtime:m['diagnosticResources']=runtime['diagnosticResources']
         commissioning_wal.inherit(args,m,runtime,runtime_directory)
         node_observation.inherit(args,m,runtime,runtime_directory)

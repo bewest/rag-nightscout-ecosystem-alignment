@@ -379,44 +379,10 @@ def warmup_counts(row):
             and 0 <= row['refused403'] <= row['attempts'] and row['elapsedMs'] >= 0)
 
 
-def socket_failure(code, raw):
-    warmup = code == 'K8S_SOCKET_PREWARM_UNMEASURED'
-    if (not warmup and code != 'K8S_SOCKET_REFUSAL_UNMEASURED') or len(raw) > 1024:
-        return {}
-    try:
-        row = json.loads(raw)['socketEvidence']
-        first = row['firstError']
-        fields = {'tenantIndex', 'stage', 'engineOpened', 'firstError', 'elapsedMs'}
-        stages = ('warmup',) if warmup else ('connect', 'observation-budget', 'disconnect')
-        if warmup:
-            fields.update(('attempts','refused403','prior'))
-            prior = row['prior']
-            if not (warmup_counts(row) and isinstance(prior,list) and len(prior)==row['tenantIndex']
-                    and all(isinstance(before,dict)
-                            and set(before)=={'tenantIndex','attempts','refused403','elapsedMs','verdict'}
-                            and type(before['tenantIndex']) is int and before['tenantIndex']==0
-                            and before['verdict']=='CONNECTED' and warmup_counts(before) for before in prior)):
-                return {}
-        if (set(row) == fields
-                and type(row['tenantIndex']) is int and row['tenantIndex'] in (0, 1)
-                and row['stage'] in stages
-                and type(row['engineOpened']) is bool and type(row['elapsedMs']) is int and row['elapsedMs'] >= 0):
-            if first is None or (set(first) == {'errorClass', 'status', 'code'}
-                    and first['errorClass'] in ('Error', 'TransportError', 'TypeError', 'Other')
-                    and (first['status'] is None or type(first['status']) is int and 100 <= first['status'] <= 599)
-                    and first['code'] in (None, 'ECONNREFUSED', 'ECONNRESET', 'EHOSTUNREACH', 'ENETUNREACH',
-                                          'ENOTFOUND', 'EAI_AGAIN', 'ETIMEDOUT', 'EPIPE')):
-                return {'socketEvidence': row}
-    except (ValueError, KeyError, TypeError):
-        pass
-    return {}
-
-
 def access(d, c, objects, client):
     k.need(not (d / 'access.json').exists() and not (d / 'access-failure.json').exists(),
            'ACCESS_OUTPUT_EXISTS')
     phase = 'candidate-receipt'
-    witness_failure = {}
     try:
         k.candidate.require(k, d, c)
         phase = 'verified-roster'
@@ -430,17 +396,18 @@ def access(d, c, objects, client):
         setup = c.get('accessSetupSeconds')
         raw = finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'],
                         c['baseUrl'], c['driver']['dependencies'], *([setup] if setup else [])],
-                     env=environment(c, d), seconds=60+(setup or 0),
-                     failure_stdout=lambda code, raw: witness_failure.update(socket_failure(code, raw)))
+                     env=environment(c, d), seconds=60+(setup or 0))
         phase = 'witness-document'
         value = json.loads(raw)
         k.need(isinstance(value, dict), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
         if setup is not None:
             warmup = value.get('warmup', {})
             witnesses = warmup.get('observations',[])
+            # A socket that did not warm in the window is a recorded UNMEASURED
+            # signal (the witness reports it per tenant); the report shape is still required.
             k.need(warmup.get('budgetMs') == setup*1000 and len(witnesses)==2 and
-                   all(warmup_counts(row) and row.get('tenantIndex')==index and row.get('verdict')=='CONNECTED'
-                       for index,row in enumerate(witnesses)), 'SOCKET_PREWARM_UNMEASURED', 'UNMEASURED')
+                   all(warmup_counts(row) and row.get('tenantIndex')==index and row.get('verdict') in ('CONNECTED','UNMEASURED')
+                       for index,row in enumerate(witnesses)), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
         phase = 'after-observe'
         k.observe(c, objects, client, baseline)
         phase = 'witness-roster'
@@ -453,7 +420,7 @@ def access(d, c, objects, client):
         return value
     except Exception as error:
         try:
-            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error), **witness_failure})
+            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error)})
         except OSError:
             pass
         raise
@@ -830,7 +797,9 @@ def authority(d, c):
     access_file = d / 'access.json'
     k.need(access_file.is_file(), 'AUTHORITY_UNMEASURED', 'UNMEASURED')
     access_result = k.document(access_file)
-    k.need(access_result.get('verdict') == 'PASS' and access_result.get('crossTenantChecks') == 2, 'AUTHORITY_REFUSED')
+    # UNMEASURED (socket not observable) continues with the signal recorded; only a
+    # measured isolation or authorization failure refuses here.
+    k.need(access_result.get('verdict') in ('PASS', 'UNMEASURED') and access_result.get('crossTenantChecks') == 2, 'AUTHORITY_REFUSED')
     k.need(access_result.get('pins')==c['pins'] and access_result.get('context')==c['context'] and access_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'AUTHORITY_SOURCE_CHANGED')
     k.need((d/'policy.json').is_file(),'POLICY_UNMEASURED','UNMEASURED')
     policy_result=k.document(d/'policy.json')

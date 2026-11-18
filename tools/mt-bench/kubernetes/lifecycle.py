@@ -201,6 +201,12 @@ def ready(label,typ,timeout,convergence=None):
                     'recordedFailures':len(failures)})
             return ready_pod
         time.sleep(min(2,max(0,until-time.time())))
+    if typ=='cohort' and time.time()<work:
+        # The serving cohort's readiness window elapsed inside the run's work window.
+        # Readiness is a signal under readiness-serve-then-warm: record it, continue.
+        put('readiness-signal-cohort.json',{'verdict':'UNMEASURED','reason':'READY_WINDOW_ELAPSED',
+            'waitedSeconds':round(time.time()-started,3)})
+        return None
     raise RuntimeError('READY_DEADLINE_'+typ)
 
 def workload_ready(stage):
