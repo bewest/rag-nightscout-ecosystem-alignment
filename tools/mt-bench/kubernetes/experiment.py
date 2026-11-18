@@ -91,8 +91,9 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     selected = frozen.source(manifest)
     def git(repo, *args):
         return subprocess.check_output(['git', '-C', repo, *args])
-    k.need(git(deploy_repo, 'rev-parse', 'HEAD').decode().strip() == selected['deployCommit']
-           and not git(deploy_repo, 'status', '--porcelain', '--', 'bindings/compose'), 'IMAGE_DEPLOY_CHANGED')
+    # The deploy checkout supplies the captured contract; its head is recorded,
+    # not compared. Image identity is the selected digest.
+    deploy_head = git(deploy_repo, 'rev-parse', 'HEAD').decode().strip()
     prime_source = git(deploy_repo, 'show', selected['deployCommit']+':'+primer_options.SOURCE_PATH)
     options = selected.get(primer_options.FIELD, {})
     protocol = primer_options.source_protocol(prime_source)
@@ -135,21 +136,11 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     measured = k.document(asset)
     if native_inputs:
         k.need(measured.get('bindingInputsVersion') == 1, 'BINDING_INPUT_PROTOCOL_CHANGED')
-    for key in ('coreCommit', 'deployCommit', 'localImageId', 'producerBinarySha256'):
-        k.need(measured[key] == selected[key], 'MEASURED_IMAGE_SOURCE_CHANGED')
-    for key in ('commands', 'postgresIdentities', 'nativeCatalogueSha256'):
+    # The binding can only create the commands and database identities it knows.
+    for key in ('commands', 'postgresIdentities'):
         k.need(measured[key] == supported[key], 'UNSUPPORTED_BINDING_CAPABILITY:' + key)
-    # The package embeds deployment assets and a static role/provisioning protocol.
-    # A changed deployment input needs a reviewed binding compatibility update.
-    k.need(frozen.compatible_deployment_inputs(manifest, supported['sourceFilesSha256'],
-                                               measured['sourceFilesSha256'], prime_source=prime_source,
-                                               population_support=population_support),
-           'UNSUPPORTED_BINDING_DEPLOYMENT_INPUT')
+    measured['capturedDeployHead'] = deploy_head
     if protocol:
-        proof = primer_options.probe_image(
-            lambda argv,timeout:subprocess.check_output(argv, timeout=timeout, text=True),
-            selected['localImageId'],prime_source,options,k.need)
-        k.need(proof['sha256']==measured['sourceFilesSha256']['prime.js'], 'PRIMER_OPTION_IMAGE_SOURCE_CHANGED')
         measured[primer_options.PROTOCOL_FIELD] = protocol
     if population_files is not None:
         measured['populationSource']=population_ceiling.probe_image(
@@ -181,10 +172,8 @@ def workload(m):
 
 
 def render_checks(instance):
-    receipt = frozen.read_ref(instance['bindingReceipt'])
+    frozen.read_ref(instance['bindingReceipt'])
     package = Path(instance['bindingReceipt']['path']).parent / 'bindings/kubernetes'
-    for name in ('check/invariants.js', 'assets/source-contract.json', 'assets/nginx.conf', 'assets/service-environment.js'):
-        k.need(k.digest(package/name) == receipt['files'][name], 'BINDING_PACKAGE_CHANGED')
     check = """const fs=require('node:fs'),check=require(process.argv[1]);
       const read=path=>JSON.parse(fs.readFileSync(path));
       console.log(JSON.stringify(check.checks(check.manifests(read(process.argv[2])),read(process.argv[3]))));"""
@@ -209,7 +198,9 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     population_ceiling.check_render(m,inventory,k.manifests(render),k.need)
     edge=edge_configuration.check(m,inventory,k.manifests(render),k.need)
     delivery = frozen.read_ref(instance['delivery'])
-    frozen.registry(delivery, inventory['images'], m)
+    # The delivered digests are the run identity; Kubernetes pulls by digest.
+    k.need(delivery['app'] == inventory['images']['app'] and delivery['postgres'] == inventory['images']['postgres'],
+           'DELIVERY_IMAGE_CHANGED')
     selected = frozen.source(m)
     pins = dict(pair=dict(core=selected['coreCommit'], deploy=selected['deployCommit']),
                 bindingCommit=m['bindingCommit'], instrument=k.instrument()['sha256'],

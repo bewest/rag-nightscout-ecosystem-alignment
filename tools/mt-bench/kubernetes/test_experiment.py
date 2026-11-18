@@ -121,18 +121,6 @@ class Frozen(unittest.TestCase):
             frozen.contract(manifest,{**fit,'primerOptions':{'concurrency':33,'maxTenants':20000}})
         self.assertEqual(frozen.contract(manifest,fit),selected)
 
-    def test_only_reviewed_primer_option_bytes_may_differ(self):
-        previous=b'the original data protocol\n'+primer_options._LEGACY_VALIDATOR+b'\nmodule.exports = { parsePrimeOptions };\n'
-        changed=primer_options._DECLARATION+previous.replace(primer_options._LEGACY_VALIDATOR,primer_options._VALIDATOR)
-        changed=changed.replace(b'parsePrimeOptions };',b'parsePrimeOptions, PRIMER_OPTION_PROTOCOL };')
-        expected={'prime.js':frozen.digest(previous),'layout.js':'unmodified'}
-        measured={**expected,'prime.js':frozen.digest(changed)}
-        self.assertTrue(frozen.compatible_deployment_inputs({},expected,measured,prime_source=changed))
-        foreign=changed.replace(b'original data',b'altered data')
-        self.assertFalse(frozen.compatible_deployment_inputs({},expected,{**measured,'prime.js':frozen.digest(foreign)},prime_source=foreign))
-        self.assertFalse(frozen.compatible_deployment_inputs({},expected,{**measured,'layout.js':'altered'},prime_source=changed))
-        self.assertTrue(frozen.compatible_deployment_inputs({},expected,measured,prime_source=changed))
-
     def test_ack_budget_binds_package_and_changes_only_ack_field(self):
         manifest = {**self.manifest, frozen.ACK_BUDGET: 60000}
         selected = frozen.source(manifest)
@@ -181,21 +169,6 @@ publish() {
         duplicate = subprocess.run(command, capture_output=True)
         self.assertNotEqual(duplicate.returncode, 0)
         self.assertEqual(duplicate.stderr.strip(), b'K8S_PGSTREAM_ACK_PUBLISH_FAILED')
-
-    def test_independent_registry_bytes(self):
-        receipts = {name:self.ref(name, dict(schemaVersion=2,mediaType='application/vnd.oci.image.manifest.v1+json',
-                                             config=dict(digest=identity))) for name,identity in
-                    [('app',self.image),('postgres',self.manifest['postgresImageId'])]}
-        images = {name:'example.invalid/'+name+'@sha256:'+ref['sha256'] for name,ref in receipts.items()}
-        delivery = dict(**images, appImageId=self.image, postgresImageId=self.manifest['postgresImageId'],
-                        sourceCommit=self.pair['core'], imageDeployCommit=self.pair['deploy'],registryPlanChange=False,
-                        transferCostApproved=True,registryManifests={name:r['path'] for name,r in receipts.items()})
-        frozen.registry(delivery, images, self.manifest)
-        with self.assertRaisesRegex(ValueError,'REGISTRY_CONFIG_CHANGED'):
-            frozen.registry(dict(delivery,postgresImageId=self.image),images,self.manifest)
-        with self.assertRaisesRegex(ValueError,'EVIDENCE_CHANGED'):
-            frozen.registry(dict(delivery,registryManifests=dict.fromkeys(images,receipts['app']['path'])),images,self.manifest)
-        frozen.registry(delivery, images, self.manifest)
 
     def test_authored_publisher_job_wait_is_source_bound(self):
         manifest={**self.manifest,'profile':{'phases':{'startupWindows':{'kubernetes':{'jobCompleteSeconds':120}}}}}

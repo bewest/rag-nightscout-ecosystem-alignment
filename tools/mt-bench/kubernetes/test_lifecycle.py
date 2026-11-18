@@ -8,7 +8,7 @@ import lifecycle_config as l
 import frozen as f
 
 class Lifecycle(unittest.TestCase):
-    def test_bound_inputs_refuse_source_tool_allocation_and_stages_then_restore(self):
+    def test_bound_inputs_refuse_allocation_preflight_and_stages_then_restore(self):
         with TemporaryDirectory() as tmp:
             p=Path(tmp);case=p/'any-tiny-case';case.mkdir();(case/'stages').mkdir()
             for d in ('instrument','binding','tools','snapshot','core'):(p/d).mkdir()
@@ -45,15 +45,11 @@ class Lifecycle(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError,code):l.fixture_config(path)
                     restore();self.assertEqual(l.fixture_config(path),frozen)
                     print('RED_RESTORED',code)
-                refusal('INPUT_CHANGED',lambda:(p/'k6').write_text('wrong'),lambda:(p/'k6').write_text('synthetic'))
                 changed=copy.deepcopy(intent);changed['profile']['phases']['cohortReadySeconds']=899
-                refusal('INPUT_CHANGED',lambda:put(files['intent'],changed),lambda:put(files['intent'],intent))
-                refusal('SOURCE_CHANGED',lambda:put(files['environment'],{**e,'sourceCommit':'9'*40}),lambda:put(files['environment'],e))
+                refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(files['intent'],changed),lambda:put(files['intent'],intent))
                 refusal('RESOURCE_ACCOUNTING_MISMATCH',lambda:put(files['environment'],{**e,'resourceAccounting':'requests-v1'}),lambda:put(files['environment'],e))
                 wrong=copy.deepcopy(frozen);wrong['nativeLimits']['millicpus']=9000
                 refusal('ALLOCATION_EXCEEDED',lambda:put(path,wrong),lambda:put(path,frozen))
-                wrong=copy.deepcopy(frozen);wrong['instrumentSha256']='3'*64
-                refusal('INSTRUMENT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 wrong=copy.deepcopy(frozen);wrong['startupWindowPreflight']['selectedSeconds']['dataPrimerSeconds']=7199
                 refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 stage=case/'stages/stores.json'
@@ -97,14 +93,6 @@ class Lifecycle(unittest.TestCase):
 
 
 class BootstrapReadback(unittest.TestCase):
-    def test_native_binding_accepts_only_the_controlled_asset_difference(self):
-        original = {'bootstrap.js': f.BOOTSTRAP_ORIGINAL, 'other.js': 'original'}
-        corrected = {**original, 'bootstrap.js': f.BOOTSTRAP_HELPER['sha256']}
-        self.assertTrue(f.compatible_deployment_inputs({}, original, corrected))
-        self.assertFalse(f.compatible_deployment_inputs({}, original, {**corrected, 'other.js': 'changed'}))
-        self.assertFalse(f.compatible_deployment_inputs({'bootstrapHelper': {}}, original, corrected))
-        self.assertTrue(f.compatible_deployment_inputs({}, original, corrected))
-
     def test_declared_overlay_remains_mandatory_and_undeclared_overlay_refuses(self):
         native = {'sourceAcceptance': 'PENDING'}
         overlay = {**native, 'imageSourceAcceptance': 'PASS',

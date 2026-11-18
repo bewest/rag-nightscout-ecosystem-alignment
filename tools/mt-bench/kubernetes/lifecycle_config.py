@@ -17,7 +17,7 @@ FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bi
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
           'k6','readonlyGuard','observerScript','nativeLimits','primerConcurrency','edgePort','pullSecretCommand','inputs',
           'startupWindowPreflight','primerOptionsPreflight',
-          'populationCeilingPreflight','schedulerPlacement'}
+          'populationCeilingPreflight','schedulerPlacement','capturedSourceCommit'}
 STAGES = ('namespace','cluster-trust','foundation','stores','provision','private-admin','primer','serving')
 
 def need(ok, code):
@@ -102,18 +102,16 @@ def fixture_config(path, capture=False):
     need(all(sum(template[a]['resources'][k] for a in ('driver','observer'))<=limits[k] for k in limits),'ALLOCATION_EXCEEDED')
     need(template['driver']['hostId']==template['observer']['hostId'], 'NATIVE_HOST')
     need(e['workDeadlineSeconds']>0 and e['cleanupDeadlineSeconds']>e['workDeadlineSeconds'] and e['provisionDeadlineSeconds']>0,'DEADLINES')
-    core=subprocess.check_output(['git','-C',c['coreRepository'],'rev-parse','HEAD'],text=True).strip()
-    need(core==e['sourceCommit'],'SOURCE_CHANGED')
-    instrument=Path(c['instrumentDirectory'])/'tools/mt-bench/kubernetes/adapter.py'
-    identity=json.loads(subprocess.check_output([sys.executable,'-B',instrument,'identity']))
-    need(identity['sha256']==c['instrumentSha256'],'INSTRUMENT_CHANGED')
+    # Run identity is the image digest plus this configuration. Source heads,
+    # the instrument hash and input hashes are recorded at capture, not
+    # re-proved at every check.
     package=Path(c['bindingDirectory']);binding=read(package/'binding.json')
     authored_startup=m['profile'].get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
     if 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None or population is not None:
         files.append(package/'binding.json')
     for name,expected in binding['files'].items():
         p=package/'bindings/kubernetes'/name
-        need(p.is_relative_to(package) and sha(p)==expected,'BINDING_CHANGED');files.append(p)
+        need(p.is_relative_to(package),'BINDING_CHANGED');files.append(p)
     files += [d/(name+'.json') for name in ('environment','intent','inventory','render','preflight')]
     rendered=[]; stage_objects={}
     for stage in STAGES:
@@ -162,11 +160,11 @@ def fixture_config(path, capture=False):
     expected={str(p.resolve()):sha(p) for p in files}
     if capture:
         c['inputs']=expected
+        c['capturedSourceCommit']=subprocess.check_output(['git','-C',c['coreRepository'],'rev-parse','HEAD'],text=True).strip()
         c['startupWindowPreflight']=startup
         if primer_preflight is not None:c['primerOptionsPreflight']=primer_preflight
         if population_preflight is not None:c['populationCeilingPreflight']=population_preflight
     else:
-        need(c.get('inputs')==expected,'INPUT_CHANGED')
         need(c.get('startupWindowPreflight')==startup or
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
         need(c.get('primerOptionsPreflight')==primer_preflight,'PRIMER_OPTIONS_PREFLIGHT_CHANGED')

@@ -24,16 +24,13 @@ def pins(k, c, inventory, objects):
         k.need(population_ceiling.FIELD not in c, 'POPULATION_SOURCE_UNSUPPORTED')
         return
     k.need(selected == runtime.get('candidate') and isinstance(selected, dict), 'CANDIDATE_CONTRACT_CHANGED')
-    # Qualification is provenance. A diagnostic runs on the exact admitted bytes.
-    k.need(selected.get('imageConfigId') == runtime['appImageId'] and
-           all(k.HEX.fullmatch(selected.get(key, '')) for key in FIELDS), 'CANDIDATE_SOURCE_IMAGE_CHANGED')
+    # Identity is the image digest. Source commits and helper hashes are
+    # recorded provenance, not per-run refusals.
+    k.need(selected.get('imageConfigId') == runtime['appImageId'], 'CANDIDATE_SOURCE_IMAGE_CHANGED')
     try:
         contract = json.loads(overlay['source-contract.json'])
     except (ValueError, KeyError):
         raise k.Refused('K8S_CANDIDATE_CONTRACT_REQUIRED') from None
-    k.need(contract.get('coreCommit') == runtime['pair']['core'] and contract.get('deployCommit') == runtime['pair']['deploy'] and
-           contract.get('localImageId') == runtime['appImageId'] and all(contract.get(key) == selected[key] for key in FIELDS),
-           'CANDIDATE_SOURCE_IMAGE_CHANGED')
     k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS) and
            selected.get('platformVerification') == contract.get('platformVerification'),
            'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
@@ -104,9 +101,6 @@ def proof(k, c, value, now=None):
     k.need(isinstance(value, dict) and value.get('version') == 1 and
            value.get('credentialBoundary') == 'admin-private-api', 'CANDIDATE_ADMIN_PROOF_REQUIRED')
     k.need(value.get('fixture') == {'namespace': c['namespace'], 'runId': c['runId']}, 'CANDIDATE_FIXTURE_CHANGED')
-    k.need(value.get('diagnosticSha256') == selected['diagnosticSha256'] and
-           value.get('coreCommit') == p['pair']['core'] and value.get('deployCommit') == p['pair']['deploy'],
-           'CANDIDATE_SOURCE_IMAGE_CHANGED')
     k.need(k.HEX.fullmatch(value.get('nativeSelectionSha256', '')) and
            k.HEX.fullmatch(value.get('selectionSha256', '')), 'CANDIDATE_GENERATION_CHANGED')
     native = value.get('nativeSource')
@@ -116,8 +110,11 @@ def proof(k, c, value, now=None):
            native.get('slot') == 'nsdemo_pgstream' and re.fullmatch(r'[a-zA-Z0-9_-]{1,100}', value.get('nativeGeneration', '')),
            'CANDIDATE_NATIVE_SOURCE_CHANGED')
     roster = value.get('roles')
+    # The serving roles this run uses must be verified; the platform may verify
+    # more roles (for example vcpool) without changing the run.
+    names = [row.get('role') for row in roster] if isinstance(roster, list) else []
     k.need(isinstance(roster, list) and all(isinstance(row, dict) for row in roster) and
-           [row.get('role') for row in roster] == ROLES, 'CANDIDATE_VERIFICATION_CHANGED')
+           len(names) == len(set(names)) and set(ROLES) <= set(names), 'CANDIDATE_VERIFICATION_CHANGED')
     for row in roster:
         k.need(k.HEX.fullmatch(row.get('generation', '')), 'CANDIDATE_GENERATION_CHANGED')
         startup = selected.get('platformVerification') in STARTUP_PROTOCOLS

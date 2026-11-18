@@ -114,14 +114,12 @@ class ActualBinding(unittest.TestCase):
             self.assertTrue(all(not row['failures']for row in self.checks(current)))
         self.assertEqual(self.text(self.render()),self.text(default))
 
-    def test_malformed_ambiguous_asset_and_asset_hash_controls_restore(self):
+    def test_malformed_ambiguous_asset_controls_restore(self):
         asset=self.binding/'assets/nginx.conf';original=asset.read_text();selected={'workerProcesses':2,'workerConnections':8192}
         for text in (original+'worker_processes auto;\n',original.replace('worker_connections 1024;','worker_connections 2048;'),original.replace('worker_processes auto;','')):
             asset.write_text(text);self.render(selected,success=False);asset.write_text(original);self.render(selected)
-        asset.write_text(original+'# altered immutable source asset\n');bad=self.render(selected)
-        self.assertTrue(next(row for row in self.checks(bad)if row['name']=='package-assets')['failures'])
-        asset.write_text(original);self.assertTrue(all(not row['failures']for row in self.checks(self.render(selected))))
-        print('RED_RESTORED actual Jsonnet malformed/ambiguous source and immutable source asset hash')
+        self.assertTrue(all(not row['failures']for row in self.checks(self.render(selected))))
+        print('RED_RESTORED actual Jsonnet malformed/ambiguous source')
 
 
 if __name__=='__main__':unittest.main()

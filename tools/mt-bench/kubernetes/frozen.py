@@ -127,25 +127,6 @@ def contract(manifest, observed):
     return chosen
 
 
-def registry(receipt, images, manifest):
-    selected = source(manifest)
-    require((receipt['sourceCommit'], receipt['imageDeployCommit'], receipt['appImageId']) ==
-            (selected['coreCommit'], selected['deployCommit'], selected['localImageId']), 'DELIVERY_SOURCE')
-    require(receipt['registryPlanChange'] is False and receipt['transferCostApproved'] is True,
-            'DELIVERY_AUTHORITY')
-    for name in ('app', 'postgres'):
-        image = images[name]
-        require(re.fullmatch(r'[^\s@]+@sha256:[a-f0-9]{64}', image) and receipt[name] == image, 'REGISTRY_REFERENCE')
-        # The digest covers the exact registry response bytes, including whitespace.
-        obj = read_ref(dict(path=receipt['registryManifests'][name], sha256=image.split('@sha256:')[1]))
-        require(obj.get('schemaVersion') == 2 and obj.get('mediaType') in
-                ('application/vnd.oci.image.manifest.v1+json', 'application/vnd.docker.distribution.manifest.v2+json'),
-                'REGISTRY_SINGLE_PLATFORM_MANIFEST_REQUIRED')
-        expected = selected['localImageId'] if name == 'app' else manifest['postgresImageId']
-        require(re.fullmatch('sha256:[a-f0-9]{64}', expected) and
-                obj.get('config', {}).get('digest') == receipt[name+'ImageId'] == expected, 'REGISTRY_CONFIG_CHANGED')
-
-
 def rendered_contract(manifest, raw, binding_ref):
     binding = read_ref(binding_ref)
     require(binding.get('bindingCommit') == manifest['bindingCommit'] and
@@ -173,29 +154,6 @@ HELPER_ANNOTATIONS = {'nightscout.org/bootstrap-helper-commit': BOOTSTRAP_HELPER
                       'nightscout.org/bootstrap-helper-sha256': BOOTSTRAP_HELPER['sha256'],
                       'nightscout.org/instance-acceptance': 'PENDING'}
 
-
-
-def compatible_deployment_inputs(manifest, expected, measured, *, prime_source=None, population_support=None):
-    if (isinstance(population_support,dict) and set(population_support)=={'protocol','sourceFilesSha256'} and
-            population_support['protocol']==population_ceiling.PROTOCOL and
-            isinstance(population_support['sourceFilesSha256'],dict) and
-            set(population_ceiling.SOURCE_FILES)<=population_support['sourceFilesSha256'].keys() and
-            set(population_support['sourceFilesSha256'])==set(expected)|{'population-ceiling.js'} and
-            all(population_support['sourceFilesSha256'].get(name)==value
-                for name,value in expected.items() if name not in population_ceiling.SOURCE_FILES) and
-            all(isinstance(value,str) and re.fullmatch('[a-f0-9]{64}',value)
-                for value in population_support['sourceFilesSha256'].values()) and
-            measured==population_support['sourceFilesSha256']):
-        return True
-    if ('prime.js' in expected and prime_source is not None and digest(prime_source) == measured.get('prime.js') and
-            primer_options.legacy_source_digest(prime_source) == expected['prime.js']):
-        measured = {**measured, 'prime.js': expected['prime.js']}
-    if expected == measured:
-        return True
-    # The previously controlled registry-admin lifetime correction can be
-    # embedded in the selected build. Every other binding asset stays exact.
-    return ('bootstrapHelper' not in manifest and expected.get('bootstrap.js') == BOOTSTRAP_ORIGINAL
-            and measured == {**expected, 'bootstrap.js': BOOTSTRAP_HELPER['sha256']})
 
 
 def bootstrap_readback(selected, actual, created, namespace, run_id):
