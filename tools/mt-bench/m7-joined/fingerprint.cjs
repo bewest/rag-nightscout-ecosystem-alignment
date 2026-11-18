@@ -36,6 +36,14 @@ function projection(status) {
 }
 const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto'), cp = require('node:child_process');
 const FILES = ['lib/api/status.js','lib/server/tenant-app/environment.js','lib/server/tenant-app/rest-context.js','lib/settings.js','lib/constants.json','lib/tenant-settings/catalogue.js','lib/tenant-registry/provision.js','lib/tenant-registry/rules.js','lib/tenant-registry/vault-keys.js'];
+function sourceFiles(core, commit) {
+  // The adopted shared REST context replaced the retired per-tenant module.
+  // Keep the historical blob set for sources that still contain that module.
+  const present = file => cp.spawnSync('git',['-C',core,'cat-file','-e',commit+':'+file],{stdio:'ignore'}).status === 0;
+  if (present('lib/server/tenant-app/rest-context.js')) return FILES;
+  if (!present('lib/server/tenant-app/shared-rest-context.js')) throw Error('M7_SETTINGS_SOURCE_LAYOUT_UNREVIEWED');
+  return FILES.map(file => file === 'lib/server/tenant-app/rest-context.js' ? 'lib/server/tenant-app/shared-rest-context.js' : file);
+}
 // Structural diagnostics contain only a fixed classification, never seed values.
 // The complete fingerprint below still binds source and provisioning semantics.
 function validateSeed(primer, count) {
@@ -68,7 +76,7 @@ function expected(core, commit, primer, count) {
   const git = (...args) => cp.execFileSync('git',['-C',core,...args],{encoding:'utf8'}).trim();
   if (!/^[a-f0-9]{40}$/.test(commit) || git('rev-parse','HEAD') !== commit) throw Error('M7_SETTINGS_SOURCE_MISMATCH');
   const blobs = {};
-  for (const file of FILES) {
+  for (const file of sourceFiles(core, commit)) {
     const blob = git('rev-parse',commit+':'+file);
     if (git('hash-object',path.join(core,file)) !== blob) throw Error('M7_SETTINGS_SOURCE_DIRTY');
     blobs[file] = blob;
