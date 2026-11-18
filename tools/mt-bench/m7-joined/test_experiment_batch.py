@@ -153,8 +153,9 @@ class Batch(unittest.TestCase):
     def test_batch_preparation_rechecks_actual_source_before_services(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)/'cell';calls=[]
-            with patch.dict(os.environ,{'M7_BATCH_RESERVATION':'synthetic'}), patch.object(runner,'load_config',return_value=({},[])), patch.object(runner,'preflight_receipt',side_effect=lambda config,args:calls.append(('receipt-preflight',args))), patch.object(runner,'arm_window'), patch.object(runner,'stage',side_effect=lambda root,name,args:calls.append((name,args))):
-                runner.prepare('synthetic',root)
+            source=Path(tmp)/'config.json';source.write_text('{}')
+            with patch.dict(os.environ,{'M7_BATCH_RESERVATION':'synthetic'}), patch.object(runner,'validate_config',return_value=({},[])), patch.object(runner,'preflight_receipt',side_effect=lambda config,args:calls.append(('receipt-preflight',args))), patch.object(runner,'arm_window'), patch.object(runner,'stage',side_effect=lambda root,name,args:calls.append((name,args))):
+                runner.prepare(source,root)
             self.assertEqual([c[0] for c in calls],['receipt-preflight','prepare','source-preflight'])
             self.assertEqual(calls[2][1],['source-preflight',str(root/'fixture')])
 
