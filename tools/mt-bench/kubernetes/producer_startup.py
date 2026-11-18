@@ -7,7 +7,7 @@ HARD_WAITING = {
     'CreateContainerConfigError', 'CreateContainerError', 'RunContainerError',
 }
 CODES = re.compile(rb'\b(?:K8S_CANDIDATE_|EVALUATOR_|CLINICAL_|M7_|PRIMER_|BOOTSTRAP_|PLATFORM_|PGSTREAM_|ECONN|VAULT_)[A-Z0-9_]{1,90}\b')
-TERMINAL_CODES = {'PGSTREAM_CONFIG_INVALID', 'PGSTREAM_SOURCE_MISMATCH', 'PGSTREAM_ARGUMENT_INVALID'}
+TERMINAL_CODES = {'PGSTREAM_CONFIG_INVALID', 'PGSTREAM_SOURCE_MISMATCH', 'PGSTREAM_ARGUMENT_INVALID', 'OBSERVED_PRODUCER_CONFIG_LOAD_ERROR'}
 
 
 def policy(value, work_seconds):
@@ -22,11 +22,18 @@ def policy(value, work_seconds):
 
 def log_codes(raw):
     codes = {item.decode() for item in CODES.findall(raw)}
-    text = raw.lower()
-    if b'notifier' in text and (b'shutting down' in text or b'shutdown' in text):
-        codes.add('OBSERVED_PRODUCER_NOTIFIER_SHUTDOWN')
-    if b'receiver' in text and re.search(rb'\b(?:http(?: status)?|status(?: code)?)[:= ]+503\b', text):
-        codes.add('OBSERVED_PRODUCER_RECEIVER_HTTP_503')
+    for line in raw.lower().splitlines():
+        if b'error: loading configuration:' in line:
+            codes.add('OBSERVED_PRODUCER_CONFIG_LOAD_ERROR')
+        if b'webhook' in line and (b'context deadline exceeded' in line or b'client.timeout exceeded' in line):
+            codes.add('OBSERVED_PRODUCER_WEBHOOK_TIMEOUT')
+        if b'notifier' in line and (b'shutting down' in line or b'shutdown' in line):
+            codes.add('OBSERVED_PRODUCER_NOTIFIER_SHUTDOWN')
+        if b'receiver' in line or b'webhook' in line:
+            if re.search(rb'\b(?:http(?: status)?|status(?: code)?)[:= ]+503\b', line):
+                codes.add('OBSERVED_PRODUCER_RECEIVER_HTTP_503')
+            if b'connection refused' in line:
+                codes.add('OBSERVED_PRODUCER_RECEIVER_CONNECTION_REFUSED')
     return sorted(codes)
 
 

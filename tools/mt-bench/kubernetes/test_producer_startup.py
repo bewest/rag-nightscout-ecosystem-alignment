@@ -80,3 +80,19 @@ class Startup(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'READY_DEADLINE_pgstream'):
             ready('only-producer', 'pgstream', 5, {'maxSeconds': 5, 'stableReadySeconds': 4})
         self.assertNotIn('startup-convergence-pgstream.json', records)
+
+    def test_native_webhook_codes_stay_line_scoped(self):
+        self.assertEqual(startup.log_codes(b'webhook response status code: 503 Service Unavailable'),
+                         ['OBSERVED_PRODUCER_RECEIVER_HTTP_503'])
+        self.assertEqual(startup.log_codes(b'webhook did not respond\nstatus code: 503 unrelated'),
+                         [])
+        self.assertEqual(startup.log_codes(b'webhook request: dial tcp: connect: connection refused'),
+                         ['OBSERVED_PRODUCER_RECEIVER_CONNECTION_REFUSED'])
+        self.assertEqual(startup.log_codes(b'notifier is idle\nwebhook shutdown'), [])
+
+    def test_actual_config_load_shape_maps_to_a_terminal_class(self):
+        raw = b'Error: loading configuration: reading config file: open fixture.yaml: no such file'
+        self.assertEqual(startup.log_codes(raw), ['OBSERVED_PRODUCER_CONFIG_LOAD_ERROR'])
+        self.assertIn(startup.log_codes(raw)[0], startup.TERMINAL_CODES)
+        self.assertEqual(startup.log_codes(b'webhook: context deadline exceeded'),
+                         ['OBSERVED_PRODUCER_WEBHOOK_TIMEOUT'])
