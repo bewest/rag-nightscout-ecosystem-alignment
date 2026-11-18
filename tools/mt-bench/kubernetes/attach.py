@@ -29,6 +29,21 @@ def execute(label,args,deadline=1800):
         write(live/'attachment-refusal.json',{'stage':label,'exit':result.returncode,'codes':detail})
         raise RuntimeError('ATTACH_'+label)
     return path
+def observe_selected_bootstrap(packet, runtime, namespace_uid, adapter_cmd, execute):
+    pins = read(packet/'run.json')['pins']['candidate']
+    helper = pins.get('runtimeBootstrapHelper')
+    actual = read(runtime/'bootstrap-helper-readback.json')
+    if actual.get('effectiveInstanceAcceptance') != pins['sourceAcceptance']:
+        raise RuntimeError('K8S_BOOTSTRAP_ACCEPTANCE_CHANGED')
+    if helper is None:
+        if actual.get('mode') != 'embedded-image':
+            raise RuntimeError('K8S_BOOTSTRAP_HELPER_UNDECLARED')
+    else:
+        if actual.get('mode') != 'diagnostic-overlay' or actual.get('sha256') != helper['sha256']:
+            raise RuntimeError('K8S_BOOTSTRAP_HELPER_MISSING_OR_CHANGED')
+        execute('bootstrap-map', adapter_cmd+['bootstrap-map', packet, namespace_uid])
+    execute('observe', adapter_cmd+['observe', packet])
+
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
 fp=execute('source-settings',[cfg['driver']['node'],src/'m7-joined/fingerprint.cjs',core,e['sourceCommit'],live/'primer-config.private.json',str(e['tenantCount'])],30)
 # The source CLI may write legacy app initialization lines before its final JSON record.
@@ -55,8 +70,7 @@ try:
               'roleDocuments':{role:str(live/(role+'-config.private.json')) for role in ('evaluator','realtime')}}
     write(live/'instance.json',instance)
     execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet,'--await-primer'])
-    execute('bootstrap-map',ad+['bootstrap-map',packet,uid])
-    execute('observe',ad+['observe',packet])
+    observe_selected_bootstrap(packet, live, uid, ad, execute)
     execute('candidate-proof',ad+['candidate-proof',packet])
     execute('policy',ad+['policy',packet])
     execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer','--concurrency',str(control['primerConcurrency'])],3600)
