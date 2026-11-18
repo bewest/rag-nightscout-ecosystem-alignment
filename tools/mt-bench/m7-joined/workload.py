@@ -41,6 +41,23 @@ def realistic_cycle_ms(scale):
 def generate(root, target):
     baseline=Path(root)/'tools/mt-bench/capacity/k6/workload.js'
     source=baseline.read_text()
+    # The ordinary batch loop already bounds each list by the remaining roster.
+    # The capacity baseline keeps its historical range; discovery uses an exact
+    # positive integer without a reference concurrency ceiling.
+    setup_guard="!/^[1-9][0-9]*$/.test(setupConcurrency) || Number(setupConcurrency) > 64"
+    require(source.count(setup_guard)==1,'M7_WORKLOAD_SETUP_CONCURRENCY_ANCHOR')
+    source=source.replace(setup_guard,"!/^[1-9][0-9]*$/.test(setupConcurrency) || !Number.isSafeInteger(Number(setupConcurrency))")
+    source=source.replace('JWT_SETUP_CONCURRENCY=16 (range 1..64)', 'JWT_SETUP_CONCURRENCY=16 (positive safe integer)')
+    source=source.replace('JWT_SETUP_CONCURRENCY must be an integer from 1 to 64',
+                          'M7_JWT_SETUP_CONCURRENCY_INVALID')
+    population_anchor='// Weighted tenant wheel: the hot tenant appears HOT times.'
+    require(source.count(population_anchor)==1,'M7_WORKLOAD_POPULATION_ANCHOR')
+    source=source.replace(population_anchor,"""if (!Number.isSafeInteger(HOT) || HOT < 1 || !TENANTS.length ||
+    TENANTS.length - 1 + HOT > 0xffffffff) throw Error('M7_WORKLOAD_POPULATION_ARRAY_LIMIT');
+if (!Number.isSafeInteger(DURATION) || DURATION < 1 || DURATION > 9223372036) {
+  throw Error('M7_WORKLOAD_DURATION_TIME_UNIT');
+}
+"""+population_anchor)
     old='const stamp = () => START + exec.scenario.iterationInTest;'
     require(source.count(old)==1,'M7_WORKLOAD_TIMESTAMP_ANCHOR_CHANGED')
     source=source.replace(old,'const stamp = () => START + Math.floor(exec.scenario.iterationInTest * cycleMs(exec.scenario.name) / weight);')
@@ -136,7 +153,7 @@ if (__ENV.M7_SETUP_SECONDS !== undefined) {
   const seconds = Number(__ENV.M7_SETUP_SECONDS);
   const until = Number(__ENV.M7_SETUP_UNTIL_MS);
   if (!/^[1-9][0-9]*$/.test(__ENV.M7_SETUP_SECONDS) ||
-      !Number.isSafeInteger(seconds * 1000) || !/^[1-9][0-9]*$/.test(__ENV.M7_SETUP_UNTIL_MS || '') ||
+      !Number.isSafeInteger(seconds * 1000) || seconds > 9223372036 || !/^[1-9][0-9]*$/.test(__ENV.M7_SETUP_UNTIL_MS || '') ||
       !Number.isSafeInteger(until)) throw Error('M7_PHASE_WINDOW_INVALID:setupSeconds');
   options.setupTimeout = seconds + 's';
 } else if (__ENV.M7_SETUP_UNTIL_MS !== undefined) {

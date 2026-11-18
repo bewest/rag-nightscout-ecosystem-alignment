@@ -39,13 +39,15 @@ class DriverConfiguration(unittest.TestCase):
         self.assertAlmostEqual(sum(r['perSecond'] for r in plan['scenarios'].values()),1)
 
     def test_rejects_unbounded_unknown_and_inconsistent_configuration_then_restores(self):
+        # maxTraceRows is an authored finite budget; its old default is no
+        # longer the invalid case. Nonrepresentable integer budgets still fail.
         c={'loadSeconds':30}
         good=self.configuration()
         for mutate in (lambda x:x.update(observer='unknown'),lambda x:x.update(maxAggregateVUs=True),
             lambda x:x.update(extra='ignored?'),lambda x:x['scenarios']['r_sgv'].update(maxVUs=1),
             lambda x:x['scenarios']['r_sgv'].update(durationSeconds=31),
             lambda x:x['scenarios']['r_sgv'].update(executor='ramping-vus'),
-            lambda x:x.update(maxTraceBytes=0),lambda x:x.update(maxTraceRows=5000001)):
+            lambda x:x.update(maxTraceBytes=0),lambda x:x.update(maxTraceRows=2**53)):
             bad=copy.deepcopy(good);mutate(bad)
             with self.assertRaises(RuntimeError):d.configuration(bad,c)
             self.assertEqual(d.configuration(good,c)['scenarios']['r_sgv']['maxVUs'],4)

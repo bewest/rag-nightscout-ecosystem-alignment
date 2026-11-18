@@ -54,7 +54,7 @@ def allocation(value, entries):
            a.get('existingCapacityOnly') is True, 'MATRIX_ALLOCATION_REQUIRED')
     now = time.time()
     k.need(now < k.timestamp(a['workUntil']) < k.timestamp(a['cleanupUntil']) <=
-           k.timestamp(a['workUntil']) + 3600, 'MATRIX_ALLOCATION_DEADLINE', 'UNMEASURED')
+           k.timestamp(a['workUntil']) + k.workload_inputs.MAX_SECONDS, 'MATRIX_ALLOCATION_DEADLINE', 'UNMEASURED')
     pre = a.get('preflight', {})
     k.need(Path(pre.get('path', '')).is_absolute() and Path(pre.get('path', '')).is_file() and
            k.HEX.fullmatch(pre.get('sha256', '')) and k.digest(pre['path']) == pre['sha256'],

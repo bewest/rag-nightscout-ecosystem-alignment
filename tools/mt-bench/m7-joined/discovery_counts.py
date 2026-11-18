@@ -1,10 +1,9 @@
 """Discovery-only count proof; strict acceptance keeps its original oracle."""
 import math
 from contract import require
+from workload_inputs import DEFAULT_PROBE_LEDGER, probe_ledger as valid_probe_ledger
 
 FIELDS={'attempts','accepted','uncertain','refused','pending'}
-
-def integer(value):return type(value) is int and 0<=value<=100000
 
 def counter(metrics,key):
     """A missing count is unknown; only finite nonnegative integer counters exist."""
@@ -18,20 +17,25 @@ def counter(metrics,key):
     require(type(value) in (int,float) and 0<=value<=9007199254740991 and math.isfinite(value) and int(value)==value,'M7_DISCOVERY_COUNTER_INVALID')
     return int(value)
 
-def probe_metadata(a,out,runid,expected):
+def probe_metadata(a,out,runid,expected,*,probe_ledger=None):
     """Missing historic uncertainty is unknown, not zero or a positive violation."""
+    require(probe_ledger is None or valid_probe_ledger(probe_ledger),'M7_PROBE_LEDGER_BUDGET')
+    budget=DEFAULT_PROBE_LEDGER if probe_ledger is None else probe_ledger
+    def integer(value):return type(value) is int and 0<=value<=budget['maxWrites']
     fanout=out/'fanout.json';acks=None
     if fanout.is_file():
-        require(not fanout.is_symlink() and fanout.stat().st_size<=4*1024*1024,'M7_PROBE_COUNTS_METADATA')
+        require(not fanout.is_symlink() and fanout.stat().st_size<=budget['maxBytes'],'M7_PROBE_COUNTS_METADATA')
         raw=a.document(fanout)
         require(isinstance(raw,dict) and set(raw)=={'probeWrites'} and isinstance(raw['probeWrites'],dict) and set(raw['probeWrites'])=={'byTenant'},'M7_PROBE_COUNTS_METADATA')
         acks=raw['probeWrites']['byTenant']
         require(isinstance(acks,dict) and set(acks)<=expected and all(integer(n) for n in acks.values()),'M7_PROBE_COUNTS_METADATA')
     file=out/'probe-accounting.json'
     if not file.is_file():return None,acks
-    require(not file.is_symlink() and file.stat().st_size<=4*1024*1024,'M7_PROBE_COUNTS_METADATA')
+    require(not file.is_symlink() and file.stat().st_size<=budget['maxBytes'],'M7_PROBE_COUNTS_METADATA')
     value=a.document(file)
-    require(isinstance(value,dict) and set(value)=={'version','kind','runId','roster','admissionsClosed','attempts','byTenant'},'M7_PROBE_COUNTS_METADATA')
+    fields={'version','kind','runId','roster','admissionsClosed','attempts','byTenant'}
+    if probe_ledger is not None:fields.add('budget')
+    require(isinstance(value,dict) and set(value)==fields and value.get('budget')==probe_ledger,'M7_PROBE_COUNTS_METADATA')
     require(value['version']==2 and value['kind']=='m7-discovery-probe-accounting' and value['runId']==runid,'M7_PROBE_COUNTS_METADATA')
     roster=value['roster'];rows=value['byTenant']
     require(isinstance(roster,list) and len(roster)==len(expected) and all(type(t) is str for t in roster) and set(roster)==expected,'M7_PROBE_COUNTS_ROSTER')
@@ -44,7 +48,7 @@ def probe_metadata(a,out,runid,expected):
         require(all(acks.get(t,0)==rows.get(t,{}).get('accepted',0) for t in expected),'M7_PROBE_COUNTS_ACK_MISMATCH')
     return value,acks
 
-def observe(a,d,out,runid,metrics):
+def observe(a,d,out,runid,metrics,*,probe_ledger=None):
     # Caller has revalidated ownership/source before the existing single SQL.
     tenants=a.document(d/'tenants.private.json');expected={r['id'] for r in tenants}
     findings={'verdict':'UNMEASURED','code':'M7_DISCOVERY_COUNTS_MISSING','failures':[],'failureCount':0,'probeCountProof':'UNMEASURED'}
@@ -53,7 +57,7 @@ def observe(a,d,out,runid,metrics):
         a.write(out/'oracle-findings.json',findings)
         error=RuntimeError(code);error.verdict='FAIL';error.oracleFindings=findings;raise error
     try:
-        ledger,legacy=probe_metadata(a,out,runid,expected)
+        ledger,legacy=probe_metadata(a,out,runid,expected,probe_ledger=probe_ledger)
         require(isinstance(metrics,dict),'M7_DISCOVERY_COUNTER_INVALID')
         required=['writes_ok']+['writes_ok{kind:'+kind+'}' for kind in ('entries','devicestatus','treatments')]+[name+'{tenant:'+tenant+'}' for tenant in sorted(expected) for name in ('writes_ok','writes_uncertain')]
         counts={key:counter(metrics,key) for key in required}
@@ -64,6 +68,7 @@ def observe(a,d,out,runid,metrics):
         complete=ledger is not None and ledger['admissionsClosed'] and all(r['pending']==0 for r in ledger['byTenant'].values())
         findings['probeCountProof']='KNOWN' if complete else 'UNMEASURED'
         findings['probeAccounting']={'version':2 if ledger else None,'admissionsClosed':ledger['admissionsClosed'] if ledger else None,'attempts':ledger['attempts'] if ledger else None,'pending':sum(r['pending'] for r in ledger['byTenant'].values()) if ledger else None}
+        if probe_ledger is not None:findings['probeAccounting']['budget']=probe_ledger
         def violation(kind,tenant=None):
             findings['failureCount']+=1
             if len(findings['failures'])<64:findings['failures'].append({'kind':kind,**({'tenant':tenant} if tenant is not None else {})})

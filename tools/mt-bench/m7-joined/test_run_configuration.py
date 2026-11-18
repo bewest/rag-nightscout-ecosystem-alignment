@@ -130,7 +130,9 @@ class Configuration(unittest.TestCase):
                     self.assertFalse(target.exists());guard.assert_not_called();effects.assert_not_called()
 
     def test_invalid_bounds_and_cross_fields_before_output(self):
-        for changes in ({'tenants':10001},{'replicas':2},{'logical-polling-clients':80001},
+        # Discovery reference sizes are overridable; array representation
+        # overflow remains invalid instead of the former 10000/80000 examples.
+        for changes in ({'tenants':2**32},{'replicas':2},{'logical-polling-clients':2**32},
                         {'offered-rps':float('inf')},{'probe-every-ms':0},
                         {'backend-subnet':'10.247.237.0/24'},{'sampler-interval':61},
                         {'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME}):

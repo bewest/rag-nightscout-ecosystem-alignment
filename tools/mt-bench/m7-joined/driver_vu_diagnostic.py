@@ -10,6 +10,7 @@ import sys
 from urllib.parse import parse_qsl
 
 from contract import require
+import workload_inputs
 from http_accounting import assess as http_assess
 from node_observation import log_events
 from statement_units import SHAPES
@@ -180,7 +181,7 @@ WEIGHTS = dict(zip(SHAPES, (1, 1, 1, 5, 1, 1, 1)))
 MAX_CONFIG_BYTES = 16384
 MAX_GENERATED_BYTES = 262144
 MAX_SUMMARY_BYTES = 64 * 1024 * 1024
-MAX_AGGREGATE_VUS = 12800
+MAX_AGGREGATE_VUS = workload_inputs.MAX_SAFE_INTEGER
 
 
 def integer(value, low, high):
@@ -192,7 +193,7 @@ def configuration(value, cadence):
         'version', 'observer', 'scenarios', 'maxAggregateVUs', 'maxTraceBytes', 'maxTraceRows'}
         and value.get('version') == 1 and type(value['version']) is int
         and value.get('observer') in ('summary-v1', 'scheduling-v1'), 'M7_DRIVER_CONFIGURATION')
-    require(integer(cadence.get('loadSeconds'), 1, 86400), 'M7_DRIVER_CONFIGURATION_WINDOW')
+    require(workload_inputs.seconds(cadence.get('loadSeconds')), 'M7_DRIVER_CONFIGURATION_WINDOW')
     require(integer(value.get('maxAggregateVUs'), 1, MAX_AGGREGATE_VUS), 'M7_DRIVER_VU_LIMIT')
     rows = value.get('scenarios')
     require(isinstance(rows, dict) and 1 <= len(rows) <= len(SHAPES) and set(rows) <= set(SHAPES),
@@ -201,8 +202,8 @@ def configuration(value, cadence):
         require(set(rows) == set(SHAPES), 'M7_DRIVER_REALISTIC_SHAPES')
     result = dict(value, maxTraceBytes=value.get('maxTraceBytes', MAX_TRACE_BYTES),
                   maxTraceRows=value.get('maxTraceRows', MAX_TRACE_ROWS))
-    require(integer(result['maxTraceBytes'], 65536, MAX_TRACE_BYTES)
-            and integer(result['maxTraceRows'], 1, MAX_TRACE_ROWS), 'M7_DRIVER_TRACE_BOUND')
+    require(integer(result['maxTraceBytes'], 65536, workload_inputs.MAX_SAFE_INTEGER // 16)
+            and integer(result['maxTraceRows'], 1, workload_inputs.MAX_SAFE_INTEGER), 'M7_DRIVER_TRACE_BOUND')
     normalized = {}
     for name, row in rows.items():
         require(isinstance(row, dict) and set(row) <= {'preAllocatedVUs', 'maxVUs', 'startTimeSeconds',
@@ -219,6 +220,10 @@ def configuration(value, cadence):
                 and integer(r['gracefulStopSeconds'], 0, 60), 'M7_DRIVER_SCENARIO_CONFIGURATION')
         normalized[name] = r
     result['scenarios'] = normalized
+    shards=cadence.get('driverShards',1)
+    require(workload_inputs.shard_count(shards) and
+            sum(r['maxVUs'] for r in normalized.values()) * shards <= result['maxAggregateVUs'],
+            'M7_DRIVER_VU_LIMIT')
     require(len(json.dumps(result).encode()) <= MAX_CONFIG_BYTES, 'M7_DRIVER_CONFIGURATION_BOUND')
     return result
 
@@ -229,8 +234,8 @@ def expected_plans(m):
     import driver_shards
     c = m['cadence']; cfg = configuration(c['driverPlan'], c)
     count = m['tenants']; hot = c.get('hotFactor', 10); n = c.get('driverShards', 1)
-    require(integer(count, 1, 10000) and integer(hot, 1, 10800)
-            and integer(n, 1, min(count, 16)), 'M7_DRIVER_CONFIGURATION_POPULATION')
+    require(workload_inputs.population_fits(count, hot)
+            and workload_inputs.shard_count(n, count), 'M7_DRIVER_CONFIGURATION_POPULATION')
     rows = driver_shards.plan(count, hot, c.get('offeredRps'), n) if n > 1 else [
         {'index': 0, 'tenants': count, 'weight': count - 1 + hot, 'hotFactor': hot,
          'offeredRps': c.get('offeredRps')}]

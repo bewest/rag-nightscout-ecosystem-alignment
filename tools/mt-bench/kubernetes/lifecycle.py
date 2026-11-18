@@ -89,7 +89,11 @@ def require_pod_uid(name,uid):
 
 def ready(label,typ,timeout,convergence=None):
     step('wait-'+typ)
-    until=min(time.time()+timeout,work)
+    started=time.time()
+    until=min(started+timeout,work)
+    if typ=='cohort':
+        put('startup-window-cohort.json',{'selectedSeconds':timeout,'startedAtEpochSeconds':started,
+             'effectiveDeadlineEpochSeconds':until,'effectiveWindowSeconds':max(0,until-started)})
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
     while time.time()<until:
@@ -123,7 +127,7 @@ def ready(label,typ,timeout,convergence=None):
             if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
                 ready_pod=pod
                 identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
-        if stable.observe(identity,time.monotonic()):
+        if stable.observe(identity,time.monotonic()) and (typ!='cohort' or time.time()<until):
             if convergence:
                 put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
                     'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
@@ -136,8 +140,9 @@ def workload_ready(stage):
     for obj in objects(stage):
         nm=obj['metadata']['name']; sel=obj['spec']['selector']['matchLabels']
         convergence=producer_policy if nm=='pgstream' else None
+        timeout=cohort_ready if stage=='serving' and obj['kind']=='StatefulSet' and nm=='cohort' else 300
         ready(','.join(k+'='+v for k,v in sel.items()),nm,
-              convergence['maxSeconds'] if convergence else 300,convergence)
+              convergence['maxSeconds'] if convergence else timeout,convergence)
 def execpod(pod,container,args,seconds=35):
     uid=pod['metadata']['uid']; nm=pod['metadata']['name']
     owned();assert get('pod',nm)['metadata']['uid']==uid
@@ -159,6 +164,7 @@ assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-de
 assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
 intent=read(d/'intent.json')
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
+cohort_ready=producer_startup.cohort_ready_seconds(intent['profile']['phases'],e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
 frozen.check_bootstrap_render(intent, [row for stage in
     ('foundation','stores','provision','private-admin','primer','serving') for row in objects(stage)])

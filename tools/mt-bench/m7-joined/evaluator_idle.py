@@ -173,13 +173,17 @@ def _decode(value,tenants,services,*,allow_unavailable=False,allow_clinical_stal
     return rounds,ids
 
 def verify(value,tenants,services,phase='idle'):
-    p.need(isinstance(value,dict) and value.get('kind')==ARTIFACT_KIND and value.get('columns')==list(COLUMNS) and value.get('policy')==POLICY and value.get('verdict')=='PASS','M7_EVALUATOR_IDLE_VERSION')
+    p.need(isinstance(value,dict) and value.get('kind')==ARTIFACT_KIND and value.get('columns')==list(COLUMNS) and value.get('verdict')=='PASS','M7_EVALUATOR_IDLE_VERSION')
+    policy=value.get('policy')
+    supported=[{**POLICY,'workPolicy':candidate} for candidate in (p.REFERENCE_POLICY,p.PREVIOUS_POLICY,p.POLICY)]
+    p.need(policy in supported and 1<=len(services)<=policy['workPolicy']['maxInstances'] and
+           1<=tenants<=policy['workPolicy']['maxTenants'],'M7_EVALUATOR_IDLE_VERSION')
     rounds,ids=_decode(value,tenants,services);tail=value.get('tailRound')
     if tail is not None:
         p.need(isinstance(tail,dict) and set(tail)=={'selected','round','elapsedSeconds'} and isinstance(tail['selected'],list) and 1<=len(tail['selected'])<=TAIL_POLICY['maxOwners'],'M7_EVALUATOR_IDLE_TAIL_COVERAGE')
         points,selected=_decode({'rounds':[tail['round']]},len(tail['selected']),services)
         p.need(set(tail['selected'])==selected,'M7_EVALUATOR_IDLE_TAIL_COVERAGE');tail={**tail,'round':points[0]}
-    result=assess(rounds,sorted(ids),phase,tail=tail)
+    result={**assess(rounds,sorted(ids),phase,tail=tail),'policy':policy}
     p.need({k:v for k,v in value.items()if k not in ('kind','columns','rounds','attribution','tailRound')}==result,'M7_EVALUATOR_IDLE_ASSESSMENT')
     return result
 

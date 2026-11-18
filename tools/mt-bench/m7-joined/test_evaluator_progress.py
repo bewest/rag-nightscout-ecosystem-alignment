@@ -175,7 +175,32 @@ class Progress(unittest.TestCase):
         with self.assertRaisesRegex(p.Refused,'BYTE_BOUND'):
             p.round_view(['evaluator'],[A],lambda *_:b'x'*(p.POLICY['maxBytesPerPhase']//3+1))
         with self.assertRaisesRegex(p.Refused,'INSTANCE_BOUND'):
-            p.round_view(['a','b','c','d','e'],[A],lambda *_:b'')
+            p.round_view([f'evaluator-{i}' for i in range(1,10)],[A],lambda *_:b'')
+
+    def test_eight_static_instances_require_exact_worker_ordinals(self):
+        services=['evaluator', *(f'evaluator-{i}' for i in range(2,9))]
+        ids=[f'00000000-0000-4000-8000-{i:012x}' for i in range(8)]
+        def fetch(service, *_):
+            index=services.index(service)
+            ordinal=index+int(broken and index==7)
+            value=self.frame(ids,ordinal=ordinal,runtime=f'99999999-9999-4999-8999-{index:012x}')
+            value.update(selfMode='static',selfCount=len(services))
+            view=value['view']
+            view['configured'].update(mode='static',count=len(services),rule='sha256-modulo-v1',leaseMs=None)
+            view['gate']['members']=len(services)
+            view['observed']=None
+            for i,row in enumerate(view['tenants']):
+                if i!=index: row.update(admitted=False,ready=False)
+            return json.dumps(value).encode()
+        broken=False
+        for restored in (False, True):
+            value=p.round_view(services,ids,fetch)
+            self.assertEqual([value['owners'][tenant]['service'] for tenant in ids],services)
+            self.assertEqual(value['queries'],8)
+            if not restored:
+                broken=True
+                with self.assertRaisesRegex(p.Refused,'STATIC_CONFIGURATION'):p.round_view(services,ids,fetch)
+                broken=False
     def partitioned(self,step=0):
         def fetch(service,*_):
             ordinal=0 if service=='a' else 1;frame=self.frame(ordinal=ordinal,runtime=R if ordinal==0 else S,increment=step)
@@ -204,7 +229,12 @@ class Progress(unittest.TestCase):
     def test_due_fields_retained_without_changing_progress_policy(self):
         rounds=[self.round(i) for i in range(3)];result=p.assess(rounds,[A,B],'idle');record=p.pack({**result,'rounds':rounds})
         self.assertEqual(record['kind'],'evaluator-progress-phase-v2')
-        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState','moduleVersion','cacheGeneration','idleWitness')},{k:v for k,v in p.LEGACY_POLICY.items() if k not in ('version','moduleVersion','idleWitness')})
+        # The source roster grows within the same observation budgets.
+        self.assertEqual({k:v for k,v in p.POLICY.items() if k not in ('version','dueState','moduleVersion','cacheGeneration','idleWitness','maxTenants','maxInstances')},{k:v for k,v in p.LEGACY_POLICY.items() if k not in ('version','moduleVersion','idleWitness','maxTenants','maxInstances')})
+        self.assertEqual(p.POLICY['maxTenants'],2**32-1)
+        for policy in (p.REFERENCE_POLICY,p.PREVIOUS_POLICY):
+            old=p.assess(rounds,[A,B],'idle',policy=policy)
+            self.assertEqual(p.verify(p.pack({**old,'rounds':rounds}),2,['evaluator'],'idle'),old)
         decoded,ids=p.decode_rounds(record,2,['evaluator'])
         self.assertEqual(decoded[0]['owners'][A]['dueAt'],1700000008572.4285)
         self.assertEqual(decoded[0]['owners'][A]['dueReason'],'pump-clock-warn')

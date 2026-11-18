@@ -172,14 +172,24 @@ def resource_selection(value):
 def allocation_boundary(value,hosts=None):
     """Transport admission; canonical SUT verifier independently binds native quotas."""
     need(isinstance(value,dict) and set(value)=={'version','services','driver','ceiling','edge'} and type(value['version']) is int and value['version']==1,'REMOTE_ALLOCATION_SHAPE')
-    need(isinstance(value['services'],dict) and 1<=len(value['services'])<=32 and {'evaluator','pgstream','nginx'}<=set(value['services']),'REMOTE_ALLOCATION_ROSTER')
+    need(isinstance(value['services'],dict) and {'evaluator','pgstream','nginx'}<=set(value['services']),'REMOTE_ALLOCATION_ROSTER')
     for role in value['services']:
         need(isinstance(role,str) and re.fullmatch(r'(postgres|vault|bootstrap|admin|primer|api|realtime|evaluator|tenant-admin|ui|nginx|placement-operator|demo|feed-reader|pgstream|socket-edge|(?:api|realtime|evaluator)-(?:[2-9]|1[0-6]))',role),'REMOTE_ALLOCATION_ROLE')
-    for limit in [*value['services'].values(),value['driver']]:
-        need(isinstance(limit,dict) and set(limit)=={'millicpus','memoryBytes'} and type(limit['millicpus']) is int and 1<=limit['millicpus']<=64000 and type(limit['memoryBytes']) is int and 1048576<=limit['memoryBytes']<=128*1024*1048576,'REMOTE_ALLOCATION_LIMIT')
+    for role,limit in [*value['services'].items(),('driver',value['driver'])]:
+        # Services use exact integer quota/period; standalone --cpus uses the
+        # engine's NanoCpus field. Match each signed-int64 carrier separately.
+        field='driver' if role=='driver' else 'services.'+role
+        need(isinstance(limit,dict) and set(limit)=={'millicpus','memoryBytes'},'REMOTE_ALLOCATION_LIMIT:'+field)
+        maximum=((1<<63)-1)//1000000 if role=='driver' else (1<<(64-20))-1
+        need(type(limit['millicpus']) is int and 1<=limit['millicpus']<=maximum,'REMOTE_ALLOCATION_LIMIT:'+field+'.millicpus')
+        need(type(limit['memoryBytes']) is int and 1048576<=limit['memoryBytes']<=(1<<63)-1,'REMOTE_ALLOCATION_LIMIT:'+field+'.memoryBytes')
     ceiling=value['ceiling']
-    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and 1<=ceiling['millicpus']<=64000 and type(ceiling['memoryBytes']) is int and 1048576<=ceiling['memoryBytes']<=128*1024*1048576,'REMOTE_ALLOCATION_CEILING')
-    need(value['edge']=={'workerProcesses':1,'workerConnections':16384} and all(type(x) is int for x in value['edge'].values()),'REMOTE_ALLOCATION_EDGE')
+    need(isinstance(ceiling,dict) and set(ceiling)=={'millicpus','memoryBytes'} and type(ceiling['millicpus']) is int and ceiling['millicpus']>=1 and type(ceiling['memoryBytes']) is int and ceiling['memoryBytes']>=1048576,'REMOTE_ALLOCATION_CEILING')
+    edge=value['edge']
+    # nginx process table and the retained source actor's descriptor budget;
+    # these are implementation boundaries, not workload acceptance sizes.
+    need(isinstance(edge,dict) and set(edge)=={'workerProcesses','workerConnections'} and type(edge['workerProcesses']) is int and 1<=edge['workerProcesses']<=1024 and type(edge['workerConnections']) is int and edge['workerConnections']>=1,'REMOTE_ALLOCATION_EDGE')
+    need(edge['workerConnections']<=65536,'REMOTE_ALLOCATION_EDGE_DESCRIPTOR_LIMIT:workerConnections exceeds retained worker_rlimit_nofile=65536; a larger configured/read-back descriptor budget is required')
     totals={key:sum(v[key]*(2 if role in ('bootstrap','primer') else 1) for role,v in value['services'].items()) for key in ('millicpus','memoryBytes')}
     need(all(totals[k]+value['driver'][k]<=ceiling[k] for k in totals),'REMOTE_ALLOCATION_AGGREGATE')
     if hosts is not None:

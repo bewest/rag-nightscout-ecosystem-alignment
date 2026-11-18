@@ -3,7 +3,8 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from contract import require, REPLICAS
+from contract import require, discovery_api_replicas, discovery_workers
+import workload_inputs
 import role_instances
 
 CORE = 'ce96241b390cd5397d808417b353161eed83e564'
@@ -25,7 +26,7 @@ def validate(manifest):
         require(build_digest is None, "M7_STATIC_SELECTION_REQUIRED")
         return None
     require(isinstance(value, dict) and set(value) == {'kind', 'workers'} and value['kind'] == KIND
-            and type(value['workers']) is int and 1 <= value['workers'] <= 4, 'M7_STATIC_TOPOLOGY')
+            and discovery_workers(value['workers']), 'M7_STATIC_TOPOLOGY')
     pair = manifest.get('pair')
     require(isinstance(pair, dict) and set(pair) == {'core', 'deploy'}
             and all(isinstance(v, str) and re.fullmatch(r'[0-9a-f]{40}', v) for v in pair.values())
@@ -34,7 +35,7 @@ def validate(manifest):
     require(manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'
             and manifest.get('pgstreamTopology') == 'external-service-v1'
             and manifest.get('completionContract') == 'evaluator-work-v2'
-            and type(manifest.get('replicas')) is int and manifest['replicas'] in REPLICAS,
+            and discovery_api_replicas(manifest.get('replicas')),
             'M7_STATIC_DIAGNOSTIC_SCOPE')
     return value
 
@@ -141,7 +142,7 @@ def verify_config(manifest, config):
         require('socket-edge' not in config.get('services', {}), 'M7_STATIC_SELECTION_REQUIRED')
         return None
     if 'tenants' in manifest:
-        require(type(manifest['tenants']) is int and 1 <= manifest['tenants'] <= 10000
+        require(workload_inputs.tenants(manifest['tenants'])
                 and config.get('services', {}).get('bootstrap', {}).get('environment', {}).get('NS_DEMO_TENANTS') == str(manifest['tenants']),
                 'M7_STATIC_SEED_COUNT')
     count = value['workers']; instances = role_instances.roster(config, manifest['replicas'])

@@ -906,6 +906,128 @@ boundary evidence; the integrator owns the final joined runtime acceptance.
 
 ## Single-host qualification allocation
 
+### Authored resource and nginx allocations
+
+`--diagnostic-resource-allocation` accepts one exact version-1 JSON allocation
+with `services`, `driver`, `ceiling` and `edge` fields. It replaces reference
+CPU/memory sizing when preparing a fresh fixture. Named profiles retain their
+exact sizes. The service roster must match the rendered fixture, including its
+existing supported role names and ordinal range. There is no separate 32-service,
+64-CPU or 128-GiB reference ceiling for an authored allocation. Every selected
+role, declared bootstrap/primer overlap and standalone driver still counts
+against the authored aggregate ceiling. Remote receiving helpers additionally
+check the actual declared SUT and driver host inventories independently.
+
+Fresh authored service allocations use integer `cpu_quota` and `cpu_period`
+fields. Compose's float32 `cpus` field can round a selected value, and its native
+conversion can lose precision even when config JSON looks unchanged. The integer
+path preserves integer quota/period through Compose; native runtime precision
+requires a separate check. Native readback requires zero
+`NanoCpus`, exact quota/period and no alternate CPU limiter. Named profiles and
+entered legacy explicit fixtures keep their existing `cpus`/`NanoCpus` path;
+standalone Docker `--cpus` keeps its exact decimal CLI path. The frozen config
+selects the mechanism, so legacy records are not migrated during an entered run.
+
+Each new service record includes `cpuEnforcement` with quota and period in
+microseconds. Fresh ordinary allocations keep a 100,000-microsecond period.
+Values from 1 through 9 millicpu use 1,000,000 microseconds to meet Linux's
+minimum 1,000-microsecond quota, where the runtime can represent that average.
+Very large fresh values use a 1,000-microsecond period before quota exceeds
+9,223,372,036,854 microseconds: runc 1.3.3's systemd conversion multiplies signed
+quota by 1,000,000 before division. These recorded period changes preserve the
+selected CPU average but change scheduling granularity. Entered quota records
+keep their frozen period; validation and census never select a new one.
+The Linux 6.18 source defines `max_bw_runtime_us=MAX_BW`, with
+`BW_SHIFT=20` and `MAX_BW=(1<<(64-BW_SHIFT))-1`; at a 1,000-microsecond period,
+that necessary service maximum is 17,592,186,044,415 millicpu. This read-derived
+kernel representation bound is separate from host fit and actual kernel
+admission. The [kernel validation](https://github.com/torvalds/linux/blob/v6.18/kernel/sched/core.c)
+and [bandwidth representation](https://github.com/torvalds/linux/blob/v6.18/kernel/sched/sched.h)
+own those limits. Docker also validates the
+[period and minimum quota](https://github.com/moby/moby/blob/docker-v29.1.3/daemon/daemon_unix.go)
+and carries explicit quota/period directly into its OCI CPU resources.
+
+Actual fresh preparation reads the selected daemon's cgroup driver/version,
+default runtime and reported runc version before resource leases or fixture
+effects. This early observation does not qualify every template role. After
+source rendering, the existing deployment stages and their transitive Compose
+dependencies select the actual execution roles for precision qualification,
+before any container command. An ops profile alone does not make a role active:
+bootstrap and primer run in these stages; unused demo/operator templates may
+remain dormant. All authored roles still count against the aggregate ledger.
+The confirmed systemd/cgroup-v2 path with runc `1.3.3` or
+`1.3.3-0ubuntu1~24.04.3` rounds CPU bandwidth up to whole percent units. Its
+[runc conversion](https://github.com/opencontainers/runc/blob/v1.3.3/vendor/github.com/opencontainers/cgroups/systemd/common.go#L264-L297)
+therefore represents service CPU only in multiples of 10 millicpu. It also
+requires quota times 1,000,000 to fit signed int64. Preparation refuses an
+affected field with its requested value, runtime and representation reason;
+the stable CLI code retains the field suffix, and a bounded JSON diagnostic
+reaches the runner's retained private preparation output. It never rounds the
+selection. For example, 65.001 CPU is unsupported on this
+path while 65.01 CPU is representable. A different period cannot change that
+ratio precision. Retained native controls observed 65.01 CPU for the requested
+65.001 CPU at both 100-ms and 1-second periods, despite exact HostConfig values;
+both strict failures and owned cleanup remain recorded under the lane's
+overflow-disk evidence. This is a runtime capability, not a reference CPU cap.
+
+Pure configuration/receipt plans never query the daemon. Missing inventory,
+other drivers and unqualified runtime versions retain runtime precision as
+`UNMEASURED`; they do not acquire this runtime-specific restriction or a native
+pass. A fresh explicit owner's `cpuPrecisionPreflight` records `qualifiedRoles`
+and `deferredRoles`, the execution-scoped `PASS` or `UNMEASURED`, and the
+classified runtime when available. A deferred role keeps its exact authored
+allocation and remains unqualified. The existing Compose actor admission guard
+checks requested targets, dependencies and already active quota roles before
+each actor command, including later activation of a dormant template. Existing
+`--no-deps` selections retain their dependency semantics; read-only commands and
+exact-owned cleanup remain available after refusal.
+Named profiles, entered legacy fixtures and standalone `--cpus` keep
+their existing paths. Exact native admission/readback remains required.
+
+Standalone driver CPU must fit Docker's signed-64-bit `NanoCpus` field; service
+and driver memory must fit its signed-64-bit byte fields. The current memory-unit
+contract starts at one MiB. Native engine and kernel admission and exact quota
+readback remain required. An accepted numeric JSON allocation does not reserve
+CPUs, enlarge host inventory or establish memory headroom. Docker's
+[container resource API](https://docs.docker.com/reference/api/engine/version/v1.40/)
+defines the native field representations.
+
+An authored `edge` selects independent positive integer `workerProcesses` and
+`workerConnections`. The helper first runs the pinned deployment renderer with
+its existing reference worker settings. It then projects only those two unique
+numeric directives into the owned mounted nginx config, before capturing its
+digest. All routing, public Host handling, header trust and handshake admission
+bytes remain source-rendered. An unexpected baseline, duplicate directive or
+changed descriptor budget refuses. Named-profile output remains unchanged.
+The existing runtime `nginx -T` readback must match the selected numeric values
+and the retained `worker_rlimit_nofile 65536` directive.
+
+The Linux nginx implementation has a total process-table bound of 1,024 child
+slots, shared by workers, optional cache helpers and overlapping generations
+during reload. This is a necessary implementation maximum, not a promise of
+1,024 available worker slots or evidence that those workers started. The
+[process table](https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process.h)
+and [worker/helper/reload paths](https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process_cycle.c)
+own that read-derived boundary. Actual process births, cgroup PID limits and
+effective OS descriptor limits need observation in the selected environment.
+Configured `workerConnections` cannot exceed the retained actor's 65,536-file
+descriptor directive and Compose `nginx.ulimits.nofile` hard limit. A larger request reports
+`ALLOCATION_EDGE_DESCRIPTOR_LIMIT`; extending it requires an explicit descriptor
+budget, mounted-config and Compose-ulimit projection, and effective descriptor readback. Connections
+include upstream connections and consume descriptors for other work too, so the
+configured value does not prove a client capacity. See nginx's
+[connection and descriptor directives](https://nginx.org/en/docs/ngx_core_module.html#worker_connections).
+
+The Python remote receiver uses the same explicit numeric contract and retains
+physical-host fit. Older remote controllers can still lack explicit allocation
+support or retain their own reference validation. Their precise source guard
+must be extended by the controller owner before using those values through that
+controller; local rendering and receiver controls do not establish a remote run.
+The existing [restriction policy](../../../docs/30-design/tenancy/deployment-and-rig-testing.md#configurable-limits-and-restrictions)
+separates these instrument boundaries from application and acceptance claims.
+
+### Named qualification profile
+
 `--diagnostic-resource-profile local-qualification-external-pgstream-6cpu-10g-v1`
 selects one proposed allocation for local synthetic qualification with
 `external-service-v1`. It is not a measured supported envelope. Keep tenant

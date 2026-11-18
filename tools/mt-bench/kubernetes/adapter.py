@@ -34,8 +34,10 @@ import dependency_reuse
 import probe
 import viewer_plan
 import workload
+import workload_inputs
 import resource_budget
 import primer_storage
+import edge_configuration
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
@@ -193,17 +195,22 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
     accounting = resource_accounting(c)
     need(resource_accounting(inventory) == accounting, 'RESOURCE_ACCOUNTING_MISMATCH')
     need(inventory.get('prefix') == 'nsdemo', 'SOURCE_SCHEMA_UNSUPPORTED')
-    need(timestamp(c['deadlines']['workUntil']) < timestamp(c['deadlines']['cleanupUntil']) <= timestamp(c['deadlines']['workUntil']) + 3600, 'CLEANUP_WINDOW')
+    need(timestamp(c['deadlines']['workUntil']) < timestamp(c['deadlines']['cleanupUntil']) <= timestamp(c['deadlines']['workUntil']) + workload_inputs.MAX_SECONDS, 'CLEANUP_WINDOW')
     deadline(c, cleanup=cleanup, now=now)
     need(isinstance(c.get('roles'), dict) and {'postgres', 'api', 'realtime', 'evaluator'} <= set(c['roles']), 'ROLE_ROSTER')
     if 'workload' in c:
         from workload_runtime import validate as validate_workload
         validate_workload(c['workload'], need, c['tenants'])
+        need('probeLedger' not in c['workload'] or c.get('tier','discovery')=='discovery', 'PROBE_LEDGER_DISCOVERY_ONLY')
     if 'accessSetupSeconds' in c:
         from workload_inputs import seconds
         need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
+    if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
+        need(isinstance(c.get('edgeConfiguration'),dict),'EDGE_CONFIGURATION_CHANGED')
+        edge=edge_configuration.check({'edge':c['edgeConfiguration'].get('requested')},inventory,objs,need)
+        need(c.get('edgeConfiguration')==edge,'EDGE_CONFIGURATION_CHANGED')
     by_key = {key(x): x for x in objs}
     need(len(by_key) == len(objs), 'DUPLICATE_RESOURCE')
     ns = by_key.get('Namespace/' + c['namespace'])
@@ -223,10 +230,11 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
             need(not t['spec'].get('resources'), 'POD_LEVEL_RESOURCE_ACCOUNTING_UNSUPPORTED')
             for container in t['spec'].get('containers', []) + t['spec'].get('initContainers', []):
                 resource_budget.validate_container(container, accounting, need)
+    need(workload_inputs.tenants(c.get('tenants', 2)) and c.get('tenants', 2) >= 2, 'DIAGNOSTIC_TENANT_ROSTER')
     if c.get('tenants', 2) != 2:
         count = c['tenants']
         provision = by_key.get('Job/provision')
-        need(type(count) is int and 2 <= count <= 10000 and provision is not None, 'DIAGNOSTIC_TENANT_ROSTER')
+        need(workload_inputs.tenants(count) and count >= 2 and provision is not None, 'DIAGNOSTIC_TENANT_ROSTER')
         bootstrap = [x for x in template(provision)['spec'].get('initContainers', []) if x['name'] == 'bootstrap']
         need(len(bootstrap) == 1 and
              [e.get('value') for e in bootstrap[0].get('env', []) if e['name'] == 'NS_DEMO_TENANTS'] == [str(count)],
@@ -495,9 +503,13 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         elif 'spec' in expected:
             need(subset(expected_visible['spec'], actual.get('spec')), 'RESOURCE_READBACK_CHANGED')
         elif expected['kind'] == 'ConfigMap' and name != 'ConfigMap/' + BOOTSTRAP_MAP:
+            if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
+                edge_configuration.readback(expected,actual,need)
             need(subset(expected_visible.get('data', {}), actual.get('data', {})), 'CONFIGMAP_CHANGED')
         result['objects'][name] = meta(actual)
         result['objects'][name]['maskedPaths'] = masked
+        if name=='ConfigMap/edge-nginx' and c.get('edgeConfiguration'):
+            result['edgeConfiguration']={**c['edgeConfiguration'],'configurationSha256':edge_configuration.readback(expected,actual,need)}
     replicas = client.get('replicasets', cleanup=cleanup)['items']
     rs_by_uid = {x['metadata']['uid']: x for x in replicas}
     pods = client.get('pods', cleanup=cleanup)['items']

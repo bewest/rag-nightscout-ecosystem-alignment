@@ -1,6 +1,30 @@
 --- a/check/invariants.js
 +++ b/check/invariants.js
-@@ -304,8 +304,16 @@
+@@ -82,6 +82,23 @@
+       const bytes=fs.readFileSync(path.join(__dirname,'../assets',name));
+       if(require('node:crypto').createHash('sha256').update(bytes).digest('hex')!==contract.sourceFilesSha256[name])fail(name+' differs from immutable source bytes');
+     }
++  });
++
++  run('edge-configuration', fail => {
++    const source=fs.readFileSync(path.join(__dirname,'../assets/nginx.conf'),'utf8');
++    const maps=all.filter(m=>m.kind==='ConfigMap'&&m.metadata.name==='edge-nginx');
++    let projected=source;
++    if(Object.hasOwn(inventory,'edgeConfiguration')) {
++      const c=inventory.edgeConfiguration,r=c?.requested,fields=['workerProcesses','workerConnections'];
++      if(!r || typeof r!=='object' || Array.isArray(r) || !Object.keys(r).length || Object.keys(r).some(k=>!fields.includes(k)) ||
++          Object.entries(r).some(([k,v])=>!Number.isSafeInteger(v)||v<1||(k==='workerProcesses'&&v>1024))) { fail('EDGE_CONFIGURATION'); return; }
++      const expected={requested:r,effective:{workerProcesses:r.workerProcesses??'auto',workerConnections:r.workerConnections??1024},sourceAsset:'assets/nginx.conf',descriptorLimit:'INHERITED_OS_UNMEASURED'};
++      if(!require('node:util').isDeepStrictEqual(c,expected))fail('EDGE_INVENTORY_CHANGED');
++      if(['worker_processes','worker_connections','worker_processes auto;','worker_connections 1024;'].some(s=>source.split(s).length!==2)) { fail('EDGE_SOURCE_SHAPE'); return; }
++      if(Object.hasOwn(r,'workerProcesses'))projected=projected.replace('worker_processes auto;','worker_processes '+r.workerProcesses+';');
++      if(Object.hasOwn(r,'workerConnections'))projected=projected.replace('worker_connections 1024;','worker_connections '+r.workerConnections+';');
++    }
++    if(maps.length!==1 || !require('node:util').isDeepStrictEqual(maps[0].data,{'nginx.conf':projected}) || maps[0].binaryData)fail('EDGE_CONFIGMAP_CHANGED');
+   });
+
+   run('internal-listener-not-on-service', fail => {
+@@ -304,8 +321,16 @@
    });
 
    run('container-budgets', fail => {
@@ -51,6 +75,17 @@
      local verifiedRoles = ['api', 'evaluator', 'realtime'],
      local adminFiles = ['env.json', 'config.json', 'vault-token', 'management-vault-token'],
      local targetNames = [role + '.' + kind + '.json' for role in verifiedRoles for kind in ['config', 'env', 'operation']],
+@@ -586,8 +593,8 @@
+         apiVersion: 'v1',
+         kind: 'ConfigMap',
+         metadata: meta('edge-nginx', 'edge'),
+-        // The Compose tree's nginx.conf, byte for byte.
+-        data: { 'nginx.conf': importstr '../../assets/nginx.conf' },
++        // Default source bytes stay exact; selected edge settings change only two directives.
++        data: { 'nginx.conf': (import 'edge-configuration.libsonnet').render(importstr '../../assets/nginx.conf', c.edge) },
+       },
+       deployment: {
+         apiVersion: 'apps/v1',
 @@ -625,6 +632,11 @@
 
      // ---------------------------------------------------------------- provisioning
@@ -132,15 +167,16 @@
            local placement = c.placement + (if std.objectHas(c.placementByWorkload, name) then c.placementByWorkload[name] else {});
            { spec+: {
              template+: { metadata+: { labels+: ownership, annotations+: identity }, spec+: placement + {
-@@ -849,6 +877,7 @@
+@@ -849,6 +877,8 @@
          imageDeployCommit: if c.imageDeployCommit == null then c.sourceCommit else c.imageDeployCommit,
          images: c.images,
          profile: c.profile,
++        [if (import 'edge-configuration.libsonnet').selected(c.edge) then 'edgeConfiguration']: (import 'edge-configuration.libsonnet').record(c.edge),
 +        resourceAccounting: c.resourceAccounting,
          storage: c.storage,
          qualification: { application: 'INHERITED_SEPARATELY', cluster: 'UNMEASURED', capacity: 'UNMEASURED', persistence: 'UNMEASURED' },
          documents: {
-@@ -862,14 +891,16 @@
+@@ -862,14 +892,16 @@
          },
          ownership: { namespace: c.namespace, label: { 'nightscout.org/run-id': c.runId }, clusterScoped: [{ kind: 'ClusterRoleBinding', name: c.namespace + '-vault-tokenreview' }] },
          services: { [v.metadata.name]: { selector: v.spec.selector, type: if std.objectHas(v.spec,'type') then v.spec.type else 'ClusterIP', ports: if std.objectHas(v.spec,'ports') then v.spec.ports else [] } for v in [rendered.postgres.service, rendered.vault.service, rendered.cohort.governing, rendered.cohort.apiService, rendered.cohort.realtimeService, rendered.cohort.intakeService, rendered.admin.service, rendered.ui.service, rendered.edge.service] },
@@ -272,3 +308,36 @@
 +    fs.rmSync(root, {recursive:true, force:true});
 +  }
 +});
+--- /dev/null
++++ b/lib/ns/edge-configuration.libsonnet
+@@ -0,0 +1,30 @@
++// Source-bound nginx numeric projection. The Unix nginx process table has
++// 1024 child slots shared by workers/helpers/reload generations; available slots
++// and effective OS descriptors remain environment observations, not capacity.
++local fields = ['workerProcesses', 'workerConnections'];
++{
++  selected(c)::
++    assert std.type(c) == 'object' : 'EDGE_CONFIGURATION';
++    assert std.length([k for k in std.objectFields(c) if !std.member(['serviceType', 'port'] + fields, k)]) == 0 : 'EDGE_CONFIGURATION_FIELDS';
++    assert !std.objectHas(c, 'workerProcesses') || (std.type(c.workerProcesses) == 'number' && std.floor(c.workerProcesses) == c.workerProcesses && c.workerProcesses >= 1 && c.workerProcesses <= 1024) : 'EDGE_WORKER_PROCESSES';
++    assert !std.objectHas(c, 'workerConnections') || (std.type(c.workerConnections) == 'number' && std.floor(c.workerConnections) == c.workerConnections && c.workerConnections >= 1 && c.workerConnections <= 9007199254740991) : 'EDGE_WORKER_CONNECTIONS';
++    std.length([k for k in fields if std.objectHas(c, k)]) > 0,
++  requested(c):: if !self.selected(c) then null else { [k]: c[k] for k in fields if std.objectHas(c, k) },
++  record(c)::
++    local r = self.requested(c);
++    if r == null then null else {
++      requested: r,
++      effective: {
++        workerProcesses: if std.objectHas(r, 'workerProcesses') then r.workerProcesses else 'auto',
++        workerConnections: if std.objectHas(r, 'workerConnections') then r.workerConnections else 1024,
++      },
++      sourceAsset: 'assets/nginx.conf',
++      descriptorLimit: 'INHERITED_OS_UNMEASURED',
++    },
++  render(source, c)::
++    local r = self.requested(c);
++    if r == null then source else
++      assert std.length(std.findSubstr('worker_processes', source)) == 1 && std.length(std.findSubstr('worker_connections', source)) == 1 && std.length(std.findSubstr('worker_processes auto;', source)) == 1 && std.length(std.findSubstr('worker_connections 1024;', source)) == 1 : 'EDGE_SOURCE_SHAPE';
++      local workers = if std.objectHas(r, 'workerProcesses') then std.strReplace(source, 'worker_processes auto;', 'worker_processes ' + std.toString(r.workerProcesses) + ';') else source;
++      if std.objectHas(r, 'workerConnections') then std.strReplace(workers, 'worker_connections 1024;', 'worker_connections ' + std.toString(r.workerConnections) + ';') else workers,
++}

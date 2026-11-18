@@ -41,9 +41,11 @@ def assess(baseline, rounds, ids,*,policy=p.POLICY,discovery_unclassified_reject
 
 
 def verify(value,tenants,services):
-    legacy=value.get('kind')=='evaluator-recovery-v1';policy=p.LEGACY_POLICY if legacy else p.POLICY
+    legacy=value.get('kind')=='evaluator-recovery-v1';policy=value.get('policy')
     columns=p.LEGACY_COLUMNS if legacy else p.COLUMNS
-    p.need(value.get('kind')==('evaluator-recovery-v1' if legacy else 'evaluator-recovery-v2') and value.get('policy')==policy and value.get('columns')==list(columns),'M7_EVALUATOR_RECOVERY_PROOF')
+    supported=(p.LEGACY_POLICY,) if legacy else (p.REFERENCE_POLICY,p.PREVIOUS_POLICY,p.POLICY)
+    p.need(value.get('kind')==('evaluator-recovery-v1' if legacy else 'evaluator-recovery-v2') and policy in supported and value.get('columns')==list(columns)
+           and 1<=len(services)<=policy['maxInstances'] and 1<=tenants<=policy['maxTenants'],'M7_EVALUATOR_RECOVERY_PROOF')
     baseline,ids=p.decode_rounds({'rounds':value.get('baseline'),'columns':value.get('columns')},tenants,services,allow_unavailable=value.get('discoveryUnclassifiedRejections') is True)
     rounds,other=p.decode_rounds({'rounds':value.get('rounds'),'columns':value.get('columns')},tenants,services,allow_unavailable=value.get('discoveryUnclassifiedRejections') is True)
     p.need(len(baseline)==1 and ids==other,'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')

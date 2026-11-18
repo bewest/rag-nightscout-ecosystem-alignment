@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+from producer_startup import cohort_ready_seconds
 
 FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bindingDirectory',
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
@@ -40,6 +41,7 @@ def fixture_config(path, capture=False):
              all(isinstance(x,str) and x and '\x00' not in x for x in c['pullSecretCommand']), 'PULL_COMMAND')
     files=[reference(c[key]) for key in ('runTemplate','delivery','cacheAbsence')]
     d=Path(c['caseDirectory']);e=read(d/'environment.json');m=read(d/'intent.json');pre=read(d/'preflight.json')
+    cohort_ready_seconds(m['profile'].get('phases',{}),e['workDeadlineSeconds'])
     need(re.fullmatch(r'[a-z0-9][a-z0-9-]{0,62}',e['runId']) and e['runId']==d.name and e['namespace'].startswith('ns-synth-'), 'INSTANCE_IDENTITY')
     need(e['tenantCount']==m['profile']['population']['provisionedTenants'], 'POPULATION')
     need(pre.get('commissioning')=='PREFLIGHT_ONLY' and pre['experiment']['renderSha256']==sha(d/'render.json'), 'PREFLIGHT')

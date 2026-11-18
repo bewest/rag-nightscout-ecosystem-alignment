@@ -9,6 +9,41 @@ import producer_startup as startup
 
 
 class Startup(unittest.TestCase):
+    def test_cohort_window_selects_only_serving_cohort_and_keeps_ready_and_work_gates(self):
+        source=Path(__file__).with_name('lifecycle.py')
+        nodes=[n for n in ast.parse(source.read_text()).body if isinstance(n,ast.FunctionDef) and n.name in ('ready','workload_ready')]
+        def attempt(window,work):
+            clock=SimpleNamespace(now=0);clock.time=clock.monotonic=lambda:clock.now
+            clock.sleep=lambda seconds:setattr(clock,'now',clock.now+seconds)
+            pod={'metadata':{'labels':{'nightscout.org/run-id':'run'}},'status':{'conditions':[]}}
+            observation={'uid':'pod','containers':[]};records={}
+            def pods(_):
+                if clock.now>=400:pod['status']['conditions']=[{'type':'Ready','status':'True'}]
+                return [pod]
+            scope={'time':clock,'work':work,'rid':'run','step':lambda *_:None,'owned':lambda:None,'pods':pods,
+                   'summary':lambda _:observation,'producer_startup':startup,'put':lambda k,v:records.update({k:v})}
+            exec(compile(ast.Module(body=nodes,type_ignores=[]),str(source),'exec'),scope)
+            return scope,records
+        for window,work,pass_ in ((300,1000,False),(900,390,False),(900,1000,True)):
+            scope,records=attempt(window,work)
+            if pass_:
+                self.assertTrue(scope['ready']('cohort','cohort',window)['status']['conditions'])
+            else:
+                with self.assertRaisesRegex(RuntimeError,'READY_DEADLINE_cohort'):
+                    scope['ready']('cohort','cohort',window)
+            self.assertEqual(records['startup-window-cohort.json']['effectiveWindowSeconds'],min(window,work))
+        called=[]
+        scope.update(ready=lambda *args:called.append(args), cohort_ready=900,producer_policy=None,
+            objects=lambda stage:[{'kind':kind,'metadata':{'name':name},'spec':{'selector':{'matchLabels':{'role':name}}}}
+                for kind,name in (('StatefulSet','cohort'),('Deployment','edge'),('Deployment','pgstream'))])
+        scope['workload_ready']('serving')
+        self.assertEqual([(r[1],r[2]) for r in called],[('cohort',900),('edge',300),('pgstream',300)])
+        self.assertEqual(startup.cohort_ready_seconds({},7200),300)
+        self.assertEqual(startup.cohort_ready_seconds({'cohortReadySeconds':900},7200),900)
+        for value in (0,None,True,7201,1.5):
+            with self.assertRaisesRegex(ValueError,'COHORT_READY_WINDOW'):
+                startup.cohort_ready_seconds({'cohortReadySeconds':value},7200)
+
     def fixture(self, *, hard=False, changed_uid=False):
         source = Path(__file__).with_name('lifecycle.py')
         nodes = [node for node in ast.parse(source.read_text()).body if isinstance(node, ast.FunctionDef)

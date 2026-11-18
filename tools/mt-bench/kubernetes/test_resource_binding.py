@@ -22,7 +22,8 @@ class ResourceBinding(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        raw = subprocess.check_output(['git', '-C', source, 'archive', 'HEAD', 'bindings/kubernetes'])
+        revision = os.environ.get('K8S_BINDING_COMMIT', 'HEAD')
+        raw = subprocess.check_output(['git', '-C', source, 'archive', revision, 'bindings/kubernetes'])
         with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
             archive.extractall(self.root, filter='data')
         patch = Path(__file__).with_name('binding-input.patch')

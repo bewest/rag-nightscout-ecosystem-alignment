@@ -133,6 +133,12 @@ restores its private file. The actor verifies the mounted state volume and
 config digest before writing and records filesystem size and usage when
 available. The source retains its original atomic writes and uncertainty journal.
 
+Set `profile.phases.cohortReadySeconds` in a fresh intent to give the serving
+cohort StatefulSet an explicit Pod Ready window. The controller uses the time
+remaining on its original work deadline if that deadline comes first. The
+legacy window is 300 seconds. The lifecycle verifies the hashed intent before
+entry and records the selected window and effective deadline at the wait.
+
 Set `profile.phases.accessSetupSeconds` to give the first and last selected
 socket witnesses an explicit warm-up window. The native client connects to
 both exact hosts without credentials first. It may retry HTTP 403 while it
@@ -241,7 +247,7 @@ The run input has these fields:
 | `version`, `runId`, `namespace`, `context`, `ownerLabel` | Version 1, exact inventory ownership label and explicit context; no current-context fallback |
 | `pins` | `pair.{core,deploy}`, `bindingCommit`, `appImage`, `appImageId`, `renderSha256`, `inventorySha256`, `instrument` |
 | `kubectl`, `readonlyGuard` | Absolute compatible client and existing private `ops/bin/ro` paths |
-| `deadlines` | Absolute UTC `workUntil` and `cleanupUntil`; cleanup ends at most one hour after work |
+| `deadlines` | Absolute UTC `workUntil` and `cleanupUntil`; cleanup follows work within the finite shared duration representation and the actual released allocation |
 | `roles` | Role to `{workload: "StatefulSet/cohort", container: "evaluator"}`; derives from actual inventory |
 | `storageMode` | `disposable` or admitted `existing-claim`; never creates a PVC |
 | `driver`, `observer` | Actual `hostId`, `sharedHost: true`, planned `resources.{millicpus,memoryBytes}`; native actors execute on the same host |
@@ -249,7 +255,7 @@ The run input has these fields:
 | `tenants`, `tenantsFile` | Synthetic roster count and private projection; commissioning requires two `.test` tenant hosts |
 | `completion` | Source projection from the original completed-output oracle, with this instrument binding |
 | `baseUrl` | Existing operator-owned loopback forward to the exact edge Pod; tenant alias Host headers stay intact |
-| `workload` | `loadSeconds` (1..86400, within the actual work deadline), either positive finite `offeredRps` or `workloadMix: "realistic-v1"` with optional positive finite `workloadScale` (default 1). Rounded scenario time units must be representable by k6. `logicalPollingClients` (0..80000) is independent of tenant count. `probeEveryMs` is a positive integer within the Node timer range and the probe ledger budget. Optional `hotFactor` (1..10) retains legacy aggregate weighting; realistic-v1 requires 1 |
+| `workload` | `loadSeconds` is a positive integer within k6's duration representation and the actual work deadline. Select positive finite `offeredRps` or `workloadMix: "realistic-v1"` with optional positive finite `workloadScale` (default 1). Rounded scenario time units must be representable by k6. `logicalPollingClients` is independent of tenant count and must fit a JavaScript array. `probeEveryMs` must fit the Node timer range and the probe budget. Optional `probeLedger` selects `maxWrites` and `maxBytes`. Optional `hotFactor` plus the rest of the roster must fit the generated array, and realistic-v1 requires 1 |
 | `settingsFingerprint` | Existing source-derived settings fingerprint for native load |
 
 For sequential workload points on one admitted fixture, prepare a new packet
@@ -476,6 +482,56 @@ phase intent. `topology` owns requested role counts. `local` holds the existing
 Compose resource/observer defaults. A fresh instance supplies paths, network
 identity, custody and actual deadlines. A second copy of a derived source or
 workload value is refused.
+
+The common intent recognizes discovery API counts 1–16 and evaluator/realtime
+worker counts 1–8. Compose projects the selected supported counts into its normal
+source-bound static receipt and exact service roster. Native Kubernetes execution
+still supports the existing K1/API1 external-producer binding. A different role
+topology reports `KUBERNETES_TOPOLOGY_UNSUPPORTED`; admitting its numeric intent
+does not implement a multi-Pod runtime or grant capacity acceptance.
+
+The optional `kubernetes.edge` block selects Kubernetes-only nginx
+`workerProcesses` and `workerConnections`. Either field can be selected
+independently. Omission keeps the exact source `auto`/`1024` bytes and adds no
+edge selection to the inventory. The Kubernetes projection emits
+`binding-inputs.json`, an edge overlay for the fresh binding constructor's
+inputs, and carries the same selection in `manifest.json`. Merge that overlay
+with the fresh instance's other constructor inputs using `std.mergePatch` before
+calling `ns.new`. Preparation requires the manifest, inventory and rendered
+ConfigMap to agree; forgetting the overlay refuses instead of ignoring it.
+
+```json
+{"kubernetes":{"edge":{"workerProcesses":2,"workerConnections":8192}}}
+```
+
+The same common intent can retain its independent `local` settings. Compose
+projection records `kubernetes.edge` as `notApplicable` and leaves local resource
+mode and nginx selection unchanged. Existing local explicit-allocation `edge`
+settings keep their own contract; a Kubernetes setting adds no local CPU or
+memory cap.
+
+The binding changes only the two unique known directives from the exact
+`assets/nginx.conf` source. Its original source hash remains required. The
+inventory records requested and effective values and the inherited descriptor
+limit as `INHERITED_OS_UNMEASURED`. The prepared packet binds the full rendered
+config hash; selected-edge observation requires exact ConfigMap data and records
+its observed hash. Masked config data stays UNMEASURED. Routing, trusted Host and
+header handling remain source bytes.
+
+Worker counts use the Linux nginx process-table maximum of 1,024 total child
+slots. Workers, cache helpers and overlapping reload generations share those
+slots, so this necessary bound does not prove that the requested workers start.
+The [Unix process table](https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process.h)
+and [worker lifecycle](https://github.com/nginx/nginx/blob/master/src/os/unix/ngx_process_cycle.c)
+define that read-derived boundary. Connection counts use positive exact
+integers within Jsonnet's binary64 carrier. Kubernetes supplies no ulimit field
+here, and this source asset has no `worker_rlimit_nofile`; effective OS file
+descriptor limits, worker births and connection capacity need observations in
+the selected environment. The local Compose descriptor budget is not inherited
+by this binding. nginx documents the
+[connection/descriptor relationship](https://nginx.org/en/docs/ngx_core_module.html#worker_connections).
+These settings configure a fresh fixture and do not qualify a capacity result
+or change edge replicas, socket topology, source images or an entered run.
 
 Use `examples.py --help` to generate 500, 1,000, 3,000 and 10,000 inputs from actual
 selected receipts, an existing local configuration and an explicit prospective

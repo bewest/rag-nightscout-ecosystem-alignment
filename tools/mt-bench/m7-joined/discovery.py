@@ -1,6 +1,7 @@
 """Explicit observational load route. Never grants capacity acceptance."""
 import json
 import viewer_plan
+import workload_inputs
 import re
 import subprocess
 import sys
@@ -10,7 +11,7 @@ import evaluator_catchup
 import driver_vu_diagnostic
 import node_observation
 import phase_windows
-from contract import require, SHA, OWNER, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope
+from contract import require, SHA, OWNER, REPLICAS, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope, discovery_api_replicas
 
 INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
 INCOMPLETE=INCOMPLETE|frozenset(('M7_OPPORTUNITY_NOT_OBSERVED','M7_OPPORTUNITY_DEADLINE','M7_OPPORTUNITY_BYTE_BOUND','M7_OPPORTUNITY_COVERAGE','M7_OPPORTUNITY_CAPTURE','M7_OPPORTUNITY_QUERY_BOUND'))
@@ -83,7 +84,9 @@ def check_discovery(value):
     declared=value.get('settingsFingerprint',{})
     require(declared.get('sha256')==chosen['settings']['sha256'] and declared.get('sourceCommit')==value['pair']['core'] and chosen['settings']['sourceCommit']==value['pair']['core'],'M7_DISCOVERY_DECLARED_SETTINGS')
     require(re.fullmatch(r'[a-f0-9]{32}',value.get('owner','')) and value.get('ownershipVerified') is True,'M7_DISCOVERY_OWNERSHIP')
-    require(type(value.get('tenants')) is int and 1<=value['tenants']<=10000 and value.get('replicas') in (1,2,4),'M7_DISCOVERY_TOPOLOGY')
+    api_ok=(discovery_api_replicas(value.get('replicas')) if value.get('profile')=='pgstream-sample'
+            else type(value.get('replicas')) is int and value['replicas'] in REPLICAS)
+    require(workload_inputs.tenants(value.get('tenants')) and api_ok,'M7_DISCOVERY_TOPOLOGY')
     require(isinstance(value.get('strictChecks'),dict) and isinstance(value.get('processes'),dict) and isinstance(value.get('hardFailures'),list),'M7_DISCOVERY_OBSERVATIONS')
     require(not value['hardFailures'],'M7_DISCOVERY_HARD_FAILURE')
     oracle=value.get('oracle')
@@ -297,6 +300,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
     spec=m['project']+'|'+str(d/'env')+'|'+str(d/'frozen.compose.json')
     completion=a.document(d/'completion-source.json') if m['profile']=='pgstream-sample' else {}
     env=a.runtime_env({'M7_GENERATOR_ROOT':str(d/'dependencies'),**({'M7_COMPLETION_SOURCE':json.dumps(completion)} if completion else {}),'M7_RUN_PURPOSE':'discovery','M7_RESTART_ROLES':json.dumps(m['restartRoles']),'M7_EVALUATOR_SERVICES':json.dumps(a.progress_services(d)),'M7_PROGRESS_PYTHON':a.sys.executable,'M7_PROGRESS_ATTRIBUTION':json.dumps(a.progress_attribution(m)),'STOCK_MS':'300000','RECOVERY_MS':'120000'})
+    env.update(workload_inputs.probe_ledger_env(m['cadence']))
     env.update(a.clinical_timeline.probe_environment(m))
     env.update(a.revision_witness.probe_environment(d,m))
     a.psql(d,'SELECT pg_stat_statements_reset();');a.phase_snapshot(d,out,'before-prime')
@@ -404,7 +408,7 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
         metrics=a.document(out/'k6-summary.json')['metrics']
         record.value['rateOffer']=a.rate_offer(m)
         fingerprint=a.profile_provenance.fingerprint_check(metrics);record.value['settingsFingerprintObservation']=fingerprint;record.save()
-        try:result,known=count_observation(a,d,out,runid,metrics)
+        try:result,known=count_observation(a,d,out,runid,metrics,probe_ledger=m['cadence'].get('probeLedger'))
         except Exception as error:
             if hasattr(error,'oracleFindings'):
                 record.value['oracleFindings']=error.oracleFindings
@@ -506,9 +510,9 @@ def k6_command(a,d,m,image,runid):
 def k6_base(a,d,m,image,runid):
     return (['docker','run','--rm','--name',m['project']+'-k6','--label',OWNER+'='+m['owner'],'--label','com.docker.compose.project='+m['project'],'--label','com.docker.compose.service=k6','--network','host','-u',str(a.os.getuid())+':'+str(a.os.getgid()),'-v',str(d/'k6')+':/scripts:ro','-v',str(d/'load')+':/out','-v',str(d/'tenants.private.json')+':/tenants.private.json:ro','-e','BASE_URL=http://127.0.0.1:'+str(m['port']),'-e','TENANTS_FILE=/tenants.private.json','-e','RUN_ID='+runid,'-e','SETTINGS_FINGERPRINT='+m['settingsFingerprint']['sha256'],'-e','RUN_START='+str(int(time.time()*1000)),'-e','DURATION='+str(m['cadence']['loadSeconds']),'-e','ACCEL='+str(m['cadence'].get('accel',1)),'-e','HOT_FACTOR='+str(m['cadence'].get('hotFactor',10)),*(['-e','OFFERED_RPS='+str(m['cadence']['offeredRps'])] if 'offeredRps' in m['cadence'] else []),*(['-e','M7_WORKLOAD_MIX='+m['cadence']['workloadMix']] if 'workloadMix' in m['cadence'] else []),*(['-e','M7_WORKLOAD_SCALE='+str(m['cadence']['workloadScale'])] if 'workloadScale' in m['cadence'] else []),'-e',a.jwt_setup_env(m),'-e','SHAPES='+','.join(m['cadence'].get('driverPlan',{}).get('scenarios',driver_vu_diagnostic.SHAPES)),image,'run','--quiet','--summary-export','/out/k6-summary.json','/scripts/workload.js'])
 
-def count_observation(a,d,out,runid,metrics):
+def count_observation(a,d,out,runid,metrics,*,probe_ledger=None):
     from discovery_counts import observe
-    return observe(a,d,out,runid,metrics)
+    return observe(a,d,out,runid,metrics,probe_ledger=probe_ledger)
 
 
 def stop_k6(a,m,record,oneoff=None):

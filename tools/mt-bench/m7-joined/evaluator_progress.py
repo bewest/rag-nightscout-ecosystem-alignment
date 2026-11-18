@@ -13,7 +13,11 @@ LEGACY_POLICY={'version':1,'moduleVersion':2,'selectorRows':128,'maxTenants':100
         'responseMaxBytes':1048576,'rpcTimeoutMs':5000,'roundDeadlineMs':15000,
         'idleWitness':'successful-time-only-completion','loadWitness':'successful-work-progression',
         'recoveryCadenceMs':15000,'recoveryTimeoutMs':900000,'recoveryMaxRounds':60,'readinessMaxQueries':25600,'readinessMaxBytes':268435456,'readinessMaxRounds':80,'deadlineClaim':False,'workloadCohortChanged':False}
-POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':5,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
+REFERENCE_POLICY={**LEGACY_POLICY,'version':2,'dueState':'captured-only-not-opportunity-assessed','moduleVersion':5,'cacheGeneration':'disposable-not-process-identity','idleWitness':'successful-work-progression-not-clinical-proof'}
+# Keep exact historical policy receipts readable. The current reader pages the
+# roster and retains its independent query/byte limits, not the reference size.
+PREVIOUS_POLICY={**REFERENCE_POLICY,'maxTenants':2**32-1}
+POLICY={**PREVIOUS_POLICY,'maxInstances':8}  # The pinned Compose worker roster supports 1–8.
 
 class Refused(RuntimeError):
     def __init__(self,code,verdict='UNMEASURED'):
@@ -69,8 +73,8 @@ def _refusal_row(row,service,runtime_id):
 def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_clinical_stall=False):
     """fetch(service,ids,query_budget,byte_budget) returns private JSONL bytes.
 
-    At most four actual instance execs run concurrently. The source helper
-    pages128 per request; bounds apply before decoding and across all instances.
+    The selected source roster sets the concurrent instance count. The source
+    helper pages 128 per request; bounds apply across all instances.
     """
     validate_ids(ids);need(1<=len(services)<=POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
     need(len(set(services))==len(services),'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
@@ -97,9 +101,10 @@ def _round_view(services,ids,fetch,warming=False,allow_unavailable=False,allow_c
             need(page.get('selfOrdinal')==position and page.get('selfMode')==view.get('configured',{}).get('mode'),'M7_EVALUATOR_PROGRESS_INSTANCE','FAIL')
             if page.get('selfMode')=='static':
                 configured=view['configured']
-                expected_ordinal=0 if service=='evaluator' else int(service.removeprefix('evaluator-'))-1 if re.fullmatch(r'evaluator-[2-4]',service) else None
+                match=re.fullmatch(r'evaluator(?:-([2-8]))?',service)
                 need(type(configured.get('count')) is int and type(page.get('selfCount')) is int
-                     and configured['count']==len(services)==page['selfCount'] and position==expected_ordinal
+                     and configured['count']==len(services)==page['selfCount'] and match is not None
+                     and position==int(match[1] or 1)-1 and position<len(services)
                      and configured.get('rule')=='sha256-modulo-v1' and 'leaseMs' in configured and configured['leaseMs'] is None
                      and 'observed' in view and view['observed'] is None
                      and type(view.get('gate',{}).get('members')) is int and view['gate']['members']==len(services),
@@ -255,9 +260,12 @@ def pack(value):
 def verify(value,tenants,services,phase):
     need(isinstance(value,dict),'M7_EVALUATOR_PROGRESS_PROOF')
     legacy=value.get('kind')=='evaluator-progress-phase-v1'
-    policy=LEGACY_POLICY if legacy else POLICY
+    policy=LEGACY_POLICY if legacy else value.get('policy')
     columns=LEGACY_COLUMNS if legacy else COLUMNS
-    need(value.get('kind')==('evaluator-progress-phase-v1' if legacy else 'evaluator-progress-phase-v2') and value.get('columns')==list(columns) and value.get('policy')==policy and value.get('verdict')=='PASS','M7_EVALUATOR_PROGRESS_PROOF')
+    supported=(LEGACY_POLICY,) if legacy else (REFERENCE_POLICY,PREVIOUS_POLICY,POLICY)
+    need(value.get('kind')==('evaluator-progress-phase-v1' if legacy else 'evaluator-progress-phase-v2') and value.get('columns')==list(columns) and value.get('policy')==policy and policy in supported and value.get('verdict')=='PASS','M7_EVALUATOR_PROGRESS_PROOF')
+    need(1<=len(services)<=policy['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
+    need(type(tenants) is int and 1<=tenants<=policy['maxTenants'],'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(isinstance(value.get('rounds'),list) and len(value['rounds'])==3,'M7_EVALUATOR_PROGRESS_ROUNDS')
     decoded,ids=decode_rounds(value,tenants,services)
     result=assess(decoded,sorted(ids),phase,policy=policy)

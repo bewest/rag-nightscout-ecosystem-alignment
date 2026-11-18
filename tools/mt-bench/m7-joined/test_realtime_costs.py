@@ -24,7 +24,9 @@ class Realtime(unittest.TestCase):
    with self.subTest(error=error),self.assertRaisesRegex(RuntimeError,error):c.assess(a,b)
    self.assertEqual(c.assess(a,book(5,11))['status'],'MEASURED')
  def test_malformed_boolean_and_watch_bound_refuse(self):
-  for change in (lambda v:v['stats']['runtime'].update(ticks=True),lambda v:v['stats'].update(watchedCount=10001),lambda v:v['stats'].update(version=4),lambda v:v['stats'].update(version=True)):
+  # watchedCount is a source gauge, not the reference population ceiling.
+  v=view();v['stats']['watchedCount']=12001;self.assertEqual(c.parse(v)['stats']['watchedCount'],12001)
+  for change in (lambda v:v['stats']['runtime'].update(ticks=True),lambda v:v['stats'].update(watchedCount=2**53),lambda v:v['stats'].update(version=4),lambda v:v['stats'].update(version=True)):
    v=view();change(v)
    with self.assertRaises(RuntimeError):c.parse(v)
  def test_optional_delivery_exact_deltas_and_unavailable_not_zero(self):

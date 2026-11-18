@@ -20,14 +20,16 @@ import sys
 from pathlib import Path
 
 from contract import require
+import workload_inputs
 
-MAX_SHARDS = 16
+MAX_SHARDS = workload_inputs.MAX_ARRAY_LENGTH
 QUANTILES = ('med', 'p(90)', 'p(95)', 'p(99)')
 
 
 def plan(count, hot, offered, shards):
-    require(type(shards) is int and 2 <= shards <= MAX_SHARDS and type(count) is int and count >= shards, 'M7_DRIVER_SHARDS_RANGE')
+    require(workload_inputs.shard_count(shards, count) and shards >= 2, 'M7_DRIVER_SHARDS_RANGE')
     require(type(hot) is int and hot >= 1, 'M7_DRIVER_SHARDS_HOT')
+    require(workload_inputs.population_fits(count, hot), 'M7_WORKLOAD_POPULATION_ARRAY_LIMIT')
     require(offered is None or (type(offered) in (int, float) and 0 < offered <= sys.float_info.max and math.isfinite(offered)), 'M7_DRIVER_SHARDS_RATE')
     total = count - 1 + hot
     rows, start = [], 0

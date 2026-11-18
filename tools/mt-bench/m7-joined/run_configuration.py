@@ -8,7 +8,8 @@ import hashlib
 import ipaddress
 import json
 import commissioning_wal
-from contract import require
+import workload_inputs
+from contract import require, REPLICAS, discovery_api_replicas
 
 
 def sha(value):
@@ -25,11 +26,14 @@ def validate_prepare(args):
     a.stream_topology.ack_option(args)
     a.preload_convergence.option(args)
     require(args.measurement_mode=='accepted','M7_CONFIG_DISCOVERY_MEASUREMENT_MODE')
-    require(type(args.tenants) is int and 1 <= args.tenants <= 10000 and (args.replicas == 1 or static),
+    require(workload_inputs.tenants(args.tenants) and (args.run_purpose=='discovery' or args.tenants<=10000)
+            and (discovery_api_replicas(args.replicas) if args.run_purpose=='discovery'
+                 else type(args.replicas) is int and args.replicas in REPLICAS)
+            and (args.replicas == 1 or static),
             'M7_CONFIG_SINGLE_API_TENANT_RANGE')
     a.profile_provenance.selection(args.diagnostics,args.diagnostics_interval_ms)
     a.primer_concurrency(args.primer_concurrency)
-    a.jwt_setup_concurrency(args.jwt_setup_concurrency)
+    a.jwt_setup_concurrency(args.jwt_setup_concurrency, args.run_purpose=='discovery')
     a.fixture_project(args, '0'*32)
     networks = [ipaddress.ip_network(getattr(args, key), strict=True) for key in ('backend_subnet', 'edge_subnet')]
     private=[ipaddress.ip_network(c) for c in ('10.0.0.0/8','172.16.0.0/12','192.168.0.0/16')]

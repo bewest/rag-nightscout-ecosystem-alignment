@@ -126,14 +126,28 @@ def reduce_stage(stage, output, fixture=None):
     if roster_file and roster_file.exists():
         files.append(roster_file)
         roster = read(roster_file)
-    if roster and all((stage / n).exists() for n in ('stored-counts.json', 'runid')):
+    supplemental = stage / 'storage-readback.json'
+    if supplemental.is_file():
+        storage_readback = read(supplemental)
+        files.append(supplemental)
+        if storage_readback.get('verdict') == 'UNMEASURED':
+            result['stored'] = {'verdict':'UNMEASURED', 'code':storage_readback['code']}
+        else:
+            counts = stage / 'stored-counts.json'
+            if (storage_readback.get('verdict') != 'OBSERVED' or not counts.is_file()
+                    or hashlib.sha256(counts.read_bytes()).hexdigest()!=storage_readback.get('countsSha256')
+                    or not (stage/'runid').is_file() or (stage/'runid').read_text().strip()!=storage_readback.get('runId')):
+                result['stored'] = {'verdict':'FAIL', 'code':'K8S_STORAGE_READBACK_CHANGED'}
+    if 'stored' not in result and roster and all((stage / n).exists() for n in ('stored-counts.json', 'runid')):
         facade = SimpleNamespace(document=read, stored=lambda *_: read(stage / 'stored-counts.json'),
                                   write=lambda p, v: write(output / Path(p).name, v))
         view = output / 'input-view'
         view.mkdir()
         write(view / 'tenants.private.json', roster)
         try:
-            counts, known = discovery_counts.observe(facade, view, stage, (stage / 'runid').read_text().strip(), metrics)
+            workload = summary['cadence'] if summary else (run_config or {}).get('workload', {})
+            counts, known = discovery_counts.observe(facade, view, stage, (stage / 'runid').read_text().strip(), metrics,
+                                                      probe_ledger=workload.get('probeLedger'))
             result['stored'] = {'verdict': 'PASS' if known and counts['uncertain'] == 0 else 'UNMEASURED',
                                 'accepted': sum(r['accepted'] or 0 for r in counts['rows']),
                                 'stored': sum(r['stored'] for r in counts['rows']),
@@ -152,6 +166,11 @@ def reduce_stage(stage, output, fixture=None):
                 read(stage / 'fanout.json')['probeWrites']['byTenant'])
         except RuntimeError as error:
             result['delivered'] = {'verdict': 'FAIL', 'code': str(error)}
+    progress_refusal = stage / 'progress-after-failure.json'
+    if progress_refusal.is_file():
+        files.extend([progress_refusal,stage/'progress-after-response.json'])
+        failure = read(progress_refusal)
+        result['finalEvaluatorProgress'] = {key:failure[key] for key in ('verdict','code','responseRetained')}
     result.setdefault('stored', {'verdict': 'UNMEASURED', 'code': 'K8S_LOAD_STORAGE_INPUTS_MISSING'})
     result.setdefault('selectedClinicalCoverage', {'verdict': 'UNMEASURED', 'code': 'K8S_LOAD_PROBE_LEDGER_MISSING'})
     result.setdefault('delivered', {'verdict': 'UNMEASURED', 'code': 'K8S_LOAD_VIEWER_INPUTS_MISSING'})

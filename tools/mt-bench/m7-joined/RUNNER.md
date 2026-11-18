@@ -171,7 +171,9 @@ Retain the actual host identities and selected primer concurrency in that plan.
 These are configuration examples, not new authorization or measured headroom.
 
 To vary the total independently, add `"logical-polling-clients":2` to local
-`prepare` for a 37-tenant roster. This discovery-only integer accepts 0..80000.
+`prepare` for a 37-tenant roster. This discovery-only integer accepts zero or a
+positive JavaScript array length, through 4,294,967,295. This representation
+bound does not establish memory or connection capacity.
 When omitted, `sockets-per-tenant` keeps its existing default and behavior.
 Remote discovery uses the existing `resourcePlan.logicalPollingClients` as the
 total; the controller's `logicalPollingClients` mirror and receipt must match.
@@ -188,12 +190,14 @@ writes, validate every emitted viewer binding and keep stored/output/authority
 checks separate. Changing load does not extend source/image/deadline or budget
 authority, and does not alter an already entered run.
 
-Discovery supports 1..10000 tenants, a legacy default of 1..8 polling clients per tenant, bounded
-cadence values and positive finite offered scenario rates that k6 can represent. Total configured phase
-time remains at most three hours and the existing earlier deadline governs.
-Strict preset ranges and source/image tuple checks remain unchanged. An exact
-qualified tuple is still required; a different candidate cannot borrow a
-previous candidate's source qualification or receipt.
+Compose and native Kubernetes discovery resolve positive roster sizes and hot
+weights within the generated JavaScript arrays' combined length limit. Finite
+phase durations must fit k6's Go duration representation; the work window must
+cover the selected phases. Offered rates must produce a positive representable
+k6 time unit. These are planning contracts. The selected source provisioner,
+role configuration, available resources and actual authority still govern
+execution. Source/image identity and fixed acceptance profiles stay exact.
+Each experiment keeps its selected source/image tuple and its own receipts.
 
 The actual public probe accounting helper is exported with a hash and checked
 before driver installation. It records admitted, accepted, uncertain, refused
@@ -473,18 +477,25 @@ cannot promote capacity or release claims. The proof owner's recovery classifier
 retains failed correctness episodes and dependent UNMEASURED claims. Strict
 acceptance remains separate and failed correctness remains failed.
 
-| Independent option | Unit and supported bound |
+| Independent option | Compose and native Kubernetes discovery |
 |---|---|
-| `tenants` | 1–10000; this discovery adapter keeps exactly one API replica |
-| `logical-polling-clients` | 0–80000 total viewers; otherwise tenants × sockets per tenant |
-| `sockets-per-tenant` | 1–8; explicit totals may differ |
-| `offered-rps` | positive finite scenario HTTP attempts per second, within k6 timer representation. Setup and stock probes have separate rates. |
-| `warmup-seconds`, `idle-seconds`, `load-seconds` | integer 1–10800 seconds each, sum ≤10800 and less than work window |
-| `probe-every-ms` | integer 1–3600000 milliseconds |
-| `sampler-interval` | integer 1–60 seconds |
-| `accel`, `hot-factor` | integer 1–10800; existing workload semantics |
-| `primer-concurrency`, `jwt-setup-concurrency` | 1–32 and 1–64, respectively |
-| `diagnostic-resource-profile` | existing named allocations only; CPU in millicpus and memory in bytes derive from that profile |
+| Tenant roster and topology | The source limits tenant count. The generated roster and hot wheel must fit JavaScript arrays. Compose discovery supports 1–16 API replicas and 1–8 evaluator/realtime workers with the required source and role receipts. Native Kubernetes runs one API and one evaluator/realtime worker with an external producer. |
+| `logical-polling-clients`, `sockets-per-tenant` | Choose a nonnegative viewer total within the JavaScript array limit. Compose can derive it from tenants × sockets per tenant. The Kubernetes workload selects the total explicitly. |
+| `offered-rps` | Positive finite scenario HTTP attempts per second with a representable k6 time unit. Setup and stock-probe requests have separate rates. |
+| `warmup-seconds`, `idle-seconds`, `load-seconds`, setup and drain | Positive integer seconds within the shared duration representation. A finite work window must contain the applicable phases. Warmup and idle here are Compose cadence options. Native Kubernetes binds finite setup, load, drain and its outer work window. |
+| `probe-every-ms` | Positive whole milliseconds up to 2,147,483,647. The planned write count must stay below the probe ledger's entry ceiling. |
+| `sampler-interval` | Compose sampler interval of 1–60 seconds. Native Kubernetes has its own observer settings. |
+| `accel`, `hot-factor` | Compose acceleration uses positive integers within the shared input representation. Both transports require the roster plus hot weight to fit the generated array. |
+| `primer-concurrency`, `jwt-setup-concurrency` | The current deployment primer accepts 1–32 workers. Discovery JWT setup accepts a positive JavaScript safe integer and batches at most the remaining roster. |
+| `diagnostic-resource-profile`, `diagnostic-resource-allocation` | Compose accepts named profiles and explicit per-service CPU and memory. Native Kubernetes binds requests and selected limits in its own fixture and allocation. |
+
+The [legacy remote protocol](../remote-pgstream/protocol.py) still uses a
+three-hour combined warmup, idle and load ceiling, a one-hour probe interval
+ceiling and 1–60 seconds for the sampler. Its workload accepts 1–8 sockets per
+tenant, 0–80,000 total viewers, acceleration and hot weight up to 10,800, primer
+concurrency 1–32 and JWT setup concurrency 1–64. The external static binding
+accepts one API and one evaluator/realtime worker. The projection checks these
+limits before launch.
 
 The remote overlay has exactly `binding`, `hostInventory`, and
 `resourceReference`. `binding` contains existing controller protocol identity,
@@ -848,7 +859,7 @@ fewer than 30 accepted witnesses is reported with `p95Qualified: false`. Set
 about 0.1 extra request/s; each witness keeps its own 120-second observation
 budget after the window.
 
-`driver-shards` (2–16, default unsharded) runs that many k6 processes inside the
+`driver-shards` (two through the selected tenant count, default unsharded) runs that many k6 processes inside the
 one admitted k6 container, with the same native limits, labels and cleanup. Each
 process receives a contiguous roster slice and the offered-rate share of its
 slice weight; only roster index 0 keeps the hot factor. Each shard must offer at
@@ -1047,8 +1058,14 @@ no service throughput or capacity.
 ### Selected static branch diagnostics
 
 `--static-workers K` explicitly selects the source-bound static profile in
-`static_topology.py`. The instrument bounds K to 1–4 and retains the existing
-API replica choices. Historical static receipts retain their original source pairs.
+`static_topology.py`. The selected Compose source and instrument support 1–8
+evaluator/realtime workers.
+Discovery accepts an integer API replica count from 1 through 16, independently
+of K. This matches the selected synthetic binding's `replicas.js` producer and
+the instrument's `api` through `api-16` service names. A larger API roster needs
+an extension to both that source contract and those instance/allocation readers.
+The fixed acceptance and pilot grid remains 1, 2 and 4. Historical static receipts
+retain their original source pairs.
 For a new pair, pass the diagnostic publication's `imageReceipt` and
 `imageReceiptSha256` as `--static-build-receipt` and
 `--static-build-receipt-sha256`. Projection checks the build receipt's source
@@ -1308,10 +1325,61 @@ loss, and bounds owned teardown with `cleanupSeconds`. Operator cancellation
 uses the usual signal or `down` on the exact run directory. Batch and reused
 session configurations continue to carry a finite work window.
 
-Current instrument limits remain distinct from service settings. The release
-supports the 10,000-tenant experimental roster, the stock client's 80,000-viewer
-ledger, and the probe's 100,000-write accounting envelope. The numeric cadence
-resolver reports an unrepresentable k6 time unit or Node timer before seeding.
-Explicit allocation profiles retain their checked range and renderer shape.
-Select uncapped services where a reference profile would distort first-fit
+Current instrument limits remain distinct from service settings. Compose and
+native Kubernetes permit larger authored rosters, viewers, hot weights, JWT
+setup batches and finite phase clocks than the reference experiments. Roster,
+viewer and hot-wheel lengths must fit JavaScript arrays. JWT concurrency is a
+positive safe integer; each batch contains at most the remaining roster.
+`jwtSetupConcurrency` in a native workload profile projects to the same local
+`jwt-setup-concurrency` and generated driver environment. Explicit `hotFactor`
+also survives profile binding, dry generation and both transport projections.
+
+Discovery `sockets-per-tenant` also accepts a positive array-representable count.
+When an explicit viewer total is absent, tenants times sockets per tenant must
+fit the same total-viewer array bound. A declared total replaces that product.
+Configured driver partitions may exceed the reference sixteen; every partition
+has at least one roster tenant, all share the one declared driver resource
+allocation, and their summed VUs must fit `maxAggregateVUs`. The partitioner
+preserves every tenant and the authored aggregate offered rate.
+
+Discovery `cleanupSeconds` replaces the one-hour reference cleanup window.
+It remains a finite integer, at least 30 seconds in the local runner and positive
+in the native profile, within the shared duration representation. Native fixture
+and allocation cleanup deadlines must remain ordered and the fixture must end
+within its actual released allocation. A larger numeric range grants no custody
+or cleanup extension to an entered run. Acceptance presets keep their ranges.
+Primer concurrency remains the selected deployment source's explicit 1–32
+contract; extending it requires updating and qualifying that source path.
+
+Configured driver `maxAggregateVUs`, `maxTraceBytes` and `maxTraceRows` replace
+reference budgets. The summed scenario/shard VUs must fit the authored total;
+capture byte and row bounds still stop observation and retain partial results.
+The decompressed capture allowance remains sixteen times the authored compressed
+byte budget and must fit an exact integer. Historical fixed diagnostic modes
+retain their original selections.
+
+A selected source that declares `PREVIEW_MAX_TENANTS=10000` still refuses a
+12,001-tenant execution. Extending that source path requires changing its tenant
+ceiling and propagating the selection into the deployment generator's registry,
+realtime, evaluator and UI `maxTenants`. The helper's larger offline plan does
+not change these source inputs. The source-access residency reader retains the
+actual durable-replay cache's 10,000-entry/256 MiB eviction contract.
+
+The probe ledger defaults to 100,000 writes and a 4 MiB per-file reader budget.
+Fresh Compose discovery can select `--probe-ledger` with a JSON object that sets
+`maxWrites` and `maxBytes`. Shared or native Kubernetes workload intent uses
+`workload.probeLedger` with those same fields. The actor checks both budgets,
+and the reducer verifies the budget retained with its counts. Exhaustion leaves
+the affected observation incomplete. Observer paging/query/byte budgets, the
+Node timer range, the clinical 120-second deadline and owned cleanup still apply.
+A full evaluator progress phase uses three rounds and currently has a 1,024-query
+and 64 MiB capture budget. For example, 10,000 tenants across eight workers need
+1,896 queries at 128 tenants per page. The progress result stays `UNMEASURED`
+when the selected census exceeds those budgets. Source topology admission and
+ordinary traffic evidence have their own checks.
+A larger requested population can exceed an observer budget; that observation
+stays `UNMEASURED` or `PARTIAL`, without a capacity grant. The numeric resolver
+reports unrepresentable k6 durations/time units and combined wheel lengths before
+seeding. Explicit resource allocations remain checked against the lane's actual
+authority. Select uncapped services where a reference profile would distort a
 measurement.

@@ -3,12 +3,14 @@
 // stock-client callbacks retain content and the probe's monotonic clock.
 function assess(clients, expected, doc, witness={}) {
  const no=code=>({ready:false,code});
- if(!Number.isInteger(expected)||expected<0||expected>80000||!Array.isArray(clients)||clients.length!==expected)return no('M7_CLIENT_COUNT');
+ if(!Number.isInteger(expected)||expected<0||!Array.isArray(clients)||clients.length!==expected)return no('M7_CLIENT_COUNT');
  if(clients.some(c=>!c||!Number.isInteger(c.socket)||c.socket<0)||new Set(clients.map(c=>c.socket)).size!==expected)return no('M7_CLIENT_VIEWER');
  const strict=witness.clientProofVersion===2;
  if(strict){
   const slots=witness.expectedSockets;
-  if(!Array.isArray(slots)||slots.length!==expected||new Set(slots).size!==expected||slots.some(x=>!Number.isInteger(x)||x<0)||clients.some(c=>!slots.includes(c.socket)))return no('M7_CLIENT_BINDING');
+  if(!Array.isArray(slots)||slots.length!==expected||slots.some(x=>!Number.isInteger(x)||x<0))return no('M7_CLIENT_BINDING');
+  const matched=new Set(slots);
+  if(matched.size!==expected||clients.some(c=>!matched.has(c.socket)))return no('M7_CLIENT_BINDING');
   if(!Number.isFinite(witness.sentMono)||witness.sentMono<0)return no('M7_CLIENT_CLOCK');
  }
  for(const c of clients){

@@ -8,6 +8,7 @@ import time
 import uuid
 from pathlib import Path
 from contract import require
+import workload_inputs
 
 
 def code(error):
@@ -72,7 +73,7 @@ def preflight(directory,manifest):
         owner=json.loads((d/'owner.json').read_text())
         require(all(owner.get(k)==manifest.get(k) for k in ('owner','pair','instrument')),'M7_COLLECTION_OWNER_SOURCE_CHANGED')
         require((d/'dependencies/node_modules').is_dir(),'M7_COLLECTION_DEPENDENCIES_REQUIRED')
-        require(type(manifest.get('tenants')) is int and 1<=manifest['tenants']<=10000,'M7_COLLECTION_ACTOR_BOUND')
+        require(workload_inputs.tenants(manifest.get('tenants')),'M7_COLLECTION_ACTOR_BOUND')
         temporary=d/('.collector-write-'+uuid.uuid4().hex)
         try:
             with temporary.open('xb') as stream:stream.write(b'synthetic collector preflight\n')

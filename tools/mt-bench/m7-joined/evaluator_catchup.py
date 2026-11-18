@@ -207,7 +207,8 @@ def run(a, directory, manifest, record):
         ids = sorted(ids)
         from discovery_counts import probe_metadata
         accounting, _ = probe_metadata(a, directory / 'load',
-                                       (directory / 'load/runid').read_text().strip(), set(ids))
+                                       (directory / 'load/runid').read_text().strip(), set(ids),
+                                       probe_ledger=manifest['cadence'].get('probeLedger'))
         p.need(accounting is not None and accounting['admissionsClosed'] is True
                and all(row['pending'] == 0 for row in accounting['byTenant'].values()), 'M7_DRAIN_PROBE_PENDING')
         # Bounded preparation and every child command share the original work

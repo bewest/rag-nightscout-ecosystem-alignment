@@ -10,7 +10,7 @@ import threading
 import time
 import uuid
 
-from contract import OWNER, require
+from contract import OWNER, require, discovery_api_replicas
 import role_instances
 
 ROLES = ('api', 'evaluator', 'realtime')
@@ -32,7 +32,7 @@ def option(args):
     if mode == 'off':
         return {}
     require(mode == MODE and args.run_purpose == 'discovery' and args.profile == 'pgstream-sample'
-            and args.replicas in (1, 2, 4) and args.pgstream_topology == 'external-service-v1'
+            and discovery_api_replicas(args.replicas) and args.pgstream_topology == 'external-service-v1'
             and args.load_seconds is not None and args.load_seconds >= 260
             and not getattr(args, 'restart_during_load_after_seconds', None)
             and not getattr(args, 'serial_exchange_diagnostic', False)

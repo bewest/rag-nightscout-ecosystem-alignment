@@ -24,7 +24,7 @@ import math
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
-from contract import (COUNTS, REPLICAS, PILOT_COUNTS, CADENCE, OWNER, SHA, require, digest, labels_match, owned,
+from contract import (COUNTS, REPLICAS, DISCOVERY_MAX_WORKERS, discovery_api_replicas, PILOT_COUNTS, CADENCE, OWNER, SHA, require, digest, labels_match, owned,
                       tenant_projection, metric, oracle, serving_mounts, campaign_check, pilot_check, host_identity, receipt_scope, diagnostic_check, measurement_request, measurement_topology, measurement_output, unaccepted_check, MEASUREMENT_AUTHORIZATION)
 from probe import generate
 from workload import REALISTIC_CADENCE_MS, REALISTIC_MIX, realistic_cycle_ms, generate as generate_workload
@@ -62,13 +62,13 @@ REUSED = ["tools/mt-bench/capacity/probe.js", "tools/mt-bench/capacity/k6/worklo
           "tools/mt-bench/run-catalog/retained.py", "tools/mt-bench/run-catalog/latency.py"]
 
 
-def jwt_setup_concurrency(value):
-    require(type(value) is int and 1 <= value <= 64, "M7_JWT_SETUP_CONCURRENCY_INVALID")
+def jwt_setup_concurrency(value, discovery=False):
+    require(workload_inputs.concurrency(value) and (discovery or value <= 64), "M7_JWT_SETUP_CONCURRENCY_INVALID")
     return value
 
 
 def jwt_setup_env(manifest):
-    return "JWT_SETUP_CONCURRENCY=" + str(jwt_setup_concurrency(manifest.get("jwtSetupConcurrency", 1)))
+    return "JWT_SETUP_CONCURRENCY=" + str(jwt_setup_concurrency(manifest.get("jwtSetupConcurrency", 1), manifest.get('runPurpose') == 'discovery'))
 
 
 def runtime_env(extra=None):
@@ -304,7 +304,12 @@ def compose(d, *args, file=None, input=None, timeout=120):
         clinical_timeline.before_sender_effect(Path(d),args,document(Path(d)/'frozen.compose.json'),document(Path(d)/'owner.json'))
         orchestration_binding.fixture_mutation_preflight(d,argv,command)
     if diagnostic_resources._ACTIVE is not None:
-        diagnostic_resources.before_compose(args, document(Path(d)/'frozen.compose.json'))
+        try:
+            diagnostic_resources.before_compose(args, document(Path(d)/'frozen.compose.json'),
+                document(Path(d)/'owner.json').get('cpuPrecisionPreflight'))
+        except RuntimeError as error:
+            resource_cpu_failure(error)
+            raise
     return command(argv, file=file, input=input, timeout=timeout)
 
 
@@ -436,23 +441,34 @@ def port():
 
 def cadence_options(args):
     value=dict(CADENCE[args.profile])
+    discovery_inputs=getattr(args,'run_purpose','acceptance')=='discovery'
+    phase_limit=workload_inputs.MAX_SECONDS if discovery_inputs else 86400
+    limits={'sockets_per_tenant':workload_inputs.MAX_ARRAY_LENGTH if discovery_inputs else 8,
+            'driver_shards':workload_inputs.MAX_ARRAY_LENGTH if discovery_inputs else 16,
+            'hot_factor':workload_inputs.MAX_ARRAY_LENGTH if discovery_inputs else 86400}
     knobs={'warmup_seconds':'warmupSeconds','idle_seconds':'idleSeconds','load_seconds':'loadSeconds','setup_seconds':'setupSeconds','drain_seconds':'drainSeconds','accel':'accel','hot_factor':'hotFactor','sampler_interval':'samplerIntervalSeconds','probe_every_ms':'probeEveryMs','sockets_per_tenant':'socketsPerTenant','driver_shards':'driverShards'}
     changed={key:getattr(args,key,None) for key in knobs if getattr(args,key,None) is not None}
     require(not changed or args.profile=='pgstream-sample','M7_SAMPLE_KNOB_PROFILE')
+    selected_ledger=getattr(args,'probe_ledger',None)
+    if selected_ledger is not None:
+        require(args.profile=='pgstream-sample' and discovery_inputs and workload_inputs.probe_ledger(selected_ledger),
+                'M7_PROBE_LEDGER_BUDGET')
+        value['probeLedger']=selected_ledger
     if args.profile=='pgstream-sample':
         value.update(warmupSeconds=60,samplerIntervalSeconds=2)
         for key,number in changed.items():
             if key == 'probe_every_ms':
                 require(workload_inputs.probe_interval(number), 'M7_PROBE_INTERVAL_RANGE')
             else:
-                require(type(number) is int and 1 <= number <=
-                        {'sockets_per_tenant':8,'driver_shards':16}.get(key, workload_inputs.MAX_SECONDS),
+                require(type(number) is int and 1 <= number <= limits.get(key,phase_limit),
                         'M7_SAMPLE_KNOB_RANGE:' + knobs[key])
             value[knobs[key]] = number
         require(value['samplerIntervalSeconds'] <= 60 and sum(value.get(key, 0) for key in
-                ('warmupSeconds','idleSeconds','loadSeconds','setupSeconds','drainSeconds')) <= workload_inputs.MAX_SECONDS,
-                'M7_SAMPLE_DURATION_RANGE')
-        require(workload_inputs.probe_fits_ledger(value['probeEveryMs'], value['loadSeconds']),
+                ('warmupSeconds','idleSeconds','loadSeconds','setupSeconds','drainSeconds')) <=
+                phase_limit, 'M7_SAMPLE_DURATION_RANGE')
+        require(workload_inputs.population_fits(getattr(args,'tenants',1), value['hotFactor']),
+                'M7_WORKLOAD_POPULATION_ARRAY_LIMIT')
+        require(workload_inputs.probe_fits_ledger(value['probeEveryMs'], value['loadSeconds'], selected_ledger),
                 'M7_PROBE_LEDGER_WINDOW')
     offered=getattr(args,'offered_rps',None)
     if offered is not None:
@@ -466,6 +482,9 @@ def cadence_options(args):
         require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_VIEWER_DISCOVERY_ONLY')
         require(workload_inputs.polling_clients(clients), 'M7_VIEWER_TOTAL_RANGE')
         value['logicalPollingClients']=clients
+    if args.profile=='pgstream-sample' and discovery_inputs:
+        require(workload_inputs.shard_count(value.get('driverShards',1),getattr(args,'tenants',1)), 'M7_DRIVER_SHARDS_RANGE')
+        require(workload_inputs.polling_clients(value.get('logicalPollingClients',getattr(args,'tenants',1)*value['socketsPerTenant'])), 'M7_VIEWER_TOTAL_RANGE')
     restart=getattr(args,'restart_during_load_after_seconds',None)
     if restart is not None:
         value['restartDuringLoadAfterSeconds']=restart
@@ -538,14 +557,14 @@ def attach(args):
     dependencies=Path(args.dependencies_root).resolve() if getattr(args,'dependencies_root',None) else source
     require(not target.exists() and source.is_dir() and state.is_dir(),'M7_ATTACH_PATH')
     require(git(source,'rev-parse','HEAD')==pair['core'],'M7_OWN_CORE_HEAD_CHANGED')
-    m={'version':1,'directory':str(target),'owner':uuid.uuid4().hex,'project':args.project,'pair':pair,'instrument':pinned,'image':args.image,'imageId':args.image_id or args.image,'profile':'pgstream-sample','runPurpose':'discovery','measurementMode':'accepted','cadence':cadence_options(args),'tenants':args.tenants,'replicas':args.replicas,'freeze':str(Path(args.freeze).resolve()),'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),'coreRepository':str(Path(args.core_repo).resolve()),'attached':True,'completionContract':getattr(args,'completion_contract',None),'jwtSetupConcurrency':jwt_setup_concurrency(getattr(args,'jwt_setup_concurrency',1))}
+    m={'version':1,'directory':str(target),'owner':uuid.uuid4().hex,'project':args.project,'pair':pair,'instrument':pinned,'image':args.image,'imageId':args.image_id or args.image,'profile':'pgstream-sample','runPurpose':'discovery','measurementMode':'accepted','cadence':cadence_options(args),'tenants':args.tenants,'replicas':args.replicas,'freeze':str(Path(args.freeze).resolve()),'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),'coreRepository':str(Path(args.core_repo).resolve()),'attached':True,'completionContract':getattr(args,'completion_contract',None),'jwtSetupConcurrency':jwt_setup_concurrency(getattr(args,'jwt_setup_concurrency',1), args.run_purpose=='discovery')}
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     m.update(static_selection)
     selection=serial_exchange_selection(args)
     if selection is not None:m['serialExchangeDiagnostic']=selection
     select_opportunities(args,m)
     evaluator_catchup.select(args,m)
-    require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and 1<=args.tenants<=10000 and (args.replicas==1 or static_selection),'M7_ATTACH_SCOPE')
+    require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and workload_inputs.tenants(args.tenants) and (args.replicas==1 or static_selection),'M7_ATTACH_SCOPE')
     # Current receipts bind semantic configuration before attachment admission.
     # This is provisional read-only metadata; canonical owner/dependency/resource
     # validation below remains mandatory before a usable attachment is written.
@@ -720,18 +739,38 @@ def unused_project_namespace(project):
         require(not any(name.startswith(project+'_') for name in names),'M7_PROJECT_NAMESPACE_EXISTS')
 
 
-def selected_resources_profile(args):
+def resource_cpu_failure(error):
+    if re.fullmatch(r'M7_DIAGNOSTIC_RESOURCE_CPU_UNREPRESENTABLE:services\.[a-z0-9-]+\.millicpus',str(error)):
+        print(json.dumps({'kind':'resource-cpu-preflight','verdict':'FAIL','code':str(error),
+                          'diagnostic':error.diagnostic},sort_keys=True,allow_nan=False),flush=True)
+
+
+def resource_cpu_preflight(selected, read=None, *, roles=None, observation=None):
+    try:
+        return diagnostic_resources.fresh_cpu_preflight(selected,read,roles=roles,observation=observation)
+    except RuntimeError as error:
+        resource_cpu_failure(error)
+        raise
+
+
+def selected_resources_profile(args, *, inspect_runtime=False):
     named=getattr(args,'diagnostic_resource_profile',None)
     explicit=getattr(args,'diagnostic_resource_allocation',None)
     require(named is None or explicit is None,'M7_DIAGNOSTIC_RESOURCE_SELECTION_AMBIGUOUS')
-    return diagnostic_resources.selection(explicit if explicit is not None else named)
+    selected=diagnostic_resources.selection(explicit if explicit is not None else named)
+    if inspect_runtime:
+        # Observe early; the rendered deployment plan later binds the actual
+        # actor scope. Merely carrying an ops template does not execute it.
+        args.diagnostic_cpu_preflight=resource_cpu_preflight(selected,
+            lambda argv:command(argv,phase='resource-cpu-preflight'),roles=())
+    return selected
 
 
 def prepare(args):
     if args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery' and getattr(args,'backend_subnet',None) and getattr(args,'edge_subnet',None):
         from run_configuration import validate_prepare
         validate_prepare(args)
-    selected=selected_resources_profile(args)
+    selected=selected_resources_profile(args,inspect_runtime=True)
     require(not selected or args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_DIAGNOSTIC_RESOURCE_DISCOVERY_ONLY')
     require(not selected or getattr(args,'generator_dependencies',None),'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
     require(not getattr(args,'vault_refusal_control',None) or selected,'M7_VAULT_CONTROL_RESOURCE_PROFILE_REQUIRED')
@@ -748,10 +787,10 @@ def prepare(args):
     require(bool(getattr(args,"backend_subnet",None))==bool(getattr(args,"edge_subnet",None)),"M7_EXPLICIT_SUBNET_PAIR_REQUIRED")
     require(os.getuid()==1000 and os.getgid()==1000,"M7_HOST_RUNTIME_UID_REQUIRED")
     if args.profile=="pgstream-sample":
-        require(1<=args.tenants<=10000 and (args.replicas==1 or static_topology.option(args)),"M7_SMALL_SAMPLE_LIMIT")
+        require((workload_inputs.tenants(args.tenants) if args.run_purpose=="discovery" else type(args.tenants) is int and 1<=args.tenants<=10000) and (args.replicas==1 or static_topology.option(args)),"M7_SMALL_SAMPLE_LIMIT")
         require(re.fullmatch(r"sha256:[a-f0-9]{64}",getattr(args,"postgres_image",None) or ""),"M7_PGSTREAM_POSTGRES_IMAGE_REQUIRED")
     if args.profile=="fresh-image-diagnostic":require(1<=args.tenants<=10 and 1<=args.replicas<=2,"M7_DIAGNOSTIC_LIMIT_INVALID")
-    require(1<=args.tenants<=10000 and args.replicas in REPLICAS and args.profile in CADENCE, "M7_CAPACITY_CELL_INVALID")
+    require((workload_inputs.tenants(args.tenants) if args.profile=="pgstream-sample" and args.run_purpose=="discovery" else type(args.tenants) is int and 1<=args.tenants<=10000) and (discovery_api_replicas(args.replicas) if args.profile=="pgstream-sample" and args.run_purpose=="discovery" else type(args.replicas) is int and args.replicas in REPLICAS) and args.profile in CADENCE, "M7_CAPACITY_CELL_INVALID")
     require(math.isfinite(args.quiet_load) and 0 <= args.quiet_load <= (os.cpu_count() or 1), "M7_QUIET_BOUND_INVALID")
     require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_./:@-]{1,255}", args.image), "M7_IMAGE_REFERENCE_INVALID")
     target = Path(args.directory).resolve()
@@ -808,7 +847,9 @@ def prepare_staged(args,target,pinned):
          "pair": {"core": args.core_commit, "deploy": args.deploy_commit}, "coreRepository": str(Path(args.core_repo).resolve()),
          "deployRepository": str(Path(args.deploy_repo).resolve()), "instrument": pinned, "image": args.image,
          "tenants": args.tenants, "replicas": args.replicas, "port": port(), "quietLoad": args.quiet_load,
-         "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":cadence_options(args),"completionContract":getattr(args,"completion_contract",None),"jwtSetupConcurrency":jwt_setup_concurrency(getattr(args,"jwt_setup_concurrency",1))}
+         "freeze": str(Path(args.freeze).resolve()), "profile":args.profile,"cadence":cadence_options(args),"completionContract":getattr(args,"completion_contract",None),"jwtSetupConcurrency":jwt_setup_concurrency(getattr(args,"jwt_setup_concurrency",1), getattr(args,"run_purpose","acceptance")=="discovery")}
+    cpu_preflight=getattr(args,'diagnostic_cpu_preflight',None)
+    if cpu_preflight and cpu_preflight.get('verdict')!='NOT_APPLICABLE':m['cpuPrecisionPreflight']=cpu_preflight
     m.update(static_topology.option(args))
     if getattr(args,'namespace_preflight',None):m['namespacePreflight']=args.namespace_preflight
     if getattr(args,'vault_refusal_control',None):m['vaultRefusalControl']=args.vault_refusal_control
@@ -855,11 +896,17 @@ def prepare_staged(args,target,pinned):
     setup_generator(target,m)
     env = runtime_env({**preparation_environment(m),**({"NS_PGSTREAM":"1","NS_POSTGRES_IMAGE":args.postgres_image} if args.profile=="pgstream-sample" else {})})
     edge_budget=diagnostic_resources.edge_worker_budget(selected_resources_profile(args))
-    if edge_budget is not None:env['NS_EDGE_WORKER_PROCESSES']=str(edge_budget['workerProcesses'])
+    if edge_budget is not None:
+        explicit_edge=edge_budget['source']=='explicit-resource-allocation-v1'
+        # The source renderer keeps its reference validation. An authored
+        # allocation projects only the two existing mounted numeric fields.
+        env['NS_EDGE_WORKER_PROCESSES']='1' if explicit_edge else str(edge_budget['workerProcesses'])
+        if explicit_edge:env['NS_EDGE_WORKER_CONNECTIONS']='16384'
     networks=["--backend-subnet",args.backend_subnet,"--edge-subnet",args.edge_subnet] if getattr(args,"backend_subnet",None) else []
     command(["node", overlay / "prepare.js", "--state", target / "state", "--port", str(m["port"]), "--project", m["project"],*networks], cwd=overlay,env=env,phase="product-prepare")
     if edge_budget is not None:
         edge_file=target/'state/edge/nginx.conf'
+        if explicit_edge:edge_file.write_text(project_edge_workers(edge_file.read_text(),edge_budget))
         verify_edge_workers(edge_file.read_text(),edge_budget)
         m['edgeWorkerBudget']={**edge_budget,'configurationSha256':digest(edge_file)}
     # Keep the source binding path stable: guards and optional controller digests
@@ -904,6 +951,16 @@ def prepare_staged(args,target,pinned):
     require(not any("shared_preload_libraries" in str(x) for x in pg["command"][:-6]), "M7_POSTGRES_PRELOAD_ALREADY_SELECTED")
     selected_resources=selected_resources_profile(args)
     config=diagnostic_resources.overlay(config,selected_resources)
+    if isinstance(selected_resources,dict):
+        observation=resource_cpu_preflight(selected_resources,roles=(),
+            observation=getattr(args,'diagnostic_cpu_preflight',None))
+        if observation.get('runtimePrecision')=='runc-systemd-whole-percent-v1':
+            planned=deployment_plan(config,pgstream=m.get('profile')=='pgstream-sample',
+                primer_concurrency_value=m.get('primerConcurrency',1),platform_verification=bool(m.get('platformStartup')))
+            roles=set().union(*(diagnostic_resources.compose_actor_roles(argv,config)
+                                for _,kind,argv in planned if kind=='compose'))
+            observation=resource_cpu_preflight(selected_resources,roles=roles,observation=observation)
+        m['cpuPrecisionPreflight']=observation
     clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'),getattr(args,'clinical_sender_binary',None),getattr(args,'clinical_sender_receipt',None),getattr(args,'clinical_intake_targets',None))
     revision_witness.install(config,target,m,getattr(args,'revision_witness_targets',None))
     api_cause.install(config,target,m,getattr(args,'api_cause_observation','off')=='on')
@@ -1724,7 +1781,7 @@ def discovery_oracle_control(d):
     metrics=document(out/'k6-summary.json')['metrics']
     def snapshot(stage):
         assert_owned(m)
-        try:value,_=observe(sys.modules[__name__],d,out,marker,metrics)
+        try:value,_=observe(sys.modules[__name__],d,out,marker,metrics,probe_ledger=m['cadence'].get('probeLedger'))
         except RuntimeError as error:
             if str(error)!='M7_DISCOVERY_WRONG_DATA' or not hasattr(error,'oracleFindings'):raise
             value=error.oracleFindings
@@ -1998,8 +2055,23 @@ def preflight(d,m,k6_image,oneoff=None):
 def verify_edge_workers(text, budget):
     workers=re.findall(r'^\s*worker_processes\s+([^;]+);',text,re.M)
     connections=re.findall(r'worker_connections\s+([^;]+);',text)
-    require(workers==[str(budget['workerProcesses'])] and connections==[str(budget['workerConnections'])],'M7_EDGE_WORKER_CONFIGURATION')
+    nofile=re.findall(r'^\s*worker_rlimit_nofile\s+([^;]+);',text,re.M)
+    require(workers==[str(budget['workerProcesses'])] and connections==[str(budget['workerConnections'])] and nofile==[str(diagnostic_resources.EDGE_NOFILE)],'M7_EDGE_WORKER_CONFIGURATION')
     return {'workerProcesses':int(workers[0]),'workerConnections':int(connections[0])}
+
+
+def project_edge_workers(text, budget):
+    """Project an explicit allocation into exact source-rendered numeric fields.
+
+    The known source-rendered baseline and descriptor budget must match before
+    replacement. All admission, trust and route bytes remain source output.
+    """
+    require(budget.get('source')=='explicit-resource-allocation-v1','M7_EDGE_PROJECTION_SELECTION')
+    verify_edge_workers(text,{'workerProcesses':1,'workerConnections':16384})
+    text=re.sub(r'(^\s*worker_processes\s+)[^;]+;',lambda match:match[1]+str(budget['workerProcesses'])+';',text,flags=re.M)
+    text=re.sub(r'(worker_connections\s+)[^;]+;',lambda match:match[1]+str(budget['workerConnections'])+';',text)
+    verify_edge_workers(text,budget)
+    return text
 
 
 def edge_runtime(d,m):
@@ -2265,7 +2337,7 @@ def parser():
     sub = p.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("prepare")
     for name in ("directory", "core-repo", "core-commit", "deploy-repo", "deploy-commit", "image"):prep.add_argument("--"+name, required=True)
-    prep.add_argument('--static-workers',type=int,choices=range(1,5),help='Explicit selected static evaluator/realtime process count for bounded branch diagnostics')
+    prep.add_argument('--static-workers',type=int,choices=range(1,DISCOVERY_MAX_WORKERS+1),help='Explicit selected static evaluator/realtime process count for bounded branch diagnostics')
     prep.add_argument('--static-build-receipt', help='Verified local image-build receipt for a frozen static diagnostic pair')
     prep.add_argument('--static-build-receipt-sha256', help='Exact SHA-256 from the selected diagnostic publication')
     prep.add_argument('--pgstream-topology',choices=(stream_topology.COLOCATED,stream_topology.EXTERNAL),default=stream_topology.COLOCATED)
@@ -2276,6 +2348,7 @@ def parser():
     prep.add_argument('--api-cause-observation',choices=('off','on'),default='off',help='Source-pinned private setup-diagnostic observer; file-I/O overhead is separate')
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
     prep.add_argument('--drain-observation', type=json.loads, help='Optional bounded post-writer catchup observer budget')
+    prep.add_argument('--probe-ledger', type=json.loads, help='Discovery probe accounting budgets maxWrites and maxBytes')
     prep.add_argument('--evaluator-catchup',choices=('fixed-target-v1',),help='Read-only post-write drain within existing work deadline; discovery without restart only')
     prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='NEXT explicit trusted SQL opportunity observer; unselected pgstream v2 discovery idle/load')
     prep.add_argument('--fixture-project',help='Owner-selected new Compose project; existing containers, volumes or networks refuse')
@@ -2317,7 +2390,7 @@ def parser():
     prep.add_argument('--workload-scale', type=float, help='Positive representable realistic-v1 rate multiplier; default1 preserves sensor cadence')
     prep.add_argument("--restart-during-load-after-seconds",type=int,help="Discovery-only planned evaluator restart after actual ordinary scenario demand begins; requires v2 receipt")
     prep.add_argument("--offered-rps",type=float,help="Explicit scenario HTTP arrival rate for pgstream discovery only; preserves mix")
-    prep.add_argument("--jwt-setup-concurrency",type=int,choices=range(1,65),default=1)
+    prep.add_argument("--jwt-setup-concurrency",type=int,default=1,help="Positive integer; discovery batches may exceed the legacy64 reference")
     prep.add_argument("--commissioning-slot-wal-mib",type=int,choices=commissioning_wal.VALUES,help="Explicit finite local commissioning WAL retention; omitted keeps deployment default")
     prep.add_argument('--pgstream-notifier-ack-timeout-ms', type=int,
                       help='Explicit acknowledgment budget for a fresh external pgstream Compose discovery run')
@@ -2327,7 +2400,7 @@ def parser():
                       help='Interval between original strict pre-load source snapshots')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,choices=range(1,33),default=1,help="Bounded commissioning workers on a qualified NEXT image; default serial")
-    prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)
+    prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, required=True, help="Discovery API count 1..16; acceptance retains its fixed grid");prep.add_argument("--quiet-load", type=float, default=3)
     attached=sub.add_parser('attach',parents=[prep],add_help=False)
     for name in ('project','source-root','state','env-file'):attached.add_argument('--'+name,required=True)
     attached.add_argument('--compose',action='append',required=True,help='Existing source Compose files, in original order')
@@ -2364,6 +2437,7 @@ def main():
     if args.command == "check-diagnostic":diagnostic_check(document(args.summary));return print("M7_DIAGNOSTIC_PASS_ONLY")
     d, m = load(args.directory,resource_limits=args.command!="down")
     if m.get('attached'):require(args.command not in ('deploy','build','diagnose'),'M7_ATTACHED_RUNTIME_OWNER_ONLY')
+    deadline_limit = workload_inputs.MAX_SECONDS if m.get('runPurpose')=='discovery' else 86400
     if args.command == "host-identity":
         observed=fixture_inventory(m);write(d/"host-identity-inventory.json",observed)
         require(host_identity(observed)==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
@@ -2377,18 +2451,18 @@ def main():
     elif args.command == "source-preflight":discovery_source_preflight(d,m)
     elif args.command == "deploy":
         with command_deadline(args.work_deadline):
-            if args.work_deadline is not None:require(math.isfinite(args.work_deadline) and 0<args.work_deadline-time.time()<=86400,'M7_COMMAND_DEADLINE')
+            if args.work_deadline is not None:require(math.isfinite(args.work_deadline) and 0<args.work_deadline-time.time()<=deadline_limit,'M7_COMMAND_DEADLINE')
             deploy(d, m)
     elif args.command == "preflight":
         with command_deadline(args.work_deadline):
-            if args.work_deadline is not None:require(math.isfinite(args.work_deadline) and 0<args.work_deadline-time.time()<=86400,'M7_COMMAND_DEADLINE')
+            if args.work_deadline is not None:require(math.isfinite(args.work_deadline) and 0<args.work_deadline-time.time()<=deadline_limit,'M7_COMMAND_DEADLINE')
             preflight(d,m,args.k6_image);print('M7_SAMPLE_INSTRUMENTS_CHECKED_NOT_ACCEPTANCE')
     elif args.command == "run":
         until = args.work_deadline
         if m.get('evaluatorCatchup') is not None:
             require(until is not None or 'drainSeconds' in phase_windows.selection(m.get('cadence', {})),
                     'M7_DRAIN_WORK_DEADLINE_REQUIRED')
-        if until is not None:require(math.isfinite(until) and 0<until-time.time()<=86400,'M7_COMMAND_DEADLINE')
+        if until is not None:require(math.isfinite(until) and 0<until-time.time()<=deadline_limit,'M7_COMMAND_DEADLINE')
         with command_deadline(until):run(d,m,args.k6_image)
     elif args.command == "diagnose":diagnose(d,m)
     elif args.command == "control":control(d, m)

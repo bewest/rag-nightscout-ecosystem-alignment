@@ -33,6 +33,20 @@ class Toolchain(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'LOCAL_BOOTSTRAP_HELPER_UNSUPPORTED'):t.local(m,dict(prepare={}))
             self.assertNotIn('bootstrapHelper',t.local(self.manifest(),dict(prepare={}))['prepare'])
             print('RED_RESTORED transport-specific helper scope')
+
+    def test_discovery_api_topology_semantics_preserve_native_execution_boundary(self):
+        selected=dict(coreCommit='1'*40,deployCommit='2'*40,localImageId='sha256:'+'6'*64,sourceAcceptance='PENDING')
+        with patch.object(t.frozen,'source',return_value=selected):
+            for count in (3,16):
+                m=self.manifest();m['topology']['apiReplicas']=count
+                m['application']['buildReceipt']={'path':'/synthetic/build.json','sha256':'a'*64}
+                local=t.local(m,dict(prepare={}))
+                self.assertEqual(local['prepare']['replicas'],count)
+                self.assertEqual(local['prepare']['static-workers'],1)
+                with self.assertRaisesRegex(ValueError,'KUBERNETES_TOPOLOGY_UNSUPPORTED'):t.legacy(m)
+            for count in (0,17,True):
+                m=self.manifest();m['topology']['apiReplicas']=count
+                with self.assertRaisesRegex(ValueError,'TOPOLOGY'):t.legacy(m,'compose')
     def test_job_actual_tool_identity_and_changed_projection_refuse_then_restore(self):
         with TemporaryDirectory() as tmp:
             p=Path(tmp);(p/'ns-job-offline-config').mkdir();(p/'ns-job-offline-request').mkdir()

@@ -11,14 +11,16 @@ import re
 import time
 import uuid
 import evaluator_progress as p
+from contract import DISCOVERY_MAX_WORKERS
 
 KIND = 'evaluator-source-access-v1'
 CATEGORIES = ('snapshot', 'catalogue', 'data')
 COUNTERS = tuple(category + suffix for category in CATEGORIES for suffix in ('Attempts', 'Completed'))
 FIELDS = set(COUNTERS) | {'residentTenants', 'residentEncodedBytes', 'evictions'}
-LIMITS = {'maxInstances': 4, 'selectorRows': 128, 'queries': 4,
+PREVIOUS_LIMITS = {'maxInstances': 4, 'selectorRows': 128, 'queries': 4,
           'responseBytes': 1048576, 'totalBytes': 4194304, 'seconds': 20,
           'residentTenants': 10000, 'residentEncodedBytes': 268435456}
+LIMITS = {**PREVIOUS_LIMITS, 'maxInstances':DISCOVERY_MAX_WORKERS, 'queries':DISCOVERY_MAX_WORKERS}
 _OBSERVER = str(uuid.uuid4())
 
 
@@ -96,7 +98,9 @@ def _decode(value, source, owned):
     p.need(value.get('owner') == owned, 'M7_SOURCE_ACCESS_OWNER', 'FAIL')
     p.need(value.get('verdict') == 'PASS', value.get('code') or 'M7_SOURCE_ACCESS_PARTIAL', value.get('verdict') if value.get('verdict') in ('FAIL', 'UNMEASURED') else 'UNMEASURED')
     selector(value['selected'], value['services'])
-    p.need(value.get('limits') == LIMITS and value.get('clock') == 'single observer time.monotonic_ns', 'M7_SOURCE_ACCESS_LIMITS')
+    limits=value.get('limits')
+    p.need(limits in (PREVIOUS_LIMITS,LIMITS) and len(value['services'])<=limits['queries'] and
+           value.get('clock') == 'single observer time.monotonic_ns', 'M7_SOURCE_ACCESS_LIMITS')
     window = value.get('readWindow', {})
     p.need(set(window) == {'startNs', 'endNs'} and all(type(x) is int and x >= 0 for x in window.values()) and window['startNs'] <= window['endNs'] and window['endNs'] - window['startNs'] <= LIMITS['seconds'] * 1e9, 'M7_SOURCE_ACCESS_CLOCK')
     cost = value.get('cost', {})
@@ -116,6 +120,7 @@ def assess(before, after, source, owned, *, criterion):
         binding(source); owner(owned)
         p.need(criterion in ('timer-only', 'acquisition'), 'M7_SOURCE_ACCESS_CRITERION')
         a = _decode(before, source, owned); b = _decode(after, source, owned)
+        p.need(a['limits']==b['limits'], 'M7_SOURCE_ACCESS_LIMITS')
         p.need(a['observerId'] == b['observerId'] and isinstance(a['observerId'], str) and p.UUID.fullmatch(a['observerId']) and a['services'] == b['services'] and a['selected'] == b['selected'], 'M7_SOURCE_ACCESS_OBSERVER')
         p.need(a['readWindow']['endNs'] <= b['readWindow']['startNs'], 'M7_SOURCE_ACCESS_CLOCK')
         deltas = {}; totals = dict.fromkeys(COUNTERS + ('evictions',), 0)
@@ -139,7 +144,7 @@ def assess(before, after, source, owned, *, criterion):
             code = None if verdict == 'PASS' else 'M7_SOURCE_ACCESS_NOT_OBSERVED'
         return {'kind': KIND, 'criterion': criterion, 'verdict': verdict, 'code': code,
                 'source': source, 'owner': owned, 'byService': deltas, 'totals': totals,
-                'collectorCost': {'before': a['cost'], 'after': b['cost']}, 'limits': dict(LIMITS),
+                'collectorCost': {'before': a['cost'], 'after': b['cost']}, 'limits': a['limits'],
                 'scope': 'actual source-access census only; timer occurrence/output/clinical completion require their independent witness'}
     except p.Refused as error:
         return {'kind': KIND, 'criterion': criterion, 'verdict': error.verdict, 'code': str(error)}

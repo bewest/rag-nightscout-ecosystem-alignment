@@ -15,10 +15,11 @@ import workload_runtime
 
 
 def environment(c, d):
-    env = {key: value for key, value in os.environ.items() if key not in ('NODE_PATH', 'NODE_OPTIONS', 'LD_PRELOAD', 'LD_LIBRARY_PATH')}
+    env = {key: value for key, value in os.environ.items() if key not in ('NODE_PATH', 'NODE_OPTIONS', 'LD_PRELOAD', 'LD_LIBRARY_PATH', 'M7_PROBE_LEDGER')}
     env.update(M7_RUN_PURPOSE='discovery', M7_GENERATOR_ROOT=c['driver']['dependencies'],
                M7_COMPLETION_SOURCE=json.dumps(c['completion']), K8S_ADAPTER=str(k.HERE / 'adapter.py'),
                K8S_PYTHON=sys.executable, K8S_RUN_DIRECTORY=str(d))
+    env.update(workload_runtime.workload_inputs.probe_ledger_env(c.get('workload', {})))
     return env
 
 
@@ -205,7 +206,7 @@ def completion(c):
     k.need(b.get('kind') == 'evaluator-work-v2' and b.get('pair') == c['pins']['pair'] and b.get('imageId') == c['pins']['appImageId'] and b.get('instrument') == c['pins']['instrument'], 'COMPLETION_SOURCE_CHANGED')
 
 
-def progress(d, c, objects, client):
+def progress(d, c, objects, client, *, raw_output=None):
     ids = [r['id'] for r in roster(c)]
     baseline = k.active_baseline(d)
     before = k.observe(c, objects, client, baseline)
@@ -213,7 +214,17 @@ def progress(d, c, objects, client):
     helper = (k.M7 / 'evaluator-progress.cjs').read_text()
     def fetch(role, selected, queries, budget):
         prefix = 'const M7_PROGRESS_IDS=' + json.dumps(selected) + ';const M7_PROGRESS_QUERY_BUDGET=' + str(queries) + ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) + ';\n'
-        return client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'], data=(prefix + helper).encode(), read=False)
+        raw = client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'], data=(prefix + helper).encode(), read=False)
+        if raw_output is not None:
+            fd = os.open(raw_output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, 'wb') as stream:
+                stream.write(raw)
+            identity = before['pods'][pod]
+            k.write(raw_output.with_name('progress-after-response.json'), {
+                'observedAt':time.time(), 'bytes':len(raw), 'sha256':k.digest(raw_output),
+                'namespaceUid':before['namespace']['uid'], 'podUid':identity['uid'],
+                'containerId':identity['containers'][container]['containerID'], 'pins':c['pins']})
+        return raw
     value = k.evaluator_progress.round_view(['evaluator'], ids, fetch)
     k.observe(c, objects, client, baseline)
     return value
@@ -422,7 +433,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
             # A native k6 already in an operator-owned finite resource scope.
             # No Docker network/volume assumption or new driver Pod is introduced.
             env.update(BASE_URL=c['baseUrl'], TENANTS_FILE=c['tenantsFile'], RUN_ID=runid, RUN_START=str(int(time.time() * 1000)),
-                       DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY='1',
+                       DURATION=str(settings['loadSeconds']), ACCEL='1', HOT_FACTOR=str(settings.get('hotFactor', 1)), JWT_SETUP_CONCURRENCY=str(settings.get('jwtSetupConcurrency', 1)),
                        SETTINGS_FINGERPRINT=c['settingsFingerprint'],
                        SHAPES='w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status')
             # k6's native terminal summary can exceed the bounded witness reader.
@@ -468,13 +479,13 @@ def execute(d, c, objects, client, load=False, recovery=False):
             raise midpoint_failure[0]
         k.need(not midpoint.is_alive() and (out / 'progress-midpoint.json').is_file(), 'MIDPOINT_UNMEASURED', 'UNMEASURED')
         k.write(out / 'after.json', k.observe(c, objects, client, baseline))
-        k.write(out / 'progress-after.json', progress(d, c, objects, client))
         k.write(out / 'window.json', {'startedAt': started, 'endedAt': time.time(), 'loadStartedAt': load_started,
                                      'loadEndedAt': load_ended, 'loadProcessStartedAt': load_process_started,
                                      'loadProcessEndedAt': load_process_ended,
                                      'loadWindowBasis': 'first ordinary scenario request through configured duration capped at native exit; JWT setup and final drain excluded',
                                      'runId': runid, 'pins': c['pins'],
                                      'context': c['context'], 'namespaceUid': baseline['namespace']['uid']})
+        terminal_progress(d, out, c, objects, client, runid, load, baseline['namespace']['uid'])
         return assess_stage(d, out, c, objects, client)
     except Exception as error:
         k.write(out / 'failure.json', {'verdict': getattr(error, 'verdict', 'UNMEASURED'), 'code': str(error) if str(error) == 'EVALUATOR_SCOPE_UNSAFE' or str(error).startswith(('K8S_', 'M7_')) else 'K8S_STAGE_FAILED', 'capacityAcceptance': 'NOT_GRANTED'})
@@ -489,6 +500,38 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 os.killpg(process.pid, signal.SIGKILL)
                 process.wait(timeout=2)
         log.close()
+
+
+def terminal_progress(d, out, c, objects, client, runid, load, namespace_uid):
+    raw = out / 'progress-after.private.jsonl'
+    try:
+        k.write(out / 'progress-after.json', progress(d, c, objects, client, raw_output=raw))
+    except (k.Refused, k.evaluator_progress.Refused) as error:
+        evidence = {'verdict':error.verdict, 'code':str(error), 'responseRetained':raw.is_file(),
+                    'namespaceUid':namespace_uid, 'pins':c['pins']}
+        if diagnostic := getattr(error,'diagnostic',None):
+            evidence['diagnostic'] = diagnostic  # Bounded, allowlisted row projection from round_view.
+        k.write(out / 'progress-after-failure.json', evidence)
+        if load:
+            storage_after_progress_failure(d, out, c, objects, client, runid, namespace_uid)
+        raise
+
+
+def storage_after_progress_failure(d, out, c, objects, client, runid, namespace_uid):
+    receipt = {'verdict':'UNMEASURED', 'runId':runid, 'namespaceUid':namespace_uid, 'pins':c['pins']}
+    try:
+        k.deadline(c)
+        values = k.stored(d, c, objects, runid, client)
+        tenants = {row['id'] for row in roster(c)}
+        k.need(set(values)<=tenants and all(set(rows)<={'entries','devicestatus','treatments','probe'} and
+               all(type(n) is int and n>=0 for n in rows.values()) for rows in values.values()), 'STORAGE_ROSTER_CHANGED')
+        counts = out / 'stored-counts.json'
+        k.write(counts, values)
+        receipt.update(verdict='OBSERVED', countsSha256=k.digest(counts))
+    except Exception as error:
+        code = str(error)
+        receipt['code'] = code if isinstance(error,k.Refused) else 'K8S_STORAGE_OBSERVATION_UNMEASURED'
+    k.write(out / 'storage-readback.json', receipt)
 
 
 def semantic(c, out, *, run=finite):
@@ -518,7 +561,8 @@ def accepted_writes(out, c, values, metrics=None):
     view.mkdir(mode=0o700, exist_ok=True)
     k.write(view / 'tenants.private.json', tenants)
     facade = SimpleNamespace(document=k.document, write=k.write, stored=lambda *_: values)
-    counts, known = k.discovery_counts.observe(facade, view, out, runid, metrics)
+    counts, known = k.discovery_counts.observe(facade, view, out, runid, metrics,
+                                               probe_ledger=c.get('workload', {}).get('probeLedger'))
     k.need(known, 'ACCEPTED_WRITE_UNMEASURED', 'UNMEASURED')
     k.need(counts.get('uncertain') == 0 and all(row['accepted'] == row['stored'] for row in counts['rows']),
            'WORKLOAD_WRITE_UNCERTAIN', 'UNMEASURED')

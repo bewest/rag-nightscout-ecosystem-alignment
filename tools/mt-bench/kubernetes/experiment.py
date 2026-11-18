@@ -13,6 +13,7 @@ import kube_adapter as k
 from auto_catalog import auto_catalog
 import execute
 import frozen
+import edge_configuration
 import matrix
 import primer_storage
 from workloads import profile, reduce
@@ -114,6 +115,7 @@ def materialize(manifest, binding_repo, deploy_repo, out):
 
 
 def workload(m):
+    edge_configuration.selection(m.get('edge'),k.need)
     selected = frozen.source(m)
     p = m['profile']
     k.need('referencePins' not in p, 'DUPLICATE_SOURCE_SELECTION')
@@ -144,6 +146,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     config = k.document(instance['config'])
     inventory = k.document(instance['inventory'])
     render = k.document(instance['render'])
+    edge=edge_configuration.check(m,inventory,k.manifests(render),k.need)
     delivery = frozen.read_ref(instance['delivery'])
     frozen.registry(delivery, inventory['images'], m)
     selected = frozen.source(m)
@@ -166,6 +169,8 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
         primer_storage.verify_receipt(c[frozen.PRIMER_STORAGE],c['primerStorageReceipt'])
     else:
         k.need('primerStorageReceipt' not in instance and 'primerStorageReceipt' not in config, 'PRIMER_STORAGE_UNDECLARED')
+    k.need('edgeConfiguration' not in config or config['edgeConfiguration']==edge,'EDGE_CONFIGURATION_CHANGED')
+    if edge is not None:c['edgeConfiguration']=edge
     k.need('producerAckReadback' not in config, 'PGSTREAM_ACK_READBACK_UNDECLARED')
     if frozen.ACK_BUDGET in selected:
         k.need('producerAckReadback' in instance, 'PGSTREAM_ACK_READBACK_REQUIRED')

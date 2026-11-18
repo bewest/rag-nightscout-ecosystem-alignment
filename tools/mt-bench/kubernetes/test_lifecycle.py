@@ -18,7 +18,9 @@ class Lifecycle(unittest.TestCase):
             e=dict(runId=case.name,namespace='ns-synth-any',tenantCount=500,sourceCommit='1'*40,
                    workDeadlineSeconds=7200,cleanupDeadlineSeconds=7800,provisionDeadlineSeconds=3600)
             put(files['environment'],e)
-            put(files['intent'],{'profile':{'population':{'provisionedTenants':500},'proposedEnvelope':{'nativeLimits':{'millicpus':8000,'memoryBytes':8*1024**3}}}})
+            intent={'profile':{'population':{'provisionedTenants':500},'phases':{'cohortReadySeconds':900},
+                              'proposedEnvelope':{'nativeLimits':{'millicpus':8000,'memoryBytes':8*1024**3}}}}
+            put(files['intent'],intent)
             put(files['preflight'],{'commissioning':'PREFLIGHT_ONLY','experiment':{'renderSha256':l.sha(files['render'])}})
             for stage in l.STAGES:put(case/'stages'/(stage+'.json'),{'items':[]})
             put(p/'binding/binding.json',{'files':{}})
@@ -39,6 +41,8 @@ class Lifecycle(unittest.TestCase):
                     restore();self.assertEqual(l.fixture_config(path),frozen)
                     print('RED_RESTORED',code)
                 refusal('INPUT_CHANGED',lambda:(p/'k6').write_text('wrong'),lambda:(p/'k6').write_text('synthetic'))
+                changed=copy.deepcopy(intent);changed['profile']['phases']['cohortReadySeconds']=899
+                refusal('INPUT_CHANGED',lambda:put(files['intent'],changed),lambda:put(files['intent'],intent))
                 refusal('SOURCE_CHANGED',lambda:put(files['environment'],{**e,'sourceCommit':'9'*40}),lambda:put(files['environment'],e))
                 refusal('RESOURCE_ACCOUNTING_MISMATCH',lambda:put(files['environment'],{**e,'resourceAccounting':'requests-v1'}),lambda:put(files['environment'],e))
                 wrong=copy.deepcopy(frozen);wrong['nativeLimits']['millicpus']=9000

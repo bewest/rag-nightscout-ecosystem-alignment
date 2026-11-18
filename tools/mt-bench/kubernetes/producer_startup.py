@@ -10,6 +10,15 @@ CODES = re.compile(rb'\b(?:K8S_CANDIDATE_|EVALUATOR_|CLINICAL_|M7_|PRIMER_|BOOTS
 TERMINAL_CODES = {'PGSTREAM_CONFIG_INVALID', 'PGSTREAM_SOURCE_MISMATCH', 'PGSTREAM_ARGUMENT_INVALID', 'OBSERVED_PRODUCER_CONFIG_LOAD_ERROR'}
 
 
+def cohort_ready_seconds(phases, work_seconds):
+    if 'cohortReadySeconds' not in phases:
+        return 300
+    selected = phases['cohortReadySeconds']
+    if type(work_seconds) is not int or type(selected) is not int or not 1 <= selected <= work_seconds:
+        raise ValueError('K8S_LIFECYCLE_COHORT_READY_WINDOW')
+    return selected
+
+
 def policy(value, work_seconds):
     if value is None:
         return None

@@ -7,6 +7,7 @@ environments remain private; journal layouts retain hashes, never env values.
 """
 from pathlib import Path
 import copy,datetime,hashlib,json,os,re,time
+import workload_inputs
 from contract import require,OWNER
 ATTEMPT='org.nightscout.m7.attempt'
 PROJECT='com.docker.compose.project'
@@ -351,7 +352,7 @@ def _oneoff_intent(binding,kind,argv,scope,runner,cidfile):
    selected=phase_windows.selection(owner.get('cadence',{}));window=load(Path(directory)/'load/phase-windows.json')
    require('setupSeconds'in selected and re.fullmatch('[1-9][0-9]*',env.get('M7_SETUP_SECONDS',''))is not None and 1<=int(env['M7_SETUP_SECONDS'])<=selected['setupSeconds']and window.get('owner')==scope['owner']and window.get('setupSeconds')==selected['setupSeconds']and env.get('M7_SETUP_UNTIL_MS')==str(window.get('setupUntilUnixMs')),'M7_BINDING_ONEOFF_SETUP_WINDOW_CHANGED')
   if 'JWT_SETUP_CONCURRENCY'in env or 'jwtSetupConcurrency'in owner:
-   concurrency=owner.get('jwtSetupConcurrency',1);require(type(concurrency)is int and 1<=concurrency<=64 and env.get('JWT_SETUP_CONCURRENCY')==str(concurrency),'M7_BINDING_ONEOFF_JWT_SETUP_CHANGED')
+   concurrency=owner.get('jwtSetupConcurrency',1);require(workload_inputs.concurrency(concurrency) and (owner.get('runPurpose')=='discovery' or concurrency<=64) and env.get('JWT_SETUP_CONCURRENCY')==str(concurrency),'M7_BINDING_ONEOFF_JWT_SETUP_CHANGED')
  else:require(command==(['version']if kind=='k6-version'else['run','--help'])and network=='none'and not mounts and not env and user is None and name is None,'M7_BINDING_ONEOFF_PROBE_COMMAND_CHANGED')
  meta=json.loads(runner(['docker','image','inspect',scope['imageId']]))[0];require(meta['Id']==scope['imageId'],'M7_BINDING_ONEOFF_IMAGE_CHANGED');default=meta['Config'];merged=dict(x.split('=',1)for x in default.get('Env',[])if'='in x);merged.update(env)
  layout={'imageId':scope['imageId'],'command':command,'entrypoint':default.get('Entrypoint'),'environmentHashes':{k:sha(v.encode())for k,v in merged.items()},'mounts':sorted(mounts),'network':network,'user':user or default.get('User',''),'owner':scope['owner'],'labels':{**labels,ATTEMPT:binding['attempt']}}

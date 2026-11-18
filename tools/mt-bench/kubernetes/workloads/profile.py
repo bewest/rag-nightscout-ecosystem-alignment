@@ -40,9 +40,11 @@ def validate(p):
              for k in ('core', 'deploy', 'bindingCommit')), 'SOURCE_PINS')
     n = p['population']['provisionedTenants']
     w = p['workload']
-    need(type(n) is int and 2 <= n <= 10000, 'TENANTS')
+    need(workload_runtime.workload_inputs.tenants(n) and n >= 2, 'TENANTS')
     workload_runtime.validate(w, need, n)
-    need(p['population']['ordinaryRosterTenants'] == n and p['population']['hotFactor'] == 1,
+    need(p['population']['ordinaryRosterTenants'] == n and
+         workload_runtime.workload_inputs.tenants(p['population']['hotFactor']) and
+         p['population']['hotFactor'] == w.get('hotFactor', 1),
          'ADAPTER_ROSTER_OR_HOT_FACTOR_UNSUPPORTED')
     need(p['history'] == {'mode': 'existing-provisioner-only', 'additionalSeedRows': 0,
                           'retention': 'UNMEASURED'}, 'HISTORY_UNSUPPORTED')
@@ -51,10 +53,14 @@ def validate(p):
     access_setup = p['phases'].get('accessSetupSeconds')
     if 'accessSetupSeconds' in p['phases']:
         need(workload_runtime.workload_inputs.seconds(access_setup), 'ACCESS_SETUP_WINDOW')
+    if 'cohortReadySeconds' in p['phases']:
+        need(workload_runtime.workload_inputs.seconds(p['phases']['cohortReadySeconds']), 'COHORT_READY_WINDOW')
     access_window = access_setup + 60 if access_setup is not None else 0
-    need(p['phases']['workSeconds'] >= w.get('setupSeconds', 310) + w['loadSeconds'] + w.get('drainSeconds', 120) + access_window + 5,
+    work = p['phases']['workSeconds']
+    need(workload_runtime.workload_inputs.seconds(work) and
+         work >= w.get('setupSeconds', 310) + w['loadSeconds'] + w.get('drainSeconds', 120) + access_window + 5,
          'WORK_WINDOW')
-    need(1 <= p['phases']['cleanupSeconds'] <= 3600, 'CLEANUP_WINDOW')
+    need(workload_runtime.workload_inputs.seconds(p['phases']['cleanupSeconds']), 'CLEANUP_WINDOW')
     for group in ('clusterLimits', 'nativeLimits'):
         need(all(type(x) is int and x > 0 for x in p['proposedEnvelope'][group].values()), 'RESOURCE_ENVELOPE')
     need(p['capacityAcceptance'] == 'NOT_GRANTED', 'NO_CAPACITY_GRANT')
@@ -72,8 +78,8 @@ def describe(p):
             'effectivePhaseWindows': {
                 key: {'seconds': w.get(key, default), 'origin': 'authored' if key in w else 'legacy default'}
                 for key, default in (('setupSeconds', 310), ('drainSeconds', 120))
-            } | ({'accessSetupSeconds': {'seconds': p['phases']['accessSetupSeconds'], 'origin': 'authored'}}
-                 if 'accessSetupSeconds' in p['phases'] else {}),
+            } | {key:{'seconds':p['phases'][key], 'origin':'authored'} for key in
+                 ('accessSetupSeconds','cohortReadySeconds') if key in p['phases']},
             'effectiveOrdinaryIngestionCadenceSecondsPerTenant': cycle_ms / 1000,
             'nominalIngestionCadenceSeconds': 300,
             'cadenceMultiplier': 300000 / cycle_ms,
@@ -86,7 +92,7 @@ def describe(p):
             'limits': ['realistic-v1 scale1 preserves per-shape sensor cadence; aggregate profiles retain their authored rate',
                        'HTTP logical pollers are not a configured population; shape rates define offered REST',
                        'all ordinary roster tenants are eligible; actual changed/witness sets are observed',
-                       'no hot/cold skew, extra history seeding, alarm synthesis or reconnect burst is executed'],
+                       'hotFactor weights the first roster tenant; no extra history seeding, alarm synthesis or reconnect burst is executed'],
             'capacityAcceptance': 'NOT_GRANTED'}
 
 
@@ -111,6 +117,7 @@ def bind(p, config):
     existing = config.get('workload', {})
     need(set(existing) <= set(p['workload']) | {'pointId', 'hotFactor', 'offeredRps', 'workloadMix', 'workloadScale'}, 'UNKNOWN_WORKLOAD_FIELD')
     need(existing.get('hotFactor', 1) == p['population']['hotFactor'], 'PROFILE_HOT_FACTOR')
+    need(existing.get('probeLedger',p['workload'].get('probeLedger')) == p['workload'].get('probeLedger'), 'PROBE_LEDGER_CHANGED')
     result = copy.deepcopy(config)
     access_setup = p['phases'].get('accessSetupSeconds')
     need(config.get('accessSetupSeconds', access_setup) == access_setup, 'ACCESS_SETUP_WINDOW_CHANGED')
@@ -135,8 +142,8 @@ def dry(p, target):
     roster = [{'id': f'00000000-0000-4000-8000-{i:012d}', 'host': f'load-{i}.test',
                'token': 'synthetic-loopback-only'} for i in range(n)]
     write(target / 'tenants.json', roster)
-    env = {'DURATION': str(p['workload']['loadSeconds']), 'ACCEL': '1', 'HOT_FACTOR': '1',
-           'JWT_SETUP_CONCURRENCY': '1',
+    env = {'DURATION': str(p['workload']['loadSeconds']), 'ACCEL': '1', 'HOT_FACTOR': str(p['workload'].get('hotFactor', 1)),
+           'JWT_SETUP_CONCURRENCY': str(p['workload'].get('jwtSetupConcurrency', 1)),
            'SHAPES': ','.join(SHAPES), 'RUN_ID': 'synthetic-profile-dry',
            'RUN_START': '1800000000000', 'TENANTS_FILE': str(target / 'tenants.json')}
     env = workload_runtime.environment(p['workload'], env, need)

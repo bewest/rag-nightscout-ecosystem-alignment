@@ -4,18 +4,22 @@ import workload_inputs
 
 SHAPES = dict(w_sgv=1, w_devicestatus=1, w_treatments_v3=1,
               r_sgv=5, r_devicestatus=1, r_treatments=1, r_status=1)
-SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE')
+SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE', 'JWT_SETUP_CONCURRENCY')
 
 
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards'}, 'WORKLOAD_FIELDS')
+         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger'}, 'WORKLOAD_FIELDS')
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
     need(workload_inputs.probe_interval(w.get('probeEveryMs')), 'WORKLOAD_PROBE_INTERVAL')
-    need(workload_inputs.probe_fits_ledger(w['probeEveryMs'], w['loadSeconds']), 'WORKLOAD_PROBE_LEDGER_WINDOW')
-    need(type(w.get('hotFactor', 1)) is int and 1 <= w.get('hotFactor', 1) <= 10, 'WORKLOAD_HOT_FACTOR')
+    need('probeLedger' not in w or workload_inputs.probe_ledger(w['probeLedger']), 'WORKLOAD_PROBE_LEDGER_BUDGET')
+    need(workload_inputs.probe_fits_ledger(w['probeEveryMs'], w['loadSeconds'], w.get('probeLedger')), 'WORKLOAD_PROBE_LEDGER_WINDOW')
+    need(workload_inputs.tenants(w.get('hotFactor', 1)), 'WORKLOAD_HOT_FACTOR')
+    need(tenants is None or workload_inputs.population_fits(tenants, w.get('hotFactor', 1)),
+         'WORKLOAD_POPULATION_ARRAY_LIMIT')
+    need(workload_inputs.concurrency(w.get('jwtSetupConcurrency', 1)), 'WORKLOAD_JWT_SETUP_CONCURRENCY')
     for key, default in (('setupSeconds', 310), ('drainSeconds', 120)):
         need(workload_inputs.seconds(w.get(key, default)), 'PHASE_WINDOW:' + key)
     if 'workloadMix' in w:
@@ -34,7 +38,7 @@ def validate(w, need, tenants=None):
     need('driverShards' not in w or 'driverPlan' in w, 'DRIVER_PLAN_REQUIRED')
     if 'driverPlan' in w:
         import driver_vu_diagnostic as driver
-        need(type(w.get('driverShards', 1)) is int and 1 <= w.get('driverShards', 1) <= 16, 'DRIVER_SHARDS')
+        need(workload_inputs.shard_count(w.get('driverShards', 1), tenants), 'DRIVER_SHARDS')
         driver.configuration(w['driverPlan'], w)
         need(set(w['driverPlan']['scenarios']) == set(SHAPES), 'DRIVER_SEVEN_SHAPES_REQUIRED')
     return w
@@ -59,6 +63,8 @@ def environment(w, inherited, need):
     # silently inherit, round or substitute a different workload selection.
     selected = ({'M7_WORKLOAD_MIX': w['workloadMix'], 'M7_WORKLOAD_SCALE': str(w.get('workloadScale', 1))}
                 if 'workloadMix' in w else {'OFFERED_RPS': str(w['offeredRps'])})
+    if 'jwtSetupConcurrency' in w or 'JWT_SETUP_CONCURRENCY' in inherited:
+        selected['JWT_SETUP_CONCURRENCY'] = str(w.get('jwtSetupConcurrency', 1))
     for key in SELECTORS:
         need(key not in inherited or key in selected and inherited[key] == selected[key],
              'WORKLOAD_ENVIRONMENT_CONFLICT')

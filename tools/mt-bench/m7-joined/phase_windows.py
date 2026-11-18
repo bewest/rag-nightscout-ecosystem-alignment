@@ -6,10 +6,11 @@ selected clinical witness keeps its independent strict 120-second deadline.
 """
 import math
 from contract import require
+import workload_inputs
 
-# Seconds are also transported as integer milliseconds to JavaScript. This is
-# a numeric representation boundary, not a workload or application limit.
-MAX_SECONDS = (2**53 - 1) // 1000
+# k6 parses setupTimeout as a signed64-bit Go nanosecond duration. This is
+# a representation boundary, not a reference workload or application limit.
+MAX_SECONDS = workload_inputs.MAX_SECONDS
 OBSERVER_KEYS = frozenset(('maxRounds','maxQueries','maxBytes','roundSeconds','intervalSeconds'))
 
 

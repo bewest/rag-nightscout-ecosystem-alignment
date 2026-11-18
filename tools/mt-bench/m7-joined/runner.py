@@ -21,6 +21,7 @@ import uuid
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import adapter as a
+import workload_inputs
 from contract import require
 from auto_catalog import auto_catalog
 
@@ -148,8 +149,9 @@ def validate_config(config):
     require(re.fullmatch(r'sha256:[a-f0-9]{64}', config['k6Image']) is not None, 'M7_RUNNER_K6_PIN')
     work = config['workSeconds']
     local_to_completion = work is None and tier == 'discovery'
-    require((local_to_completion or type(work) is int and 30 <= work <= 86400)
-            and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <= 3600,
+    require((local_to_completion or type(work) is int and 30 <= work <= (workload_inputs.MAX_SECONDS if tier == "discovery" else 86400))
+            and type(config['cleanupSeconds']) is int and 30 <= config['cleanupSeconds'] <=
+            (workload_inputs.MAX_SECONDS if tier == 'discovery' else 3600),
             'M7_RUNNER_FINITE_LIMIT')
     require(not local_to_completion or not os.environ.get('M7_BATCH_RESERVATION'),
             'M7_RUNNER_TO_COMPLETION_REQUIRES_ONE_SHOT')

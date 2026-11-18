@@ -61,7 +61,8 @@ class WorkloadScale(unittest.TestCase):
     kube.validate(w,adapter.require,tenants=1000)
 
  def test_canonical_cadence_and_local_eight_shard_environment(self):
-  args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',workload_mix='realistic-v1',workload_scale=2,driver_shards=8)
+  # Partition validation uses the actual 1000-tenant roster constructed below.
+  args=SimpleNamespace(tenants=1000,profile='pgstream-sample',run_purpose='discovery',workload_mix='realistic-v1',workload_scale=2,driver_shards=8)
   cadence=adapter.cadence_options(args);self.assertEqual(cadence['workloadScale'],2)
   for value in (True,0,-1,float('nan'),float('inf')):
    args.workload_scale=value

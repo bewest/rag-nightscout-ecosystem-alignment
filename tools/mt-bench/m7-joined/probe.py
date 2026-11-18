@@ -1,7 +1,7 @@
 """Explicit adaptation of a tracked prior probe, never a serving-source mount."""
 import hashlib
 from pathlib import Path
-from contract import require
+from contract import DISCOVERY_MAX_WORKERS, require
 
 
 def generate(root, target, *, serial_exchange=False):
@@ -16,7 +16,7 @@ def generate(root, target, *, serial_exchange=False):
     before_restart = "    const restartIso = new Date().toISOString(); const r0 = Date.now();"
     require(source.count(before_restart)==1,"M7_PROBE_RESTART_TIME_ANCHOR_CHANGED")
     source=source.replace(before_restart,r'''    const evaluatorServices=JSON.parse(process.env.M7_EVALUATOR_SERVICES||'null');
-    if(!Array.isArray(evaluatorServices)||!evaluatorServices.length||evaluatorServices.length>4)throw Error('M7_EVALUATOR_PROGRESS_INSTANCE_BOUND');
+    if(!Array.isArray(evaluatorServices)||!evaluatorServices.length||evaluatorServices.length>WORKER_LIMIT)throw Error('M7_EVALUATOR_PROGRESS_INSTANCE_BOUND');
     const recoveryObserve=spec=>new Promise((resolve,reject)=>{
       const child=execFile(process.env.M7_PROGRESS_PYTHON, [path.join(__dirname,'evaluator_recovery.py')], {encoding:'utf8',timeout:920000,maxBuffer:1048576},(error,stdout)=>{
         let value;try{value=JSON.parse(stdout);}catch{return reject(Error('M7_EVALUATOR_RECOVERY_UNAVAILABLE'));}
@@ -26,7 +26,7 @@ def generate(root, target, *, serial_exchange=False):
     });
     const recoveryBaseline=path.join(signalDir,'evaluator-recovery-baseline.private.json');
     const baselineObservation=await recoveryObserve({mode:'baseline',path:recoveryBaseline});
-    const restartIso = new Date().toISOString(); const r0 = Date.now();''')
+    const restartIso = new Date().toISOString(); const r0 = Date.now();'''.replace('WORKER_LIMIT',str(DISCOVERY_MAX_WORKERS)))
     start = source.index("    const gap = (async () => {")
     end = source.index("    // Edge after the role restart:", start)
     source = source[:start] + r'''    const gap = (async () => {
@@ -133,7 +133,7 @@ def generate(root, target, *, serial_exchange=False):
         require(source.count(old)==1,'M7_VIEWER_PROBE_ANCHOR_CHANGED')
         source=source.replace(old,new)
     viewers_change("tenants.length*PER", "TOTAL")
-    viewers_change("const EVAL_TIMEOUT =", "const TOTAL=Number(args.clients??tenants.length*PER);if(!Number.isInteger(TOTAL)||TOTAL<0||TOTAL>80000||!tenants.length||new Set(tenants.map(t=>t.id)).size!==tenants.length)throw Error('M7_VIEWER_TOTAL_RANGE');const viewers=tenants.map((_,i)=>Math.floor(TOTAL/tenants.length)+(i<TOTAL%tenants.length?1:0));\nconst EVAL_TIMEOUT =")
+    viewers_change("const EVAL_TIMEOUT =", "const TOTAL=Number(args.clients??tenants.length*PER);if(!Number.isSafeInteger(TOTAL)||TOTAL<0||TOTAL>0xffffffff||!tenants.length||new Set(tenants.map(t=>t.id)).size!==tenants.length)throw Error('M7_VIEWER_TOTAL_RANGE');const viewers=tenants.map((_,i)=>Math.floor(TOTAL/tenants.length)+(i<TOTAL%tenants.length?1:0));\nconst EVAL_TIMEOUT =")
     viewers_change("k < PER;", "k < viewers[i];")
     viewers_change("jwts[i] = await exchange(tenants[i]);", "jwts[i] = viewers[i]?await exchange(tenants[i]):null;")
     viewers_change("expected: PER", "expected: viewers[i]")
