@@ -457,8 +457,12 @@ workload value is refused.
 Use `examples.py --help` to generate 500, 1,000, 3,000 and 10,000 inputs from actual
 selected receipts, an existing local configuration and an explicit prospective
 envelope. Population, sparse/full viewers, realistic rate multiplier, duration,
-setup/drain/work/cleanup, per-scenario VUs and driver shards are arguments. Those
-files are examples, not allocations or accepted operating quotas.
+setup/drain/work/cleanup, per-scenario VUs and driver shards are arguments. The
+examples use 900 seconds each for setup and drain. They select a 60,000 ms
+producer acknowledgment budget unless the input already selects one. Use
+`--ack-timeout-ms` to select a different value. The generator prints these
+values beside the output path. Actual allocations and qualification remain
+with the execution owner.
 
 ```bash
 K=tools/mt-bench/kubernetes

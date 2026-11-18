@@ -189,7 +189,7 @@ checks separate. Changing load does not extend source/image/deadline or budget
 authority, and does not alter an already entered run.
 
 Discovery supports 1..10000 tenants, a legacy default of 1..8 polling clients per tenant, bounded
-cadence values and offered scenario rates 1..10000/s. Total configured phase
+cadence values and positive finite offered scenario rates that k6 can represent. Total configured phase
 time remains at most three hours and the existing earlier deadline governs.
 Strict preset ranges and source/image tuple checks remain unchanged. An exact
 qualified tuple is still required; a different candidate cannot borrow a
@@ -478,7 +478,7 @@ acceptance remains separate and failed correctness remains failed.
 | `tenants` | 1–10000; this discovery adapter keeps exactly one API replica |
 | `logical-polling-clients` | 0–80000 total viewers; otherwise tenants × sockets per tenant |
 | `sockets-per-tenant` | 1–8; explicit totals may differ |
-| `offered-rps` | finite 1–10000 scenario HTTP attempts/second; excludes setup and stock probes |
+| `offered-rps` | positive finite scenario HTTP attempts per second, within k6 timer representation. Setup and stock probes have separate rates. |
 | `warmup-seconds`, `idle-seconds`, `load-seconds` | integer 1–10800 seconds each, sum ≤10800 and less than work window |
 | `probe-every-ms` | integer 1–3600000 milliseconds |
 | `sampler-interval` | integer 1–60 seconds |
