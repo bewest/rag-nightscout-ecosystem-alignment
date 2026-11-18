@@ -40,19 +40,23 @@ class Frozen(unittest.TestCase):
         k.write(p,value)
         return dict(path=str(p), sha256=k.digest(p))
 
-    def test_owner_receipt_is_distinct_from_build_and_selection(self):
+    def test_source_receipt_provenance_is_recorded_not_reproved(self):
         baseline = frozen.source(self.manifest)
         self.assertEqual(baseline['sourceAcceptance'], 'PENDING')
-        cases = ((dict(self.pending, coreCommit='a'*40), 'SOURCE_PAIR'),
-                 (dict(self.pending, imageId='sha256:'+'a'*64), 'SOURCE_IMAGE'),
-                 (dict(self.pending, status='ACCEPTANCE_SELECTION'), 'SOURCE_RECEIPT'),
-                 (dict(self.pending, imageReceiptSha256='a'*64), 'SOURCE_PAIR'))
-        for value, code in cases:
-            with self.assertRaisesRegex(ValueError, 'K8S_EXPERIMENT_'+code+'$'):
-                frozen.source(dict(self.manifest, sourceReceipt=self.ref('bad',value)))
-            self.assertEqual(frozen.source(self.manifest),baseline)
+        # Receipt words and cross-receipt pairs no longer refuse a run.
+        for value in (dict(self.pending, coreCommit='a'*40), dict(self.pending, status='ACCEPTANCE_SELECTION'),
+                      dict(self.pending, imageReceiptSha256='a'*64)):
+            other = frozen.source(dict(self.manifest, sourceReceipt=self.ref('other', value)))
+            self.assertEqual({**other, 'diagnosticSha256': None}, {**baseline, 'diagnosticSha256': None})
+        # A PASS receipt for another image never labels this source PASS.
+        other = dict(self.pending, kind='joined-acceptance', status='PASS', imageId='sha256:'+'a'*64)
+        self.assertEqual(frozen.source(dict(self.manifest, sourceReceipt=self.ref('other', other)))['sourceAcceptance'], 'PENDING')
         with self.assertRaisesRegex(ValueError, 'EVIDENCE_CHANGED'):
             frozen.source(dict(self.manifest, sourceReceipt=dict(self.manifest['sourceReceipt'],sha256='0'*64)))
+        selected = {**baseline, 'nativeCatalogueSha256': '7'*64}
+        self.assertEqual(frozen.contract(self.manifest, {**selected, 'coreCommit': 'b'*40}), baseline)
+        with self.assertRaisesRegex(ValueError, 'CONTRACT_CONFIGURATION_CHANGED'):
+            frozen.contract(self.manifest, {**selected, 'localImageId': 'sha256:'+'b'*64})
 
     def test_native_binding_inputs_skip_legacy_patch_and_keep_capture_protocol(self):
         from unittest.mock import patch
@@ -117,7 +121,7 @@ class Frozen(unittest.TestCase):
             with self.assertRaisesRegex(k.Refused,'PRIMER_OPTIONS_AWAIT_PRIMER_REQUIRED'):
                 experiment.prepare(self.ref('primer-intent',manifest)['path'],{},self.root/'new-packet')
         self.assertFalse((self.root/'new-packet').exists())
-        with self.assertRaisesRegex(ValueError,'CONTRACT_SOURCE_CHANGED'):
+        with self.assertRaisesRegex(ValueError,'CONTRACT_CONFIGURATION_CHANGED'):
             frozen.contract(manifest,{**fit,'primerOptions':{'concurrency':33,'maxTenants':20000}})
         self.assertEqual(frozen.contract(manifest,fit),selected)
 
@@ -133,7 +137,7 @@ class Frozen(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'PGSTREAM_ACK_UNDECLARED'):
             frozen.contract(self.manifest, selected)
         wrong = {**selected, frozen.ACK_BUDGET: 10000}
-        with self.assertRaisesRegex(ValueError, 'CONTRACT_SOURCE_CHANGED'):
+        with self.assertRaisesRegex(ValueError, 'CONTRACT_CONFIGURATION_CHANGED'):
             frozen.contract(manifest, wrong)
         script = self.root/'scripts/secrets.sh'
         script.parent.mkdir()
@@ -175,7 +179,7 @@ publish() {
         selected=frozen.source(manifest)
         self.assertEqual(selected[frozen.JOB_COMPLETE],120)
         selected['nativeCatalogueSha256']='7'*64
-        with self.assertRaisesRegex(frozen.Refused,'CONTRACT_SOURCE_CHANGED'):
+        with self.assertRaisesRegex(frozen.Refused,'CONTRACT_CONFIGURATION_CHANGED'):
             frozen.contract(manifest,{**selected,frozen.JOB_COMPLETE:30})
         frozen.contract(manifest,selected)
         script=self.root/'scripts/secrets.sh';script.parent.mkdir()

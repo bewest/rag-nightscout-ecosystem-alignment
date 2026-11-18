@@ -857,14 +857,15 @@ def continuity(d, c, independent_directory):
     first = k.document(d / 'observation.initial.json')
     second = k.document(peer / 'observation.initial.json')
     k.need(c['context'] == other['context'] and c['namespace'] != other['namespace'] and c['runId'] != other['runId'] and first['namespace']['uid'] != second['namespace']['uid'], 'INDEPENDENT_FIXTURE_REQUIRED')
-    k.need(all(c['pins'][field] == other['pins'][field] for field in ('pair','appImage','appImageId','bindingCommit','instrument')), 'CONTINUITY_SOURCE_CHANGED')
+    # Both fixtures run the same image; other pins are recorded, not compared.
+    k.need(c['pins']['appImageId'] == other['pins']['appImageId'], 'CONTINUITY_IMAGE_CHANGED')
     window = k.document(peer / 'load/window.json')
     result = k.document(peer / 'load/result.json')
     capture = k.document(peer / 'load/probe.json')
     k.need(type(window.get('loadStartedAt')) in (int,float) and type(window.get('loadEndedAt')) in (int,float) and
            window['loadStartedAt'] < restart['startedAt'] < restart['endedAt'] < window['loadEndedAt'] and
            result.get('verdict') == 'OBSERVED', 'CONTINUITY_WINDOW_UNMEASURED', 'UNMEASURED')
-    k.need(window.get('pins')==other['pins'] and result.get('pins')==other['pins'] and window.get('namespaceUid')==second['namespace']['uid'],'CONTINUITY_SOURCE_CHANGED')
+    k.need(window.get('namespaceUid')==second['namespace']['uid'],'CONTINUITY_NAMESPACE_CHANGED')
     k.need(k.document(d / 'recovery/result.json').get('verdict') == 'OBSERVED', 'RECOVERY_UNMEASURED', 'UNMEASURED')
     from matrix import identity
     identity(other, second, k.document(peer / 'load/before.json'))

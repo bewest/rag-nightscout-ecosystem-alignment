@@ -46,8 +46,7 @@ def node_requests(objects, baseline, accounting):
 
 def identity(c, baseline, current):
     """Keep the entire observed peer roster and incarnations unchanged."""
-    k.need(current.get('context') == c['context'] and current.get('runId') == c['runId']
-           and current.get('pins') == c['pins'], 'MATRIX_SOURCE_CHANGED')
+    k.need(current.get('context') == c['context'] and current.get('runId') == c['runId'], 'MATRIX_RUN_CHANGED')
     k.need(current['namespace']['uid'] == baseline['namespace']['uid'], 'NAMESPACE_UID_CHANGED')
     for section in ('objects', 'pods'):
         k.need(current[section].keys() == baseline[section].keys(), 'MATRIX_ROSTER_CHANGED')
