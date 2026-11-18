@@ -181,6 +181,19 @@ class StaticTopology(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'M7_STATIC_EXPLICIT_ALLOCATION'):parsed(bad)
         good=config();parsed(good)
 
+    def test_single_worker_and_api_do_not_require_selected_service_caps(self):
+        cfg = config()
+        cfg['prepare'].pop('diagnostic-resource-allocation')
+        cfg['prepare'].update({'static-workers': 1, 'replicas': 1})
+        args = parsed(cfg)
+        self.assertEqual(s.option(args)['staticTopology'], {'kind': s.KIND, 'workers': 1})
+        self.assertIsNone(rc.from_args(args, a.instrument()['sha256'])['resources'])
+        for changes in ({'static-workers': 2}, {'replicas': 2}):
+            other = {**cfg, 'prepare': {**cfg['prepare'], **changes}}
+            with self.assertRaisesRegex(RuntimeError, 'M7_STATIC_EXPLICIT_ALLOCATION'):
+                parsed(other)
+        self.assertEqual(s.option(parsed(cfg))['staticTopology']['workers'], 1)
+
     def test_each_published_exact_pair_has_config_receipt_and_unknown_pair_refusal(self):
         for core, deploy in s.SOURCE_PAIRS:
             cfg = config();cfg['prepare'].update({'core-commit': core, 'deploy-commit': deploy})

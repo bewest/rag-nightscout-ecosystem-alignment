@@ -90,7 +90,10 @@ def option(args, require_allocation=True):
                 'pgstreamTopology': args.pgstream_topology, 'completionContract': args.completion_contract,
                 'replicas': args.replicas}
     validate({**manifest, **build})
-    require(not require_allocation or isinstance(getattr(args, 'diagnostic_resource_allocation', None), dict), 'M7_STATIC_EXPLICIT_ALLOCATION')
+    needs_selected_allocation = count > 1 or args.replicas > 1
+    require(not (require_allocation and needs_selected_allocation) or
+            isinstance(getattr(args, 'diagnostic_resource_allocation', None), dict),
+            'M7_STATIC_EXPLICIT_ALLOCATION')
     return {'staticTopology': manifest['staticTopology'], **build}
 
 
