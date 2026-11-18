@@ -32,6 +32,15 @@ def fixture():
                                       for n in ('wait-stores', 'bootstrap', 'vault-kubernetes-auth')]
             spec['volumes'] = [{'name': 'state', 'emptyDir': {'sizeLimit': '64Mi'}},
                                {'name': 'tmp', 'emptyDir': {'medium': 'Memory', 'sizeLimit': '16Mi'}}]
+        spec.update(serviceAccountName='source-account', securityContext={'runAsNonRoot': True})
+        spec['volumes'].append({'name': 'source-config', 'secret': {'secretName': 'source-config', 'defaultMode': 288}})
+        for container in spec.get('initContainers', []) + spec['containers']:
+            container.update(image='synthetic.invalid/source@sha256:'+'1'*64,
+                command=['node', 'source.js'], args=['--strict'], workingDir='/app',
+                env=[{'name': 'EXPECTED', 'value': 'source'}],
+                envFrom=[{'secretRef': {'name': 'source-config'}}],
+                volumeMounts=[{'name': 'source-config', 'mountPath': '/run/source', 'readOnly': True}],
+                securityContext={'allowPrivilegeEscalation': False})
         result.append(obj)
     return result
 
@@ -101,6 +110,109 @@ class PhaseFit(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'STAGE_RESOURCES_CHANGED'):
             p.staged_projection(self.env, self.docs, broken)
         self.assertEqual(p.staged_projection(self.env, self.docs, stages), plan)
+
+    def source_mutations(self):
+        def first(spec):return spec['initContainers'][0]
+        return (('image', lambda spec:first(spec).update(image='synthetic.invalid/changed@sha256:'+'2'*64)),
+                ('command', lambda spec:first(spec).update(command=['node', 'changed.js'])),
+                ('args', lambda spec:first(spec).update(args=['--changed'])),
+                ('regular-image', lambda spec:spec['containers'][0].update(image='changed@sha256:'+'2'*64)),
+                ('regular-command', lambda spec:spec['containers'][0].update(command=['changed-command'])),
+                ('regular-args', lambda spec:spec['containers'][0].update(args=['--changed'])),
+                ('workingDir', lambda spec:first(spec).update(workingDir='/changed')),
+                ('env', lambda spec:first(spec)['env'][0].update(value='changed')),
+                ('envFrom', lambda spec:first(spec)['envFrom'][0]['secretRef'].update(name='changed')),
+                ('mount', lambda spec:first(spec)['volumeMounts'][0].update(mountPath='/changed')),
+                ('volume-source', lambda spec:spec['volumes'][-1]['secret'].update(secretName='changed')),
+                ('container-security', lambda spec:first(spec)['securityContext'].update(allowPrivilegeEscalation=True)),
+                ('pod-security', lambda spec:spec['securityContext'].update(runAsNonRoot=False)),
+                ('service-account', lambda spec:spec.update(serviceAccountName='changed')))
+
+    def test_staged_executable_and_source_templates_are_bound_to_original_render(self):
+        stages = {s: [copy.deepcopy(o) for o in self.docs if p.key(o) in names] for s, names in p.PARTITION.items()}
+        original = p.staged_projection(self.env, self.docs, stages)
+        for name, mutate in self.source_mutations():
+            with self.subTest(field=name):
+                changed = copy.deepcopy(stages); mutate(p.template(changed['provision'][0]))
+                with self.assertRaisesRegex(ValueError, 'STAGE_SOURCE_CHANGED'):
+                    p.staged_projection(self.env, self.docs, changed)
+                self.assertEqual(p.staged_projection(self.env, self.docs, stages), original)
+        for stage, docs in stages.items():
+            for index, obj in enumerate(docs):
+                with self.subTest(workload=p.key(obj)):
+                    changed = copy.deepcopy(stages)
+                    p.template(changed[stage][index])['containers'][0]['image'] = 'changed@sha256:'+'2'*64
+                    with self.assertRaisesRegex(ValueError, 'STAGE_SOURCE_CHANGED'):
+                        p.staged_projection(self.env, self.docs, changed)
+
+    def test_live_job_and_pod_executable_and_source_templates_refuse(self):
+        job, pod = completed(self.expected)
+        for name, mutate in self.source_mutations():
+            with self.subTest(field=name, boundary='job'):
+                changed = copy.deepcopy(job); mutate(p.template(changed))
+                with self.assertRaisesRegex(ValueError, 'JOB_SOURCE_CHANGED'):
+                    p.terminal(self.expected, changed, [pod], 'ns-uid', 'phase')
+            with self.subTest(field=name, boundary='pod'):
+                changed = copy.deepcopy(pod); mutate(changed['spec'])
+                with self.assertRaisesRegex(ValueError, 'POD_SOURCE_CHANGED'):
+                    p.terminal(self.expected, job, [changed], 'ns-uid', 'phase')
+        self.assertEqual(p.terminal(self.expected, job, [pod], 'ns-uid', 'phase')['jobUid'], 'job-uid')
+
+    def test_explicit_api_defaults_and_quantity_normalization_preserve_source(self):
+        expected = copy.deepcopy(self.expected)
+        for c in p.template(expected).get('initContainers', []) + p.template(expected)['containers']:
+            c['env'].append({'name': 'POD_NAMESPACE', 'valueFrom': {'fieldRef': {'fieldPath': 'metadata.namespace'}}})
+            c['readinessProbe'] = {'exec': {'command': ['test', '-f', '/state/.ready']}}
+        job, pod = completed(expected)
+        job['spec'].update(parallelism=1, completions=1, completionMode='NonIndexed', suspend=False, manualSelector=False)
+        job['metadata'].update(resourceVersion='42', generation=1, managedFields=[{'manager': 'kube-controller-manager'}])
+        job['spec']['template']['metadata']['labels'] = {'batch.kubernetes.io/controller-uid': 'job-uid'}
+        pod['metadata'].update(resourceVersion='43', annotations={'server-metadata': 'allowed'})
+        for spec in (p.template(job), pod['spec']):
+            spec.update(dnsPolicy='ClusterFirst', schedulerName='default-scheduler',
+                        terminationGracePeriodSeconds=30, enableServiceLinks=True,
+                        priority=0, preemptionPolicy='PreemptLowerPriority', serviceAccount='source-account',
+                        tolerations=[{'key': 'node.kubernetes.io/'+reason, 'operator': 'Exists',
+                                      'effect': 'NoExecute', 'tolerationSeconds': 300}
+                                     for reason in ('not-ready', 'unreachable')])
+            for c in spec.get('initContainers', []) + spec['containers']:
+                c.update(terminationMessagePath='/dev/termination-log', terminationMessagePolicy='File',
+                         imagePullPolicy='IfNotPresent')
+                c['readinessProbe'].update(failureThreshold=3, successThreshold=1, timeoutSeconds=1,
+                                           periodSeconds=10, initialDelaySeconds=0)
+                c['env'][-1]['valueFrom']['fieldRef']['apiVersion'] = 'v1'
+                c['envFrom'][0]['secretRef']['optional'] = False
+                for group in c['resources'].values():
+                    group['cpu'] = str(p.resource_budget.quantity(group['cpu'], True, p.require)/1000)
+                    group['memory'] = str(p.resource_budget.quantity(group['memory'], False, p.require))
+            spec['volumes'][-1]['secret']['optional'] = False
+            spec['volumes'][0]['emptyDir']['medium'] = ''
+            spec['volumes'][0]['emptyDir']['sizeLimit'] = str(64*MIB)
+        proof = p.terminal(expected, job, [pod], 'ns-uid', 'phase')
+        self.assertEqual(proof['sourceTemplateSha256'], p.digest(expected['spec']['template']))
+        self.assertEqual(proof, p.terminal(expected, job, [pod], 'ns-uid', 'phase', proof))
+        changed = copy.deepcopy(job);p.template(changed)['schedulerName'] = 'changed-scheduler'
+        with self.assertRaisesRegex(ValueError, 'JOB_SOURCE_CHANGED'):
+            p.terminal(expected, changed, [pod], 'ns-uid', 'phase')
+
+    def test_only_the_existing_service_account_admission_projection_is_permitted(self):
+        expected = copy.deepcopy(self.expected);p.template(expected)['automountServiceAccountToken'] = True
+        job, pod = completed(expected)
+        name = 'kube-api-access-synthetic'
+        pod['spec']['volumes'].append({'name': name, 'projected': {'defaultMode': 420, 'sources': [
+            {'serviceAccountToken': {'path': 'token', 'expirationSeconds': 3607}},
+            {'configMap': {'name': 'kube-root-ca.crt', 'items': [{'key': 'ca.crt', 'path': 'ca.crt'}]}},
+            {'downwardAPI': {'items': [{'path': 'namespace', 'fieldRef': {'apiVersion': 'v1', 'fieldPath': 'metadata.namespace'}}]}}]}})
+        for c in pod['spec'].get('initContainers', []) + pod['spec']['containers']:
+            c['volumeMounts'].append({'name': name, 'mountPath': '/var/run/secrets/kubernetes.io/serviceaccount', 'readOnly': True})
+        p.terminal(expected, job, [pod], 'ns-uid', 'phase')
+        changed = copy.deepcopy(pod);changed['spec']['containers'][0]['volumeMounts'][-1]['mountPath'] = '/run/source'
+        with self.assertRaisesRegex(ValueError, 'UNEXPECTED_ADMISSION_VOLUME'):
+            p.terminal(expected, job, [changed], 'ns-uid', 'phase')
+        disabled = copy.deepcopy(expected);p.template(disabled)['automountServiceAccountToken'] = False
+        no_mount_job, _ = completed(disabled)
+        with self.assertRaisesRegex(ValueError, 'UNEXPECTED_ADMISSION_VOLUME'):
+            p.terminal(disabled, no_mount_job, [pod], 'ns-uid', 'phase')
 
     def test_job_policy_and_unknown_workload_refuse(self):
         for mutate in (lambda j: j['spec'].update(parallelism=2), lambda j: j['spec'].update(completions=2),
@@ -216,6 +328,15 @@ class PhaseFit(unittest.TestCase):
                 scope['install']('private-admin')
             self.assertEqual(made, [])
             state['pods'] = [pod]
+            for name, mutate in self.source_mutations():
+                with self.subTest(field=name):
+                    state['job'] = copy.deepcopy(job);state['pods'] = [copy.deepcopy(pod)]
+                    mutate(p.template(state['job']));mutate(state['pods'][0]['spec'])
+                    with self.assertRaisesRegex(ValueError, 'JOB_SOURCE_CHANGED'):
+                        scope['install']('private-admin')
+                    self.assertEqual(made, [])
+                    self.assertFalse((live/'provision-retirement.json').exists())
+            state['job'] = job;state['pods'] = [pod]
             scope['install']('private-admin')
             self.assertEqual(made, ['Deployment/admin'])
             self.assertTrue((live/'provision-retirement.json').is_file())

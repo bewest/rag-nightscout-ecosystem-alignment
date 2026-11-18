@@ -101,6 +101,99 @@ def retained_volumes(spec, need=require):
             'ephemeralBytes': disk}}
 
 
+def _default(path, name, value):
+    """Only explicit API defaults may disappear from a live source comparison."""
+    pod = {'dnsPolicy': 'ClusterFirst', 'schedulerName': 'default-scheduler',
+           'terminationGracePeriodSeconds': 30, 'enableServiceLinks': True,
+           'priority': 0, 'preemptionPolicy': 'PreemptLowerPriority',
+           'securityContext': {}, 'hostNetwork': False, 'hostPID': False, 'hostIPC': False}
+    container = {'terminationMessagePath': '/dev/termination-log', 'terminationMessagePolicy': 'File',
+                 'imagePullPolicy': 'IfNotPresent', 'stdin': False, 'stdinOnce': False, 'tty': False,
+                 'command': [], 'args': [], 'securityContext': {}}
+    probe = {'failureThreshold': 3, 'successThreshold': 1, 'timeoutSeconds': 1,
+             'periodSeconds': 10, 'initialDelaySeconds': 0}
+    defaults = pod if not path else container if path in (('containers', '*'), ('initContainers', '*')) else {}
+    if path and path[-1] in ('startupProbe', 'readinessProbe', 'livenessProbe'):defaults = probe
+    if path and path[-1] == 'fieldRef':defaults = {'apiVersion': 'v1'}
+    if path and path[-1] in ('secretKeyRef', 'configMapKeyRef', 'secretRef', 'configMapRef'):
+        defaults = {'optional': False}
+    if path and path[-1] in ('secret', 'configMap'):defaults = {'optional': False, 'defaultMode': 420}
+    if path and path[-1] == 'projected':defaults = {'defaultMode': 420}
+    if path and path[-1] == 'emptyDir':defaults = {'medium': ''}
+    if len(path) >= 2 and path[-2:] == ('ports', '*'):defaults = {'protocol': 'TCP'}
+    if len(path) >= 2 and path[-2:] == ('volumeMounts', '*'):
+        defaults = {'readOnly': False, 'mountPropagation': 'None'}
+    if len(path) >= 2 and path[-2:] == ('env', '*'):defaults = {'value': ''}
+    if path and path[-1] == 'httpGet':defaults = {'scheme': 'HTTP'}
+    return name in defaults and type(value) is type(defaults[name]) and value == defaults[name]
+
+
+def _normalize_defaults(expected, actual, path=()):
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        value = copy.deepcopy(actual)
+        for name in list(value):
+            if name in expected:
+                value[name] = _normalize_defaults(expected[name], value[name], path + (name,))
+            elif _default(path, name, value[name]):
+                del value[name]
+        return value
+    if isinstance(expected, list) and isinstance(actual, list) and len(expected) == len(actual):
+        return [_normalize_defaults(a, b, path + ('*',)) for a, b in zip(expected, actual)]
+    return copy.deepcopy(actual)
+
+
+def source_projection(expected, actual, need=require):
+    """Normalize API additions, then leave all executable and source facts visible."""
+    value = resource_budget.readback_projection(expected, actual, need)
+    # Match the existing adapter's narrowly permitted service-account projection.
+    declared = {v['name'] for v in expected.get('volumes', [])}
+    extra = [v for v in value.get('volumes', []) if v['name'] not in declared]
+    admitted = set()
+    for volume in extra:
+        sources = volume.get('projected', {}).get('sources', [])
+        need(expected.get('automountServiceAccountToken') is not False and
+             volume['name'].startswith('kube-api-access-') and sources and
+             all(set(s) <= {'serviceAccountToken', 'configMap', 'downwardAPI'} for s in sources),
+             'UNEXPECTED_ADMISSION_VOLUME')
+        admitted.add(volume['name'])
+    if admitted:
+        value['volumes'] = [v for v in value['volumes'] if v['name'] not in admitted]
+        for container in value.get('containers', []) + value.get('initContainers', []):
+            mounts = container.get('volumeMounts', [])
+            removed = [v for v in mounts if v['name'] in admitted]
+            need(all(v.get('mountPath') == '/var/run/secrets/kubernetes.io/serviceaccount' and
+                     v.get('readOnly') is True for v in removed), 'UNEXPECTED_ADMISSION_VOLUME')
+            if removed:
+                container['volumeMounts'] = [v for v in mounts if v['name'] not in admitted]
+                if not container['volumeMounts']:container.pop('volumeMounts')
+    # Kubernetes retains the deprecated serviceAccount alias on a live Pod.
+    account = expected.get('serviceAccountName', 'default')
+    if 'serviceAccount' not in expected and value.get('serviceAccount') == account:value.pop('serviceAccount')
+    if 'serviceAccountName' not in expected and value.get('serviceAccountName') == 'default':value.pop('serviceAccountName')
+    # The two default admission tolerations are mutable scheduling metadata.
+    authored = expected.get('tolerations', [])
+    if 'tolerations' in value:
+        def standard(row):
+            return row in ({'key': 'node.kubernetes.io/'+reason, 'operator': 'Exists',
+                            'effect': 'NoExecute', 'tolerationSeconds': 300} for reason in ('not-ready', 'unreachable'))
+        value['tolerations'] = [r for r in value['tolerations'] if r in authored or not standard(r)]
+        if not value['tolerations'] and 'tolerations' not in expected:value.pop('tolerations')
+    for left, right in zip(expected.get('volumes', []), value.get('volumes', [])):
+        if 'emptyDir' in left and 'emptyDir' in right and 'sizeLimit' in left['emptyDir']:
+            want = left['emptyDir']['sizeLimit'];got = right['emptyDir'].get('sizeLimit')
+            if got is not None and resource_budget.quantity(want, False, need) == resource_budget.quantity(got, False, need):
+                right['emptyDir']['sizeLimit'] = want
+    return _normalize_defaults(expected, value)
+
+
+def source_metadata(expected, actual, need=require):
+    # UID/resourceVersion/generated names and extra controller metadata are not source.
+    for field in ('labels', 'annotations'):
+        need(isinstance(actual.get(field, {}), dict) and
+             all(actual.get(field, {}).get(k) == v for k, v in expected.get(field, {}).items()),
+             'SOURCE_METADATA_CHANGED')
+
+
 def projection(environment, objects, need=require):
     chosen = selection(environment, need)
     if chosen is None:
@@ -121,6 +214,7 @@ def projection(environment, objects, need=require):
                        'budget': resource_budget.pod_budget(spec, mode, need),
                        'resources': {c['name']: c.get('resources', {}) for c in
                                      spec.get('initContainers', []) + spec['containers']},
+                       'authoredTemplate': copy.deepcopy(obj['spec']['template']),
                        'overhead': spec.get('overhead', {}),
                        **({'policy': job_policy(obj, need), 'retained': retained_volumes(spec, need)}
                           if name == PROVISION else {})}
@@ -152,7 +246,9 @@ def staged_projection(environment, rendered, stages, need=require):
         need(len(actual) == len(set(actual)) and set(actual) == set(PARTITION.get(stage, ())),
              'STAGE_PARTITION')
     all_objects = [o for docs in stages.values() for o in docs]
-    need(projection(environment, all_objects, need) == plan, 'STAGE_RESOURCES_CHANGED')
+    staged = projection(environment, all_objects, need)
+    need(staged['nodes'] == plan['nodes'], 'STAGE_RESOURCES_CHANGED')
+    need(staged == plan, 'STAGE_SOURCE_CHANGED')
     return plan
 
 
@@ -215,7 +311,9 @@ def terminal(expected, job, pods, namespace_uid, run_id, previous=None, need=req
     policy = job_policy(expected, need)
     need(isinstance(namespace_uid, str) and namespace_uid, 'NAMESPACE_UID')
     need(job is not None and job_policy(job, need) == policy, 'JOB_POLICY_CHANGED')
-    resource_budget.readback_projection(template(expected), template(job), need)
+    need(source_projection(template(expected), template(job), need) == template(expected), 'JOB_SOURCE_CHANGED')
+    source_metadata(expected['spec']['template'].get('metadata', {}),
+                    job['spec']['template'].get('metadata', {}), need)
     need(template(job).get('nodeName') == template(expected).get('nodeName') and
          retained_volumes(template(job), need) == retained_volumes(template(expected), need),
          'JOB_RESOURCES_CHANGED')
@@ -237,7 +335,7 @@ def terminal(expected, job, pods, namespace_uid, run_id, previous=None, need=req
     need(len(owned) <= 1, 'PROVISION_POD_ROSTER')
     proof = {'version': 1, 'contract': CONTRACT, 'namespaceUid': namespace_uid, 'jobUid': metadata['uid'],
              'completionTime': status['completionTime'], 'completeTransitionTime': conditions[0]['lastTransitionTime'],
-             'policy': policy}
+             'policy': policy, 'sourceTemplateSha256': digest(expected['spec']['template'])}
     if owned:
         pod = owned[0]; meta = pod['metadata']
         need(not pod['spec'].get('ephemeralContainers') and
@@ -248,7 +346,8 @@ def terminal(expected, job, pods, namespace_uid, run_id, previous=None, need=req
              and len(refs) == 1 and refs[0].get('kind') == 'Job' and refs[0].get('name') == 'provision'
              and refs[0].get('uid') == metadata['uid'] and pod.get('status', {}).get('phase') == 'Succeeded',
              'POD_NOT_TERMINAL')
-        resource_budget.readback_projection(template(expected), pod['spec'], need)
+        need(source_projection(template(expected), pod['spec'], need) == template(expected), 'POD_SOURCE_CHANGED')
+        source_metadata(expected['spec']['template'].get('metadata', {}), meta, need)
         need(pod['spec'].get('nodeName') == template(expected).get('nodeName') and
              retained_volumes(pod['spec'], need) == retained_volumes(template(expected), need),
              'POD_RESOURCES_CHANGED')

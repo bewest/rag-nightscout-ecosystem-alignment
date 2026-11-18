@@ -507,7 +507,12 @@ remain in force. A snapshot establishes neither a reservation nor future use.
 The contract supports the rendered single provision Job with one completion,
 one parallel Pod, no retries and no restartable sidecars. Lifecycle binding
 checks the complete stage partition, resource projection and publisher/controller
-hashes. Before later resources are created, the controller retains an exact
+hashes. The phase hash also binds the complete authored Pod templates: executable,
+image, arguments, environment, source volumes, mounts and security settings.
+Live source comparison normalizes explicit API defaults and equivalent resource
+quantities, then requires the authored source. Server UID/version/controller
+metadata and the existing service-account projection retain their separate rules.
+Before later resources are created, the controller retains an exact
 namespace/Job/Pod/container receipt: Complete Job, succeeded Pod, all declared
 containers terminated successfully with no restarts. Every later install and
 runtime observation checks that receipt. A replaced, running, failed, terminating
