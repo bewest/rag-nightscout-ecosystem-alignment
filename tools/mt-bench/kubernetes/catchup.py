@@ -99,7 +99,8 @@ class Collector:
     def __call__(self, timeout):
         index = self.round
         self.round += 1
-        deadline = time.monotonic() + min(timeout, self.o.ROUND_SECONDS)
+        # The caller clips the configured round to the remaining drain/work window.
+        deadline = time.monotonic() + timeout
         start, cpu = time.monotonic(), time.process_time()
         baseline = k.active_baseline(self.d)
         before = k.observe(self.c, self.objects, self.client, baseline)
