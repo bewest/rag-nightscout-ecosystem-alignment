@@ -1,9 +1,97 @@
 """Explicit source-bound pgstream process topology; no runtime substitution."""
-from contract import require
+import json
+import os
+from pathlib import Path
+import stat
+import tempfile
+
+from contract import digest, require
 
 COLOCATED = 'colocated-v1'
 EXTERNAL = 'external-service-v1'
 EXTERNAL_COMMAND = ['/usr/local/bin/pgstream','run','-c','/run/ns-stream/pgstream.yaml','--log-level','info']
+ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
+WIRE_DIRECTORY = '/run/ns-stream'
+SOURCE_ACK_TIMEOUT_MS = 2000
+
+
+def ack_selection(manifest):
+    if ACK_BUDGET not in manifest:
+        return {}
+    value = manifest[ACK_BUDGET]
+    require(manifest.get('profile') == 'pgstream-sample' and manifest.get('runPurpose') == 'discovery'
+            and selection(manifest) == EXTERNAL, 'M7_PGSTREAM_ACK_LOCAL_EXTERNAL_DISCOVERY_REQUIRED')
+    # pgstream converts milliseconds to a signed nanosecond Go duration.
+    require(type(value) is int and 0 < value <= (2**63 - 1) // 1_000_000, 'M7_PGSTREAM_ACK_BUDGET_INVALID')
+    return {ACK_BUDGET: value}
+
+
+def ack_option(args):
+    value = getattr(args, 'pgstream_notifier_ack_timeout_ms', None)
+    if value is None:
+        return {}
+    require(getattr(args, 'command', 'prepare') == 'prepare', 'M7_PGSTREAM_ACK_FRESH_PREPARE_REQUIRED')
+    return ack_selection({ACK_BUDGET: value, 'profile': args.profile, 'runPurpose': args.run_purpose,
+                          'pgstreamTopology': args.pgstream_topology})
+
+
+def wire_path(directory, mounts):
+    root = directory/'state/pgstream'
+    selected = [mount for mount in mounts if mount.get('target', mount.get('Destination')) == WIRE_DIRECTORY]
+    require(len(selected) == 1, 'M7_PGSTREAM_ACK_WIRE_MOUNT')
+    mount = selected[0]
+    require(mount.get('type', mount.get('Type')) == 'bind'
+            and mount.get('source', mount.get('Source')) == str(root)
+            and (mount.get('read_only') is True or mount.get('RW') is False), 'M7_PGSTREAM_ACK_WIRE_MOUNT')
+    path = root/'pgstream.yaml'
+    require(path.resolve() == path and path.is_file(), 'M7_PGSTREAM_ACK_WIRE_PATH')
+    return path
+
+
+def wire_config(path):
+    try:
+        config = json.loads(path.read_text())
+        notifier = config['target']['webhooks']['notifier']
+        require(notifier['worker_count'] == 1 and notifier['strict_mode'] is True
+                and notifier['backoff'] == {'constant': {'max_retries': 1, 'interval': 50}},
+                'M7_PGSTREAM_ACK_WIRE_SHAPE')
+        return config, notifier
+    except (ValueError, TypeError, KeyError):
+        raise RuntimeError('M7_PGSTREAM_ACK_WIRE_SHAPE') from None
+
+
+def install_ack_budget(directory, manifest, compose):
+    options = ack_selection(manifest)
+    if not options:
+        return None
+    path = wire_path(directory, compose['services']['pgstream']['volumes'])
+    config, notifier = wire_config(path)
+    require(notifier.get('client_timeout') == SOURCE_ACK_TIMEOUT_MS, 'M7_PGSTREAM_ACK_SOURCE_DEFAULT_CHANGED')
+    original = digest(path)
+    ownership = path.stat()
+    notifier['client_timeout'] = options[ACK_BUDGET]
+    with tempfile.NamedTemporaryFile(mode='w', dir=path.parent, delete=False) as staged:
+        temporary = Path(staged.name)
+        try:
+            own = os.fstat(staged.fileno())
+            require((own.st_uid, own.st_gid) == (ownership.st_uid, ownership.st_gid), 'M7_PGSTREAM_ACK_WIRE_OWNER')
+            os.fchmod(staged.fileno(), stat.S_IMODE(ownership.st_mode))
+            json.dump(config, staged, indent=2)
+            staged.write('\n')
+            staged.flush()
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
+    return {'sourceTimeoutMs': SOURCE_ACK_TIMEOUT_MS, 'effectiveTimeoutMs': options[ACK_BUDGET],
+            'sourceWireSha256': original, 'effectiveWireSha256': digest(path)}
+
+
+def verify_ack_budget(directory, manifest, mounts):
+    path = wire_path(directory, mounts)
+    _, notifier = wire_config(path)
+    record = manifest.get('pgstreamNotifierAckWire', {})
+    require(record.get('effectiveTimeoutMs') == manifest[ACK_BUDGET] == notifier.get('client_timeout')
+            and record.get('effectiveWireSha256') == digest(path), 'M7_PGSTREAM_ACK_WIRE_CHANGED')
 
 
 def selection(manifest):

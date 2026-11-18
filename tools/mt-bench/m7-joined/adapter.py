@@ -526,6 +526,7 @@ def attach(args):
     static_selection=static_topology.option(args,require_allocation=False)
     require(not static_selection or getattr(args,'runtime_owner',None),'M7_STATIC_ATTACH_OWNER_REQUIRED')
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
+    stream_topology.ack_option(args)
     require(not api_warm_cause.option(args),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     require(not selected_resources_profile(args) and not getattr(args,'revision_witness_targets',None) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
@@ -742,6 +743,7 @@ def prepare(args):
     primer_concurrency(getattr(args,"primer_concurrency",1))
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
+    ack_budget=stream_topology.ack_option(args)
     profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000))
     require(bool(getattr(args,"backend_subnet",None))==bool(getattr(args,"edge_subnet",None)),"M7_EXPLICIT_SUBNET_PAIR_REQUIRED")
     require(os.getuid()==1000 and os.getgid()==1000,"M7_HOST_RUNTIME_UID_REQUIRED")
@@ -769,6 +771,9 @@ def prepare(args):
                    'cadence':cadence_options(args),'runPurpose':getattr(args,'run_purpose','acceptance'),'measurementMode':args.measurement_mode,'runId':getattr(args,'run_id',None),'imageId':getattr(args,'image_id',None) or args.image,'maximumRunMinutes':getattr(args,'maximum_run_minutes',180),
                    'diagnostics':profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000)),**static_selection,**({'pgstreamTopology':args.pgstream_topology,'completionContract':args.completion_contract} if static_selection else {})}
         candidate.update(commissioning_wal.option(args))
+        candidate.update(ack_budget)
+        if ack_budget:
+            candidate['pgstreamTopology']=args.pgstream_topology
         selection=serial_exchange_selection(args)
         if selection is not None:candidate['serialExchangeDiagnostic']=selection
         serial_exchange_receipt(candidate,document(args.freeze))
@@ -810,6 +815,7 @@ def prepare_staged(args,target,pinned):
     if getattr(args,'pgstream_topology',stream_topology.COLOCATED)!=stream_topology.COLOCATED:m['pgstreamTopology']=args.pgstream_topology
     m["primerConcurrency"]=primer_concurrency(getattr(args,"primer_concurrency",1))
     m.update(commissioning_wal.option(args))
+    m.update(stream_topology.ack_option(args))
     if getattr(args,'image_input_preflight',None):m['imageInputPreflight']=args.image_input_preflight
     if getattr(args,"run_purpose","acceptance")=="discovery":m["runPurpose"]="discovery"
     select_opportunities(args,m)
@@ -894,14 +900,17 @@ def prepare_staged(args,target,pinned):
     require(not any("shared_preload_libraries" in str(x) for x in pg["command"][:-6]), "M7_POSTGRES_PRELOAD_ALREADY_SELECTED")
     selected_resources=selected_resources_profile(args)
     config=diagnostic_resources.overlay(config,selected_resources)
-    if m.get('runPurpose') == 'discovery':
-        m['composeLimitMode'] = diagnostic_resources.compose_limit_mode(config, selected_resources)
     clinical_timeline.install(config,target,m,getattr(args,'clinical_intake_timeline','off'),getattr(args,'clinical_sender_binary',None),getattr(args,'clinical_sender_receipt',None),getattr(args,'clinical_intake_targets',None))
     revision_witness.install(config,target,m,getattr(args,'revision_witness_targets',None))
     api_cause.install(config,target,m,getattr(args,'api_cause_observation','off')=='on')
     api_warm_cause.install(config,target,m,api_warm_cause.option(args).get('apiWarmCauseMode','off'))
     m['servingInstances'] = role_instances.roster(config,m['replicas'])
     node_observation.install(config,target,m,node_observation.option(args).get('nodeObservationMode','off'))
+    if m.get('runPurpose') == 'discovery':
+        if selected_resources is None:
+            config, removed = diagnostic_resources.uncapped_compose(config)
+            write(target/'compose-limits-projection.json', {'removedReferenceFields': removed})
+        m['composeLimitMode'] = diagnostic_resources.compose_limit_mode(config, selected_resources)
     if selected_resources is not None or m.get('runPurpose') == 'discovery':
         config=seal_diagnostic_images(config,m)
     record=diagnostic_resources.selected_record(config,selected_resources)
@@ -925,6 +934,8 @@ def verify(d, m, teardown=False):
     require(host_identity(fixture_inventory(m))==m["hostIdentity"],"M7_HOST_IDENTITY_CHANGED")
     require(git(d / "core", "rev-parse", "HEAD") == m["pair"]["core"], "M7_OWN_CORE_HEAD_CHANGED")
     require(digest(d / "frozen.compose.json") == m["composeSha256"], "M7_COMPOSE_CHANGED")
+    if m.get('composeLimitMode') == 'uncapped-services':
+        diagnostic_resources.compose_limit_mode(document(d/'frozen.compose.json'), None)
     if m.get("environmentSha256"):
         require(digest(d/"env")==m["environmentSha256"] and digest(d/"core/deploy/multitenant/.env")==m["environmentSha256"],"M7_ENVIRONMENT_CHANGED")
     if m.get('edgeWorkerBudget'):
@@ -932,6 +943,8 @@ def verify(d, m, teardown=False):
         require(digest(edge_file)==m['edgeWorkerBudget']['configurationSha256'],'M7_EDGE_CONFIGURATION_CHANGED')
         verify_edge_workers(edge_file.read_text(),m['edgeWorkerBudget'])
     stream_topology.verify_config(m,document(d/"frozen.compose.json"))
+    if m.get('pgstreamNotifierAckWire') and not teardown:
+        stream_topology.verify_ack_budget(d,m,document(d/'frozen.compose.json')['services']['pgstream']['volumes'])
     commissioning_wal.verify(document(d/"frozen.compose.json"),m)
     platform_startup_config(document(d/"frozen.compose.json"),d,m,verify=True)
     clinical_timeline.verify(document(d/"frozen.compose.json"),d,m,teardown=teardown)
@@ -1338,6 +1351,10 @@ def deploy(d, m):
                 write(d/"owner.json",m)
             if name=="infrastructure":psql(d,"CREATE EXTENSION IF NOT EXISTS pg_stat_statements;")
             if name=="bootstrap":
+                ack_wire=stream_topology.install_ack_budget(d,m,config)
+                if ack_wire is not None:
+                    m['pgstreamNotifierAckWire']=ack_wire
+                    write(d/'producer-ack-budget.json',ack_wire)
                 if m.get('staticTopology'):static_runtime_contract(d,m)
                 fingerprint=settings_fingerprint(d,m)
                 m["settingsFingerprint"]=fingerprint
@@ -1357,6 +1374,11 @@ def deploy(d, m):
     projections=[tenant_projection(document(file),m["tenants"]) for file in candidates]
     require(all(value==projections[0] for value in projections),"M7_PRIMER_OUTPUT_CONFLICT")
     write(d/"tenants.private.json",projections[0])
+    if stream_topology.ACK_BUDGET in m:
+        streams=[row for row in resources(m) if row['Config']['Labels'].get('com.docker.compose.service')=='pgstream']
+        require(len(streams)==1 and streams[0]['Config']['Labels'].get(OWNER)==m['owner'], 'M7_PGSTREAM_ACK_RUNTIME_OWNER')
+        stream_topology.verify_ack_budget(d,m,streams[0]['Mounts'])
+        write(d/'producer-ack-budget.json',{**m['pgstreamNotifierAckWire'], 'ownedMountVerified': True})
     profile_provenance.runtime_environment(resources(m),m["diagnostics"],config,pgstream=m.get("profile")=="pgstream-sample")
     if m.get('composeLimitMode') == 'uncapped-services':
         rows = diagnostic_resources.uncapped_readback(diagnostic_resource_rows(m), config['services'])
@@ -2293,6 +2315,8 @@ def parser():
     prep.add_argument("--offered-rps",type=float,help="Explicit scenario HTTP arrival rate for pgstream discovery only; preserves mix")
     prep.add_argument("--jwt-setup-concurrency",type=int,choices=range(1,65),default=1)
     prep.add_argument("--commissioning-slot-wal-mib",type=int,choices=commissioning_wal.VALUES,help="Explicit finite local commissioning WAL retention; omitted keeps deployment default")
+    prep.add_argument('--pgstream-notifier-ack-timeout-ms', type=int,
+                      help='Explicit acknowledgment budget for a fresh external pgstream Compose discovery run')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,choices=range(1,33),default=1,help="Bounded commissioning workers on a qualified NEXT image; default serial")
     prep.add_argument("--tenants", type=int, required=True);prep.add_argument("--replicas", type=int, choices=REPLICAS, required=True);prep.add_argument("--quiet-load", type=float, default=3)

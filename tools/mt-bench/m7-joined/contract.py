@@ -279,10 +279,13 @@ def unaccepted_check(document):
 
 def discovery_authorization(manifest, receipt):
     """Version 1 preserves the original PENDING contract; v2 binds projections."""
+    import stream_topology
     version=receipt.get('version',1)
     require(type(version) is int and version in (1,2),'M7_DIAGNOSTIC_RECEIPT_VERSION')
     require('commissioningSlotWalMiB' not in manifest or version==2,
             'M7_COMMISSIONING_SLOT_WAL_BOUND_RECEIPT_REQUIRED')
+    ack_budget = stream_topology.ack_selection(manifest)
+    require(not ack_budget or version==2, 'M7_PGSTREAM_ACK_BOUND_RECEIPT_REQUIRED')
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
     import static_topology
@@ -290,6 +293,7 @@ def discovery_authorization(manifest, receipt):
     resolved=manifest.get('runConfiguration')
     require(isinstance(resolved,dict) and receipt.get('configurationSha256')==sha(resolved),
             'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
+    require(stream_topology.ack_selection(resolved) == ack_budget, 'M7_DIAGNOSTIC_CONFIGURATION_MISMATCH')
     require(resolved.get('staticTopology') == manifest.get('staticTopology') and
             resolved.get('staticBuildReceiptSha256') == manifest.get('staticBuildReceiptSha256'),
             'M7_STATIC_CONFIGURATION_MISMATCH')

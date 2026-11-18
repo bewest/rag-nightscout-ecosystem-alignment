@@ -214,11 +214,32 @@ def compose_limit_mode(config, selected):
     if selected is not None:
         return 'configured'
     for role, spec in config['services'].items():
-        alternate = spec.get('deploy', {}).get('resources', {}).get('limits', {})
+        alternate = spec.get('deploy', {}).get('resources', {})
         need(not any(spec.get(key) for key in (*COMPOSE_CPU_LIMITS, *COMPOSE_MEMORY_LIMITS))
-             and not any(alternate.get(key) for key in ('cpus', 'memory')),
+             and not any(alternate.get(kind, {}).get(key) for kind in ('limits', 'reservations')
+                         for key in ('cpus', 'memory')),
              'IMPLICIT_SERVICE_LIMIT:' + role)
     return 'uncapped-services'
+
+
+def uncapped_compose(config):
+    """Project reference sizing out of the diagnostic runtime, preserving source files."""
+    result = copy.deepcopy(config)
+    removed = {}
+    for role, spec in result['services'].items():
+        fields = [key for key in (*COMPOSE_CPU_LIMITS, *COMPOSE_MEMORY_LIMITS) if key in spec]
+        for key in fields:
+            del spec[key]
+        alternate = spec.get('deploy', {}).get('resources', {})
+        for kind in ('limits', 'reservations'):
+            block = alternate.get(kind, {})
+            for key in ('cpus', 'memory'):
+                if key in block:
+                    del block[key]
+                    fields.append('deploy.resources.' + kind + '.' + key)
+        if fields:
+            removed[role] = fields
+    return result, removed
 
 
 def uncapped_readback(rows, services):

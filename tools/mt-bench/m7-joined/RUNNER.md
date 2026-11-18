@@ -1238,9 +1238,10 @@ Measurements with uncertain or variable units stay outside the exact list.
 
 Omitting both `diagnostic-resource-profile` and
 `diagnostic-resource-allocation` selects uncapped Compose services, including
-ordinary external pgstream discovery. The normal preparation rejects an
-unexpected embedded service quota and deployment checks the owned Docker
-readback. Host constraints still apply. A named profile or an authored
+ordinary external pgstream discovery. Preparation removes reference CPU and
+memory sizing from the frozen runtime configuration and records the affected
+fields. Deployment checks the owned Docker readback. Host constraints still
+apply. A named profile or an authored
 allocation selects its explicit service/driver caps and existing readback.
 Static workers and batch reservations still require their exact allocation
 inputs. Review requested versus observed limits before comparing operating
@@ -1255,6 +1256,13 @@ Use `plan` to inspect their values and the work they cover. Set these limits
 from observed phase timings and keep their evidence with the experiment.
 Deployment priming is a separate provisioning stage. A traffic window names
 the generator's offered-work plan and does not set the overall cleanup clock.
+
+For fresh external pgstream discovery, `pgstream-notifier-ack-timeout-ms`
+selects the producer's per-request acknowledgment budget. Omit it to keep the
+source value. The receipt binds the requested value. After bootstrap, the
+runner records the source and effective wire hashes and checks the owned
+producer's read-only mount. The setting leaves retry cadence and clinical
+completion deadlines unchanged.
 
 For an owner-monitored one-shot local discovery point, set `"tier": "discovery"`
 and `"workSeconds": null`, supply positive `setup-seconds` and `drain-seconds`
