@@ -4942,7 +4942,7 @@ pending case remains UNMEASURED.</p>
 <tr>
 <td><strong>Production envelope</strong> — measured before limits are set</td>
 <td>No measured workload, availability, freshness or recovery figures exist yet. A synthetic functional pass does not define tenant capacity.</td>
-<td>Benchmark the reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove component-wise horizontal/vertical scaling with a binding inventory. Then agree recovery time and acceptable loss from the measurements and use them as thresholds (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-envelope-measured-not-declared">decision 2026-11-09</a>).</td>
+<td>Benchmark the reference at stepped tenant counts with a hot tenant and publish the numbers; contrast against N single-tenant processes and the per-site model at equal synthetic load; prove component-wise horizontal/vertical scaling with a binding inventory. Then agree recovery time and acceptable loss from the measurements and use them as thresholds (<a href="../../30-design/tenancy/multitenancy-decisions.html#m7-envelope-measured-not-declared">decision 2026-11-09</a>).</td>
 <td><code>MT-BENCH-BASELINE</code>, <code>MT-BENCH-CONTRAST</code>, <code>MT-SCALE-UNBOUND</code>; measurement owner, coordinator schedules the windows.</td>
 </tr>
 <tr>
@@ -4955,19 +4955,19 @@ pending case remains UNMEASURED.</p>
 <td><strong>Production provisioning, ingress and secrets</strong> — required before production use</td>
 <td>Demo bootstrap seeds synthetic tenants and restricts its database; it is not a general production provisioner. Peer/client-IP trust unification and production Vault login/renewal/custody need implementation or live acceptance.</td>
 <td>Explicit operator provisioning and append-only migrations with effective grants/RLS/read-only readiness; safe partial-failure refusal and retry/inspection. Real TLS edge tests for host/selector conflict, spoof, unknown tenant, sockets, client IP and private owner/operator/database reachability. Vault Agent sidecar auto-auth (one AppRole per deployment), token-file renewal/expiry/revocation, seal/outage, CA verification/rotation and recoverable unseal custody. Wrong or missing authority refuses without fallback.</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deployment-and-trust-2026-11-07">Deployment/trust decisions</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-agent-sidecar">Vault Agent sidecar</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-home-now">deploy-tree home</a> (<code>DEPLOY-VAULT-AGENT</code> in <code>nightscout-deploy</code>, <code>MT-VAULT-TOKEN-FILE</code> in core), <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/CREDENTIALS.md">ed2 credential inventory</a>; source integration + deployment operator.</td>
+<td><a href="../../30-design/tenancy/multitenancy-decisions.html#m6-deployment-and-trust-2026-11-07">Deployment/trust decisions</a>, <a href="../../30-design/tenancy/multitenancy-decisions.html#vault-agent-sidecar">Vault Agent sidecar</a>, <a href="../../30-design/tenancy/multitenancy-decisions.html#deploy-tree-home-now">deploy-tree home</a> (<code>DEPLOY-VAULT-AGENT</code> in <code>nightscout-deploy</code>, <code>MT-VAULT-TOKEN-FILE</code> in core), <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/CREDENTIALS.md">ed2 credential inventory</a>; source integration + deployment operator.</td>
 </tr>
 <tr>
 <td><strong>Lifecycle, keys and recovery</strong> — M6b plus actual deployment recovery</td>
 <td>Bounded restore is accepted; key retention/destruction and operator-assisted ownership are in the M6b joined acceptance, while ownership in a serving role, the production key custodian and recoverable operation after unresolved suspension remain open. Fail-closed is safe refusal, not demonstrated eventual recovery.</td>
-<td>Actual provision/pause/suspend/export/delete/ownership flows with race and current-authority controls, including the adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity policy</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-and-ownership-phase">restore census</a> and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#key-destruction-removes-export">export removal at key destruction</a>; artifact/key-reference fidelity, cancellation vs execution, recovery within retention and destruction/after-window refusal. Rehearse interrupted restore/upgrade, lost acknowledgements, participant death and host/dependency replacement using supported operator procedures. Verify A state/history and independent B state. Record when recovery must stop; never clear orphans or replay uncertain activation blindly.</td>
+<td>Actual provision/pause/suspend/export/delete/ownership flows with race and current-authority controls, including the adopted <a href="../../30-design/tenancy/multitenancy-decisions.html#activity-is-pause-suspend">activity policy</a>, <a href="../../30-design/tenancy/multitenancy-decisions.html#restore-census-and-ownership-phase">restore census</a> and <a href="../../30-design/tenancy/multitenancy-decisions.html#key-destruction-removes-export">export removal at key destruction</a>; artifact/key-reference fidelity, cancellation vs execution, recovery within retention and destruction/after-window refusal. Rehearse interrupted restore/upgrade, lost acknowledgements, participant death and host/dependency replacement using supported operator procedures. Verify A state/history and independent B state. Record when recovery must stop; never clear orphans or replay uncertain activation blindly.</td>
 <td><a href="../../30-design/tenancy/multitenant-delivery-roadmap.html#m5m6-acceptance-families">M6 acceptance families</a>, <a href="../../30-design/tenancy/deployment-and-rig-testing.html#credential-and-recovery-boundaries">recovery guide</a>; lifecycle/source owner + operator.</td>
 </tr>
 <tr>
 <td><strong>Connector and client journeys</strong> — adopted preview scope</td>
 <td>The outbound pull against a tenant has a <a href="../../../reports/tenancy/connector-sync-2026-11-10/index.html">Docker lab measurement</a> (entries only); cadence, token refresh, real ingress, the tenant-side connector role and relevant client/device cases remain open.</td>
 <td>Existing single-site connector pulls with a pre-issued tenant reader first, with independent stored/history outcomes and retry/revocation checks. Tenant-side inbound connector uses the adopted tenant-bound API/secrets/egress contract before claiming that direction. Complete retained Android requirement and the declared supported-client/rig checks; name iOS/all-client exclusions. Any scope reduction needs an explicit decision.</td>
-<td><a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#first-preview-no-push-provider">First external channel</a>, <a href="../../30-design/tenancy/multitenant-delivery-roadmap.html">roadmap</a>; connector/client owner, coordinated into final candidate.</td>
+<td><a href="../../30-design/tenancy/multitenancy-decisions.html#first-preview-no-push-provider">First external channel</a>, <a href="../../30-design/tenancy/multitenant-delivery-roadmap.html">roadmap</a>; connector/client owner, coordinated into final candidate.</td>
 </tr>
 <tr>
 <td><strong>Measured operating behavior</strong> — after envelope declaration, on representative inputs</td>
@@ -4979,19 +4979,19 @@ pending case remains UNMEASURED.</p>
 <td><strong>Coherent release and deployment admission</strong> — join the preceding rows</td>
 <td>A collection of source slices, or the old ed2 campaign, cannot qualify a changed production candidate. M6 promotion, release and deployment trust are separate decisions.</td>
 <td>Frozen joined candidate with applicable full/default-browser/enabled-corpus/client/native acceptance and final prcheck; exact pending/unsupported inventory and controls. Then actual deployment trust record plus live spoof/conflict/outage probes, backup restore/recovery rehearsal, observable service failures and operator response. Reviewed release/rollback and explicit real-data/identity/role admission precede the production cohort.</td>
-<td><a href="../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#3-batch-rules">Batching rules</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">deployment admission</a>, release records; coordinator, maintainer and deployment operator.</td>
+<td><a href="../../30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.html#3-batch-rules">Batching rules</a>, <a href="../../30-design/tenancy/multitenancy-decisions.html#deployment-admission-probes-and-trust-record">deployment admission</a>, release records; coordinator, maintainer and deployment operator.</td>
 </tr>
 </tbody>
 </table>
 <p>The production deployment must establish custody/private ingress and the
 declared cooperative application roster under the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
+<a href="../../30-design/tenancy/multitenancy-decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
 External direct SQL writers are unsupported and their effects are undefined
 behavior; arbitrary-writer exclusion is not an admission gate for this supported
 topology. Every supported internal participant must still follow its authority,
 write and lifecycle contracts. A current-session census is diagnostic, not proof
 of credential custody or complete participant registration. The existing
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">separate-process decision</a>
+<a href="../../30-design/tenancy/multitenancy-decisions.html#restore-service-processes">separate-process decision</a>
 does not require inventing a stronger database fence merely to keep processes
 separate. Transaction pooling is outside the accepted reference.</p>
 <p>Monitoring and runbooks should expose tenant unavailable/suspended state, evaluator

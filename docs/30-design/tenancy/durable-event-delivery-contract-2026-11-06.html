@@ -16,7 +16,7 @@
         <link rel="prev" href="derived-output-boundary-2026-11-07.html">
       
       
-        <link rel="next" href="m4-client-binary-lab-packet-2026-11-06.html">
+        <link rel="next" href="execution-log.html">
       
       
         
@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3395,6 +3397,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -5802,7 +5832,7 @@ transactional tenant clock, and names the entry bar before any distributed
 evaluator or realtime wiring. It promotes no milestone, selects no provider,
 admits nothing to a release candidate, and infers no consistency stronger than
 what the cited records reproduced.</em></p>
-<p><strong>Current direction, 2026-11-16:</strong> the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#stream-fed-clinical-materializer">stream-fed clinical materializer decision</a>
+<p><strong>Current direction, 2026-11-16:</strong> the <a href="multitenancy-decisions.html#stream-fed-clinical-materializer">stream-fed clinical materializer decision</a>
 supersedes routine D6 polling and snapshot rediscovery for the maintained default
 evaluator. The <a href="evaluator-realtime-communication.html#stream-fed-clinical-materializer--adopted-target-2026-11-16">current architecture</a>
 owns row intake, recoverable acceptance, cohorts, scheduling and output delivery.
@@ -6092,7 +6122,7 @@ keys them apart; the port corpus preserves typed forms in delete records,
 </tbody>
 </table>
 <p>A consumer never infers a hard delete from a missing event. Strict stamped replay
-retains the limits above. The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m5-bounded-snapshot-reconciliation">bounded snapshot reconciliation decision</a>
+retains the limits above. The later <a href="multitenancy-decisions.html#m5-bounded-snapshot-reconciliation">bounded snapshot reconciliation decision</a>
 selects full admitted current-identity/absence reconciliation in a consistent tenant
 snapshot, independent of floor movement. An arbitrary recent-time window is not
 sufficient. It preserves existing hard deletes and unstamped activity behavior;
@@ -6185,7 +6215,7 @@ says so in its health report; it does not invent one.</p>
 <h2 id="7-evaluator-and-notification-state">7. Evaluator and notification state<a class="headerlink" href="#7-evaluator-and-notification-state" title="Permanent link">&para;</a></h2>
 <p><a href="../remedial/rc-16.0.0-integration-record.html#r73-durable-runtime-operations-batch">R73</a> owns current functional M5 acceptance. The historical source inventory below
 remains anchored to the earlier source in §0; it is not a current code inventory.</p>
-<p>The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-wide-alarm-suppression">tenant-wide suppression decision</a>
+<p>The later <a href="multitenancy-decisions.html#tenant-wide-alarm-suppression">tenant-wide suppression decision</a>
 settles first-preview ack/snooze effects: shared within the tenant for the alarm
 group/level, original absolute expiry retained through restart, and no extension
 from repeats during the active window. Preserve the existing default duration and
@@ -6272,7 +6302,7 @@ and the seams plan's identity rule:</p>
    is not a database revision (R49).</li>
 </ol>
 <h3 id="durable-notification-request-handoff">Durable notification request handoff<a class="headerlink" href="#durable-notification-request-handoff" title="Permanent link">&para;</a></h3>
-<p>The maintainer adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#durable-notification-requests-and-retries">durable requests and retries</a>
+<p>The maintainer adopted <a href="multitenancy-decisions.html#durable-notification-requests-and-retries">durable requests and retries</a>
 for the explicit multitenant preview after reviewing actual-component/synthetic-
 provider ambiguity evidence on <code>57d54963</code>. That evidence models lost process-local
 state through component recreation; it is not a measured process crash, live
@@ -6459,7 +6489,7 @@ sentence the entry bar in §8 can falsify:</p>
     it locally; R56 owns the joined baseline and its measured limits.</li>
 </ol>
 <h2 id="11-maintainer-acceptance-and-experiments">11. Maintainer acceptance and experiments<a class="headerlink" href="#11-maintainer-acceptance-and-experiments" title="Permanent link">&para;</a></h2>
-<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m5-bounded-snapshot-reconciliation">bounded snapshot reconciliation decision</a>
+<p>The <a href="multitenancy-decisions.html#m5-bounded-snapshot-reconciliation">bounded snapshot reconciliation decision</a>
 selects the initial M5 current-state recovery path. It preserves existing writer
 contracts and requires explicit row/byte refusal. R73 records bounded functional
 implementation/native acceptance for the first reference; scan cadence/capacity
@@ -6469,7 +6499,7 @@ notification-delivery guarantees retain their own contracts.</p>
 chat: proceed with tenant-local durable checkpoints, commit-coupled ordering,
 at-least-once replay and idempotent consumers, and use experiments to inform
 scalability and performance. The decision is recorded in the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#b7-durable-multitenant-delivery-2026-11-06">release decisions</a>.
+<a href="multitenancy-decisions.html#b7-durable-multitenant-delivery-2026-11-06">release decisions</a>.
 This accepts the direction and the executable entry bar, not measured distributed
 recovery, a performance budget, a provider, milestone promotion or release admission.
 R73 supplies the functional M5 disposition and recorded instruments. The queue

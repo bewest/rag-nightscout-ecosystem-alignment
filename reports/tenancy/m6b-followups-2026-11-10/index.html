@@ -12051,7 +12051,7 @@
 
 
 <h1 id="m6b-follow-ups-last-owner-revocation-legacy-subject-writers-export-file-expiry">M6b follow-ups: last-owner revocation, legacy subject writers, export-file expiry<a class="headerlink" href="#m6b-follow-ups-last-owner-revocation-legacy-subject-writers-export-file-expiry" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>d38055bc9</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Lane
 <code>codex/m6b-followups-20261110</code>; local, unpushed. Source of the three items: the M6b join
 coordinator handoff, step 6 (read-derived, not reproduced).</em></p>
@@ -12096,7 +12096,7 @@ coordinator handoff, step 6 (read-derived, not reproduced).</em></p>
 <p>The intended behaviour comes from <a href="../../../docs/30-design/tenancy/owner-authority.html#owner-permissions-and-ceilings">owner authority</a>:
 "last-owner removal must not orphan the tenant", and "last-owner protection, current authority
 and audit remain required for the operator path"; and from the 16.0.0 decision
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-may-revoke-subjects"><code>owner-may-revoke-subjects</code></a>.
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#owner-may-revoke-subjects"><code>owner-may-revoke-subjects</code></a>.
 A usable owner is an active <code>tenant_owner_actors</code> row with <code>can_update</code> whose principal is an
 existing subject of the tenant (<code>lib/tenant-ownership/README.md</code>).</p>
 <h2 id="verdicts">Verdicts<a class="headerlink" href="#verdicts" title="Permanent link">&para;</a></h2>
@@ -12235,7 +12235,7 @@ explicit owner revocation and preserves legacy/default update/remove behavior").
 either that tested behaviour or a database identity's privilege shape. The decision question is
 below.</p>
 <h2 id="item-3-export-file-expiry-unsettled-decision-question">Item 3: export-file expiry (unsettled, decision question)<a class="headerlink" href="#item-3-export-file-expiry-unsettled-decision-question" title="Permanent link">&para;</a></h2>
-<p><strong>What is stated.</strong> Decision <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-deletion-key-retention"><code>tenant-deletion-key-retention</code></a>
+<p><strong>What is stated.</strong> Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#tenant-deletion-key-retention"><code>tenant-deletion-key-retention</code></a>
 keeps the Transit keys and the export artifact for 30 days, then an operator destroys the keys,
 which cryptographically erases the artifact's secrets. <code>lib/tenant-lifecycle/README.md</code> says
 "Expiry of the export artifact file itself is not automated by this module", and the

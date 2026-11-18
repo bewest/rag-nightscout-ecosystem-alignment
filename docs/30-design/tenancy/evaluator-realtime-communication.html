@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3404,6 +3406,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
   
 
     
@@ -5824,7 +5854,7 @@
 
 
 <h1 id="evaluator-realtime-and-api-communication">Evaluator, realtime and API communication<a class="headerlink" href="#evaluator-realtime-and-api-communication" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>df4e17764</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing living explanation, reconciled 2026-11-16 against selected
 cgm-remote-monitor <code>5e112547b31252ec428747c821d3cd1b3684ce2b</code> and alignment records
 <code>5fdc4bf0685d35d2fac980bad1b28bd66525ccdb</code>. Architecture is </em><em>read-derived</em><em>;
@@ -6128,7 +6158,7 @@ it. The <a href="runtime-topology.html#evaluator-inspection-and-workload-ownersh
 owns the other roles' scaling semantics.</p>
 <h2 id="transaction-coverage-and-mechanism-retirement">Transaction coverage and mechanism retirement<a class="headerlink" href="#transaction-coverage-and-mechanism-retirement" title="Permanent link">&para;</a></h2>
 <p><strong>Direction for evaluation, 2026-11-16; replacement proposed, unimplemented and
-unqualified.</strong> The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#stream-native-coverage-direction">release decision</a>
+unqualified.</strong> The <a href="multitenancy-decisions.html#stream-native-coverage-direction">release decision</a>
 directs internal ordering and coverage toward the PostgreSQL committed stream.
 Evaluator still owns recoverable accepted versus completed work, clinically
 sufficient bounded state and actual due obligations. Realtime consumes completed
@@ -6205,7 +6235,7 @@ separately, so clinical computation does not hold the serial CDC delivery open.
 The existing evaluator checkpoint consumer retains observed and completed
 versions, completed result/frame, content revision, next due instant and
 ownership/restore generation. Acquisition and clinical completion remain separate.</p>
-<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-platform-restart">platform restart decision</a>
+<p>The <a href="multitenancy-decisions.html#evaluator-platform-restart">platform restart decision</a>
 places pgstream in an independently managed service. It sends webhooks to the
 evaluator's private receiver. The platform owns the pinned process and its restart
 policy; the evaluator owns durable receipt, clinical completion and application
@@ -6218,7 +6248,7 @@ durable admission. The current selected binding targets its sole intake owner;
 ordinary load balancing across evaluator replicas is not qualified by the private
 Service address. Receiver availability and clinical readiness are separate so
 service discovery does not require clinical readiness before delivery can start.</p>
-<p>The historical <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json">bounded platform witness</a>
+<p>The historical <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json">bounded platform witness</a>
 measures a Docker-managed stream replacement with the same evaluator and exact
 durable catch-up. It does not qualify the new application image, Kubernetes,
 general failover or a capacity limit.</p>
@@ -6468,12 +6498,12 @@ and restore state. A handoff receipt does not prove browser display, human
 acknowledgement or provider/device delivery. External exactly-once delivery is
 not claimed.</p>
 <p>Content-identical clinical cycles keep their output revision under the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change">content-revision decision</a>.
+<a href="multitenancy-decisions.html#evaluator-revision-on-content-change">content-revision decision</a>.
 Durable completed coverage may advance without changing the frame. An active,
 unacknowledged, unsnoozed alarm repeats on its own
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-repeat-clock">heartbeat clock</a>.
+<a href="multitenancy-decisions.html#alarm-repeat-clock">heartbeat clock</a>.
 Paused or suspended tenants neither compute nor deliver alarms; resuming requires
-current eligible output under the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity policy</a>.</p>
+current eligible output under the <a href="multitenancy-decisions.html#activity-is-pause-suspend">activity policy</a>.</p>
 <p><a id="alarm-repeat-and-targeted-wake-diagram"></a>
 <pre class="mermaid"><code>flowchart LR
   E[Eligible completed output] --&gt; P[Durable notification requests]

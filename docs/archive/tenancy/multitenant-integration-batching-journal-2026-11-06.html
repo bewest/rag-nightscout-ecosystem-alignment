@@ -4984,7 +4984,7 @@ release records own later acceptance. Do not execute an old “next” from this
 multitenant preview is batched, what verification runs at each stage, and which
 completion batches cover M0–M6 and where an early proof is still required.
 Item states, gates and
-blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/queue/work-queue.yaml">the work queue</a>; acceptance
+blockers live in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/queue/work-queue.yaml">the work queue</a>; acceptance
 evidence lives in the <a href="../../30-design/remedial/rc-16.0.0-integration-record.html">integration record</a>
 and the <a href="../../30-design/tenancy/multitenant-delivery-dashboard.html">working dashboard</a>. This plan
 supplements the <a href="../../30-design/tenancy/multitenant-delivery-roadmap.html">REST delivery roadmap</a>
@@ -5420,7 +5420,7 @@ cannot substitute for that mapping.</p>
 <tr>
 <td>M5 sockets/evaluator/ack</td>
 <td>B: D23 forwarding with actual ack/no-ack behavior, current authorization/reconnect, tenant rooms/caches, replay-equivalent evaluation and durable ack/snooze recovery</td>
-<td>Implementation after interfaces are proven; ack schema/retention and notification delivery retain their own decision/acceptance gates. Live external notifications are not admitted by evaluator lab success. <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#durable-notification-requests-and-retries">Durable request/retry responsibility</a> is adopted; joined ordinary/snooze/repeat/restart/ambiguous-send/foreign/failed-cycle/shutdown consumer tests are required, not inferred from uploader passes.</td>
+<td>Implementation after interfaces are proven; ack schema/retention and notification delivery retain their own decision/acceptance gates. Live external notifications are not admitted by evaluator lab success. <a href="../../30-design/tenancy/multitenancy-decisions.html#durable-notification-requests-and-retries">Durable request/retry responsibility</a> is adopted; joined ordinary/snooze/repeat/restart/ambiguous-send/foreign/failed-cycle/shutdown consumer tests are required, not inferred from uploader passes.</td>
 </tr>
 <tr>
 <td>M6 populated operations and bounds</td>

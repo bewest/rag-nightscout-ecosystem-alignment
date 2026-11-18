@@ -12123,18 +12123,18 @@
 
 
 <h1 id="evaluator-partitioning-mt-evaluator-partition-m7-lane-ep-stopped-at-the-overlap-premise-2026-11-10">Evaluator partitioning (MT-EVALUATOR-PARTITION, M7), lane EP: stopped at the overlap premise, 2026-11-10<a class="headerlink" href="#evaluator-partitioning-mt-evaluator-partition-m7-lane-ep-stopped-at-the-overlap-premise-2026-11-10" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>dcba324d8</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing evidence record for lane EP. Captured 2026-11-10; not edited after capture.
-Decisions read: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">evaluator-static-partition</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#pool-primitive-shared">pool-primitive-shared</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-partition-now">evaluator-partition-now</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change">evaluator-revision-on-content-change</a> and
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-repeat-clock">alarm-repeat-clock</a>.
+Decisions read: <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#evaluator-static-partition">evaluator-static-partition</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#pool-primitive-shared">pool-primitive-shared</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#evaluator-partition-now">evaluator-partition-now</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#evaluator-revision-on-content-change">evaluator-revision-on-content-change</a> and
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#alarm-repeat-clock">alarm-repeat-clock</a>.
 Synthetic data only.</em></p>
 <h2 id="outcome">Outcome<a class="headerlink" href="#outcome" title="Permanent link">&para;</a></h2>
 <p>The lane stopped before implementation, on the condition its brief named: <strong>the evaluator's
 notification output is not idempotent across two overlapping members.</strong> The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">evaluator-static-partition</a>
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#evaluator-static-partition">evaluator-static-partition</a>
 decision accepts duplicate evaluation "bounded to one heartbeat interval after a membership change"
 because "the evaluator's outputs are idempotent by contract (... notification intent with stable
 identity and suppression)". The shipping producer gives a new alarm effect, and so a new delivery
@@ -12189,7 +12189,7 @@ consumer id. When two members both work one tenant, each pass sees the other mem
 and is delivered. The per-tenant advisory lock (<code>producer-state.js:10-15</code>) serialises the passes; it
 does not merge them.</p>
 <h3 id="measurement-reproduced-reducer-level">Measurement (reproduced, reducer level)<a class="headerlink" href="#measurement-reproduced-reducer-level" title="Permanent link">&para;</a></h3>
-<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a> drives the shipping <code>reduce</code> with one synthetic urgent
+<p>Probe: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a> drives the shipping <code>reduce</code> with one synthetic urgent
 alarm request, identical content, one pass per second for 10 s, repeat interval 60 s. It counts new
 non-clear alarm effects. Output at <code>1792063a</code>:</p>
 <table>
@@ -12328,8 +12328,8 @@ equivalence through the evaluator integration suites, the inspection read, the t
 controls, <code>test:unit</code>, tiers, write-boundary and eslint. No code changed, so none of them was run.
 The store-level step of the finding (a new key becomes a delivered request) is read-derived.</p>
 <h2 id="resumed-2026-11-10-implemented-and-measured">Resumed, 2026-11-10: implemented and measured<a class="headerlink" href="#resumed-2026-11-10-implemented-and-measured" title="Permanent link">&para;</a></h2>
-<p><em>Appended after the maintainer's decisions <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-output-idempotent-by-content">alarm-output-idempotent-by-content</a>
-(option b) and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#pool-desired-count-in-table">pool-desired-count-in-table</a>.
+<p><em>Appended after the maintainer's decisions <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#alarm-output-idempotent-by-content">alarm-output-idempotent-by-content</a>
+(option b) and <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#pool-desired-count-in-table">pool-desired-count-in-table</a>.
 The sections above are the stop record and stay as captured; the figures above that say UNMEASURED are
 superseded by this section only where it gives a measurement.</em></p>
 <h3 id="anchors_1">Anchors<a class="headerlink" href="#anchors_1" title="Permanent link">&para;</a></h3>
@@ -12355,7 +12355,7 @@ superseded by this section only where it gives a measurement.</em></p>
 </tr>
 <tr>
 <td>lab harness</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/tenancy/evaluator-partition/run.cjs"><code>tools/tenancy/evaluator-partition/run.cjs</code></a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/tools/tenancy/evaluator-partition/run.cjs"><code>tools/tenancy/evaluator-partition/run.cjs</code></a></td>
 </tr>
 </tbody>
 </table>
@@ -12449,7 +12449,7 @@ the pod-index label. <code>NS_EVALUATOR_POOL_MEMBERS</code> has no environment c
 operator sets the count with <code>setPoolMembers</code>. The binding also needs <code>MULTITENANT_POOL_EVALUATOR_PARTITION=on</code>,
 <code>_LEASE_MS</code>, <code>_DATABASE_URL</code> (secret) and <code>_NAMESPACE</code>, plus a <code>pools</code> block and an operator identity on the admin role.</p>
 <h3 id="measurements-reproduced">Measurements (reproduced)<a class="headerlink" href="#measurements-reproduced" title="Permanent link">&para;</a></h3>
-<p>Reducer probe (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a>, now with a content digest), identical content, 10 passes:</p>
+<p>Reducer probe (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/evaluator-partition-2026-11-10/reduce-probe.cjs"><code>reduce-probe.cjs</code></a>, now with a content digest), identical content, 10 passes:</p>
 <table>
 <thead>
 <tr>
@@ -12696,7 +12696,7 @@ for all six files.</p>
 </ul>
 <h2 id="pool-member-hygiene-2026-11-10">Pool member hygiene, 2026-11-10<a class="headerlink" href="#pool-member-hygiene-2026-11-10" title="Permanent link">&para;</a></h2>
 <p><em>Appended after the maintainer adopted the three follow-ups above
-(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#pool-member-hygiene">pool-member-hygiene</a>).</em></p>
+(<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#pool-member-hygiene">pool-member-hygiene</a>).</em></p>
 <p>Lane head: <code>codex/evaluator-partition-20261110</code> at <strong><code>d6560468</code></strong>, one commit on <code>cb1b751d</code>. It touches 4 files:
 <code>lib/server/internal-api/transport.js</code>, <code>lib/server/serve/vcpool-preview.js</code>,
 <code>tests/internal-api-stale-socket.test.js</code> (new) and <code>tests/tiers.json</code>. Local and unpushed. Alignment <code>main</code> was

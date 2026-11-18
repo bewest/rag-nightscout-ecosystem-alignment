@@ -12284,14 +12284,14 @@
 
 
 <h1 id="realtime-publishes-on-change-perf-lane-rt-2026-11-10">Realtime publishes on change (perf lane RT), 2026-11-10<a class="headerlink" href="#realtime-publishes-on-change-perf-lane-rt-2026-11-10" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-11 at <code>ec6ad8464</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing evidence record for perf lane RT (multitenant only). Captured 2026-11-10/11 (UTC); not
-edited after capture. Decisions read: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#cost-proportional-to-activity">cost-proportional-to-activity</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity-is-pause-suspend</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#suspended-refusal-423">suspended-refusal-423</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-devicestatus-status-parity">tenant-devicestatus-status-parity</a>,
+edited after capture. Decisions read: <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#cost-proportional-to-activity">cost-proportional-to-activity</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#activity-is-pause-suspend">activity-is-pause-suspend</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#suspended-refusal-423">suspended-refusal-423</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#tenant-devicestatus-status-parity">tenant-devicestatus-status-parity</a>,
 D6 and the <a href="../../../docs/30-design/tenancy/durable-event-delivery-contract-2026-11-06.html">durable event delivery contract</a>;
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-capacity-gate">m7-capacity-gate</a> for the marginal-cost section.
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#m7-capacity-gate">m7-capacity-gate</a> for the marginal-cost section.
 Synthetic data only. Every figure is labelled </em><em>reproduced</em><em> (read from a run file here) or </em><em>derived</em><em>
 (arithmetic on reproduced figures, stated).</em></p>
 <h2 id="outcome">Outcome<a class="headerlink" href="#outcome" title="Permanent link">&para;</a></h2>
@@ -12346,14 +12346,14 @@ timeout, <code>operation-cohort-config.js:49</code>). On a loaded PostgreSQL one
 pg-pool rejects with <code>timeout exceeded when trying to connect</code> at <code>operation-window.js:103</code>, the
 startup <code>Promise.allSettled</code> treats any rejection as fatal (<code>runtime.js:43-45</code> and <code>tenant-startup.js</code>
 warm, both at <code>cb1b751d</code>), and <code>preview-realtime.js</code> turns it into <code>PreviewConfigError</code> → exit 78. Shown with a diagnostic
-copy of <code>preview-realtime.js</code> that prints the swallowed error (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-restart-diagnostic.txt"><code>runs/base-n50-restart-diagnostic.txt</code></a>).
+copy of <code>preview-realtime.js</code> that prints the swallowed error (<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-restart-diagnostic.txt"><code>runs/base-n50-restart-diagnostic.txt</code></a>).
 It is not caused by the previous process: a fresh <code>up</code> of the stopped container failed the same way.
 The perf-db lane reproduced the same mechanism independently with unbounded warm at 200
 (<a href="../perf-db-2026-11-10/index.html">perf-db record</a>).</p>
 <p><strong>Not fixed here, measured in both heads:</strong> graceful shutdown with sockets attached overruns the
 10 s bound (<code>still open 10000 ms after SIGTERM: PipeWrap, PipeWrap, Timeout, …</code>, then the watchdog
-exits 1; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-realtime-lifecycle.txt"><code>runs/base-n50-realtime-lifecycle.txt</code></a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/perf-realtime-2026-11-10/runs/after-n50-realtime-lifecycle.txt"><code>runs/after-n50-realtime-lifecycle.txt</code></a>). Without sockets the
+exits 1; <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/perf-realtime-2026-11-10/runs/base-n50-realtime-lifecycle.txt"><code>runs/base-n50-realtime-lifecycle.txt</code></a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/perf-realtime-2026-11-10/runs/after-n50-realtime-lifecycle.txt"><code>runs/after-n50-realtime-lifecycle.txt</code></a>). Without sockets the
 base restarted in 5 s with no overrun. The mechanism was not examined.</p>
 <h2 id="anchors">Anchors<a class="headerlink" href="#anchors" title="Permanent link">&para;</a></h2>
 <table>
@@ -12386,7 +12386,7 @@ base restarted in 5 s with no overrun. The mechanism was not examined.</p>
 </tr>
 <tr>
 <td>harness</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/realtime-perf"><code>tools/mt-bench/realtime-perf/</code></a> (<code>run.sh</code>, <code>measure.js</code>); projects <code>ns-prt-&lt;label&gt;-n&lt;N&gt;</code></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/tools/mt-bench/realtime-perf"><code>tools/mt-bench/realtime-perf/</code></a> (<code>run.sh</code>, <code>measure.js</code>); projects <code>ns-prt-&lt;label&gt;-n&lt;N&gt;</code></td>
 </tr>
 <tr>
 <td>alignment <code>main</code> when written</td>
@@ -12455,7 +12455,7 @@ had no commits when this lane started, so nothing was reconciled yet.</p>
 warm (<code>tenant-startup.js</code> warm). perf-db reads <code>NS_TENANT_STARTUP_CONCURRENCY</code> (default 4) for warm and
 realtime's first refresh and makes pool sizes configurable; this lane hard-codes 2 for warm, startup
 and change ticks. At the join take perf-db's setting for startup and derive the tick concurrency from
-<code>NS_POOL_REALTIME_MAX</code>. The new <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>
+<code>NS_POOL_REALTIME_MAX</code>. The new <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>
 decision (recorded after this lane started) is not implemented for realtime here: realtime still
 refuses the boot if any tenant's startup fails, and <code>/health</code> stays 503 until all are ready.</p>
 <h2 id="checks">Checks<a class="headerlink" href="#checks" title="Permanent link">&para;</a></h2>
@@ -12817,7 +12817,7 @@ browser stays dark until reloaded. Unchanged by this lane, as required.</p>
 </tr>
 <tr>
 <td>1,000 tenants idle with a few sockets</td>
-<td><strong>UNMEASURED</strong>: the api exits 78 at boot before realtime starts (operation-window pool connect timeout at <code>operation-window.js:103</code>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/perf-realtime-2026-11-10/runs/after-n1000-api-diagnostic.txt"><code>runs/after-n1000-api-diagnostic.txt</code></a>). Bounding the api warm to 2 did not change it (tried in a commit since removed from the branch); the remaining all-tenant step was not found. perf-db reports 1,000 tenants starting with its serve-then-warm api change.</td>
+<td><strong>UNMEASURED</strong>: the api exits 78 at boot before realtime starts (operation-window pool connect timeout at <code>operation-window.js:103</code>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/perf-realtime-2026-11-10/runs/after-n1000-api-diagnostic.txt"><code>runs/after-n1000-api-diagnostic.txt</code></a>). Bounding the api warm to 2 did not change it (tried in a commit since removed from the branch); the remaining all-tenant step was not found. perf-db reports 1,000 tenants starting with its serve-then-warm api change.</td>
 <td>reproduced symptom</td>
 </tr>
 </tbody>
@@ -12858,9 +12858,9 @@ the session scratch directory.</p>
 <hr />
 <h2 id="update-2026-11-11-bf-233-change-stamp-function-incremental-refresh-serve-then-warm">Update 2026-11-11: BF-233, change-stamp function, incremental refresh, serve-then-warm<a class="headerlink" href="#update-2026-11-11-bf-233-change-stamp-function-incremental-refresh-serve-then-warm" title="Permanent link">&para;</a></h2>
 <p><em>Appended 2026-11-11 (UTC); the sections above are unchanged. Brief: BF-233 (filed from this lane's
-finding), decisions <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#change-stamp-definer-function">change-stamp-definer-function</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#incremental-refresh">incremental-refresh</a> and
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>.
+finding), decisions <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#change-stamp-definer-function">change-stamp-definer-function</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#incremental-refresh">incremental-refresh</a> and
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>.
 The coordinator then put the change-stamp function and incremental refresh </em><em>on hold</em><em> pending the
 maintainer's answer on how the write clock should cover deletes; what was built before the hold is
 committed and described below, and nothing further was added to those two after it, except where a

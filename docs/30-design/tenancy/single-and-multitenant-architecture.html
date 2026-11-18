@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3382,6 +3384,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
   
 
     
@@ -5780,11 +5810,11 @@
 
 
 <h1 id="single-and-multitenant-nightscout-architecture-and-compatibility">Single and multitenant Nightscout: architecture and compatibility<a class="headerlink" href="#single-and-multitenant-nightscout-architecture-and-compatibility" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>28107d068</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing living explanation, groomed 2026-11-08; header 2026-11-10. The
 restore/Compose reference this page explains is cgm-remote-monitor
 <code>ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364</code>, recorded in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/published-ed2-2026-11-08.json">publication measurement</a>.
 Draft PR #8898 has since moved on (M6a and M6b joins); its current head and
 verification are in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>,
 and private service composition is in the <a href="runtime-topology.html">runtime topology guide</a>.
@@ -5815,7 +5845,7 @@ need their own evidence; an accepted component is not a completed platform track
 <tbody>
 <tr>
 <td>Separate API/realtime/evaluator/admin and packaged UI</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose acceptance</a></td>
 <td>One-host role composition, existing client/browser routes and private control channels work together.</td>
 <td>Multi-host discovery, replicas/failover, production ingress/service identity and operating limits.</td>
 </tr>
@@ -5823,7 +5853,7 @@ need their own evidence; an accepted component is not a completed platform track
 <td>Tenant-local restore and shared-role restart</td>
 <td><a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native acceptance</a>, plus ed2 packaged ordinary restore above</td>
 <td>A can stay suspended while B progresses; forward correction/deletion history allows tested clients to converge without a global pause.</td>
-<td>Automatic orphan clearance, supported suspended-restore resume and production recovery bounds under the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">application ownership contract</a>.</td>
+<td>Automatic orphan clearance, supported suspended-restore resume and production recovery bounds under the <a href="multitenancy-decisions.html#exclusive-application-postgres-ownership">application ownership contract</a>.</td>
 </tr>
 <tr>
 <td>Functional durable evaluator/realtime reference</td>
@@ -5833,7 +5863,7 @@ need their own evidence; an accepted component is not a completed platform track
 </tr>
 <tr>
 <td>Existing client compatibility</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 actual pinned clients</a>; <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/39f4-corpus-accepted/index.html">39f4 enabled corpus</a></td>
 <td>Use the admitted API/history/credential shapes and the named clients' stored outcomes.</td>
 <td>Wider/mobile clients, other query shapes and all-client acceptance.</td>
 </tr>
@@ -5869,7 +5899,7 @@ ordinary restore/history/B-continuity; final ed2 full and pinned-client acceptan
 also passed. Browser regression remains attributed to c23, and enabled-corpus
 acceptance to 39f4. Input-equivalence records explain source deltas without
 transferring campaign credit. The older b029 matrix retains its narrower scope.</p>
-<p>The maintainer <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">reaffirmed separate service processes</a>,
+<p>The maintainer <a href="multitenancy-decisions.html#restore-service-processes">reaffirmed separate service processes</a>,
 including containers with shared private sockets where appropriate. Compose is
 implemented and functionally accepted for the one-host synthetic preview; a
 Jsonnet generator remains an optional packaging tool.</p>
@@ -5938,11 +5968,11 @@ credential custody. The <a href="../../../reports/tenancy/operation-window-accep
 exercises the actual separate processes and uncertainty/restart cases under its
 declared fixed trusted-cohort boundary. Arbitrary direct SQL actors remain outside
 that proof and are unsupported under the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
+<a href="multitenancy-decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
 The <a href="sql-and-migration-architecture.html#component-ownership-and-internal-application-apis">database ownership map</a>
 distinguishes cross-component commands from admitted reads and owned persistence.
 The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-startup-admission">tenant-local startup requirement</a>
+<a href="multitenancy-decisions.html#tenant-local-startup-admission">tenant-local startup requirement</a>
 prevents a suspended tenant from blocking another tenant's shared-role restart.
 The c23 native acceptance reproduces fresh API/realtime/evaluator startup and B
 operation while A remains suspended in the tested failure scenarios. It does not
@@ -6170,7 +6200,7 @@ gates went red under their semantic controls and passed restored.
 bounds the optional selected-reader mode with actual clients: three oref0
 subject-token uploads match the reference, tightening the ceiling refuses the next
 upload with no effects, and an actual cgmsim root upload gets 503 under selected
-mode against 200 unselected, at that checkpoint. The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion decision</a>
+mode against 200 unselected, at that checkpoint. The later <a href="multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion decision</a>
 withdraws reader clamping and retains writer policy. <a href="../remedial/rc-16.0.0-integration-record.html#r64---published-control-recovery-batch-remote-verification-2026-11-06">R64</a>
 reads back the published head: all 15 CI jobs and CodeQL passed, including the
 opt-in corpus job; three release-image jobs were skipped by condition. The
@@ -6267,8 +6297,8 @@ write seam or a fresh historical comparison of the multitenant preview.</p>
   end
   %% Layout-only link, not a comparison between the experiments
   Historical ~~~ Preview</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/releases/cgm-remote-monitor-16.0.0/compat/page.yaml">comparison contract</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/releases/cgm-remote-monitor-16.0.0/compat/headline.json">results</a>
 record v15.0.9 <code>c6a0d8ed</code> versus dev <code>497d08c9</code>, twice per endpoint:
 <strong>4,916 synthetic write cells, 2,803 changed outputs, zero unexplained differences</strong>.
 The recorded classifications contain no Defect-verdict cells; this is not a proof

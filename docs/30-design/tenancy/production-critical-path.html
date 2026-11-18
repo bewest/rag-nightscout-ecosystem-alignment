@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3315,6 +3317,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
   
 
     
@@ -5646,12 +5676,12 @@
 
 
 <h1 id="from-multitenant-preview-to-production">From multitenant preview to production<a class="headerlink" href="#from-multitenant-preview-to-production" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>4806ab303</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Living contributor-facing production guide, reconciled 2026-11-16 against the
 release records at alignment <code>5fdc4bf0685d35d2fac980bad1b28bd66525ccdb</code>.
 This is </em><em>read-derived</em><em> sequencing and explanation, not an application measurement.
 <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html">Release decisions</a> own
-adopted policy; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/queue/work-queue.yaml">queue</a> owns claimed work state;
+adopted policy; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/queue/work-queue.yaml">queue</a> owns claimed work state;
 <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a> and linked
 reports own executed acceptance, source heads and publication. Use those records
 for the current candidate and blockers.</em></p>
@@ -5661,7 +5691,7 @@ passing a functional preview or running a capacity experiment. This guide explai
 how those pieces join without making every later production feature a prerequisite
 to testing an independently ready capability.</p>
 <h2 id="immediate-m7-priority">Immediate M7 priority<a class="headerlink" href="#immediate-m7-priority" title="Permanent link">&para;</a></h2>
-<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#single-host-streaming-first">single-host streaming decision</a>
+<p>The <a href="multitenancy-decisions.html#single-host-streaming-first">single-host streaming decision</a>
 sets the current order: use the existing evaluator/realtime composition and UDS
 interfaces, measure a bounded local workload, and qualify the supported candidate.
 Explore toward 10,000 synthetic tenants as measured resources permit. Keep actual
@@ -5694,7 +5724,7 @@ nodes, a replicated database or an external secrets service are not automatic
 proofs of availability. Specify which dependency or failure domain may be lost,
 what continues serving, and what recovery must establish before service resumes.</p>
 <p>The capacity campaign's tenant levels are experimental points. The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-capacity-gate">adopted capacity gate</a>
+<a href="multitenancy-decisions.html#m7-capacity-gate">adopted capacity gate</a>
 defines its current milestone and stretch target; it does not select a production
 node type or an ultimate fleet size. Small-group efficiency and a larger fleet's
 bounded growth must be evaluated separately. Multiple independently admitted
@@ -5739,7 +5769,7 @@ UNMEASURED.</p>
 <tr>
 <td>Workload and resource envelope</td>
 <td>How much useful work fits, including interference and recovery?</td>
-<td>Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-envelope-measured-not-declared">M7 measurement policy</a> and the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-capacity-gate">capacity gate</a>. The latter closes the separate single-site contrast requirement. Historical counts or node density are assumptions until reproduced on comparable inputs.</td>
+<td>Matched synthetic measurements with stored-write, authority and evaluator/consumer outcomes; latency/freshness tails, CPU, memory, pool/lock waits and recovery. Follow <a href="multitenancy-decisions.html#m7-envelope-measured-not-declared">M7 measurement policy</a> and the <a href="multitenancy-decisions.html#m7-capacity-gate">capacity gate</a>. The latter closes the separate single-site contrast requirement. Historical counts or node density are assumptions until reproduced on comparable inputs.</td>
 </tr>
 <tr>
 <td>Human identity and owner authority</td>
@@ -5749,7 +5779,7 @@ UNMEASURED.</p>
 <tr>
 <td>Provisioning, ingress and secrets</td>
 <td>Are storage, authority and keys ready before serving; are private controls actually private?</td>
-<td>Operator provisioning and recoverable partial failures; current grants/RLS; TLS/host/selector/client-IP/socket probes; service credential renewal, expiry, revocation and outage/recovery, CA verification/rotation and recoverable Vault unseal custody. A disposable lab bootstrap is not an operator provisioner. Existing Agent proofs retain their scope; the selected deployment needs a <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">trust record and probes</a>.</td>
+<td>Operator provisioning and recoverable partial failures; current grants/RLS; TLS/host/selector/client-IP/socket probes; service credential renewal, expiry, revocation and outage/recovery, CA verification/rotation and recoverable Vault unseal custody. A disposable lab bootstrap is not an operator provisioner. Existing Agent proofs retain their scope; the selected deployment needs a <a href="multitenancy-decisions.html#deployment-admission-probes-and-trust-record">trust record and probes</a>.</td>
 </tr>
 <tr>
 <td>Lifecycle, keys and recovery</td>
@@ -5769,7 +5799,7 @@ UNMEASURED.</p>
 <tr>
 <td>Release and deployment admission</td>
 <td>Are the actual source, configuration, image and operational procedure qualified together?</td>
-<td>Applicable full/browser/enabled-corpus/native/client acceptance, named pending cases, final prcheck, deployment trust and recovery rehearsal, rollback and explicit operator admission. <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">Release contents</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-admission-probes-and-trust-record">deployment admission decision</a>.</td>
+<td>Applicable full/browser/enabled-corpus/native/client acceptance, named pending cases, final prcheck, deployment trust and recovery rehearsal, rollback and explicit operator admission. <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">Release contents</a>, <a href="multitenancy-decisions.html#deployment-admission-probes-and-trust-record">deployment admission decision</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -5778,7 +5808,7 @@ production criterion. Conversely, ancestry or an old green report does not prove
 new inputs. Reuse evidence through an explicit affected-input assessment and keep
 its original source/instrument attribution.</p>
 <p>The supported application cohort follows the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
+<a href="multitenancy-decisions.html#exclusive-application-postgres-ownership">exclusive application ownership contract</a>.
 External direct SQL writers are outside that contract. Every supported participant
 still follows its authority, write and lifecycle rules; current connections alone
 do not prove complete membership or credential custody. A load-balanced address

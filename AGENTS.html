@@ -2451,7 +2451,7 @@
 
 
 <h1 id="working-in-this-repository-the-contract-for-any-agent">Working in this repository: the contract for any agent<a class="headerlink" href="#working-in-this-repository-the-contract-for-any-agent" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>cd850286a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>What this is: the operating contract for coding agents (contributor-facing). Read before anything
 else; leads to <a href="docs/00-overview/REVIEWER-ONBOARDING.html">docs/00-overview/REVIEWER-ONBOARDING.md</a>.
 Vendor-neutral: Copilot, Claude Code, Codex, Cursor and local models all read this file. The
@@ -2573,9 +2573,14 @@ place to go stale.</p>
 <td>appending a dated table; the file is the state of record for a cycle</td>
 </tr>
 <tr>
-<td>a tenancy decision (D1–D23)</td>
+<td>a tenancy decision (D1–D23, and every later multitenant decision)</td>
 <td><code>docs/30-design/tenancy/multitenancy-decisions.md</code></td>
-<td>editing the decision; the roadmap links to it</td>
+<td>editing D1–D23; later decisions are one row each under "Programme decisions after D23"</td>
+</tr>
+<tr>
+<td>multitenant progress: what joined, what was tested, what is left, who owns it</td>
+<td><code>docs/30-design/tenancy/execution-log.md</code></td>
+<td>appending a dated table per coherent batch. Multitenant work stays out of <code>releases/</code> until a release carries a multitenant role</td>
 </tr>
 <tr>
 <td>a measurement summary and provenance</td>
@@ -2746,7 +2751,8 @@ defines its operational detail.</p>
 <li><strong>Who owns what</strong> among the open lanes, and where to send notes.</li>
 </ol>
 <p>Record the programme-level state in <code>releases/&lt;product&gt;-&lt;version&gt;/contents.md</code> (a dated "Update"
-table) and <code>decisions.md</code>. Write new lane-level detail to
+table) and <code>decisions.md</code>; for multitenant work, in <code>docs/30-design/tenancy/execution-log.md</code> and
+<code>docs/30-design/tenancy/multitenancy-decisions.md</code>. Write new lane-level detail to
 <code>/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-&lt;lane&gt;-&lt;date&gt;.md</code>
 (local, untracked: it names worktrees and ports on this machine). Keep an existing
 lane handoff at its current path, including legacy <code>externals/work/</code> handoffs. Link the second from the first.

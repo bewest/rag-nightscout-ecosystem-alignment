@@ -5086,7 +5086,7 @@ and linked qualification records own later execution. Captured text and source
 maps are retained; local links are rebased for this archive.</em></p>
 <h2 id="event-driven-target-and-first-proof">Event-driven target and first proof<a class="headerlink" href="#event-driven-target-and-first-proof" title="Permanent link">&para;</a></h2>
 <p><strong>Direction adopted 2026-11-13; current local integration and recovery evidence retain their exact source and limits.</strong>
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#event-driven-reset">release decision</a>
+The <a href="../../30-design/tenancy/multitenancy-decisions.html#event-driven-reset">release decision</a>
 owns this priority. The ownership and placement model below is proposed for the
 proof; it is not implementation acceptance. Evaluate maintained pgstream CDC (change data capture) before
 further tuning or benchmarking the polling implementation described below.</p>
@@ -5115,7 +5115,7 @@ further tuning or benchmarking the polling implementation described below.</p>
 committed outputs; it does not independently sweep raw inputs. Keep these as two
 logical modules and initially co-locate them where that simplifies the local
 proof. This changes the prototype placement priority of the earlier
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">separate-process decision</a>.
+<a href="../../30-design/tenancy/multitenancy-decisions.html#restore-service-processes">separate-process decision</a>.
 Independent physical scaling remains possible, subject to evidence.</p>
 <p>“Stateless evaluator” means caches can disappear without losing correctness.
 Tenant versions, completed work, pending alarms and due times remain state and
@@ -5158,7 +5158,7 @@ not enable a shipping role or establish production delivery guarantees.</p>
 <p><em>Execution plan, 2026-11-13; read-derived from core prototype
 <code>aba583199e9ab8a4bb907adc46dc9262a3dcedf5</code> and deployment reference
 <code>84accb33c3daccebfdf886300c3ba6c638e003c6</code>. Final joined acceptance remains open. Focused current-source results are recorded in
-the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html#update--coherent-switch-over-candidate-2026-11-15">switch-over release update</a>; each criterion keeps its measured scope.</em></p>
+the <a href="../../30-design/tenancy/execution-log.html#update--coherent-switch-over-candidate-2026-11-15">switch-over release update</a>; each criterion keeps its measured scope.</em></p>
 <p><strong>Objective:</strong> the actual multitenant evaluator and realtime roles process
 committed changes and due clinical work, recover after process loss, and refuse
 stale-owner effects. The existing pgstream capability has one implementation
@@ -5181,7 +5181,7 @@ The existing evaluator checkpoint consumer is the proposed home for observed and
 completed versions, completed result/frame, content revision, next due instant
 and ownership/restore generation. Keep acquisition separate from clinical
 completion. Add only the schema necessary to make this recovery state durable.</p>
-<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-platform-restart">platform restart decision</a>
+<p>The <a href="../../30-design/tenancy/multitenancy-decisions.html#evaluator-platform-restart">platform restart decision</a>
 places pgstream in an independently managed service. It sends webhooks to the
 evaluator's private receiver. The platform owns the pinned process and its restart
 policy; the evaluator owns durable receipt, clinical completion and application
@@ -5194,7 +5194,7 @@ durable admission. The current selected binding targets its sole intake owner;
 ordinary load balancing across evaluator replicas is not qualified by the private
 Service address. Receiver availability and clinical readiness are separate so
 service discovery does not require clinical readiness before delivery can start.</p>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json">bounded platform witness</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/switch-over-finish-2026-11-15/external-platform04.json">bounded platform witness</a>
 measures a Docker-managed stream replacement with the same evaluator and exact
 durable catch-up. It does not qualify the new application image, Kubernetes,
 general failover or a capacity limit.</p>
@@ -5358,7 +5358,7 @@ notification delivery.</p>
 <p>These are application modules wired by explicit preview role configuration.
 Separate processes/containers can share a private directory containing Unix-domain
 sockets (UDS): an endpoint is a transport address, not shared JavaScript memory.
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">adopted separate-process decision</a>
+The <a href="../../30-design/tenancy/multitenancy-decisions.html#restore-service-processes">adopted separate-process decision</a>
 retains this deployment boundary. A local <code>EventEmitter</code> does not become a durable
 cross-process event bus merely because the processes share a host.</p>
 <h2 id="clinical-acquisition-and-browser-records">Clinical acquisition and browser records<a class="headerlink" href="#clinical-acquisition-and-browser-records" title="Permanent link">&para;</a></h2>
@@ -5370,16 +5370,16 @@ The runtime reports an output revision only from a successful cycle and requires
 an admitted tenant operation for <code>last(tenant)</code> to expose it.
 <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/data/tenant-projection-evaluator.js#L49-L101">Evaluator acquisition</a>, <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/server/serve/evaluator-runtime.js#L125-L154">runtime output</a>
 and <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/storage/postgres-durable-replay.js#L79-L144">durable snapshot/checkpoint</a> implement these separate stages.</p>
-<p><strong>Adopted 2026-11-10, not in the inspected tree.</strong> The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change">output revision changes
+<p><strong>Adopted 2026-11-10, not in the inspected tree.</strong> The <a href="../../30-design/tenancy/multitenancy-decisions.html#evaluator-revision-on-content-change">output revision changes
 only when the output content changes</a>
 (time-driven changes included); an identical cycle keeps its revision, and the
 realtime consumer is woken on real changes only for tenants with a pending alarm.
 The inspected code bumps the revision on every cycle (read-derived, cited in the
 decision). Alarm repetition is separate: an active, unacknowledged, unsnoozed alarm
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-repeat-clock">repeats on its own clock equal to the single-site heartbeat</a>
+<a href="../../30-design/tenancy/multitenancy-decisions.html#alarm-repeat-clock">repeats on its own clock equal to the single-site heartbeat</a>
 (same setting, 60 s by default) and on new data, as on a single site. Both are
 BF-231 / <code>MT-CONSUMER-STALE-RESELECT</code> work. The evaluator only works tenants
-eligible under the <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity policy</a>: while a site
+eligible under the <a href="../../30-design/tenancy/multitenancy-decisions.html#activity-is-pause-suspend">activity policy</a>: while a site
 is paused or suspended no alarms are computed or delivered.</p>
 <pre class="mermaid"><code>sequenceDiagram
     participant API as API process
@@ -5465,8 +5465,8 @@ suppression state; the evaluator subsequently reads that state.
 <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/lib/server/realtime/private-api.js#L35-L86">Private acknowledgement admission</a> is distinct from the transport
 receipt acknowledging an evaluator-to-realtime handoff.</p>
 <p><a id="alarm-repeat-and-targeted-wake-diagram"></a>The diagrams above follow the inspected tree. The 2026-11-10 decisions
-(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change">evaluator-revision-on-content-change</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-repeat-clock">alarm-repeat-clock</a>, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#activity-is-pause-suspend">activity-is-pause-suspend</a>)
+(<a href="../../30-design/tenancy/multitenancy-decisions.html#evaluator-revision-on-content-change">evaluator-revision-on-content-change</a>,
+<a href="../../30-design/tenancy/multitenancy-decisions.html#alarm-repeat-clock">alarm-repeat-clock</a>, <a href="../../30-design/tenancy/multitenancy-decisions.html#activity-is-pause-suspend">activity-is-pause-suspend</a>)
 change when the consumer is woken and how an active alarm repeats. Built on lanes <code>956d0940</code> and <code>07981b55</code>,
 in the batch join that is in acceptance; <a href="../../../reports/tenancy/consumer-refusal-2026-11-10/index.html">evidence</a>.</p>
 <pre class="mermaid"><code>sequenceDiagram
@@ -5549,7 +5549,7 @@ relabelled as a successful output. Realtime rebuilds its own projection and full
 browser frame. Durable notification requests survive and retain their retry
 identity. Current credentials/configuration are checked again; retained process
 memory does not authorize a new connection.</p>
-<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-history-forward-correction">logical restore policy</a>
+<p>The <a href="../../30-design/tenancy/multitenancy-decisions.html#restore-history-forward-correction">logical restore policy</a>
 requires forward changes and deletion records for known captured/current clinical
 identities, preserving public IDs and clinical fields. It retains current
 nonclinical authority, consumer state and the authoritative live clock; physical
@@ -5611,12 +5611,12 @@ reproduces this bounded restart criterion on its exact later source; the inspect
 <td>Fixed trusted cooperative participants, private serving credentials and database ingress. No raw-SQL fence, automatic orphan clearance, suspended-restore resume command or recovery-time guarantee</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold Compose measurement</a></td>
 <td>Reproduced actual UI, main/alarm sockets and ordinary A restore with B committing work; public identity, forward history and synthetic client convergence preserved; independent configuration/resource/process closure</td>
 <td>Exact ed2 source and image, one-host synthetic scope. Actual pinned clients, final regression and wider M6 admission remain separate</td>
 </tr>
 <tr>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client measurement</a></td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client measurement</a></td>
 <td>Reproduced actual cgmsim/oref0 execution with matching stored outcomes and no unexplained or missing differences; independent baseline/resource/process closure within the original deadline</td>
 <td>Synthetic pinned-client scope; connector polling, Android/device, provider delivery and wider milestone admission remain separate</td>
 </tr>

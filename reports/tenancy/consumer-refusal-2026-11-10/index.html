@@ -12156,7 +12156,7 @@
 
 
 <h1 id="realtime-consumer-refusal-under-evaluator-timer-churn">Realtime consumer refusal under evaluator timer churn<a class="headerlink" href="#realtime-consumer-refusal-under-evaluator-timer-churn" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>de1643e1b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing measurement record, captured 2026-11-10. Not edited after capture. Lane
 <code>codex/consumer-refusal-20261110</code>; local, unpushed. Settles the suspected pre-existing defect reported by the
 <a href="../activity-eligibility-2026-11-10/index.html">activity-eligibility lane</a> ("evaluator timers at 150 ms make the realtime
@@ -12482,7 +12482,7 @@ under churn with no wake from timer publications; decision (a)/(b) above.</p>
 </blockquote>
 <p>Evidence: this record; lane handoff <code>externals/work/HANDOFF-consumer-refusal-20261110.md</code> (local).</p>
 <h2 id="addendum-2026-11-10-revision-on-content-change-stopped-at-the-reader-inventory">Addendum 2026-11-10: revision-on-content-change stopped at the reader inventory<a class="headerlink" href="#addendum-2026-11-10-revision-on-content-change-stopped-at-the-reader-inventory" title="Permanent link">&para;</a></h2>
-<p>Decision <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change"><code>evaluator-revision-on-content-change</code></a>
+<p>Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#evaluator-revision-on-content-change"><code>evaluator-revision-on-content-change</code></a>
 (alignment <code>main</code> <code>b9e78338</code>). Lane head unchanged at <code>1adb17f8</code>, tree clean. No code was changed: one reader relies on
 the per-cycle bump, so the lane stopped and reported, as instructed.</p>
 <p><strong>What changes between cycles over unchanged data</strong> (reproduced natively; actual evaluator role, one synthetic reading,
@@ -12555,8 +12555,8 @@ once per second per tenant, against legacy's once per heartbeat (60 s default).<
    repeat tick counter driven by a heartbeat), so the revision can still move only on content change?</li>
 </ol>
 <h2 id="addendum-2026-11-10-second-revision-on-content-change-and-the-alarm-repeat-clock">Addendum 2026-11-10 (second): revision on content change and the alarm repeat clock<a class="headerlink" href="#addendum-2026-11-10-second-revision-on-content-change-and-the-alarm-repeat-clock" title="Permanent link">&para;</a></h2>
-<p>Decisions <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-revision-on-content-change"><code>evaluator-revision-on-content-change</code></a>
-and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#alarm-repeat-clock"><code>alarm-repeat-clock</code></a> (alignment <code>main</code>
+<p>Decisions <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#evaluator-revision-on-content-change"><code>evaluator-revision-on-content-change</code></a>
+and <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#alarm-repeat-clock"><code>alarm-repeat-clock</code></a> (alignment <code>main</code>
 <code>fee6e40e</code>). Lane <code>codex/consumer-refusal-20261110</code>: <code>1adb17f8</code> → <code>1d39c924</code> (telemetry) → <strong><code>956d0940</code></strong> (behaviour).
 PostgreSQL 16.15 disposable container (same digest), removed afterwards.</p>
 <h3 id="what-changed-956d0940">What changed (<code>956d0940</code>)<a class="headerlink" href="#what-changed-956d0940" title="Permanent link">&para;</a></h3>

@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3304,6 +3306,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
   
 
     
@@ -5624,10 +5654,10 @@
 
 
 <h1 id="private-api-composition-deployment-bindings-and-fixed-roster-scaling">Private API composition, deployment bindings and fixed-roster scaling<a class="headerlink" href="#private-api-composition-deployment-bindings-and-fixed-roster-scaling" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Living contributor-facing implementation plan, refreshed 2026-11-10 for the
-adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">internal listener shape</a> and
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>. Current
+adopted <a href="multitenancy-decisions.html#internal-listener-ory-pattern">internal listener shape</a> and
+<a href="multitenancy-decisions.html#internal-listener-graceful-shutdown">graceful shutdown</a>. Current
 mechanisms are </em><em>read-derived</em><em> from joined application <code>dc795bd1</code>; carried
 measurements retain their original source/instrument in the linked evidence.
 Remaining criteria are </em><em>UNMEASURED</em><em> until their instruments run. Queue homes:
@@ -5637,7 +5667,7 @@ Remaining criteria are </em><em>UNMEASURED</em><em> until their instruments run.
 from implementation or a diagram.</em></p>
 <h2 id="implemented-foundation-and-remaining-boundary">Implemented foundation and remaining boundary<a class="headerlink" href="#implemented-foundation-and-remaining-boundary" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../../reports/tenancy/internal-service-api-2026-11-09/index.html">internal API implementation</a>
-and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined dc795bd1 acceptance</a>
+and <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/m6a-join-2026-11-09/dc795bd1-acceptance">joined dc795bd1 acceptance</a>
 carry the shared transport, three service registries, executable request/response
 schemas, named clients, strict public/private separation and consuming-role
 configuration. UDS and actual loopback HTTP tests exist; the joined regression,
@@ -5694,7 +5724,7 @@ services or deployment processes. Data/authorization/owner REST modules may
 co-locate under existing audience and credential rules. REST v1/v2/v3 remain
 version adapters inside one logical request-serving component.</p>
 <h2 id="endpoint-and-compatibility-contract">Endpoint and compatibility contract<a class="headerlink" href="#endpoint-and-compatibility-contract" title="Permanent link">&para;</a></h2>
-<p><strong>Adopted configuration (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">decision</a>, 2026-11-10,
+<p><strong>Adopted configuration (<a href="multitenancy-decisions.html#internal-listener-ory-pattern">decision</a>, 2026-11-10,
 multitenant only).</strong> Each role process has one private listener, <code>serve.internal</code>,
 configured in the style of Ory Kratos/Hydra's <code>serve.public</code>/<code>serve.admin</code>:
 <code>host</code>/<code>port</code> or <code>socket</code>, each overridable from the environment
@@ -5716,7 +5746,7 @@ restriction. Public request content cannot choose private destinations.
 Credentials in URLs, unexpected paths/query/fragment components, unsupported
 schemes and implicit trust/fallback refuse, and the adopted shape keeps those
 refusals.</p>
-<p><strong>Shutdown (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-graceful-shutdown">decision</a>).</strong> On SIGTERM the
+<p><strong>Shutdown (<a href="multitenancy-decisions.html#internal-listener-graceful-shutdown">decision</a>).</strong> On SIGTERM the
 internal listener stops accepting connections, lets in-flight calls finish and
 send their responses up to a configurable deadline below the platform's
 termination grace, then force-closes what remains; callers still treat a

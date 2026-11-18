@@ -4970,7 +4970,7 @@ whose items 1 and 2 now have maintainer decisions, linked below rather than re-a
 text named beside them, never from memory. <strong>Measured</strong> means a record says a probe or suite ran it;
 <strong>read</strong> means it comes from reading code or a document.</p>
 <p><strong>Correction scope.</strong> The original source survey below remains anchored to <code>83582e87</code>.
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decisions</a>
+The <a href="../../30-design/tenancy/multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decisions</a>
 now settle the M2/M6 boundary and withdraw the optional subject-reader clamping mode.
 These are maintainer decisions; the remaining recommendations in this packet are proposals,
 not adopted policy. Numeric bounds deferred there remain unapproved here.</p>
@@ -5121,7 +5121,7 @@ option below (D1, D4; owner-authority.md:32-34).</p>
 person is); Q4 and Q5 sit on top. They are presented Q1 → Q5 as briefed, with the dependency named in
 each.</p>
 <h3 id="q1-human-identity-provider-for-owners">Q1. Human identity provider for owners<a class="headerlink" href="#q1-human-identity-provider-for-owners" title="Permanent link">&para;</a></h3>
-<p><strong>Later direction adopted:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">shared optional OIDC integration</a>
+<p><strong>Later direction adopted:</strong> <a href="../../30-design/tenancy/multitenancy-decisions.html#shared-oidc-provider-renewal">shared optional OIDC integration</a>
 serves equivalent single/multitenant human authentication through separate authority
 adapters. No provider-specific deployment or callback/cookie contract is selected
 by that direction. The source survey and alternatives below retain their scope.</p>
@@ -5228,7 +5228,7 @@ unchanged by this choice and remains a maintainer gate before any real identity 
 <strong>Unmeasured:</strong> any provider other than Kratos; the adapter against Nightscout's actual listener;
 E's edge over https and through socket.io.</p>
 <h3 id="q2-session-model-and-lifetimes">Q2. Session model and lifetimes<a class="headerlink" href="#q2-session-model-and-lifetimes" title="Permanent link">&para;</a></h3>
-<p><strong>Renewal direction adopted:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">provider-backed renewal first</a>,
+<p><strong>Renewal direction adopted:</strong> <a href="../../30-design/tenancy/multitenancy-decisions.html#shared-oidc-provider-renewal">provider-backed renewal first</a>,
 with existing Nightscout current authority and adopted limits. This supersedes the
 earlier recommendation (a) as the initial implementation selection. Nightscout-owned
 rotating refresh is not an initial requirement. Logout/idle/outage/concurrency and
@@ -5494,7 +5494,7 @@ full cross-purpose key-isolation acceptance and rotation overlap/cutoff. The bou
 wrong-purpose refusal is already measured as described above; it is not a human-issuer proof.</p>
 <h3 id="q4-existing-grant-authority-withdrawn-reader-mode-future-m6-research">Q4. Existing-grant authority: withdrawn reader mode, future M6 research<a class="headerlink" href="#q4-existing-grant-authority-withdrawn-reader-mode-future-m6-research" title="Permanent link">&para;</a></h3>
 <p><strong>Decided: withdraw the optional subject-reader clamping mode.</strong> The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision</a>
+<a href="../../30-design/tenancy/multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision</a>
 at alignment <code>56951c8088ec7f942c875a52a13f8816bbafea8f</code> supersedes this packet's earlier
 per-tenant activation/preflight proposal and the earlier root-carrier →401 recommendation.
 Changing that refusal from503 to401 would still break compatibility. A tenant's own
@@ -5521,18 +5521,18 @@ cross-tenant refusal, current revocation and no-effect oracles, with independent
 controls. A subject-only pass cannot establish backward compatibility. Thresholds, activation
 policy, migration and performance remain unmeasured; the current decision is to remove the mode.</p>
 <h3 id="q5-ownership-lifecycle">Q5. Ownership lifecycle<a class="headerlink" href="#q5-ownership-lifecycle" title="Permanent link">&para;</a></h3>
-<p><strong>Preview scope decided:</strong> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">operator-assisted ownership changes</a>
+<p><strong>Preview scope decided:</strong> <a href="../../30-design/tenancy/multitenancy-decisions.html#preview-operator-assisted-ownership">operator-assisted ownership changes</a>
 are sufficient initially. Self-service co-owner/transfer proposals below are later
 enhancements, not first-preview gates. The operator path still needs current
 authority, last-owner protection, audit and recovery without secret disclosure.
 The earlier recommendation (a) below is retained as a future proposal, not the
-adopted preview implementation. The later <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">deletion ceremony decision</a>
+adopted preview implementation. The later <a href="../../30-design/tenancy/multitenancy-decisions.html#preview-deletion-confirmation">deletion ceremony decision</a>
 requires explicit request and operator confirmation, cancellation until execution
 starts, and no mandatory waiting period. It supersedes the proposed 14-day
 pre-execution window below. The adopted 30-day post-deletion key/artifact retention
 remains separate; other future invitation/self-service proposals are not adopted.</p>
 <p><strong>Later decision, separate from this draft's recommendations:</strong> the maintainer's
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision record</a>
+<a href="../../30-design/tenancy/multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision record</a>
 adopts retaining Transit keys and the export artifact for 30 days, followed by
 operator key destruction. R69 measures recovery while laboratory keys remain;
 key destruction and restore-after-window refusal remain unmeasured. This artifact
@@ -5702,7 +5702,7 @@ and a restoration. Predicted results are written before the run.</p>
 </tbody>
 </table>
 <p><strong>Research dependency order, not an implementation commitment.</strong> The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decisions</a>
+<a href="../../30-design/tenancy/multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decisions</a>
 place human issuer/refresh, future existing-grant lifecycle and tenant lifecycle under M6.
 M2 retains the roadmap cell's bar and is <strong>not promoted</strong> by this packet.</p>
 <ol>
@@ -5727,7 +5727,7 @@ M2 retains the roadmap cell's bar and is <strong>not promoted</strong> by this p
   for future measurement. No value in this packet overrides the promotion-bar decision deferring
   numeric bounds; none is an approved default or an implementation instruction.</li>
 <li><strong>M2 promotion.</strong> The roadmap-cell bar and M6 placement are decided in the
-  <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision</a>,
+  <a href="../../30-design/tenancy/multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion-bar decision</a>,
   recorded at alignment <code>0de4d791b71f70616ea21893c2a98832bd3e67da</code>; completion still requires
   final-head evidence. This packet does not promote M2.</li>
 <li><strong>The provider list.</strong> Only Kratos has been run; Clerk and others are read. The adapter

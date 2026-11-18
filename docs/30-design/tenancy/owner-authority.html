@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3304,6 +3306,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
   
 
     
@@ -5624,7 +5654,7 @@
 
 
 <h1 id="tenant-owner-authority-and-token-verification">Tenant owner authority and token verification<a class="headerlink" href="#tenant-owner-authority-and-token-verification" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>4917b2d4a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing living contract. Adopted by the maintainer in the owner-authority
 chat, 2026-11-05; current with the release decisions of 2026-11-10. Supplement to execution-plan D17/D22; this is the home of the owner
 authority and local-verification amendment. Implementation acceptance is separate.
@@ -5685,7 +5715,7 @@ Initial capabilities cover reading effective configuration/provenance, changing
 permitted settings, managing uploader/follower credentials and grants, configuring
 enabled integrations, export and deletion requests. Operator provisioning,
 suspension, policy changes and execution of lifecycle deletion remain on the private
-operator plane. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-deletion-confirmation">preview deletion ceremony</a>
+operator plane. The <a href="multitenancy-decisions.html#preview-deletion-confirmation">preview deletion ceremony</a>
 requires an explicit request/operator confirmation, permits cancellation before
 execution starts and imposes no mandatory waiting period. Current authority and
 verified artifact/recovery prerequisites still apply. Controller commands require their own reviewed authority.</p>
@@ -5693,15 +5723,15 @@ verified artifact/recovery prerequisites still apply. Controller commands requir
 transfer and adding co-owners are sensitive explicit operations; last-owner removal
 must not orphan the tenant. Transactional transfer/recovery details require a
 bounded implementation contract, not automatic operator access to owner secrets.
-For the first preview, <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#preview-operator-assisted-ownership">ownership changes are operator-assisted</a>.
+For the first preview, <a href="multitenancy-decisions.html#preview-operator-assisted-ownership">ownership changes are operator-assisted</a>.
 Self-service co-owner addition and transfer are later enhancements; last-owner
 protection, current authority and audit remain required for the operator path.</p>
 <p>A grant must fit all three: project delegable catalogue, operator tenant ceiling,
 and actor's explicit delegation authority. Possessing a permission does not grant
 the right to delegate it. For the first preview the owner defines roles from any
 permission string single tenant accepts, wildcards included, under the ceiling
-(<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-credentials-single-tenant-equivalent">decision</a>);
-a stricter permission model is a <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#permission-tightening-applies-to-both">separate proposal for both modes</a>.
+(<a href="multitenancy-decisions.html#owner-credentials-single-tenant-equivalent">decision</a>);
+a stricter permission model is a <a href="multitenancy-decisions.html#permission-tightening-applies-to-both">separate proposal for both modes</a>.
 Unknown roles refuse.
 An upgrade must not silently add new capabilities to an existing delegated role.
 Role edits have the same ceiling checks as direct assignments. Tightening current
@@ -5725,7 +5755,7 @@ unimplemented. R48 data-token readers are unchanged.</p>
 This selected transaction does not make an operation/target-only management
 callback sufficient for general proposed-grant enforcement.</p>
 <h2 id="shared-oidc-integration">Shared OIDC integration<a class="headerlink" href="#shared-oidc-integration" title="Permanent link">&para;</a></h2>
-<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#shared-oidc-provider-renewal">shared OIDC decision</a>
+<p>The <a href="multitenancy-decisions.html#shared-oidc-provider-renewal">shared OIDC decision</a>
 adopts one optional integration for single-tenant and multitenant Nightscout,
 provider-backed renewal first, and separate authorization adapters. Human login,
 renewal and logout support should be equivalent for comparable capabilities in
@@ -5734,7 +5764,7 @@ single-tenant opt-in is <code>ENABLE=oidc</code>, or an equivalent explicit flag
 measurement refutes that spelling. Default-off behavior preserves current startup,
 web/data authentication and unattended clients. No OIDC feature is implemented or
 enabled merely by setting that value today.
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deployment-identity-generic-adapter-authentik-reference">identity provider decision</a>
+The <a href="multitenancy-decisions.html#deployment-identity-generic-adapter-authentik-reference">identity provider decision</a>
 adopts a generic adapter with Authentik as the intended reference, subject to the
 Kratos proof, and Kratos as the measured fallback.</p>
 <p>Share the provider-facing protocol and session integration. Single-tenant maps
@@ -5755,11 +5785,11 @@ No first-party browser UI is required by this integration decision.</p>
 valid provider authentication and current Nightscout authority. It does not require
 Nightscout-owned rotating refresh credentials initially. The provider's login
 cookie/session, any Nightscout browser-session cookie, the current server-side
-Nightscout session and access bearer token are distinct. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-human-session-effects-2026-11-07">adopted session
+Nightscout session and access bearer token are distinct. The <a href="multitenancy-decisions.html#m6-human-session-effects-2026-11-07">adopted session
 contracts</a>
 scope idle/absolute lifetimes to management sessions, order logout local-first with
 an optional provider call, fence concurrent renewal and default browsers to an
-HttpOnly cookie with direct-token mode retained. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">adopted provider-outage policy</a>
+HttpOnly cookie with direct-token mode retained. The <a href="multitenancy-decisions.html#oidc-provider-outage-existing-access">adopted provider-outage policy</a>
 allows existing valid access only until existing expiry under current local
 checks, with no new login/renewal or relaxed freshness. Adopted lifetimes below
 remain; provider activity alone cannot bypass current Nightscout authority.</p>
@@ -5780,19 +5810,19 @@ not certify current Nightscout grants; provider logout/revocation propagation mu
 be part of the eventual session integration contract.</p>
 <p>Initial headless management uses explicitly provisioned management credentials
 from the private operator plane. A tenant's root secret (<code>API_SECRET</code>) has
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-root-single-site-parity">single-site parity</a>:
+<a href="multitenancy-decisions.html#tenant-root-single-site-parity">single-site parity</a>:
 all data, subjects, roles and the admin tools, never owner or operator authority. It
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-may-edit-owner-subjects">may edit any subject</a>
+<a href="multitenancy-decisions.html#root-may-edit-owner-subjects">may edit any subject</a>
 except removing the last usable owner, and cannot grant itself ownership. In
 multitenant mode every subject write goes through the owner-aware writer that
-enforces that guard. Through the admin tools root <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-role-edit-delete">may edit a role's permissions,
+enforces that guard. Through the admin tools root <a href="multitenancy-decisions.html#root-role-edit-delete">may edit a role's permissions,
 not rename it, and may not delete a role a subject holds</a>;
-it <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#root-grant-ceiling-default-all">may grant any tenant data permission (<code>*</code>) unless the operator narrows the
+it <a href="multitenancy-decisions.html#root-grant-ceiling-default-all">may grant any tenant data permission (<code>*</code>) unless the operator narrows the
 list</a>, never owner or operator permissions.
-A subject whose roles grant <code>admin:api:subjects:*</code> <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admin-role-subjects-use-admin-tools">uses the admin tools with its
+A subject whose roles grant <code>admin:api:subjects:*</code> <a href="multitenancy-decisions.html#admin-role-subjects-use-admin-tools">uses the admin tools with its
 own token</a> under the same guard.
-Implementation is <code>MT-ROOT-ADMIN-PARITY</code>. An owner <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-may-revoke-subjects">may revoke subjects</a>
-and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-may-pause">may pause their own site</a>; only the operator suspends
+Implementation is <code>MT-ROOT-ADMIN-PARITY</code>. An owner <a href="multitenancy-decisions.html#owner-may-revoke-subjects">may revoke subjects</a>
+and <a href="multitenancy-decisions.html#owner-may-pause">may pause their own site</a>; only the operator suspends
 and deletes. Unattended uploaders use revocable machine credentials
 whose renewal does not require a human login.</p>
 <p>Adopted initial limits, subject to measured implementation acceptance:</p>
@@ -5852,7 +5882,7 @@ tenant-binding round trips; one snapshot is not a claim of one wire request.</p>
 new-format tokens continue ordinary data operations during a Vault outage. New
 issuance, reveal and secret consumption that requires Vault refuse. Unknown keys
 refuse rather than fall back. PostgreSQL authority outages refuse protected reads
-and writes even when the token signature verifies. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#oidc-provider-outage-existing-access">OIDC provider-outage decision</a>
+and writes even when the token signature verifies. The <a href="multitenancy-decisions.html#oidc-provider-outage-existing-access">OIDC provider-outage decision</a>
 allows existing human access only within its adopted lifetime and current
 Nightscout authority during an identity-provider outage. Provider-dependent
 renewal refuses. Local logout/revocation takes effect on the next protected

@@ -12114,7 +12114,7 @@
 
 
 <h1 id="multitenant-capacity-campaign-one-host-compose-reference-2026-11-1112">Multitenant capacity campaign, one-host Compose reference (2026-11-11/12)<a class="headerlink" href="#multitenant-capacity-campaign-one-host-compose-reference-2026-11-1112" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-11 at <code>21fa4bce6</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Dated measurement record (contributor-facing). Captured 2026-11-11 18:00Z to 2026-11-12 02:50Z;
 not edited after capture. Synthetic tenants only. Every figure is labelled </em><em>measured</em><em> (read from
 this campaign's tool output, files under <a href="runs/index.html"><code>runs/</code></a>), </em><em>derived</em><em> (computed from measured
@@ -12129,7 +12129,7 @@ figures, method stated) or </em><em>read-derived</em><em> (from reading code, no
 </thead>
 <tbody>
 <tr>
-<td><strong>1,000-tenant milestone</strong> (<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m7-capacity-gate"><code>m7-capacity-gate</code></a>)</td>
+<td><strong>1,000-tenant milestone</strong> (<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#m7-capacity-gate"><code>m7-capacity-gate</code></a>)</td>
 <td><strong>Met on both heads.</strong> Every 1,000-tenant run (8) finished with every role healthy, the stored-count oracle GREEN with zero uncertain writes, all probe writes delivered, and all tenants evaluated after the full restart. Socket caps differ by run (table below).</td>
 </tr>
 <tr>
@@ -12183,12 +12183,12 @@ commit, <code>deploy/multitenant</code> replaced by the deploy commit's <code>bi
 <code>.overlay.json</code> written by hand because <code>SOURCE.md</code> names 0392acf9), <code>prepare.js</code> + <code>build.js</code>;
 both labels (<code>org.opencontainers.image.revision</code>, <code>org.nightscout.deploy.revision</code>) checked by
 <code>build.js --check-image</code> and by <code>cap.sh</code> at every deploy. Image 1 was built by
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/tools/mt-bench/capacity/build.sh"><code>build.sh</code></a> (git archive of both commits).</p>
 <p>Host: 16 threads, 62 GiB, shared with peer sessions' containers (listed per run in
 <code>host-deploy.txt</code> counts). PostgreSQL <code>max_connections</code> 100, <code>superuser_reserved_connections</code> 3
 (measured from the running stack).</p>
 <h2 id="harness">Harness<a class="headerlink" href="#harness" title="Permanent link">&para;</a></h2>
-<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
+<p><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/tools/mt-bench/capacity"><code>tools/mt-bench/capacity/</code></a>: <code>campaign.sh</code> (quiet-host wait,
 then per run: deploy, idle, real cadence + sockets + probe writes, full four-role restart, oracle,
 summary, teardown), <code>cap.sh</code> (the steps), <code>probe.js</code> (sockets, probe writes, restart measurements),
 <code>startup.js</code>, <code>summarize.js</code> (one <code>summary.json</code> per run), <code>aggregate.js</code> (tables), <code>k6/workload.js</code>.
@@ -12606,7 +12606,7 @@ failure count far more than the control comparison does: b1–b4 show a failed p
    realtime's 1 s counter): sessions at exactly 2,000 from +27.5 to +50.6 s, then 2,000 → 1,501 by
    +55.6 s; <code>invalidated</code> and <code>primeRefreshFailures</code> 0. b4 at cap 4N (measured): zero server
    disconnects, 2000/2000 back unaided, sessions peaked at 2,455, above 2N. Decision:
-   <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#realtime-no-socket-cap"><code>realtime-no-socket-cap</code></a>
+   <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#realtime-no-socket-cap"><code>realtime-no-socket-cap</code></a>
    (no per-process cap, plus cause codes).</li>
 </ol>
 <h2 id="findings">Findings<a class="headerlink" href="#findings" title="Permanent link">&para;</a></h2>
@@ -12651,7 +12651,7 @@ failure count far more than the control comparison does: b1–b4 show a failed p
 </tr>
 <tr>
 <td>Socket cap 2N drops reconnecting clients after a restart</td>
-<td>decided: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#realtime-no-socket-cap"><code>realtime-no-socket-cap</code></a>; runs here used cap 4N as a bench setting</td>
+<td>decided: <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#realtime-no-socket-cap"><code>realtime-no-socket-cap</code></a>; runs here used cap 4N as a bench setting</td>
 <td>Correction 3</td>
 </tr>
 <tr>

@@ -2742,7 +2742,7 @@
 
 
 <h1 id="session-handoff">Session handoff<a class="headerlink" href="#session-handoff" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>cd850286a</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p>Two layers, linked: the <strong>programme-level state</strong> goes in the release records (shared, tracked),
 and the <strong>lane-level detail</strong> goes in a local handoff file (untracked, because it names worktrees
 and ports on this machine). Vendor memory is private to one tool and is never the only copy.</p>
@@ -2758,7 +2758,9 @@ transfers are still recorded promptly. Follow the repository's completion-focuse
 coordination contract in <code>AGENTS.md</code> and the applicable batch plan.</p>
 <h2 id="1-record-the-programme-state-tracked">1. Record the programme state (tracked)<a class="headerlink" href="#1-record-the-programme-state-tracked" title="Permanent link">&para;</a></h2>
 <p>Append a dated Update table to <code>releases/&lt;product&gt;-&lt;version&gt;/contents.md</code> and any decision rows to
-<code>decisions.md</code> (the <code>release-record</code> skill). Hashes come from <code>git log</code> run now, not from a brief.</p>
+<code>decisions.md</code> (the <code>release-record</code> skill). Multitenant work instead appends to
+<code>docs/30-design/tenancy/execution-log.md</code> and <code>docs/30-design/tenancy/multitenancy-decisions.md</code>
+("Programme decisions after D23"); a release directory carries only what that release ships. Hashes come from <code>git log</code> run now, not from a brief.</p>
 <h2 id="2-write-the-lane-handoff-local">2. Write the lane handoff (local)<a class="headerlink" href="#2-write-the-lane-handoff-local" title="Permanent link">&para;</a></h2>
 <p>For a new lane on this workstation, use
 <code>/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-&lt;lane&gt;-&lt;YYYY-MM-DD&gt;.md</code>,

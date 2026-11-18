@@ -12229,11 +12229,11 @@
 
 
 <h1 id="perf-lane-ev-the-evaluator-works-on-change-and-due-time-not-a-per-tenant-one-second-poll-2026-11-10">Perf lane EV: the evaluator works on change and due time, not a per-tenant one-second poll (2026-11-10)<a class="headerlink" href="#perf-lane-ev-the-evaluator-works-on-change-and-due-time-not-a-per-tenant-one-second-poll-2026-11-10" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-11 at <code>edbdb0213</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing measurement record for decision
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#cost-proportional-to-activity">cost-proportional-to-activity</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#cost-proportional-to-activity">cost-proportional-to-activity</a>,
 stage 1. Captured 2026-11-10 20:48–23:20 local time; not edited after capture. Synthetic tenants and data only.
-Figures are labelled </em><em>reproduced</em><em> (run here, output in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/perf-evaluator-2026-11-10/runs"><code>runs/</code></a>) or </em><em>derived</em><em> (arithmetic on
+Figures are labelled </em><em>reproduced</em><em> (run here, output in <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/tree/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/perf-evaluator-2026-11-10/runs"><code>runs/</code></a>) or </em><em>derived</em><em> (arithmetic on
 reproduced figures). Every run shared the host with other lanes; load averages are quoted per run.</em></p>
 <h2 id="anchors">Anchors<a class="headerlink" href="#anchors" title="Permanent link">&para;</a></h2>
 <table>
@@ -12270,7 +12270,7 @@ reproduced figures). Every run shared the host with other lanes; load averages a
 </tr>
 <tr>
 <td>harnesses</td>
-<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/tenancy/perf-evaluator/equivalence.cjs"><code>tools/tenancy/perf-evaluator/equivalence.cjs</code></a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/tools/tenancy/perf-evaluator/bench.cjs"><code>bench.cjs</code></a> (this commit)</td>
+<td><a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/tools/tenancy/perf-evaluator/equivalence.cjs"><code>tools/tenancy/perf-evaluator/equivalence.cjs</code></a>, <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/tools/tenancy/perf-evaluator/bench.cjs"><code>bench.cjs</code></a> (this commit)</td>
 </tr>
 </tbody>
 </table>
@@ -12340,7 +12340,7 @@ server date (<code>lib/storage/postgres-write-clock.js:74</code>). Two kinds of 
 absence and unstamped activity through the explicit recovery backstop") deletes an entry and inserts an activity
 row: floor unchanged <strong>and</strong> row count unchanged. A floor-plus-count signature failed it (reproduced during this
 lane). Hence the per-row version digest. Decision
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m5-bounded-snapshot-reconciliation">m5-bounded-snapshot-reconciliation</a>
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#m5-bounded-snapshot-reconciliation">m5-bounded-snapshot-reconciliation</a>
 already requires recovery "independent of floor movement"; this is the same fact seen from the backstop.</p>
 <p>Cost of that coverage: the signature scans the tenant's admitted rows (bounded by <code>maxRows</code>): 0.25–0.79 DB-ms
 per check at 576 rows (reproduced, <code>runs/bench.txt</code> per-evaluation <code>signature</code>).</p>
@@ -12752,8 +12752,8 @@ stage.</p>
    idle cost) would multiply both 1 and 2 until lane (3) lands.</p>
 <h2 id="conflicts-with-decisions-recorded-after-this-lane-started-stop-and-report">Conflicts with decisions recorded after this lane started (stop-and-report)<a class="headerlink" href="#conflicts-with-decisions-recorded-after-this-lane-started-stop-and-report" title="Permanent link">&para;</a></h2>
 <p>The coordinator relayed
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#change-stamp-definer-function">change-stamp-definer-function</a>
-and <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#incremental-refresh">incremental-refresh</a> while this
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#change-stamp-definer-function">change-stamp-definer-function</a>
+and <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#incremental-refresh">incremental-refresh</a> while this
 lane ran. Neither is built here; both conflict with what was reproduced:</p>
 <ol>
 <li><strong>A definer function returning <code>(tenant_id, last_stamp)</code> does not see hard deletes or unstamped (activity)
@@ -12788,7 +12788,7 @@ lane ran. Neither is built here; both conflict with what was reproduced:</p>
 <h2 id="resumed-2026-11-11-00000200-local-evaluation-gap-gate-alert-and-readiness-seam">Resumed, 2026-11-11 (00:00–02:00 local): evaluation-gap gate, alert and readiness seam<a class="headerlink" href="#resumed-2026-11-11-00000200-local-evaluation-gap-gate-alert-and-readiness-seam" title="Permanent link">&para;</a></h2>
 <p><em>Appended after the coordinator relayed perf-db's restart-gap measurement (<code>codex/perf-db-20261110</code> <code>540d3998</code>,
 <a href="../perf-db-2026-11-10/index.html">perf-db record, "Resumed"</a>) and the readiness seam for
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>. The
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#readiness-serve-then-warm">readiness-serve-then-warm</a>. The
 sections above are unchanged.</em></p>
 <h3 id="anchors_1">Anchors<a class="headerlink" href="#anchors_1" title="Permanent link">&para;</a></h3>
 <table>
@@ -13020,10 +13020,10 @@ lines and run 2's inspection showed all 1,000 alerting; in the diagnostic steady
 </tbody>
 </table>
 <h2 id="round-3-2026-11-11-06000700-local-consumers-on-change-gate-at-deployed-settings-cpu-profile">Round 3, 2026-11-11 (06:00–07:00 local): consumers on change, gate at deployed settings, CPU profile<a class="headerlink" href="#round-3-2026-11-11-06000700-local-consumers-on-change-gate-at-deployed-settings-cpu-profile" title="Permanent link">&para;</a></h2>
-<p><em>Decisions <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#write-clock-complete">write-clock-complete</a> (the
+<p><em>Decisions <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#write-clock-complete">write-clock-complete</a> (the
 digest scan retires once perf-db's complete clock lands; the signature stays opaque: <code>evaluator-runtime.js</code>
 <code>validSignature</code>/<code>same</code>, read through <code>component.signature()</code> → <code>postgres-durable-replay.js</code> <code>signature()</code>) and
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#incremental-refresh-realtime-only">incremental-refresh-realtime-only</a>
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#incremental-refresh-realtime-only">incremental-refresh-realtime-only</a>
 (no incremental read for the evaluator) are noted; nothing in this round depends on them.</em></p>
 <table>
 <thead>
@@ -13169,7 +13169,7 @@ digest scan retires once perf-db's complete clock lands; the signature stays opa
 <p>Every tenant within 70.7 s: inside the 60–90 s target. Steady state after the gate (inspection): every tenant confirmed
 within 1,116 ms (p50 579, p90 1,019), no alert, no refusal; consumer passes 1–2 per tenant over the gate (not ~300);
 evaluator 81% CPU, 509 MiB; PostgreSQL 558% CPU, which is the per-tenant digest signature check once a second (the
-scan <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#write-clock-complete">write-clock-complete</a> retires).</p>
+scan <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#write-clock-complete">write-clock-complete</a> retires).</p>
 <h3 id="where-an-evaluations-cpu-goes-reproduced-runsprofile-deployfulltxt-measurement-only">Where an evaluation's CPU goes (reproduced, <code>runs/profile-{deploy,full}.txt</code>; measurement only)<a class="headerlink" href="#where-an-evaluations-cpu-goes-reproduced-runsprofile-deployfulltxt-measurement-only" title="Permanent link">&para;</a></h3>
 <p><code>tools/tenancy/perf-evaluator/profile.cjs</code>: one tenant with 24 h of entries and device status (576 rows), the actual
 component on actual PostgreSQL, 200 sequential cycles of each kind under the V8 sampling profiler (100 µs), self time

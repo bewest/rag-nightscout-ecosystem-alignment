@@ -3827,6 +3827,8 @@
       
         
       
+        
+      
     
     
     
@@ -5828,7 +5830,7 @@
 
 
 <h1 id="next-gen-platform-one-write-path-four-tracks">Next-gen platform: one write path, four tracks<a class="headerlink" href="#next-gen-platform-one-write-path-four-tracks" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>68922e7ea</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing living plan, reconciled 2026-11-16 against the
 <a href="../../../reports/tenancy/pgstream-idiomatic-2026-11-14/index.html#streamlined-runtime-integration--2026-11-16">selected stream integration record</a>
 and <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html">release contents</a>.
@@ -6063,7 +6065,7 @@ release hypotheses. It is historical context, not a current dispatch queue.</p>
 </tr>
 </tbody>
 </table>
-<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT decided 2026-10-31: one in-process event per write, named from WriteResult.items[], and the per-database-call event kept as backend instrumentation; delivery between processes is decided with the serve roles; its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name. The later <a href="../tenancy/durable-event-delivery-contract-2026-11-06.html">B7 recovery direction</a> uses a durable feed and the adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m5-bounded-snapshot-reconciliation">bounded full current-state snapshot backstop</a>; the time-only alarm tick remains separate from that reconciliation schedule.</p>
+<p>The forward constraints are two mature backends behind one interface (D2–D4), the closed query operator set as a filter tree (D8), a source label and later a tenant binding on every write, and one commit fact the change feed can carry (D6; D-EVENT decided 2026-10-31: one in-process event per write, named from WriteResult.items[], and the per-database-call event kept as backend instrumentation; delivery between processes is decided with the serve roles; its card in §5). Under #8854's merge conditions, the commit event stays internal and unstable, and the intent layer gets its own name. The later <a href="../tenancy/durable-event-delivery-contract-2026-11-06.html">B7 recovery direction</a> uses a durable feed and the adopted <a href="../tenancy/multitenancy-decisions.html#m5-bounded-snapshot-reconciliation">bounded full current-state snapshot backstop</a>; the time-only alarm tick remains separate from that reconciliation schedule.</p>
 <h2 id="3-the-map">3. The map<a class="headerlink" href="#3-the-map" title="Permanent link">&para;</a></h2>
 <p>For multitenant status and sequencing, use the
 <a href="../tenancy/multitenant-delivery-dashboard.html">multitenant delivery dashboard</a>.
@@ -6278,7 +6280,7 @@ owner/data/operator routes. R72 accepts that bounded versioned-write and
 route-separation bar; wider catalogue and human-session acceptance remain M6. M4's bar is executed headless clients
 plus source-pattern replay for the rest, with <strong>no all-client claim</strong>; Android
 emulator work moves to C and iOS is outside the automated lab. M4 still depends on M3.
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion decisions</a>
+The <a href="../tenancy/multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion decisions</a>
 own these scope changes. Headless owner <code>config.ownerPolicy</code> is retained writer
 policy, distinct from the withdrawn authorization reader option.</p>
 <p>The <a href="../tenancy/single-and-multitenant-architecture.html">architecture and compatibility comparison</a>

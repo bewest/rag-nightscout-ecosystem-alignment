@@ -4688,10 +4688,10 @@ clinical/isolation/authority/durability obligations remain required.</em></p>
 <h1 id="counters-compatibility-and-tenant-restore-options">Counters, compatibility and tenant restore options<a class="headerlink" href="#counters-compatibility-and-tenant-restore-options" title="Permanent link">&para;</a></h1>
 <p><em>Living contributor-facing design analysis, 2026-11-07. Read-derived from the
 published f0fac99a application unless a linked experiment says reproduced.
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#allocator-preserving-restore-first">Release decisions</a>
+<a href="../../30-design/tenancy/multitenancy-decisions.html#allocator-preserving-restore-first">Release decisions</a>
 own the adopted experiment direction and conditional preview pause allowance.
 This analysis adopts no schema, new cursor format or runtime admission.</em></p>
-<p><em>2026-11-10: the restore census now also <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-census-counter-writers">refuses a connected non-participant
+<p><em>2026-11-10: the restore census now also <a href="../../30-design/tenancy/multitenancy-decisions.html#restore-census-counter-writers">refuses a connected non-participant
 whose identity can write the insertion-order or write-clock tables</a>;
 read-only identities stay exempt, and only the restore of the tenant being
 restored refuses. In the current design only <code>api</code> writes those counters.</em></p>
@@ -4781,7 +4781,7 @@ not a repair to the existing exact physical backup oracle. Whole-deployment
 physical restore keeps its separate fidelity contract.</p>
 <p>A logical prototype must sort captured rows explicitly by BigInt ordinal;
 export array order is not an ordering contract. Preserve public IDs and typed
-clinical values. The later adopted <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-history-forward-correction">forward history correction policy</a>
+clinical values. The later adopted <a href="../../30-design/tenancy/multitenancy-decisions.html#restore-history-forward-correction">forward history correction policy</a>
 supersedes exact history-timestamp copying for same-ID logical restore: retain
 the live issued floor, advertise changed/restored values and deletions above it,
 and publish effects only after the actual restore commit. Exact raw metadata
@@ -4804,7 +4804,7 @@ Investigate concrete natural-order consumers before adding another counter or
 requiring a shared pause. Future versioned cursors and restore generations are
 incremental architecture options, not prerequisites silently added to the preview.</p>
 <h2 id="fault-isolation-and-the-selected-next-step">Fault isolation and the selected next step<a class="headerlink" href="#fault-isolation-and-the-selected-next-step" title="Permanent link">&para;</a></h2>
-<p>The maintainer <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-insertion-semantics">selected per-tenant insertion semantics and a tenant-local state prototype</a>. Cross-tenant ordering is not required; same-deployment restore must preserve other tenants' current state. The global
+<p>The maintainer <a href="../../30-design/tenancy/multitenancy-decisions.html#tenant-local-insertion-semantics">selected per-tenant insertion semantics and a tenant-local state prototype</a>. Cross-tenant ordering is not required; same-deployment restore must preserve other tenants' current state. The global
 counter concern is shared mutable state under faulty or malicious behavior, not
 an observed requirement for cross-tenant ordinal values.</p>
 <p>Ordinary atomic sequence allocation and privileged sequence maintenance have

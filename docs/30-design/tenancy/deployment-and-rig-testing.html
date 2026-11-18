@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3343,6 +3345,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
   
 
     
@@ -5702,18 +5732,18 @@
 
 
 <h1 id="deployment-scenarios-and-rig-testing">Deployment scenarios and rig testing<a class="headerlink" href="#deployment-scenarios-and-rig-testing" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>92fd94a15</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing living runbook. Deployment structure and commands are
 </em><em>read-derived</em><em> from cgm-remote-monitor
 <code>151de0248a1e4301c85b5c638185eec3ca8c38e6</code>, with the nginx edge-network correction
 in <code>4935aa77049c66793669a7be940e40ed6ba5b386</code>, inspected 2026-11-07. Executed
-results retain their own source in the linked records. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold
+results retain their own source in the linked records. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold
 Compose measurement</a>
 records the later ed2 implementation, including its Host-preserving demo sender.
 Architecture/evidence grooming: 2026-11-08; no new runtime campaign was run.
 This document implements
 the documentation scope of MT-DOC-DEPLOY; current claims live in the
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/queue/work-queue.yaml">work queue</a> and
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/queue/work-queue.yaml">work queue</a> and
 <a href="multitenant-delivery-dashboard.html">delivery dashboard</a>.</em></p>
 <h2 id="choose-the-experiment">Choose the experiment<a class="headerlink" href="#choose-the-experiment" title="Permanent link">&para;</a></h2>
 <table>
@@ -5733,7 +5763,7 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 <tr>
 <td>One-host synthetic Compose preview</td>
 <td>Exercise separate services, browser/API/socket paths and tenant-local restore</td>
-<td>Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">Cold functional acceptance</a> passed on ed2; real-client, capacity and production admission have separate gates.</td>
+<td>Fixed participants, private Unix sockets, direct PostgreSQL and locally generated credentials. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">Cold functional acceptance</a> passed on ed2; real-client, capacity and production admission have separate gates.</td>
 </tr>
 <tr>
 <td>Headless client lab</td>
@@ -5754,11 +5784,11 @@ the documentation scope of MT-DOC-DEPLOY; current claims live in the
 </table>
 <p>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/ed2ced00c80bd0a6a7d75f834d2c6e2af8c71364/deploy/multitenant/README.md">application Compose guide</a>
 owns runnable packaging instructions at the ed2 reference. The Compose tree
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-lives-in-nightscout-deploy">lives in the sibling repository <code>nightscout-deploy</code></a>
-and is <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#deploy-tree-home-now">its home from the next #8898 batch on</a>; core
+<a href="multitenancy-decisions.html#deploy-tree-lives-in-nightscout-deploy">lives in the sibling repository <code>nightscout-deploy</code></a>
+and is <a href="multitenancy-decisions.html#deploy-tree-home-now">its home from the next #8898 batch on</a>; core
 then keeps only the fixture its own tests boot. The commands below describe the
 ed2 reference as accepted; run current packaging from <code>nightscout-deploy</code>. The
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-service-processes">service-process decision</a>
+<a href="multitenancy-decisions.html#restore-service-processes">service-process decision</a>
 owns the deployment requirement. Compose is implemented; a Jsonnet generator is
 an optional way to produce configuration, not another runtime component or a
 selected prerequisite.</p>
@@ -5769,7 +5799,7 @@ layout and access-policy extensions need their own acceptance.</p>
 <h2 id="concurrent-experiments-and-acceptance">Concurrent experiments and acceptance<a class="headerlink" href="#concurrent-experiments-and-acceptance" title="Permanent link">&para;</a></h2>
 <p>Agents may run isolated synthetic branch experiments before the branch has full
 acceptance, alongside implementation and other experiments. The maintainer's
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#concurrent-branch-experiments">experiment decision</a>
+<a href="multitenancy-decisions.html#concurrent-branch-experiments">experiment decision</a>
 governs this workflow. Acceptance qualifies a selected candidate and its claims;
 it is not a prerequisite for discovering that candidate's faults.</p>
 <table>
@@ -5804,7 +5834,7 @@ Keep strict/default acceptance separate. The existing
 <a href="../../../tools/mt-bench/m7-joined/DIAGNOSTIC-SEAM.html">fresh-image diagnostic</a>
 is a small functional profile; its limits do not define every discovery workload.
 The reusable runner's current local qualification and remaining remote boundary
-are recorded in the <a href="../../../releases/cgm-remote-monitor-16.0.0/contents.html#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15">release update</a>.</p>
+are recorded in the <a href="execution-log.html#update--concurrent-branch-experiments-and-runner-reuse-2026-11-15">release update</a>.</p>
 <p>Give each concurrent lane its own worktree, project identity, database/state,
 ports, networks and cleanup custody. Record contention on shared hosts. Reserve
 a quiet host for a comparison that needs one; do not impose a global quiet-host
@@ -6001,7 +6031,7 @@ flowchart below retains the accepted reference's connection summary.</p>
   Operator --&gt; RT
   Operator --&gt; Eval
   Operator --&gt; Admin</code></pre>
-<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
+<p>The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
 exercises this topology as a one-host synthetic reference. UI and nginx receive
 no database credentials. PostgreSQL, Vault,
 tenant-admin and maintenance endpoints have no public port in this reference.
@@ -6019,7 +6049,7 @@ An external TLS ingress requires its own declared trust configuration and test.<
 <p>nginx alone attaches to both the internal <code>backend</code> network and the <code>edge</code>
 bridge. The edge bridge permits host publication; every application, database,
 Vault and maintenance service stays on the internal backend network. The
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">accepted cold measurement</a>
 reproduces reachable UI/API/socket paths and A restore with B committing work;
 it retains exact source/image and independent cleanup attribution.</p>
 <h2 id="prepare-a-disposable-synthetic-instance">Prepare a disposable synthetic instance<a class="headerlink" href="#prepare-a-disposable-synthetic-instance" title="Permanent link">&para;</a></h2>
@@ -6084,7 +6114,7 @@ record; a connected socket alone proves no data delivery. Public API identifiers
 and internal storage identifiers need not be identical.</p>
 <p>The <a href="../../../tools/lab/m4-client-binaries/index.html">pinned client lab</a> owns
 supported headless client execution. Android emulator and physical-device runs
-remain separately attributed; <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#multitenant-promotion-bars-2026-11-06">promotion decisions</a>
+remain separately attributed; <a href="multitenancy-decisions.html#multitenant-promotion-bars-2026-11-06">promotion decisions</a>
 define their milestone scope. Avoid replacing a real client execution with a
 handwritten request and describing the result as that client's acceptance.</p>
 <h2 id="restore-and-failure-scenarios">Restore and failure scenarios<a class="headerlink" href="#restore-and-failure-scenarios" title="Permanent link">&para;</a></h2>
@@ -6094,7 +6124,7 @@ handwritten request and describing the result as that client's acceptance.</p>
 <p>The <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/deploy/multitenant/demo.js#L60">demo implementation</a>
 captures A, changes A, restores A using the real lifecycle/controller, writes B
 during the held A operation and checks forward history correction/deletion.
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-history-forward-correction">restore-history decision</a>
+The <a href="multitenancy-decisions.html#restore-history-forward-correction">restore-history decision</a>
 owns client convergence semantics. B's preexisting state must remain unchanged;
 its explicitly authored new writes are expected differences.</p>
 <table>
@@ -6124,7 +6154,7 @@ its explicitly authored new writes are expected differences.</p>
 <tr>
 <td>Shared-role restart with A suspended</td>
 <td>Fresh API/realtime/evaluator processes actually serving B; A refused with no stale output; A protected state unchanged</td>
-<td>Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a> reproduces the bounded shared-role restart criterion; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a> supplies the separate packaged ordinary-restore proof.</td>
+<td>Deferred A initialization cannot bypass shared schema/permission checks or silently reactivate A. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/c23-native-accepted/index.html">c23 native matrix</a> reproduces the bounded shared-role restart criterion; the <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a> supplies the separate packaged ordinary-restore proof.</td>
 </tr>
 <tr>
 <td>Missing/restarted participant</td>
@@ -6138,7 +6168,7 @@ its explicitly authored new writes are expected differences.</p>
 </tr>
 </tbody>
 </table>
-<p>The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tenant-local-startup-admission">startup-admission decision</a>
+<p>The <a href="multitenancy-decisions.html#tenant-local-startup-admission">startup-admission decision</a>
 and <a href="https://github.com/nightscout/cgm-remote-monitor/blob/151de0248a1e4301c85b5c638185eec3ca8c38e6/docs/tenant-operation-cohort.md#failure-recovery-and-shared-role-restart-boundary">application recovery contract</a>
 own restart behavior. Process/control liveness and each tenant's readiness are
 different observations. Realtime <code>/health</code> retains strict aggregate readiness;
@@ -6162,9 +6192,9 @@ refusal and restart evidence does not establish a recovery-time bound.</p>
 <p>The lab Vault credentials expire after 24 hours and restart does not renew them.
 The generated CA expires after 30 days. Preserve verification and prepare a fresh
 synthetic instance when appropriate; do not disable TLS checks. Vault sealing,
-key custody and production Vault connectivity (a <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-agent-sidecar">Vault Agent sidecar</a>,
+key custody and production Vault connectivity (a <a href="multitenancy-decisions.html#vault-agent-sidecar">Vault Agent sidecar</a>,
 maintained in <code>nightscout-deploy</code>) remain governed by the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#m6-deployment-and-trust-2026-11-07">adopted trust contracts</a>.</p>
+<a href="multitenancy-decisions.html#m6-deployment-and-trust-2026-11-07">adopted trust contracts</a>.</p>
 <h2 id="stop-retain-and-report">Stop, retain and report<a class="headerlink" href="#stop-retain-and-report" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./demo.sh<span class="w"> </span>stop
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>./demo.sh<span class="w"> </span>down
@@ -6185,9 +6215,9 @@ B progress while A remains unavailable, with independent physical closure. Its
 fixed trusted cooperative cohort and private credential/ingress boundary remain
 load-bearing. The earlier <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/b029-native-accepted/index.html">b029 record</a>
 retains its own narrower scope. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/index.html">current acceptance family</a>
-keeps their source-specific verdicts separate. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a>
+keeps their source-specific verdicts separate. The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-cold-accepted.json">ed2 cold record</a>
 adds actual UI/socket and ordinary restore/history/B-continuity acceptance.
-The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client record</a>
+The <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/operation-window-acceptance-2026-11-07/ed2-clients-accepted.json">ed2 pinned-client record</a>
 adds actual cgmsim/oref0 execution with matching stored outcomes and independent
 physical closure. The <a href="../../../reports/tenancy/operation-window-acceptance-2026-11-07/ed2-full-accepted/index.html">final ed2 regression</a>
 passed all seven nonbrowser tiers. Other clients and rigs, capacity, HA,

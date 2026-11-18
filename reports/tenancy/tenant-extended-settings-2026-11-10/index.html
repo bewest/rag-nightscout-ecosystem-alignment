@@ -12001,7 +12001,7 @@
 
 
 <h1 id="mt-tenant-extended-settings-bf-232-tenant-plugin-extended-settings">MT-TENANT-EXTENDED-SETTINGS (BF-232): tenant plugin extended settings<a class="headerlink" href="#mt-tenant-extended-settings-bf-232-tenant-plugin-extended-settings" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>2449abe67</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing evidence record, captured 2026-11-10. Not edited after capture.</em></p>
 <table>
 <thead>
@@ -12034,7 +12034,7 @@
 </tbody>
 </table>
 <h2 id="1-reproduction-on-the-base-reproduced">1. Reproduction on the base: <strong>reproduced</strong><a class="headerlink" href="#1-reproduction-on-the-base-reproduced" title="Permanent link">&para;</a></h2>
-<p>Script: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c660162cb6526ee7c2fff5d3b3a85589ad5cca3a/reports/tenancy/tenant-extended-settings-2026-11-10/repro-base.test.js"><code>repro-base.test.js</code></a> (synthetic tenant, one reading 40 minutes old, the
+<p>Script: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/a34233c2c1eee08b65cefd8a4792730a5c5a23aa/reports/tenancy/tenant-extended-settings-2026-11-10/repro-base.test.js"><code>repro-base.test.js</code></a> (synthetic tenant, one reading 40 minutes old, the
 actual <code>tenant-projection-evaluator</code> with a recording SQL double). Run on <code>b70ad83f</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>EVALUATOR_CONFIG refused: invalid explicit evaluator preview configuration
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>EMITTED []
@@ -12254,7 +12254,7 @@ projected into a fresh object of primitives. The status route shows the projecti
 (<code>filteredSettings</code> recognises the tenant's own extended object), as a single site shows its extended
 settings. No owner catalogue entry was added; see §6.</p>
 <p>Owner surface reading: the 16.0.0 decision
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#owner-settings-projected-catalogue">owner-settings-projected-catalogue</a>
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#owner-settings-projected-catalogue">owner-settings-projected-catalogue</a>
 limits owner-writable names to the projected client keys, <code>enable</code> and thresholds, and "every other
 name is unsupported on the owner surface and refuses by name". The same row records the rest as
 "operator-static JSON per tenant". The fix therefore carries plugin extended settings from the operator's

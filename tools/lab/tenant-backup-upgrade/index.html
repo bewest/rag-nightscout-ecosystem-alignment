@@ -5199,7 +5199,7 @@
 
 
 <h1 id="focused-tenant-backupupgrade-postgresql-proof">Focused tenant backup/upgrade PostgreSQL proof<a class="headerlink" href="#focused-tenant-backupupgrade-postgresql-proof" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-06 at <code>fbf184322</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p>This lab runs the application's explicit five-case PostgreSQL suite against an
 owned disposable PostgreSQL 16 fixture, then semantic mutants and restorations.
 It archives the selected committed application source into scratch and uses an
@@ -5259,7 +5259,7 @@ suite, registered case or fake-client result counts as native evidence.</p>
 <h2 id="recovery-scope">Recovery scope<a class="headerlink" href="#recovery-scope" title="Permanent link">&para;</a></h2>
 <p>The <a href="../../../reports/tenancy/backup-upgrade-native-f77-2026-11-06.html">representative native proof</a>
 records the executed entries/clock boundary. Apply the
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-identity-and-cloning">restore identity and cloning decision</a>:
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#restore-identity-and-cloning">restore identity and cloning decision</a>:
 this laboratory exercises original-tenant recovery. Cloning implementation/native
 acceptance, the full selected catalogue and durable backup storage remain unmeasured.</p>
 

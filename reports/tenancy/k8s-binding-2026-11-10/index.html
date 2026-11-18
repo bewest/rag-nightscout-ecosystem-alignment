@@ -12112,17 +12112,17 @@
 
 
 <h1 id="kubernetes-binding-deploy-k8s-binding-lane-k-2026-11-10">Kubernetes binding (DEPLOY-K8S-BINDING), lane K, 2026-11-10<a class="headerlink" href="#kubernetes-binding-deploy-k8s-binding-lane-k-2026-11-10" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-10 at <code>a50d6f7a1</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing evidence record. Captured 2026-11-10; not edited after capture. Figures are
 from tool output in this session. Status words as in AGENTS.md section 4.</em></p>
-<p>Decision of record: <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#tanka-binding-parallel">tanka-binding-parallel</a>
+<p>Decision of record: <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#tanka-binding-parallel">tanka-binding-parallel</a>
 (Tanka/Jsonnet in nightscout-deploy, local cluster, in parallel with the Compose bench; the
 equivalence claim still waits on <code>DEPLOY-TRUST-PROBES</code>). Also applied:
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#internal-listener-ory-pattern">internal-listener-ory-pattern</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#admin-plane-same-address-different-port">admin-plane-same-address-different-port</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#evaluator-static-partition">evaluator-static-partition</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#pool-primitive-shared">pool-primitive-shared</a>,
-<a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#vault-agent-sidecar">vault-agent-sidecar</a>.</p>
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#internal-listener-ory-pattern">internal-listener-ory-pattern</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#admin-plane-same-address-different-port">admin-plane-same-address-different-port</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#evaluator-static-partition">evaluator-static-partition</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#pool-primitive-shared">pool-primitive-shared</a>,
+<a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#vault-agent-sidecar">vault-agent-sidecar</a>.</p>
 <h2 id="anchors">Anchors<a class="headerlink" href="#anchors" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -12541,7 +12541,7 @@ deleted at the end, and the built image and kind node image were removed.</p>
 <h2 id="2026-11-10-late-follow-ups-after-the-smoke">2026-11-10 (late): follow-ups after the smoke<a class="headerlink" href="#2026-11-10-late-follow-ups-after-the-smoke" title="Permanent link">&para;</a></h2>
 <p><em>Appended; earlier sections stand as recorded. Branch <code>k8s/cluster-smoke-20261110</code> head <code>b9af14c</code> (local, unpushed).</em></p>
 <ul>
-<li><strong>Two-Pod row replaced.</strong> Decision <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#cohort-pod-not-scaled">cohort-pod-not-scaled</a>: the one-Pod cohort is a monolith that scales vertically only. For horizontal scale or HA, operators use per-role placement, and the two placements never run against the same database at once. The binding, not core, holds the cohort to one replica.</li>
+<li><strong>Two-Pod row replaced.</strong> Decision <a href="../../../docs/30-design/tenancy/multitenancy-decisions.html#cohort-pod-not-scaled">cohort-pod-not-scaled</a>: the one-Pod cohort is a monolith that scales vertically only. For horizontal scale or HA, operators use per-role placement, and the two placements never run against the same database at once. The binding, not core, holds the cohort to one replica.</li>
 <li>The smoke's red two-Pod control is now this rule, enforced at render time.</li>
 <li>New invariant <code>cohort-single-replica</code>: a rendered <code>replicas: 2</code> gives <code>FAIL cohort-single-replica: StatefulSet/cohort replicas is 2; the one-Pod cohort is a monolith and scales vertically only; for horizontal scale or HA use per-role placement (decision cohort-pod-not-scaled)</code>. It is restored to green after the control.</li>
 <li>The README explains cohort and per-role placement for operators.</li>

@@ -2579,6 +2579,8 @@
       
         
       
+        
+      
     
     
     
@@ -3271,6 +3273,34 @@
     
   
     Durable event delivery contract for multitenant consumers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="execution-log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multitenant execution log
   
 
     
@@ -5558,11 +5588,11 @@
 
 
 <h1 id="ordering-history-and-restore-responsibilities">Ordering, history and restore responsibilities<a class="headerlink" href="#ordering-history-and-restore-responsibilities" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-16 at <code>28107d068</code>.</em></p>
+<p><em>Living document, last changed 2026-11-17 at <code>5a19634fa</code>.</em></p>
 <p><em>Contributor-facing living architecture guide, reconciled 2026-11-16.
 Current implementation is </em><em>read-derived</em><em> from qualified core
 <code>c31c6e0b69a2a2f2a5320b9e4d32195f1b3e1878</code>; reproduced evidence retains the source
-named in each linked record. The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#stream-native-coverage-direction">release decision</a>
+named in each linked record. The <a href="multitenancy-decisions.html#stream-native-coverage-direction">release decision</a>
 owns the direction to evaluate stream-native internal coverage. A replacement
 for current clock-event sealing is </em><em>proposed, unimplemented and unqualified</em><em>.
 No new cursor, CDC engine, event log or replication-slot topology is adopted.</em></p>
@@ -5627,7 +5657,7 @@ public history cursors. Do not promote the ordinal into a universal progress cou
 <p>Restore must preserve current authority, exclude stale effects and establish
 consistent accepted/completed/pending/due state before reopening. Logical restore
 and whole-deployment physical backup retain their distinct fidelity contracts.
-The <a href="../../../releases/cgm-remote-monitor-16.0.0/decisions.html#restore-history-forward-correction">forward history policy</a>
+The <a href="multitenancy-decisions.html#restore-history-forward-correction">forward history policy</a>
 preserves supported history continuity; independent tenant progress and bounded
 failure recovery remain required. The existing implementation is qualified only
 for the source and scenarios in the
