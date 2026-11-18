@@ -101,6 +101,8 @@ Environment: `my.test.env` = `tests/ci.test.env` with `CUSTOMCONNSTR_mongo` repo
 container on 127.0.0.1:27517 (server version 7.0.43 read from `mongosh`, image
 `mongo@sha256:9854f7139445d766a9523571d6f047530c45547460ffcf8259eb2bf4264632ca`).
 
+*Raw logs (`test-affected.log`, `test-all-and-browser.log`, `final-test-all-and-browser.log`, `dc795bd1-acceptance/test-all-and-browser.txt`) were untracked on 2026-11-18 under the raw-output rule; they remain in Git history up to `4264afbad5`. The counts below are the record.*
+
 ### 7a. `npm run test:affected -- --since ed2ced00` (`test-affected.log`, exit 17)
 
 129 changed files, 405 of 605 tests implicated. Unit 1714 passing / 17 failing; dom 22 / 3;

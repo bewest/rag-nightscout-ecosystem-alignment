@@ -49,6 +49,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 
 - [platform-application-boundary](multitenancy-decisions.md#platform-application-boundary) — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.
 - [brittle-check-removal](multitenancy-decisions.md#brittle-check-removal) — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.
+- [unclear-rows-resolved](multitenancy-decisions.md#unclear-rows-resolved) — The six Unclear questions resolved toward removal (desired count, writer census, revision wake, cost step A, idle witness, move readiness).
 - [architecture-justified-removal](multitenancy-decisions.md#architecture-justified-removal) — Machinery from an obsolete design is removed on architecture grounds with correctness controls, no measurement.
 - [serial-machinery-retirement](multitenancy-decisions.md#serial-machinery-retirement) — Remove serial machinery the streaming design no longer needs, rather than tune it.
 - [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first) — Simplified, runnable, operable architecture first; performance work is lower priority meanwhile.
@@ -263,11 +264,4 @@ The text of every row below was archived unchanged on 2026-11-18 in [the superse
 
 ## Unclear
 
-| row | question that needs answering |
-|---|---|
-| [pool-desired-count-in-table](multitenancy-decisions.md#pool-desired-count-in-table) | [static-hash-ownership](multitenancy-decisions.md#static-hash-ownership) makes changing K a restart for evaluator and realtime. Does the in-table expected count still govern `vcpool`, or retire everywhere? |
-| [restore-census-counter-writers](multitenancy-decisions.md#restore-census-counter-writers) | [restore-suspend-drain-replace](multitenancy-decisions.md#restore-suspend-drain-replace) retires the cohort census after replacement. Does the pre-restore census of connected writers (here and in [restore-census-and-ownership-phase](multitenancy-decisions.md#restore-census-and-ownership-phase)) also retire? |
-| [evaluator-revision-on-content-change](multitenancy-decisions.md#evaluator-revision-on-content-change) | Content-only revisions persist in later rows; does the revision-driven consumer wake and stale-selection retry survive output CDC ([stream-fed-clinical-materializer](multitenancy-decisions.md#stream-fed-clinical-materializer))? |
-| [evaluation-cost-candidates](multitenancy-decisions.md#evaluation-cost-candidates) | Which of steps A–E remain after the stream-fed working set and [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first)? |
-| [evaluator-idle-opportunity](multitenancy-decisions.md#evaluator-idle-opportunity) | Is the idle-safety witness still part of the run verdict after [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate)? |
-| [realtime-move-readiness-viewers](multitenancy-decisions.md#realtime-move-readiness-viewers) | With dynamic moves retired by [static-hash-ownership](multitenancy-decisions.md#static-hash-ownership), does a shard takeover readiness contract still apply, for example at restart? |
+None open. The six questions listed here on 2026-11-18 were resolved by [unclear-rows-resolved](multitenancy-decisions.md#unclear-rows-resolved): the in-table desired count, the pre-restore writer census, the revision-driven wake and stale-selection retry, evaluation-cost step A, the idle-safety witness in the run verdict and the shard-move readiness contract retire.
