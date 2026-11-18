@@ -676,9 +676,21 @@ count and mean; per-shard quantile ranges; pooled quantiles UNMEASURED).
 refuses if any original file changes.
 
 Run configuration `outcomeGate: {"midpointStop": "never"}` records the midpoint
-without stopping the driver; `deadlineMs` is also configuration. The Kubernetes
-path has no all-tenant catch-up collector yet, so that component is UNMEASURED
-there and a Kubernetes run cannot reach PASS until one exists.
+without stopping the driver; `deadlineMs` and `catchup` (default `true`) are
+also configuration.
+
+The all-tenant catch-up ([catchup.py](catchup.py)) runs in a load stage that
+selects `drainSeconds`, after the driver and probe exit and before terminal
+progress. It is the Compose fixed-floor reader on the Kubernetes access path:
+`completed-oracle.cjs` builds the progress query and snapshot from the run's
+completion source; each round reads storage through `postgres_read`
+(`BEGIN READ ONLY … ROLLBACK`) and the evaluator inspection through the pinned
+exec, inside one owned-namespace `observe` bracket; `evaluator_catchup.observe`
+classifies every tenant. Raw SQL and inspection responses are written to
+`load/catchup/round-NNNN-*.private.jsonl` before decoding; the result is
+`load/evaluator-catchup.json`. Its window is the drain time left after the
+writers join, clipped by the work deadline; no time left gives UNMEASURED
+`M7_DRAIN_DEADLINE` without a read.
 
 ## One intent for Compose and Kubernetes
 

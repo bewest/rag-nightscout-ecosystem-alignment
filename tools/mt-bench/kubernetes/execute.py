@@ -332,14 +332,16 @@ def midpoint_signal(out, c, ids, refusal):
 def gate_mode(c):
     value = dict(c.get('outcomeGate') or {})
     value.setdefault('midpointStop', 'hard')
-    k.need(set(value) <= {'midpointStop', 'deadlineMs'} and value['midpointStop'] in ('hard', 'never'),
-           'OUTCOME_GATE_CONFIGURATION')
+    value.setdefault('catchup', True)
+    k.need(set(value) <= {'midpointStop', 'deadlineMs', 'catchup'} and value['midpointStop'] in ('hard', 'never')
+           and type(value['catchup']) is bool, 'OUTCOME_GATE_CONFIGURATION')
     return value
 
 
 def gate_config(c):
     mode = gate_mode(c)
     return {'deadlineMs':mode['deadlineMs']} if 'deadlineMs' in mode else None
+
 
 
 def stop_process(process):
@@ -552,6 +554,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
     started = time.time()
     process = None
     load_started = load_ended = load_process_started = load_process_ended = None
+    drain_started = None
     midpoint = None
     cancel = threading.Event()
     midpoint_failure = []
@@ -613,6 +616,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 load_process_ended = time.time()
                 load_started, load_ended = ordinary_load_window(c, out / 'k6.log', load_process_started, load_process_ended)
             (out / '.restart').touch()
+            drain_started = time.time()
         if load and 'drainSeconds' in settings:
             # The inherited oracle has a 120 s per-write lookback. Keep that scope explicit.
             requested = settings['drainSeconds']
@@ -626,6 +630,7 @@ def execute(d, c, objects, client, load=False, recovery=False):
         else:
             wait_observed(process, k.deadline(c), midpoint_failure)
         k.need(process.returncode == 0, 'PROBE_FAILED', 'UNMEASURED')
+        writers_joined_ns = time.monotonic_ns()  # driver and probe have both exited
         midpoint.join(timeout=min(60, k.deadline(c)))
         if midpoint_failure:
             raise midpoint_failure[0]
@@ -638,6 +643,11 @@ def execute(d, c, objects, client, load=False, recovery=False):
                                      'loadWindowBasis': 'first ordinary scenario request through configured duration capped at native exit; JWT setup and final drain excluded',
                                      'runId': runid, 'pins': c['pins'],
                                      'context': c['context'], 'namespaceUid': baseline['namespace']['uid']})
+        if load and 'drainSeconds' in settings and gate_mode(c)['catchup']:
+            # All-tenant fixed-floor catch-up: storage floor vs completed evaluation.
+            import catchup
+            catchup.run(d, out, c, objects, client, [row['id'] for row in tenants],
+                        writers_joined_ns=writers_joined_ns, drain_started=drain_started)
         terminal_progress(d, out, c, objects, client, runid, load, baseline['namespace']['uid'])
         return assess_stage(d, out, c, objects, client)
     except Exception as error:
