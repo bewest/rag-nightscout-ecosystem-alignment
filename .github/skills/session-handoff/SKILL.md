@@ -26,16 +26,21 @@ coordination contract in `AGENTS.md` and the applicable batch plan.
 ## 1. Record the programme state (tracked)
 
 Append a dated Update table to `releases/<product>-<version>/contents.md` and any decision rows to
-`decisions.md` (the `release-record` skill). Multitenant work instead appends to
+`decisions.md` (the `release-record` skill). Add a decision row only when it changes what an agent
+or operator does; mark any row it replaces as superseded in the same edit. Multitenant work instead appends to
 `docs/30-design/tenancy/execution-log.md` and `docs/30-design/tenancy/multitenancy-decisions.md`
 ("Programme decisions after D23"); a release directory carries only what that release ships. Hashes come from `git log` run now, not from a brief.
 
 ## 2. Write the lane handoff (local)
 
-For a new lane on this workstation, use
-`/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>-<YYYY-MM-DD>.md`,
-following the storage rule in `AGENTS.md`. Update an existing lane handoff at its
-current path; do not move a live lane to apply this default. Template:
+One file per lane:
+`/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>.md` (no date in the name; the
+date goes in the heading). Update it in place; never start a second file for the same lane. Add or
+update the lane's row in `artifacts/handoffs/INDEX.md` (lane, owner, status, file). When the lane
+closes, mark the row closed and move the file to `artifacts/handoffs/archive/`.
+
+Keep the part before "Done" to one screen. Link captures, logs and earlier handoffs; do not paste
+them. A handoff over about 15 KB is a sign that evidence belongs in a capture or a record. Template:
 
 ```markdown
 # Handoff from <lane> (<date>, <time>Z)
@@ -76,7 +81,7 @@ Rules for the content:
 ## 3. Link the two
 
 Put the handoff file's path in the contents.md Update row ("lane detail:
-`/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>-<date>.md`, local"). If the handoff carries decisions or traps that
+`/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>.md`, local"). If the handoff carries decisions or traps that
 outlive the lane, write them into `AGENTS.md` §5 or a skill in the same commit, so they reach every
 tool.
 

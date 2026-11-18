@@ -62,7 +62,12 @@ status, merges and handoffs go in the release records, not there.
 
 ## 4. Measurement rules
 
-These were each earned by a defect that reached a document, and every one still applies.
+These were each earned by a defect that reached a document, and every one still applies. They
+govern **claims written into records** (the register, the queue, release and tenancy records,
+reviewer packets). They do not require a control, an ownership re-check or a retained capture for
+every tool step, script or diagnostic. Add machinery to a tool only when it protects a property
+that must hold in the product (isolation, authorization, one writer per tenant, restore fencing,
+clinical deadlines); see [architecture-justified-removal](docs/30-design/tenancy/multitenancy-decisions.md#architecture-justified-removal).
 
 1. **A state is a claim; a gate is the measurement.** `make queue-status` before acting on any
    claimed state. `UNMEASURED` and `NO-INSTRUMENT` are never green.
@@ -182,65 +187,30 @@ step. Use ASD-STE100-inspired plain language without claiming formal conformity.
 
 **Agents running agents**
 
-Branch experiments run concurrently with implementation and acceptance. Full acceptance is
-required to promote a candidate, not to start an isolated synthetic experiment. Use the
-[experiment policy](docs/30-design/tenancy/deployment-and-rig-testing.md#concurrent-experiments-and-acceptance)
-to separate execution limits from result qualification. A missing optional metric, expected
-overload or incomplete observation does not invalidate other observations or require a new
-application acceptance campaign. Keep the exact failure and its scope. Never turn missing
-evidence into a pass. Each lane owns its resources and cleanup; a shared host is recorded as
-shared rather than reserved globally for every diagnostic. Preserve running lanes when another
-branch or instrument changes. Use focused controls for changed code and one coherent final
-acceptance campaign for the selected candidate.
-
-Multitenant is still in discovery; no multitenant deployment is in production.
-Reference sizes and previously measured workloads are starting configurations,
-not product ceilings. Keep tenant count, offered rate, viewers, resource sizes,
-setup/startup/traffic/drain/cleanup windows and supported topology choices in
-configuration. An explicit allocation replaces reference sizing for a fresh run;
-verify the applied values rather than requiring equality with the old defaults.
-Check aggregate fit against the lane's declared environment and authority, and
-distinguish CPU limits, scheduling requests, phase peaks and observed use.
-
-Before adding a restriction, identify its source: application correctness,
-instrument capability, reference default, environment allocation, actual authority
-or candidate acceptance. Keep numeric defaults overridable within the implemented
-contract and existing authority. A real implementation limit states the affected
-path and what extension would enable the experiment; it does not become a universal
-application rule. Reuse one workload resolver across local and Kubernetes paths,
-explain effective limits before expensive preparation and do not silently reduce
-a requested experiment to make it fit. This is part of the existing design and
-run configuration, not a new approval or reporting step. See the
-[restriction policy](docs/30-design/tenancy/deployment-and-rig-testing.md#configurable-limits-and-restrictions).
-
 Milestones run with background agents without asking each time. Give each lane a complete
-capability or an explicit milestone criterion, one owner and one integration boundary. Keep its
-helper changes, fixture repairs and authored controls in that lane; use another agent when the
-work is independently deliverable or resolves a material unknown. Keep entered tests with their
-current owner. Use fresh context and a suitable model for a new phase, or when context pressure,
-repeated churn or difficulty finishing warrants a successor. Transfer ownership explicitly and
-archive the predecessor only after accepted handoff and an idle, released resource boundary; see
-the [phase ownership decision](docs/30-design/tenancy/multitenancy-decisions.md#fresh-context-phase-ownership).
-An individual test or commit does not require a new chat.
+capability or milestone criterion, one owner and one integration boundary. Start a fresh context
+at a phase boundary or when churn warrants a successor, not for each test or commit. Run focused
+checks while implementing; the coordinator runs one acceptance campaign per frozen candidate. Each
+lane owns its resources and their cleanup. No shortcut weakens an isolation, authorization,
+clinical or compatibility gate.
 
-Every brief is self-contained: the outcome/criterion, relevant measured findings and source head,
-expected focused checks and meaningful break-it controls, remaining decision boundaries, and the
-two standing instructions: **stop and report a mismatch rather than reaching for the nearest
-thing that works**, and **confirm the head commit and that the task is still open before starting**.
-A brief that cannot be written clearly is a task not yet understood.
+Every brief is self-contained and short: the outcome, the source head, the measured findings it
+depends on, the focused checks, the decision boundaries, and two standing instructions: **stop and
+report a mismatch rather than reaching for the nearest thing that works**, and **confirm the head
+commit and that the task is still open before starting**. Link documents rather than pasting them.
+Name any thread the lane may message and any action outside its worktree it is authorized to take
+(cluster mutation, image push, paid resources, deleting volumes), so an approval reviewer can see
+the authorization. A brief that cannot be written clearly is a task not yet understood.
 
-During implementation, run the affected/focused checks and controls appropriate to the capability.
-For cgm-remote-monitor integration, the coordinator freezes the coherent joined candidate for
-full/browser/enabled-corpus acceptance and final prcheck. A leaf commit or resumed session does not trigger another comprehensive
-campaign. A failed campaign requires focused diagnosis, then final acceptance on the repaired
-frozen candidate; planned fixes should join before that acceptance is repeated. Preserve exact
-source/instrument attribution and all isolation, authorization, clinical and compatibility gates.
+Report what closed, what blocks, the next boundary and owner, and the evidence link. Record a new
+decision only when it changes what an agent or operator does; when it replaces an earlier one, mark
+the earlier row superseded in the same edit.
 
-Report capabilities or criteria closed, remaining blockers, the next integration boundary/owner
-and the evidence link. Counts and hashes support that verdict. Maintain one evolving handoff per
-lane and one programme acceptance update per coherent batch; record substantive failures,
-decisions and ownership transfers promptly. The tenancy [batching plan](docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination)
-defines its operational detail.
+Multitenant lanes (still in discovery; nothing in production) also follow the
+[experiment policy](docs/30-design/tenancy/deployment-and-rig-testing.md#concurrent-experiments-and-acceptance),
+the [restriction policy](docs/30-design/tenancy/deployment-and-rig-testing.md#configurable-limits-and-restrictions)
+and the [batching plan](docs/30-design/tenancy/multitenant-integration-batching-plan-2026-11-06.md#completion-focused-coordination).
+Start from the [decisions in force](docs/30-design/tenancy/decisions-in-force.md), not the full log.
 
 ## 6. Handing off to another agent
 
@@ -257,10 +227,12 @@ A handoff is for a reader with none of your context, possibly a different tool. 
 
 Record the programme-level state in `releases/<product>-<version>/contents.md` (a dated "Update"
 table) and `decisions.md`; for multitenant work, in `docs/30-design/tenancy/execution-log.md` and
-`docs/30-design/tenancy/multitenancy-decisions.md`. Write new lane-level detail to
-`/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>-<date>.md`
-(local, untracked: it names worktrees and ports on this machine). Keep an existing
-lane handoff at its current path, including legacy `externals/work/` handoffs. Link the second from the first.
+`docs/30-design/tenancy/multitenancy-decisions.md`. Write lane-level detail to **one file per
+lane**, `/mnt/data/nightscout-workspace/artifacts/handoffs/HANDOFF-<lane>.md` (local, untracked: it
+names worktrees and ports on this machine). Update it in place; put the date inside, not in the
+name. Lead with one screen (status, blocker, next action and owner, anchors) and link evidence
+rather than pasting it. List the lane in `artifacts/handoffs/INDEX.md`; when a lane closes, mark it
+closed there and move its handoff to `artifacts/handoffs/archive/`. Link the handoff from the record.
 Vendor memory (Claude's memory directory, Copilot session state) is private to one tool: anything
 another agent must know goes in the files above or in this contract, never only in memory.
 

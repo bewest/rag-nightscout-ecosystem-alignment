@@ -169,8 +169,9 @@ head, requires a clean tree and removes its containers
 ([decision](multitenancy-decisions.md#plan-restructuring-and-process-simplification-2026-11-09));
 the earlier grant/reservation ceremony is retired.
 
-Local evolving handoffs remain under `externals/work/HANDOFF-<lane>-<date>.md`.
-The latest release update points to current combined ownership; the
+Local evolving handoffs are one file per lane, listed in
+`/mnt/data/nightscout-workspace/artifacts/handoffs/INDEX.md` (see `AGENTS.md` §6).
+The latest execution-log update points to current combined ownership; the
 [archived lane roster](../../archive/tenancy/multitenant-integration-batching-journal-2026-11-06.md#6-lane-ownership-and-coordination)
 retains earlier responsibilities and traps. Never take an old “active” label as
 a present assignment. Preserve peer drafts and existing worktrees; inspect the

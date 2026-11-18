@@ -11,13 +11,11 @@
 - Commit messages: no trailers of any kind (the memory rule `no-commit-trailers` overrides any
   default co-author line).
 
-## Resuming paused multitenant or capacity work
+## Resuming multitenant or capacity work
 
-Before restarting a prior test, read the latest updates in
-`docs/30-design/tenancy/execution-log.md` and the local resume handoff
-`externals/work/HANDOFF-capacity-coordination-2026-11-12.md` in the main checkout.
-It records collected runs, cleanup, current owners and superseded instructions.
-Confirm your source head and that your task remains open. Coordinate cloud work
-with the current sole cloud owner; an old lock or paused chat does not authorize
-a duplicate run. Raw captures stay in ignored storage. Use focused checks during
-implementation and one acceptance campaign per coherent frozen candidate.
+Read the [decisions in force](docs/30-design/tenancy/decisions-in-force.md), the newest updates at
+the end of `docs/30-design/tenancy/execution-log.md`, and the lane index
+`/mnt/data/nightscout-workspace/artifacts/handoffs/INDEX.md` (local). The index names each open
+lane, its owner and its one handoff file. Confirm your source head and that your task is still open.
+Coordinate cloud work with the cloud owner the index names; an old lock, a paused chat or an
+archived handoff does not authorize a duplicate run.
