@@ -138,26 +138,34 @@ class Preload(unittest.TestCase):
                                                        unresolvedFailure=None, maxFailureResolutionMs=900)
         for row in typed['view']['tenants'][1:]:
             row['progress'].update(failureReasons={}, unresolvedFailure=None, maxFailureResolutionMs=None)
-        preload.compare_failed({A:0, B:0}, {A:1, B:0}, (json.dumps(typed)+'\n').encode())
-        with self.assertRaisesRegex(k.Refused, 'FAILED_COUNTER_INCREASED'):
-            preload.compare_failed({A:0, B:0}, {A:1, B:0}, (json.dumps(page(failed=(1, 0)))+'\n').encode())
+        import preload_convergence as shared
+        def inspect(frame, baseline=None):
+            return shared.inspect_pages({'evaluator':(json.dumps(frame)+'\n').encode()}, ['evaluator'], [A, B],
+                                        failed_baseline=baseline or {A:0, B:0},
+                                        failure_policy=k.evaluator_progress.OUTCOME_FAILURE_POLICY)
+        inspect(typed)
+        with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_EVALUATION_FAILURE'):
+            inspect(page(failed=(1, 0)))
+        # A changed failure baseline (different owner set) still refuses.
+        with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_FAILURE_BASELINE'):
+            inspect(typed, {A:0})
         hard = copy.deepcopy(typed)
         hard['view']['tenants'][0]['progress']['failureReasons'] = {'worker-unavailable':1}
-        with self.assertRaisesRegex(k.Refused, 'FAILED_COUNTER_INCREASED'):
-            preload.compare_failed({A:0, B:0}, {A:1, B:0}, (json.dumps(hard)+'\n').encode())
+        with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_EVALUATION_FAILURE'):
+            inspect(hard)
 
     def test_per_tenant_increase_decrease_and_offset_cannot_hide(self):
-        for second, code in (((4, 1), 'INCREASED'), ((2, 0), 'DECREASED'), ((2, 2), 'DECREASED')):
+        for second in ((4, 1), (2, 0), (2, 2)):
             with self.subTest(second=second):
                 self.out = self.d/('counts-'+str(second));self.out.mkdir()
                 self.calls = 0;self.frames = [page(failed=(3, 1)), page(failed=second)]
-                with self.assertRaisesRegex(k.Refused, 'FAILED_COUNTER_'+code): self.run_phase()
+                with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_EVALUATION_FAILURE'): self.run_phase()
                 self.assertEqual(len(self.result()['samples']), 2)
 
     def test_third_round_counter_drift_and_reset_refuse_before_driver(self):
         state = self.run_phase()
         self.frames = [page(failed=(1, 0))];self.calls = 0
-        with self.assertRaisesRegex(k.Refused, 'FAILED_COUNTER_INCREASED'): self.fresh(state)
+        with self.assertRaisesRegex(RuntimeError, 'M7_PRELOAD_EVALUATION_FAILURE'): self.fresh(state)
         self.assertEqual(k.document(self.out/'preload-convergence/fresh-readiness.json')['verdict'], 'FAIL')
         self.assertTrue((self.out/'progress-before.private.jsonl').is_file())
 

@@ -37,30 +37,6 @@ def failed_counts(raw):
     return result
 
 
-def compare_failed(first, current, raw=None):
-    """An increase is refused unless every new failure is a typed transient."""
-    k.need(set(first) == set(current), 'PRELOAD_OWNER_CHANGED')
-    accepted = transient_rows(raw) if raw is not None else set()
-    for tenant, count in current.items():
-        if count > first[tenant] and tenant in accepted:
-            continue
-        if count != first[tenant]:
-            error = k.Refused('K8S_PRELOAD_FAILED_COUNTER_' + ('INCREASED' if count > first[tenant] else 'DECREASED'))
-            error.counter = {'tenant':tenant, 'before':first[tenant], 'after':count}
-            raise error
-
-
-def transient_rows(raw):
-    import outcome_gate
-    result = set()
-    for line in raw.splitlines():
-        view = json.loads(line)['view']
-        for row in view['tenants']:
-            if row.get('admitted') is True and outcome_gate.accepts_failure(row, view):
-                result.add(row['tenant'])
-    return result
-
-
 def limits(c, objects, client, baseline, seconds, now):
     values = [('selected-phase', now+seconds), ('original-work', k.timestamp(c['deadlines']['workUntil'])),
               ('original-cleanup', k.timestamp(c['deadlines']['cleanupUntil']))]
@@ -159,7 +135,6 @@ def run(d, out, c, objects, client, *, ids, collect, clock=time):
                     result['evaluationProgressQualification'] = {
                         'verdict':'FAIL' if any(first_failed.values()) else 'UNMEASURED',
                         'scope':'existing later progress assess is unchanged; no clinical cause or qualification pass inferred'}
-                compare_failed(first_failed, current_failed, raw)
                 observed = shared.inspect_pages({'evaluator':raw}, ['evaluator'], ids, failed_baseline=first_failed,
                                                 failure_policy=k.evaluator_progress.OUTCOME_FAILURE_POLICY)
                 if previous is not None:
@@ -223,8 +198,6 @@ def fresh(out, c, point, state):
             k.need(point.get('capturePolicy', k.evaluator_progress.POLICY) == state['policy'],
                    'PRELOAD_CAPTURE_POLICY_CHANGED')
             raw = (out/'progress-before.private.jsonl').read_bytes()
-            counts = failed_counts(raw)
-            compare_failed(state['failedBaseline'], counts)
             observed = shared.inspect_pages({'evaluator':raw}, ['evaluator'], state['ids'],
                                             failed_baseline=state['failedBaseline'],
                                             failure_policy=k.evaluator_progress.OUTCOME_FAILURE_POLICY)
