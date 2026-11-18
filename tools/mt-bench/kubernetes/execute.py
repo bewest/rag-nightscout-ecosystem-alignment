@@ -86,7 +86,7 @@ def wait_observed(process, seconds, failures):
             continue
 
 
-def finite(c, argv, *, env=None, data=None, output=None, seconds=120, failures=None, outcome=None):
+def finite(c, argv, *, env=None, data=None, output=None, seconds=120, failures=None, outcome=None, failure_stdout=None):
     """coreutils timeout survives loss of its parent and bounds the native child.
 
     Only this owned process group is signalled. Cluster cleanup stays HUMAN.
@@ -106,6 +106,8 @@ def finite(c, argv, *, env=None, data=None, output=None, seconds=120, failures=N
             out, err = None, None
         if process.returncode != 0:
             code = (err or b'').decode(errors='replace').strip()
+            if failure_stdout is not None:
+                failure_stdout(code, out or b'')
             if k.re.fullmatch(r'(K8S|M7)_[A-Z_]+', code):
                 raise k.Refused(code, 'UNMEASURED' if 'UNMEASURED' in code else 'FAIL')
             raise k.Refused('K8S_NATIVE_PROCESS_FAILED', 'UNMEASURED')
@@ -217,10 +219,32 @@ def progress(d, c, objects, client):
     return value
 
 
+def socket_failure(code, raw):
+    if code != 'K8S_SOCKET_REFUSAL_UNMEASURED' or len(raw) > 1024:
+        return {}
+    try:
+        row = json.loads(raw)['socketEvidence']
+        first = row['firstError']
+        if (set(row) == {'tenantIndex', 'stage', 'engineOpened', 'firstError', 'elapsedMs'}
+                and type(row['tenantIndex']) is int and row['tenantIndex'] in (0, 1)
+                and row['stage'] in ('connect', 'observation-budget', 'disconnect')
+                and type(row['engineOpened']) is bool and type(row['elapsedMs']) is int and row['elapsedMs'] >= 0):
+            if first is None or (set(first) == {'errorClass', 'status', 'code'}
+                    and first['errorClass'] in ('Error', 'TransportError', 'TypeError', 'Other')
+                    and (first['status'] is None or type(first['status']) is int and 100 <= first['status'] <= 599)
+                    and first['code'] in (None, 'ECONNREFUSED', 'ECONNRESET', 'EHOSTUNREACH', 'ENETUNREACH',
+                                          'ENOTFOUND', 'EAI_AGAIN', 'ETIMEDOUT', 'EPIPE')):
+                return {'socketEvidence': row}
+    except (ValueError, KeyError, TypeError):
+        pass
+    return {}
+
+
 def access(d, c, objects, client):
     k.need(not (d / 'access.json').exists() and not (d / 'access-failure.json').exists(),
            'ACCESS_OUTPUT_EXISTS')
     phase = 'candidate-receipt'
+    witness_failure = {}
     try:
         k.candidate.require(k, d, c)
         phase = 'verified-roster'
@@ -232,7 +256,8 @@ def access(d, c, objects, client):
         actor(c)
         phase = 'node-witness'
         raw = finite(c, [c['driver']['node'], k.HERE / 'access.cjs', c['tenantsFile'],
-                        c['baseUrl'], c['driver']['dependencies']], env=environment(c, d), seconds=60)
+                        c['baseUrl'], c['driver']['dependencies']], env=environment(c, d), seconds=60,
+                     failure_stdout=lambda code, raw: witness_failure.update(socket_failure(code, raw)))
         phase = 'witness-document'
         value = json.loads(raw)
         k.need(isinstance(value, dict), 'ACCESS_REPORT_INVALID', 'UNMEASURED')
@@ -248,7 +273,7 @@ def access(d, c, objects, client):
         return value
     except Exception as error:
         try:
-            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error)})
+            k.write(d / 'access-failure.json', {'phase': phase, **k.failure_evidence(error), **witness_failure})
         except OSError:
             pass
         raise

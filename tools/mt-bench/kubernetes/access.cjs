@@ -1,7 +1,16 @@
 'use strict';
 // Bounded, read-only authority transport check. No new benchmark workload.
 const fs=require('node:fs'),http=require('node:http'),path=require('node:path');
-async function run(tenants,base,io,{observeMs=5000}={}){
+const SOCKET_ERROR_CLASSES=new Set(['Error','TransportError','TypeError']);
+const SOCKET_ERROR_CODES=new Set(['ECONNREFUSED','ECONNRESET','EHOSTUNREACH','ENETUNREACH','ENOTFOUND','EAI_AGAIN','ETIMEDOUT','EPIPE']);
+function transportError(error){
+  const description=error?.description;
+  const status=[description,error?.context?.status,description?.status].find(value=>Number.isInteger(value)&&value>=100&&value<=599);
+  const code=[error?.code,description?.code,error?.context?.code].find(value=>SOCKET_ERROR_CODES.has(value));
+  const errorClass=[error?.type,error?.name].find(value=>SOCKET_ERROR_CLASSES.has(value));
+  return {errorClass:errorClass??'Other',status:status??null,code:code??null};
+}
+async function run(tenants,base,io,{connectMs=5000,observeMs=5000}={}){
   if(tenants.length!==2||!base.hostname.match(/^(127\.0\.0\.1|localhost)$/))throw Error('K8S_ACCESS_SCOPE');
   const records=[],sockets=[],startedAt=Date.now(),deadline=startedAt+45000;
   const lookup=(host,opts,cb)=>opts?.all?cb(null,[{address:'127.0.0.1',family:4}]):cb(null,'127.0.0.1',4);
@@ -26,15 +35,31 @@ async function run(tenants,base,io,{observeMs=5000}={}){
       records.push({case:'invalid-token',tenantIndex:i,...invalid});
       // A swapped credential on the stock Socket.IO authorization path must
       // produce no dataUpdate during a finite observed polling connection.
-      let connected=false,frames=0,authorizeReply=false;
-      const socket=io('http://'+tenants[1-i].host+':'+base.port,{transports:['polling'],agent,reconnection:false,timeout:5000});sockets.push(socket);
-      socket.on('connect',()=>{connected=true;socket.emit('authorize',{client:'web',token:exchanged.jwt,history:1,status:true},()=>{authorizeReply=true;});});
+      const connectStarted=Date.now();
+      let frames=0,authorizeReply=false,engineOpened=false,firstError=null,disconnected=false;
+      const socket=io('http://'+tenants[1-i].host+':'+base.port,{transports:['polling'],agent,reconnection:false,timeout:connectMs});sockets.push(socket);
+      socket.io?.once('open',()=>{engineOpened=true;});
+      socket.once('disconnect',()=>{disconnected=true;});
       socket.on('dataUpdate',()=>frames++);
-      const observationStarted=Date.now(),until=Math.min(deadline,Date.now()+observeMs);
-      await new Promise(resolve=>setTimeout(resolve,Math.max(0,until-Date.now())));
-      if(!connected)throw Error('K8S_SOCKET_REFUSAL_UNMEASURED');
+      const connected=await new Promise(resolve=>{
+        const timer=setTimeout(()=>resolve(false),Math.max(0,Math.min(connectMs,deadline-Date.now())));
+        socket.once('connect_error',error=>{firstError=transportError(error);clearTimeout(timer);resolve(false);});
+        socket.once('connect',()=>{clearTimeout(timer);resolve(true);});
+      });
+      const socketRefusal=stage=>{
+        const error=Error('K8S_SOCKET_REFUSAL_UNMEASURED');
+        error.socketEvidence={tenantIndex:i,stage,engineOpened,firstError,elapsedMs:Date.now()-connectStarted};
+        throw error;
+      };
+      if(!connected)socketRefusal('connect');
+      if(Date.now()+observeMs>deadline)socketRefusal('observation-budget');
+      socket.emit('authorize',{client:'web',token:exchanged.jwt,history:1,status:true},()=>{authorizeReply=true;});
+      const observationStarted=Date.now();
+      await new Promise(resolve=>setTimeout(resolve,observeMs));
       if(frames)throw Error('K8S_FOREIGN_SOCKET_FRAME');
-      records.push({case:'cross-token-socket',tenantIndex:i,connected,authorizeReply,frames,observedMs:Date.now()-observationStarted});socket.close();
+      if(disconnected)socketRefusal('disconnect');
+      records.push({case:'cross-token-socket',tenantIndex:i,connected,authorizeReply,frames,observedMs:Date.now()-observationStarted,
+        connectElapsedMs:observationStarted-connectStarted});socket.close();
     }
     return {version:1,verdict:'PASS',crossTenantChecks:2,records,startedAt,endedAt:Date.now(),scope:'finite read refusal and no foreign frame; no network-policy enforcement claim',capacityAcceptance:'NOT_GRANTED'};
   }finally{for(const s of sockets)s.close();agent.destroy();}
@@ -54,6 +79,7 @@ async function main() {
 }
 module.exports = { run, witnesses };
 if (require.main === module) main().catch(e => {
+  if (e.socketEvidence) console.log(JSON.stringify({socketEvidence:e.socketEvidence}));
   console.error(/^K8S_[A-Z_]+$/.test(e.message) ? e.message : 'K8S_ACCESS_UNMEASURED');
   process.exitCode = 1;
 });

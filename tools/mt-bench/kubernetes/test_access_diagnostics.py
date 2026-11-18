@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -8,6 +9,22 @@ from test_adapter import k as adapter, execute
 
 
 class AccessDiagnostics(unittest.TestCase):
+    def test_spawned_socket_refusal_retains_only_eligible_transport_fields(self):
+        sample = {'socketEvidence': {'tenantIndex': 0, 'stage': 'connect', 'engineOpened': False, 'elapsedMs': 5000,
+                                     'firstError': {'errorClass': 'TransportError', 'status': 502, 'code': None}}}
+        code = 'K8S_SOCKET_REFUSAL_UNMEASURED'
+        def invoke(value):
+            stdout = json.dumps(value)
+            script = f'import sys; print({stdout!r}); print({code!r}, file=sys.stderr); sys.exit(1)'
+            captured = {}
+            with patch.object(adapter, 'deadline', return_value=5), self.assertRaisesRegex(adapter.Refused, code):
+                execute.finite({}, [sys.executable, '-B', '-c', script], seconds=5,
+                               failure_stdout=lambda name, raw: captured.update(execute.socket_failure(name, raw)))
+            return captured
+        self.assertEqual(invoke(sample), sample)
+        sample['socketEvidence']['firstError']['message'] = 'private marker'
+        self.assertEqual(invoke(sample), {})
+
     def test_retains_fixed_phase_type_and_source_frames_without_input_values(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
