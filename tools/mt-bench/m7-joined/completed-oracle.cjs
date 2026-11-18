@@ -54,9 +54,17 @@ function query(config,ids,marker,progress=false){
 }
 const version=value=>typeof value==='string'&&/^(0|[1-9][0-9]*)$/.test(value);
 const exact=value=>version(value)&&value.length<=19&&BigInt(value)<=9223372036854775807n;
+function contractDigest(config){
+ const fields=[config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')];
+ // Source lib/tenant-lifecycle/native-selection binds the native receipt to
+ // intake-profile's lifecycle codec/domain. Legacy clock receipts keep their
+ // original three-field contract; a row never supplies its expected digest.
+ if(config.native)fields.push('canonical-maintenance-active-plus2-v1','positive-int8-complete-pair-max-4611686018427387902-v1');
+ return createHash('sha256').update(JSON.stringify(fields)).digest('hex');
+}
 function typedState(row,config,progress=false){
  const t=row.typed,s=row.state,o=s?.output;
- const digest=createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex');
+ const digest=contractDigest(config);
 
  if(!t||t.version!==2||t.contractDigest!==digest||t.enabled!==true||t.arrayBounds!==true||t.bodyMetadataAbsent!==true)return false;
  for(const [field,name]of [['observed','observed'],['completed','completed']]){
@@ -125,7 +133,7 @@ function progressSnapshot(rows,config,ids){
     revisionZero:t?.revision==='0',identityNull:t?.identity===null,digestNull:t?.digest===null,
     completedEmpty:Array.isArray(t?.completed)&&t.completed.length===6&&t.completed.every(v=>v===null),
     versionTwo:t?.version===2,enabled:t?.enabled===true,arrayBounds:t?.arrayBounds===true,bodyMetadataAbsent:t?.bodyMetadataAbsent===true,
-    contractDigestMatches:t?.contractDigest===(createHash('sha256').update(JSON.stringify([config.kind,config.checkpoint,config.consumer.replace(/-completed$/,'')])).digest('hex')),
+    contractDigestMatches:t?.contractDigest===contractDigest(config),
     observedSixSlots:Array.isArray(t?.observed)&&t.observed.length===6,
     completedSixSlots:Array.isArray(t?.completed)&&t.completed.length===6}};
    throw error;
@@ -138,4 +146,4 @@ function progressSnapshot(rows,config,ids){
  });
  return {kind:'evaluator-durable-progress-v1',reader:plain(config.binding),rows:values};
 }
-module.exports={source,prepare,query,assess,assessDurable:(row,witness,config)=>assess(row,witness,[],0,config),progressSnapshot,progressQuery:(config,ids)=>query(config,ids,'progress-opportunity',true)};
+module.exports={source,prepare,query,assess,assessDurable:(row,witness,config)=>assess(row,witness,[],0,config),expectedContractDigest:config=>contractDigest(prepare(config)),progressSnapshot,progressQuery:(config,ids)=>query(config,ids,'progress-opportunity',true)};
