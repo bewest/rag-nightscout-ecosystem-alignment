@@ -84,6 +84,7 @@ def run(d, out, c, objects, client, *, ids, collect, clock=time):
               'scope':'execution readiness only; historical failed counters and every strict refusal retained; qualification unchanged'}
     k.write(folder/'result.json', result)
     first_failed, previous, previous_ready = None, None, None
+    strict = options.get('readiness') == shared.STRICT
     try:
         frozen(d, c, objects)
         baseline = k.active_baseline(d)
@@ -141,6 +142,7 @@ def run(d, out, c, objects, client, *, ids, collect, clock=time):
                     shared.same_source(previous, observed)
                 previous = observed
                 sample['sourceIdentities'] = observed['identities']
+                sample['cohortCompletion'] = shared.cohort_completion(observed)
                 sample['returnedPages'] = len(raw.splitlines())
                 sample['returnedBytes'] = len(raw)
                 sample['historicalFailedTotal'] = sum(current_failed.values())
@@ -152,16 +154,23 @@ def run(d, out, c, objects, client, *, ids, collect, clock=time):
                            'PRELOAD_UNCLASSIFIED_OBSERVATION')
                     previous_ready = None
                 else:
-                    if previous_ready is not None:
+                    bracket_ready = previous_ready is not None
+                    if bracket_ready:
                         try:
                             k.evaluator_progress.assess([previous_ready[1], point, point], ids, 'load',
                                 policy=policy, discovery_unclassified_rejections=True)
                         except k.evaluator_progress.Refused as caught:
-                            if str(caught) != 'M7_EVALUATOR_PROGRESS_NOT_OBSERVED':
+                            if str(caught) == 'M7_EVALUATOR_PROGRESS_NOT_OBSERVED':
+                                pass
+                            elif strict:
                                 raise
+                            else:
+                                bracket_ready = False  # preload-is-a-signal: not yet warm, keep observing
+                    if bracket_ready:
                         k.deadline(c)
                         result.update(status='EXECUTION_READY', stopReason='stable-strict-bracket', readyBracket={'firstSample':previous_ready[0],
                             'lastSample':index, 'intervalMs':(start-result['samples'][previous_ready[0]]['startedMonoNs'])/1e6})
+                        result['signal'] = shared.signal(result | {'finishedAt':clock.time()})
                         return {'until':until, 'last':observed, 'failedBaseline':first_failed,
                                 'ids':ids, 'result':result, 'folder':folder, 'policy':policy,
                                 'directory':d, 'objects':objects}
@@ -169,7 +178,14 @@ def run(d, out, c, objects, client, *, ids, collect, clock=time):
                 remaining = until-clock.time()
                 if remaining > 0:
                     clock.sleep(min(options['intervalSeconds'], remaining))
-            raise k.Refused('K8S_PRELOAD_CONVERGENCE_EXPIRED', 'UNMEASURED')
+            if strict:
+                raise k.Refused('K8S_PRELOAD_CONVERGENCE_EXPIRED', 'UNMEASURED')
+            # preload-is-a-signal: the window ended with a partly warm roster. Record it and let
+            # traffic start; the outcome gate still judges stored writes, the clinical deadline,
+            # the all-tenant catch-up and isolation.
+            result.update(status='NOT_CONVERGED', stopReason='phase-expired-signal')
+            return {'until':None, 'last':previous, 'failedBaseline':first_failed, 'ids':ids, 'result':result,
+                    'folder':folder, 'policy':policy, 'directory':d, 'objects':objects, 'status':'NOT_CONVERGED'}
     except BaseException as error:
         result.update(status='REFUSED', stopReason='phase-expired' if str(error) in
                       ('K8S_PRELOAD_CONVERGENCE_EXPIRED', 'K8S_OBSERVATION_DEADLINE',
@@ -183,6 +199,7 @@ def run(d, out, c, objects, client, *, ids, collect, clock=time):
         raise
     finally:
         result['finishedAt'] = clock.time()
+        result['signal'] = shared.signal(result)
         result['strictStartupVerdicts'] = {verdict:sum(sample['verdict'] == verdict for sample in result['samples'])
                                            for verdict in ('PASS', 'FAIL', 'UNMEASURED')}
         k.write(folder/'result.json', result)
@@ -191,6 +208,10 @@ def run(d, out, c, objects, client, *, ids, collect, clock=time):
 def fresh(out, c, point, state):
     """The unchanged third normal strict read must match before driver creation."""
     result = {'verdict':'FAIL', 'capacityAcceptance':'NOT_GRANTED'}
+    if state.get('status') == 'NOT_CONVERGED':
+        result.update(verdict='NOT_REQUIRED', scope='preload is a signal; no fresh whole-roster read gates traffic')
+        k.write(state['folder']/'fresh-readiness.json', result)
+        return
     try:
         with k.observation_deadline(state['until']):
             k.deadline(c)

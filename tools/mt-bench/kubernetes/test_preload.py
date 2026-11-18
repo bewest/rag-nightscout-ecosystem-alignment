@@ -88,15 +88,37 @@ class Preload(unittest.TestCase):
         self.assertEqual(k.document(self.out/'preload-convergence/fresh-readiness.json')['verdict'], 'PASS')
         self.assertEqual(self.calls, 4)
 
-    def test_persistent_unready_expires_and_original_work_clips_large_selection(self):
+    def test_opt_in_all_tenant_readiness_expires_and_original_work_clips_large_selection(self):
         self.frames = [page(False)]
-        self.c['preloadConvergence']['seconds'] = 3600
+        self.c['preloadConvergence'].update(seconds=3600, readiness=preload.shared.STRICT)
         self.c['deadlines']['workUntil'] = iso(self.clock.now+3)
         with self.assertRaisesRegex(k.Refused, 'CONVERGENCE_EXPIRED'):
             self.run_phase()
         self.assertEqual(self.result()['status'], 'REFUSED')
         self.assertEqual(self.result()['window']['clippedBy'], ['original-work'])
         self.assertTrue(all(v['verdict'] == 'FAIL' for v in self.result()['samples']))
+
+    def test_partly_warm_roster_is_a_signal_and_traffic_is_admitted(self):
+        """preload-is-a-signal on the Kubernetes path: expiry is recorded, not refused."""
+        self.frames = [page(False)]
+        state = self.run_phase()
+        self.assertEqual(state['status'], 'NOT_CONVERGED')
+        self.assertIsNone(state['until'])
+        saved = self.result()
+        self.assertEqual(saved['status'], 'NOT_CONVERGED')
+        self.assertFalse(saved['signal']['converged'])
+        self.assertEqual(saved['window']['clippedBy'], ['selected-phase'])
+        with self.assertRaisesRegex(k.evaluator_progress.Refused, 'PROGRESS_ERROR'):
+            execute.retained_progress(self.d, self.out, self.c, self.objects, self.client, 'progress-before', until=None, warming=True)
+        self.assertTrue((self.out/'progress-before-failure.json').is_file())  # retained, tolerated by execute()
+        preload.fresh(self.out, self.c, None, state)
+        self.assertEqual(k.document(self.out/'preload-convergence/fresh-readiness.json')['verdict'], 'NOT_REQUIRED')
+
+    def test_warming_then_ready_records_convergence_seconds(self):
+        self.frames = [page(False), page(False), page(), page(), page()]
+        state = self.run_phase();self.fresh(state)
+        self.assertTrue(self.result()['signal']['converged'])
+        self.assertGreaterEqual(self.result()['signal']['convergenceSeconds'], 0)
 
     def test_no_fixed_eighty_sample_ceiling(self):
         self.c['preloadConvergence'].update(seconds=3600, intervalSeconds=15)

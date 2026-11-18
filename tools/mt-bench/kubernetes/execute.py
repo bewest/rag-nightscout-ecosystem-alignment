@@ -501,8 +501,18 @@ def execute(d, c, objects, client, load=False, recovery=False):
     import preload
     convergence = preload.run(d, out, c, objects, client, ids=[row['id'] for row in tenants],
                               collect=retained_progress) if load else None
-    initial = retained_progress(d, out, c, objects, client, 'progress-before',
-                                until=convergence['until'] if convergence is not None else None)
+    # preload-is-a-signal: a roster still warming at the end of the phase starts traffic. The
+    # starting read keeps its strict decode; its typed warming refusal is retained as evidence
+    # (progress-before-failure.json) and is not an entry condition. The outcome gate judges the
+    # midpoint and the end of drain.
+    warming_start = convergence is not None and convergence.get('status') == 'NOT_CONVERGED'
+    try:
+        initial = retained_progress(d, out, c, objects, client, 'progress-before', warming=warming_start,
+                                    until=convergence['until'] if convergence is not None else None)
+    except k.evaluator_progress.Refused as refused:
+        if not warming_start or str(refused) not in ('M7_EVALUATOR_PROGRESS_ERROR', 'M7_EVALUATOR_PROGRESS_WARMING'):
+            raise
+        initial = None
     if convergence is not None:
         preload.fresh(out, c, initial, convergence)
     runid = stage_runid(c, name)

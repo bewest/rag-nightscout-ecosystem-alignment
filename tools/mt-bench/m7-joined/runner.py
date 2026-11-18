@@ -326,12 +326,6 @@ def _cleanup(root, reason):
             d, m = a.load(fixture,resource_limits=False)
             with a.private_commands(root / 'cleanup-commands'):
                 a.down(d, m)
-            require(not a.resources(m), 'M7_RUNNER_RESOURCES_REMAIN')
-            config = a.document(d / 'frozen.compose.json') if (d / 'frozen.compose.json').exists() else {}
-            for kind, flag in (('networks', 'network'), ('volumes', 'volume')):
-                for spec in config.get(kind, {}).values():
-                    ids = a.command(['docker', flag, 'ls', '-q', '--filter', 'name=' + spec['name']]).splitlines()
-                    require(not ids, 'M7_RUNNER_' + kind.upper() + '_REMAIN')
         result = {'status': 'ABSENT', 'reason': reason, 'at': time.time()}
         write(root / 'cleanup.json', result)
         return result

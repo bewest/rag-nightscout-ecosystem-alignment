@@ -2431,24 +2431,21 @@ def down(d,m):
 
 
 def _down(d, m):
+    # Decision simple-run-cleanup: `docker compose down -v` on the owned project, then one absence
+    # check on the project label. The project name is unique to the run; no census of container
+    # identities, no per-resource ownership proof and no source re-verification precede the delete.
     for file in list(d.glob("*/sampler-job.json"))+list(d.glob("*/probe-job.json"))+list(d.glob("*/diagnostic-job.json")):stop_job(file,m["owner"])
-    assert_owned(m)
     try:terminal_snapshot(d,m)
     except Exception as error:
         write(d/'terminal-capture-unavailable.json',{'status':'UNMEASURED','type':type(error).__name__})
     if m.get('attached'):
         write(d/'instrument-jobs-stopped.json',{'runtimeResources':'UNCHANGED','cleanupOwner':'runtime owner'});return
     if m.get("prepared"):
-        verify(d, m, teardown=True)
         config=document(d/"frozen.compose.json")
         try:captured=profile_provenance.capture_logs(d/"role-logs",config,lambda role:["docker","compose","-p",m["project"],"--env-file",str(d/"env"),"-f",str(d/"frozen.compose.json"),"logs","--no-color","--no-log-prefix","--timestamps","--tail","1000",role],seconds=remaining_seconds(5*len(config['services']))/max(1,len(config['services'])))
         except Exception:captured={"version":1,"scope":"PRIVATE","error":"capture-failed","complete":False}
         write(d/"role-logs/manifest.json",captured)
         compose(d, "--profile", "ops", "down", "--volumes", "--remove-orphans", timeout=120)
-        for row in resources(m):
-            owned(row,m["owner"]);command(["docker","rm","--force","--volumes",row["Id"]])
-    else:
-        require(not resources(m), "M7_PARTIAL_PREPARE_HAS_RESOURCES")
     write(d/'cleanup-absence.json',assert_absent(m))
     core = d / "core"
     if core.exists():
@@ -2522,6 +2519,8 @@ def parser():
                       help='Opt-in finite pre-load source convergence before unchanged normal readiness; local owned-to-completion discovery only')
     prep.add_argument('--preload-convergence-interval-seconds', type=int,
                       help='Interval between original strict pre-load source snapshots')
+    prep.add_argument('--preload-readiness', choices=('require-all',),
+                      help='Opt in to refusing traffic until every tenant is ready; omitted, convergence is a recorded signal')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,default=1,help="Native DATA primer worker limit; default serial")
     prep.add_argument("--primer-max-tenants",type=int,help="Native DATA primer maximum pending tenants per invocation")

@@ -373,27 +373,37 @@ def sampled_oracle(completed_output):
     return {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_ORACLE_UNMEASURED'], 'witnesses': count}
 
 
-def readiness_component(preload, end):
-    """Readiness is judged at preload convergence and at the end of drain."""
+def readiness_component(preload, end, strict=False):
+    """Readiness is judged at the end of drain; preload convergence is a signal.
+
+    Decision preload-is-a-signal: a roster that is not warm at traffic start is
+    recorded, never refused. Only the opt-in all-tenant mode (`strict`) judges the
+    preload status as before.
+    """
     codes = []
-    if preload is None:
-        codes.append('M7_OUTCOME_PRELOAD_NOT_CAPTURED')
-        pre = 'UNMEASURED'
+    signal = {'status': preload, 'role': 'signal'}
+    if strict:
+        signal['role'] = 'required-all-tenants'
+        if preload is None:
+            codes.append('M7_OUTCOME_PRELOAD_NOT_CAPTURED')
+            pre = 'UNMEASURED'
+        else:
+            pre = 'PASS' if preload in ('CONVERGED', 'EXECUTION_READY') else 'FAIL' if preload == 'REFUSED' else 'UNMEASURED'
+            if pre != 'PASS':
+                codes.append('M7_OUTCOME_PRELOAD_' + str(preload).upper())
     else:
-        pre = 'PASS' if preload in ('CONVERGED', 'EXECUTION_READY') else 'FAIL' if preload == 'REFUSED' else 'UNMEASURED'
-        if pre != 'PASS':
-            codes.append('M7_OUTCOME_PRELOAD_' + str(preload).upper())
+        pre = 'PASS'
     end_verdict = end['readiness']['verdict'] if end is not None else 'UNMEASURED'
     if end is None:
         codes.append('M7_OUTCOME_END_NOT_CAPTURED')
     elif end_verdict != 'PASS':
         codes.append('M7_OUTCOME_END_NOT_READY')
-    return {'verdict': worst(pre, end_verdict), 'codes': codes, 'preload': preload,
+    return {'verdict': worst(pre, end_verdict), 'codes': codes, 'preload': preload, 'preloadSignal': signal,
             'endOfDrain': end['readiness'] if end is not None else None}
 
 
 def judge(*, ids, points, preload_status, storage_findings, completed_output, catchup_value,
-          authority=None, config=None, attribution=None):
+          authority=None, config=None, attribution=None, preload_strict=False):
     """Combine the components. Any FAIL fails; any UNMEASURED is UNMEASURED.
 
     `points` maps 'before'/'midpoint'/'after' to a read point or None. The
@@ -418,7 +428,7 @@ def judge(*, ids, points, preload_status, storage_findings, completed_output, ca
     else:
         components['failedCompletions'] = {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_NO_POINTS']}
         components['isolation'] = {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_NO_POINTS']}
-    components['readiness'] = readiness_component(preload_status, classified.get('after'))
+    components['readiness'] = readiness_component(preload_status, classified.get('after'), strict=preload_strict)
     components['storage'] = storage(storage_findings)
     components['sampledOracle'] = sampled_oracle(completed_output)
     components['catchup'] = catchup(catchup_value, ids, config=config)
@@ -498,6 +508,10 @@ def load_point(folder, name, service='evaluator'):
     return from_decoded(decoded) if isinstance(decoded, dict) and 'allRows' in decoded else None
 
 
+def strict_preload(preload):
+    return bool(preload) and preload.get('configuration', {}).get('readiness') == 'require-all'
+
+
 def judge_kubernetes_load(folder, ids, *, config=None, attribution=None):
     """One Kubernetes load stage folder (runtime/packet/load)."""
     folder = Path(folder)
@@ -507,6 +521,7 @@ def judge_kubernetes_load(folder, ids, *, config=None, attribution=None):
     verdict = judge(ids=ids, points={'before': load_point(folder, 'progress-before'),
                                   'midpoint': load_point(folder, 'progress-midpoint'), 'after': after},
                  preload_status=preload.get('status') if preload else None,
+                 preload_strict=strict_preload(preload),
                  storage_findings=_document(folder / 'oracle-findings.json'),
                  completed_output=probe.get('completedOutput'),
                  catchup_value=_document(folder / 'evaluator-catchup.json'),
@@ -565,6 +580,7 @@ def judge_compose_run(directory, ids, *, config=None, attribution=None):
     end_label = points.pop('endPoint')
     verdict = judge(ids=ids, points=points,
                     preload_status=preload.get('status') if preload else None,
+                 preload_strict=strict_preload(preload),
                     storage_findings=_document(load / 'oracle-findings.json'),
                     completed_output=probe.get('completedOutput'),
                     catchup_value=_document(load / 'evaluator-catchup.json'),

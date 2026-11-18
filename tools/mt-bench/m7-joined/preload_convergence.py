@@ -13,6 +13,9 @@ import phase_windows
 
 FIELD = 'preloadConvergence'
 CONTRACT = 'strict-preload-convergence-v1'
+# Decision preload-is-a-signal: the phase records convergence and never refuses a roster that is
+# still warming. `readiness: require-all` is the explicit opt-in that refuses until all tenants are ready.
+STRICT = 'require-all'
 PENDING_CODES = frozenset(('EVALUATOR_STARTING', 'EVALUATOR_ACQUISITION_REQUIRED',
                            'EVALUATOR_CLINICAL_PROGRESS_STALLED'))
 
@@ -29,8 +32,9 @@ def selection(manifest):
 
 def configuration(value):
     """One phase-options resolver, independent of execution transport/custody."""
-    require(isinstance(value, dict) and set(value) == {'contract', 'seconds', 'intervalSeconds'}
-            and value['contract'] == CONTRACT, 'M7_PRELOAD_SELECTION')
+    base = {'contract', 'seconds', 'intervalSeconds'}
+    require(isinstance(value, dict) and set(value) in (base, base | {'readiness'})
+            and value['contract'] == CONTRACT and value.get('readiness', STRICT) == STRICT, 'M7_PRELOAD_SELECTION')
     require(all(type(value[key]) is int and 1 <= value[key] <= phase_windows.MAX_SECONDS
                 for key in ('seconds', 'intervalSeconds'))
             and value['intervalSeconds'] < value['seconds'], 'M7_PRELOAD_WINDOW')
@@ -40,12 +44,14 @@ def configuration(value):
 def option(args):
     seconds = getattr(args, 'preload_convergence_seconds', None)
     interval = getattr(args, 'preload_convergence_interval_seconds', None)
+    readiness = getattr(args, 'preload_readiness', None)
     if seconds is None:
-        require(interval is None, 'M7_PRELOAD_SECONDS_REQUIRED')
+        require(interval is None and readiness is None, 'M7_PRELOAD_SECONDS_REQUIRED')
         return {}
     require(getattr(args, 'command', 'prepare') == 'prepare', 'M7_PRELOAD_FRESH_PREPARE_REQUIRED')
     value = {'contract': CONTRACT, 'seconds': seconds,
-             'intervalSeconds': interval if interval is not None else min(15, max(1, seconds // 2))}
+             'intervalSeconds': interval if interval is not None else min(15, max(1, seconds // 2)),
+             **({'readiness': readiness} if readiness else {})}
     return selection({FIELD: value, 'profile': args.profile, 'runPurpose': args.run_purpose,
                       'completionContract': args.completion_contract})
 
@@ -174,6 +180,28 @@ def same_source(first, current):
                         'M7_PRELOAD_FOREIGN_WORK')
 
 
+def cohort_completion(observed):
+    owners = list(observed['owners'].values())
+    return {'owners': len(owners),
+            'readyAndCompletedAcquisition': sum(row['ready'] and row['completedAcquisitions'] > 0
+                                               and row['lastCompletedAgeMs'] is not None for row in owners),
+            'minimumCompletedAcquisitions': min(row['completedAcquisitions'] for row in owners),
+            'maximumFailedCompletions': max(row['failedCompletions'] for row in owners)}
+
+
+def signal(result):
+    """What the phase observed; recorded for the report, never an entry condition."""
+    samples = result['samples']
+    start = result['startedMonoNs'] if 'startedMonoNs' in result else samples[0]['startedMonoNs'] if samples else None
+    bracket = result.get('readyBracket')
+    last = next((s['cohortCompletion'] for s in reversed(samples) if 'cohortCompletion' in s), None)
+    return {'converged': bracket is not None,
+            'convergenceSeconds': (samples[bracket['lastSample']]['endedMonoNs']-start)/1e9 if bracket else None,
+            'observedSeconds': (result['finishedAt']-result['startedAt']),
+            'samples': len(samples), 'lastCohortCompletion': last,
+            'role': 'signal; traffic starts when the roles are ready'}
+
+
 def run(a, directory, manifest, *, clock=time):
     chosen = selection(manifest)
     if not chosen:
@@ -182,6 +210,7 @@ def run(a, directory, manifest, *, clock=time):
             == 'LOCAL_OWNED_TO_COMPLETION', 'M7_PRELOAD_OWNED_TO_COMPLETION_REQUIRED')
     d = Path(directory)
     config = chosen[FIELD]
+    strict = config.get('readiness') == STRICT
     a.reserve_output(d, manifest, 'preload', ('preload-convergence',))
     out = d/'preload-convergence'
     out.mkdir(mode=0o700)
@@ -265,14 +294,8 @@ def run(a, directory, manifest, *, clock=time):
                 # Validate/classify every original source row, including rows
                 # after the strict reader's first refusal. Never edit its values.
                 observed = inspect_pages(raw, services, ids, failure_policy=p.OUTCOME_FAILURE_POLICY)
-                owners = list(observed['owners'].values())
                 sample['sourceIdentities'] = observed['identities']
-                sample['cohortCompletion'] = {
-                    'owners': len(owners),
-                    'readyAndCompletedAcquisition': sum(row['ready'] and row['completedAcquisitions'] > 0
-                                                       and row['lastCompletedAgeMs'] is not None for row in owners),
-                    'minimumCompletedAcquisitions': min(row['completedAcquisitions'] for row in owners),
-                    'maximumFailedCompletions': max(row['failedCompletions'] for row in owners)}
+                sample['cohortCompletion'] = cohort_completion(observed)
                 a.write(sample_dir/'sample.json', sample)
                 a.write(out/'result.json', result)
                 if previous is not None:
@@ -286,6 +309,12 @@ def run(a, directory, manifest, *, clock=time):
                 else:
                     if previous_ready is not None:
                         bracket = p.stable_discovery_baseline(previous_ready[1], point, ids)
+                        if not strict and bracket['availability']['verdict'] != 'PASS':
+                            previous_ready = (index, point)
+                            left = until-clock.time()
+                            if left > 0:
+                                clock.sleep(min(config['intervalSeconds'], left))
+                            continue
                         require(bracket['availability']['verdict'] == 'PASS', 'M7_PRELOAD_NOT_READY')
                         stable = {'firstSample': previous_ready[0], 'lastSample': index,
                                   'intervalMs': (started-result['samples'][previous_ready[0]]['startedMonoNs'])/1e6,
@@ -295,8 +324,8 @@ def run(a, directory, manifest, *, clock=time):
                 left = until-clock.time()
                 if left > 0:
                     clock.sleep(min(config['intervalSeconds'], left))
-            require(stable is not None, 'M7_PRELOAD_CONVERGENCE_EXPIRED')
-        result.update(status='CONVERGED', readyBracket=stable)
+            require(stable is not None or not strict, 'M7_PRELOAD_CONVERGENCE_EXPIRED')
+        result.update(status='CONVERGED' if stable is not None else 'NOT_CONVERGED', readyBracket=stable)
     except BaseException as error:
         result.update(status='REFUSED', failure={'code': str(error) if re.fullmatch(r'M7_[A-Z0-9_]+', str(error))
                                                else 'M7_PRELOAD_REFUSED',
@@ -305,10 +334,11 @@ def run(a, directory, manifest, *, clock=time):
         raise
     finally:
         result['finishedAt'] = clock.time()
+        result['signal'] = signal(result)
         result['strictStartupVerdicts'] = {value: sum(sample['verdict'] == value for sample in result['samples'])
                                            for value in ('PASS', 'FAIL', 'UNMEASURED')}
         a.write(out/'result.json', result)
-    return {'status': 'CONVERGED', 'evidence': 'preload-convergence/result.json',
-            'sha256': a.digest(out/'result.json'), 'readyBracket': stable,
+    return {'status': result['status'], 'evidence': 'preload-convergence/result.json',
+            'sha256': a.digest(out/'result.json'), 'readyBracket': stable, 'signal': result['signal'],
             'strictStartupVerdicts': result['strictStartupVerdicts'],
             'scope': result['scope'], 'capacityAcceptance': 'NOT_GRANTED'}

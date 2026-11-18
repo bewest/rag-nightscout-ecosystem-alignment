@@ -115,7 +115,7 @@ class DiagnosticOptions(unittest.TestCase):
             self.assertIsNone(r._ACTIVE)
             self.assertFalse(a._CLEANUP_NODE_LIMIT.get())
 
-    def test_actual_down_source_verifier_is_capped_after_resource_bypass(self):
+    def test_actual_down_is_one_delete_and_one_absence_check_with_no_source_verifier(self):
         r.configure()
         with tempfile.TemporaryDirectory() as temp:
             d=Path(temp);(d/'core').mkdir()
@@ -131,9 +131,8 @@ class DiagnosticOptions(unittest.TestCase):
                 a.down(d,m)
             # Teardown now proves exact network/volume absence as well as
             # source identity. Return empty inventories, never error text.
-            self.assertEqual(recorded[1:],[['docker',kind,'ls','-q','--filter','label=com.docker.compose.project=synthetic-owned'] for kind in ('network','volume')])
-            self.assertEqual(recorded[0][:3],['node','--max-heap-size=128','-e'])
-            self.assertIn('assertCleanSource',recorded[0][3])
+            # simple-run-cleanup: no source verifier before the delete; one absence check after it.
+            self.assertEqual(recorded,[['docker',kind,'ls','-q','--filter','label=com.docker.compose.project=synthetic-owned'] for kind in ('network','volume')])
             self.assertEqual(a.document(d/'cleanup-absence.json')['status'],'ABSENT')
             self.assertIsNone(r._ACTIVE)
 

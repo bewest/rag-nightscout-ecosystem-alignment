@@ -13,6 +13,7 @@ import producer_startup
 import phase_fit
 import owned_worker
 import application_topology
+import run_cleanup
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 cfg=fixture_config(Path(sys.argv[1]))
@@ -72,14 +73,6 @@ def create(obj):
     if cfg.get('ownedWorkerPreflight') and obj['kind'] in owned_worker.WORKLOADS:
         check_worker()
     return json.loads(k(['create','-f','-','-o','json'],obj))
-def deluid(path,uid):
-    k(['delete','--raw',path,'-f','-'],{'apiVersion':'v1','kind':'DeleteOptions','propagationPolicy':'Foreground','preconditions':{'uid':uid}})
-def absent(kind,name,local):
-    deadline=time.monotonic()+150
-    while time.monotonic()<deadline:
-        if get(kind,name,local) is None:return
-        time.sleep(2)
-    raise RuntimeError('ABSENCE_UNCONFIRMED_'+kind)
 def owned():
     cur=get('namespace',ns,False)
     assert cur and cur['metadata']['uid']==nsuid and cur['metadata']['labels']['nightscout.org/run-id']==rid
@@ -397,27 +390,16 @@ finally:
         put('terminal-pods.json',[summary(p) for p in pods('nightscout.org/run-id='+rid)])
     except Exception:put('terminal-pods-unavailable.json',{'status':'UNMEASURED'})
     cleaning=True
-    rpc=[tool/'kubectl','--context',ctx,'--request-timeout=14s']
+    rpc=[tool/'kubectl','--context',ctx,'--request-timeout=170s']  # `delete --wait` holds one request
     cleanup_errors=[]
-    if trustuid:
+    if nsuid or trustuid:
         try:
-            t=get('clusterrolebinding',tn,False)
-            if t:
-                assert t['metadata']['uid']==trustuid and t['subjects']==trust['subjects'],'TRUST_OWNERSHIP_CHANGED'
-                deluid('/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/'+tn,trustuid)
-            absent('clusterrolebinding',tn,False)
-        except Exception as error:cleanup_errors.append({'scope':'trust','code':type(error).__name__})
-    if nsuid:
-        try:
-            cur=get('namespace',ns,False)
-            if cur:
-                owned();deluid('/api/v1/namespaces/'+ns,nsuid)
-            absent('namespace',ns,False)
-        except Exception as error:cleanup_errors.append({'scope':'namespace','code':type(error).__name__})
+            result=run_cleanup.cleanup(lambda argv:command(rpc+argv,timeout=min(150,max(1,cleanup-time.time()-2))).decode(),ns,rid)
+            put('absence.json',{**result,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
+        except run_cleanup.CleanupFailed as error:cleanup_errors.append({'scope':'absence','code':'K8S_CLEANUP_LEFTOVER','leftovers':error.leftovers})
+        except Exception as error:cleanup_errors.append({'scope':'cleanup','code':type(error).__name__})
     if cleanup_errors:
-        put('cleanup-failure.json',{'verdict':'UNMEASURED','failures':cleanup_errors})
-    else:
-        put('absence.json',{'namespace':ns,'namespaceUid':nsuid,'trustUid':trustuid,'verifiedAt':timestamp()})
+        put('cleanup-failure.json',{'verdict':'FAIL' if any(x['scope']=='absence' for x in cleanup_errors) else 'UNMEASURED','failures':cleanup_errors})
     auto_catalog(d, lambda path, value: path.write_text(json.dumps(value, indent=2) + '\n'))
     if cleanup_errors:
         raise RuntimeError('OWNED_CLEANUP_UNCONFIRMED')

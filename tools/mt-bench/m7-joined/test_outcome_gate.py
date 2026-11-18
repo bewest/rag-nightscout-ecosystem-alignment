@@ -152,7 +152,16 @@ class Fixtures(unittest.TestCase):
         for key in ('storage_findings', 'completed_output', 'catchup_value'):
             with self.subTest(key):
                 self.assertEqual(self.judged(**{key:None})['verdict'], 'UNMEASURED')
-        self.assertEqual(self.judged(preload_status=None)['verdict'], 'UNMEASURED')
+        # preload-is-a-signal: an unwarm or uncaptured preload never decides the verdict.
+        for status in (None, 'NOT_CONVERGED', 'REFUSED'):
+            with self.subTest(preload=status):
+                judged = self.judged(preload_status=status)
+                self.assertEqual(judged['verdict'], 'PASS')
+                self.assertEqual(judged['components']['readiness']['preloadSignal'], {'status': status, 'role': 'signal'})
+        # The opt-in all-tenant mode keeps the old judgement.
+        self.assertEqual(self.judged(preload_status=None, preload_strict=True)['verdict'], 'UNMEASURED')
+        self.assertEqual(self.judged(preload_status='NOT_CONVERGED', preload_strict=True)['verdict'], 'UNMEASURED')
+        self.assertEqual(self.judged(preload_status='REFUSED', preload_strict=True)['verdict'], 'FAIL')
         self.assertEqual(self.judged(points={'before':point(row(A), HEALTHY()), 'after':None})['verdict'], 'UNMEASURED')
         self.assertEqual(self.judged(storage_findings={'verdict':'RED', 'failureCount':1})['verdict'], 'FAIL')
 

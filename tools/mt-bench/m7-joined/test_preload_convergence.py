@@ -147,7 +147,34 @@ class Convergence(unittest.TestCase):
                     self.assertEqual([sample['verdict'] for sample in saved['samples']], ['FAIL', 'PASS', 'PASS'])
                     self.assertIsNone(saved['samples'][0]['diagnostic']['failedRow']['code'])
 
-    def test_persistent_errorless_unready_expires_without_declaring_it_healthy(self):
+    def test_partly_warm_roster_is_a_signal_and_reaches_traffic(self):
+        """preload-is-a-signal: an unconverged roster is recorded, never refused."""
+        for running in (True, False):
+            with self.subTest(running=running), tempfile.TemporaryDirectory() as area:
+                d = Path(area);a.write(d/'tenants.private.json', [{'id': A}, {'id': B}])
+                io = IO([errorless_unready(running=running)])
+                result = warm.run(io, d, self.m, clock=io.clock)
+                saved = a.document(d/'preload-convergence/result.json')
+                self.assertEqual((result['status'], saved['status']), ('NOT_CONVERGED', 'NOT_CONVERGED'))
+                self.assertFalse(saved['signal']['converged'])
+                self.assertIsNone(saved['signal']['convergenceSeconds'])
+                self.assertEqual(saved['signal']['lastCohortCompletion']['owners'], 2)
+                self.assertNotIn('failure', saved)
+
+    def test_partly_warm_then_converged_records_the_convergence_time(self):
+        pending = frame('EVALUATOR_STARTING', acquisitions=0)
+        result, _ = self.run_phase([pending, pending, frame(), frame()])
+        self.assertEqual(result['status'], 'CONVERGED')
+        self.assertTrue(result['signal']['converged'])
+        self.assertAlmostEqual(result['signal']['convergenceSeconds'], 3.0, delta=0.5)
+
+    def test_signal_still_refuses_source_corruption(self):
+        """Only the not-yet-warm outcome is a signal. Owner and counter checks stay hard."""
+        with self.assertRaisesRegex(RuntimeError, 'RUNTIME_CHANGED'):
+            self.run_phase([frame(runtime=R), frame(runtime=S)])
+
+    def test_opt_in_all_tenant_readiness_still_refuses_an_unconverged_roster(self):
+        self.m[warm.FIELD]['readiness'] = warm.STRICT
         for running in (True, False):
             with self.subTest(running=running), tempfile.TemporaryDirectory() as area:
                 d = Path(area);a.write(d/'tenants.private.json', [{'id': A}, {'id': B}])
@@ -170,6 +197,7 @@ class Convergence(unittest.TestCase):
         self.assertEqual([v['verdict'] for v in self.saved()['samples']], ['UNMEASURED', 'UNMEASURED', 'PASS', 'PASS'])
 
     def test_persistent_pending_input_expires_phase_without_ordinary_or_threshold_change(self):
+        self.m[warm.FIELD]['readiness'] = warm.STRICT
         io = IO([frame('EVALUATOR_CLINICAL_PROGRESS_STALLED', acquisitions=0)])
         with self.assertRaisesRegex(RuntimeError, 'CONVERGENCE_EXPIRED'):
             warm.run(io, self.d, self.m, clock=io.clock)
@@ -294,6 +322,15 @@ class Configuration(unittest.TestCase):
             contract.discovery_authorization(manifest, receipt)
         with self.assertRaisesRegex(RuntimeError, 'OWNED_TO_COMPLETION_RECEIPT_REQUIRED'):
             contract.discovery_authorization(manifest, {'version': 1})
+    def test_opt_in_readiness_flag_is_configuration_and_default_is_signal(self):
+        value = self.selected()
+        self.assertNotIn('readiness', rc.resolve(value)['configuration'][warm.FIELD])
+        value['prepare']['preload-readiness'] = 'require-all'
+        self.assertEqual(rc.resolve(value)['configuration'][warm.FIELD]['readiness'], 'require-all')
+        value = self.selected();del value['prepare']['preload-convergence-seconds'], value['prepare']['preload-convergence-interval-seconds']
+        value['prepare']['preload-readiness'] = 'require-all'
+        with self.assertRaisesRegex(RuntimeError, 'PRELOAD_SECONDS_REQUIRED'):
+            rc.resolve(value)
     def test_bounded_old_run_and_invalid_phase_are_rejected_before_preparation(self):
         value = self.selected();value['workSeconds'] = 7200
         with self.assertRaisesRegex(RuntimeError, 'LOCAL_OWNED_TO_COMPLETION_REQUIRED'):
