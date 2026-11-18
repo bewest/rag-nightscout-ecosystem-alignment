@@ -36,7 +36,7 @@ class SetupRefusal(unittest.TestCase):
   result=self.observe('success');self.assertEqual(result['jwtCount'],3);self.assertEqual(result['logs'],[]);self.assertIsNone(result['error']);self.assertEqual(len(result['requests']),3)
  def test_failure_records_safe_phase_index_clock_and_still_aborts(self):
   result=self.observe('allowed');self.assertEqual(result['error'],'exchange refused 503');self.assertEqual(len(result['requests']),2)
-  self.assertEqual(result['requests'],[{'ordinal':1,'timeout':'60s','name':'exchange'},{'ordinal':2,'timeout':'60s','name':'exchange'}])
+  self.assertEqual(result['requests'],[{'ordinal':1,'timeout':'60000ms','name':'exchange'},{'ordinal':2,'timeout':'60000ms','name':'exchange'}])
   self.assertEqual(len(result['logs']),1);event=json.loads(result['logs'][0].split(' ',1)[1]);self.assertEqual(event,{'phase':'jwt-setup','tenantIndex':1,'requestOrdinal':2,'status':503,'errorCode':'AUTHORITY_UNAVAILABLE','bodyObservation':'ALLOWLISTED_ERROR_CODE','retryAfterSeconds':5,'startedAtMs':1003,'finishedAtMs':1004,'elapsedMs':1})
   self.assertNotIn('DO_NOT_RETAIN',json.dumps(result));self.assertNotIn('example.test',json.dumps(event));self.assertNotIn('token',json.dumps(event))
  def test_batch_refusal_keeps_roster_index_safe_envelope_and_aborts(self):

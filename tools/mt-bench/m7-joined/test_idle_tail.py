@@ -85,8 +85,9 @@ class Tail(unittest.TestCase):
         values=[];seen=[];observer=idle.Observer(['evaluator'],[A,B],None,120,'idle',values.append,tail_fetch=lambda *args:None)
         observer.rounds=self.rounds();observer.finish();self.assertEqual(values[-1]['code'],'M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING');self.assertFalse(seen)
         tail=self.point()
-        def point(services,ids,fetch):
+        def point(services,ids,fetch,*,policy):
             self.assertEqual(ids,[A]);self.assertEqual(services,['evaluator'])
+            self.assertEqual(policy,p.POLICY)
             # This recording fetch exercises the actual shared deadline closure.
             with patch.object(observer,'tail_fetch',side_effect=lambda *args:seen.append(args)or b'owned'):
                 fetch('evaluator',[A],999,999)
@@ -110,8 +111,9 @@ class Tail(unittest.TestCase):
             def fetch(service,selected,queries,budget,timeout):
                 timeouts.append(timeout);clock[0]+=4 if len(timeouts)==1 else(2 if expired else .5);return b'owned'
             observer=idle.Observer(['evaluator','evaluator-2'],[A,B],None,120,'idle',values.append,tail_fetch=fetch);observer.rounds=rounds;observer.finish()
-            def observe(services,selected,read):
+            def observe(services,selected,read,*,policy):
                 self.assertEqual(selected,[A])
+                self.assertEqual(policy,p.POLICY)
                 for service in services:read(service,selected,99,99)
                 return point['round']
             with patch.object(idle.time,'monotonic',side_effect=lambda:clock[0]),patch.object(idle,'round_view',side_effect=observe):

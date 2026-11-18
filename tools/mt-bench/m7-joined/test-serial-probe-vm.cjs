@@ -1,5 +1,6 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),{EventEmitter}=require('node:events');
+const {performance}=require('node:perf_hooks');
 const [sourceFile,dir,mode='positive']=process.argv.slice(2);const events=[],sockets=[];let active=0,max=0,requests=0,actorCloses=0,agentCloses=0;
 class Agent{destroy(){agentCloses++;}}
 const http={Agent,request(options,callback){assert.equal(options.method,'GET','ordinary write released');requests++;const ordinal=requests;active++;max=Math.max(max,active);const req=new EventEmitter();req.end=()=>queueMicrotask(()=>{const res=new EventEmitter();res.statusCode=mode==='stock-retry'&&ordinal===1?503:200;callback(res);res.emit('data',Buffer.from('{"token":"SYNTHETIC_JWT"}'));active--;res.emit('end');});req.destroy=()=>{};return req;}};
@@ -8,7 +9,7 @@ const fakeActor={createActor(){events.push('actor-created');return{async phase(p
 const args=['node',sourceFile,'--base','http://127.0.0.1:53001','--tenants',path.join(dir,'tenants.json'),'--compose','synthetic|env|compose','--runid','synthetic-run','--per','2','--open','5','--window','310','--probeEvery','300000','--restart','0','--evalTimeout','900','--out',path.join(dir,'probe.json'),'--signal',path.join(dir,'.window'),'--serialExchangeBinding',path.join(dir,'binding.json'),'--serialExchangeBindingSha256','a'.repeat(64)];
 const fakeProcess={argv:args,env:{M7_RUN_PURPOSE:'discovery'},exit(code){throw Error('UNEXPECTED_PROCESS_EXIT_'+code);}};
 const requireFake=name=>{if(name==='node:fs')return fs;if(name==='node:path')return path;if(name==='node:http')return http;if(name==='node:child_process')return new Proxy({}, {get(){return()=>{throw Error('UNEXPECTED_PRIVILEGED_CALL');};}});if(name==='socket.io-client')return{io};if(name==='./serial-exchange-pair.cjs')return fakeActor;if(name==='./durable-lag.cjs')return require(path.join(dir,'durable-lag.cjs'));throw Error('UNEXPECTED_REQUIRE_'+name);};
-const context={require:requireFake,process:fakeProcess,__dirname:dir,console:{log(){},error(){}},URL,Buffer,Map,Set,Date,JSON,Promise,Math,setTimeout:(fn)=>{queueMicrotask(fn);return 1;},clearTimeout(){}};
+const context={require:requireFake,process:fakeProcess,__dirname:dir,console:{log(){},error(){}},URL,Buffer,Map,Set,Date,JSON,Promise,Math,performance,setTimeout:(fn)=>{queueMicrotask(fn);return 1;},clearTimeout(){}};
 (async()=>{const value=vm.runInNewContext(fs.readFileSync(sourceFile,'utf8'),context);let failure;try{await value;}catch(e){failure=e;}
  assert.equal(actorCloses,1);assert.equal(agentCloses,2);assert.ok(sockets.every(s=>s.closed));assert.ok(!fs.existsSync(path.join(dir,'.window')),'diagnostic released .window');
  if(mode==='throw-before'||mode==='throw-after'||mode==='throw-close'){assert.ok(failure);return;}

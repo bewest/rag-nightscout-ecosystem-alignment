@@ -1,7 +1,7 @@
 """Synthetic binding/refusal controls; never starts a sender or application."""
 import copy,hashlib,json,os,tempfile,unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import call,patch
 import clinical_timeline as t
 import diagnostic_resources as r
 A='11111111-1111-4111-8111-111111111111';B='22222222-2222-4222-8222-222222222222'
@@ -131,9 +131,13 @@ class SenderBinding(unittest.TestCase):
         self.install();self.publish();self.m.update(prepared=True,owner='synthetic-owner',project='synthetic-owned')
         (self.d/'state/clinical-sender-binary/pgstream').unlink();output=self.d/'state/clinical-sender-output'
         file=output/'clinical-sender-timeline.jsonl';file.write_text('{"phase":"message-ready"}\n');file.chmod(0o600)
-        with patch.object(a,'verify',side_effect=lambda directory,metadata,teardown=False:t.verify(self.config,directory,metadata,teardown=teardown)) as check,patch.object(a,'assert_owned') as ownership,patch.object(a,'compose') as teardown,patch.object(a,'resources',return_value=[]),patch.object(a.profile_provenance,'capture_logs',return_value={'complete':False}):
+        with patch.object(a,'verify',side_effect=lambda directory,metadata,teardown=False:t.verify(self.config,directory,metadata,teardown=teardown)) as check,patch.object(a,'assert_owned') as ownership,patch.object(a,'compose') as teardown,patch.object(a,'resources',return_value=[]),patch.object(a,'command',return_value='') as inspect,patch.object(a.profile_provenance,'capture_logs',return_value={'complete':False}):
             (self.d/'frozen.compose.json').write_text(json.dumps(self.config));a._down(self.d,self.m)
-            check.assert_called_once_with(self.d,self.m,teardown=True);ownership.assert_called_once_with(self.m);teardown.assert_called_once()
+            check.assert_called_once_with(self.d,self.m,teardown=True)
+            self.assertEqual(ownership.call_args_list,[call(self.m)]*3)
+            teardown.assert_called_once_with(self.d,'--profile','ops','down','--volumes','--remove-orphans',timeout=120)
+            self.assertEqual(inspect.call_args_list,[call(['docker',kind,'ls','-q','--filter','label=com.docker.compose.project=synthetic-owned']) for kind in ('network','volume')])
+        self.assertEqual(a.document(self.d/'cleanup-absence.json')['status'],'ABSENT')
         self.assertFalse((self.d/'state').exists());self.assertEqual((self.d/'clinical-timeline/clinical-sender-timeline.jsonl').read_text(),'{"phase":"message-ready"}\n')
         captured=[json.loads(file.read_text()) for file in self.d.glob('clinical-sender-cleanup-observation-*.json')];self.assertEqual(len(captured),1);self.assertEqual(captured[0]['status'],'UNMEASURED')
     def test_sender_retention_is_bounded_partial_and_never_clinical_green(self):

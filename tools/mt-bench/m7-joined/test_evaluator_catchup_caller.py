@@ -61,10 +61,9 @@ class Caller(unittest.TestCase):
         def rpc(*args, **kwargs):
             self.rpc_calls.append({'deadlineContext': a._COMMAND_DEADLINE.get(), **kwargs})
             return ''
-        def view(services, ids, fetch, *, allow_unavailable=False):
-            # The actual tail retains unavailable rows for classification. This
-            # mock must accept that caller contract instead of raising TypeError.
+        def view(services, ids, fetch, *, allow_unavailable=False, policy):
             self.assertTrue(allow_unavailable)
+            self.assertEqual(policy,progress.capture_policy(manifest['cadence'].get('evaluatorProgressBudget')))
             if thread_rpc:
                 with ThreadPoolExecutor(max_workers=1) as executor:
                     executor.submit(fetch, 'evaluator', ids, 1, 1024).result()

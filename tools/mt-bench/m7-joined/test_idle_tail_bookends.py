@@ -37,7 +37,8 @@ class TailBookends(unittest.TestCase):
                 # Patch of sharedtime.sleep also touches the tail's tiny controlled wait;
                 # keep a minimum mocked duration through its real clock field below.
                 original=idle.time.monotonic;clock=[0.]
-                def measured_tail(*args):
+                def measured_tail(*args,policy):
+                    self.assertEqual(policy,p.POLICY)
                     value=tail(*args);clock[0]+=.01;return value
                 with patch.object(idle.time,'monotonic',side_effect=lambda:clock[0]),patch.object(idle,'round_view',side_effect=measured_tail):
                     error=None
