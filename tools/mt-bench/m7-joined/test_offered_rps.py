@@ -33,14 +33,15 @@ class OfferedRate(unittest.TestCase):
   self.assertEqual(r['counts']['scenario_request_attempts'],2);self.assertEqual(r['counts']['scenario_transport_failures'],2)
   self.assertNotIn('scenario_http_responses',r['counts']);self.assertEqual(r['counts']['writes_uncertain'],1)
  def test_discovery_only_binding_and_forwarding(self):
-  args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',offered_rps=180)
+  args=SimpleNamespace(profile='pgstream-sample',run_purpose='discovery',offered_rps=180,tenants=3000)
   cadence=adapter.cadence_options(args);self.assertEqual(cadence['offeredRps'],180)
   m={'cadence':{**cadence,'hotFactor':1},'tenants':3000,'project':'synthetic','owner':'a'*32,'port':1234,'settingsFingerprint':{'sha256':'b'*64}}
   self.assertIn('OFFERED_RPS=180',discovery.k6_command(adapter,Path('/synthetic'),m,'image','run'))
   self.assertAlmostEqual(adapter.rate_offer(m)['effectiveScenarioRps'],180,delta=.001)
-  for value in (0,float('inf'),float('nan'),10001,True):
+  for value in (0,float('inf'),float('nan'),True):
    args.offered_rps=value
    with self.assertRaisesRegex(RuntimeError,'RPS_RANGE'):adapter.cadence_options(args)
+  args.offered_rps=12000;self.assertEqual(adapter.cadence_options(args)['offeredRps'],12000)
   args.offered_rps=180;args.run_purpose='acceptance'
   with self.assertRaisesRegex(RuntimeError,'DISCOVERY_ONLY'):adapter.cadence_options(args)
 if __name__=='__main__':unittest.main()
