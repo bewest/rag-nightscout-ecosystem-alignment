@@ -40,10 +40,12 @@ def assess(baseline, rounds, ids,*,policy=p.POLICY,discovery_unclassified_reject
 
 
 
-def verify(value,tenants,services):
+def verify(value,tenants,services,*,budget=None):
     legacy=value.get('kind')=='evaluator-recovery-v1';policy=value.get('policy')
     columns=p.LEGACY_COLUMNS if legacy else p.COLUMNS
-    supported=(p.LEGACY_POLICY,) if legacy else (p.REFERENCE_POLICY,p.PREVIOUS_POLICY,p.POLICY)
+    supported=((p.capture_policy(budget),) if budget is not None else
+               (p.LEGACY_POLICY,) if legacy else (p.REFERENCE_POLICY,p.PREVIOUS_POLICY,p.POLICY))
+    p.need(not legacy or budget is None,'M7_EVALUATOR_RECOVERY_PROOF')
     p.need(value.get('kind')==('evaluator-recovery-v1' if legacy else 'evaluator-recovery-v2') and policy in supported and value.get('columns')==list(columns)
            and 1<=len(services)<=policy['maxInstances'] and 1<=tenants<=policy['maxTenants'],'M7_EVALUATOR_RECOVERY_PROOF')
     baseline,ids=p.decode_rounds({'rounds':value.get('baseline'),'columns':value.get('columns')},tenants,services,allow_unavailable=value.get('discoveryUnclassifiedRejections') is True)
@@ -61,6 +63,7 @@ def verify(value,tenants,services):
 
 def main(spec):
     ids=spec['ids'];p.validate_ids(ids);services=spec['services']
+    policy=p.capture_policy(spec['attribution'].get('evaluatorProgressBudget'))
     helper=Path(__file__).with_name('evaluator-progress.cjs').read_text()
     def fetch(service,selected,queries,budget):
         prefix='const M7_PROGRESS_IDS='+json.dumps(selected)+';const M7_PROGRESS_QUERY_BUDGET='+str(queries)+';const M7_PROGRESS_BYTE_BUDGET='+str(budget)+';\n'
@@ -68,18 +71,18 @@ def main(spec):
         p.need(result.returncode==0,'M7_EVALUATOR_PROGRESS_UNAVAILABLE');return result.stdout
     path=Path(spec['path']);path.parent.mkdir(parents=True,exist_ok=True)
     if spec['mode']=='baseline':
-        value=p.round_view(services,ids,fetch,allow_unavailable=spec.get('discoveryUnclassifiedRejections') is True);path.write_text(json.dumps(value,separators=(',',':')));os.chmod(path,0o600)
+        value=p.round_view(services,ids,fetch,allow_unavailable=spec.get('discoveryUnclassifiedRejections') is True,policy=policy);path.write_text(json.dumps(value,separators=(',',':')));os.chmod(path,0o600)
         return {'version':p.POLICY['version'],'instances':value['instances'],'queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']}
     baseline=json.loads(Path(spec['baseline']).read_text());rounds=[];errors=[];queries=0;bytes_seen=0;wall=0;result=None;started=time.monotonic()
     try:
         for attempt in range(60):
             if time.time()*1000>=spec['deadlineMs']:break
             try:
-                value=p.round_view(services,ids,fetch,warming=True,allow_unavailable=spec.get('discoveryUnclassifiedRejections') is True)
+                value=p.round_view(services,ids,fetch,warming=True,allow_unavailable=spec.get('discoveryUnclassifiedRejections') is True,policy=policy)
                 rounds=(rounds+[value])[-2:];queries+=value['queries'];bytes_seen+=value['bytes'];wall+=value['wallSeconds']
                 p.need(queries<=p.POLICY['readinessMaxQueries'] and bytes_seen<=p.POLICY['readinessMaxBytes'],'M7_EVALUATOR_RECOVERY_BUDGET')
                 if len(rounds)==2:
-                    result=assess(baseline,rounds,ids,discovery_unclassified_rejections=spec.get('discoveryUnclassifiedRejections') is True);break
+                    result=assess(baseline,rounds,ids,discovery_unclassified_rejections=spec.get('discoveryUnclassifiedRejections') is True,policy=policy);break
             except p.Refused as error:
                 errors.append({'code':str(error),'verdict':error.verdict,'collection':getattr(error,'collection',None)})
                 if getattr(error,'collection',None):
@@ -92,9 +95,9 @@ def main(spec):
     except Exception as error:
         result={'version':p.POLICY['version'],'verdict':getattr(error,'verdict','UNMEASURED'),'code':str(error),'observed':0,'expected':len(ids),'missing':len(ids)}
     result['sampling']={'cadenceMs':15000,'queries':queries,'bytes':bytes_seen,'wallSeconds':wall,'elapsedSeconds':time.monotonic()-started,'failures':len(errors)}
-    evidence={'discoveryUnclassifiedRejections':spec.get('discoveryUnclassifiedRejections') is True,'kind':'evaluator-recovery-v2','attribution':spec['attribution'],'policy':p.POLICY,'columns':list(p.COLUMNS),'result':dict(result),'errors':errors,'baseline':p.pack({'rounds':[baseline]})['rounds'],'rounds':p.pack({'rounds':rounds})['rounds']}
+    evidence={'discoveryUnclassifiedRejections':spec.get('discoveryUnclassifiedRejections') is True,'kind':'evaluator-recovery-v2','attribution':spec['attribution'],'policy':policy,'columns':list(p.COLUMNS),'result':dict(result),'errors':errors,'baseline':p.pack({'rounds':[baseline]})['rounds'],'rounds':p.pack({'rounds':rounds})['rounds']}
     publishing=time.monotonic();cpu=time.process_time()
-    raw=json.dumps(evidence,separators=(',',':')).encode();p.need(len(raw)<=16777216,'M7_EVALUATOR_RECOVERY_ARTIFACT_BOUND')
+    raw=json.dumps(evidence,separators=(',',':')).encode();p.need(len(raw)<=(policy['maxBytesPerPhase'] if policy!=p.POLICY else 16777216),'M7_EVALUATOR_RECOVERY_ARTIFACT_BOUND')
     path.write_bytes(raw);os.chmod(path,0o600);compressed=gzip.compress(raw,mtime=0);Path(str(path)+'.gz').write_bytes(compressed);os.chmod(str(path)+'.gz',0o600)
     cost=Path(str(path)+'.publication.json');cost.write_text(json.dumps({'wallSeconds':time.monotonic()-publishing,'processCpuSeconds':time.process_time()-cpu,'rawBytes':len(raw),'gzipBytes':len(compressed),'scope':'serialization, gzip and primary-file writes; sidecar publication excluded'}));os.chmod(cost,0o600)
     result['evidence']={'rawSha256':hashlib.sha256(raw).hexdigest(),'gzipSha256':hashlib.sha256(compressed).hexdigest()}

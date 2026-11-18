@@ -74,6 +74,16 @@ def bind_primer_storage(package, selected):
     shutil.copyfile(k.HERE/'primer_storage.py',package/frozen.PRIMER_STORAGE_PACKAGE)
 
 
+def bind_job_completion_wait(package, selected):
+    if frozen.JOB_COMPLETE not in selected:
+        return
+    publisher=package/'scripts/secrets.sh'
+    text=publisher.read_text()
+    wait='k wait --for=condition=complete job/provision --timeout=30s >/dev/null'
+    k.need(text.count(wait)==1,'PROVISION_JOB_COMPLETE_SEAM')
+    publisher.write_text(text.replace(wait,wait.replace('30s',f"{selected[frozen.JOB_COMPLETE]}s")))
+
+
 def materialize(manifest, binding_repo, deploy_repo, out):
     selected = frozen.source(manifest)
     def git(repo, *args):
@@ -107,6 +117,7 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     k.write(asset, measured)
     bind_ack_publisher(package, selected)
     bind_primer_storage(package, selected)
+    bind_job_completion_wait(package, selected)
     k.write(out/'binding.json', dict(bindingCommit=manifest['bindingCommit'],
             sourceContractSha256=k.digest(asset), patchSha256=k.digest(k.HERE/'binding-input.patch'),
             files={str(p.relative_to(package)):k.digest(p) for p in sorted(package.rglob('*')) if p.is_file()},

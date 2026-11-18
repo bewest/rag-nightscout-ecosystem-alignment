@@ -139,6 +139,22 @@ remaining on its original work deadline if that deadline comes first. The
 legacy window is 300 seconds. The lifecycle verifies the hashed intent before
 entry and records the selected window and effective deadline at the wait.
 
+Fresh intent also accepts positive integer seconds in
+`profile.phases.startupWindows.kubernetes`. Set `workloadReadySeconds` for
+other unselected workload waits, or `primerReadySeconds` and `dataPrimerSeconds`
+for the primer Job and DATA actor. `roleExportSeconds`, `platformVerifySeconds`,
+`secretSeedSeconds`, `secretPublishSeconds` and `jobCompleteSeconds` cover the
+separate bootstrap handoffs. `requestSeconds`, `commandSeconds` and `execSeconds`
+control individual controller calls. The lifecycle records the chosen values,
+their reference defaults and native Pod probe and Job deadline settings at
+preflight. Each wait is clipped to its original work deadline. The DATA actor
+also honors the existing owned Job deadline. Native Pod probes and clinical
+completion continue to use their existing predicates and clocks.
+
+Set optional `workload.evaluatorProgressBudget` with `maxQueriesPerPhase` and
+`maxBytesPerPhase` to select a different three-round evaluator capture budget.
+The packet retains the exact policy and keeps an exhausted capture `UNMEASURED`.
+
 Set `profile.phases.accessSetupSeconds` to give the first and last selected
 socket witnesses an explicit warm-up window. The native client connects to
 both exact hosts without credentials first. It may retry HTTP 403 while it

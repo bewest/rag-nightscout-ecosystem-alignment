@@ -1372,11 +1372,19 @@ Fresh Compose discovery can select `--probe-ledger` with a JSON object that sets
 and the reducer verifies the budget retained with its counts. Exhaustion leaves
 the affected observation incomplete. Observer paging/query/byte budgets, the
 Node timer range, the clinical 120-second deadline and owned cleanup still apply.
-A full evaluator progress phase uses three rounds and currently has a 1,024-query
-and 64 MiB capture budget. For example, 10,000 tenants across eight workers need
-1,896 queries at 128 tenants per page. The progress result stays `UNMEASURED`
-when the selected census exceeds those budgets. Source topology admission and
-ordinary traffic evidence have their own checks.
+A full evaluator progress phase uses three rounds and defaults to 1,024 queries
+and 64 MiB. Select `--evaluator-progress-budget` with `maxQueriesPerPhase` and
+`maxBytesPerPhase` to bind a different budget. At 128 tenants per page, 10,000
+tenants across eight workers need 1,896 queries. Each retained observation uses
+the selected query and byte budget. Exhausted capture stays `UNMEASURED`.
+
+`--startup-windows` accepts optional `composeReadySeconds`, `stageSeconds` and
+`evaluatorReadySeconds` for fresh Compose discovery. A shared experiment places
+the same object in `profile.phases.startupWindows.compose`. Plans show the
+selected values and their reference defaults. Commands and waits use the lesser
+of the selected window and remaining authorized work. Owner-monitored priming
+and provision use their completion path when `stageSeconds` is omitted.
+Explicit startup, progress and probe ledger budgets require a version-2 receipt.
 A larger requested population can exceed an observer budget; that observation
 stays `UNMEASURED` or `PARTIAL`, without a capacity grant. The numeric resolver
 reports unrepresentable k6 durations/time units and combined wheel lengths before

@@ -13,6 +13,11 @@ MAX_ARRAY_LENGTH = 2**32 - 1
 MAX_PROBE_INTERVAL_MS = 2**31 - 1
 MAX_ARRIVAL_CYCLE_MS = (2**63 - 1) // 1000000
 DEFAULT_PROBE_LEDGER = {'maxWrites': 100000, 'maxBytes': 4 * 1024 * 1024}
+COMPOSE_STARTUP_DEFAULTS = {'composeReadySeconds':1200, 'stageSeconds':1800, 'evaluatorReadySeconds':1200}
+KUBERNETES_STARTUP_DEFAULTS = {'workloadReadySeconds':300, 'primerReadySeconds':3600, 'roleExportSeconds':70,
+                              'platformVerifySeconds':150, 'secretSeedSeconds':90, 'secretPublishSeconds':185,
+                              'jobCompleteSeconds':30, 'requestSeconds':14, 'commandSeconds':18, 'execSeconds':35,
+                              'dataPrimerSeconds':3600}
 MAX_VIEWERS = MAX_ARRAY_LENGTH
 
 
@@ -70,6 +75,20 @@ def probe_ledger_env(workload):
         return {}
     import json
     return {'M7_PROBE_LEDGER': json.dumps(workload['probeLedger'], separators=(',', ':'))}
+
+
+def startup_windows(value, defaults, require):
+    require(isinstance(value,dict) and set(value)<=defaults.keys() and all(seconds(v) for v in value.values()),
+            'M7_STARTUP_WINDOWS_INVALID')
+    return {**defaults,**value}
+
+
+def startup_selection(phases, require):
+    selected = phases.get('startupWindows',{})
+    require(isinstance(selected,dict) and set(selected)<={'compose','kubernetes'},'M7_STARTUP_WINDOWS_INVALID')
+    startup_windows(selected.get('compose',{}),COMPOSE_STARTUP_DEFAULTS,require)
+    startup_windows(selected.get('kubernetes',{}),KUBERNETES_STARTUP_DEFAULTS,require)
+    return selected
 
 
 def aggregate_cycle_ms(tenants, hot_factor, requested_rate):

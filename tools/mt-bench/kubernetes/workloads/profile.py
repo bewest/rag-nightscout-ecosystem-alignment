@@ -55,6 +55,7 @@ def validate(p):
         need(workload_runtime.workload_inputs.seconds(access_setup), 'ACCESS_SETUP_WINDOW')
     if 'cohortReadySeconds' in p['phases']:
         need(workload_runtime.workload_inputs.seconds(p['phases']['cohortReadySeconds']), 'COHORT_READY_WINDOW')
+    workload_runtime.workload_inputs.startup_selection(p['phases'],need)
     access_window = access_setup + 60 if access_setup is not None else 0
     work = p['phases']['workSeconds']
     need(workload_runtime.workload_inputs.seconds(work) and
@@ -73,6 +74,8 @@ def describe(p):
     w = p['workload']
     cycles, rates = workload_runtime.rates(w, n)
     cycle_ms = cycles['w_sgv']
+    inputs=workload_runtime.workload_inputs
+    startup=inputs.startup_selection(p['phases'],need)
     return {'version': 1, 'profile': p['name'], 'basis': 'read-derived equations from generated M7 workload',
             'workload': w, 'arrivalCycleMs': cycle_ms, 'shapeCycleMs': cycles, 'shapeRequestsPerSecond': rates,
             'effectivePhaseWindows': {
@@ -80,6 +83,11 @@ def describe(p):
                 for key, default in (('setupSeconds', 310), ('drainSeconds', 120))
             } | {key:{'seconds':p['phases'][key], 'origin':'authored'} for key in
                  ('accessSetupSeconds','cohortReadySeconds') if key in p['phases']},
+            'startupWindows':{target:{key:{'seconds':startup.get(target,{}).get(key,value),
+                                          'origin':'authored' if key in startup.get(target,{}) else 'reference'}
+                                      for key,value in defaults.items()}
+                              for target,defaults in (('compose',inputs.COMPOSE_STARTUP_DEFAULTS),
+                                                       ('kubernetes',inputs.KUBERNETES_STARTUP_DEFAULTS))},
             'effectiveOrdinaryIngestionCadenceSecondsPerTenant': cycle_ms / 1000,
             'nominalIngestionCadenceSeconds': 300,
             'cadenceMultiplier': 300000 / cycle_ms,
@@ -118,11 +126,17 @@ def bind(p, config):
     need(set(existing) <= set(p['workload']) | {'pointId', 'hotFactor', 'offeredRps', 'workloadMix', 'workloadScale'}, 'UNKNOWN_WORKLOAD_FIELD')
     need(existing.get('hotFactor', 1) == p['population']['hotFactor'], 'PROFILE_HOT_FACTOR')
     need(existing.get('probeLedger',p['workload'].get('probeLedger')) == p['workload'].get('probeLedger'), 'PROBE_LEDGER_CHANGED')
+    budget=p['workload'].get('evaluatorProgressBudget')
+    need(existing.get('evaluatorProgressBudget',budget)==budget,'EVALUATOR_PROGRESS_BUDGET_CHANGED')
     result = copy.deepcopy(config)
     access_setup = p['phases'].get('accessSetupSeconds')
     need(config.get('accessSetupSeconds', access_setup) == access_setup, 'ACCESS_SETUP_WINDOW_CHANGED')
     if access_setup is not None:
         result['accessSetupSeconds'] = access_setup
+    data_seconds=workload_runtime.workload_inputs.startup_selection(p['phases'],need).get('kubernetes',{}).get('dataPrimerSeconds')
+    need(config.get('dataPrimerSeconds',data_seconds)==data_seconds,'DATA_PRIMER_WINDOW_CHANGED')
+    if data_seconds is not None:
+        result['dataPrimerSeconds']=data_seconds
     # A profile intentionally replaces the old rate selection, but preserves
     # runtime marker identity. Revalidate to refuse incompatible combinations.
     result['workload'] = {k: v for k, v in existing.items() if k in ('pointId', 'hotFactor')}

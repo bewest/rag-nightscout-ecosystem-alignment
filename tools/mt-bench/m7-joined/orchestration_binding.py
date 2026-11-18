@@ -174,7 +174,7 @@ def _options(action,options):
  while i<len(options):
   value=options[i];require(value in allowed[action]and value!='never','M7_BINDING_COMPOSE_OPTION_REFUSED')
   if value in('--pull','--wait-timeout'):
-   require(i+1<len(options),'M7_BINDING_COMPOSE_OPTION_REFUSED');argument=options[i+1];require(argument=='never'if value=='--pull'else argument.isdigit()and 1<=int(argument)<=1200,'M7_BINDING_COMPOSE_OPTION_REFUSED');i+=2
+   require(i+1<len(options),'M7_BINDING_COMPOSE_OPTION_REFUSED');argument=options[i+1];require(argument=='never'if value=='--pull'else re.fullmatch(r'[0-9]{1,10}',argument)and workload_inputs.seconds(int(argument)),'M7_BINDING_COMPOSE_OPTION_REFUSED');i+=2
   else:i+=1
  return options
 

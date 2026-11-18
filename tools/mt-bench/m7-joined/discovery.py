@@ -15,6 +15,7 @@ from contract import require, SHA, OWNER, REPLICAS, UNACCEPTED_SCOPE, discovery_
 
 INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
 INCOMPLETE=INCOMPLETE|frozenset(('M7_OPPORTUNITY_NOT_OBSERVED','M7_OPPORTUNITY_DEADLINE','M7_OPPORTUNITY_BYTE_BOUND','M7_OPPORTUNITY_COVERAGE','M7_OPPORTUNITY_CAPTURE','M7_OPPORTUNITY_QUERY_BOUND'))
+INCOMPLETE=INCOMPLETE|frozenset(('M7_EVALUATOR_PROGRESS_QUERY_BOUND','M7_EVALUATOR_PROGRESS_BYTE_BOUND','M7_EVALUATOR_PROGRESS_BUDGET'))
 
 def safe_code(error):
     text=str(error)
@@ -25,7 +26,7 @@ SOFT_WORK_FAILURES=frozenset()
 
 def incomplete(error):return str(error) in SOFT_WORK_FAILURES or (getattr(error,'verdict','UNMEASURED')!='FAIL' and str(error) in INCOMPLETE)
 
-def recovery_episode(value,ids,binding):
+def recovery_episode(value,ids,binding,*,budget=None):
     """Allow more discovery collection after a sampled local cache discard.
 
     This never clears the strict failure or certifies an unseen interval. Actual
@@ -39,12 +40,15 @@ def recovery_episode(value,ids,binding):
             and value.get('code')=='M7_EVALUATOR_PROGRESS_RESET' and value.get('verdict')=='FAIL'
             and value.get('failedCollection') is None,'M7_DISCOVERY_RECOVERY_SHAPE')
     require(value.get('durableBinding')==binding,'M7_DISCOVERY_RECOVERY_BINDING')
+    policy=p.capture_policy(budget)
+    require(value.get('capturePolicy',p.POLICY)==policy and value.get('attribution',{}).get('evaluatorProgressBudget')==budget,
+            'M7_DISCOVERY_RECOVERY_BUDGET')
     require(all(value.get('attribution',{}).get(k)==binding[k] for k in ('pair','imageId','instrument')),'M7_DISCOVERY_RECOVERY_BINDING')
     require(all(value.get('attribution',{}).get(k)==binding[k] for k in ('pair','imageId','instrument')),'M7_DISCOVERY_RECOVERY_BINDING')
     services=list(value['rounds'][0]['instances']);rounds,actual=idle._decode(value,len(ids),services)
     require(len(rounds)==3 and actual==set(ids),'M7_DISCOVERY_RECOVERY_COVERAGE')
-    require(sum(r['queries'] for r in rounds)<=p.POLICY['maxQueriesPerPhase']
-            and sum(r['bytes'] for r in rounds)<=p.POLICY['maxBytesPerPhase'],'M7_DISCOVERY_RECOVERY_BUDGET')
+    require(sum(r['queries'] for r in rounds)<=policy['maxQueriesPerPhase']
+            and sum(r['bytes'] for r in rounds)<=policy['maxBytesPerPhase'],'M7_DISCOVERY_RECOVERY_BUDGET')
     durable=o.durable_rows(value['durable'],ids,binding);o.capture_windows(value['captureWindows'],3)
     changes=[]
     for previous,current in zip(rounds,rounds[1:]):
@@ -140,7 +144,8 @@ class Record:
                 try:
                     ids=sorted(row['id'] for row in self.a.document(self.d/'tenants.private.json'))
                     binding={'kind':'evaluator-work-v2','pair':self.m['pair'],'imageId':self.m['imageId'],'instrument':self.m['instrument']['sha256']}
-                    episode=recovery_episode(self.a.document(self.d/stage/'evaluator-progress.json'),ids,binding)
+                    episode=recovery_episode(self.a.document(self.d/stage/'evaluator-progress.json'),ids,binding,
+                                             budget=self.m.get('cadence',{}).get('evaluatorProgressBudget'))
                     self.a.assert_owned(self.m);allowed=True
                 except Exception:
                     # The original refusal remains authoritative when this
@@ -538,16 +543,20 @@ def partial_progress(a,d,m,stage):
     need=progress.need
     need(stage in ('idle','load'),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
     file=d/stage/'evaluator-progress.json'
-    need(file.is_file() and not file.is_symlink() and file.stat().st_size<=16777216,'M7_DISCOVERY_PARTIAL_PROGRESS_ARTIFACT')
+    budget=m.get('cadence',{}).get('evaluatorProgressBudget')
+    policy=progress.capture_policy(budget)
+    max_retained=policy['maxBytesPerPhase'] if budget is not None else 16777216
+    need(file.is_file() and not file.is_symlink() and file.stat().st_size<=max_retained,'M7_DISCOVERY_PARTIAL_PROGRESS_ARTIFACT')
     value=a.document(file);module=idle if stage=='idle' else progress
+    retained_policy={**idle.POLICY,'workPolicy':policy} if stage=='idle' else policy
     kind=idle.ARTIFACT_KIND if stage=='idle' else 'evaluator-progress-phase-v2'
-    need(value.get('kind')==kind and value.get('columns')==list(module.COLUMNS) and value.get('policy')==module.POLICY and value.get('phase')==stage and value.get('verdict')=='UNMEASURED' and value.get('code')=='M7_EVALUATOR_PROGRESS_ROUNDS' and value.get('attribution')==a.progress_attribution(m),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
+    need(value.get('kind')==kind and value.get('columns')==list(module.COLUMNS) and value.get('policy')==retained_policy and value.get('phase')==stage and value.get('verdict')=='UNMEASURED' and value.get('code')=='M7_EVALUATOR_PROGRESS_ROUNDS' and value.get('attribution')==a.progress_attribution(m),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
     need(isinstance(value.get('rounds'),list) and 1<=len(value['rounds'])<=2,'M7_DISCOVERY_PARTIAL_PROGRESS_ROUNDS')
     services=a.progress_services(d);need(1<=len(services)<=progress.POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
     decoded,ids=(idle._decode(value,m['tenants'],services) if stage=='idle' else progress.decode_rounds(value,m['tenants'],services))
     expected=[row['id'] for row in a.document(d/'tenants.private.json')];progress.validate_ids(expected)
     need(ids==set(expected),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-    need(sum(r['queries'] for r in decoded)<=progress.POLICY['maxQueriesPerPhase'] and sum(r['bytes'] for r in decoded)<=progress.POLICY['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
+    need(sum(r['queries'] for r in decoded)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in decoded)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
     if stage=='idle':idle.clock_windows(decoded)
     # Check ALL available rounds, not only the first timing refusal. No absent
     # round, unselected interval or clock witness is manufactured.

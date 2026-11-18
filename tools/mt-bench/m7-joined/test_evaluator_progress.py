@@ -201,6 +201,32 @@ class Progress(unittest.TestCase):
                 broken=True
                 with self.assertRaisesRegex(p.Refused,'STATIC_CONFIGURATION'):p.round_view(services,ids,fetch)
                 broken=False
+
+    def test_selected_capture_budget_reaches_wide_query_and_is_required_on_retained_proof(self):
+        services=['evaluator', *(f'evaluator-{i}' for i in range(2,9))]
+        wide=[f'00000000-0000-4000-8000-{i:012x}' for i in range(10000)]
+        native=[]
+        def read(service,ids,queries,byte_budget):
+            native.append((service,len(ids),queries,byte_budget))
+            raise p.Refused('SYNTHETIC_CAPTURE_BOUNDARY')
+        with self.assertRaisesRegex(p.Refused,'QUERY_BOUND'):p.round_view(services,wide,read)
+        self.assertEqual(native,[])
+        selected={'maxQueriesPerPhase':1896,'maxBytesPerPhase':128*1024*1024}
+        policy=p.capture_policy(selected)
+        with self.assertRaisesRegex(p.Refused,'SYNTHETIC_CAPTURE_BOUNDARY'):
+            p.round_view(services,wide,read,policy=policy)
+        self.assertEqual(sorted(native),[(service,10000,79,selected['maxBytesPerPhase']//24) for service in services])
+        exhausted=p.capture_policy({**selected,'maxBytesPerPhase':3})
+        with self.assertRaisesRegex(p.Refused,'BYTE_BOUND') as caught:
+            p.round_view(['evaluator'],[A],lambda *_:json.dumps(self.frame(ids=[A])).encode(),policy=exhausted)
+        self.assertEqual(caught.exception.verdict,'UNMEASURED')
+        rounds=[self.round(i) for i in range(3)]
+        expected=p.assess(rounds,[A,B],'load',policy=policy)
+        record=p.pack({**expected,'rounds':rounds})
+        self.assertEqual(p.verify(record,2,['evaluator'],'load',budget=selected),expected)
+        with self.assertRaisesRegex(p.Refused,'PROOF'):p.verify(record,2,['evaluator'],'load')
+        with self.assertRaisesRegex(p.Refused,'PROOF'):
+            p.verify(record,2,['evaluator'],'load',budget={**selected,'maxQueriesPerPhase':1895})
     def partitioned(self,step=0):
         def fetch(service,*_):
             ordinal=0 if service=='a' else 1;frame=self.frame(ordinal=ordinal,runtime=R if ordinal==0 else S,increment=step)

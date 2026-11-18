@@ -174,6 +174,7 @@ def run(a, directory, manifest, *, clock=time):
     services = a.progress_services(d)
     ids = sorted(row['id'] for row in a.document(d/'tenants.private.json'))
     p.validate_ids(ids)
+    capture_policy=p.capture_policy(manifest.get('cadence',{}).get('evaluatorProgressBudget'))
     seconds = a.remaining_seconds(config['seconds'])
     until = clock.time()+seconds
     max_rounds = math.ceil(seconds/config['intervalSeconds'])+2
@@ -222,7 +223,7 @@ def run(a, directory, manifest, *, clock=time):
                 point, error = None, None
                 try:
                     point = p.round_view(services, ids, fetch, warming=True,
-                                         allow_unavailable=False, allow_clinical_stall=False)
+                                         allow_unavailable=False, allow_clinical_stall=False,policy=capture_policy)
                     availability = p.availability([point], ids)
                     if availability['verdict'] != 'PASS':
                         raise p.Refused('M7_EVALUATOR_PROGRESS_WARMING')

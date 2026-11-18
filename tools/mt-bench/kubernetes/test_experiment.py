@@ -115,6 +115,20 @@ publish() {
             frozen.registry(dict(delivery,registryManifests=dict.fromkeys(images,receipts['app']['path'])),images,self.manifest)
         frozen.registry(delivery, images, self.manifest)
 
+    def test_authored_publisher_job_wait_is_source_bound(self):
+        manifest={**self.manifest,'profile':{'phases':{'startupWindows':{'kubernetes':{'jobCompleteSeconds':120}}}}}
+        selected=frozen.source(manifest)
+        self.assertEqual(selected[frozen.JOB_COMPLETE],120)
+        selected['nativeCatalogueSha256']='7'*64
+        with self.assertRaisesRegex(frozen.Refused,'CONTRACT_SOURCE_CHANGED'):
+            frozen.contract(manifest,{**selected,frozen.JOB_COMPLETE:30})
+        frozen.contract(manifest,selected)
+        script=self.root/'scripts/secrets.sh';script.parent.mkdir()
+        source='k wait --for=condition=complete job/provision --timeout=30s >/dev/null\n'
+        script.write_text(source)
+        experiment.bind_job_completion_wait(self.root,selected)
+        self.assertEqual(script.read_text(),source.replace('30s','120s'))
+
     def test_private_fresh_preflight_for_this_experiment(self):
         c = dict(runId='test',namespace='synthetic-test',experimentSha256='7'*64,pins=dict(renderSha256='8'*64))
         observed = dict(offline='PASS',commissioning='PREFLIGHT_ONLY',experiment=dict(

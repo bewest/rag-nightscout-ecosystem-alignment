@@ -45,7 +45,7 @@ else:
             d = Path(tmp)
             c = dict(context='test', namespace='owned-ns', runId='owned-run', roles={'api':{}},
                      kubectl='/usr/bin/kubectl', tenants=1, pins={'candidate':{}},
-                     deadlines={'workUntil':stamp(utc+timedelta(hours=1))})
+                     deadlines={'workUntil':stamp(utc+timedelta(hours=1))}, dataPrimerSeconds=7200)
             objects = {'ConfigMap/provision-scripts':{'data':{'source-contract.json':'{}'}}}
             pod = dict(name='waiting',uid='p',workload='Job/primer',containers={'done':dict(ready=True,containerID='c')})
             observation = dict(namespace={'uid':'ns'},pods={'waiting':pod},
@@ -72,6 +72,7 @@ else:
                  patch.object(primer.subprocess,'run',return_value=reply) as actor:
                 result = primer.prime(d,d/'attempt',2)
                 self.assertEqual(result['verdict'],'OBSERVED')
+                self.assertEqual(result['selectedDataPrimerSeconds'],7200)
                 argv = actor.call_args.args[0]
                 self.assertEqual(argv[6:15],['exec','-i','waiting','-c','done','--','node','-','owned-ns'])
                 self.assertEqual(argv[-3:], [str(int((utc.timestamp()+120)*1000)),'1','2'])

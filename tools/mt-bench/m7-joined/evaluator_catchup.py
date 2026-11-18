@@ -235,6 +235,7 @@ def run(a, directory, manifest, record):
             p.need(policy['maxRounds'] >= 1 and round_queries <= policy['maxQueries'], 'M7_DRAIN_QUERY_BOUND')
             p.need(round_bytes <= policy['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
             collector = a.opportunity_collector(directory, manifest, ids)
+            capture_policy=p.capture_policy(manifest['cadence'].get('evaluatorProgressBudget'))
             value['preparationCost'] = collector.preparation_cost
             def fetch(timeout):
                 round_until = min(until, time.monotonic_ns() + int(timeout * 1e9))
@@ -247,9 +248,9 @@ def run(a, directory, manifest, record):
                 with a.command_deadline(min(a._COMMAND_DEADLINE.get(), time.time() + timeout)):
                     snapshot, cost = collector(timeout)
                     try:
-                        view = idle.round_view(a.progress_services(directory), ids, rpc,allow_unavailable=True)
+                        view = idle.round_view(a.progress_services(directory), ids, rpc,allow_unavailable=True,policy=capture_policy)
                         cost['inspection'] = idle._pack_round(view)
-                        o.all_roster([rounds[-1], rounds[-1], view], ids, 'load')
+                        o.all_roster([rounds[-1], rounds[-1], view], ids, 'load',policy=capture_policy)
                     except p.Refused as error:
                         error.drainCapture = {'snapshot': snapshot, 'cost': cost}
                         raise

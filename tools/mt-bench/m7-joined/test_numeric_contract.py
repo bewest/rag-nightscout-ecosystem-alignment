@@ -36,6 +36,17 @@ class NumericContract(unittest.TestCase):
             result=configuration.resolve(config_)
         cadence=result['configuration']['cadence']
         self.assertEqual(cadence['probeLedger'],selected)
+        config_bound=result['configuration']
+        manifest={**config_bound,'instrument':{'sha256':'d'*64},'runConfiguration':config_bound}
+        proof=result['diagnosticReceiptTemplate']
+        contract.discovery_authorization(manifest,proof)
+        with self.assertRaisesRegex(RuntimeError,'WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED'):
+            contract.discovery_authorization(manifest,{'version':1})
+        omitted={**manifest,'cadence':{k:v for k,v in cadence.items() if k!='probeLedger'}}
+        self.assertEqual(contract.discovery_authorization(omitted,{'version':1}),contract.UNACCEPTED_SCOPE)
+        changed={**manifest,'cadence':{**cadence,'probeLedger':{**selected,'maxWrites':120001}}}
+        with self.assertRaisesRegex(RuntimeError,'DIAGNOSTIC_CONFIGURATION_MISMATCH'):
+            contract.discovery_authorization(changed,proof)
         env=inputs.probe_ledger_env(cadence)
         script="""const opts={ids:['tenant-a'],runId:'synthetic',persist(){}};
 const create=require('./probe-accounting.cjs').create;
@@ -57,6 +68,23 @@ load(ledger); ledger.close(); console.log(JSON.stringify(ledger.snapshot()));
             self.assertEqual(ledger['attempts'],100001)
             self.assertEqual(ledger['byTenant']['tenant-a']['accepted'],100001)
             self.assertTrue(ledger['admissionsClosed'])
+
+    def test_startup_and_progress_windows_are_authored_facts(self):
+        value=self.selected(); windows={'composeReadySeconds':2400,'stageSeconds':3600,'evaluatorReadySeconds':2700}
+        budget={'maxQueriesPerPhase':2048,'maxBytesPerPhase':134217728}
+        value['prepare'].update({'startup-windows':json.dumps(windows),'evaluator-progress-budget':json.dumps(budget)})
+        with patch.object(a,'instrument',return_value={'sha256':'d'*64}):
+            resolved=configuration.resolve(value)
+        self.assertEqual(resolved['startupWindows']['composeReadySeconds'],{'seconds':2400,'origin':'authored'})
+        self.assertEqual(resolved['configuration']['cadence']['evaluatorProgressBudget'],budget)
+        for field in ('startupWindows','evaluatorProgressBudget'):
+            with self.assertRaisesRegex(RuntimeError,'WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED'):
+                contract.discovery_authorization({'cadence':{field:resolved['configuration']['cadence'][field]}},{'version':1})
+        plan=a.deployment_plan({'services':{}},pgstream=True,compose_ready_seconds=2400)
+        for _,_,options in plan:
+            if '--wait-timeout' in options:
+                self.assertEqual(options[options.index('--wait-timeout')+1],'2400')
+                self.assertEqual(a.orchestration_binding._options('up',['--wait-timeout','2400']),['--wait-timeout','2400'])
 
     def selected(self):
         value = config()

@@ -9,6 +9,7 @@ ACK_BUDGET = 'pgstreamNotifierAckTimeoutMs'
 ACK_PACKAGE = ('scripts/producer_ack_publish.py', 'scripts/producer_wire.py')
 PRIMER_STORAGE = 'primerStorage'
 PRIMER_STORAGE_PACKAGE = 'scripts/primer_storage.py'
+JOB_COMPLETE = 'provisionJobCompleteSeconds'
 
 
 class Refused(ValueError):
@@ -84,6 +85,11 @@ def source(manifest):
                 and type(storage['stateMiB']) is int and 0 < storage['stateMiB'] <= (2**53-1)//1048576
                 and storage['secretCodec'] in ('raw-v1','gzip-v1'), 'PRIMER_STORAGE_SELECTION')
         chosen[PRIMER_STORAGE] = storage
+    startup = manifest.get('profile',{}).get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
+    if 'jobCompleteSeconds' in startup:
+        seconds=startup['jobCompleteSeconds']
+        require(type(seconds) is int and 1<=seconds<=(2**63-1)//1000000000,'STARTUP_JOB_COMPLETE_WINDOW')
+        chosen[JOB_COMPLETE]=seconds
     return chosen
 
 
@@ -94,6 +100,7 @@ def contract(manifest, observed):
             'BOOTSTRAP_HELPER_UNDECLARED')
     require((ACK_BUDGET in observed) == (ACK_BUDGET in chosen), 'PGSTREAM_ACK_UNDECLARED')
     require((PRIMER_STORAGE in observed) == (PRIMER_STORAGE in chosen), 'PRIMER_STORAGE_UNDECLARED')
+    require((JOB_COMPLETE in observed) == (JOB_COMPLETE in chosen),'STARTUP_JOB_COMPLETE_UNDECLARED')
     if 'bootstrapHelper' in manifest:
         require(observed.get('sourceFilesSha256', {}).get('bootstrap.js') == BOOTSTRAP_ORIGINAL, 'BOOTSTRAP_BASE_CHANGED')
     require(re.fullmatch('[a-f0-9]{64}', observed['nativeCatalogueSha256']), 'CATALOGUE_ID')

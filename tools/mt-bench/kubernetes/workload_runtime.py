@@ -10,12 +10,17 @@ SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE', 'JWT_SETUP_C
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger'}, 'WORKLOAD_FIELDS')
+         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget'}, 'WORKLOAD_FIELDS')
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
     need(workload_inputs.probe_interval(w.get('probeEveryMs')), 'WORKLOAD_PROBE_INTERVAL')
     need('probeLedger' not in w or workload_inputs.probe_ledger(w['probeLedger']), 'WORKLOAD_PROBE_LEDGER_BUDGET')
     need(workload_inputs.probe_fits_ledger(w['probeEveryMs'], w['loadSeconds'], w.get('probeLedger')), 'WORKLOAD_PROBE_LEDGER_WINDOW')
+    if 'evaluatorProgressBudget' in w:
+        import evaluator_progress as progress
+        need(w['evaluatorProgressBudget'] is not None,'WORKLOAD_EVALUATOR_PROGRESS_BUDGET')
+        try:progress.capture_policy(w['evaluatorProgressBudget'])
+        except progress.Refused:need(False,'WORKLOAD_EVALUATOR_PROGRESS_BUDGET')
     need(workload_inputs.tenants(w.get('hotFactor', 1)), 'WORKLOAD_HOT_FACTOR')
     need(tenants is None or workload_inputs.population_fits(tenants, w.get('hotFactor', 1)),
          'WORKLOAD_POPULATION_ARRAY_LIMIT')

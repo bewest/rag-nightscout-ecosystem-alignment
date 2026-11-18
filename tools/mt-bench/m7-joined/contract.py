@@ -303,6 +303,8 @@ def discovery_authorization(manifest, receipt):
     ack_budget = stream_topology.ack_selection(manifest)
     require(not ack_budget or version==2, 'M7_PGSTREAM_ACK_BOUND_RECEIPT_REQUIRED')
     preload = preload_convergence.receipt(manifest, receipt)
+    selected_budgets={'probeLedger','startupWindows','evaluatorProgressBudget'} & manifest.get('cadence',{}).keys()
+    require(not selected_budgets or version==2,'M7_WORKLOAD_BUDGET_BOUND_RECEIPT_REQUIRED')
     if version==1:return dict(UNACCEPTED_SCOPE)
     from run_configuration import sha
     import static_topology

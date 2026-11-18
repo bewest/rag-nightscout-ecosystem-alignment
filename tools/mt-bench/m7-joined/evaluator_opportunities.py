@@ -99,7 +99,7 @@ def durable_rows(captures,ids,binding):
     return decoded
 
 
-def all_roster(rounds,ids,phase,*,allow_clinical_stall=False):
+def all_roster(rounds,ids,phase,*,allow_clinical_stall=False,policy=p.POLICY):
     # Re-decode to enforce every row's readiness/admission/health independently of
     # eligibility. Then run process/counter/foreign/reset/hidden-error checks.
     p.need(bool(rounds),'M7_EVALUATOR_PROGRESS_ROUNDS')
@@ -110,7 +110,7 @@ def all_roster(rounds,ids,phase,*,allow_clinical_stall=False):
             normalized=current['owners'][tenant]
             p.need(all(owner.get(k)==v for k,v in normalized.items()),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     p.need(set(rounds[0]['owners'])==set(ids),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
-    try:p.assess(rounds,ids,phase,discovery_unclassified_rejections=True)
+    try:p.assess(rounds,ids,phase,discovery_unclassified_rejections=True,policy=policy)
     except p.Refused as error:
         if str(error)!='M7_EVALUATOR_PROGRESS_NOT_OBSERVED':raise
 
@@ -137,8 +137,8 @@ def timer_outcome(rounds,tenant,captures=None):
     except (p.Refused,KeyError):return 'UNMEASURED'
 
 
-def assess(rounds,ids,phase,*,durable=None,binding=None):
-    p.validate_ids(ids);all_roster(rounds,ids,phase)
+def assess(rounds,ids,phase,*,durable=None,binding=None,policy=p.POLICY):
+    p.validate_ids(ids);all_roster(rounds,ids,phase,policy=policy)
     captures=durable_rows(durable,ids,binding) if durable is not None else None
     selected_native=native_binding(binding) if captures is not None else False
     outcomes={};source_tenants={key:set() for key in SOURCES}
@@ -214,8 +214,8 @@ def collection_cost(value,windows,tenants):
 
 class Observer(p.Observer):
     """Explicit idle/load caller. Three SQL-before-inspection captures, one clock."""
-    def __init__(self,*args,durable_fetch,binding,preparation_cost,source_sha256,query_sha256):
-        super().__init__(*args)
+    def __init__(self,*args,durable_fetch,binding,preparation_cost,source_sha256,query_sha256,policy=p.POLICY):
+        super().__init__(*args,policy=policy)
         p.need(self.phase in ('idle','load'),'M7_OPPORTUNITY_PHASE')
         self.durable_fetch,self.binding=durable_fetch,binding
         self.preparation_cost=preparation_cost;self.durable=[];self.windows=[];self.costs=[]
@@ -225,14 +225,15 @@ class Observer(p.Observer):
         try:
             start=time.monotonic_ns();snapshot,cost=self.durable_fetch();end=time.monotonic_ns()
             self.durable.append(snapshot);self.costs.append(cost)
-            row=idle.round_view(self.services,self.ids,self.fetch,allow_unavailable=True,allow_clinical_stall=getattr(self,'rest_only',False))
+            row=idle.round_view(self.services,self.ids,self.fetch,allow_unavailable=True,allow_clinical_stall=getattr(self,'rest_only',False),policy=self.policy)
             self.rounds.append(row);self.windows.append({'startNs':start,'durableEndNs':end,'inspectionEndNs':time.monotonic_ns()})
         except Exception as error:
             self.failure=error
             if hasattr(error,'opportunityCost'):self.costs.append(error.opportunityCost)
 
     def payload(self,value):
-        return {**value,'opportunityContract':CONTRACT,'durableBinding':self.binding,'durable':self.durable,'rounds':self.rounds,
+        return {**value,**({'capturePolicy':self.policy} if self.policy!=p.POLICY else {}),
+                'opportunityContract':CONTRACT,'durableBinding':self.binding,'durable':self.durable,'rounds':self.rounds,
                 'durableSourceSha256':self.source_sha256,'durableQuerySha256':self.query_sha256,
                 'captureWindows':self.windows,'durableCollectorCost':{'preparation':self.preparation_cost,'rounds':self.costs,
                     'scope':'observer and SQL command elapsed time; observer CPU excludes Node/PG child CPU; included in measured system workload'}}
@@ -250,8 +251,8 @@ class Observer(p.Observer):
             p.need(sum(c['rawSqlBytes'] for c in self.costs)<=3*ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
             if getattr(self,'rest_only',False):
                 from discovery_rest import assess_rest
-                result=assess_rest(self.rounds,self.ids,self.phase,self.durable,self.binding)
-            else:result=assess(self.rounds,self.ids,self.phase,durable=self.durable,binding=self.binding)
+                result=assess_rest(self.rounds,self.ids,self.phase,self.durable,self.binding,policy=self.policy)
+            else:result=assess(self.rounds,self.ids,self.phase,durable=self.durable,binding=self.binding,policy=self.policy)
             collection_cost(self.payload(result)['durableCollectorCost'],self.windows,len(self.ids))
         except Exception as error:self.failed(error);raise
         self.result=self.payload(result);self.write(self.result)
@@ -274,16 +275,18 @@ def pack(value):
             'rounds':[idle._pack_round(r) for r in value.get('rounds',[])]}
 
 
-def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None):
+def verify(value,tenants,services,binding,*,source_sha256=None,query_sha256=None,budget=None):
     p.need(value.get('kind')=='evaluator-opportunity-phase-v1' and value.get('opportunityContract')==CONTRACT and value.get('columns')==list(idle.COLUMNS),'M7_OPPORTUNITY_ARTIFACT')
     p.need(value.get('durableBinding')==binding,'M7_OPPORTUNITY_BINDING','FAIL')
+    policy=p.capture_policy(budget)
+    p.need(value.get('capturePolicy',p.POLICY)==policy,'M7_EVALUATOR_PROGRESS_BUDGET_CHANGED')
     for key,expected in [('durableSourceSha256',source_sha256),('durableQuerySha256',query_sha256)]:
         p.need(isinstance(value.get(key),str) and re.fullmatch('[a-f0-9]{64}',value[key]) and (expected is None or value[key]==expected),'M7_OPPORTUNITY_BINDING','FAIL')
     rounds,ids=idle._decode(value,tenants,services,allow_unavailable=True,allow_clinical_stall=value.get('restCollectionPermitted') is True);capture_windows(value.get('captureWindows'),3)
     collection_cost(value.get('durableCollectorCost'),value['captureWindows'],tenants)
     if value.get('restCollectionPermitted') is True:
         from discovery_rest import assess_rest
-        result=assess_rest(rounds,sorted(ids),value.get('phase'),value.get('durable'),binding)
-    else:result=assess(rounds,sorted(ids),value.get('phase'),durable=value.get('durable'),binding=binding)
+        result=assess_rest(rounds,sorted(ids),value.get('phase'),value.get('durable'),binding,policy=policy)
+    else:result=assess(rounds,sorted(ids),value.get('phase'),durable=value.get('durable'),binding=binding,policy=policy)
     p.need(all(value.get(k)==v for k,v in result.items() if k not in ('kind','durableCollectorCost')),'M7_OPPORTUNITY_ASSESSMENT')
     return result

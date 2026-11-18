@@ -202,9 +202,12 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         from workload_runtime import validate as validate_workload
         validate_workload(c['workload'], need, c['tenants'])
         need('probeLedger' not in c['workload'] or c.get('tier','discovery')=='discovery', 'PROBE_LEDGER_DISCOVERY_ONLY')
+        need('evaluatorProgressBudget' not in c['workload'] or c.get('tier','discovery')=='discovery', 'EVALUATOR_PROGRESS_BUDGET_DISCOVERY_ONLY')
     if 'accessSetupSeconds' in c:
         from workload_inputs import seconds
         need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
+    if 'dataPrimerSeconds' in c:
+        need(workload_inputs.seconds(c['dataPrimerSeconds']), 'DATA_PRIMER_WINDOW')
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
@@ -274,7 +277,7 @@ class Client:
     def __init__(self, c, run=subprocess.run):
         self.c, self.run = c, run
 
-    def call(self, args, *, data=None, read=True, cleanup=False):
+    def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -297,7 +300,7 @@ class Client:
         raw = result.stdout
         if isinstance(raw, str):
             raw = raw.encode()
-        need(isinstance(raw, bytes) and len(raw) <= 32 * 1024 * 1024, 'OBSERVATION_BOUND', 'UNMEASURED')
+        need(isinstance(raw, bytes) and len(raw) <= output_limit, 'OBSERVATION_BOUND', 'UNMEASURED')
         return raw
 
     def get(self, kind, name=None, cleanup=False):

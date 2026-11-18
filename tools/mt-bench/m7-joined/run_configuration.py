@@ -101,8 +101,11 @@ def resolve(config, source_acceptance=None):
         template['executionScope'] = 'LOCAL_OWNED_TO_COMPLETION'
     from contract import discovery_authorization
     discovery_authorization({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},template)
+    authored=resolved['cadence'].get('startupWindows',{})
     return {'configuration': resolved, 'configurationSha256': sha(resolved), 'diagnosticReceiptTemplate':template,
             'receiptLimits': limits,
+            'startupWindows':{key:{'seconds':authored.get(key,value), 'origin':'authored' if key in authored else 'reference'}
+                              for key,value in workload_inputs.COMPOSE_STARTUP_DEFAULTS.items()},
             'workSeconds': config['workSeconds'], 'cleanupSeconds': config['cleanupSeconds'],
             'k6Image': config['k6Image']}
 
@@ -133,7 +136,7 @@ def remote_projection(config, overlay, source_acceptance=None):
     require(not set(b).intersection({'tenants','pair','imageId','k6Image','workload','reportMode','pgstreamTopology','diagnosticResourceProfile','diagnosticResourceAllocation','staticTopology','commissioningSlotWalMiB','tenantReadiness'}),
             'M7_CONFIG_REMOTE_MIRROR_REFUSED')
     cadence = dict(r['cadence'])
-    require(not {'setupSeconds','drainSeconds','drainObservation'} & cadence.keys(),
+    require(not {'setupSeconds','drainSeconds','drainObservation','startupWindows','probeLedger','evaluatorProgressBudget'} & cadence.keys(),
             'M7_REMOTE_PHASE_WINDOWS_UNSUPPORTED')
     viewers = cadence.get('logicalPollingClients',r['tenants']*cadence['socketsPerTenant'])
     b.update(tenants=r['tenants'], pair=r['pair'], imageId=r['imageId'], reportMode='discovery',

@@ -179,11 +179,12 @@ def run(a,d,m,out,work,record,stop_load):
             result['captures']={'before':before,'authorityBefore':auth_before,'costBefore':cost_before}
             a.write(out/'demand-recovery.json',result)
             try:
-                baseline=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),warming=True,allow_unavailable=True)
+                policy=p.capture_policy(m.get('cadence',{}).get('evaluatorProgressBudget'))
+                baseline=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),warming=True,allow_unavailable=True,policy=policy)
                 if any(not row['ready'] for row in baseline['owners'].values()):
                     error=p.Refused('M7_EVALUATOR_PROGRESS_UNAVAILABLE');error.diagnostic={'availability':p.availability([baseline],ids)};raise error
                 time.sleep(.25);live(future);bound()
-                confirmed=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),allow_unavailable=True)
+                confirmed=p.round_view(services,ids,lambda service,chosen,q,b:a.progress_fetch(d,service,chosen,q,b),allow_unavailable=True,policy=policy)
                 if any(not row['ready'] for row in confirmed['owners'].values()):
                     error=p.Refused('M7_EVALUATOR_PROGRESS_UNAVAILABLE');error.diagnostic={'availability':p.availability([confirmed],ids)};raise error
             except p.Refused as error:

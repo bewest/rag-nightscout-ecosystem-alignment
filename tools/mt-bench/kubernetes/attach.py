@@ -22,8 +22,10 @@ cfg['driver'].update(k6=str(k6),k6Sha256=sha(k6));cfg['readonlyGuard']=str(Path(
 cfg.update(context=e['context'],runId=e['runId'],namespace=ns,tenants=e['tenantCount'],deadlines={k:v.replace('+00:00','Z') for k,v in dl.items()},tenantsFile=str(live/'packet/primer/tenants.json'))
 def execute(label,args,deadline=1800):
     path=live/(label+'.log')
+    remaining=min(deadline,until-time.time())
+    if remaining<=0:raise RuntimeError('ATTACH_WORK_DEADLINE')
     with path.open('xb') as f:
-        result=subprocess.run([str(x) for x in args],stdout=f,stderr=subprocess.STDOUT,timeout=max(1,min(deadline,until-time.time())))
+        result=subprocess.run([str(x) for x in args],stdout=f,stderr=subprocess.STDOUT,timeout=remaining)
     if result.returncode:
         detail=sorted(set(re.findall(r'\b(?:K8S_|M7_|PRIMER_)[A-Z_]{2,88}',path.read_text(errors='replace')[-2500:])))
         write(live/'attachment-refusal.json',{'stage':label,'exit':result.returncode,'codes':detail})
@@ -77,7 +79,9 @@ try:
     write(live/'instance.json',instance)
     execute('prepare',exp+['prepare',d/'intent.json',live/'instance.json',packet,'--await-primer'])
     observe_selected_bootstrap(packet, live, uid, ad, execute)
-    execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer','--concurrency',str(control['primerConcurrency'])],3600)
+    startup=control.get('startupWindowPreflight',{}).get('selectedSeconds',{})
+    execute('prime',[sys.executable,'-B',K/'primer.py',packet,packet/'primer','--concurrency',str(control['primerConcurrency'])],
+            startup.get('dataPrimerSeconds',3600))
     assert read(packet/'primer/result.json')['verdict']=='OBSERVED'
     # Capture read-only SQL independently of optional client measurements.
     try:execute('sql',ad+['observe-sql',packet,live/'sql'],120)

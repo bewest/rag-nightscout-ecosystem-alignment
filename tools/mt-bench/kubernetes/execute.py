@@ -211,10 +211,13 @@ def progress(d, c, objects, client, *, raw_output=None):
     baseline = k.active_baseline(d)
     before = k.observe(c, objects, client, baseline)
     pod, container = k.selected_pod(c, before, 'evaluator')
+    selected=c.get('workload',{}).get('evaluatorProgressBudget')
+    policy=k.evaluator_progress.capture_policy(selected)
     helper = (k.M7 / 'evaluator-progress.cjs').read_text()
     def fetch(role, selected, queries, budget):
         prefix = 'const M7_PROGRESS_IDS=' + json.dumps(selected) + ';const M7_PROGRESS_QUERY_BUDGET=' + str(queries) + ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) + ';\n'
-        raw = client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'], data=(prefix + helper).encode(), read=False)
+        options={'output_limit':budget} if selected is not None else {}
+        raw = client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'], data=(prefix + helper).encode(), read=False, **options)
         if raw_output is not None:
             fd = os.open(raw_output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, 'wb') as stream:
@@ -223,10 +226,11 @@ def progress(d, c, objects, client, *, raw_output=None):
             k.write(raw_output.with_name('progress-after-response.json'), {
                 'observedAt':time.time(), 'bytes':len(raw), 'sha256':k.digest(raw_output),
                 'namespaceUid':before['namespace']['uid'], 'podUid':identity['uid'],
-                'containerId':identity['containers'][container]['containerID'], 'pins':c['pins']})
+                'containerId':identity['containers'][container]['containerID'], 'pins':c['pins'], 'capturePolicy':policy})
         return raw
-    value = k.evaluator_progress.round_view(['evaluator'], ids, fetch)
+    value = k.evaluator_progress.round_view(['evaluator'], ids, fetch,policy=policy)
     k.observe(c, objects, client, baseline)
+    if selected is not None:value['capturePolicy']=policy
     return value
 
 
@@ -617,7 +621,11 @@ def assess_stage(d, out, c, objects, client):
            frames['verdict'] == 'NOT_EXERCISED', 'CLIENT_FRAME_UNMEASURED', 'UNMEASURED')
     rounds = [k.document(out / (name + '.json')) for name in ('progress-before', 'progress-midpoint', 'progress-after')]
     # Keep existing progress assessment separate from durable clinical proof.
-    progress = k.evaluator_progress.assess(rounds, [r['id'] for r in tenants], 'load')
+    selected=c.get('workload',{}).get('evaluatorProgressBudget')
+    policy=k.evaluator_progress.capture_policy(selected)
+    k.need(all(row.get('capturePolicy')==(policy if selected is not None else None) for row in rounds),
+           'EVALUATOR_PROGRESS_BUDGET_CHANGED')
+    progress = k.evaluator_progress.assess(rounds, [r['id'] for r in tenants], 'load',policy=policy)
     functional = load_checks(out, c) if out.name == 'load' else 'NOT_SELECTED'
     summary = {'version': 1, 'verdict': 'OBSERVED', 'runId': runid, 'pins': c['pins'], 'storedWrites': counts,
                'clinical': clinical, 'frames': frames, 'evaluatorProgress': progress,

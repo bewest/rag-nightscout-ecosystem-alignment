@@ -4,8 +4,9 @@ Adapted from the retained staging controller; all local custody is explicit JSON
 """
 import base64, datetime as dt, hashlib, json, os, subprocess, sys, time, traceback
 import signal
+from contextlib import contextmanager
 from pathlib import Path
-from lifecycle_config import fixture_config
+from lifecycle_config import fixture_config, startup_preflight
 import frozen
 import primer_storage
 import producer_startup
@@ -16,13 +17,19 @@ d=Path(cfg['caseDirectory']); inst=Path(cfg['instrumentDirectory']); tool=Path(c
 read=lambda p:json.loads(p.read_bytes())
 os.umask(0o077);sys.dont_write_bytecode=True
 e=read(d/'environment.json'); ns=e['namespace'];ctx=e['context'];rid=e['runId']
+intent=read(d/'intent.json')
+startup=cfg.get('startupWindowPreflight') or startup_preflight(intent,e,[])
+waits=startup['selectedSeconds']
 assert e['runId']==d.name and ns.startswith('ns-synth-'),'INSTANCE_IDENTITY_CHANGED'
 live=d/'runtime';live.mkdir(mode=0o700,exist_ok=True);assert not any(live.iterdir()),'ENTERED_OUTPUT_EXISTS'
 def put(n,obj):(live/n).write_text(json.dumps(obj,indent=2)+'\n')
 def timestamp():return dt.datetime.now(dt.timezone.utc).isoformat()
-def command(argv,data=None,timeout=18,private=False):
+def command(argv,data=None,timeout=None,private=False):
     rem=cleanup-time.time() if cleaning else work-time.time()
+    if not cleaning and phase_cutoff is not None:
+        rem=min(rem,phase_cutoff-time.time())
     assert rem>0,'CUTOFF'
+    if timeout is None:timeout=18 if cleaning else waits['commandSeconds']
     q=subprocess.run([str(x) for x in argv],input=data,capture_output=True,timeout=min(timeout,rem),env=env)
     if q.returncode:
         import re
@@ -31,8 +38,23 @@ def command(argv,data=None,timeout=18,private=False):
         raise RuntimeError('PRIVATE_STEP_FAILED' if private else 'STAGE_COMMAND_FAILED')
     return q.stdout
 env={**os.environ,'PATH':str(tool)+':'+os.environ['PATH'],'TMPDIR':str(live),'NS_KUBE_CONTEXT':ctx,'NS_RUN_ID':rid,'RO_NO_LOG':'1','PYTHONDONTWRITEBYTECODE':'1'}
-rpc=[tool/'kubectl','--context',ctx,'--request-timeout=14s']
+rpc=[tool/'kubectl','--context',ctx,'--request-timeout='+str(waits['requestSeconds'])+'s']
 start=time.time();work=start+e['workDeadlineSeconds'];cleanup=start+e['cleanupDeadlineSeconds'];cleaning=False
+phase_cutoff=None
+
+@contextmanager
+def startup_window(name, seconds):
+    global phase_cutoff
+    previous=phase_cutoff
+    started=time.time()
+    phase_cutoff=min(started+seconds,work,previous if previous is not None else work)
+    try:
+        put('startup-window-'+name+'.json',{'selectedSeconds':seconds,'startedAtEpochSeconds':started,
+            'effectiveDeadlineEpochSeconds':phase_cutoff,'effectiveWindowSeconds':max(0,phase_cutoff-started)})
+        yield phase_cutoff
+    finally:
+        phase_cutoff=previous
+
 def k(args,body=None,private=False):return command(rpc+args,json.dumps(body).encode() if body else None,private=private)
 def get(kind,name,local=True):
     b=k(['get',kind,name,*(['-n',ns] if local else []),'--ignore-not-found','-o','json'])
@@ -90,10 +112,7 @@ def require_pod_uid(name,uid):
 def ready(label,typ,timeout,convergence=None):
     step('wait-'+typ)
     started=time.time()
-    until=min(started+timeout,work)
-    if typ=='cohort':
-        put('startup-window-cohort.json',{'selectedSeconds':timeout,'startedAtEpochSeconds':started,
-             'effectiveDeadlineEpochSeconds':until,'effectiveWindowSeconds':max(0,until-started)})
+    until=min(started+timeout,work,phase_cutoff if phase_cutoff is not None else work)
     stable=producer_startup.StableReady(convergence['stableReadySeconds'] if convergence else 0)
     failures={}
     while time.time()<until:
@@ -127,26 +146,28 @@ def ready(label,typ,timeout,convergence=None):
             if any(x.get('type')=='Ready' and x.get('status')=='True' for x in pod.get('status',{}).get('conditions',[])):
                 ready_pod=pod
                 identity=(s['uid'],tuple((v['name'],v['restartCount']) for v in s['containers']))
-        if stable.observe(identity,time.monotonic()) and (typ!='cohort' or time.time()<until):
+        if stable.observe(identity,time.monotonic()) and time.time()<until:
             if convergence:
                 put('startup-convergence-'+typ+'.json',{'verdict':'READY','uid':identity[0],
                     'effectivePolicy':convergence,'observedStableSeconds':time.monotonic()-stable.started,
                     'recordedFailures':len(failures)})
             return ready_pod
-        time.sleep(2)
+        time.sleep(min(2,max(0,until-time.time())))
     raise RuntimeError('READY_DEADLINE_'+typ)
 
 def workload_ready(stage):
     for obj in objects(stage):
         nm=obj['metadata']['name']; sel=obj['spec']['selector']['matchLabels']
         convergence=producer_policy if nm=='pgstream' else None
-        timeout=cohort_ready if stage=='serving' and obj['kind']=='StatefulSet' and nm=='cohort' else 300
-        ready(','.join(k+'='+v for k,v in sel.items()),nm,
-              convergence['maxSeconds'] if convergence else timeout,convergence)
-def execpod(pod,container,args,seconds=35):
+        timeout=waits['cohortReadySeconds'] if stage=='serving' and obj['kind']=='StatefulSet' and nm=='cohort' else waits['workloadReadySeconds']
+        seconds=convergence['maxSeconds'] if convergence else timeout
+        with startup_window(nm,seconds):
+            ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)
+def execpod(pod,container,args,seconds=None):
     uid=pod['metadata']['uid']; nm=pod['metadata']['name']
     owned();assert get('pod',nm)['metadata']['uid']==uid
-    result=command([tool/'kubectl','--context',ctx,'-n',ns,'exec',nm,'-c',container,'--',*args],timeout=seconds,private=True)
+    result=command([tool/'kubectl','--context',ctx,'-n',ns,'exec',nm,'-c',container,'--',*args],
+                   timeout=waits['execSeconds'] if seconds is None else seconds,private=True)
     assert get('pod',nm)['metadata']['uid']==uid
     return result
 raw=Path(cfg['snapshotDirectory']);src=read(raw/'capture.json')
@@ -162,10 +183,13 @@ assert get('namespace',ns,False) is None
 trust=objects('cluster-trust')[0]; tn=trust['metadata']['name']
 assert tn==ns+'-vault-tokenreview' and trust['roleRef']['name']=='system:auth-delegator' and trust['subjects']==[{'kind':'ServiceAccount','name':'vault','namespace':ns}] and get('clusterrolebinding',tn,False) is None
 assert read(Path(cfg['cacheAbsence']['path']))['verifiedAt']
-intent=read(d/'intent.json')
 producer_policy=producer_startup.policy(intent['profile']['phases'].get('producerStartup'),e['workDeadlineSeconds'])
-cohort_ready=producer_startup.cohort_ready_seconds(intent['profile']['phases'],e['workDeadlineSeconds'])
 selected_source=frozen.source(intent)
+if frozen.JOB_COMPLETE in selected_source:
+    contract, = (row['data']['source-contract.json'] for row in objects('foundation')
+                 if row['kind']=='ConfigMap' and row['metadata']['name']=='provision-scripts')
+    receipt=(Path(cfg['bindingDirectory'])/'binding.json').resolve()
+    frozen.rendered_contract(intent,contract,{'path':str(receipt),'sha256':cfg['inputs'][str(receipt)]})
 frozen.check_bootstrap_render(intent, [row for stage in
     ('foundation','stores','provision','private-admin','primer','serving') for row in objects(stage)])
 primer_storage.check_render(selected_source, objects('primer'))
@@ -191,33 +215,36 @@ try:
         del pull
     step('seed stores')
     secret_script=Path(cfg['bindingDirectory'])/'bindings/kubernetes/scripts/secrets.sh'
-    command(['bash',secret_script,'seed',ns,'unused'],timeout=90,private=True)
+    with startup_window('secret-seed',waits['secretSeedSeconds']):
+        command(['bash',secret_script,'seed',ns,'unused'],timeout=waits['secretSeedSeconds'],private=True)
     actual=get('configmap', frozen.HELPER_MAP)
     put('bootstrap-helper-readback.json',frozen.bootstrap_readback(selected_source,actual,uids,ns,rid))
     install('stores');workload_ready('stores')
     install('provision')
-    provision=ready('job-name=provision','provision',e['provisionDeadlineSeconds'])
+    with startup_window('provision',waits['provisionReadySeconds']):
+        provision=ready('job-name=provision','provision',waits['provisionReadySeconds'])
     step('owned role export')
     # Keep the two private configuration documents required for the completion oracle only.
-    until=time.monotonic()+70
-    while time.monotonic()<until:
-        row=get('pod',provision['metadata']['name']);assert row['metadata']['uid']==provision['metadata']['uid']
-        put('latest-role-export.json',summary(row))
-        if row.get('status',{}).get('phase')=='Failed':
-            owned()
-            uid=row['metadata']['uid']
-            assert get('pod',row['metadata']['name'])['metadata']['uid']==uid
-            codes=failure_codes(row['metadata']['name'],'done',uid)['codes']
-            assert get('pod',row['metadata']['name'])['metadata']['uid']==uid
-            put('failure-role-export.json',{'podUid':uid,'container':'done','codes':codes,'classification':'CAPTURED' if codes else 'UNCLASSIFIED'})
-            raise RuntimeError('SOURCE_ROLE_EXPORT_POD_FAILED')
-        try:execpod(provision,'done',['test','-f','/state/.ready']);break
-        except RuntimeError:time.sleep(1)
-    else:raise RuntimeError('SOURCE_ROLE_EXPORT_NOT_READY')
-    (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
-    for role in ('evaluator','realtime'):
-        (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
-    published=command(['bash',secret_script,'publish',ns,'unused'],timeout=185,private=True)
+    with startup_window('role-export',waits['roleExportSeconds']) as until:
+        while time.time()<until:
+            row=get('pod',provision['metadata']['name']);assert row['metadata']['uid']==provision['metadata']['uid']
+            put('latest-role-export.json',summary(row))
+            if row.get('status',{}).get('phase')=='Failed':
+                owned()
+                uid=row['metadata']['uid']
+                assert get('pod',row['metadata']['name'])['metadata']['uid']==uid
+                codes=failure_codes(row['metadata']['name'],'done',uid)['codes']
+                assert get('pod',row['metadata']['name'])['metadata']['uid']==uid
+                put('failure-role-export.json',{'podUid':uid,'container':'done','codes':codes,'classification':'CAPTURED' if codes else 'UNCLASSIFIED'})
+                raise RuntimeError('SOURCE_ROLE_EXPORT_POD_FAILED')
+            try:execpod(provision,'done',['test','-f','/state/.ready']);break
+            except RuntimeError:time.sleep(min(1,max(0,until-time.time())))
+        else:raise RuntimeError('SOURCE_ROLE_EXPORT_NOT_READY')
+        (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
+        for role in ('evaluator','realtime'):
+            (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
+    with startup_window('secret-publish',waits['secretPublishSeconds']):
+        published=command(['bash',secret_script,'publish',ns,'unused'],timeout=waits['secretPublishSeconds'],private=True)
     if frozen.PRIMER_STORAGE in selected_source:
         storage_receipt=json.loads(published.splitlines()[0])
         selected_storage=selected_source[frozen.PRIMER_STORAGE]
@@ -234,22 +261,24 @@ try:
     install('primer');pobj=get('job','primer')
     assert pobj['spec']['suspend'] is True
     k(['patch','job','primer','-n',ns,'--type=json','-p',json.dumps([{'op':'test','path':'/metadata/uid','value':pobj['metadata']['uid']},{'op':'test','path':'/spec/suspend','value':True},{'op':'replace','path':'/spec/suspend','value':False}])])
-    primer=ready('job-name=primer','primer',min(e['provisionDeadlineSeconds'],3600))
+    primer_seconds=min(waits['primerReadySeconds'],pobj['spec']['activeDeadlineSeconds'])
+    with startup_window('primer',primer_seconds):
+        primer=ready('job-name=primer','primer',primer_seconds)
     step('platform verification')
     # done runs source verification before writing the ready marker.
-    deadline=time.monotonic()+150
-    while time.monotonic()<deadline:
-        row=get('pod',primer['metadata']['name'])
-        assert row['metadata']['uid']==primer['metadata']['uid']
-        cons=row['status'].get('containerStatuses',[])
-        if any(c['state'].get('terminated',{}).get('exitCode',0)!=0 for c in cons):
-            put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done',row['metadata']['uid'])['codes']})
-            raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED')
-        try:
-            execpod(primer,'done',['test','-s','/run/ns-primer/verified.json'])
-            break
-        except RuntimeError:time.sleep(2)
-    else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
+    with startup_window('platform-verify',waits['platformVerifySeconds']) as until:
+        while time.time()<until:
+            row=get('pod',primer['metadata']['name'])
+            assert row['metadata']['uid']==primer['metadata']['uid']
+            cons=row['status'].get('containerStatuses',[])
+            if any(c['state'].get('terminated',{}).get('exitCode',0)!=0 for c in cons):
+                put('platform-failure.json',{'podUid':row['metadata']['uid'],'codes':failure_codes(row['metadata']['name'],'done',row['metadata']['uid'])['codes']})
+                raise RuntimeError('SOURCE_PLATFORM_VERIFICATION_FAILED')
+            try:
+                execpod(primer,'done',['test','-s','/run/ns-primer/verified.json'])
+                break
+            except RuntimeError:time.sleep(min(2,max(0,until-time.time())))
+        else:raise RuntimeError('SOURCE_VERIFICATION_MARKER_DEADLINE')
     install('serving');workload_ready('serving')
     if ack_wire is not None:
         latest=read(live/'latest-pgstream.json')
@@ -290,6 +319,7 @@ finally:
         put('terminal-pods.json',[summary(p) for p in pods('nightscout.org/run-id='+rid)])
     except Exception:put('terminal-pods-unavailable.json',{'status':'UNMEASURED'})
     cleaning=True
+    rpc=[tool/'kubectl','--context',ctx,'--request-timeout=14s']
     cleanup_errors=[]
     if trustuid:
         try:

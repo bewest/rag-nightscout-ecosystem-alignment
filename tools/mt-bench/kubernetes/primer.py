@@ -92,6 +92,11 @@ def prime(directory, output, concurrency):
                        for row in job['status'].get('conditions', [])), 'PRIMER_JOB_INACTIVE')
         cutoff = min(k.timestamp(c['deadlines']['workUntil']),
                      k.timestamp(job['status']['startTime']) + job['spec']['activeDeadlineSeconds'])
+        if 'dataPrimerSeconds' in c:
+            selected=c['dataPrimerSeconds']
+            k.need(k.workload_inputs.seconds(selected),'DATA_PRIMER_WINDOW')
+            cutoff=min(cutoff,time.time()+selected)
+            result['selectedDataPrimerSeconds']=selected
         args = [c['namespace'], c['runId'], hashlib.sha256(contract).hexdigest(),
                 hashlib.sha256(proof).hexdigest(), str(int(cutoff*1000)), str(c['tenants']), str(concurrency)]
         result['cutoffEpochMs'] = int(cutoff*1000)

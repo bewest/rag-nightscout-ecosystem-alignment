@@ -18,7 +18,8 @@ class Lifecycle(unittest.TestCase):
             e=dict(runId=case.name,namespace='ns-synth-any',tenantCount=500,sourceCommit='1'*40,
                    workDeadlineSeconds=7200,cleanupDeadlineSeconds=7800,provisionDeadlineSeconds=3600)
             put(files['environment'],e)
-            intent={'profile':{'population':{'provisionedTenants':500},'phases':{'cohortReadySeconds':900},
+            intent={'profile':{'population':{'provisionedTenants':500},'phases':{'cohortReadySeconds':900,
+                                'startupWindows':{'kubernetes':{'workloadReadySeconds':600,'dataPrimerSeconds':7200}}},
                               'proposedEnvelope':{'nativeLimits':{'millicpus':8000,'memoryBytes':8*1024**3}}}}
             put(files['intent'],intent)
             put(files['preflight'],{'commissioning':'PREFLIGHT_ONLY','experiment':{'renderSha256':l.sha(files['render'])}})
@@ -35,6 +36,10 @@ class Lifecycle(unittest.TestCase):
             def external(argv,**kw):return '1'*40 if argv[0]=='git' else json.dumps({'sha256':'2'*64}).encode()
             with patch.object(l.subprocess,'check_output',side_effect=external):
                 frozen=l.fixture_config(path,capture=True);put(path,frozen);self.assertEqual(l.fixture_config(path),frozen)
+                windows=frozen['startupWindowPreflight']
+                self.assertEqual(windows['authoredFields'],['cohortReadySeconds','dataPrimerSeconds','workloadReadySeconds'])
+                self.assertEqual(windows['selectedSeconds']['dataPrimerSeconds'],7200)
+                self.assertEqual(windows['selectedSeconds']['execSeconds'],35)
                 def refusal(code,mutate,restore):
                     mutate()
                     with self.assertRaisesRegex(ValueError,code):l.fixture_config(path)
@@ -49,6 +54,8 @@ class Lifecycle(unittest.TestCase):
                 refusal('ALLOCATION_EXCEEDED',lambda:put(path,wrong),lambda:put(path,frozen))
                 wrong=copy.deepcopy(frozen);wrong['instrumentSha256']='3'*64
                 refusal('INSTRUMENT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
+                wrong=copy.deepcopy(frozen);wrong['startupWindowPreflight']['selectedSeconds']['dataPrimerSeconds']=7199
+                refusal('STARTUP_PREFLIGHT_CHANGED',lambda:put(path,wrong),lambda:put(path,frozen))
                 stage=case/'stages/stores.json'
                 refusal('STAGE_NAMESPACE',lambda:put(stage,{'items':[dict(kind='ConfigMap',metadata={'namespace':'foreign'})]}),lambda:put(stage,{'items':[]}))
 
