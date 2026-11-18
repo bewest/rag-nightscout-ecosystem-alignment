@@ -15,6 +15,71 @@ import runner
 from test_run_configuration import config
 
 
+class AdapterRunEntry(unittest.TestCase):
+    """Spawn the real parser/main path, replacing only load and workload I/O."""
+
+    def dispatch(self, cadence, deadline=None):
+        script = '''
+import json
+from pathlib import Path
+import sys
+sys.path.insert(0, sys.argv[1])
+import adapter
+root = Path(sys.argv[2])
+manifest = json.loads((root / 'manifest.json').read_text())
+def load(directory, *, resource_limits):
+    assert Path(directory) == root and resource_limits is True
+    return root, manifest
+def run(directory, selected, image):
+    assert directory == root and selected is manifest and image == 'synthetic-k6'
+    print(json.dumps({'entered': True, 'deadline': adapter._COMMAND_DEADLINE.get()}))
+adapter.load = load
+adapter.run = run
+sys.argv = ['adapter.py', 'run', str(root), '--k6-image', 'synthetic-k6', *sys.argv[3:]]
+try:
+    adapter.main()
+except RuntimeError as error:
+    print(str(error), file=sys.stderr)
+    sys.exit(1)
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root/'manifest.json').write_text(json.dumps({
+                'evaluatorCatchup': 'fixed-target-v1', 'cadence': cadence}))
+            args = [sys.executable, '-B', '-c', script, str(Path(adapter.__file__).parent), str(root)]
+            if deadline is not None:
+                args += ['--work-deadline', str(deadline)]
+            return subprocess.run(args, capture_output=True, text=True, timeout=10)
+
+    def test_cli_enters_owner_monitored_work_with_a_finite_drain(self):
+        result = self.dispatch({'setupSeconds': 900, 'drainSeconds': 900})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), {'entered': True, 'deadline': None})
+
+    def test_cli_keeps_the_existing_outer_deadline(self):
+        deadline = time.time() + 60
+        result = self.dispatch({}, deadline)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), {'entered': True, 'deadline': deadline})
+
+    def test_cli_refuses_an_unbounded_or_invalid_drain_before_work(self):
+        for cadence, code in (({}, 'M7_DRAIN_WORK_DEADLINE_REQUIRED'),
+                              ({'drainSeconds': 0}, 'M7_PHASE_WINDOW_INVALID:drainSeconds')):
+            with self.subTest(cadence=cadence):
+                result = self.dispatch(cadence)
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(result.stdout, '')
+                self.assertEqual(result.stderr.strip(), code)
+
+    def test_cli_refuses_an_invalid_outer_deadline_before_work(self):
+        for deadline in (float('nan'), time.time() - 1):
+            with self.subTest(deadline=deadline):
+                result = self.dispatch({'drainSeconds': 900}, deadline)
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(result.stdout, '')
+                self.assertEqual(result.stderr.strip(), 'M7_COMMAND_DEADLINE')
+
+
 class OwnerMonitoredRun(unittest.TestCase):
     def test_open_run_has_finite_phase_budgets_and_is_local_discovery_only(self):
         value = config()

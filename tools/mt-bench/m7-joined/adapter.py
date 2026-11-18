@@ -2377,7 +2377,9 @@ def main():
             preflight(d,m,args.k6_image);print('M7_SAMPLE_INSTRUMENTS_CHECKED_NOT_ACCEPTANCE')
     elif args.command == "run":
         until = args.work_deadline
-        if m.get('evaluatorCatchup') is not None:require(until is not None,'M7_DRAIN_WORK_DEADLINE_REQUIRED')
+        if m.get('evaluatorCatchup') is not None:
+            require(until is not None or 'drainSeconds' in phase_windows.selection(m.get('cadence', {})),
+                    'M7_DRAIN_WORK_DEADLINE_REQUIRED')
         if until is not None:require(math.isfinite(until) and 0<until-time.time()<=86400,'M7_COMMAND_DEADLINE')
         with command_deadline(until):run(d,m,args.k6_image)
     elif args.command == "diagnose":diagnose(d,m)
