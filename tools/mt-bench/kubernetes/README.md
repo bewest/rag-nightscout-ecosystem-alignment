@@ -591,105 +591,18 @@ python3 -B -m unittest discover -s tools/mt-bench/kubernetes
 The external-fixture controls report a skip when their source is absent. A skipped
 commissioner or binding control does not qualify a runtime configuration.
 
-### Explicitly owned worker
+### Placement and fit
 
-The optional `ownedWorkerPlacement` contract tests placement on one separately
-acquired DigitalOcean Kubernetes worker. Select it only after a complete
-earlier provider and Kubernetes inventory establishes that the pool and Node
-are new. Prepare a private proof with the guard's named Node read, a fresh
-whole-cluster Node/Pod census, the provider cluster and pool responses, and the
-exact infrastructure Pod/controller identities reviewed for this fixture. The
-provider evidence must explicitly report `auto_scale: false` and one worker.
-An omitted flag leaves fixed-pool custody unmeasured.
-
-Use a fresh copy of the exact phase-patched private commissioner and its fixture
-constructor with the [owned-worker patch](commissioning-owned-worker.patch).
-Copy `owned_worker.py` and `owned_worker_view.py` from this same instrument into
-the new commissioner's `ops/staging-k8s/bin/`. The patch paths are relative to a
-directory containing `ops/` and the retained `prepare-private-case.py`. The
-focused control verifies the original file hashes before applying the patch.
-
-The constructor's `--owned-worker-placement` consumes the private selection by
-file. It binds the selected node name and lane label and authors one
-`Equal/NoSchedule` toleration per workload. Preflight joins cluster, pool,
-provider node and Kubernetes Node UID, checks the taint and workload templates,
-and then evaluates the existing resource fit. `collect.py --owned-worker-node
-NODE` retains the scoped, projected Node read beside its ordinary inventory.
-The lifecycle uses the guard at stage entry and immediately before each
-workload create. Runtime observations verify the same placement.
-Its selected read mode emits placement and ownership fields only. A wrong UID,
-label, taint, cordon, foreign or missing Pod, incomplete census, or unmeasured
-provider proof refuses admission. The lifecycle keeps namespace UID cleanup
-available when a worker check fails.
-
-The taint constrains ordinary scheduling. Pods with direct node bindings or
-wildcard tolerations can still appear, so each check uses the full worker Pod
-roster. Placement evidence is bounded to the times it was observed. Provider
-acquisition, image delivery, and managed-worker integration have separate
-custody and verification. This tool issues read commands and retains no
-capacity acceptance.
-
-### Provision and serving phases
-
-The existing lifecycle publishes provisioned Secrets and waits for the provision
-Job to complete before it creates admin, primer or serving workloads. A fresh
-commissioning environment can select
-`"resourcePhasePlan":{"contract":"provision-before-serving-v1"}` to account
-that ordering. Omission retains the full simultaneous-envelope calculation.
-
-The selected plan preserves full namespace quota, per-role requests, Pod slots
-and the native allocation grant. Preflight separately reports the per-node
-provision and serving peaks used for fit, including retained memory-backed
-`emptyDir` bytes as memory and disk-backed `emptyDir` bytes as local storage.
-Possible disk file-cache residency is a separate sensitivity, not an additional
-pinned-memory quota. Existing worker reserves, sampled usage and pressure checks
-remain in force. A snapshot establishes neither a reservation nor future use.
-
-The contract supports the rendered single provision Job with one completion,
-one parallel Pod, no retries and no restartable sidecars. Lifecycle binding
-checks the complete stage partition, resource projection and publisher/controller
-hashes. The phase hash also binds the complete authored Pod templates: executable,
-image, arguments, environment, source volumes, mounts and security settings.
-Live source comparison normalizes explicit API defaults and equivalent resource
-quantities, then requires the authored source. Server UID/version/controller
-metadata and the existing service-account projection retain their separate rules.
-Before later resources are created, the controller retains an exact
-namespace/Job/Pod/container receipt: Complete Job, succeeded Pod, all declared
-containers terminated successfully with no restarts. Every later install and
-runtime observation checks that receipt. A replaced, running, failed, terminating
-or overlapping provision actor refuses. Absence alone is insufficient; a retained
-terminal proof can outlive its exact Pod while the same Job remains complete.
-Existing downstream Pod-roster checks still apply.
-
-Runtime display reads remain redacted. The selected phase captures a private
-0600 source scope during attach and uses `phase_source_private.py` to compare
-the current raw source in memory. This fixed port can only GET the bound
-namespace, `Job/provision` and the captured provision Pod. Its output contains
-typed results, identities and hashes. A nonce and pre/post identity checks bind
-each proof to the current guarded whole-namespace observation. Missing tools or
-unavailable evidence refuse as `UNMEASURED`; observed source, identity or proof
-changes refuse as `FAIL`. Redaction never acts as a source wildcard. The retained
-terminal receipt still permits verified Pod garbage collection with the same
-Complete Job and no other provision owner Pod.
-
-Lifecycle configuration captures and checks the helper and existing tool hashes
-before actors. Keep the runtime helper with its frozen instrument; the private
-commissioner below still requires only its two named modules. The port retains
-the existing per-GET timeout and original phase/work deadlines. It adds six
-private GETs and three guarded reads per observation; SQL brackets each read
-with two observations. `test_phase_source_private.py` uses a retained raw pair,
-the exact display redactor and inert API transport to check this boundary. Its
-timing measures fixture overhead, not cluster latency.
-
-Copy `phase_fit.py` and `resource_budget.py` from the same frozen helper into the
-new commissioner's `bin/` directory. The complete
-`commissioning-accounting.patch` includes this opt-in path for its declared base.
-The separate [phase-only patch](commissioning-phase-fit.patch) targets the exact
-already-patched operator base identified in its header and preserves that base's
-volume and diagnostic guards. Use one applicable patch on a fresh source copy;
-retain the original. `test_phase_fit.py` and the selected commissioner controls
-exercise the stage, fit, terminal proof and changed-input boundaries without
-cluster actors.
+Runs rely on Kubernetes for placement and fit: authored requests, the namespace
+ResourceQuota and LimitRange, and the scheduler. The per-run owned-worker,
+provision/serving phase-fit, node-memory and private provision-source proofs were
+removed on 2026-11-18 under decision
+[k8s-platform-proofs-to-deploy](../../../docs/30-design/tenancy/multitenancy-decisions.md#k8s-platform-proofs-to-deploy);
+the one fit check and image publication belong to nightscout-deploy. Reserving a
+worker follows [reserved-k8s-worker](../../../docs/30-design/tenancy/multitenancy-decisions.md#reserved-k8s-worker).
+`commissioning-accounting.patch` still carries an opt-in `resourcePhasePlan` hunk
+for the operator's commissioner; do not select it, because its `phase_fit` module
+is gone.
 
 ## Outcome evaluator gate on Kubernetes
 

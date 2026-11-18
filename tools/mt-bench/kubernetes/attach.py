@@ -2,7 +2,6 @@
 import datetime as dt,hashlib,json,os,re,socket,subprocess,sys,time
 from pathlib import Path
 from lifecycle_config import fixture_config
-import owned_worker
 control=fixture_config(Path(sys.argv[1]))
 d=Path(control['caseDirectory']); live=d/'runtime'
 src=Path(control['instrumentDirectory'])/'tools/mt-bench'; K=src/'kubernetes'
@@ -21,8 +20,6 @@ cfg['driver']['coreRepository']=str(core)
 k6=Path(control['k6'])
 cfg['driver'].update(k6=str(k6),k6Sha256=sha(k6));cfg['readonlyGuard']=str(Path(control['readonlyGuard']))
 cfg.update(context=e['context'],runId=e['runId'],namespace=ns,tenants=e['tenantCount'],deadlines={k:v.replace('+00:00','Z') for k,v in dl.items()},tenantsFile=str(live/'packet/primer/tenants.json'))
-if worker := control.get('ownedWorkerPreflight'):
-    cfg[owned_worker.FIELD] = {**worker['proof'], 'namespaceUid': uid}
 def execute(label,args,deadline=1800):
     path=live/(label+'.log')
     remaining=min(deadline,until-time.time())
@@ -53,22 +50,6 @@ def observe_selected_bootstrap(packet, runtime, namespace_uid, adapter_cmd, exec
     execute('candidate-proof', adapter_cmd+['candidate-proof', packet])
     execute('policy', adapter_cmd+['policy', packet])
 
-if worker:
-    import kube_adapter as adapter
-    scoped = adapter.Client(cfg)
-    owner = scoped.get('namespace', ns)
-    metadata = owner['metadata']
-    adapter.need(metadata['name'] == ns and metadata['uid'] == uid and not metadata.get('deletionTimestamp')
-                 and metadata.get('labels', {}).get('nightscout.org/run-id') == e['runId'],
-                 'OWNED_WORKER_NAMESPACE_UID_CHANGED')
-    selected = worker['proof']['selection']
-    def roster(kind):
-        return json.loads(scoped.call(['get', kind, '--chunk-size=0', '-o', 'json']))
-    fixture = owned_worker.stage_pods(selected, ns, roster('pods'), roster('replicasets'),
-                                     read(live/'created.json'), adapter.need)
-    owned_worker.live(selected, worker['proof']['infrastructure'], fixture,
-                      lambda argv: json.loads(scoped.call(argv, owned_worker_view=True)), adapter.need)
-
 exp=[sys.executable,'-B',K/'experiment.py'];ad=[sys.executable,'-B',K/'adapter.py']
 obj=read(live/'latest-edge.json');edge=obj['name'];edgeuid=obj['uid']
 kub=[cfg['kubectl'],'--context',cfg['context'],'-n',ns]
@@ -86,11 +67,6 @@ try:
     else:raise RuntimeError('EDGE_FORWARD_UNAVAILABLE')
     assert edge_id()==edgeuid
     cfg['baseUrl']='http://127.0.0.1:'+match[1]
-    if control.get('resourcePhasePreflight'):
-        import phase_source_private
-        cfg['resourcePhasePlan']={'plan':control['resourcePhasePreflight']['plan'],
-                                  'retirement':ref(live/'provision-retirement.json'),
-                                  'privateSource':phase_source_private.write_scope(control,cfg,e,live)}
     write(live/'input.json',cfg)
     instance={'config':str(live/'input.json'),'inventory':str(d/'inventory.json'),'render':str(d/'render.json'),
               'bindingReceipt':ref(Path(control['bindingDirectory'])/'binding.json'),'delivery':control['delivery'],

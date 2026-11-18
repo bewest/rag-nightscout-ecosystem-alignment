@@ -30,7 +30,6 @@ M7 = HERE.parent / 'm7-joined'
 sys.modules.setdefault('kube_adapter', sys.modules[__name__])
 sys.path.insert(0, str(M7))
 import candidate
-import owned_worker
 import frozen
 import discovery_counts
 import evaluator_progress
@@ -42,7 +41,6 @@ import workload_inputs
 import resource_budget
 import primer_storage
 import edge_configuration
-import phase_fit
 import application_topology
 
 SHA = re.compile(r'[a-f0-9]{40}')
@@ -242,7 +240,6 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         preload.selection(c['preloadConvergence'])
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
-    owned_worker.packet(c, inventory, objs, need, cleanup=cleanup)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
         need(isinstance(c.get('edgeConfiguration'),dict),'EDGE_CONFIGURATION_CHANGED')
         edge=edge_configuration.check({'edge':c['edgeConfiguration'].get('requested')},inventory,objs,need)
@@ -304,18 +301,6 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
              hashlib.sha256(visible_helper['data']['bootstrap.js'].encode()).hexdigest() == helper['sha256'],
              'BOOTSTRAP_HELPER_SCOPE')
     candidate.pins(sys.modules[__name__], c, inventory, by_key)
-    phase_fit.runtime_binding(c,objs,need)
-    if phase_fit.FIELD in c:
-        try:
-            import phase_source_private
-        except ImportError:
-            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
-        try:
-            phase_source_private.binding(c,by_key)
-        except phase_source_private.Refused as error:
-            raise Refused(str(error),error.verdict)
-        except (ImportError,OSError,ValueError,KeyError):
-            need(False,'PHASE_PRIVATE_PROOF_REQUIRED','UNMEASURED')
     return by_key
 
 
@@ -324,7 +309,7 @@ class Client:
         self.c, self.run = c, run
 
     def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024,
-             response_sink=None, owned_worker_view=False):
+             response_sink=None):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -334,11 +319,7 @@ class Client:
         binary = 'kubectl' if read else c['kubectl']
         argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout=15s', *args]
         env = dict(os.environ, PATH=str(Path(c['kubectl']).parent) + os.pathsep + os.environ.get('PATH', ''), RO_ALLOW_SENSITIVE='1')
-        if owned_worker_view:
-            need(read and owned_worker.FIELD in c, 'OWNED_WORKER_VIEW_SCOPE')
-            env.update(RO_OWNED_WORKER_VIEW='1', RO_NO_LOG='1')
-        else:
-            env.pop('RO_OWNED_WORKER_VIEW', None)
+        env.pop('RO_OWNED_WORKER_VIEW', None)
         need(Path(shutil.which('kubectl', path=env['PATH']) or '/missing').resolve() == Path(c['kubectl']).resolve(), 'PINNED_KUBECTL_REQUIRED')
         try:
             result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -370,36 +351,6 @@ class Client:
             return json.loads(self.call(argv, cleanup=cleanup))
         except ValueError:
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
-
-    def phase_source_proof(self, request):
-        """Fixed private equality helper; this port never accepts kubectl argv."""
-        import phase_source_private
-        c=self.c
-        deadline(c)
-        helper=HERE/'phase_source_private.py'
-        need(helper.is_file(),'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
-        env={k:v for k,v in os.environ.items() if k not in ('PYTHONPATH','PYTHONHOME')}
-        env['PYTHONDONTWRITEBYTECODE']='1'
-        try:
-            need(request.get('scope')==c.get(phase_fit.FIELD,{}).get('privateSource'),
-                 'PHASE_PRIVATE_SCOPE_CHANGED')
-            request['until']=min(request['until'],time.time()+deadline(c))
-            result=self.run([sys.executable,'-B',str(helper)],input=json.dumps(request,allow_nan=False).encode(),
-                            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=deadline(c),check=False,
-                            env=env,cwd=str(HERE))
-            deadline(c)
-            need(isinstance(result.stdout,bytes) and len(result.stdout)<=phase_source_private.MAX_BYTES,
-                 'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
-            answer=json.loads(result.stdout)
-        except (OSError,subprocess.TimeoutExpired,ValueError):
-            raise Refused('K8S_PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
-        if result.returncode:
-            need(isinstance(answer,dict) and set(answer)=={'code','verdict'} and
-                 answer['verdict'] in ('FAIL','UNMEASURED') and
-                 answer['code'] in phase_source_private.ERROR_CODES,
-                 'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
-            raise Refused(answer['code'],answer['verdict'])
-        return answer
 
 
 def meta(obj):
@@ -556,12 +507,10 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         need(baseline is not None and not cleanup and restarted_role is None, 'SERVING_BASELINE_REQUIRED')
         need(not ns['metadata'].get('deletionTimestamp'), 'NAMESPACE_TERMINATING')
         result['setupJobs'] = {}
-    phase_job=None
     for name, expected in by_key.items():
         if expected['kind'] not in PLURALS:
             continue
         actual = client.get(expected['kind'], expected['metadata']['name'], cleanup)
-        if name==phase_fit.PROVISION:phase_job=actual
         owned(c, actual)
         if serving_sql:
             need(not actual['metadata'].get('deletionTimestamp'), 'RESOURCE_TERMINATING')
@@ -656,27 +605,6 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         if baseline is not None:
             need(baseline.get('bootstrapHelper', {}).get('configMapUid') == result['bootstrapHelper']['configMapUid'],
                  'BOOTSTRAP_HELPER_UID_CHANGED')
-    if not cleanup and (worker := c.get(owned_worker.FIELD)):
-        need(worker['namespaceUid'] == result['namespace']['uid'], 'OWNED_WORKER_NAMESPACE_UID_CHANGED')
-        selection = worker['selection']
-        def guarded_worker_get(argv):
-            return json.loads(client.call(argv, owned_worker_view=True))
-        result[owned_worker.FIELD] = owned_worker.live(selection, worker['infrastructure'],
-            [owned_worker.identity(pod, need) for pod in pods], guarded_worker_get, need)
-    if not cleanup and phase_fit.FIELD in c:
-        try:
-            import phase_source_private
-        except ImportError:
-            need(False,'PHASE_PRIVATE_HELPER_UNAVAILABLE','UNMEASURED')
-        try:
-            result['resourcePhasePlan']=phase_source_private.observe(c,by_key,result,ns,phase_job,pods,client,
-                                                                     lambda:deadline(c))
-        except phase_source_private.Refused as error:
-            raise Refused(str(error),error.verdict)
-        except (ImportError,OSError,ValueError,KeyError) as error:
-            if isinstance(error,ValueError) and str(error) in phase_source_private.SOURCE_CODES:
-                raise Refused(str(error),'FAIL')
-            need(False,'PHASE_PRIVATE_PROOF_UNAVAILABLE','UNMEASURED')
     candidate.images(sys.modules[__name__], c, result)
     for role, selection in c['roles'].items():
         selected = [r for r in result['pods'].values() if r['workload'] == selection['workload']]
