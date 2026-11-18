@@ -18,6 +18,7 @@ import matrix
 import primer_storage
 import primer_options
 import population_ceiling
+import application_topology
 from workloads import profile, reduce
 
 
@@ -124,12 +125,16 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     supported = k.document(asset)
     support_path=package/'assets/population-ceiling-source.json'
     if support_path.is_file():population_support=k.document(support_path)
-    subprocess.run(['git', 'apply', '--directory=bindings/kubernetes', str(k.HERE / 'binding-input.patch')],
-                   cwd=out, check=True)
+    native_inputs = supported.get('bindingInputsVersion') == 1
+    if not native_inputs:
+        subprocess.run(['git', 'apply', '--directory=bindings/kubernetes', str(k.HERE / 'binding-input.patch')],
+                       cwd=out, check=True)
     subprocess.run([sys.executable, package/'check/source-equivalence.py', '--capture',
                     '--compose', Path(deploy_repo).resolve()/'bindings/compose',
                     '--image', selected['localImageId']], check=True)
     measured = k.document(asset)
+    if native_inputs:
+        k.need(measured.get('bindingInputsVersion') == 1, 'BINDING_INPUT_PROTOCOL_CHANGED')
     for key in ('coreCommit', 'deployCommit', 'localImageId', 'producerBinarySha256'):
         k.need(measured[key] == selected[key], 'MEASURED_IMAGE_SOURCE_CHANGED')
     for key in ('commands', 'postgresIdentities', 'nativeCatalogueSha256'):
@@ -159,12 +164,14 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     bind_job_completion_wait(package, selected)
     k.write(out/'binding.json', dict(bindingCommit=manifest['bindingCommit'],
             sourceContractSha256=k.digest(asset), patchSha256=k.digest(k.HERE/'binding-input.patch'),
+            **({'bindingInputsVersion': 1, 'patchApplied': False} if native_inputs else {}),
             files={str(p.relative_to(package)):k.digest(p) for p in sorted(package.rglob('*')) if p.is_file()},
             sourceAcceptance=selected['sourceAcceptance'], capacityAcceptance='NOT_GRANTED'))
     return package
 
 
 def workload(m):
+    application_topology.selection(m, k.need)
     edge_configuration.selection(m.get('edge'),k.need)
     selected = frozen.source(m)
     p = m['profile']
@@ -197,6 +204,7 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
            'PRIMER_OPTIONS_AWAIT_PRIMER_REQUIRED')
     config = k.document(instance['config'])
     inventory = k.document(instance['inventory'])
+    config = dict(config, **application_topology.bind(m, config, inventory, k.need))
     render = k.document(instance['render'])
     population_ceiling.check_render(m,inventory,k.manifests(render),k.need)
     edge=edge_configuration.check(m,inventory,k.manifests(render),k.need)
@@ -238,7 +246,8 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     frozen.rendered_contract(m, contract, instance['bindingReceipt'])
     k.need(pins['candidate']['sourceAcceptance'] == selected['sourceAcceptance'], 'CANDIDATE_IMAGE_STATUS')
     checks = render_checks(instance)
-    k.need(c['roles'].get('evaluator') == dict(workload='StatefulSet/cohort', container='evaluator')
+    expected_roles = application_topology.role_mapping(application_topology.selection(c, k.need))
+    k.need(c['roles'].get('evaluator') == expected_roles['evaluator']
            and c['roles'].get('pgstream') == dict(workload='Deployment/pgstream', container='pgstream'),
            'UNSUPPORTED_ROLE_TOPOLOGY')
     k.need(c['storageMode'] == 'disposable', 'EXPERIMENT_STORAGE')

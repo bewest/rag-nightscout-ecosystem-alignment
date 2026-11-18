@@ -541,6 +541,30 @@ refuse `WORKLOAD_REPLICA_CENSUS_UNSUPPORTED`, because role selection and the
 observed Pod census need an explicit topology extension. This is distinct from
 the cohort's socket-sharing requirement.
 
+The explicit `applicationTopology: "separate-k1"` profile places API, evaluator,
+realtime and tenant-admin in their own one-replica Deployments. Common intents
+select it under `kubernetes.applicationTopology`; projection carries the same
+selection into the existing binding inputs and frozen experiment. The render,
+inventory and run selection must agree. Omitting the field preserves the cohort
+profile. This profile does not admit additional role replicas or HA.
+
+The separated profile requires the twelve named fixture workloads and checks the
+four role mappings, their single application processes and absence of shared
+sockets. Observation still follows each Pod through its actual controller UID,
+checks container identities and refuses overlapping role Pods. Cleanup uses the
+existing UID preconditions for every workload. Each separated serving role uses
+the existing `cohortReadySeconds` serving window; an elapsed readiness window
+inside the work deadline produces a role-specific UNMEASURED signal. Clinical
+completion, authority and isolation gates retain their existing requirements.
+
+Current P platform receipts select `platformVerification: "startup-v2"` in both
+the source contract and candidate inventory. Their role rows contain exactly
+`role` and `generation`, without an expiry lease. Legacy candidate contracts
+retain the expiry check. A topology selection alone does not change proof
+semantics. Offline profile controls do not qualify private HTTP transport,
+replacement or clinical/client behavior on a live cluster; those observations
+belong to the lane's frozen baseline and retained run evidence.
+
 Focused controls use real scratch Jsonnet renders and patched commissioner code:
 
 ```bash

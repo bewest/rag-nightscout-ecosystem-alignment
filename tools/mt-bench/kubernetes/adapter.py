@@ -43,6 +43,7 @@ import resource_budget
 import primer_storage
 import edge_configuration
 import phase_fit
+import application_topology
 
 SHA = re.compile(r'[a-f0-9]{40}')
 HEX = re.compile(r'[a-f0-9]{64}')
@@ -248,6 +249,7 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         need(c.get('edgeConfiguration')==edge,'EDGE_CONFIGURATION_CHANGED')
     by_key = {key(x): x for x in objs}
     need(len(by_key) == len(objs), 'DUPLICATE_RESOURCE')
+    application_topology.validate(c, inventory, by_key, need)
     ns = by_key.get('Namespace/' + c['namespace'])
     need(ns is not None and ns['metadata'].get('labels', {}).get(c['ownerLabel']) == c['runId'], 'NAMESPACE_OWNERSHIP')
     for obj in objs:

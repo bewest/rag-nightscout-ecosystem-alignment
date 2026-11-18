@@ -33,6 +33,9 @@ def pins(k, c, inventory, objects):
     k.need(contract.get('coreCommit') == runtime['pair']['core'] and contract.get('deployCommit') == runtime['pair']['deploy'] and
            contract.get('localImageId') == runtime['appImageId'] and all(contract.get(key) == selected[key] for key in FIELDS),
            'CANDIDATE_SOURCE_IMAGE_CHANGED')
+    k.need(selected.get('platformVerification') in (None, 'startup-v2') and
+           selected.get('platformVerification') == contract.get('platformVerification'),
+           'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
     k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
     k.need(contract.get(primer_storage.FIELD)==c.get(primer_storage.FIELD) and
            (primer_storage.FIELD in contract)==('primerStorageReceipt' in c), 'PRIMER_STORAGE_PUBLISH_SCOPE')
@@ -114,7 +117,10 @@ def proof(k, c, value, now=None):
            [row.get('role') for row in roster] == ROLES, 'CANDIDATE_VERIFICATION_CHANGED')
     for row in roster:
         k.need(k.HEX.fullmatch(row.get('generation', '')), 'CANDIDATE_GENERATION_CHANGED')
-        if now is not None:
+        startup = selected.get('platformVerification') == 'startup-v2'
+        if startup:
+            k.need(set(row) == {'role', 'generation'}, 'CANDIDATE_VERIFICATION_CHANGED')
+        elif now is not None:
             k.need(k.timestamp(row.get('expiresAt', '')) > now, 'CANDIDATE_VERIFICATION_EXPIRED')
 
 

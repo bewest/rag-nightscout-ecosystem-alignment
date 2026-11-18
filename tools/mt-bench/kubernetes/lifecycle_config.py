@@ -13,6 +13,7 @@ import primer_options
 import population_ceiling
 import phase_fit
 import owned_worker
+import application_topology
 
 FIELDS = {'version','caseDirectory','instrumentDirectory','instrumentSha256','bindingDirectory',
           'toolsDirectory','snapshotDirectory','cacheAbsence','runTemplate','delivery','coreRepository',
@@ -54,7 +55,9 @@ def startup_preflight(intent, environment, objects):
             'containers':{actor['name']:{probe:{key:actor[probe][key] for key in probe_fields if key in actor[probe]}
                                          for probe in ('startupProbe','readinessProbe') if probe in actor}
                           for actor in pod.get('initContainers',[])+pod['containers']}}
-    return {'selectedSeconds':selected,'authoredFields':sorted(set(authored)|({'cohortReadySeconds'} if 'cohortReadySeconds' in phases else set())),
+    return {**({application_topology.FIELD:application_topology.selection(intent,need)}
+               if application_topology.FIELD in intent else {}),
+            'selectedSeconds':selected,'authoredFields':sorted(set(authored)|({'cohortReadySeconds'} if 'cohortReadySeconds' in phases else set())),
             'workDeadlineSeconds':environment['workDeadlineSeconds'],'native':native}
 
 def fixture_config(path, capture=False):
@@ -86,6 +89,8 @@ def fixture_config(path, capture=False):
     need(pre.get('commissioning')=='PREFLIGHT_ONLY' and pre['experiment']['renderSha256']==sha(d/'render.json'), 'PREFLIGHT')
     need(all(limits[k]<=m['profile']['proposedEnvelope']['nativeLimits'][k] for k in limits), 'ALLOCATION_EXCEEDED')
     template=read(c['runTemplate']['path'])
+    inventory=read(d/'inventory.json')
+    application_topology.bind(m,template,inventory,need)
     mode=template.get('resourceAccounting','limits-v1')
     need(mode in ('limits-v1','requests-v1') and mode==e.get('resourceAccounting','limits-v1') and
          mode==pre.get('trialEnvelope',{}).get('resourceAccounting','limits-v1') and

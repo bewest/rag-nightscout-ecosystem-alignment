@@ -1,9 +1,11 @@
 """Frozen owner inputs and per-allocation preflight are independent contracts."""
 import copy
+import io
 import json
 from pathlib import Path
 import subprocess
 import tempfile
+import tarfile
 import unittest
 from types import SimpleNamespace
 from test_adapter import fixture
@@ -51,6 +53,54 @@ class Frozen(unittest.TestCase):
             self.assertEqual(frozen.source(self.manifest),baseline)
         with self.assertRaisesRegex(ValueError, 'EVIDENCE_CHANGED'):
             frozen.source(dict(self.manifest, sourceReceipt=dict(self.manifest['sourceReceipt'],sha256='0'*64)))
+
+    def test_native_binding_inputs_skip_legacy_patch_and_keep_capture_protocol(self):
+        from unittest.mock import patch
+        selected = frozen.source(self.manifest)
+        for version, captured in ((None, None), (1, 1), (1, None)):
+            supported = dict(selected, commands={}, postgresIdentities={}, nativeCatalogueSha256='7'*64,
+                             sourceFilesSha256={})
+            if version is not None:
+                supported['bindingInputsVersion'] = version
+            archive = io.BytesIO()
+            with tarfile.open(fileobj=archive, mode='w') as output:
+                payload = json.dumps(supported).encode()
+                member = tarfile.TarInfo('bindings/kubernetes/assets/source-contract.json')
+                member.size = len(payload)
+                output.addfile(member, io.BytesIO(payload))
+            calls = []
+            out = self.root/('materialized-'+str(version)+'-'+str(captured))
+            def git(argv, **_):
+                if argv[3:5] == ['rev-parse', 'HEAD']:
+                    return selected['deployCommit'].encode()
+                if argv[3] == 'status':
+                    return b''
+                if argv[3] == 'show':
+                    return b'synthetic prime source'
+                if argv[3] == 'archive':
+                    return archive.getvalue()
+                self.fail(argv)
+            def execute(argv, **_):
+                calls.append(argv)
+                if str(argv[1]).endswith('source-equivalence.py'):
+                    path = out/'bindings/kubernetes/assets/source-contract.json'
+                    measured = json.loads(path.read_bytes())
+                    if captured is None:
+                        measured.pop('bindingInputsVersion', None)
+                    k.write(path, measured)
+                return SimpleNamespace(returncode=0)
+            with patch.object(experiment.subprocess, 'check_output', side_effect=git), \
+                 patch.object(experiment.subprocess, 'run', side_effect=execute):
+                if version == 1 and captured is None:
+                    with self.assertRaisesRegex(k.Refused, 'BINDING_INPUT_PROTOCOL_CHANGED'):
+                        experiment.materialize(self.manifest, '/synthetic/binding', '/synthetic/deploy', out)
+                    self.assertFalse((out/'binding.json').exists())
+                else:
+                    experiment.materialize(self.manifest, '/synthetic/binding', '/synthetic/deploy', out)
+                    receipt = k.document(out/'binding.json')
+                    self.assertEqual(any(argv[:2] == ['git', 'apply'] for argv in calls), version is None)
+                    if version == 1:
+                        self.assertEqual((receipt['bindingInputsVersion'], receipt['patchApplied']), (1, False))
 
     def test_selected_primer_requires_new_source_proof_and_preserves_exact_inputs(self):
         options={'concurrency':64,'maxTenants':20000}

@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timezone
 
 import kube_adapter as k
+import application_topology
 
 
 def check(export, output, environment=None):
@@ -45,6 +46,8 @@ def check(export, output, environment=None):
     if 'candidateContract' in inv:
         c['pins'].update(candidate=inv['candidateContract'], postgresImage=inv['images']['postgres'],
                          postgresImageId='sha256:'+'0'*64)  # deliberately held until E supplies the commissioned mapping
+    if application_topology.FIELD in inv:
+        c[application_topology.FIELD] = application_topology.selection(inv, k.need)
     for name,item in inv['workloads'].items():
         if item['kind']=='Job':continue
         for container in item['containers']:

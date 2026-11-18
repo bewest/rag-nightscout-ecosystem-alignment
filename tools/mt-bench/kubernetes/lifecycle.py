@@ -12,6 +12,7 @@ import primer_storage
 import producer_startup
 import phase_fit
 import owned_worker
+import application_topology
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 cfg=fixture_config(Path(sys.argv[1]))
@@ -201,10 +202,10 @@ def ready(label,typ,timeout,convergence=None):
                     'recordedFailures':len(failures)})
             return ready_pod
         time.sleep(min(2,max(0,until-time.time())))
-    if typ=='cohort' and time.time()<work:
-        # The serving cohort's readiness window elapsed inside the run's work window.
+    if application_topology.readiness_signal(intent,typ,frozen.require) and time.time()<work:
+        # The serving workload's readiness window elapsed inside the run's work window.
         # Readiness is a signal under readiness-serve-then-warm: record it, continue.
-        put('readiness-signal-cohort.json',{'verdict':'UNMEASURED','reason':'READY_WINDOW_ELAPSED',
+        put('readiness-signal-'+typ+'.json',{'verdict':'UNMEASURED','reason':'READY_WINDOW_ELAPSED',
             'waitedSeconds':round(time.time()-started,3)})
         return None
     raise RuntimeError('READY_DEADLINE_'+typ)
@@ -213,7 +214,7 @@ def workload_ready(stage):
     for obj in objects(stage):
         nm=obj['metadata']['name']; sel=obj['spec']['selector']['matchLabels']
         convergence=producer_policy if nm=='pgstream' else None
-        timeout=waits['cohortReadySeconds'] if stage=='serving' and obj['kind']=='StatefulSet' and nm=='cohort' else waits['workloadReadySeconds']
+        timeout=waits['cohortReadySeconds'] if application_topology.serving_workload(intent,stage,obj,frozen.require) else waits['workloadReadySeconds']
         seconds=convergence['maxSeconds'] if convergence else timeout
         with startup_window(nm,seconds):
             ready(','.join(k+'='+v for k,v in sel.items()),nm,seconds,convergence)

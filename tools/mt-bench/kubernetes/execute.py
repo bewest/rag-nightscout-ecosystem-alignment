@@ -918,7 +918,9 @@ def matrix_plan(value):
                 total[dimension] += amount
         for actor_name in ('driver','observer'):
             for field in ('millicpus','memoryBytes'):total[field]+=c[actor_name]['resources'][field]
-        commands.append({'runId':c['runId'],'namespace':c['namespace'],'cohortReplicas':1,
+        placement = ({'applicationTopology':'separate-k1','applicationReplicas':{role:1 for role in k.application_topology.ROLES}}
+                     if k.application_topology.selection(c,k.need)==k.application_topology.SEPARATE else {'cohortReplicas':1})
+        commands.append({'runId':c['runId'],'namespace':c['namespace'],**placement,
                          'argv':[sys.executable,'-B',str(k.HERE/'adapter.py'),'load',str(d)],'workload':c['workload'],'deadlines':c['deadlines']})
     ceiling=value.get('aggregateCeiling',{})
     k.need(set(ceiling)==set(total) and all(type(ceiling[key]) is int and total[key]<=ceiling[key] for key in total),'AGGREGATE_HEADROOM_EXCEEDED')
