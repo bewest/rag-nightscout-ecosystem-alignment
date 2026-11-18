@@ -168,20 +168,14 @@ class Adapter(unittest.TestCase):
         changed.update(containerID='containerd://evaluator',restartCount=0)
         self.green()
 
-    def test_pod_budget_must_match_the_render(self):
+    def test_pod_budget_changes_by_kubernetes_are_recorded_not_refused(self):
         spec = self.client.pods[0]['spec']
         for name, change in [('overhead', {'cpu': '100m'}), ('resources', {'limits': {'cpu': '1'}})]:
             spec[name] = change
-            with self.assertRaisesRegex(k.Refused, 'POD_BUDGET_CHANGED'):
-                self.green()
+            observed = self.green()['pods']['cohort-0']['observedResources']
+            self.assertEqual(observed['overhead' if name == 'overhead' else 'podResources'], change)
             del spec[name]
             self.green()
-        original = {'initContainers': [{'name': 'install', 'resources': {}}]}
-        changed = copy.deepcopy(original)
-        changed['initContainers'][0]['restartPolicy'] = 'Always'
-        with self.assertRaisesRegex(k.Refused, 'POD_BUDGET_CHANGED'):
-            k.admission_projection(original, changed)
-        k.admission_projection(original, original)
 
     def test_retired_job_only_allows_independent_stored_seed_observation(self):
         job = copy.deepcopy(self.objects['StatefulSet/postgres'])

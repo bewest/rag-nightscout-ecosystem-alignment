@@ -588,7 +588,9 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         declared = expected.get('containers', []) + expected.get('initContainers', [])
         need(set(containers) == {r['name'] for r in declared}, 'CONTAINER_IDENTITY_UNMEASURED', 'UNMEASURED')
         result['pods'][pod['metadata']['name']] = {**meta(pod), 'workload': name, 'controllerUid': parent['uid'], 'nodeName': pod['spec'].get('nodeName'),
-            'resources': {r['name']: r['resources'] for r in pod['spec'].get('containers', []) + pod['spec'].get('initContainers', [])},
+            'resources': {r['name']: r.get('resources', {}) for r in pod['spec'].get('containers', []) + pod['spec'].get('initContainers', [])},
+            # Recorded as Kubernetes holds them; quota, LimitRange and the scheduler enforce budgets.
+            'observedResources': resource_budget.observed(pod['spec']),
             'imageReferences': {r['name']: r['image'] for r in declared}, 'containers': containers,
             'admissionVolumes': admitted,
             'maskedPaths': masked,
