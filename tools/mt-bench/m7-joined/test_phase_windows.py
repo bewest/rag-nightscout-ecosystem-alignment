@@ -163,6 +163,11 @@ console.log(JSON.stringify({lateInit:run(900001,0),lateResponse:run(890000,10001
         self.assertEqual(interval,30)
         for value in ({'unknown':1},{'maxQueries':0},{'maxRounds':True},{'intervalSeconds':float('inf')}):
             with self.assertRaisesRegex(RuntimeError,'M7_DRAIN_OBSERVER_'):windows.observation_override(value)
+        cadence={'drainObservation':{'sqlMaxBytes':64*1024*1024,'roundSeconds':90}}
+        policy,_=windows.observation_policy(cadence,120,80,100000000,defaults)
+        self.assertNotIn('sqlMaxBytes',policy)
+        self.assertEqual(policy['roundSeconds'],90)
+        self.assertEqual(windows.observation_sql_bytes(cadence,1),64*1024*1024)
 
 
 if __name__=='__main__':unittest.main()

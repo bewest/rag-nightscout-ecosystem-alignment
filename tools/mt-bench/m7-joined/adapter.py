@@ -1938,9 +1938,11 @@ def select_opportunities(args,m):
     if selected is not None:m['evaluatorOpportunities']=selected;opportunity_contract(m)
 
 
-def opportunity_collector(d,m,ids):
+def opportunity_collector(d,m,ids,*,byte_limit=None):
     """Existing private SQL executor; no public-driver SQL or new connection."""
     opportunity_contract(m);evaluator_progress.validate_ids(ids)
+    def sql_bytes():return evaluator_opportunities.ROUND_BYTES if byte_limit is None else byte_limit
+    evaluator_progress.need(type(sql_bytes()) is int and 0<sql_bytes()<=2**53-1,'M7_OPPORTUNITY_BYTE_BOUND')
     config_path=d/'completion-source.json'
     require(config_path.is_file(),'M7_OPPORTUNITY_SOURCE_REQUIRED')
     config=document(config_path);source_sha=digest(config_path)
@@ -1955,7 +1957,7 @@ def opportunity_collector(d,m,ids):
         if until is not None:
             require(until>time.time(),'M7_COMMAND_DEADLINE');timeout=min(timeout,until-time.time())
         raw=command([node,*([] if diagnostic_resources._ACTIVE is not None else ['--max-old-space-size=256']),'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
-        evaluator_progress.need(len(raw.encode())<=evaluator_opportunities.ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
+        evaluator_progress.need(len(raw.encode())<=sql_bytes(),'M7_OPPORTUNITY_BYTE_BOUND')
         value=json.loads(raw)
         if isinstance(value,dict) and 'refused' in value:
             code=value['refused'];error=evaluator_progress.Refused(code,'UNMEASURED' if code in ('M7_OPPORTUNITY_COVERAGE','M7_COMPLETION_NATIVE_INVALIDATED') else 'FAIL')
@@ -1978,7 +1980,7 @@ def opportunity_collector(d,m,ids):
                 ms=max(1,min(4000,int(remaining*1000)-100))
                 raw=psql(d,"BEGIN; SET LOCAL statement_timeout='"+str(ms)+"ms';\n"+query+"\nCOMMIT;",database,timeout=min(5,remaining))
                 count+=1;used+=len(raw.encode());cost.update(sqlQueries=count,rawSqlBytes=used)
-                evaluator_progress.need(used<=evaluator_opportunities.ROUND_BYTES,'M7_OPPORTUNITY_BYTE_BOUND')
+                evaluator_progress.need(used<=sql_bytes(),'M7_OPPORTUNITY_BYTE_BOUND')
                 rows.extend(json.loads(line) for line in raw.splitlines() if line)
             remaining=deadline-time.monotonic();evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
             cost['nodeCalls']=1;snapshot=invoke({'mode':'snapshot','rows':rows,'ids':ids},remaining)

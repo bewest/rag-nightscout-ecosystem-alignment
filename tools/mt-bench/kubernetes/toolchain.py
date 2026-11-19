@@ -19,7 +19,7 @@ FRESH={'core-repo','deploy-repo','generator-dependencies','generator-dependency-
        'generator-dependency-receipt-sha256','fixture-project','backend-subnet','edge-subnet','port','receipt','freeze'}
 DERIVED={'core-commit','deploy-commit','image','image-id','postgres-image','tenants','replicas',
          'load-seconds','hot-factor','accel','offered-rps','workload-mix','workload-scale',
-         'logical-polling-clients','probe-every-ms','probe-ledger','evaluator-progress-budget','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
+         'logical-polling-clients','probe-every-ms','probe-ledger','evaluator-progress-budget','drain-observation','startup-windows','setup-seconds','drain-seconds','jwt-setup-concurrency','driver-plan','driver-vu-diagnostic','driver-shards',
          'static-workers','static-build-receipt','static-build-receipt-sha256','pgstream-topology'}
 
 def legacy(m,target='kubernetes'):
@@ -88,6 +88,8 @@ def local(m,instance):
         options['probe-ledger'] = json.dumps(w['probeLedger'])
     if 'evaluatorProgressBudget' in w:
         options['evaluator-progress-budget'] = json.dumps(w['evaluatorProgressBudget'])
+    if 'drainObservation' in w:
+        options['drain-observation'] = json.dumps(w['drainObservation'])
     startup=profile.workload_runtime.workload_inputs.startup_selection(p['phases'],frozen.require)
     if 'compose' in startup:
         options['startup-windows'] = json.dumps(startup['compose'])

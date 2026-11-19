@@ -10,7 +10,7 @@ SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE', 'JWT_SETUP_C
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
-         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget'}, 'WORKLOAD_FIELDS')
+         'driverPlan', 'driverShards', 'jwtSetupConcurrency', 'probeLedger','evaluatorProgressBudget','drainObservation'}, 'WORKLOAD_FIELDS')
     need(workload_inputs.seconds(w.get('loadSeconds')), 'WORKLOAD_LOAD_SECONDS')
     need(workload_inputs.polling_clients(w.get('logicalPollingClients')), 'WORKLOAD_VIEWERS')
     need(workload_inputs.probe_interval(w.get('probeEveryMs')), 'WORKLOAD_PROBE_INTERVAL')
@@ -27,6 +27,10 @@ def validate(w, need, tenants=None):
     need(workload_inputs.concurrency(w.get('jwtSetupConcurrency', 1)), 'WORKLOAD_JWT_SETUP_CONCURRENCY')
     for key, default in (('setupSeconds', 310), ('drainSeconds', 120)):
         need(workload_inputs.seconds(w.get(key, default)), 'PHASE_WINDOW:' + key)
+    if 'drainObservation' in w:
+        import phase_windows
+        try:phase_windows.observation_override(w['drainObservation'])
+        except (RuntimeError,ValueError):need(False,'WORKLOAD_DRAIN_OBSERVATION')
     if 'workloadMix' in w:
         need(w['workloadMix'] == REALISTIC_MIX and 'offeredRps' not in w and w.get('hotFactor', 1) == 1,
              'REALISTIC_MIX_CONFIGURATION')

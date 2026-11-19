@@ -690,9 +690,9 @@ def sql(d, c, objects, query, client=None):
     return raw
 
 
-def postgres_read(client, pod, container, query):
+def postgres_read(client, pod, container, query, **options):
     data = ('BEGIN READ ONLY;\n' + query + '\nROLLBACK;\n').encode()
-    raw = client.call(['exec', '-i', pod, '-c', container, '--', 'psql', '-X', '-qAt', '-F', '\t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'nightscout_compose_test'], data=data, read=False)
+    raw = client.call(['exec', '-i', pod, '-c', container, '--', 'psql', '-X', '-qAt', '-F', '\t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'nightscout_compose_test'], data=data, read=False, **options)
     return raw.decode()
 
 

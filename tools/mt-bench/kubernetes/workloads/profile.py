@@ -140,6 +140,8 @@ def bind(p, config):
     need(existing.get('probeLedger',p['workload'].get('probeLedger')) == p['workload'].get('probeLedger'), 'PROBE_LEDGER_CHANGED')
     budget=p['workload'].get('evaluatorProgressBudget')
     need(existing.get('evaluatorProgressBudget',budget)==budget,'EVALUATOR_PROGRESS_BUDGET_CHANGED')
+    observation=p['workload'].get('drainObservation')
+    need(existing.get('drainObservation',observation)==observation,'DRAIN_OBSERVATION_CHANGED')
     result = copy.deepcopy(config)
     access_setup = p['phases'].get('accessSetupSeconds')
     need(config.get('accessSetupSeconds', access_setup) == access_setup, 'ACCESS_SETUP_WINDOW_CHANGED')

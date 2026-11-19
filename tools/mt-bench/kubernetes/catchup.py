@@ -55,8 +55,10 @@ class Collector:
         self.oracle = k.M7 / 'completed-oracle.cjs'
         self.source_sha256 = k.hashed(self.config)
         self.round = 0
+        import phase_windows
+        self.sql_max_bytes = phase_windows.observation_sql_bytes(c['workload'], o.ROUND_BYTES)
         start, cpu = time.monotonic(), time.process_time()
-        batches = [ids[offset:offset + 64] for offset in range(0, len(ids), 64)]
+        batches = [ids]
         self.queries = self.invoke({'mode': 'queries', 'batches': batches}, 10)
         k.need(isinstance(self.queries, list) and len(self.queries) == len(batches) and
                all(isinstance(q, str) and q.startswith('SELECT ') for q in self.queries), 'CATCHUP_QUERY_BINDING')
@@ -66,14 +68,14 @@ class Collector:
 
     def invoke(self, value, timeout):
         """The same reader script the Compose collector runs, on the run's pinned node."""
-        script = ("try{const o=require(process.argv[1]),x=JSON.parse(require('fs').readFileSync(0)),c=o.prepare(x.config);"
-                  "console.log(JSON.stringify(x.mode==='queries'?x.batches.map(ids=>o.progressQuery(c,ids)):o.progressSnapshot(x.rows,c,x.ids)));}"
+        script = ("try{const o=require(process.argv[1]),t=require(process.argv[2]),x=JSON.parse(require('fs').readFileSync(0)),c=o.prepare(x.config);"
+                  "console.log(JSON.stringify(x.mode==='queries'?x.batches.map(ids=>t.query(c,ids)):t.snapshot(x.rows,c,x.ids)));}"
                   "catch(e){console.log(JSON.stringify({refused:/^[A-Z][A-Z0-9_]{1,100}$/.test(e.message)?e.message:'M7_OPPORTUNITY_READER_REFUSED'}));}")
         timeout = min(timeout, k.deadline(self.c))
-        result = self.run([self.node, '-e', script, str(self.oracle)],
+        result = self.run([self.node, '-e', script, str(self.oracle), str(k.M7 / 'progress-transport.cjs')],
                           input=json.dumps({'config': self.config, **value}).encode(),
                           capture_output=True, timeout=timeout)
-        k.need(result.returncode == 0 and len(result.stdout) <= self.o.ROUND_BYTES, 'CATCHUP_READER_FAILED', 'UNMEASURED')
+        k.need(result.returncode == 0 and len(result.stdout) <= self.sql_max_bytes, 'CATCHUP_READER_FAILED', 'UNMEASURED')
         value = json.loads(result.stdout)
         if isinstance(value, dict) and 'refused' in value:
             import evaluator_progress as p
@@ -81,18 +83,25 @@ class Collector:
             raise p.Refused(code, 'UNMEASURED' if code in ('M7_OPPORTUNITY_COVERAGE', 'M7_COMPLETION_NATIVE_INVALIDATED') else 'FAIL')
         return value
 
-    def inspection(self, pod, container, index):
+    def inspection(self, pod, container, index, deadline):
         """Evaluator inspection pages, written before the strict reader decodes them."""
         import evaluator_idle as idle
         import evaluator_progress as p
         helper = (k.M7 / 'evaluator-progress.cjs').read_text()
         policy = p.capture_policy(self.c.get('workload', {}).get('evaluatorProgressBudget'))
         def fetch(role, selected, queries, budget):
+            remaining = deadline - time.monotonic()
+            k.need(remaining > 0, 'CATCHUP_ROUND_DEADLINE', 'UNMEASURED')
             prefix = ('const M7_PROGRESS_IDS=' + json.dumps(selected) + ';const M7_PROGRESS_QUERY_BUDGET=' + str(queries) +
-                      ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) + ';\n')
+                      ';const M7_PROGRESS_BYTE_BUDGET=' + str(budget) +
+                      ';const M7_PROGRESS_DEADLINE_MS=' + str(max(1, math.floor(remaining * 1000))) + ';\n')
+            path = self.folder / ('round-%04d-inspection.private.jsonl' % index)
+            def sink(raw, returncode):
+                _private(path, raw)
             raw = self.client.call(['exec', '-i', pod, '-c', container, '--', 'node', '-'],
-                                   data=(prefix + helper).encode(), read=False, output_limit=budget)
-            _private(self.folder / ('round-%04d-inspection.private.jsonl' % index), raw)
+                                   data=(prefix + helper).encode(), read=False, output_limit=budget,
+                                   timeout=remaining, response_sink=sink)
+            if not path.exists():_private(path, raw)
             return raw
         return idle.round_view(['evaluator'], self.ids, fetch, allow_unavailable=True, policy=policy), policy
 
@@ -102,36 +111,60 @@ class Collector:
         # The caller clips the configured round to the remaining drain/work window.
         deadline = time.monotonic() + timeout
         start, cpu = time.monotonic(), time.process_time()
+        with k.observation_deadline(time.time() + timeout):
+            return self.collect(index, deadline, start, cpu)
+
+    def collect(self, index, deadline, start, cpu):
+        cost = {'sqlQueries': 0, 'rawSqlBytes': 0, 'nodeCalls': 0}
+        try:
+            return self.collect_round(index, deadline, cost)
+        except Exception as error:
+            error.drainCapture = {'cost':cost}
+            raise
+        finally:
+            cost.update(wallSeconds=time.monotonic() - start, observerProcessCpuSeconds=time.process_time() - cpu)
+
+    def collect_round(self, index, deadline, cost):
         baseline = k.active_baseline(self.d)
         before = k.observe(self.c, self.objects, self.client, baseline)
         pod, container = k.selected_pod(self.c, before, 'postgres')
         rows, used = [], 0
-        cost = {'sqlQueries': 0, 'rawSqlBytes': 0, 'nodeCalls': 0}
         raw_file = self.folder / ('round-%04d-sql.private.jsonl' % index)
         with raw_file.open('xb') as stream:
             os.chmod(raw_file, 0o600)
             for query in self.queries:
                 k.need(time.monotonic() < deadline, 'CATCHUP_ROUND_DEADLINE', 'UNMEASURED')
                 k.deadline(self.c)
-                raw = k.postgres_read(self.client, pod, container, query)
+                captured = False
+                def sink(data, returncode):
+                    nonlocal captured
+                    stream.write(data)
+                    stream.flush()
+                    cost['rawSqlBytes'] += len(data)
+                    captured = True
+                remaining = deadline - time.monotonic()
+                # PostgreSQL keeps a finite statement cutoff even if the exec
+                # transport is lost. Its millisecond setting is signed int32.
+                bounded_query = 'SET LOCAL statement_timeout=' + str(max(1,min(2147483647,math.floor(remaining*1000)))) + ';\n' + query
+                raw = k.postgres_read(self.client, pod, container, bounded_query,
+                                      timeout=remaining, output_limit=self.sql_max_bytes, response_sink=sink)
                 data = raw.encode()
-                stream.write(data)
-                stream.flush()
+                if not captured:sink(data, 0)
                 used += len(data)
                 cost.update(sqlQueries=cost['sqlQueries'] + 1, rawSqlBytes=used)
-                k.need(used <= self.o.ROUND_BYTES, 'CATCHUP_BYTE_BOUND', 'UNMEASURED')
+                k.need(used <= self.sql_max_bytes, 'CATCHUP_BYTE_BOUND', 'UNMEASURED')
                 rows.extend(json.loads(line) for line in raw.splitlines() if line)
         remaining = deadline - time.monotonic()
         k.need(remaining > 0, 'CATCHUP_ROUND_DEADLINE', 'UNMEASURED')
         cost['nodeCalls'] = 1
         snapshot = self.invoke({'mode': 'snapshot', 'rows': rows, 'ids': self.ids}, remaining)
         evaluator_pod, evaluator_container = k.selected_pod(self.c, before, 'evaluator')
-        view, policy = self.inspection(evaluator_pod, evaluator_container, index)
+        view, policy = self.inspection(evaluator_pod, evaluator_container, index, deadline)
         import evaluator_idle as idle
         cost['inspection'] = idle._pack_round(view)
         after = k.observe(self.c, self.objects, self.client, baseline)
         k.need(after['namespace']['uid'] == before['namespace']['uid'], 'CATCHUP_NAMESPACE_CHANGED', 'FAIL')
-        cost.update(wallSeconds=time.monotonic() - start, observerProcessCpuSeconds=time.process_time() - cpu)
+        k.need(time.monotonic() <= deadline, 'CATCHUP_ROUND_DEADLINE', 'UNMEASURED')
         self.last_view, self.policy = view, policy
         return snapshot, cost
 
@@ -164,8 +197,10 @@ def run(d, out, c, objects, client, ids, *, writers_joined_ns, drain_started, co
         until = time.time() + seconds
         with k.observation_deadline(until):
             rpc_queries = math.ceil(len(ids) / 128)
-            round_queries = math.ceil(len(ids) / 64) + rpc_queries
-            round_bytes = o.ROUND_BYTES + rpc_queries * (p.POLICY['responseMaxBytes'] + 8192)
+            round_queries = 1 + rpc_queries
+            sql_bytes = phase_windows.observation_sql_bytes(settings,o.ROUND_BYTES)
+            value['observationWindow']['sqlMaxBytes'] = sql_bytes
+            round_bytes = sql_bytes + rpc_queries * (p.POLICY['responseMaxBytes'] + 8192)
             policy, interval = phase_windows.observation_policy(settings, seconds, round_queries, round_bytes, catchup.POLICY)
             value['observationWindow'].update(collectorPolicy=policy, intervalSeconds=interval)
             p.need(policy['maxRounds'] >= 1 and round_queries <= policy['maxQueries'], 'M7_DRAIN_QUERY_BOUND')
@@ -191,7 +226,8 @@ def run(d, out, c, objects, client, ids, *, writers_joined_ns, drain_started, co
             result = catchup.observe(boundary, ids, reader.binding, fetch, writer_stopped_ns=writers_joined_ns,
                                      boundary_window={'startNs': start, 'endNs': end}, seconds=remaining,
                                      interval=min(interval, remaining), initial_cost=boundary_cost, policy=policy,
-                                     round_max_queries=round_queries, round_max_bytes=round_bytes)
+                                     round_max_queries=round_queries, round_max_bytes=round_bytes,
+                                     sql_queries=1, sql_max_bytes=sql_bytes)
             value.update(result)
     except p.Refused as error:
         value.update(verdict=error.verdict, code=str(error))
@@ -199,8 +235,12 @@ def run(d, out, c, objects, client, ids, *, writers_joined_ns, drain_started, co
             value['refusedCapture'] = error.drainCapture
     except k.Refused as error:
         value.update(verdict=error.verdict, code=str(error))
+        if hasattr(error, 'drainCapture'):
+            value['refusedCapture'] = error.drainCapture
     except Exception as error:
         safe = str(error) if re.fullmatch(r'(M7|K8S)_[A-Z0-9_]+', str(error)) else 'K8S_CATCHUP_COLLECTION_REFUSED'
         value.update(verdict='UNMEASURED', code=safe, errorType=type(error).__name__)
+        if hasattr(error, 'drainCapture'):
+            value['refusedCapture'] = error.drainCapture
     k.write(output, value)
     return value

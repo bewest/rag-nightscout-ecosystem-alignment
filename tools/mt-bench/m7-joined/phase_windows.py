@@ -11,7 +11,7 @@ import workload_inputs
 # k6 parses setupTimeout as a signed64-bit Go nanosecond duration. This is
 # a representation boundary, not a reference workload or application limit.
 MAX_SECONDS = workload_inputs.MAX_SECONDS
-OBSERVER_KEYS = frozenset(('maxRounds','maxQueries','maxBytes','roundSeconds','intervalSeconds'))
+OBSERVER_KEYS = frozenset(('maxRounds','maxQueries','maxBytes','roundSeconds','intervalSeconds','sqlMaxBytes'))
 
 
 def selection(cadence):
@@ -46,8 +46,12 @@ def observation_policy(cadence, seconds, round_queries, round_bytes, defaults):
         rounds=max(policy['maxRounds'],math.ceil(seconds/interval)+2)
         policy.update(maxRounds=rounds,maxQueries=max(policy['maxQueries'],rounds*round_queries),
                       maxBytes=max(policy['maxBytes'],rounds*round_bytes))
-    policy.update({key:value for key,value in override.items() if key!='intervalSeconds'})
+    policy.update({key:value for key,value in override.items() if key not in ('intervalSeconds','sqlMaxBytes')})
     return policy,min(interval,seconds)
+
+
+def observation_sql_bytes(cadence, default):
+    return observation_override(cadence.get('drainObservation',{})).get('sqlMaxBytes',default)
 
 
 def start(manifest, now_ns, now_ms):

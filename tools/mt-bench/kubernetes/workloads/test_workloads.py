@@ -22,6 +22,16 @@ class Coverage(unittest.TestCase):
                   'observer': {'resources': {'millicpus': 500, 'memoryBytes': 512 * 1024**2}},
                   'deadlines': {'workUntil': stamp(1800), 'cleanupUntil': stamp(2400)}}
         self.assertEqual(profiles.bind(p, config)['workload'], p['workload'])
+        selected={'roundSeconds':90,'sqlMaxBytes':64*1024**2}
+        p['workload']['drainObservation']=selected
+        observer=copy.deepcopy(config);observer['workload']={'drainObservation':selected}
+        self.assertEqual(profiles.bind(p,observer)['workload']['drainObservation'],selected)
+        observer['workload']['drainObservation']={'roundSeconds':20}
+        with self.assertRaisesRegex(ValueError,'K8S_LOAD_DRAIN_OBSERVATION_CHANGED'):
+            profiles.bind(p,observer)
+        observer['workload']['drainObservation']=selected
+        self.assertEqual(profiles.bind(p,observer)['workload']['drainObservation'],selected)
+        del p['workload']['drainObservation']
         oversized = copy.deepcopy(config)
         oversized['driver']['resources']['millicpus'] = 10000
         with self.assertRaisesRegex(ValueError, 'K8S_LOAD_ACTOR_PLAN_EXCEEDS_PROFILE'):

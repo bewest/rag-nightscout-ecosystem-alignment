@@ -48,13 +48,14 @@ class Fake:
     def node(self, argv, *, input, capture_output, timeout):
         value = json.loads(input)
         if value['mode'] == 'queries':
+            self.batches = value['batches']
             out = ['SELECT synthetic_progress(%d)' % i for i, _ in enumerate(value['batches'])]
         else:
             self.snapshots += 1
             out = {'kind':'evaluator-durable-progress-v1', 'reader':value['config']['binding'], 'rows':value['rows']}
         return SimpleNamespace(returncode=0, stdout=json.dumps(out).encode())
 
-    def postgres_read(self, client, pod, container, query):
+    def postgres_read(self, client, pod, container, query, **kwargs):
         if self.sql_error:
             raise RuntimeError('synthetic transport loss')
         return ''.join(json.dumps(row) + '\n' for row in durable(self.stuck))
@@ -66,7 +67,7 @@ class Catchup(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
 
     def stage(self, fake, *, accounting=True, joined_ago=200, drain=4, round_seconds=None,
-              work_seconds=None, module=catchup):
+              work_seconds=None, sql_max_bytes=None, module=catchup):
         d = Path(self.tmp.name) / ('run-%d' % len(list(Path(self.tmp.name).iterdir())))
         out = d / 'load'
         out.mkdir(parents=True)
@@ -77,6 +78,8 @@ class Catchup(unittest.TestCase):
                  workload={'drainSeconds':drain, 'drainObservation':{'intervalSeconds':1}})
         if round_seconds is not None:
             c['workload']['drainObservation']['roundSeconds'] = round_seconds
+        if sql_max_bytes is not None:
+            c['workload']['drainObservation']['sqlMaxBytes'] = sql_max_bytes
         if work_seconds is not None:
             c['deadlines']['workUntil'] = iso(time.time() + work_seconds)
         c['driver'] = {**c.get('driver', {}), 'node':'/inert/node'}
@@ -103,8 +106,8 @@ class Catchup(unittest.TestCase):
         clock = SimpleNamespace(wall=time.time(), mono=time.monotonic())
         fake = Fake()
         read = fake.postgres_read
-        def postgres_read(*args):
-            raw = read(*args)
+        def postgres_read(*args, **kwargs):
+            raw = read(*args, **kwargs)
             clock.wall += 25
             clock.mono += 25
             return raw
@@ -184,6 +187,66 @@ class Catchup(unittest.TestCase):
                 self.assertEqual(value['observationWindow']['collectorPolicy']['roundSeconds'], 60)
                 self.assertEqual(value['observationWindow']['selectedClinicalDeadlineSeconds'], 120)
 
+    def test_sql_byte_budget_can_extend_default_and_still_refuses_oversized_response(self):
+        fake = Fake()
+        read = fake.postgres_read
+        fake.postgres_read = lambda *a,**kw:' ' * (17 * 1024 * 1024) + read(*a,**kw)
+        _, refused = self.stage(fake, joined_ago=5)
+        self.assertEqual((refused['verdict'],refused['code']),('UNMEASURED','K8S_CATCHUP_BYTE_BOUND'))
+        _, restored = self.stage(fake, joined_ago=5, sql_max_bytes=32*1024*1024)
+        self.assertEqual(restored['verdict'],'PASS',restored.get('code'))
+        self.assertGreater(restored['boundaryCost']['rawSqlBytes'],16*1024*1024)
+        self.assertEqual(restored['boundaryCost']['sqlQueries'],1)
+
+    def timed_inspection_stage(self, module=catchup):
+        # Fast SQL followed by slow inspection was formerly credited beyond
+        # roundSeconds. Keep real storage/due/health decoding in the path.
+        fake = Fake();read = fake.inspection;calls = [0]
+        clock = SimpleNamespace(wall=time.time(),mono=time.monotonic())
+        def inspection(*a,**kw):
+            calls[0]+=1
+            if calls[0]>1:clock.wall+=25;clock.mono+=25
+            return read(*a,**kw)
+        fake.inspection = inspection
+        with patch.object(time,'time',side_effect=lambda:clock.wall), \
+             patch.object(time,'time_ns',side_effect=lambda:int(clock.wall*1e9)), \
+             patch.object(time,'monotonic',side_effect=lambda:clock.mono), \
+             patch.object(time,'monotonic_ns',side_effect=lambda:int(clock.mono*1e9)):
+            return self.stage(fake,joined_ago=5,drain=60,round_seconds=20,module=module)
+
+    def test_inspection_and_final_census_cannot_overrun_round(self):
+        out,value = self.timed_inspection_stage()
+        self.assertEqual((value['verdict'],value['code']),('UNMEASURED','K8S_CATCHUP_ROUND_DEADLINE'))
+        self.assertEqual(value['refusedCapture']['cost']['wallSeconds'],25)
+        self.assertTrue((out/'catchup/round-0000-inspection.private.jsonl').is_file())
+
+    def test_runtime_foreign_ownership_and_missing_jobs_refuse(self):
+        import copy
+        for label,change in [('runtime',lambda x:x['view'].update(runtimeId='55555555-5555-4555-8555-555555555555')),
+                             ('foreign',lambda x:x['view']['tenants'][0].update(admitted=False)),
+                             ('jobs',lambda x:x['view']['tenants'][0].pop('jobs'))]:
+            with self.subTest(label=label):
+                fake=Fake();calls=[0]
+                def inspection(*a,**kw):
+                    value=copy.deepcopy(page());calls[0]+=1
+                    if calls[0]>1:change(value)
+                    return (json.dumps({**value,'observedAt':int(time.time()*1000)})+'\n').encode()
+                fake.inspection=inspection
+                _,value=self.stage(fake,joined_ago=5)
+                self.assertNotEqual(value['verdict'],'PASS',label)
+        _,restored=self.stage(Fake(),joined_ago=5)
+        self.assertEqual(restored['verdict'],'PASS')
+
+    def test_disposable_cache_generation_change_keeps_existing_semantics(self):
+        fake=Fake();calls=[0]
+        def inspection(*a,**kw):
+            calls[0]+=1
+            value=page(generation=calls[0])
+            return (json.dumps({**value,'observedAt':int(time.time()*1000)})+'\n').encode()
+        fake.inspection=inspection
+        _,value=self.stage(fake,joined_ago=5)
+        self.assertEqual(value['verdict'],'PASS',value.get('code'))
+
 
 # ------------------------------------------------------------ break-it controls
 
@@ -236,6 +299,16 @@ class BreakIt(unittest.TestCase):
                 case.tmp.cleanup()
         self.check('configured-round-budget', criterion, module=broken)
 
+    def test_entire_round_deadline_control(self):
+        broken=ablated(catchup,"        k.need(time.monotonic() <= deadline, 'CATCHUP_ROUND_DEADLINE', 'UNMEASURED')\n",'')
+        def criterion(module):
+            case=Catchup('test_inspection_and_final_census_cannot_overrun_round');case.setUp()
+            try:
+                _,value=case.timed_inspection_stage(module)
+                return (value['verdict'],value.get('code'))==('UNMEASURED','K8S_CATCHUP_ROUND_DEADLINE')
+            finally:case.tmp.cleanup()
+        self.check('entire-round-deadline',criterion,module=broken)
+
     def test_stuck_tenant_control(self):
         import evaluator_catchup
         def criterion(module):
@@ -266,7 +339,7 @@ class BreakIt(unittest.TestCase):
                 return sql.is_file() and sql.stat().st_size > 0
             finally:
                 case.tmp.cleanup()
-        broken = ablated(catchup, "                stream.write(data)\n", "")
+        broken = ablated(catchup, "                    stream.write(data)\n", "")
         self.check('raw-storage-first', criterion, module=broken)
 
     def test_storage_basis_control(self):

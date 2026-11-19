@@ -85,7 +85,8 @@ def assess(boundary, previous, current, ids, binding, *, boundary_clock=None,cur
 
 def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns, seconds=60, interval=5,
             initial_cost=None, round_max_queries=None, round_max_bytes=o.ROUND_BYTES,
-            monotonic_ns=time.monotonic_ns, sleep=time.sleep, policy=None):
+            monotonic_ns=time.monotonic_ns, sleep=time.sleep, policy=None,
+            sql_queries=None, sql_max_bytes=o.ROUND_BYTES):
     """Finite collector; retain every capture and refusal, including partial work.
 
     The returned brackets are on one observer's monotonic clock. A completion's
@@ -109,9 +110,11 @@ def observe(boundary, ids, binding, fetch, *, boundary_window, writer_stopped_ns
            and type(writer_stopped_ns) is int and writer_stopped_ns >= 0
            and all(type(v) is int for v in boundary_window.values())
            and writer_stopped_ns <= boundary_window['startNs'] <= boundary_window['endNs'] <= started, 'M7_DRAIN_WRITER_BOUNDARY')
+    if sql_queries is None:sql_queries=math.ceil(len(ids)/64)
+    p.need(type(sql_queries) is int and sql_queries>0 and type(sql_max_bytes) is int and sql_max_bytes>0,'M7_DRAIN_BOUND')
     def totals(cost):
-        p.need(isinstance(cost, dict) and type(cost.get('sqlQueries')) is int and cost['sqlQueries'] == math.ceil(len(ids) / 64)
-               and type(cost.get('rawSqlBytes')) is int and 0 < cost['rawSqlBytes'] <= o.ROUND_BYTES
+        p.need(isinstance(cost, dict) and type(cost.get('sqlQueries')) is int and cost['sqlQueries'] == sql_queries
+               and type(cost.get('rawSqlBytes')) is int and 0 < cost['rawSqlBytes'] <= sql_max_bytes
                and type(cost.get('nodeCalls')) is int and cost['nodeCalls'] == 1, 'M7_DRAIN_COST')
         inspection = cost.get('inspection', {})
         p.need(isinstance(inspection, dict) and all(type(inspection.get(k, 0)) is int and inspection.get(k, 0) >= 0 for k in ('queries', 'bytes')), 'M7_DRAIN_COST')
@@ -231,7 +234,9 @@ def run(a, directory, manifest, record):
             services = a.progress_services(directory)
             rpc_queries = len(services) * math.ceil(len(ids) / 128)
             round_queries = math.ceil(len(ids) / 64) + rpc_queries
-            round_bytes = o.ROUND_BYTES + rpc_queries * (p.POLICY['responseMaxBytes'] + 8192)
+            sql_bytes = phase_windows.observation_sql_bytes(manifest['cadence'],o.ROUND_BYTES)
+            value['observationWindow']['sqlMaxBytes'] = sql_bytes
+            round_bytes = sql_bytes + rpc_queries * (p.POLICY['responseMaxBytes'] + 8192)
             policy,interval=phase_windows.observation_policy(manifest['cadence'],seconds,round_queries,round_bytes,POLICY)
             value['observationWindow']['collectorPolicy']=policy
             value['observationWindow']['intervalSeconds']=interval
@@ -239,7 +244,7 @@ def run(a, directory, manifest, record):
             # exactly as observe reserves each later read. Refusal spends no SQL.
             p.need(policy['maxRounds'] >= 1 and round_queries <= policy['maxQueries'], 'M7_DRAIN_QUERY_BOUND')
             p.need(round_bytes <= policy['maxBytes'], 'M7_DRAIN_BYTE_BOUND')
-            collector = a.opportunity_collector(directory, manifest, ids)
+            collector = a.opportunity_collector(directory, manifest, ids, **({'byte_limit':sql_bytes} if sql_bytes!=o.ROUND_BYTES else {}))
             capture_policy=p.capture_policy(manifest['cadence'].get('evaluatorProgressBudget'))
             value['preparationCost'] = collector.preparation_cost
             def fetch(timeout):
@@ -271,7 +276,7 @@ def run(a, directory, manifest, record):
             result = observe(boundary, ids, collector.binding, fetch,
                              writer_stopped_ns=stopped, boundary_window={'startNs': start, 'endNs': end},
                              seconds=remaining, interval=min(interval, remaining), initial_cost=boundary_cost, policy=policy,
-                             round_max_queries=round_queries, round_max_bytes=round_bytes)
+                             round_max_queries=round_queries, round_max_bytes=round_bytes,sql_max_bytes=sql_bytes)
             value.update(result)
     except p.Refused as error:
         value.update(verdict=error.verdict, code=str(error))
