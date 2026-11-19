@@ -5901,6 +5901,10 @@
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/clinical-sql-transport-2026-11-19/index.html</loc>
+         <lastmod>2026-11-19</lastmod>
+    </url>
+    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/cohort-constructor-snapshot-2026-11-12/index.html</loc>
          <lastmod>2026-11-19</lastmod>
     </url>
@@ -5918,6 +5922,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/completion-batch-74d7-2026-11-06/index.html</loc>
+         <lastmod>2026-11-19</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/concurrent-capacity-2026-11-18/index.html</loc>
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>
@@ -6166,6 +6174,10 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/key-retention-2026-11-10/index.html</loc>
+         <lastmod>2026-11-19</lastmod>
+    </url>
+    <url>
+         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/reports/tenancy/kubernetes-catchup-scale-2026-11-19/index.html</loc>
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>
@@ -7305,10 +7317,6 @@
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/kubernetes/node-memory-proof.html</loc>
-         <lastmod>2026-11-19</lastmod>
-    </url>
-    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/kubernetes/population-ceiling-commissioning.html</loc>
          <lastmod>2026-11-19</lastmod>
     </url>
@@ -7341,23 +7349,11 @@
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/m7-joined/component-profiles-interface.html</loc>
-         <lastmod>2026-11-19</lastmod>
-    </url>
-    <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/mongo-iso-poc/index.html</loc>
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/mongo-views-poc/index.html</loc>
-         <lastmod>2026-11-19</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/native-admission/index.html</loc>
-         <lastmod>2026-11-19</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/native-clinical/index.html</loc>
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>
@@ -7382,14 +7378,6 @@
     </url>
     <url>
          <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/rust/index.html</loc>
-         <lastmod>2026-11-19</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/tagged-admission/index.html</loc>
-         <lastmod>2026-11-19</lastmod>
-    </url>
-    <url>
-         <loc>https://bewest.github.io/rag-nightscout-ecosystem-alignment/tools/mt-bench/tagged-admission/tagged-admission.html</loc>
          <lastmod>2026-11-19</lastmod>
     </url>
     <url>

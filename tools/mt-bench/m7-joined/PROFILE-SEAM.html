@@ -1751,12 +1751,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
     
     
     
@@ -1944,8 +1938,6 @@
       
         
       
-        
-      
     
     
     
@@ -2004,8 +1996,6 @@
       
         
           
-        
-      
         
       
         
@@ -2222,34 +2212,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="component-profiles-interface.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Explicit M7 component profiles — integration interface
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -2355,122 +2317,6 @@
     
   
     mongo-views-poc/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-admission/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-clinical/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-clinical/
   
 
     
@@ -2819,66 +2665,6 @@
     
   
     rust/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../tagged-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tagged-admission/
   
 
     
@@ -4137,12 +3923,12 @@
 
 
 <h1 id="source-paired-profile-provenance">Source-paired profile provenance<a class="headerlink" href="#source-paired-profile-provenance" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>198ad1534</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>1c5372d53</code>.</em></p>
 <p>This instrument capability does not authorize a campaign. The coordinator still
 pins the exact source pair, image, instrument and acceptance receipt. Existing
 094 diagnostic evidence is immutable and does not acquire these new fields.</p>
 <p><code>python3 tools/mt-bench/m7-joined/adapter.py capabilities</code> emits the tracked,
-versioned <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/m7-joined/capabilities.json">capabilities.json</a>, without Docker or cloud access.
+versioned <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/capabilities.json">capabilities.json</a>, without Docker or cloud access.
 The reserved deployment transport must verify this contract and the committed
 <code>adapter.py manifest</code> content hash before activating its pilot. This lane does
 not change that transport or activate a pilot.</p>
@@ -4152,39 +3938,16 @@ The interval range is1000..60000ms. Only <code>NS_M7_DIAGNOSTICS</code> and
 The frozen Compose environment, generated private environment overrides and
 actual running-container environment are checked. Unsupported numbered worker
 roles refuse rather than silently escaping diagnostics/log inventory.</p>
-<p>After infrastructure bootstrap and before provisioning, <code>fingerprint.cjs</code> reads
-the actual private <code>state/primer/config.json</code>, requires the exact synthetic seed
-shape without settings/overrides and checks the pinned provisioning source's
-blank settings insert. It verifies nine source blobs against the paired core
-commit, then constructs the default tenant environment from those source bytes.
-No SQL seed, owner setting mutation or additional HTTP request is used.</p>
-<p>Fingerprint schema1 hashes a fixed, bounded projection: units; ordered enabled
-plugins; timeFormat/dayStart/dayEnd, focusHours/heartbeat; display/alarm booleans,
-alarm minute arrays/timeago minutes; four BG thresholds; devicestatus advanced
-and days. Other strings, authentication, credentials, runtime state, identifiers,
-times and the full status document are excluded. Whitelisted values exist only
-in RAM. Exported evidence contains only schema/hash, exact source-blob IDs and
-a seed-shape proof. This is a selected-settings fingerprint, not a claim to hash
-every server setting or every extended plugin option.</p>
-<p>The existing generated k6 <code>r_status</code> response supplies observations. Successful
-200 bodies over128KiB or malformed/missing selected fields are invalid. A
-changed hash is a functional failure. Zero valid observations is UNMEASURED and
-cannot pass. Metrics are <code>settings_fingerprint_observed</code>,
-<code>settings_fingerprint_invalid</code>, <code>settings_fingerprint_mismatch</code>; the adapter
-writes <code>settingsFingerprintObservation</code> with counts and verdict to its summary.
-No status body, whitelist projection or per-tenant label is exported by this
-seam. k6 itself retains its existing transient response handling.</p>
-<p><code>settingsFingerprint</code> also records the exact six Transit purpose/type schema
-from pinned registry rules. <code>transit.keyCountObservation</code> is UNMEASURED: source
-schema is not an observed Vault key count. Registry defaults include their
-current complete enabled-plugin list, rather than the historical static lean
-five-plugin profile. The source hash records that difference without overriding
-new defaults to imitate the historical workload.</p>
-<p><code>profileSelection</code> contains version, settings schema/hash/source provenance,
+<p>The per-run settings fingerprint (<code>fingerprint.cjs</code>) was removed on 2026-11-18.
+It re-derived a settings projection from core source blobs at the paired commit
+and refused any source layout it had not seen, which stopped runs on source
+moves rather than on a product property. Run identity is the image digest plus
+the run configuration. The k6 <code>r_status</code> read remains an ordinary status read.</p>
+<p><code>profileSelection</code> (version 4) contains version,
 diagnostics selection, topology and a canonical SHA256 over those fields.
 It deliberately excludes tenant count and API replica count. All pilot levels
 and all same-workload API-scaling cells must carry the exact same object/hash.
-Changing diagnostics, settings or realtime/evaluator topology creates a distinct
+Changing diagnostics or realtime/evaluator topology creates a distinct
 profile; it cannot be called API replication alone. Pilot <code>--replicas 1|2|4</code>
 selects one fixed count across500/750/1000 (default1); <code>profileReplicas</code> records
 that choice. Fixed2 is a pilot profile, not evidence of API scaling. Full-ladder

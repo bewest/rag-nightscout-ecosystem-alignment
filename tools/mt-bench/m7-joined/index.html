@@ -1751,12 +1751,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
     
     
     
@@ -1944,8 +1938,6 @@
       
         
       
-        
-      
     
     
     
@@ -2004,8 +1996,6 @@
       
         
           
-        
-      
         
       
         
@@ -2212,34 +2202,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="component-profiles-interface.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Explicit M7 component profiles — integration interface
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -2345,122 +2307,6 @@
     
   
     mongo-views-poc/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-admission/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-clinical/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-clinical/
   
 
     
@@ -2809,66 +2655,6 @@
     
   
     rust/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../tagged-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tagged-admission/
   
 
     
@@ -4384,7 +4170,7 @@
 
 
 <h1 id="joined-m7-capacity-adapter">Joined M7 capacity adapter<a class="headerlink" href="#joined-m7-capacity-adapter" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-18 at <code>82536ec44</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>4570cf55b</code>.</em></p>
 <p>This prepares the <strong>next</strong> measurement; it does not establish a capacity result.
 The prior capacity record and authorization/allocation profiles retain their own
 source scope. No prior working-tree lib mount or bootstrap patch is reused here.
@@ -4604,23 +4390,6 @@ uses the private admin API; restore commissioning precedes API priming, and a
 private local publisher completes custody before remaining roles start. Seeding
 uses DATA APIs. There is no direct tenant-row
 or Vault seeding in the campaign adapter.</p>
-<p><code>campaign.py pilot</code> supplies a distinct500→750→1000 remote pilot. See
-<a href="REMOTE-SEAM.html">the remote controller seam</a> for host prerequisites, cost ownership,
-commands, stage order, verdicts and artifacts. The controller enforces its current maintainer-authorized spending/deadline policy;
-this adapter performs no cloud action.</p>
-<p><code>campaign.py all</code> accepts the same source/image/freeze arguments plus <code>--work</code> and
-<code>--k6-image</code>. It measures 1 API at 1,000 → 3,000 → 5,000 → 10,000, then 2 and 4 APIs
-at those counts on the <strong>same frozen pair and image</strong>. Every failed correctness or
-instrument gate stops growth. <code>campaign.py ladder --replicas 1</code> (then2, then4)
-provides separate explicit ladders in the same <code>--work</code> ledger. A measured profile
-ceiling stays FAIL; the coordinator may start the next profile at1,000 after a
-source/instrument/host-matched <code>measured-profile-ceiling</code> receipt links the failure
-artifact and diagnosis hashes. Any stored-oracle, authority/refusal or functional
-failure sets a global block: a ceiling receipt cannot override it. It never automatically starts anyway on a busy
-host. <code>check-campaign</code> refuses missing count/replica rows, mixed source/instrument/
-image identities and unmeasured cells. Realtime worker placement remains the
-product binding's selected topology; the API-replica matrix is not a claim that
-all possible realtime placements or automatic takeover were measured.</p>
 <h2 id="instrument">Instrument<a class="headerlink" href="#instrument" title="Permanent link">&para;</a></h2>
 <p>The source manifest hashes every adapter file and every reused tracked instrument.
 The existing <code>capacity/k6/workload.js</code> supplies seven client shapes: CGM
@@ -4674,7 +4443,6 @@ observed runtime acquisition and the oracle control. No latency or CPU capacity
 threshold is invented; report those distributions and marginal costs as measured.</p>
 <p>Focused preparation only:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/test_contract.py<span class="w"> </span>-v
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/smoke.py<span class="w"> </span>/new/private/smoke-output
 </code></pre></div>
 <p>The smoke owns one tiny PostgreSQL fixture and six synthetic HTTP accepted writes
 using the tracked payload functions under deterministic mocks. It proves the
@@ -4867,15 +4635,6 @@ request-to-callback deadline. Missing, duplicate, foreign, wrong-value or late
 callbacks refuse. The historical hold4000 failure stays unchanged: retained
 callbacks show timely stored-ID delivery, but omit connection counts and full
 callback values needed to identify its strict-predicate rejection.</p>
-<p><code>--api-cause-observation on</code> installs a source-hash-bound private admission/exchange
-observer only for a setup diagnostic. Its bounded code/SQLSTATE counts carry no
-request body, error message or credential. File-I/O overhead is unmeasured; keep
-it outside an unmatched operating comparison. <code>api_cause.prepare_stages</code> prepares
-the fixed 0/4000/8000-viewer, 50-opens/second setup discriminator with sequential
-no-retry exchange checks. Its callback availability does not establish clinical
-or stored-frame equivalence. Runtime source-access captures use the existing
-<code>source-access-v1</code> private inspection port; M5's timer-only control checks actual
-snapshot/catalogue/data acquisition, with an unchanged checkpoint as no substitute.</p>
 <p>Focused offline controls (no SQL/runtime execution):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/completed-oracle-control.cjs
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/completed-oracle-v2-control.cjs
@@ -4983,17 +4742,6 @@ actual maintained Go notifier's message admission/handoff, each HTTP attempt,
 Node's first request-handler entry and later selected-row parsing. It is source
 instrumentation, not a product optimization or a capacity result. No native run,
 image or resource slot is selected by this implementation.</p>
-<p><code>--clinical-intake-timeline two-target-intake-timeline-raw-v2</code> explicitly adds a
-separate Node metadata ledger. The existing <code>off</code> default and v1 selection remain.
-The ledger writes before calling the original handler, then records request
-abort/close and response finish/close even when parsing never identifies a row.
-A later record joins the local request ID to the selected trace; it never rewrites
-the original timestamp. Instance ID plus PID and local request ID prevent a join
-across process starts. Validated LSNs, numeric connection/port metadata and fixed
-lifecycle fields are retained; bodies, URLs, authorization and arbitrary strings
-are excluded. The handler still receives the original <code>this</code> and arguments and
-returns its original promise or exception. Passive lifecycle listeners add no
-body consumer, scheduler work, admission or ACK.</p>
 <p>Raw bounds are 32,768 rows, 8 MiB and 128 pending writes, separate from the existing
 4,096-row/2 MiB selected trace. Saturation, short writes, pending drain, missing
 status or an entry without an abort/response terminal record is UNMEASURED.
@@ -5008,23 +4756,6 @@ counts and its optional seal also match the retained bytes. COMPLETE here descri
 not prove target delivery or clinical completion. Node entry is a JavaScript
 handler boundary, not socket or kernel arrival. Malformed selected-row inspection
 forwards to the actual receiver's validation and preserves its rejection.</p>
-<p><code>clinical-sender-trace.patch</code> is an experimental patch against the retained
-maintained v1.6.0 source archive, bound by <code>clinical-sender-source.json</code>. Original
-archive, go.mod and go.sum bytes stay unchanged. It instruments the actual
-notifier rather than introducing a proxy or substitute sender. It is disabled
-unless <code>NS_M7_CLINICAL_SENDER_TIMELINE=1</code>. That explicit mode reads two IDs and an explicit <code>clockSchema</code> at
-<code>/run/ns-intake-timeline/targets.json</code> and creates private, exclusive output under
-<code>/run/ns-ipc/clinical-sender-{timeline.jsonl,status.json}</code>. The raw Node selector alone installs no sender override. The additional explicit
-<code>--clinical-sender-binary</code> and <code>--clinical-sender-receipt</code> options stage only the
-reviewed instrumented CLI named in the source manifest; they accept no command
-override or alternative version. Preparation creates an owned exclusive 0555
-binary copy and 0444 build-receipt sidecar, a separate readonly sender-target
-mount and an isolated owned output directory. The original direct Go command,
-image, streaming wire mount, per-role quotas and application role mounts stay in
-use. Existing prepare/verify/publish/preflight/retain paths own these bindings. Its sender target
-file is a separate role mount: the next packet must bind <code>clockSchema</code> to the
-actual selected receiver route, with no default namespace fallback. Node target
-inspection uses the original receiver clock routes.</p>
 <p>Go records message-ready after serialization and before queue-byte admission;
 fast admission or blocking Acquire enter/return/refusal; unbuffered handoff-wait;
 consumer receive; and per-attempt client.Do call/return plus passive httptrace
@@ -5057,11 +4788,6 @@ Check the original file digests and unchanged go.mod/go.sum before applying:</p>
 <a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="s2">"</span><span class="nv">$CLINICAL_GO</span><span class="s2">"</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-mod<span class="o">=</span><span class="nb">readonly</span><span class="w"> </span>-race<span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>-timeout<span class="o">=</span>30s<span class="w"> </span>./pkg/wal/processor/webhook/notifier
 </code></pre></div>
 <p>Focused Node/Python controls, from the alignment root:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/clinical-intake-raw.test.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CLINICAL_CORE</span><span class="s2">"</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/clinical-intake-timeline.test.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CLINICAL_CORE</span><span class="s2">"</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/clinical-timeline-startup.test.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CLINICAL_PAIRED_SOURCE</span><span class="s2">"</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>tools/mt-bench/m7-joined<span class="w"> </span>python3<span class="w"> </span>-B<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>test_clinical_timeline<span class="w"> </span>test_probe_counts<span class="w"> </span>test_discovery<span class="w"> </span>test_pgstream_sample<span class="w"> </span>test_runner<span class="w"> </span>-q
-</code></pre></div>
 <p>The startup control needs the actual application archive plus its exact deployment
 overlay and matching dependency lock; it intercepts CLI execution before services.
 A bare application worktree has no deployment entrypoint. Controls plant missing
@@ -5114,8 +4840,8 @@ no public flag to bypass admission or resource ownership.</p>
 <p>These focused controls import the application and deployment modules from explicit
 worktrees. They do not launch a service or establish deployed recovery, clinical
 equivalence, or an operating envelope.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-default-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$DEPLOY_WORKTREE</span><span class="s2">"</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-row-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NATIVE_DECODER_JSONL</span><span class="s2">"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-default-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$DEPLOY_WORKTREE</span><span class="s2">"</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>node<span class="w"> </span>tools/mt-bench/m7-joined/materializer-row-control.cjs<span class="w"> </span><span class="s2">"</span><span class="nv">$CORE_WORKTREE</span><span class="s2">"</span><span class="w"> </span><span class="s2">"</span><span class="nv">$NATIVE_DECODER_JSONL</span><span class="s2">"</span>
 </code></pre></div>
 <p>The default control checks the maintained route and wire exports without a route
 override: all six clinical tables enter the decoder, XIDs are enabled, delivery

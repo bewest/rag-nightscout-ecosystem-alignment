@@ -1751,12 +1751,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
     
     
     
@@ -1944,8 +1938,6 @@
       
         
       
-        
-      
     
     
     
@@ -2004,8 +1996,6 @@
       
         
           
-        
-      
         
       
         
@@ -2292,34 +2282,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="component-profiles-interface.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Explicit M7 component profiles — integration interface
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -2425,122 +2387,6 @@
     
   
     mongo-views-poc/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-admission/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-clinical/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-clinical/
   
 
     
@@ -2889,66 +2735,6 @@
     
   
     rust/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../tagged-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tagged-admission/
   
 
     
@@ -4248,7 +4034,7 @@
 
 
 <h1 id="remote-controller-seam">Remote controller seam<a class="headerlink" href="#remote-controller-seam" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-11 at <code>668db69bb</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>4570cf55b</code>.</em></p>
 <p>The controller owns cloud creation/transport/bundling, checkpoints and teardown,
 and enforces the maintainer-authorized controller-selected spending/deadline policy. This adapter makes no cloud
 API call and does not estimate or waive that ceiling. Do not start it before the
@@ -4289,14 +4075,8 @@ contain synthetic custody material. Keep state/checkpoints private; only selecte
 sanitized evidence belongs in a public record. The controller preserves raw artifacts
 and provenance before destroying its owned VM, subject to its budget/deadline.</p>
 <h2 id="pilot-invocation">Pilot invocation<a class="headerlink" href="#pilot-invocation" title="Permanent link">&para;</a></h2>
+<p>The 500, 750 and 1,000-tenant remote pilot runs as the granular cell commands below. The former one-command <code>campaign.py</code> convenience form was removed with the Kubernetes and remote-pgstream paths replacing it (history: alignment <code>5a203ee7</code>).</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>manifest<span class="w"> </span>&gt;<span class="w"> </span>/private/instrument-manifest.json
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/campaign.py<span class="w"> </span>pilot<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>--work<span class="w"> </span>/private/new-pilot-directory<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>--core-repo<span class="w"> </span>/sources/core.git<span class="w"> </span>--core-commit<span class="w"> </span><span class="s2">"</span><span class="nv">$M7_CORE_SHA</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span>--deploy-repo<span class="w"> </span>/sources/deploy.git<span class="w"> </span>--deploy-commit<span class="w"> </span><span class="s2">"</span><span class="nv">$M7_DEPLOY_SHA</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>--image<span class="w"> </span><span class="s2">"</span><span class="nv">$M7_PAIRED_IMAGE</span><span class="s2">"</span><span class="w"> </span>--k6-image<span class="w"> </span><span class="s2">"</span><span class="nv">$M7_K6_IMAGE</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span>--freeze<span class="w"> </span>/private/frozen-acceptance.json<span class="w"> </span>--quiet-load<span class="w"> </span><span class="m">3</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>python3<span class="w"> </span>tools/mt-bench/m7-joined/adapter.py<span class="w"> </span>check-pilot<span class="w"> </span>/private/new-pilot-directory/campaign.json
 </code></pre></div>
 <p><code>pilot</code> selects one API and counts500→750→1000, real cadence, hot factor10 and two
 stock polling clients per tenant. Each cell has60s sampler-disabled idle,120s sampled
@@ -4347,8 +4127,7 @@ unknown resources. The remote controller retains VM-level cleanup responsibility
 <code>host-identity</code>, <code>run --k6-image ...</code>, and <code>down</code>. Repeat with fresh owned directories
 for750 and1000 only after the previous <code>summary.json</code> is PASS. Assemble their cells
 under <code>kind:m7-joined-remote-pilot</code> and check with <code>check-pilot</code>; it requires identical
-pair/instrument/image/host and all three rows. The full <code>campaign.py pilot</code> is the
-convenience form, not a resumable partially measured window. Preserve completed
+pair/instrument/image/host and all three rows. Preserve completed
 cell checkpoints; an interrupted window restarts as a new cell, not a continuation
 whose elapsed time is silently stitched together. <code>host-identity</code> returns only the
 identity/source hashes and keeps its full inventory private.</p>

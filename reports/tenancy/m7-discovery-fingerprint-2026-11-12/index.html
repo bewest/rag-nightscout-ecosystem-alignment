@@ -2562,6 +2562,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4077,6 +4083,64 @@
           
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../clinical-sql-transport-2026-11-19/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    clinical-sql-transport-2026-11-19/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
         
       
         
@@ -4167,6 +4231,64 @@
     
   
     completion-batch-74d7-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../concurrent-capacity-2026-11-18/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    concurrent-capacity-2026-11-18/
   
 
     
@@ -6353,6 +6475,64 @@
   
   
   
+    <a href="../kubernetes-catchup-scale-2026-11-19/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    kubernetes-catchup-scale-2026-11-19/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../legacy-rest-temporal-fixtures-386dba33-2026-11-07/index.html" class="md-nav__link">
       
   
@@ -7728,7 +7908,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_98" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_101" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -7751,8 +7931,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_98_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_98">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_101_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_101">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -11966,7 +12146,7 @@
 
 
 <h1 id="discovery-status-fingerprint-instrument-repair">Discovery status fingerprint: instrument repair<a class="headerlink" href="#discovery-status-fingerprint-instrument-repair" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>5f6cf4aa8</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>609454169</code>.</em></p>
 <p><strong>Reproduced; fixed in alignment source.</strong> The discovery workload discarded the
 response body that its settings fingerprint needed. The repair retains text for
 only the existing status GET. It adds no request, changes no application code,
@@ -12078,10 +12258,10 @@ capacity, clinical correctness, or the actual site's settings fingerprint.</p>
 The unchanged <code>native_time_witness</code> function's AST SHA-256 is
 <code>87e84a54e3bff3c490dea2041bfe7c206946d22dad6c09d36d835cbb8d201ce4</code>.
 This is source compatibility evidence, not a new native witness.</p>
-<p>Source: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/m7-joined/workload.py">generator</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/m7-joined/test_fingerprint_body.py">body regression</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/m7-joined/discovery.py">discovery collector</a>,
-<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/tools/mt-bench/m7-joined/test_discovery.py">ordering controls</a>.</p>
+<p>Source: <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/workload.py">generator</a>,
+body regression (<code>tools/mt-bench/m7-joined/test_fingerprint_body.py</code> at <code>50c10c47ce</code>, removed 2026-11-18 with the settings fingerprint),
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/discovery.py">discovery collector</a>,
+<a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/tools/mt-bench/m7-joined/test_discovery.py">ordering controls</a>.</p>
 <h2 id="retained-evidence">Retained evidence<a class="headerlink" href="#retained-evidence" title="Permanent link">&para;</a></h2>
 <p>Captured originals stay outside Git under evidence identifiers
 <code>discovery-reference-20261112-a</code> and <code>m7-fingerprint-body-review-20261112</code>.

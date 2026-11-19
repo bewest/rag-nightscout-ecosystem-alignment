@@ -16,7 +16,7 @@
         <link rel="prev" href="RUNNER.html">
       
       
-        <link rel="next" href="component-profiles-interface.html">
+        <link rel="next" href="../mongo-iso-poc/index.html">
       
       
         
@@ -1751,12 +1751,6 @@
       
         
       
-        
-      
-        
-      
-        
-      
     
     
     
@@ -1944,8 +1938,6 @@
       
         
       
-        
-      
     
     
     
@@ -2004,8 +1996,6 @@
       
         
           
-        
-      
         
       
         
@@ -2222,34 +2212,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="component-profiles-interface.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Explicit M7 component profiles — integration interface
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -2355,122 +2317,6 @@
     
   
     mongo-views-poc/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-admission/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../native-clinical/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    native-clinical/
   
 
     
@@ -2819,66 +2665,6 @@
     
   
     rust/
-  
-
-    
-  </span>
-  
-  
-
-      
-        <span class="md-nav__icon md-icon"></span>
-      
-    </a>
-  
-
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-      
-        
-          
-        
-      
-        
-      
-    
-    
-    
-      
-      
-    
-    
-      
-        
-        
-      
-    
-    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
-      
-        
-  
-  
-  
-    <a href="../tagged-admission/index.html" class="md-nav__link">
-      
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    tagged-admission/
   
 
     
@@ -4137,7 +3923,7 @@
 
 
 <h1 id="explicit-pre-acceptance-baseline-collection">Explicit pre-acceptance baseline collection<a class="headerlink" href="#explicit-pre-acceptance-baseline-collection" title="Permanent link">&para;</a></h1>
-<p><em>Living document, last changed 2026-11-12 at <code>7219ad70b</code>.</em></p>
+<p><em>Living document, last changed 2026-11-18 at <code>4570cf55b</code>.</em></p>
 <p>This opt-in admission permits measurement while functional acceptance is pending.
 It never grants functional or capacity acceptance. The existing accepted path
 remains the default. The selected profile is still <code>remote-pilot</code>: unchanged
@@ -4176,8 +3962,7 @@ does not authorize bypassing the controller's existing run deadline.</p>
 </code></pre></div>
 <p>Repeat only the prescribed count with the same immutable receipt/pair/image/
 instrument/run identity. <code>build</code>, <code>deploy</code> and <code>run</code> commands are unchanged.
-<code>campaign.py pilot</code> accepts the same measurement/run/image/minute flags; <code>all</code>
-and replica ladders cannot select this admission. Parent transport uses its own
+Parent transport uses its own
 existing ownership/deadline orchestration; no new shipping sequence is added.
 <code>adapter.py measurement-capabilities</code> returns a separate explicit version-1
 support descriptor. The existing cap4 <code>capabilities.json</code> remains byte-identical.</p>

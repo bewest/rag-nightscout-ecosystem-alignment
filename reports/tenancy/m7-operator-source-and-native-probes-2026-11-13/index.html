@@ -2562,6 +2562,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -4077,6 +4083,64 @@
           
         
       
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../clinical-sql-transport-2026-11-19/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    clinical-sql-transport-2026-11-19/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
         
       
         
@@ -4167,6 +4231,64 @@
     
   
     completion-batch-74d7-2026-11-06/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../concurrent-capacity-2026-11-18/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    concurrent-capacity-2026-11-18/
   
 
     
@@ -6353,6 +6475,64 @@
   
   
   
+    <a href="../kubernetes-catchup-scale-2026-11-19/index.html" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    kubernetes-catchup-scale-2026-11-19/
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
     <a href="../legacy-rest-temporal-fixtures-386dba33-2026-11-07/index.html" class="md-nav__link">
       
   
@@ -8260,7 +8440,7 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_107" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_18_110" checked>
         
           
           <div class="md-nav__link md-nav__container">
@@ -8283,8 +8463,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_107_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_7_18_107">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_18_110_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_18_110">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -11956,7 +12136,7 @@
 
 <h1 id="operator-source-review-and-bounded-native-probes--2026-11-13">Operator source review and bounded native probes — 2026-11-13<a class="headerlink" href="#operator-source-review-and-bounded-native-probes--2026-11-13" title="Permanent link">&para;</a></h1>
 <p><em>Living document, last changed 2026-11-13 at <code>351f44136</code>.</em></p>
-<p><strong>Fixed on local branches; reproduced at the stated scope.</strong> Core <code>e1f130ecf500eacaee8626af3d83a16a23a23731</code> and deployment <code>abe3e82df1f149b1213455c37b9e6177acf31adf</code> are joined in the owned candidate. Nothing is merged to application dev or released. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/c134b329a04eaeb3a5536c54b98146c8f5605eef/reports/tenancy/m7-operator-source-and-native-probes-2026-11-13/summary.json">Structured attribution</a> keeps the different source and native measurements separate.</p>
+<p><strong>Fixed on local branches; reproduced at the stated scope.</strong> Core <code>e1f130ecf500eacaee8626af3d83a16a23a23731</code> and deployment <code>abe3e82df1f149b1213455c37b9e6177acf31adf</code> are joined in the owned candidate. Nothing is merged to application dev or released. <a href="https://github.com/bewest/rag-nightscout-ecosystem-alignment/blob/66bb31e0c30a831179e278754123e3ae998ade7f/reports/tenancy/m7-operator-source-and-native-probes-2026-11-13/summary.json">Structured attribution</a> keeps the different source and native measurements separate.</p>
 <h2 id="audited-ensure-source">Audited ensure source<a class="headerlink" href="#audited-ensure-source" title="Permanent link">&para;</a></h2>
 <p>The dedicated unselected operator capability supports fresh provisioning and two provenance-backed metadata repairs. It preserves clinical data, credentials, revocations, history, progress and restore holds. Fresh creation requires a closed deployment store map, actual single-database identity, retained-state absence and the existing exclusive lifecycle fence before key work. Registered missing keys refuse; they are never recreated from an empty current table. A settings repair retains its latest complete immutable historical version; a public-key registration repair requires the latest successful matching immutable observation.</p>
 <p>The implementation owns an append-only operation ledger, closed private REST/CLI grammar and separate narrow SQL/Vault identities. A selected admission profile refuses before construction. Its proof reads make it a clinical actor: finish ensure and stop/drain the dedicated process, then require authoritative restore preflight to prove its backends absent. Local close is not retirement proof. Factory reset is not implemented here; its credential-preservation decision stands and operational scope remains pending.</p>
