@@ -21,7 +21,7 @@ serve-then-warm readiness**
 | repository | `cgm-remote-monitor` |
 | branch | `codex/perf-db-20261110` |
 | base | `official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1` |
-| claimed state | `ready-to-push` — a claim; `make queue-status ID=MT-PERF-DB` is the measurement |
+| claimed state | `in-flight-upstream` — a claim; `make queue-status ID=MT-PERF-DB` is the measurement |
 | semver | `n/a` |
 
 ## What this changes
@@ -60,7 +60,14 @@ maintainer; architecture review
 ## Notes carried on the item
 
 2026-11-10: 1,000 tenants start (baseline failed at 100). Resumed for
-readiness-serve-then-warm and admission-epoch-everywhere.
+readiness-serve-then-warm and admission-epoch-everywhere. 2026-11-18 (groom,
+reproduced): branch head 471e51a9 is an ancestor of draft PR #8898 head
+6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore
+candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-
+remote-monitor-official). The commits are already on #8898, so the next step
+is no longer a human push: ready-to-push -> in-flight-upstream. The gate's
+"frozen-head acceptance at the next #8898 batch join" is now the one campaign
+on the frozen candidate (decision restore-candidate-frozen).
 
 ---
 

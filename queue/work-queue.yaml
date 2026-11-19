@@ -24602,11 +24602,13 @@ items:
           type and typeRef), or a generated registration declares a unit
           that differs from its source read. GREEN on 2026-10-18: 60 tests
           (46 before).
-      - run: make schema-sync-model && git diff --exit-code specs/sync/registrations
+      - run: PYTHONPATH=tools python3 -m nsschema.sync_model --check
         kind: static
         describe: >
           FAILS when the generated registrations differ from what the
-          generator produces from its source reads.
+          generator produces from its source reads. Read-only: --check
+          compares and never rewrites (2026-11-18; the earlier form ran the
+          generator over tracked files). Red with one registration edited.
     blocks_on: [SPEC-STATE-INTENT]
     evidence:
       - specs/sync/controller-state-model.schema.json
@@ -25910,6 +25912,7 @@ items:
       provider interop, 17 of 20 authored mutants (runnable via run.sh --control).
       Next step is the join; `ready-to-push` here means the gate passes and the
       branch is local.
+      2026-11-18 (groom, reproduced): branch head 3b09131e is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-M6A-JOIN
     title: "M6a: join the accepted owner/OIDC candidate to #8898 and run the final campaign"
@@ -25982,6 +25985,7 @@ items:
       Every CI job on that head is green, CodeQL included: alert 155 fixed, 154 dismissed (used in tests), 150
       still open at the new line lib/authorization/storage.js:395 (the accessToken.length loop). Fix 7b30a6f2
       joins under MT-M6B-JOIN.
+      2026-11-18 (groom, reproduced): branch head dc795bd1 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-M6B-JOIN
     title: "Join M6b ownership/retention, single-site OIDC provisioning, listener composition and CodeQL 150 into #8898"
@@ -26035,6 +26039,7 @@ items:
       2026-11-10 (read from GitHub at 21:0xZ): maintainer pushed b70ad83f to #8898; all 16 CI jobs
       green including CodeQL and the multitenant opt-in corpus; no open code-scanning alerts on the
       PR (150 fixed).
+      2026-11-18 (groom, reproduced): branch head b70ad83f is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
   - id: MT-OIDC-SINGLE-PROVISION
     title: "Single-site OIDC: declarative identity-to-role list and a role for signed-in strangers"
     parcel: tenancy
@@ -26092,6 +26097,7 @@ items:
       roles per operation (stored permissionGroups ignored); OIDC_IDENTITIES[_FILE] keyed on issuer+subject or
       issuer-verified email; OIDC_FALLBACK_ROLES for unlisted people. Maintainer 2026-11-10: the list is authoritative at each start (decision single-site-oidc-list-authoritative). Joined into MT-M6B-JOIN.
       2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
+      2026-11-18 (groom, reproduced): branch head 4b81f59d is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
   - id: MT-OWNERSHIP-OPS
     title: "M6b: operator-assisted ownership add, transfer and recovery"
     parcel: tenancy
@@ -26132,6 +26138,7 @@ items:
       subject-admin remove() can delete the last owner subject; legacy subject-admin writers without
       ownerPolicy do not serialize with ownership changes. Joined into MT-M6B-JOIN.
       2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
+      2026-11-18 (groom, reproduced): branch head 6ee8fb04 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
   - id: MT-ADMIN-ROLE-OWNERSHIP
     title: "M6b: compose ownership operations into the multitenant admin role with an ownership_operator identity"
     parcel: tenancy
@@ -26165,6 +26172,7 @@ items:
       2026-11-10 (reproduced in lane): three commits on b70ad83f. Decision inputs (read-derived): default admin bind
       vs plane rule; restore cohort census refuses while admin is connected; no lifecycle fence on ownership changes.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 1376c294 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-ROOT-ADMIN-PARITY
     title: "Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, admin tools"
@@ -26202,6 +26210,7 @@ items:
       0007_root_role_administration is provisional (allocate at the join). owner-subject-policy 38/0, focused unit
       220/0; controls C1-C8. Owner and root share one catalogue (policy row digest), so the demo gives owners '*' too.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 165c13bf is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-INTERNAL-LISTENER
     title: "Internal listener: one serve.internal per role (Ory pattern, socket default) and graceful shutdown with a deadline"
@@ -26232,6 +26241,7 @@ items:
       Decisions internal-listener-ory-pattern and internal-listener-graceful-shutdown (2026-11-10).
       2026-11-10 (reproduced in lane): 78ecba76 on b70ad83f. serve.internal {socket}|{host,port}, NS_SERVE_INTERNAL_*, socket default <runtime>/<roles>.sock; peers NS_<ROLE>_INTERNAL_URL|SOCKET defaulting to sockets; contracts fixed per role in internal-listener.js; endpoint-config.js and openControl removed. Join: ownership-operations must be added to OWNED/plan() for admin.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 78ecba76 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-ACTIVITY-ELIGIBILITY
     title: "Pause/suspend drive worker eligibility; evaluator stops while paused; owner may pause"
@@ -26269,6 +26279,7 @@ items:
       pauses, cancel restores, execution suspends. Native 33 passing; nine controls. Open: 423 vs 503 for refused
       uploads; deploy wiring and grants; full API/realtime role runs with activity selected; per-request read cost.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 07981b55 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-EXPORT-EXPIRY
     title: "Key destruction removes the export artifact file in the same audited step"
@@ -26304,6 +26315,7 @@ items:
       Join note: production wiring must pass removeArtifact; operator role needs UPDATE on the two new columns;
       other lifecycle migrations renumber after 0006.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 701eba6f is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-ADMIN-LIFECYCLE-FIT
     title: "Restore census accepts non-clinical identities; ownership refuses on non-active tenants; admin plane rule allows same address on a different port"
@@ -26342,6 +26354,7 @@ items:
       lib/tenant-lifecycle/README.md calls importArtifact without ledgerNamespace (the export-expiry lane also
       edits that README); fix at the join.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 66655756 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: DEPLOY-TREE-HOME
     title: "Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture; operator-facing README"
@@ -26350,7 +26363,7 @@ items:
     branch: docs/operator-readme-20261110
     worktree: ../nightscout-deploy-readme-wt
     base: main@cda3826
-    state: ready-to-push
+    state: in-progress
     blast_radius: >
       nightscout-deploy README rewritten for operators (what runs, how, pinned core commit; stubs say not started); #8898 drops or shrinks deploy/multitenant to the fixture its tests boot; port e6f6e248 grants as an overlay.
     review: maintainer
@@ -26373,6 +26386,7 @@ items:
       the imported tree is core ed2ced00 while core is 61 commits newer; its health.js requires a removed module and
       tenant-admin exits 1 on the mixed base (read-derived cause). Fix is one final re-import from the joined #8898
       candidate, after which the deploy repo is canonical and core keeps the fixture (core half, at the join).
+      2026-11-18 (groom, reproduced): the deploy half 9387428 is on nightscout-deploy main (ancestor of origin/main), so nothing is left to push there. The core half is on the frozen restore candidate, core bbc99a85, whose deploy/ holds only deploy/multitenant/README.md with plans under tests/fixtures, while #8898 head 6e193b3e still carries deploy/multitenant/{config,demo,health,restore}.js (git ls-tree). ready-to-push -> in-progress until the candidate reaches #8898; decision core-static-plan-retired applies.
 
   - id: MT-CONSUMER-STALE-RESELECT
     title: "Alarm consumer survives evaluator timer publications during selection (BF-231)"
@@ -26410,6 +26424,7 @@ items:
       selections 360 -> 125/min, 0 refusals; 150 ms churn 8/8 delivered. Repeat covers any requested notification, as
       single-site processing does. Handed to the batch join.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 956d0940 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-TENANT-EXTENDED-SETTINGS
     title: "Tenant environment carries plugin extended settings so the stale-data alarm can be enabled (BF-232)"
@@ -26443,6 +26458,7 @@ items:
       after the first preview (documents settle only the first preview); devicestatus.advanced defaults true on a single
       site but is unset for a tenant (read-derived, env.js:396 vs receiveddata.js:159).
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 2f1ae027 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-BATCH-JOIN-1110
     title: "Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full acceptance"
@@ -26478,6 +26494,7 @@ items:
       re-run, 18 environment-reaching corpus suites 160/1. Open follow-ups: activity selections and grants in the demo
       config; export-expiry removeArtifact production wiring; API ingest refusal and socket disconnect under suspend are
       wired in core but not in the deploy demo.
+      2026-11-18 (groom, reproduced): branch head 16a1fc2d is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
   - id: MT-OWNER-LAST-GUARD
     title: "M6b follow-up: refuse revoking the last usable owner's subject (BF-229)"
     parcel: tenancy
@@ -26513,6 +26530,7 @@ items:
       questions from the same lane (legacy multi-mode writer without ownerPolicy; export-artifact expiry)
       are with the maintainer.
       2026-11-10: joined into codex/batch-join-20261110 16a1fc2d (MT-BATCH-JOIN-1110), accepted, not pushed.
+      2026-11-18 (groom, reproduced): branch head 65657a62 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-KEY-RETENTION
     title: "M6b: 30-day retained-key destruction and after-window refusal"
@@ -26556,6 +26574,7 @@ items:
       reproduced natively; never released). Joined into MT-M6B-JOIN. Open for the maintainer: early destroy
       refused by design; export-file expiry not automated.
       2026-11-10: ships in #8898 at b70ad83f (MT-M6B-JOIN); CI green.
+      2026-11-18 (groom, reproduced): branch head ed46cc43 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
   - id: MT-VAULT-TOKEN-FILE
     title: "M6c: read the Vault token from a sink file per call (Vault Agent compatibility)"
     parcel: tenancy
@@ -26596,6 +26615,7 @@ items:
       integration 24 passing, 0 failing. Report reports/tenancy/vault-agent-2026-11-09/.
       2026-11-10: 0c547958 is an ancestor of dc795bd1 (git merge-base --is-ancestor), which the maintainer
       pushed to #8898; this item ships with the M6a bundle and needs no separate push.
+      2026-11-18 (groom, reproduced): branch head 0c547958 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The work is on #8898, so in-flight-upstream stands; acceptance is the one campaign on the frozen candidate (decision restore-candidate-frozen).
   - id: DEPLOY-VAULT-AGENT
     title: "M6c: Vault Agent sidecar in the Compose binding (auto-auth, sink, renewal)"
     parcel: tenancy
@@ -27181,7 +27201,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/pool-primitive-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Multitenant only. One PostgreSQL pool-membership table keyed by pool kind and
       ordinal, plus one slice function (tenant ID hashed onto the member count). The
@@ -27205,6 +27225,7 @@ items:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       2026-11-10: decided (decisions.md#pool-primitive-shared), built now ahead of M7.
+      2026-11-18 (groom, reproduced): branch head 5a789903 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The commits are already on #8898, so the next step is no longer a human push: ready-to-push -> in-flight-upstream. The gate's "frozen-head acceptance at the next #8898 batch join" is now the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-CONNECTOR-REVERSE
     title: "M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site into the tenant"
@@ -27212,7 +27233,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/connector-reverse-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Multitenant only. A vcpool role runs the existing nightscout-connect Nightscout
       source driver per tenant and writes through the tenant's own API as a tenant-bound
@@ -27236,6 +27257,7 @@ items:
     notes: >
       2026-11-10: partitioning decided (decisions.md#pool-primitive-shared); egress
       capacity is a deployment constraint (decisions.md#vcpool-egress-capacity).
+      2026-11-18 (groom, reproduced): branch head 1792063a is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The commits are already on #8898, so the next step is no longer a human push: ready-to-push -> in-flight-upstream. The gate's "frozen-head acceptance at the next #8898 batch join" is now the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-PERF-DB
     title: "Restore-fence epoch admission, bounded startup warm, pool configuration, serve-then-warm readiness"
@@ -27243,7 +27265,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/perf-db-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Multitenant only. In-transaction catalogue epoch replaces per-transaction window admission; bounded warm; pool sizes from configuration; per-tenant readiness with an all-tenants flag.
     review: maintainer; architecture review
@@ -27260,6 +27282,7 @@ items:
       - reports/tenancy/perf-db-2026-11-10/README.md
     notes: >
       2026-11-10: 1,000 tenants start (baseline failed at 100). Resumed for readiness-serve-then-warm and admission-epoch-everywhere.
+      2026-11-18 (groom, reproduced): branch head 471e51a9 is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The commits are already on #8898, so the next step is no longer a human push: ready-to-push -> in-flight-upstream. The gate's "frozen-head acceptance at the next #8898 batch join" is now the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-PERF-REALTIME
     title: "Realtime publishes on change; event-driven authorization; queued connects under pool pressure"
@@ -27267,7 +27290,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/perf-realtime-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Multitenant only. Change detection by tenant write clock per interval, frames only on view change, authorization at connect, expiry and events, connects queued instead of disconnected.
     review: maintainer; architecture review
@@ -27284,6 +27307,7 @@ items:
       - reports/tenancy/perf-realtime-2026-11-10/README.md
     notes: >
       2026-11-10: lane head 6f31c94b; idle frames 20 to 0 per socket-minute, realtime DB-ms 1,307 to 8 per minute at 1x20. BF-233 open.
+      2026-11-18 (groom, reproduced): branch head eacd6a3b is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The commits are already on #8898, so the next step is no longer a human push: ready-to-push -> in-flight-upstream. The gate's "frozen-head acceptance at the next #8898 batch join" is now the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-PERF-EVALUATOR
     title: "Evaluator works on change: per-member change query and due-time timers replace the per-tenant poll"
@@ -27291,7 +27315,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/perf-evaluator-20261110
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Multitenant only. Evaluation on change stamp past checkpoint plus per-tenant due-time timers for time-driven alarms; backstop per D6.
     review: maintainer; architecture review
@@ -27308,6 +27332,7 @@ items:
       - releases/cgm-remote-monitor-16.0.0/decisions.md
     notes: >
       2026-11-10: lane running.
+      2026-11-18 (groom, reproduced): branch head 9c46b95e is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The commits are already on #8898, so the next step is no longer a human push: ready-to-push -> in-flight-upstream. The gate's "frozen-head acceptance at the next #8898 batch join" is now the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
   - id: MT-CAPACITY-FIXES
     title: "Capacity campaign fixes: operator-set config size cap, realtime warm retry, bootstrap error detail, nginx re-resolve, start ordering"
@@ -27466,7 +27491,7 @@ items:
     repo: cgm-remote-monitor
     branch: codex/eval-cost-20261111
     base: official/workspace/multitenant-20261102@16a1fc2d45e59602eb6ec3e3bf6f506f35bcc5b1
-    state: ready-to-push
+    state: in-flight-upstream
     blast_radius: >
       Multitenant evaluator only. Steps C/D/E, B and A of decisions.md#evaluation-cost-candidates;
       ties break on the insertion ordinal on both paths (decisions.md#view-reads-total-order).
@@ -27485,6 +27510,7 @@ items:
     notes: >
       2026-11-11: head 745c7f4e. Time-only cycle 19.5 to 4.6 CPU-ms and 44 to 0 statements; acquisition 32.0 to 14.3 CPU-ms.
       Tie reads: MongoDB matches the ordinal order on 400 of 402, PostgreSQL's previous order on 0.
+      2026-11-18 (groom, reproduced): branch head 745c7f4e is an ancestor of draft PR #8898 head 6e193b3e (open, draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-official). The commits are already on #8898, so the next step is no longer a human push: ready-to-push -> in-flight-upstream. The gate's "frozen-head acceptance at the next #8898 batch join" is now the one campaign on the frozen candidate (decision restore-candidate-frozen).
   - id: MT-D6-SLOT-READER
     title: "D6: qualify default stream-fed clinical materialization and output recovery"
     parcel: tenancy

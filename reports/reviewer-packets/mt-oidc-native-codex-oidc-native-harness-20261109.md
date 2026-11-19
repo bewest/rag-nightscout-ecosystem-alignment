@@ -79,7 +79,12 @@ not have gone green as written; the settings-reader fixture lacked SELECT on
 schema_migrations (fixture fixed). UNMEASURED: full/browser/corpus/prcheck on
 the branch (MT-M6A-JOIN), real provider interop, 17 of 20 authored mutants
 (runnable via run.sh --control). Next step is the join; `ready-to-push` here
-means the gate passes and the branch is local.
+means the gate passes and the branch is local. 2026-11-18 (groom, reproduced):
+branch head 3b09131e is an ancestor of draft PR #8898 head 6e193b3e (open,
+draft; read from GitHub 2026-11-18) and of the frozen restore candidate, core
+bbc99a85 (`git merge-base --is-ancestor` in externals/cgm-remote-monitor-
+official). The work is on #8898, so in-flight-upstream stands; acceptance is
+the one campaign on the frozen candidate (decision restore-candidate-frozen).
 
 ---
 

@@ -30,7 +30,7 @@ every item that was `merged-upstream` then is `released`.
 
 <!-- BEGIN GENERATED: needs-a-human -->
 
-### Maintainer &mdash; 36 items
+### Maintainer &mdash; 35 items
 
 | id | claimed state | what it is | PR |
 |---|---|---|---|
@@ -41,7 +41,9 @@ every item that was `merged-upstream` then is `released`.
 | `MT-ADMIN-LIFECYCLE-FIT` | `in-flight-upstream` | Restore census accepts non-clinical identities; ownership refuses on non-active  | &mdash; |
 | `MT-ADMIN-ROLE-OWNERSHIP` | `in-flight-upstream` | M6b: compose ownership operations into the multitenant admin role with an owners | &mdash; |
 | `MT-BATCH-JOIN-1110` | `in-flight-upstream` | Join the 2026-11-10 decision batch (eight lanes) onto #8898 and run full accepta | &mdash; |
+| `MT-CONNECTOR-REVERSE` | `in-flight-upstream` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in | &mdash; |
 | `MT-CONSUMER-STALE-RESELECT` | `in-flight-upstream` | Alarm consumer survives evaluator timer publications during selection (BF-231) | &mdash; |
+| `MT-EVAL-COST` | `in-flight-upstream` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work | &mdash; |
 | `MT-EXPORT-EXPIRY` | `in-flight-upstream` | Key destruction removes the export artifact file in the same audited step | &mdash; |
 | `MT-INTERNAL-LISTENER` | `in-flight-upstream` | Internal listener: one serve.internal per role (Ory pattern, socket default) and | &mdash; |
 | `MT-KEY-RETENTION` | `in-flight-upstream` | M6b: 30-day retained-key destruction and after-window refusal | &mdash; |
@@ -51,6 +53,10 @@ every item that was `merged-upstream` then is `released`.
 | `MT-OIDC-SINGLE-PROVISION` | `in-flight-upstream` | Single-site OIDC: declarative identity-to-role list and a role for signed-in str | &mdash; |
 | `MT-OWNER-LAST-GUARD` | `in-flight-upstream` | M6b follow-up: refuse revoking the last usable owner's subject (BF-229) | &mdash; |
 | `MT-OWNERSHIP-OPS` | `in-flight-upstream` | M6b: operator-assisted ownership add, transfer and recovery | &mdash; |
+| `MT-PERF-DB` | `in-flight-upstream` | Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t | &mdash; |
+| `MT-PERF-EVALUATOR` | `in-flight-upstream` | Evaluator works on change: per-member change query and due-time timers replace t | &mdash; |
+| `MT-PERF-REALTIME` | `in-flight-upstream` | Realtime publishes on change; event-driven authorization; queued connects under  | &mdash; |
+| `MT-POOL-PRIMITIVE` | `in-flight-upstream` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice)  | &mdash; |
 | `MT-ROOT-ADMIN-PARITY` | `in-flight-upstream` | Multitenant tenant API_SECRET gets single-site admin parity: subjects, roles, ad | &mdash; |
 | `MT-TENANT-EXTENDED-SETTINGS` | `in-flight-upstream` | Tenant environment carries plugin extended settings so the stale-data alarm can  | &mdash; |
 | `MT-VAULT-TOKEN-FILE` | `in-flight-upstream` | M6c: read the Vault token from a sink file per call (Vault Agent compatibility) | &mdash; |
@@ -62,13 +68,6 @@ every item that was `merged-upstream` then is `released`.
 | `DEPENDABOT-CONFIG` | `needs-decision` | Dependabot runs with no configuration: security PRs target master, and alerts co | &mdash; |
 | `MOD-UNITS-CANONICAL` | `needs-decision` | Canonical units at write: spelling only (N1) or mg/dL plus the original (N2), an | &mdash; |
 | `MOD-WRITE-VALIDATION-READ` | `needs-decision` | Flag stored records that break a write-validation rule on API v3 reads (read-sid | &mdash; |
-| `DEPLOY-TREE-HOME` | `ready-to-push` | Move the Compose deploy tree to nightscout-deploy; core keeps the test fixture;  | &mdash; |
-| `MT-CONNECTOR-REVERSE` | `ready-to-push` | M6d: tenant-side Nightscout connector (vcpool) pulls a family's existing site in | &mdash; |
-| `MT-EVAL-COST` | `ready-to-push` | Evaluator per-evaluation cost: no per-cycle copies, dates parsed once, kept work | &mdash; |
-| `MT-PERF-DB` | `ready-to-push` | Restore-fence epoch admission, bounded startup warm, pool configuration, serve-t | &mdash; |
-| `MT-PERF-EVALUATOR` | `ready-to-push` | Evaluator works on change: per-member change query and due-time timers replace t | &mdash; |
-| `MT-PERF-REALTIME` | `ready-to-push` | Realtime publishes on change; event-driven authorization; queued connects under  | &mdash; |
-| `MT-POOL-PRIMITIVE` | `ready-to-push` | Shared pool-membership primitive (pool kind, member count, ordinal, ring slice)  | &mdash; |
 | `WS-LAB` | `ready-to-push` | tools/lab/proxy-trust - socket.io (WebSocket) cells on the AR chain (W0-W3) | &mdash; |
 
 ### SAFETY reviewer &mdash; 1 item
