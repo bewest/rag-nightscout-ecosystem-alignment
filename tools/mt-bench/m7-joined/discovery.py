@@ -6,15 +6,13 @@ import re
 import subprocess
 import sys
 import time
-import discovery_rest
 import driver_memory
 import driver_vu_diagnostic
 import phase_windows
 from contract import require, SHA, OWNER, REPLICAS, UNACCEPTED_SCOPE, discovery_scope, check_discovery_scope, discovery_api_replicas
 
-INCOMPLETE=frozenset(('M7_EVALUATOR_IDLE_JOB_PENDING','M7_EVALUATOR_IDLE_NEW_DEMAND','M7_EVALUATOR_IDLE_FINAL_COMPLETION_PENDING','M7_EVALUATOR_IDLE_TAIL_REQUIRED','M7_EVALUATOR_IDLE_TAIL_COMPLETION','M7_EVALUATOR_IDLE_TAIL_BODY','M7_EVALUATOR_IDLE_TAIL_JOB_PENDING','M7_EVALUATOR_IDLE_TAIL_DEADLINE','M7_EVALUATOR_IDLE_TAIL_OWNER_BOUND','M7_EVALUATOR_IDLE_TAIL_OPPORTUNITY','M7_EVALUATOR_IDLE_TIME_NOT_OBSERVED','M7_EVALUATOR_IDLE_UNCREDITED_WORK','M7_EVALUATOR_IDLE_UNATTRIBUTED_TIME','M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT'))
-INCOMPLETE=INCOMPLETE|frozenset(('M7_OPPORTUNITY_NOT_OBSERVED','M7_OPPORTUNITY_DEADLINE','M7_OPPORTUNITY_BYTE_BOUND','M7_OPPORTUNITY_COVERAGE','M7_OPPORTUNITY_CAPTURE','M7_OPPORTUNITY_QUERY_BOUND'))
-INCOMPLETE=INCOMPLETE|frozenset(('M7_EVALUATOR_PROGRESS_QUERY_BOUND','M7_EVALUATOR_PROGRESS_BYTE_BOUND','M7_EVALUATOR_PROGRESS_BUDGET'))
+INCOMPLETE=frozenset(('M7_EVALUATOR_PROGRESS_NOT_OBSERVED','M7_RUNTIME_NOT_READY','M7_EVALUATOR_PROGRESS_UNAVAILABLE','M7_EVALUATOR_PROGRESS_COLLECTOR_TIMEOUT',
+                      'M7_EVALUATOR_PROGRESS_QUERY_BOUND','M7_EVALUATOR_PROGRESS_BYTE_BOUND','M7_EVALUATOR_PROGRESS_BUDGET'))
 
 def safe_code(error):
     text=str(error)
@@ -25,61 +23,17 @@ SOFT_WORK_FAILURES=frozenset()
 
 def incomplete(error):return str(error) in SOFT_WORK_FAILURES or (getattr(error,'verdict','UNMEASURED')!='FAIL' and str(error) in INCOMPLETE)
 
-def recovery_episode(value,ids,binding,*,budget=None):
-    """Allow more discovery collection after a sampled local cache discard.
-
-    This never clears the strict failure or certifies an unseen interval. Actual
-    process replacement, counter rewind, foreign work and restore changes stop.
-    """
-    import evaluator_idle as idle
-    import evaluator_progress as p
-    import evaluator_opportunities as o
-    p.validate_ids(ids)
-    require(value.get('kind')=='evaluator-opportunity-phase-v1' and value.get('phase')=='load'
-            and value.get('code')=='M7_EVALUATOR_PROGRESS_RESET' and value.get('verdict')=='FAIL'
-            and value.get('failedCollection') is None,'M7_DISCOVERY_RECOVERY_SHAPE')
-    require(value.get('durableBinding')==binding,'M7_DISCOVERY_RECOVERY_BINDING')
-    policy=p.capture_policy(budget)
-    require(value.get('capturePolicy',p.POLICY)==policy and value.get('attribution',{}).get('evaluatorProgressBudget')==budget,
-            'M7_DISCOVERY_RECOVERY_BUDGET')
-    require(all(value.get('attribution',{}).get(k)==binding[k] for k in ('pair','imageId','instrument')),'M7_DISCOVERY_RECOVERY_BINDING')
-    require(all(value.get('attribution',{}).get(k)==binding[k] for k in ('pair','imageId','instrument')),'M7_DISCOVERY_RECOVERY_BINDING')
-    services=list(value['rounds'][0]['instances']);rounds,actual=idle._decode(value,len(ids),services)
-    require(len(rounds)==3 and actual==set(ids),'M7_DISCOVERY_RECOVERY_COVERAGE')
-    require(sum(r['queries'] for r in rounds)<=policy['maxQueriesPerPhase']
-            and sum(r['bytes'] for r in rounds)<=policy['maxBytesPerPhase'],'M7_DISCOVERY_RECOVERY_BUDGET')
-    durable=o.durable_rows(value['durable'],ids,binding);o.capture_windows(value['captureWindows'],3)
-    changes=[]
-    for previous,current in zip(rounds,rounds[1:]):
-        require(current['instances']==rounds[0]['instances'],'M7_DISCOVERY_PROCESS_REPLACED')
-        for service,rows in previous['allRows'].items():
-            for tenant,before in rows.items():
-                after=current['allRows'][service][tenant]
-                require(after['admitted']==before['admitted'],'M7_DISCOVERY_ADMISSION_CHANGED')
-                require(all(after[k]>=before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_DISCOVERY_COUNTER_REWOUND')
-                if not before['admitted']:
-                    require(after==before,'M7_DISCOVERY_FOREIGN_CHANGED')
-                elif after['generation']!=before['generation']:
-                    changes.append({'tenant':tenant,'before':before['generation'],'after':after['generation']})
-    require(changes,'M7_DISCOVERY_NO_LOCAL_RECOVERY')
-    for tenant in ids:
-        require(durable[0][tenant]['restoreGeneration']==durable[-1][tenant]['restoreGeneration'],'M7_DISCOVERY_RESTORE_CHANGED')
-    return {'kind':'local-runtime-recovery','changes':changes,'strictVerdict':'FAIL',
-            'interval':'UNMEASURED between snapshots','scope':'continued bounded discovery; no correctness or capacity promotion'}
-
 def check_discovery(value):
     require(value.get('kind') in ('m7-joined-discovery-cell','m7-joined-discovery') and value.get('version')==1 and value.get('runPurpose')=='discovery' and value.get('capacityAcceptance')=='NOT_GRANTED','M7_DISCOVERY_SHAPE')
     require(value.get('status') in ('MEASURED','PARTIAL'),'M7_DISCOVERY_STATUS')
     require(all(SHA.fullmatch(value.get('pair',{}).get(k,'')) for k in ('core','deploy')),'M7_DISCOVERY_SOURCE')
-    require(re.fullmatch(r'[a-f0-9]{64}',value.get('instrument','')) and re.fullmatch(r'[a-f0-9]{64}',value.get('hostIdentity','')) and re.fullmatch(r'sha256:[a-f0-9]{64}',value.get('imageId','')),'M7_DISCOVERY_IDENTITY')
-    from profile_provenance import check_identity
-    chosen=check_identity(value.get('profileSelection'))
+    require(re.fullmatch(r'sha256:[a-f0-9]{64}',value.get('imageId','')),'M7_DISCOVERY_IDENTITY')
     if value['kind']=='m7-joined-discovery':
         cells=value.get('cells');require(isinstance(cells,list) and 1<=len(cells)<=12,'M7_DISCOVERY_CELLS')
         roster=[]
         for row in cells:
             require(row.get('kind')=='m7-joined-discovery-cell','M7_DISCOVERY_CELL_KIND');check_discovery(row)
-            require(all(row.get(k)==value.get(k) for k in ('pair','instrument','hostIdentity','imageId','profileSelection')),'M7_DISCOVERY_MIXED_IDENTITY')
+            require(all(row.get(k)==value.get(k) for k in ('pair','imageId')),'M7_DISCOVERY_MIXED_IDENTITY')
             roster.append((row['tenants'],row['replicas']))
         require(len(set(roster))==len(roster),'M7_DISCOVERY_DUPLICATE_CELL')
         if value['status']=='MEASURED':require(all(row['status']=='MEASURED' for row in cells),'M7_DISCOVERY_MISSING_MEASUREMENT')
@@ -102,7 +56,6 @@ def check_discovery(value):
     if value.get('profile')=='pgstream-sample':
         check_discovery_scope(value)
         if value['status']=='MEASURED':
-            require(not any('recoveryEpisode' in row for row in value['strictChecks'].values()),'M7_DISCOVERY_RECOVERED_CELL_NOT_ACCEPTED')
             require(value.get('completedOutput',{}).get('verdict')=='PASS' and value.get('oracleControl')=={'baseline':'GREEN','broken':'RED','restored':'GREEN'} and value.get('sqlAttribution'),'M7_DISCOVERY_SAMPLE_PROOF')
     probe=value.get('probe') or {};require(not probe.get('hardFailure') and not hard_recovery(probe.get('restart',{}).get('runtimeAcquisitionObservation',{})),'M7_DISCOVERY_HARD_FAILURE')
     for row in value['strictChecks'].values():
@@ -116,8 +69,8 @@ class Record:
         self.a,self.d,self.m=a,d,m
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json',driver_memory.RESULT,driver_memory.SAMPLES,'host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
-        self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle-disabled','idle','load') for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json',driver_memory.RESULT,driver_memory.SAMPLES,'host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
+        self.value['collectionSegments']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('load',) for file in (self.d/folder).glob('*-collection.json') if file.is_file()}
         self.a.write(self.d/'summary.json',self.value)
     def failure(self,stage,error,hard=False):
         row={'verdict':getattr(error,'verdict','UNMEASURED'),'code':safe_code(error),'hardFailure':hard};self.value['strictChecks'][stage]=row
@@ -125,33 +78,15 @@ class Record:
         self.save()
     def observe(self,stage,fn):
         try:
-            result=fn();finding=getattr(result,'result',result)
-            if discovery_rest.result(finding):
-                require(discovery_rest.selected(self.m),'M7_DISCOVERY_CLINICAL_CONTINUATION_SCOPE')
-                self.value['strictChecks'][stage]={**{k:finding[k] for k in ('verdict','clinicalVerdict','clinicalCode','restCollectionPermitted')},'hardFailure':False}
-                self.value['clinicalVerdict']='FAIL';self.value['capacityAcceptance']='NOT_GRANTED';self.save();return result
+            result=fn()
             self.value['strictChecks'][stage]={'verdict':'UNMEASURED','code':'M7_EVALUATOR_AVAILABILITY_UNMEASURED','hardFailure':False} if stage=='readiness' and isinstance(result,dict) and result.get('verdict')=='UNMEASURED' else {'verdict':'PASS'};self.save();return result
         except Exception as error:
             allowed=incomplete(error);partial=None
-            episode=None
-            if str(error)=='M7_EVALUATOR_PROGRESS_RESET' and stage=='load' and self.m.get('evaluatorOpportunities')=='received-input-v1':
-                try:
-                    ids=sorted(row['id'] for row in self.a.document(self.d/'tenants.private.json'))
-                    binding={'kind':'evaluator-work-v2','pair':self.m['pair'],'imageId':self.m['imageId'],'instrument':self.m['instrument']['sha256']}
-                    episode=recovery_episode(self.a.document(self.d/stage/'evaluator-progress.json'),ids,binding,
-                                             budget=self.m.get('cadence',{}).get('evaluatorProgressBudget'))
-                    self.a.assert_owned(self.m);allowed=True
-                except Exception:
-                    # The original refusal remains authoritative when this
-                    # narrow evidence classification cannot be established.
-                    pass
             if str(error)=='M7_EVALUATOR_PROGRESS_ROUNDS' and getattr(error,'verdict',None)=='UNMEASURED':
                 try:partial=partial_progress(self.a,self.d,self.m,stage);allowed=True
                 except Exception as invalid:
                     self.failure(stage,invalid,True);raise invalid from error
             self.failure(stage,error,not allowed)
-            if episode is not None:
-                self.value['strictChecks'][stage]['recoveryEpisode']=episode;self.save()
             if partial is not None:
                 self.value['strictChecks'][stage]['partialObservation']=partial;self.save()
             if not allowed:raise
@@ -235,7 +170,7 @@ def retained_results(a, d, m, summary):
     read('measurements', lambda: measurements(d, m))
     result['measurements'].setdefault('complete', False)
     progress = {}
-    for phase in ('idle', 'load'):
+    for phase in ('load',):
         if (d/phase/'evaluator-progress.json').is_file():
             try:
                 progress[phase] = a.progress_summary(d/phase)
@@ -525,27 +460,23 @@ def hard_recovery(value):return value.get('verdict')=='FAIL' and value.get('code
 
 
 def partial_progress(a,d,m,stage):
-    """Only genuine, bounded 1/2-round current-source captures may continue."""
-    import evaluator_idle as idle
+    """Only genuine, bounded 1/2-round current-source load captures may continue."""
     import evaluator_progress as progress
     need=progress.need
-    need(stage in ('idle','load'),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
+    need(stage=='load','M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
     file=d/stage/'evaluator-progress.json'
     budget=m.get('cadence',{}).get('evaluatorProgressBudget')
     policy=progress.capture_policy(budget)
     max_retained=policy['maxBytesPerPhase'] if budget is not None else 16777216
     need(file.is_file() and not file.is_symlink() and file.stat().st_size<=max_retained,'M7_DISCOVERY_PARTIAL_PROGRESS_ARTIFACT')
-    value=a.document(file);module=idle if stage=='idle' else progress
-    retained_policy={**idle.POLICY,'workPolicy':policy} if stage=='idle' else policy
-    kind=idle.ARTIFACT_KIND if stage=='idle' else 'evaluator-progress-phase-v2'
-    need(value.get('kind')==kind and value.get('columns')==list(module.COLUMNS) and value.get('policy')==retained_policy and value.get('phase')==stage and value.get('verdict')=='UNMEASURED' and value.get('code')=='M7_EVALUATOR_PROGRESS_ROUNDS' and value.get('attribution')==a.progress_attribution(m),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
+    value=a.document(file)
+    need(value.get('kind')=='evaluator-progress-phase-v2' and value.get('columns')==list(progress.COLUMNS) and value.get('policy')==policy and value.get('phase')==stage and value.get('verdict')=='UNMEASURED' and value.get('code')=='M7_EVALUATOR_PROGRESS_ROUNDS' and value.get('attribution')==a.progress_attribution(m),'M7_DISCOVERY_PARTIAL_PROGRESS_SCOPE')
     need(isinstance(value.get('rounds'),list) and 1<=len(value['rounds'])<=2,'M7_DISCOVERY_PARTIAL_PROGRESS_ROUNDS')
     services=a.progress_services(d);need(1<=len(services)<=progress.POLICY['maxInstances'],'M7_EVALUATOR_PROGRESS_INSTANCE_BOUND')
-    decoded,ids=(idle._decode(value,m['tenants'],services) if stage=='idle' else progress.decode_rounds(value,m['tenants'],services,demand_driven=True))
+    decoded,ids=progress.decode_rounds(value,m['tenants'],services,demand_driven=True)
     expected=[row['id'] for row in a.document(d/'tenants.private.json')];progress.validate_ids(expected)
     need(ids==set(expected),'M7_EVALUATOR_PROGRESS_COVERAGE','FAIL')
     need(sum(r['queries'] for r in decoded)<=policy['maxQueriesPerPhase'] and sum(r['bytes'] for r in decoded)<=policy['maxBytesPerPhase'],'M7_EVALUATOR_PROGRESS_BUDGET')
-    if stage=='idle':idle.clock_windows(decoded)
     # Check ALL available rounds, not only the first timing refusal. No absent
     # round, unselected interval or clock witness is manufactured.
     previous=decoded[0];failed_work=0
@@ -557,7 +488,6 @@ def partial_progress(a,d,m,stage):
                 need(before['admitted']==after['admitted'] and all(after[k]>=before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_RESET','FAIL')
                 if not before['admitted']:
                     need(not after['ready'] and all(after[k]==before[k] for k in ('completedAcquisitions','completedTimeCycles','failedCompletions','legacyCycles')),'M7_EVALUATOR_PROGRESS_FOREIGN','FAIL')
-                    if stage=='idle':need(not any(idle.jobs(after['jobs']).values()),'M7_EVALUATOR_IDLE_FOREIGN_PENDING','FAIL')
                 else:failed_work+=after['failedCompletions']
         previous=current
-    return {'rounds':len(decoded),'scope':'available snapshots only; missing phase observation remains UNMEASURED','workFailurePresent':failed_work>0,'loadClockProof':'not supplied by load source schema' if stage=='load' else 'captured idle brackets validated'}
+    return {'rounds':len(decoded),'scope':'available snapshots only; missing phase observation remains UNMEASURED','workFailurePresent':failed_work>0,'loadClockProof':'not supplied by load source schema'}

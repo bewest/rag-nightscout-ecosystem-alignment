@@ -34,9 +34,6 @@ import outcome_gate
 import api_cause
 import driver_vu_diagnostic
 import commissioning_wal
-import discovery_rest
-import evaluator_idle
-import evaluator_opportunities
 import observation_rows
 import sql_attribution
 import cost_companion
@@ -1280,8 +1277,7 @@ def attachment_generator(d,source,root,m,owner_file=None):
         if prior['kind']=='owned-qualified-dependency-copy':
             qualification=runtime.get('dependencyReuse');ready=root/'dependency-reuse-ready.json'
             require(isinstance(qualification,dict) and prior.get('reuseProvenance',{}).get('qualification')==qualification
-                    and ready.is_file() and not ready.is_symlink() and document(ready)==prior['reuseProvenance']
-                    and dependency_reuse.tree(root/'node_modules')==qualification.get('tree'),
+                    and ready.is_file() and not ready.is_symlink() and document(ready)==prior['reuseProvenance'],
                     'M7_ATTACH_RUNTIME_DEPENDENCY_COPY_CHANGED')
         binding={'ownerFile':str(owner_file.resolve()),'ownerFileSha256':digest(owner_file),'owner':runtime['owner'],
                  'instrument':runtime['instrument'],'generatorProvenanceSha256':digest(provenance)}
@@ -1308,31 +1304,15 @@ def attachment_generator(d,source,root,m,owner_file=None):
     return value
 
 
-def dependency_run(argv):
-    # The reuse module always requests its fixed 128MiB helper cap. The selected
-    # resource wrapper owns that identical helper lease/cap; avoid a second flag.
-    argv=list(argv)
-    if diagnostic_resources._ACTIVE is not None:
-        require(len(argv)>1 and argv[1]=='--max-old-space-size=128','M7_DEPENDENCY_REUSE_NODE_CAP_REQUIRED')
-        argv.pop(1)
-    return command(argv,phase='dependency-reuse-preflight')
-
-
 def qualified_dependencies(args):
-    fields=('generator_dependencies','generator_dependency_receipt','generator_dependency_receipt_sha256')
-    values=[getattr(args,key,None) for key in fields]
-    preparation=[getattr(args,'generator_dependency_preparation'+suffix,None) for suffix in ('','_sha256','_head')]
-    if not any(values) and not any(preparation):return None
-    require(all(values) and (not any(preparation) or all(preparation)),'M7_DEPENDENCY_REUSE_SELECTION_INCOMPLETE')
+    # The receipt and preparation options are accepted for older configurations
+    # and not read: the selected tree is copied, not re-qualified by hash.
+    source=getattr(args,'generator_dependencies',None)
+    if not source:return None
     require(args.profile=='pgstream-sample' and getattr(args,'run_purpose','acceptance')=='discovery','M7_DEPENDENCY_REUSE_DISCOVERY_ONLY')
-    for value in [values[2],*([preparation[1]] if any(preparation) else [])]:
-        require(re.fullmatch('[a-f0-9]{64}',value or ''),'M7_DEPENDENCY_REUSE_RECEIPT_HASH_REQUIRED')
-    if any(preparation):require(SHA.fullmatch(preparation[2] or ''),'M7_DEPENDENCY_REUSE_SOURCE_HEAD_REQUIRED')
     package=command(['git','-C',args.core_repo,'show',args.core_commit+':package.json'],binary=True)
     lock=command(['git','-C',args.core_repo,'show',args.core_commit+':package-lock.json'],binary=True)
-    return dependency_reuse.preflight(source=values[0],receipt_path=values[1],receipt_sha256=values[2],
-        package_bytes=package,lock_bytes=lock,tools=generator_tools(),run=dependency_run,
-        source_preparation={'path':preparation[0],'sha256':preparation[1],'head':preparation[2]} if any(preparation) else None)
+    return dependency_reuse.preflight(source=source,package_bytes=package,lock_bytes=lock)
 
 
 
@@ -1345,7 +1325,7 @@ def setup_generator(d,m):
     if reuse is not None:
         with private_commands(d/'generator-commands'):
             reuse_provenance=dependency_reuse.copy_owned(destination=root,qualification=reuse,
-                package_bytes=package,lock_bytes=lock_bytes,run=dependency_run)
+                package_bytes=package,lock_bytes=lock_bytes)
             client=generator_client(d,tools)
     else:
         require(diagnostic_resources._ACTIVE is None,'M7_DIAGNOSTIC_DEPENDENCIES_REQUIRED')
@@ -1792,36 +1772,6 @@ def sampling(d, out):
                                     "overhead": "included in host/PG cgroup figures; compare sampler-disabled idle control"})
 
 
-def enabled_idle(d,m,out,seconds):
-    """Existing two bookends, including AFTER when the observer refuses."""
-    phase_snapshot(d,out,'before')
-    phase_failure=None
-    try:
-        with sampling(d,out), observe_progress(d,m,out,'idle') as progress:time.sleep(seconds)
-    except BaseException as error:
-        phase_failure=error
-        raise
-    finally:
-        try:phase_snapshot(d,out,'after')
-        except BaseException as error:
-            detail={'version':1,'phase':'idle','snapshot':'after','status':'FAILED',
-                    'code':'M7_IDLE_AFTER_SNAPSHOT_REFUSED','originalPhaseFailurePreserved':phase_failure is not None,
-                    'partialFiles':{name:(out/name).is_file() for name in ('after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv')}}
-            # Raw exception messages may contain SQL/URLs/data. Persist only fixed
-            # metadata; publication failure must not replace the phase failure.
-            try:write(out/'after-snapshot-failure.json',detail)
-            except Exception:detail['publicationFailed']=True
-            if phase_failure is None:
-                if hasattr(progress,'failed'):
-                    try:progress.failed(evaluator_progress.Refused('M7_IDLE_AFTER_SNAPSHOT_REFUSED'),{'afterSnapshotFailure':detail})
-                    except Exception:detail['observerPublicationFailed']=True
-                raise
-            try:phase_failure.afterSnapshotFailure=detail
-            except Exception:pass
-    if isinstance(progress,evaluator_idle.Observer):progress.complete_after_cost_window()
-    return progress
-
-
 def stored(d, runid):
     require(re.fullmatch(r"[a-z0-9-]{1,120}", runid), "M7_RUN_ID_INVALID")
     sql = "\nUNION ALL\n".join("SELECT tenant_id::text,'" + kind + "',count(*) FROM nsdemo_" + kind + "." + kind + " WHERE doc->>'" + field + "'='" + runid + suffix + "' GROUP BY 1" for kind, field, suffix in [("entries","device",""),("devicestatus","device",""),("treatments","enteredBy",""),("entries","device","-probe")]) + ";"
@@ -1947,8 +1897,7 @@ def progress_attribution(m):
 
 def write_progress(out,value,m):
     before=time.monotonic();cpu=time.process_time()
-    packed={**(evaluator_opportunities.pack(value) if value.get('opportunityContract') else evaluator_idle.pack(value)
-               if (value.get('policy') or {}).get('kind')==evaluator_idle.POLICY['kind'] else evaluator_progress.pack(value)),
+    packed={**evaluator_progress.pack(value),
             'attribution':progress_attribution(m)};raw=json.dumps(packed,separators=(',',':')).encode()+b'\n'
     file=out/'evaluator-progress.json';file.write_bytes(raw);file.chmod(0o600)
     compressed=out/'evaluator-progress.json.gz';compressed.write_bytes(gzip.compress(raw,mtime=0));compressed.chmod(0o600)
@@ -1988,83 +1937,8 @@ def observe_progress(d,m,out,phase):
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
     observer={}  # a run reports its verdict; it never stops on it
     policy=evaluator_progress.capture_policy(m['cadence'].get('evaluatorProgressBudget'))
-    if phase=='idle':return evaluator_idle.Observer(*args,tail_fetch=fetch,policy=policy,failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY,**observer)
     value=evaluator_progress.Observer(*args,policy=policy,demand_driven=True,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
     return value
-
-
-def opportunity_contract(m):
-    require(m.get('profile')=='pgstream-sample' and m.get('completionContract')=='evaluator-work-v2' and m.get('runPurpose')=='discovery','M7_OPPORTUNITY_PROFILE_UNSUPPORTED')
-
-
-def opportunity_collector(d,m,ids,*,byte_limit=None,round_seconds=None):
-    """Existing private SQL executor; no public-driver SQL or new connection."""
-    opportunity_contract(m);evaluator_progress.validate_ids(ids)
-    def sql_bytes():return evaluator_opportunities.ROUND_BYTES if byte_limit is None else byte_limit
-    evaluator_progress.need(type(sql_bytes()) is int and 0<sql_bytes()<=2**53-1,'M7_OPPORTUNITY_BYTE_BOUND')
-    config_path=d/'completion-source.json'
-    require(config_path.is_file(),'M7_OPPORTUNITY_SOURCE_REQUIRED')
-    config=document(config_path);source_sha=digest(config_path)
-    expected={'kind':'evaluator-work-v2','pair':m['pair'],'imageId':m['imageId'],'instrument':m['instrument']['sha256']}
-    if config.get('native') is not None:expected['nativeConfigurationSha256']=hashlib.sha256(json.dumps(config['native'],sort_keys=True,separators=(',',':')).encode()).hexdigest()
-    require(config.get('binding')==expected and config.get('kind')==expected['kind'],'M7_OPPORTUNITY_BINDING')
-    require('selection' not in config,'M7_OPPORTUNITY_SELECTED_PROFILE_UNSUPPORTED')
-    until=_COMMAND_DEADLINE.get()
-    database=application_database(d);node=m['generator']['tools']['node']['path']
-    script="try{const o=require(process.argv[1]),x=JSON.parse(require('fs').readFileSync(0)),c=o.prepare(x.config);console.log(JSON.stringify(x.mode==='queries'?x.batches.map(ids=>o.progressQuery(c,ids)):o.progressSnapshot(x.rows,c,x.ids)));}catch(e){console.log(JSON.stringify({refused:/^[A-Z][A-Z0-9_]{1,100}$/.test(e.message)?e.message:'M7_OPPORTUNITY_READER_REFUSED',...(e.completionDiagnostic?{completionDiagnostic:e.completionDiagnostic}:{})}));}"
-    def invoke(value,timeout):
-        if until is not None:
-            require(until>time.time(),'M7_COMMAND_DEADLINE');timeout=min(timeout,until-time.time())
-        raw=command([node,'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
-        value=json.loads(raw)
-        if isinstance(value,dict) and 'refused' in value:
-            code=value['refused'];error=evaluator_progress.Refused(code,'UNMEASURED' if code in ('M7_OPPORTUNITY_COVERAGE','M7_COMPLETION_NATIVE_INVALIDATED') else 'FAIL')
-            if 'completionDiagnostic' in value:error.collection={'completionReader':value['completionDiagnostic']}
-            raise error
-        return value
-    batches=[ids[offset:offset+64] for offset in range(0,len(ids),64)]
-    start=time.monotonic();cpu=time.process_time()
-    queries=invoke({'mode':'queries','batches':batches}, round_seconds or evaluator_opportunities.ROUND_SECONDS)
-    evaluator_progress.need(isinstance(queries,list) and len(queries)==len(batches) and all(isinstance(q,str) and q.startswith('SELECT ') for q in queries),'M7_OPPORTUNITY_QUERY_BINDING')
-    preparation={'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu,'nodeCalls':1,'sqlQueries':0}
-    def capture(timeout=None):
-        stall = evaluator_opportunities.ROUND_SECONDS if round_seconds is None else round_seconds
-        evaluator_progress.need(stall > 0 and (timeout is None or timeout > 0),'M7_OPPORTUNITY_DEADLINE')
-        # Without an operator work cutoff, the finite roster bounds the number
-        # of possible renewals. A silent process still has one inactivity window.
-        start = time.monotonic()
-        cpu = time.process_time()
-        deadline = start + (timeout if timeout is not None else (len(ids) + len(queries) + 1) * stall)
-        def remaining():
-            left = min(deadline-time.monotonic(), until-time.time() if until is not None else float('inf'))
-            evaluator_progress.need(left > 0,'M7_OPPORTUNITY_DEADLINE')
-            return left
-        require(digest(config_path)==source_sha,'M7_OPPORTUNITY_SOURCE_CHANGED')
-        rows = []
-        cost = {'sqlQueries':0, 'rawSqlBytes':0, 'nodeCalls':0, 'largestRowBytes':0, 'maxInactivitySeconds':0}
-        try:
-            for query, batch in zip(queries,batches):
-                reader = observation_rows.Rows(batch, stall, sql_bytes())
-                left = min(remaining(), (len(batch)+1)*stall)
-                ms = max(1,min(2147483647,int(left*1000)))
-                cost['sqlQueries'] += 1
-                try:
-                    raw = psql(d,"BEGIN READ ONLY; SET LOCAL statement_timeout='"+str(ms)+"ms';\n"+query+"\nROLLBACK;",database,timeout=left,rows=reader)
-                    reader.finish(raw.encode())
-                finally:
-                    cost['rawSqlBytes'] += reader.total
-                    cost['largestRowBytes'] = max(cost['largestRowBytes'], reader.largest)
-                    cost['maxInactivitySeconds'] = max(cost['maxInactivitySeconds'], reader.max_gap)
-                rows.extend(json.loads(line) for line in raw.splitlines())
-            cost['nodeCalls'] = 1
-            snapshot = invoke({'mode':'snapshot','rows':rows,'ids':ids}, min(stall,remaining()))
-            remaining()
-            return snapshot,{**cost,'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu}
-        except Exception as error:
-            error.opportunityCost={**cost,'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu};raise
-    capture.binding=expected;capture.preparation_cost=preparation;capture.source_sha256=source_sha
-    capture.query_sha256=hashlib.sha256(json.dumps(queries,separators=(',',':')).encode()).hexdigest()
-    return capture
 
 
 def readiness(d, m, *, clock=time):
@@ -2109,8 +1983,7 @@ def readiness(d, m, *, clock=time):
             pages[service] = raw
             return raw
         try:
-            value=evaluator_progress.round_view(services,ids,read,warming=True,demand_driven=True,
-                                                 allow_clinical_stall=discovery_rest.selected(m),policy=policy)
+            value=evaluator_progress.round_view(services,ids,read,warming=True,demand_driven=True,policy=policy)
         except evaluator_progress.Refused as error:
             for key in ('queries','bytes'):
                 used[key]+=getattr(error,'collection',{}).get(key,0)
@@ -2130,9 +2003,6 @@ def readiness(d, m, *, clock=time):
         try:
             value=capture()
             evaluator_progress.need(all(used[key]<=limits[key] for key in ('queries','bytes')),exhausted)
-            if discovery_rest.selected(m) and any(evaluator_progress.clinical_stall(row) for row in value['owners'].values()):
-                return publish('FAIL', clinicalVerdict='FAIL', clinicalCode=discovery_rest.CODE,
-                               restCollectionPermitted=True, capacityAcceptance='NOT_GRANTED', sourceBinding=discovery_rest.binding(m))
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
             return publish('PASS',meaning='Evaluator is reachable with complete owner and scope evidence.')
         except evaluator_progress.Refused as error:

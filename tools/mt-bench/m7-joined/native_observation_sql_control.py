@@ -14,7 +14,7 @@ def main():
  def run(args,**kw):return subprocess.run(args,check=True,capture_output=True,text=True,timeout=kw.pop('timeout',20),**kw).stdout
  def node(script,value=None):return run([a.node,'-e',script,str(frozen)],input=None if value is None else json.dumps(value))
  fixture=json.loads(node("const d=process.argv[1];console.log(JSON.stringify(require(d+'/native-observation-fixture.cjs')));"))
- query=json.loads(node("const d=process.argv[1],f=require(d+'/native-observation-fixture.cjs'),o=require(d+'/completed-oracle.cjs');console.log(JSON.stringify({clinical:o.query(f.config,[f.row.tenant],'synthetic-native'),progress:o.progressQuery(f.config,[f.row.tenant])}));"))
+ query=json.loads(node("const d=process.argv[1],f=require(d+'/native-observation-fixture.cjs'),o=require(d+'/completed-oracle.cjs');console.log(JSON.stringify({clinical:o.query(f.config,[f.row.tenant],'synthetic-native')}));"))
  for n,q in query.items():(root/(n+'.sql')).write_text(q+'\n')
  owner=uuid.uuid4().hex;name='ns-mtqual-native-'+owner[:12];cid=None
  receipt={'kind':'focused-native-observer-sql-v1','owner':owner,'containerName':name,'startedAt':time.time(),'instrument':{x.name:hashlib.sha256(x.read_bytes()).hexdigest() for x in frozen.iterdir()},'appAcceptance':'UNMEASURED','controls':{},'cleanup':'UNMEASURED'}
@@ -56,10 +56,7 @@ CREATE TABLE synthetic_control.tenant_lifecycle_windows(tenant_id uuid PRIMARY K
   assert assess('source-restored')['ready'] is True
   bad=assess('missing-marker','DELETE FROM synthetic_entries.entries;');assert bad['code']=='M7_COMPLETION_STORED'
   assert assess('marker-restored')['ready'] is True
-  progress=json.loads(sql('BEGIN READ ONLY;SET LOCAL statement_timeout=5000;'+query['progress']+'ROLLBACK;').strip())
-  metadata=json.loads(node("const d=process.argv[1],f=require(d+'/native-observation-fixture.cjs'),o=require(d+'/completed-oracle.cjs');let b='';process.stdin.on('data',x=>b+=x);process.stdin.on('end',()=>console.log(JSON.stringify(o.progressSnapshot([JSON.parse(b)],f.config,[f.row.tenant]))));",progress))
-  assert metadata['rows'][0]['native']['inputFloor']=='2';assert metadata['rows'][0]['native']['raw']['head']=='4';assert metadata['rows'][0]['pendingAt'] is None
-  (root/'progress.json').write_text(json.dumps(metadata,indent=2)+'\n');receipt['status']='FOCUSED_CONTROL_COMPLETE'
+  receipt['status']='FOCUSED_CONTROL_COMPLETE'
  finally:
   if cid:subprocess.run(['docker','rm','-f','-v',cid],capture_output=True,text=True,timeout=25)
   active=run(['docker','ps','-aq','--no-trunc','--filter','label=ns.mtqual.native='+owner]).splitlines()

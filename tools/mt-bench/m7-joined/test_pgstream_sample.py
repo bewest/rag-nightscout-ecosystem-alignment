@@ -96,7 +96,7 @@ class Sample(unittest.TestCase):
                 # Control eligibility now requires the full exact count-observer metadata.
                 record.value.update(probe={'completedOutput':{'verdict':'PASS'}},oracle={'verdict':'GREEN','failureCount':0,'failures':[],'missingFieldCount':0,'uncertain':0,'domains':{'entries':2,'devicestatus':0,'treatments':0},'rows':rows,'probeCountProof':'KNOWN','probeAccounting':{'version':2,'admissionsClosed':True,'pending':0}},processes={'k6':{'returncode':0},'probe':{'returncode':0}},settingsFingerprintObservation={'verdict':'PASS'});record.save()
             with contextlib.ExitStack() as stack:
-                for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','enabled_idle'):stack.enter_context(patch.object(a,name))
+                for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot'):stack.enter_context(patch.object(a,name))
                 stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',return_value='[{"Id":"sha256:synthetic"}]'))
                 stack.enter_context(patch.object(a,'sample_preflight',return_value=({},{})))
                 proof=stack.enter_context(patch.object(a,'sample_results',return_value={'idle':{'status':'MEASURED'}}))

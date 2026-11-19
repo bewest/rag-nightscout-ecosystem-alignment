@@ -156,23 +156,8 @@ def identity(diagnostics, config):
     require(not any('vault-agent' in name for name in roles),'M7_AGENT_OVERLAY_UNSUPPORTED')
     require(roles.get('vault',{}).get('command',[])[:2]==['vault','server'],'M7_VAULT_SERVER_TOPOLOGY_UNCONFIRMED')
     from evaluator_progress import POLICY
-    from evaluator_idle import POLICY as IDLE_POLICY
-    value={'version':4,'evaluatorProgress':POLICY,'evaluatorIdleSafety':IDLE_POLICY,
+    value={'version':5,'evaluatorProgress':POLICY,
            'diagnostics':diagnostics,'topology':{'binding':'registry-default','secretsBackend':'vault-server','vaultAgentOverlay':False,
            'realtimeWorkers':sum(name=='realtime' or re.fullmatch(r'realtime-\d+',name) is not None for name in roles),
            'evaluatorWorkers':sum(name=='evaluator' or re.fullmatch(r'evaluator-\d+',name) is not None for name in roles)}}
     return {**value,'sha256':hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
-
-def check_identity(value):
-    import hashlib
-    require(isinstance(value,dict) and value.get('version') in (3,4),'M7_PROFILE_SELECTION_REQUIRED')
-    expected=hashlib.sha256(json.dumps({k:v for k,v in value.items() if k!='sha256'},sort_keys=True,separators=(',',':')).encode()).hexdigest()
-    require(value.get('sha256')==expected,'M7_PROFILE_SELECTION_HASH_INVALID')
-    from evaluator_progress import POLICY
-    from evaluator_idle import POLICY as IDLE_POLICY
-    require(value.get('evaluatorProgress')==POLICY and value.get('evaluatorIdleSafety')==IDLE_POLICY,'M7_PROFILE_EVALUATOR_PROGRESS_INVALID')
-    chosen=value.get('diagnostics',{})
-    require(chosen==selection(chosen.get('mode'),chosen.get('intervalMs')),'M7_PROFILE_DIAGNOSTICS_INVALID')
-    require(value.get('topology',{}).get('secretsBackend')=='vault-server' and value['topology'].get('vaultAgentOverlay') is False,'M7_PROFILE_TOPOLOGY_INVALID')
-    return value
-

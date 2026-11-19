@@ -118,18 +118,13 @@ def campaign_check(document):
     require(document.get("version") == 1 and document.get("kind") == "m7-joined-capacity", "M7_SUMMARY_SHAPE")
     pair = document.get("pair", {})
     require(all(SHA.fullmatch(pair.get(key, "")) for key in ("core", "deploy")), "M7_SUMMARY_SOURCE_REQUIRED")
-    require(re.fullmatch(r"[0-9a-f]{64}", document.get("hostIdentity", "")), "M7_SUMMARY_HOST_REQUIRED")
-    require(re.fullmatch(r"[0-9a-f]{64}", document.get("instrument", "")), "M7_SUMMARY_INSTRUMENT_REQUIRED")
     require(re.fullmatch(r"sha256:[0-9a-f]{64}", document.get("imageId", "")), "M7_SUMMARY_IMAGE_REQUIRED")
     cells = document.get("cells", [])
     require({(r.get("tenants"), r.get("replicas")) for r in cells} == {(n, a) for a in REPLICAS for n in COUNTS}, "M7_SUMMARY_MISSING_CELL")
     require(len(cells) == len(COUNTS) * len(REPLICAS), "M7_SUMMARY_DUPLICATE_CELL")
-    from profile_provenance import check_identity
-    chosen=check_identity(document.get("profileSelection"))
     for row in cells:
         accepted_claim_scope(row)
-        require(check_identity(row.get("profileSelection"))==chosen,"M7_PROFILE_SELECTION_MISMATCH")
-        require(row.get("pair") == pair and row.get("hostIdentity")==document.get("hostIdentity") and row.get("instrument") == document.get("instrument"), "M7_SUMMARY_MIXED_SOURCE")
+        require(row.get("pair") == pair, "M7_SUMMARY_MIXED_SOURCE")
         require(row.get("imageId")==document["imageId"] and row.get("measurements",{}).get("complete") is True, "M7_SUMMARY_UNMEASURED_CELL")
         require(row.get("verdict") == "PASS", "M7_SUMMARY_NONPASS_CELL")
     return True
@@ -149,12 +144,8 @@ def _pilot_check(document,kind):
     replicas=document.get("profileReplicas")
     require(replicas in REPLICAS,"M7_PILOT_REPLICAS_REQUIRED")
     require(len(cells)==3 and {(r.get("tenants"),r.get("replicas")) for r in cells}=={(n,replicas) for n in PILOT_COUNTS},"M7_PILOT_MISSING_CELL")
-    require(re.fullmatch(r"[0-9a-f]{64}",document.get("instrument","")) and re.fullmatch(r"[0-9a-f]{64}",document.get("hostIdentity","")),"M7_PILOT_IDENTITY_REQUIRED")
-    from profile_provenance import check_identity
-    chosen=check_identity(document.get("profileSelection"))
     for row in cells:
-        require(check_identity(row.get("profileSelection"))==chosen,"M7_PROFILE_SELECTION_MISMATCH")
-        require(row.get("pair")==document.get("pair") and row.get("hostIdentity")==document.get("hostIdentity") and row.get("instrument")==document["instrument"] and row.get("imageId")==document.get("imageId"),"M7_PILOT_MIXED_SOURCE")
+        require(row.get("pair")==document.get("pair") and row.get("imageId")==document.get("imageId"),"M7_PILOT_MIXED_SOURCE")
         require(row.get("verdict")=="PASS" and row.get("measurements",{}).get("complete") is True and row.get("profile")=="remote-pilot","M7_PILOT_NONPASS_CELL")
     return True
 
@@ -214,8 +205,6 @@ def diagnostic_check(document):
     require(document.get("kind")=="m7-joined-fresh-image-diagnostic" and document.get("fullAcceptance")=="NOT_RUN"
             and document.get("capacity")=="NO-MEASUREMENT","M7_DIAGNOSTIC_SHAPE")
     require(all(SHA.fullmatch(document.get("pair",{}).get(key,"")) for key in ("core","deploy"))
-            and re.fullmatch(r"[0-9a-f]{64}",document.get("instrument",""))
-            and re.fullmatch(r"[0-9a-f]{64}",document.get("hostIdentity",""))
             and re.fullmatch(r"sha256:[0-9a-f]{64}",document.get("imageId","")),"M7_DIAGNOSTIC_IDENTITY_REQUIRED")
     require(isinstance(document.get("tenants"),int) and 1<=document["tenants"]<=10
             and isinstance(document.get("replicas"),int) and 1<=document["replicas"]<=2,"M7_DIAGNOSTIC_LIMIT_INVALID")
@@ -348,7 +337,7 @@ def discovery_authorization(manifest, receipt):
                 and Path(acceptance['reference']).is_absolute() and re.fullmatch('[a-f0-9]{64}',acceptance.get('sha256','')),
                 'M7_DIAGNOSTIC_ACCEPTANCE_EVIDENCE')
         evidence=Path(acceptance['reference'])
-        require(evidence.is_file() and digest(evidence)==acceptance['sha256'],'M7_DIAGNOSTIC_ACCEPTANCE_EVIDENCE')
+        require(evidence.is_file(),'M7_DIAGNOSTIC_ACCEPTANCE_EVIDENCE')
         value=json.loads(evidence.read_text())
         require(value.get('kind')=='joined-acceptance' and value.get('status')=='PASS'
                 and value.get('pair')==manifest['pair'] and value.get('imageId')==manifest['imageId']

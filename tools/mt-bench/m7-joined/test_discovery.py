@@ -231,7 +231,7 @@ class Discovery(unittest.TestCase):
         @contextlib.contextmanager
         def ctx(*args):yield
         with contextlib.ExitStack() as stack:
-            for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','enabled_idle','job_record','stop_job','assert_owned'):stack.enter_context(patch.object(a,name))
+            for name in ('frozen','quiet','verify','image','verify_generator','readiness','psql','phase_snapshot','job_record','stop_job','assert_owned'):stack.enter_context(patch.object(a,name))
             stack.enter_context(patch.object(a.time,'sleep'));stack.enter_context(patch.object(a,'command',side_effect=command));stack.enter_context(patch.object(a,'progress_services',return_value=['evaluator']));stack.enter_context(patch.object(a,'progress_attribution',return_value={}))
             for name in ('sampling','loadgen_process','observe_progress'):stack.enter_context(patch.object(a,name,ctx))
             stack.enter_context(patch.object(a.subprocess,'Popen',side_effect=popen));stack.enter_context(patch.object(a,'stored',side_effect=stored));stack.enter_context(patch('reduce.measurements',side_effect=reduced))
@@ -273,7 +273,7 @@ class Discovery(unittest.TestCase):
 
     def test_aggregate_requires_matching_identity_and_no_acceptance_label(self):
         result,_,_=self.run_recording(p.Refused('M7_EVALUATOR_PROGRESS_NOT_OBSERVED'));aggregate={**{k:result[k] for k in ('version','pair','hostIdentity','instrument','imageId','runPurpose','status','capacityAcceptance','profileSelection')},'kind':'m7-joined-discovery','cells':[result]};d.check_discovery(aggregate)
-        broken=copy.deepcopy(aggregate);broken['cells'][0]['instrument']='0'*64
+        broken=copy.deepcopy(aggregate);broken['cells'][0]['imageId']='sha256:'+'0'*64
         with self.assertRaisesRegex(RuntimeError,'MIXED_IDENTITY'):d.check_discovery(broken)
         broken=copy.deepcopy(aggregate);broken['capacityAcceptance']='PASS'
         with self.assertRaisesRegex(RuntimeError,'SHAPE'):d.check_discovery(broken)

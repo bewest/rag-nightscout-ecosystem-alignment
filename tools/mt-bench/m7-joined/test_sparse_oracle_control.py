@@ -111,7 +111,7 @@ class SparseControl(unittest.TestCase):
             record.value.update(oracle=counted,probe={'completedOutput':{'verdict':'PASS'}},
                 settingsFingerprintObservation={'verdict':'PASS'},processes={'k6':{'returncode':0},'probe':{'returncode':0}})
         with self.runtime(state,psql),contextlib.ExitStack() as stack:
-            for name in ('frozen','quiet','image','verify_generator','readiness','phase_snapshot','enabled_idle'):stack.enter_context(patch.object(a,name))
+            for name in ('frozen','quiet','image','verify_generator','readiness','phase_snapshot'):stack.enter_context(patch.object(a,name))
             # No runtime stages or SQL resets: the actual control alone uses psql.
             original=a.psql
             stack.enter_context(patch.object(a,'psql',side_effect=lambda folder,query,*args:original(folder,query,*args) if query.startswith('BEGIN;') else ''))

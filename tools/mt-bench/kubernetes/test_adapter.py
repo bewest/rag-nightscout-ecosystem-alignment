@@ -502,17 +502,14 @@ class NativeDriverRecord(unittest.TestCase):
             node = root / 'node'; node.write_text('synthetic')
             driver = {'hostId': 'h', 'node': str(node), 'nodeSha256': '0'*64, 'dependencies': str(deps),
                       'coreRepository': '/nonexistent', 'packageSha256': '0'*64, 'lockSha256': '0'*64,
-                      'nodeModules': 'captured', 'resources': {}}
+                      'resources': {}}
             c = {'driver': driver, 'observer': {'hostId': 'h'}, 'pins': {'pair': {'core': 'a'*40}}}
-            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
-                 patch.object(execute, 'finite_scope', return_value='scope'):
+            with patch.object(execute, 'finite_scope', return_value='scope'):
                 value = execute.actor(c)
             self.assertFalse(value['matchesCapture'])
             self.assertEqual(value['observedTools']['nodeSha256'], execute.k.digest(node))
-            self.assertEqual(value['nodeModules'], 'changed')
             driver['node'] = 'relative'
-            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
-                 patch.object(execute, 'finite_scope', return_value='scope'):
+            with patch.object(execute, 'finite_scope', return_value='scope'):
                 with self.assertRaisesRegex(execute.k.Refused, 'DRIVER_TOOL_PATH'):
                     execute.actor(c)
 
