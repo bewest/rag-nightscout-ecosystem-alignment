@@ -42,6 +42,7 @@ import node_observation
 import discovery_rest
 import evaluator_idle
 import evaluator_opportunities
+import observation_rows
 import evaluator_catchup
 import preload_convergence
 import sql_attribution
@@ -128,7 +129,7 @@ def private_output(path, limit):
     return data, {'observedBytes':size,'retainedBytes':len(data),'truncated':size>len(data),'retention':'tail' if size>len(data) else 'complete'}
 
 
-def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None):
+def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None, rows=None):
     # Raw output belongs only in private phase artifacts; never argv/env in
     # public exceptions. Capture begins before prepared=true or state exists.
     timeout=remaining_seconds(timeout)
@@ -137,7 +138,7 @@ def _command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, bi
     if capture is not None:
         capture['sequence']+=1
         prefix=capture['directory']/(str(capture['sequence']).zfill(4)+'-'+Path(str(argv[0])).name)
-    run = wait_for_primer or subprocess.run
+    run = rows.run if rows is not None else wait_for_primer or subprocess.run
     result=None;failure=None;stdout=b'';stderr=b'';output_counts={}
     try:
         if prefix is None:
@@ -184,7 +185,7 @@ def diagnostic_resource_rows(m):
     return rows
 
 
-def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None):
+def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, binary=False, phase=None, wait_for_primer=None, rows=None):
     selected_env = runtime_env() if env is None else env
     if _CLEANUP_NODE_LIMIT.get() and argv and Path(str(argv[0])).name=='node':
         # Teardown must not acquire the diagnostic driver lock or a new actor
@@ -194,7 +195,7 @@ def command(argv, *, cwd=None, env=None, input=None, file=None, timeout=120, bin
     role = 'generator' if phase in ('product-prepare', 'generator-client-preflight','completed-oracle') else 'helper'
     if diagnostic_resources._ACTIVE is not None and list(map(str,argv[:2]))==['docker','run']:argv=bounded_k6_argv(argv)
     with diagnostic_resources.command(argv, selected_env, role) as (bounded_argv, bounded_env):
-        return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase, wait_for_primer=wait_for_primer)
+        return _command(bounded_argv, cwd=cwd, env=bounded_env, input=input, file=file, timeout=timeout, binary=binary, phase=phase, wait_for_primer=wait_for_primer, **({'rows':rows} if rows is not None else {}))
 
 
 def bounded_k6_argv(argv):
@@ -298,7 +299,7 @@ def load(directory, *, resource_limits=True):
     return d, m
 
 
-def compose(d, *args, file=None, input=None, timeout=120, wait_for_primer=None):
+def compose(d, *args, file=None, input=None, timeout=120, wait_for_primer=None, rows=None):
     if diagnostic_resources._ACTIVE is not None:
         args=list(args);i=0
         while i<len(args) and args[i]=='--profile':i+=2
@@ -317,7 +318,7 @@ def compose(d, *args, file=None, input=None, timeout=120, wait_for_primer=None):
         except RuntimeError as error:
             resource_cpu_failure(error)
             raise
-    return command(argv, file=file, input=input, timeout=timeout, wait_for_primer=wait_for_primer)
+    return command(argv, file=file, input=input, timeout=timeout, wait_for_primer=wait_for_primer, **({'rows':rows} if rows is not None else {}))
 
 
 def resources(m, all_containers=True):
@@ -1082,8 +1083,8 @@ def verify(d, m, teardown=False):
     assert_owned(m)
 
 
-def psql(d, sql, database="postgres", *, timeout=None):
-    return compose(d, "exec", "-T", "postgres", "psql", "-X", "-q", "-At", "-F", "\t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", database, input=sql.encode(),**({'timeout':timeout} if timeout is not None else {}))
+def psql(d, sql, database="postgres", *, timeout=None, rows=None):
+    return compose(d, "exec", "-T", "postgres", "psql", "-X", *(["-v", "FETCH_COUNT=64"] if rows else []), "-q", "-At", "-F", "\t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", database, input=sql.encode(),**({'rows':rows} if rows else {}),**({'timeout':timeout} if timeout is not None else {}))
 
 
 def service_roster(config):
@@ -1952,11 +1953,24 @@ def progress_services(d):
     return services
 
 
-def progress_fetch(d,service,ids,queries,budget,timeout=20):
+def progress_fetch(d,service,ids,queries,budget,timeout=20,*,stall_seconds=None):
     prefix="const M7_PROGRESS_IDS="+json.dumps(ids)+";const M7_PROGRESS_QUERY_BUDGET="+str(queries)+";const M7_PROGRESS_BYTE_BUDGET="+str(budget)+";\n"
+    options = {}
+    if stall_seconds is not None:
+        timeout = min(timeout, remaining_seconds((queries+1)*stall_seconds))
+        prefix += 'const M7_PROGRESS_DEADLINE_MS='+str(max(1,math.floor(timeout*1000)))+';\n'
+        reader = observation_rows.Rows(ids, stall_seconds, evaluator_progress.POLICY['responseMaxBytes']+8192, pages=True)
+        options['rows'] = reader
     code=prefix+(HERE/"evaluator-progress.cjs").read_text()
-    try:return compose(d,"exec","-T",service,"node","-",input=code.encode(),timeout=timeout)
-    except Exception:raise evaluator_progress.Refused("M7_EVALUATOR_PROGRESS_UNAVAILABLE")
+    try:
+        raw = compose(d,"exec","-T",service,"node","-",input=code.encode(),timeout=timeout,**options)
+        if stall_seconds is not None:
+            reader.finish(raw.encode())
+        return raw
+    except evaluator_progress.Refused:
+        raise
+    except Exception:
+        raise evaluator_progress.Refused("M7_EVALUATOR_PROGRESS_UNAVAILABLE")
 
 
 def progress_attribution(m):
@@ -2009,7 +2023,11 @@ def observe_progress(d,m,out,phase):
     until=_COMMAND_DEADLINE.get()
     def fetch(*args):
         # Executor threads do not inherit ContextVars. Keep the original cutoff.
-        with command_deadline(until):return progress_fetch(d,*args)
+        with command_deadline(until):
+            if 'evaluatorOpportunities' in m and phase in ('idle','load'):
+                seconds = allocation['effective']['roundSeconds']
+                return progress_fetch(d,*args,timeout=(args[2]+1)*seconds,stall_seconds=seconds)
+            return progress_fetch(d,*args)
     fetch=retain_raw(out,phase,fetch)
     fetch=clinical_warm.observing(fetch,d/clinical_warm.FILE,progress_services(d),ids)
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
@@ -2019,6 +2037,7 @@ def observe_progress(d,m,out,phase):
         opportunity_contract(m)
         if phase in ('idle','load'):
             allocation=evaluator_opportunities.round_budget(len(ids),m['cadence'].get('opportunityObservation'))
+            policy=evaluator_progress.roster_policy(m['cadence'].get('evaluatorProgressBudget'), len(ids), len(args[0]))
             collector=opportunity_collector(d,m,ids,byte_limit=allocation['effective']['sqlMaxBytes'],
                                             round_seconds=allocation['effective']['roundSeconds'])
             observer=evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256,round_allocation=allocation,policy=policy,**observer)
@@ -2058,8 +2077,7 @@ def opportunity_collector(d,m,ids,*,byte_limit=None,round_seconds=None):
     def invoke(value,timeout):
         if until is not None:
             require(until>time.time(),'M7_COMMAND_DEADLINE');timeout=min(timeout,until-time.time())
-        raw=command([node,*([] if diagnostic_resources._ACTIVE is not None else ['--max-old-space-size=256']),'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
-        evaluator_progress.need(len(raw.encode())<=sql_bytes(),'M7_OPPORTUNITY_BYTE_BOUND')
+        raw=command([node,'-e',script,HERE/'completed-oracle.cjs'],input=json.dumps({'config':config,**value}).encode(),timeout=timeout,phase='completed-oracle')
         value=json.loads(raw)
         if isinstance(value,dict) and 'refused' in value:
             code=value['refused'];error=evaluator_progress.Refused(code,'UNMEASURED' if code in ('M7_OPPORTUNITY_COVERAGE','M7_COMPLETION_NATIVE_INVALIDATED') else 'FAIL')
@@ -2067,27 +2085,42 @@ def opportunity_collector(d,m,ids,*,byte_limit=None,round_seconds=None):
             raise error
         return value
     batches=[ids[offset:offset+64] for offset in range(0,len(ids),64)]
-    start=time.monotonic();cpu=time.process_time();queries=invoke({'mode':'queries','batches':batches},10)
+    start=time.monotonic();cpu=time.process_time()
+    queries=invoke({'mode':'queries','batches':batches}, round_seconds or evaluator_opportunities.ROUND_SECONDS)
     evaluator_progress.need(isinstance(queries,list) and len(queries)==len(batches) and all(isinstance(q,str) and q.startswith('SELECT ') for q in queries),'M7_OPPORTUNITY_QUERY_BINDING')
     preparation={'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu,'nodeCalls':1,'sqlQueries':0}
     def capture(timeout=None):
-        if timeout is None:
-            timeout=evaluator_opportunities.ROUND_SECONDS if round_seconds is None else round_seconds
-        evaluator_progress.need(type(timeout) in (int,float) and math.isfinite(timeout) and timeout>0,'M7_OPPORTUNITY_DEADLINE')
+        stall = evaluator_opportunities.ROUND_SECONDS if round_seconds is None else round_seconds
+        evaluator_progress.need(stall > 0 and (timeout is None or timeout > 0),'M7_OPPORTUNITY_DEADLINE')
+        # Without an operator work cutoff, the finite roster bounds the number
+        # of possible renewals. A silent process still has one inactivity window.
+        start = time.monotonic()
+        cpu = time.process_time()
+        deadline = start + (timeout if timeout is not None else (len(ids) + len(queries) + 1) * stall)
+        def remaining():
+            left = min(deadline-time.monotonic(), until-time.time() if until is not None else float('inf'))
+            evaluator_progress.need(left > 0,'M7_OPPORTUNITY_DEADLINE')
+            return left
         require(digest(config_path)==source_sha,'M7_OPPORTUNITY_SOURCE_CHANGED')
-        start=time.monotonic();cpu=time.process_time();deadline=start+timeout;rows=[];used=0;count=0
-        cost={'sqlQueries':0,'rawSqlBytes':0,'nodeCalls':0}
+        rows = []
+        cost = {'sqlQueries':0, 'rawSqlBytes':0, 'nodeCalls':0, 'largestRowBytes':0, 'maxInactivitySeconds':0}
         try:
-            for query in queries:
-                remaining=min(deadline-time.monotonic(),until-time.time() if until is not None else float('inf'));evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
-                ms=max(1,min(4000,int(remaining*1000)-100))
-                raw=psql(d,"BEGIN; SET LOCAL statement_timeout='"+str(ms)+"ms';\n"+query+"\nCOMMIT;",database,timeout=min(5,remaining))
-                count+=1;used+=len(raw.encode());cost.update(sqlQueries=count,rawSqlBytes=used)
-                evaluator_progress.need(used<=sql_bytes(),'M7_OPPORTUNITY_BYTE_BOUND')
-                rows.extend(json.loads(line) for line in raw.splitlines() if line)
-            remaining=deadline-time.monotonic();evaluator_progress.need(remaining>0,'M7_OPPORTUNITY_DEADLINE')
-            cost['nodeCalls']=1;snapshot=invoke({'mode':'snapshot','rows':rows,'ids':ids},remaining)
-            evaluator_progress.need(time.monotonic()<=deadline,'M7_OPPORTUNITY_DEADLINE')
+            for query, batch in zip(queries,batches):
+                reader = observation_rows.Rows(batch, stall, sql_bytes())
+                left = min(remaining(), (len(batch)+1)*stall)
+                ms = max(1,min(2147483647,int(left*1000)))
+                cost['sqlQueries'] += 1
+                try:
+                    raw = psql(d,"BEGIN READ ONLY; SET LOCAL statement_timeout='"+str(ms)+"ms';\n"+query+"\nROLLBACK;",database,timeout=left,rows=reader)
+                    reader.finish(raw.encode())
+                finally:
+                    cost['rawSqlBytes'] += reader.total
+                    cost['largestRowBytes'] = max(cost['largestRowBytes'], reader.largest)
+                    cost['maxInactivitySeconds'] = max(cost['maxInactivitySeconds'], reader.max_gap)
+                rows.extend(json.loads(line) for line in raw.splitlines())
+            cost['nodeCalls'] = 1
+            snapshot = invoke({'mode':'snapshot','rows':rows,'ids':ids}, min(stall,remaining()))
+            remaining()
             return snapshot,{**cost,'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu}
         except Exception as error:
             error.opportunityCost={**cost,'wallSeconds':time.monotonic()-start,'observerProcessCpuSeconds':time.process_time()-cpu};raise

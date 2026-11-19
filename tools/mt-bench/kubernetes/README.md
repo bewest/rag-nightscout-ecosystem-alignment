@@ -703,26 +703,24 @@ writers join, clipped by the work deadline; no time left gives UNMEASURED
 `M7_DRAIN_DEADLINE` without a read.
 
 The collector uses one all-roster progress SELECT in one read-only PostgreSQL
-transaction per round. Its [progress-only wire projection](../m7-joined/progress-transport.cjs)
+transaction per round. PostgreSQL streams the SELECT through a cursor, fetching up to
+128 rows at a time. Its [progress-only wire projection](../m7-joined/progress-transport.cjs)
 omits repeated constant reader metadata and JSON field names, then restores the
 independent typed/state fields before calling the unchanged strict
 `completed-oracle.progressSnapshot`. Native source, restore, contract, vector,
 output identity and timing checks remain in that reader. Clinical queries and
 clinical/client assessors keep their original complete projection.
 
-`workload.drainObservation` selects bounded observer settings: `roundSeconds`
-(default 20), `intervalSeconds` (default 5), total `maxRounds`, `maxQueries`,
-`maxBytes`, and `sqlMaxBytes` per round (default 16 MiB). All values are positive
-safe integers. SQL and runtime inspection bytes both count toward the total;
-query totals count the one SQL SELECT plus every 128-tenant inspection page.
-The SQL-byte default is an overridable observer budget. Set it to fit the
-selected population or source metadata; a larger budget does not create a
-capacity claim. The round deadline covers the initial census, SQL, snapshot
-decode, inspection pages and final census. Child transports receive the
-remaining round time; every round also remains inside the existing drain and
-work deadlines. These settings never extend the selected clinical deadline of
-120 seconds. Common experiment intents project the same observer settings into
-the local runner's existing `--drain-observation` option.
+`workload.drainObservation.roundSeconds` selects the inactivity window
+(default 20 s). Each completed census request, new selected SQL row or new
+inspection page lets collection continue inside the operator's drain and work
+deadlines. `sqlMaxBytes` allows bytes between completed SQL rows (default
+16 MiB). Polls use `intervalSeconds` (default 5 s). After the boundary,
+`maxRounds`, `maxQueries` and `maxBytes` bound consecutive captures without
+progress toward the original fixed targets. Receipts count every SQL and
+inspection read and its returned bytes. The clinical deadline remains 120 s.
+Common experiment intents project these settings into the local runner's
+`--drain-observation` option.
 
 The bounded local differential control is
 `catchup_scale_control.py --output <new-absolute-directory> --node <pinned-node>

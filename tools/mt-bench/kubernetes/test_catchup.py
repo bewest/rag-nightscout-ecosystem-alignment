@@ -100,7 +100,7 @@ class Catchup(unittest.TestCase):
                                drain_started=time.time(), collector=collector)
         return out, value
 
-    def timed_stage(self, *, round_seconds=60, drain=60, work_seconds=120, module=catchup):
+    def timed_stage(self, *, round_seconds=60, drain=60, work_seconds=120, module=catchup, advancing=False):
         """A real collector round with 25 synthetic seconds of SQL transport."""
         import evaluator_catchup as shared
         clock = SimpleNamespace(wall=time.time(), mono=time.monotonic())
@@ -108,8 +108,14 @@ class Catchup(unittest.TestCase):
         read = fake.postgres_read
         def postgres_read(*args, **kwargs):
             raw = read(*args, **kwargs)
-            clock.wall += 25
-            clock.mono += 25
+            if advancing:
+                for line in raw.splitlines(keepends=True):
+                    clock.wall += 12.5
+                    clock.mono += 12.5
+                    kwargs['rows'].feed(line.encode())
+            else:
+                clock.wall += 25
+                clock.mono += 25
             return raw
         fake.postgres_read = postgres_read
         observe = shared.observe
@@ -170,10 +176,19 @@ class Catchup(unittest.TestCase):
         self.assertEqual(value['observationWindow']['selectedClinicalDeadlineSeconds'], 120)
         self.assertEqual(self.gate(out)['verdict'], 'PASS')
 
+    def test_advancing_rows_outlive_one_inactivity_window(self):
+        out, value = self.timed_stage(round_seconds=20, advancing=True)
+        self.assertEqual(self.gate(out)['verdict'], 'PASS', value['code'])
+        self.assertEqual(value['boundaryCost']['wallSeconds'],25)
+        self.assertEqual(value['boundaryCost']['maxInactivitySeconds'],12.5)
+        out, value = self.timed_stage(round_seconds=20, advancing=True, work_seconds=21)
+        self.assertEqual(value['verdict'], 'UNMEASURED')
+        self.assertNotEqual(self.gate(out)['verdict'], 'PASS')
+
     def test_shorter_selected_round_still_refuses_slow_collection(self):
         out, value = self.timed_stage(round_seconds=20)
         self.assertEqual((value['verdict'], value['code']),
-                         ('UNMEASURED', 'K8S_CATCHUP_ROUND_DEADLINE'))
+                         ('UNMEASURED', 'M7_OPPORTUNITY_DEADLINE'))
         self.assertEqual(value['observationWindow']['collectorPolicy']['roundSeconds'], 20)
         self.assertTrue((out / 'catchup' / 'round-0000-sql.private.jsonl').is_file())
 
@@ -192,7 +207,7 @@ class Catchup(unittest.TestCase):
         read = fake.postgres_read
         fake.postgres_read = lambda *a,**kw:' ' * (17 * 1024 * 1024) + read(*a,**kw)
         _, refused = self.stage(fake, joined_ago=5)
-        self.assertEqual((refused['verdict'],refused['code']),('UNMEASURED','K8S_CATCHUP_BYTE_BOUND'))
+        self.assertEqual((refused['verdict'],refused['code']),('UNMEASURED','M7_OPPORTUNITY_BYTE_BOUND'))
         _, restored = self.stage(fake, joined_ago=5, sql_max_bytes=32*1024*1024)
         self.assertEqual(restored['verdict'],'PASS',restored.get('code'))
         self.assertGreater(restored['boundaryCost']['rawSqlBytes'],16*1024*1024)
@@ -216,7 +231,7 @@ class Catchup(unittest.TestCase):
 
     def test_inspection_and_final_census_cannot_overrun_round(self):
         out,value = self.timed_inspection_stage()
-        self.assertEqual((value['verdict'],value['code']),('UNMEASURED','K8S_CATCHUP_ROUND_DEADLINE'))
+        self.assertEqual((value['verdict'],value['code']),('UNMEASURED','M7_OPPORTUNITY_DEADLINE'))
         self.assertEqual(value['refusedCapture']['cost']['wallSeconds'],25)
         self.assertTrue((out/'catchup/round-0000-inspection.private.jsonl').is_file())
 
@@ -299,15 +314,20 @@ class BreakIt(unittest.TestCase):
                 case.tmp.cleanup()
         self.check('configured-round-budget', criterion, module=broken)
 
-    def test_entire_round_deadline_control(self):
-        broken=ablated(catchup,"        k.need(time.monotonic() <= deadline, 'CATCHUP_ROUND_DEADLINE', 'UNMEASURED')\n",'')
+    def test_inspection_inactivity_control(self):
+        import observation_rows
         def criterion(module):
-            case=Catchup('test_inspection_and_final_census_cannot_overrun_round');case.setUp()
+            case = Catchup('test_inspection_and_final_census_cannot_overrun_round')
+            case.setUp()
             try:
-                _,value=case.timed_inspection_stage(module)
-                return (value['verdict'],value.get('code'))==('UNMEASURED','K8S_CATCHUP_ROUND_DEADLINE')
-            finally:case.tmp.cleanup()
-        self.check('entire-round-deadline',criterion,module=broken)
+                _, value = case.timed_inspection_stage(module)
+                return value['code'] == 'M7_OPPORTUNITY_DEADLINE'
+            finally:
+                case.tmp.cleanup()
+        self.assertTrue(criterion(catchup))
+        with patch.object(observation_rows.Rows, 'check', return_value=60):
+            self.assertFalse(criterion(catchup))
+        self.assertTrue(criterion(catchup))
 
     def test_stuck_tenant_control(self):
         import evaluator_catchup

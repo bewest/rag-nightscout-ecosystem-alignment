@@ -59,3 +59,12 @@ test('inspection helper obeys the selected remaining round across RPC pages',asy
  assert.notEqual(mutant,source);await assert.rejects(()=>green(mutant),assert.AssertionError);await green(source);
  assert.deepEqual(await run(source,0),{rpcs:0,exit:1,lines:0});
 });
+
+test('both SQL selectors accept a roster above 10,000 and progress requires every row',()=>{
+ const ids=Array.from({length:10001},(_,i)=>i.toString(16).padStart(8,'0')+'-1111-4111-8111-111111111111');
+ const rows=ids.map(tenant=>wire({...row,tenant,state:{...row.state,output:{...row.state.output,tenant}}}));
+ assert(oracle.query(config,ids,'synthetic-native').includes(ids.at(-1)));
+ assert(transport.query(config,ids).includes(ids.at(-1)));
+ assert.throws(()=>transport.snapshot(rows.slice(1),config,ids),/M7_OPPORTUNITY_COVERAGE/);
+ assert.equal(transport.snapshot(rows,config,ids).rows.length,ids.length);
+});

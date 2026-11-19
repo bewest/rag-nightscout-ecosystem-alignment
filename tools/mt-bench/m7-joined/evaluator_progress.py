@@ -35,6 +35,14 @@ def capture_policy(selected=None):
          all(integer(value,1) for value in selected.values()),'M7_EVALUATOR_PROGRESS_BUDGET_INPUT','FAIL')
     return {**POLICY,**selected}
 
+def roster_policy(selected, count, instances):
+    """Every selected RPC page can spend its own transport allowance."""
+    policy = capture_policy(selected)
+    queries = math.ceil(count / policy['selectorRows']) * instances * policy['roundsPerPhase']
+    return {**policy, 'maxQueriesPerPhase':max(policy['maxQueriesPerPhase'], queries),
+            'maxBytesPerPhase':max(policy['maxBytesPerPhase'], queries*(policy['responseMaxBytes']+8193))}
+
+
 def due_fields(row):
     need('dueAt' in row and 'dueReason' in row,'M7_EVALUATOR_PROGRESS_DUE_CONTRACT')
     at,reason=row['dueAt'],row['dueReason']

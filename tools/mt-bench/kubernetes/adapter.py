@@ -68,9 +68,9 @@ def need(ok, code, verdict='FAIL'):
         raise Refused('K8S_' + code, verdict)
 
 
-def document(path):
+def document(path, *, max_bytes=32 * 1024 * 1024):
     p = Path(path)
-    need(p.is_file() and not p.is_symlink() and p.stat().st_size <= 32 * 1024 * 1024, 'INPUT_FILE')
+    need(p.is_file() and not p.is_symlink() and (max_bytes is None or p.stat().st_size <= max_bytes), 'INPUT_FILE')
     return json.loads(p.read_text())
 
 
@@ -315,7 +315,7 @@ class Client:
         self.c, self.run = c, run
 
     def call(self, args, *, data=None, read=True, cleanup=False, output_limit=32*1024*1024,
-             response_sink=None, timeout=None):
+             response_sink=None, timeout=None, rows=None):
         c = self.c
         deadline(c, cleanup)
         need(Path(c['kubectl']).is_absolute() and Path(c['kubectl']).is_file() and Path(c['kubectl']).name == 'kubectl', 'PINNED_KUBECTL_REQUIRED')
@@ -323,20 +323,29 @@ class Client:
         # The existing guard accepts the literal tool name. Select the pinned
         # compatible binary through PATH rather than bypassing that guard.
         binary = 'kubectl' if read else c['kubectl']
-        argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout=15s', *args]
+        read_seconds = getattr(self, 'request_seconds', None)
+        limit = min(timeout if timeout is not None else read_seconds or 20, deadline(c, cleanup))
+        if read_seconds is not None and rows is None:
+            limit = min(limit, read_seconds)
+        request_timeout = str(max(1, math.ceil(1000 * limit)))+'ms' if rows or read_seconds else '15s'
+        argv = prefix + [binary, '--context', c['context'], '--namespace', c['namespace'], '--request-timeout='+request_timeout, *args]
         env = dict(os.environ, PATH=str(Path(c['kubectl']).parent) + os.pathsep + os.environ.get('PATH', ''), RO_ALLOW_SENSITIVE='1')
         env.pop('RO_OWNED_WORKER_VIEW', None)
         need(Path(shutil.which('kubectl', path=env['PATH']) or '/missing').resolve() == Path(c['kubectl']).resolve(), 'PINNED_KUBECTL_REQUIRED')
         try:
-            result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              timeout=min(20 if timeout is None else timeout, deadline(c, cleanup)), check=False, env=env)
+            if rows and self.run is subprocess.run:
+                result = rows.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  timeout=limit, env=env)
+            else:
+                result = self.run(argv, input=data, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  timeout=limit, check=False, env=env)
         except (OSError, subprocess.TimeoutExpired):
             raise Refused('K8S_OBSERVATION_LOST', 'UNMEASURED')
         def bounded_response():
             raw = result.stdout
             if isinstance(raw, str):
                 raw = raw.encode()
-            need(isinstance(raw, bytes) and len(raw) <= output_limit, 'OBSERVATION_BOUND', 'UNMEASURED')
+            need(isinstance(raw, bytes) and (rows is not None or len(raw) <= output_limit), 'OBSERVATION_BOUND', 'UNMEASURED')
             return raw
         # Only an explicit private observer sink receives bounded returned bytes
         # before the original deadline/exit refusal. Partial timeout output and
@@ -747,7 +756,8 @@ def sql(d, c, objects, query, client=None):
 
 def postgres_read(client, pod, container, query, **options):
     data = ('BEGIN READ ONLY;\n' + query + '\nROLLBACK;\n').encode()
-    raw = client.call(['exec', '-i', pod, '-c', container, '--', 'psql', '-X', '-qAt', '-F', '\t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'nightscout_compose_test'], data=data, read=False, **options)
+    fetch = ['-v', 'FETCH_COUNT=128'] if options.get('rows') else []
+    raw = client.call(['exec', '-i', pod, '-c', container, '--', 'psql', '-X', *fetch, '-qAt', '-F', '\t', '-v', 'ON_ERROR_STOP=1', '-U', 'postgres', '-d', 'nightscout_compose_test'], data=data, read=False, **options)
     return raw.decode()
 
 

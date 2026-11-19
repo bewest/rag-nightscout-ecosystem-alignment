@@ -62,7 +62,7 @@ class Caller(unittest.TestCase):
             if stale and step==2:rows[0]['typed']['completed'][0]='11';rows[0]['state']['completed']['clock']='11'
             if missing and step==1:rows.pop(0)
             return '\n'.join(json.dumps(r) for r in rows)+'\n'
-        def rpc(directory,service,*args):
+        def rpc(directory,service,*args,**options):
             step=len(rpc_calls);rpc_calls.append(step);frame=fixtures.Progress().frame()
             frame['observedAt']=int(time.time()*1000)
             for r in frame['view']['tenants']:

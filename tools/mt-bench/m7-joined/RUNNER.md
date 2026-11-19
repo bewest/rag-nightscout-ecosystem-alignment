@@ -1396,15 +1396,18 @@ and 64 MiB. Select `--evaluator-progress-budget` with `maxQueriesPerPhase` and
 tenants across eight workers need 1,896 queries. Each retained observation uses
 the selected query and byte budget. Exhausted capture stays `UNMEASURED`.
 
-The local durable opportunity observer collects a SQL snapshot before each of
-the three evaluator inspections. Each round reserves at least 16 MiB and 20 s,
-scaling to 4 KiB per tenant and one second per 64-tenant SQL batch. These
-defaults allow headroom over the R4c incomplete prefix. For an explicitly
-bounded scenario set `prepare.opportunity-observation` to an object with
-`sqlMaxBytes`, `roundSeconds`, or both. The phase receipt records the requested
-and effective values and the actual query count, SQL bytes and observer cost.
-The work cutoff still applies. `drainObservation` selects the separate
-post-writer fixed-target observation budget.
+The local durable opportunity observer reads the selected roster in 64-tenant
+SQL batches before each evaluator inspection. Each new selected SQL row or
+inspection page renews the inactivity clock. Query counts cover generated SELECTs.
+PostgreSQL cursor fetches carry their rows. By default a read allows 20 s
+between advances and 16 MiB for an unfinished SQL row. A scenario can select
+these allowances with `prepare.opportunity-observation.roundSeconds` and
+`sqlMaxBytes`. The receipt records total SQL bytes, largest row, longest SQL
+inactivity, query count and elapsed time. Retained fixed-budget receipts keep
+their original checks. The operator work cutoff applies throughout.
+`drainObservation` selects the separate post-writer observation. Its round,
+query and byte counters stop repeated snapshots that make no progress toward
+the frozen targets. All captures count toward reported cost.
 
 
 `--startup-windows` accepts optional `composeReadySeconds`, `stageSeconds` and
