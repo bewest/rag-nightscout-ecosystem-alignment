@@ -12,14 +12,29 @@ from probe import generate
 from test_preload_convergence import A, B, R, S, frame
 
 
-def point(path, start, end, *, acquisitions, terminal=False, runtime=R):
+def point(path, start, end, *, acquisitions, terminal=False, runtime=R, generation=1001):
     value = frame(code=None if acquisitions else 'EVALUATOR_STARTING',
                   acquisitions=acquisitions, runtime=runtime)
+    for row in value['view']['tenants']:
+        row['progress']['generation'] = generation
     warm.record(path, {'evaluator': json.dumps(value).encode()}, ['evaluator'], [A, B],
                 start, end, terminal=terminal)
 
 
 class ClinicalWarm(unittest.TestCase):
+    def test_forward_progress_preserves_first_warm_and_rewinds_break_continuity(self):
+        for generation, acquisitions in [(1001, 3), (1003, 1)]:
+            with self.subTest(generation=generation, acquisitions=acquisitions), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / warm.FILE
+                point(path, 0, 10, acquisitions=0)
+                point(path, 20, 30, acquisitions=1)
+                point(path, 40, 50, acquisitions=2, generation=1002)
+                result = warm.coverage(path, [A, B])
+                self.assertEqual(result['coverage']['WARM'], 2)
+                self.assertEqual(result['byTenant'][A]['warmByMs'], 30)
+                point(path, 60, 70, acquisitions=acquisitions, generation=generation)
+                self.assertEqual(warm.coverage(path, [A, B])['coverage']['UNMEASURED'], 2)
+
     def test_never_warm_requires_terminal_owner_credit_and_stable_identity(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / warm.FILE

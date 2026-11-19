@@ -44,9 +44,14 @@ def record(path, raw, services, ids, start_ms, end_ms, *, terminal=False):
             count = owner['completedAcquisitions']
             row = state['byTenant'].setdefault(tenant, {
                 'identity': identity, 'warmByMs': None, 'coldThroughMs': None, 'beforeTerminal': False})
-            if row['identity'] != identity or count < row.get('acquisitions', 0):
+            # The component generation can advance inside one evaluator process.
+            # Its lifetime counters and the first qualified warm observation
+            # belong to the tenant on that owner, across those forward steps.
+            previous = row['identity']
+            if previous[:2] != identity[:2] or identity[2] < previous[2] or count < row.get('acquisitions', 0):
                 row['sourceChanged'] = True
             if not row.get('sourceChanged'):
+                row['identity'] = identity
                 if row['warmByMs'] is None:
                     if count == 0:
                         row['coldThroughMs'] = start_ms
