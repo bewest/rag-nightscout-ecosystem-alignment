@@ -23,6 +23,21 @@ class StandardPoint(unittest.TestCase):
                     runner.main()
                 self.assertEqual((case/'result.json').read_bytes(), previously)
 
+    def test_failure_after_prepare_has_terminal_result(self):
+        with TemporaryDirectory() as temp:
+            root = Path(temp)/'point'
+            def prepared(config, raw, one_shot):
+                raw.mkdir()
+                points.write(raw/'result.json', {'status':'PREPARED', 'phase':'prepare'})
+                return raw
+            with patch.object(sys, 'argv', ['runner.py', 'run', 'config', str(root), '--standard-case']), \
+                 patch.object(runner, 'prepare', side_effect=prepared), \
+                 patch.object(runner, 'execute', side_effect=RuntimeError('M7_RUNNER_WORK_DEADLINE')):
+                with self.assertRaisesRegex(RuntimeError, 'WORK_DEADLINE'):
+                    runner.main()
+            self.assertEqual(points.read(root/'result.json')['status'], 'FAILED_PARTIAL')
+            self.assertEqual(points.read(root/'result.json')['code'], 'M7_RUNNER_WORK_DEADLINE')
+
     def test_named_observation_memory_cleanup_and_missing_accounting(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)/'raw'

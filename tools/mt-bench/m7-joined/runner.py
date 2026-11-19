@@ -1007,8 +1007,9 @@ def main():
         except BaseException as error:
             if not raw.exists():
                 raw.mkdir(mode=0o700)
-            if not (raw/'result.json').exists():
-                write(raw/'result.json', {'version': 1, 'status': 'FAILED_PARTIAL',
+            result = point_results.read(raw/'result.json')
+            if not result or result.get('status') in ('PREPARING', 'PREPARED'):
+                write(raw/'result.json', {**result, 'version': 1, 'status': 'FAILED_PARTIAL',
                       'code': code(error), 'capacityAcceptance': 'NOT_GRANTED'})
             raise
         finally:

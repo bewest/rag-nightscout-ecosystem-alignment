@@ -29,6 +29,20 @@ assert e['runId']==d.name and ns.startswith('ns-synth-'),'INSTANCE_IDENTITY_CHAN
 live=d/'runtime';live.mkdir(mode=0o700,exist_ok=True);assert not any(live.iterdir()),'ENTERED_OUTPUT_EXISTS'
 def put(n,obj):(live/n).write_text(json.dumps(obj,indent=2)+'\n')
 def timestamp():return dt.datetime.now(dt.timezone.utc).isoformat()
+
+# Once this case has acquired its empty output directory, refusals before the
+# namespace create also need a terminal result. The entered lifecycle below
+# installs its own exception/cleanup path before making any mutation.
+def unentered_failure(kind, error, trace):
+    import re
+    try:
+        code = str(error)
+        put('first-failure.json', {'stage':'pre-entry', 'time':timestamp(),
+            'code':code if re.fullmatch(r'[A-Z0-9_]{1,120}', code) else kind.__name__})
+        point_results.publish_native(d)
+    finally:
+        sys.__excepthook__(kind, error, trace)
+sys.excepthook = unentered_failure
 def command(argv,data=None,timeout=None,private=False):
     rem=cleanup-time.time() if cleaning else work-time.time()
     if not cleaning and phase_cutoff is not None:
@@ -392,6 +406,7 @@ nsuid=trustuid=None;events=[];uids=[];current='create-namespace'
 def interrupted(signum, frame):raise RuntimeError('CONTROLLER_SIGNAL_'+str(signum))
 signal.signal(signal.SIGTERM,interrupted)
 put('deadlines.json',{'workUntil':dt.datetime.fromtimestamp(work,dt.timezone.utc).isoformat(),'cleanupUntil':dt.datetime.fromtimestamp(cleanup,dt.timezone.utc).isoformat()})
+sys.excepthook = sys.__excepthook__
 try:
     node=create(objects('namespace')[0]);nsuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid})
     owned();node=create(trust);trustuid=node['metadata']['uid'];put('custody.json',{'namespace':ns,'namespaceUid':nsuid,'trustName':tn,'trustUid':trustuid})

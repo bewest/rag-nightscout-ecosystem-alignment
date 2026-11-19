@@ -621,7 +621,7 @@ def observe(c, by_key, client, baseline=None, *, cleanup=False, restarted_role=N
         if name == native_join.JOB:
             pod = native_join.exact_spec(c, client, pod, ns['metadata']['uid'], cleanup=cleanup)
             result['testActors'][pod['metadata']['name']] = native_join.test_pod(c, by_key[name], pod, parent['uid'])
-            need(len(result['testActors']) <= 1, 'NATIVE_LOAD_POD_CENSUS')
+            need(len(result['testActors']) <= 1, 'NATIVE_LOAD_POD_CENSUS', 'UNMEASURED')
             continue
         helper_annotations(template(by_key[name])['metadata'], pod['metadata'])
         helper_pod(expected, pod['spec'])
