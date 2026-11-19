@@ -265,48 +265,6 @@
    writePrivate(completeFile, JSON.stringify({ version: 1, method: 'kubernetes', role: roleName, policy: policyName, serviceAccount, namespace, audience,
      tokenTtl: ttl, tokenMaxTtl: maxTtl, sink: SINK, mode: registry ? 'registry' : 'static', tenants: registry ? null : apiConfig.tenants.length }, null, 2) + '\n');
    return { state: 'vault-agent-provisioned', method: 'kubernetes', role: roleName, policy: policyName, sink: SINK };
---- a/check/candidate-documents.test.cjs
-+++ b/check/candidate-documents.test.cjs
-@@ -106,3 +106,39 @@
-     } finally { await new Promise(resolve => server.close(resolve)); }
-   } finally { fs.rmSync(root, { force: true, recursive: true }); }
- });
-+
-+test('Vault provisions the same API document that the admin role verifies', async () => {
-+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vault-role-export-'));
-+  const originalFetch = globalThis.fetch;
-+  try {
-+    const d = documents(root);
-+    const { writePrivate } = binding('bootstrap');
-+    const { input, provision } = require('../ops/vault-kubernetes-auth.js');
-+    fs.unlinkSync(path.join(root, 'vault-agent/complete.json'));
-+    writePrivate(path.join(root, 'bootstrap/layout.json'), binding('config').layout());
-+    writePrivate(path.join(root, 'bootstrap/vault-init.json'), {root_token: 'synthetic'});
-+    const options = input({NS_VAULT_K8S_AUTH:'1', NS_BOOTSTRAP_OUTPUT:root,
-+      NS_VAULT_K8S_NAMESPACE:'synthetic', NS_VAULT_K8S_SERVICE_ACCOUNT:'cohort'});
-+    let requests = 0;
-+    globalThis.fetch = async (_, init) => {
-+      requests++;
-+      return init.method === 'GET' ? new Response(JSON.stringify({data:{policy:'synthetic'}})) : new Response(null, {status:204});
-+    };
-+    const before = d.get('api/config.json');
-+    const name = 'admin/verification/api.config.json';
-+    const restore = d.change(name, value => { value.platformVerification.namespace += '_changed'; });
-+    try { await assert.rejects(provision(options), {code:'VAULT_VERIFICATION_DOCUMENT_CHANGED'}); }
-+    finally { restore(); }
-+    assert.equal(requests, 0);
-+    assert.deepEqual(d.get('api/config.json'), before);
-+    await provision(options);
-+    const expected = {...before, vault:{...before.vault, tokenFile:'/run/ns-vault/token'}};
-+    assert.deepEqual(d.get('api/config.json'), expected);
-+    assert.deepEqual(d.get(name), expected);
-+    const proof = bootstrapProof(root, app, contract, fixture('synthetic','vault-handoff'));
-+    assert.deepEqual(proof.roles.map(row => row.role), ['api','evaluator','realtime']);
-+  } finally {
-+    globalThis.fetch = originalFetch;
-+    fs.rmSync(root, {recursive:true, force:true});
-+  }
-+});
 --- /dev/null
 +++ b/lib/ns/edge-configuration.libsonnet
 @@ -0,0 +1,30 @@
