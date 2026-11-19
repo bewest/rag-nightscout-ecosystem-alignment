@@ -119,6 +119,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [vault-agent-sidecar](multitenancy-decisions.md#vault-agent-sidecar) — Vault Agent sidecar handles auth and renewal; the app reads the token file at call time.
 - [vault-one-approle-per-deployment](multitenancy-decisions.md#vault-one-approle-per-deployment) — One AppRole per deployment; tenant separation comes from application authority and RLS.
 - [vault-approle-lockout-off](multitenancy-decisions.md#vault-approle-lockout-off) — Vault user lockout is disabled for the deployment's single AppRole login.
+- [vault-readiness-honest](multitenancy-decisions.md#vault-readiness-honest) — Vault is Ready only when it can serve; a sealed restart stops the run; unseal automation is staged toward production.
 - [integration-credential-parts](multitenancy-decisions.md#integration-credential-parts) — Integration credentials split into operator-owned and owner-owned parts; neither reads the other's.
 - [tenant-root-secret-owner-control](multitenancy-decisions.md#tenant-root-secret-owner-control) — Owners can reveal (after re-authentication), audit, rotate and set the tenant root secret.
 - [authorize-cost-first](multitenancy-decisions.md#authorize-cost-first) — Cut per-authorization cost before API scale-out (narrowed by [authority-recheck-deferred](multitenancy-decisions.md#authority-recheck-deferred)).
@@ -208,7 +209,8 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [performance-signals-not-gates](multitenancy-decisions.md#performance-signals-not-gates) — Performance results are signals; correctness and safety gates stay strict.
 - [capacity-characterize-not-gate](multitenancy-decisions.md#capacity-characterize-not-gate) — Capacity runs characterize; they stop only on incorrect behavior or an unmeasurable harness.
 - [capacity-test-tiers](multitenancy-decisions.md#capacity-test-tiers) — Smoke, discovery and acceptance tiers with a target ladder (narrowed by [cluster-fan-out-testing](multitenancy-decisions.md#cluster-fan-out-testing): environments).
-- [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate) — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted.
+- [outcome-evaluator-gate](multitenancy-decisions.md#outcome-evaluator-gate) — The evaluator gate judges outcomes against the 120 s clinical deadline; typed transient retries are counted (narrowed by [clinical-deadline-from-warm](multitenancy-decisions.md#clinical-deadline-from-warm)).
+- [clinical-deadline-from-warm](multitenancy-decisions.md#clinical-deadline-from-warm) — Run gates measure the clinical deadline from tenant warm; cold-phase misses and time-to-warm are reported figures.
 - [preload-is-a-signal](multitenancy-decisions.md#preload-is-a-signal) — Whole-roster preload convergence is a signal; traffic starts when roles are ready.
 - [m7-envelope-measured-not-declared](multitenancy-decisions.md#m7-envelope-measured-not-declared) — Operating limits come from measurement (narrowed by [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first)).
 - [local-10k-release](multitenancy-decisions.md#local-10k-release) — Run the local 10,000-tenant realistic-mix point now on the a72 reference.
@@ -218,6 +220,10 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [workload-acceleration-local-only](multitenancy-decisions.md#workload-acceleration-local-only) — Remote and capacity runs use real time; only local harness checks accelerate.
 - [concurrent-branch-experiments](multitenancy-decisions.md#concurrent-branch-experiments) — Isolated synthetic branch experiments may run before full acceptance.
 - [flexible-experiment-limits](multitenancy-decisions.md#flexible-experiment-limits) — Reference sizes are configurable; identify a restriction's source before adding it.
+- [generous-run-resources](multitenancy-decisions.md#generous-run-resources) — Test fixtures set requests only; no per-role limits; setup sizes unbounded or progress-based; bound a run only for a scenario that needs it (narrowed by [requests-typical-scheduler-decides](multitenancy-decisions.md#requests-typical-scheduler-decides)).
+- [start-roles-before-priming](multitenancy-decisions.md#start-roles-before-priming) — Every role starts before provisioning and priming; no remaining-roles stage.
+- [requests-typical-scheduler-decides](multitenancy-decisions.md#requests-typical-scheduler-decides) — Requests near typical use; the scheduler places; Pending is the fit result; no harness fit solver or Compose allocation accounting.
+- [repeated-standard-point](multitenancy-decisions.md#repeated-standard-point) — A result is one scenario run three times on one freeze; only product properties fail a run.
 - [routine-diagnostic-image-delivery](multitenancy-decisions.md#routine-diagnostic-image-delivery) — Routine low-cost diagnostic image pushes and pulls need no per-image approval.
 - [disposable-native-harness](multitenancy-decisions.md#disposable-native-harness) — Native acceptance uses a disposable harness (narrowed by [simple-run-cleanup](multitenancy-decisions.md#simple-run-cleanup)).
 - [simple-run-cleanup](multitenancy-decisions.md#simple-run-cleanup) — Cleanup is one owned delete plus one absence check.
