@@ -204,7 +204,12 @@ def bounded_k6_argv(argv):
         require(not any(str(x).startswith('--pull=') for x in value),'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
         if '--pull' in value:
             i=value.index('--pull');require(value.count('--pull')==1 and value[i+1:i+2]==['never'],'M7_DIAGNOSTIC_PULL_POLICY_CHANGED')
-        else:value[9:9]=['--pull','never']
+        else:
+            profile = diagnostic_resources._ACTIVE.budget.profile
+            flags = diagnostic_resources.standalone_flags(
+                diagnostic_resources.standalone_limit(), diagnostic_resources.driver_memory_request(profile))
+            offset = 3 + len(flags)
+            value[offset:offset] = ['--pull', 'never']
     return value
 
 
@@ -1804,6 +1809,9 @@ def sampling(d, out):
     log = (out / "sampler.log").open("wb")
     env = runtime_env({"M7_SAMPLE_OWNER": m["owner"]}) if (
         m.get("profile") == "pgstream-sample" and m.get("runPurpose") == "discovery") else runtime_env()
+    import driver_memory
+    if out.name == 'load' and driver_memory.selected(m):
+        env['M7_SAMPLE_DRIVER_MEMORY'] = '1'
     process = subprocess.Popen([str(BASE / "probes/sample.sh"), m["project"], str((d / "env").resolve()), str((d / "frozen.compose.json").resolve()), str(empty.resolve()), str(out.resolve()),str(m.get("cadence",{}).get("samplerIntervalSeconds",2))], cwd=d.resolve(),env=env, stdout=log, stderr=log, start_new_session=True)
     job=out/"sampler-job.json";job_record(job,process,m["owner"],group=True)
     before = time.monotonic()
@@ -2557,6 +2565,9 @@ def _down(d, m):
         write(d/'terminal-capture-unavailable.json',{'status':'UNMEASURED','type':type(error).__name__})
     if m.get('attached'):
         write(d/'instrument-jobs-stopped.json',{'runtimeResources':'UNCHANGED','cleanupOwner':'runtime owner'});return
+    import driver_memory
+    if driver_memory.selected(m) and (d / 'load' / driver_memory.CID).is_file():
+        driver_memory.cleanup(sys.modules[__name__],m,d/'load',document(d/'loadgen-image.json')['k6'])
     if m.get("prepared"):
         config=document(d/"frozen.compose.json")
         try:captured=profile_provenance.capture_logs(d/"role-logs",config,lambda role:["docker","compose","-p",m["project"],"--env-file",str(d/"env"),"-f",str(d/"frozen.compose.json"),"logs","--no-color","--no-log-prefix","--timestamps","--tail","1000",role],seconds=remaining_seconds(5*len(config['services']))/max(1,len(config['services'])))

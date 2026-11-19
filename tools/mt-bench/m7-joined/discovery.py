@@ -8,6 +8,7 @@ import sys
 import time
 import discovery_rest
 import evaluator_catchup
+import driver_memory
 import driver_vu_diagnostic
 import node_observation
 import phase_windows
@@ -117,7 +118,7 @@ class Record:
         self.a,self.d,self.m=a,d,m
         self.value={'version':1,'kind':'m7-joined-discovery-cell','runPurpose':'discovery','status':'PARTIAL','capacityAcceptance':'NOT_GRANTED',**{k:m[k] for k in ('pair','hostIdentity','imageId','tenants','replicas','owner','profile','cadence')},'instrument':m['instrument']['sha256'],'profileSelection':m['profileSelection'],'coverage':{'fullNominalCgmCycle':m['cadence']['loadSeconds']>=300/m['cadence'].get('accel',1),'timerWitness':'UNMEASURED; observed progress is retained separately'},'ownershipVerified':False,'strictChecks':{},'processes':{},'hardFailures':[],'oracle':None,'probe':None,**(discovery_scope(m) if m['profile']=='pgstream-sample' else {}),**({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),'performanceThresholds':'none; HTTP errors, drops, socket loss and recovery timeouts are observed outputs, not capacity SLOs'}
     def save(self):
-        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json','host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
+        self.value['artifacts']={str(file.relative_to(self.d)):self.a.digest(file) for folder in ('idle','load') for name in ('evaluator-progress.json','probe.json','k6-summary.json','http-accounting.json','after-cgroups.json','after-pg-role.tsv','after-pg-statements.tsv','stored-counts.json','oracle-findings.json','probe-accounting.json','fanout.json','demand-recovery.json','node-observation.json','k6-scheduling.csv.gz','driver-vu-assessment.json',driver_memory.RESULT,driver_memory.SAMPLES,'host-load.tsv','pg-activity.tsv','pg-blockers.tsv') if (file:=self.d/folder/name).is_file()}
         preload = self.d/'preload-convergence/result.json'
         if preload.is_file():
             self.value['artifacts']['preload-convergence/result.json'] = self.a.digest(preload)
@@ -179,9 +180,14 @@ def run_discovery(a,d,m,k6_image,oneoff=None):
 
 
 def _run_discovery(a,d,m,k6_image,oneoff=None):
-    record=Record(a,d,m);record.save()
+    record=Record(a,d,m)
+    if driver_memory.selected(m):
+        record.value['driverMemory'] = {'status':'UNMEASURED', 'reason':'driver-observation-not-retained'}
+    record.save()
     try:
         require(m.get('profile')!='fresh-image-diagnostic','M7_DIAGNOSTIC_CANNOT_RUN_CAPACITY')
+        require(not driver_memory.selected(m) or (oneoff is None and not m.get('attached')),
+                'M7_DRIVER_MEMORY_LOCAL_FIXTURE_REQUIRED')
         a.frozen(m,'run');a.quiet(d,m,'run-before',check_load=False);a.verify(d,m);a.image(m)
         record.value['ownershipVerified']=True;record.save()
         require((d/'deploy-before-host.json').is_file(),'M7_DEPLOY_QUIET_RECORD_REQUIRED')
@@ -262,6 +268,8 @@ def retained_results(a, d, m, summary):
                 progress[phase] = {'verdict': 'UNMEASURED', 'code': safe_code(error)}
     result['evaluatorProgress'] = progress
     out = d/'load'
+    if driver_memory.selected(m) and (out / driver_memory.RESULT).is_file():
+        read('driverMemory', lambda: a.document(out / driver_memory.RESULT))
     probe = summary.get('probe') or {}
     if probe:
         result['completedOutput'] = probe.get('completedOutput', {'verdict':'UNMEASURED'})
@@ -375,6 +383,8 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
                                 argv=phase_windows.k6_setup(argv,k6_id,setup,windows['setupUntilUnixMs'])
                                 grace=max((row.get('gracefulStopSeconds',30) for row in m['cadence'].get('driverPlan',{}).get('scenarios',{}).values()),default=30)
                                 timeout=a.remaining_seconds(setup+m['cadence']['loadSeconds']+grace+5)
+                            if driver_memory.selected(m):
+                                return driver_memory.launch(a,m,out,k6_id,argv,file=output,timeout=timeout)
                             return (oneoff('k6-load',argv,file=output,timeout=timeout) if oneoff
                                     else a.command(argv,file=output,timeout=timeout))
                         record.process('k6',launch)
@@ -413,6 +423,8 @@ def discovery_load(a,d,m,k6_id,record,oneoff=None):
             else:
                 record.value['strictChecks']['recovery']={'verdict':'UNMEASURED','code':'M7_DISCOVERY_RECOVERY_NOT_STARTED'};record.save()
     finally:
+        if driver_memory.selected(m):
+            driver_memory.retain(a,m,out,k6_id,runid)
         if process is not None:
             a.stop_job(out/'probe-job.json',m['owner']);process.wait(timeout=10)
             if 'probe' not in record.value['processes']:record.value['processes']['probe']={'returncode':process.returncode,'stoppedByRunner':True,'endMonoNs':time.monotonic_ns()};record.save()

@@ -795,6 +795,17 @@ discovery does not replace it with its historical driver default. Runtime checks
 continue to compare actual CPU, memory, no-swap limits and one-worker nginx
 configuration against the authored allocation.
 
+For local Compose discovery, set `driver.memoryReservationBytes` in place of
+`driver.memoryBytes` to request memory without a container memory or swap limit.
+The aggregate ceiling accounts for the reservation and the driver CPU setting
+still applies. The plan shows the reservation under `effective.resources.standalone.k6`.
+The runner checks the exact created container before launch. Read
+`load/driver-memory.json` for verified settings, terminal state, and the
+largest sampled kernel `memory.peak` with run and container identity.
+`load/k6-memory.tsv` retains the underlying samples. The observed peak is a
+lower bound on the final lifetime peak. A driver that exits before a usable
+sample leaves its peak UNMEASURED.
+
 Remote preparation requires the paired controller/worker allocation support.
 Its packet carries `diagnosticResourceAllocation`; its receipt mirrors the exact
 object as `remoteDiagnosticResourceAllocation`. Both boundaries check finite

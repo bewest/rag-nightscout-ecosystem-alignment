@@ -30,10 +30,32 @@ echo -e "t\tcontainer\tcpu_pct\tmem" > "$out/docker-stats.tsv"
 echo -e "t\tload1\tload5\tload15" > "$out/host-load.tsv"
 echo -e "t\trole\tstate\twait_event_type\twait_event\tn" > "$out/pg-activity.tsv"
 echo -e "t\tungranted_locks\tbackends" > "$out/pg-locks.tsv"
+# The runner writes the full ID at create time, before starting the load actor.
+# A driver that exits between ticks can have a terminal receipt with no sample.
+sample_driver_memory() {
+  local cid started values
+  [[ -r "$out/k6-container.cid" ]] || return 0
+  cid=$(cat "$out/k6-container.cid") || return 0
+  [[ "$cid" =~ ^[0-9a-f]{64}$ ]] || return 0
+  started=$(timeout 3 docker container inspect --format '{{if .State.Running}}{{.State.StartedAt}}{{end}}' "$cid" 2>/dev/null) || return 0
+  [[ -n "$started" ]] || return 0
+  values=$(timeout 3 docker exec "$cid" cat /sys/fs/cgroup/{memory.peak,memory.max,memory.swap.max} 2>/dev/null) || return 0
+  [[ "$values" =~ ^[0-9]+$'\n'(max|[0-9]+)$'\n'(max|[0-9]+)$ ]] || return 0
+  [[ "$started" == "$(timeout 3 docker container inspect --format '{{.State.StartedAt}}' "$cid" 2>/dev/null)" ]] || return 0
+  printf '%s\t%s\t%s\t%s\n' "$(date +%s.%N)" "$cid" "$started" "${values//$'\n'/$'\t'}" >> "$out/k6-memory.tsv"
+}
+driver_memory=${M7_SAMPLE_DRIVER_MEMORY:-}
+if [[ "$driver_memory" == 1 ]]; then
+  printf 't\tcontainerId\tstartedAt\tmemoryPeakBytes\tmemoryMax\tmemorySwapMax\n' > "$out/k6-memory.tsv"
+fi
 while :; do
   t=$(date +%s.%N)
-  docker stats --no-stream --format '{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}' $(docker ps -q --filter "label=com.docker.compose.project=$project") \
-    | sed "s/^/$t\t/" >> "$out/docker-stats.tsv"
+  if [[ "$driver_memory" == 1 ]]; then sample_driver_memory; fi
+  ids=$(docker ps -q --filter "label=com.docker.compose.project=$project")
+  if [[ -n "$ids" ]]; then
+    docker stats --no-stream --format '{{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}' $ids \
+      | sed "s/^/$t\t/" >> "$out/docker-stats.tsv"
+  fi
   echo -e "$t\t$(cut -d' ' -f1-3 /proc/loadavg | tr ' ' '\t')" >> "$out/host-load.tsv"
   if [[ -n "$owner" ]]; then
     # Buffer the bounded response so a failed query cannot publish a valid tick.

@@ -52,9 +52,12 @@ def local_resource_plan(selected):
                 'liveResources': LOCAL_RESOURCES['liveResources']}
     return {'resources': required,
             'allocationBreakdown': {
-                'basis': 'selected allocation ceiling; conservative concurrent upper bound',
+                'basis': ('selected allocation ceiling; driver memory accounted at its reservation'
+                          if resources.driver_memory_request(selected) else
+                          'selected allocation ceiling; conservative concurrent upper bound'),
                 'sutAndOneoffs': sut,
-                'driverK6': {'millicpus': driver.cpu, 'memoryBytes': driver.memory},
+                'driverK6': (dict(selected['driver']) if resources.driver_memory_request(selected)
+                             else {'millicpus': driver.cpu, 'memoryBytes': driver.memory}),
                 'hostV8': {'heapMiB': heap},
                 'hostRss': 'SEPARATELY_OBSERVED_NOT_HEAP_BOUNDED',
                 'generatorHeadroom': 'UNMEASURED_UNLESS_RETAINED'},

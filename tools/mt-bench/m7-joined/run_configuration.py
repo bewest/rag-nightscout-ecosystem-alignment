@@ -47,14 +47,21 @@ def validate_prepare(args):
     return cadence
 
 
+def resource_projection(resources, profile):
+    if profile is None:
+        return None
+    return {'profile': profile, 'millicpus': resources.cpu_ceiling(profile),
+            'memoryBytes': resources.memory_ceiling(profile),
+            **({'standalone': {'k6': resources.driver_record(profile)}}
+               if resources.driver_memory_request(profile) else {})}
+
+
 def from_args(args, instrument):
     import adapter as a
     # This is semantic input, independent of transport paths and observed limits.
     cadence = validate_prepare(args)
     profile = a.selected_resources_profile(args)
-    resources = None if profile is None else {
-        'profile': profile, 'millicpus': a.diagnostic_resources.cpu_ceiling(profile),
-        'memoryBytes': a.diagnostic_resources.memory_ceiling(profile)}
+    resources = resource_projection(a.diagnostic_resources, profile)
     return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **a.preload_convergence.option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **a.node_observation.option(args), **a.api_warm_cause.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
             'imageId': args.image_id or args.image, 'instrument': instrument,
             'postgresImageId': args.postgres_image, 'profile': args.profile,
@@ -70,9 +77,7 @@ def from_args(args, instrument):
 def from_manifest(m):
     import adapter as a
     profile = m.get('diagnosticResources', {}).get('profile')
-    resources = None if profile is None else {'profile': profile,
-        'millicpus': a.diagnostic_resources.cpu_ceiling(profile),
-        'memoryBytes': a.diagnostic_resources.memory_ceiling(profile)}
+    resources = resource_projection(a.diagnostic_resources, profile)
     node = m.get('nodeObservation')
     warm = m.get('apiWarmCause')
     return {**({'staticBuildReceiptSha256': m['staticBuildReceiptSha256']} if m.get('staticBuildReceiptSha256') else {}),
@@ -127,6 +132,9 @@ def remote_projection(config, overlay, source_acceptance=None):
         sys.path[:]=previous
     require(config['workSeconds'] is not None, 'M7_REMOTE_TO_COMPLETION_UNSUPPORTED')
     result = resolve(config,source_acceptance); r = result['configuration']
+    resources = (r.get('resources') or {}).get('profile')
+    require(not a.diagnostic_resources.driver_memory_request(resources),
+            'M7_CONFIG_REMOTE_DRIVER_MEMORY_RESERVATION_UNSUPPORTED')
     import primer_options
     require('primerMaxTenants' not in r and not primer_options.requires_extended(primer_options.from_manifest(r)),
             'M7_REMOTE_PRIMER_OPTIONS_UNSUPPORTED')
