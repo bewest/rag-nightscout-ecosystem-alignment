@@ -744,6 +744,7 @@ def session_observe(directory, owner, name, config_file, history_file):
         ob = root/'observations'/name
         require(not ob.exists(), 'M7_SESSION_OBSERVATION_EXISTS')
         ob.mkdir(mode=0o700)
+        entry_memory = point_results.available_memory()
         write(ob/'config.json',config)
         write(ob/'history.json',{'declared':history, 'runtime':'REUSED',
             'elapsedSessionSeconds':time.time()-session['startedAt'],
@@ -791,7 +792,8 @@ def session_observe(directory, owner, name, config_file, history_file):
                 'cleanupOwner':session['owner'],'stopWorkAt':session['stopWorkAt'],
                 'capacityAcceptance':'NOT_GRANTED','runtime':'REUSED',
                 'writeEffects':'UNCERTAIN after failure; inspect originals before another scenario' if failure else 'Retained; never reset'}
-            write(ob/'result.json',result)
+            result['memAvailableAtEntryBytes'] = entry_memory
+            point_results.publish_compose(ob, result, cleanup={'status':'DEFERRED_TO_SESSION_CLOSE'})
             auto_catalog(ob, write)
             if failure and failure.get('errorType') in ('KeyboardInterrupt','SystemExit'):
                 session_close(root,session['owner'])
