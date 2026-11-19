@@ -22,6 +22,31 @@ class RestAlongsideClinicalStall(unittest.TestCase):
         row.update(ready=False,code=r.CODE,jobs=dict.fromkeys(p.JOB_FLAGS,False));row['jobs']['running']=True
         row['progress'].update(completedAcquisitions=1,failedCompletions=0,lastCompletedAgeMs=41175)
         return frame
+    def test_first_acquisition_stall_keeps_fail_without_completion_credit(self):
+        # The second local 1000 point retained this source-reported debt
+        # before the tenant's first acquisition completed. No completed
+        # position or completion age may be invented to collect REST.
+        for running in (True,False):
+            frame=self.frame();row=frame['view']['tenants'][0]
+            row['jobs']['running']=running
+            row['progress'].update(completedAcquisitions=0,completedTimeCycles=0,failedCompletions=0,lastCompletedAgeMs=None)
+            m=self.manifest()
+            with tempfile.TemporaryDirectory() as tmp:
+                d=Path(tmp);a.write(d/'tenants.private.json',[{'id':A},{'id':B}])
+                with patch.object(a,'progress_services',return_value=['evaluator']),patch.object(a,'progress_fetch',return_value=json.dumps(frame)),patch.object(a.time,'sleep'):
+                    finding=a.readiness(d,m)
+                self.assertTrue(r.result(finding))
+                self.assertEqual(finding['clinicalVerdict'],'FAIL')
+                self.assertEqual(finding['capacityAcceptance'],'NOT_GRANTED')
+                self.assertTrue(r.permitted(a,d,m))
+            with self.assertRaisesRegex(p.Refused,'ERROR'):
+                p.round_view(['evaluator'],[A,B],lambda *_:json.dumps(frame),warming=True,allow_unavailable=True)
+            for change in (lambda f:f['view']['tenants'][0].update(admitted=False),
+                           lambda f:f['view']['tenants'][0].update(code='EVALUATOR_RESTORE_CHANGED'),
+                           lambda f:f['view']['tenants'][0]['jobs'].update(running='true')):
+                broken=copy.deepcopy(frame);change(broken)
+                with self.assertRaises(p.Refused):
+                    p.round_view(['evaluator'],[A,B],lambda *_:json.dumps(broken),warming=True,allow_unavailable=True,allow_clinical_stall=True)
     def test_real_readiness_retains_clinical_fail_and_allows_only_discovery(self):
         frame=self.frame();m=self.manifest()
         with tempfile.TemporaryDirectory() as tmp:

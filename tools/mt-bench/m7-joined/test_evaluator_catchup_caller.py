@@ -206,10 +206,10 @@ class Caller(unittest.TestCase):
         self.assertLess(events.index('after-reconnect'), events.index('tail'))
         self.assertEqual(record.value['strictChecks']['load']['code'], 'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
 
-    def test_explicit_discovery_without_restart_selection_only(self):
+    def test_discovery_without_restart_selects_mandatory_catchup(self):
         m = {'profile': 'pgstream-sample', 'completionContract': 'evaluator-work-v2', 'runPurpose': 'discovery',
              'evaluatorOpportunities': 'received-input-v1', 'cadence': {'restart': False}}
-        c.select(argparse.Namespace(), m); self.assertNotIn('evaluatorCatchup', m)
+        c.select(argparse.Namespace(), m); self.assertEqual(m['evaluatorCatchup'], 'fixed-target-v1')
         c.select(argparse.Namespace(evaluator_catchup='fixed-target-v1'), m)
         for bad in [{**m, 'runPurpose': 'acceptance'}, {**m, 'cadence': {'restart': True}}]:
             with self.assertRaisesRegex(Exception, 'DRAIN_PROFILE'):

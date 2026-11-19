@@ -388,4 +388,7 @@ def clinical_stall(row):
     Job flags describe an observation, not the clinical result. The separate
     discovery REST path retains this FAIL while collecting independent work.
     """
-    return row.get('admitted') is True and row.get('ready') is False and row.get('code')=='EVALUATOR_CLINICAL_PROGRESS_STALLED' and row.get('alert') is None and job_state(row.get('jobState')) and row.get('completedAcquisitions',0)>0 and row.get('lastCompletedAgeMs') is not None
+    # A source-reported stall can predate the first completed acquisition.
+    # Completion counts and ages remain validated by the caller; they earn
+    # no clinical credit merely because independent REST is observable.
+    return row.get('admitted') is True and row.get('ready') is False and row.get('code')=='EVALUATOR_CLINICAL_PROGRESS_STALLED' and row.get('alert') is None and job_state(row.get('jobState'))
