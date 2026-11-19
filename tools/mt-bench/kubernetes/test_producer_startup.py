@@ -11,12 +11,24 @@ from types import SimpleNamespace
 import unittest
 
 import producer_startup as startup
+import scheduling
 from primer_progress import ProgressWindow
 import application_topology
 import frozen
 
 
 class Startup(unittest.TestCase):
+    def test_scheduler_refusal_requires_the_observed_pod_identity(self):
+        pod = {'metadata':{'name':'pgstream-pod'}, 'status':{'phase':'Pending', 'conditions':[
+            {'type':'PodScheduled','status':'False','reason':'Unschedulable'}]}}
+        self.assertEqual(scheduling.outcome(pod)['placement'], 'UNMEASURED')
+        pod['metadata']['uid'] = 'observed-uid'
+        self.assertEqual(scheduling.outcome(pod)['placement'], 'Unschedulable')
+        pod['status']['conditions'] = []
+        self.assertEqual(scheduling.outcome(pod)['placement'], 'Pending')
+        pod['spec'] = {'nodeName':'worker'}
+        self.assertEqual(scheduling.outcome(pod)['placement'], 'Scheduled')
+
     def test_role_diagnostic_keeps_only_the_source_contract(self):
         raw = b'Evaluator startup refused {"targetRole":"evaluator","checkPhase":"STREAM_STARTUP","causeCode":"UNCLASSIFIED"}'
         self.assertEqual(startup.role_diagnostics(raw), [
@@ -31,14 +43,15 @@ class Startup(unittest.TestCase):
         def attempt(window,work):
             clock=SimpleNamespace(now=0);clock.time=clock.monotonic=lambda:clock.now
             clock.sleep=lambda seconds:setattr(clock,'now',clock.now+seconds)
-            pod={'metadata':{'labels':{'nightscout.org/run-id':'run'}},'status':{'conditions':[]}}
+            pod={'metadata':{'uid':'pod','name':'cohort-0','labels':{'nightscout.org/run-id':'run'}},
+                 'spec':{'nodeName':'worker'}, 'status':{'conditions':[]}}
             observation={'uid':'pod','containers':[]};records={}
             def pods(_):
                 if clock.now>=400:pod['status']['conditions']=[{'type':'Ready','status':'True'}]
                 return [pod]
             scope={'ProgressWindow':ProgressWindow,'time':clock,'work':work,'rid':'run','step':lambda *_:None,'owned':lambda:None,'pods':pods,
                    'application_topology':application_topology,'intent':{},'frozen':frozen,
-                   'contextmanager':contextmanager,'phase_cutoff':None,
+                   'contextmanager':contextmanager,'phase_cutoff':None,'scheduling':scheduling,'subprocess':subprocess,
                    'summary':lambda _:observation,'producer_startup':startup,'put':lambda k,v:records.update({k:v})}
             exec(compile(ast.Module(body=nodes,type_ignores=[]),str(source),'exec'),scope)
             return scope,records
@@ -85,13 +98,13 @@ class Startup(unittest.TestCase):
         failed = {'uid': 'pod-id', 'name': 'pod', 'containers': [container]}
         ready = copy.deepcopy(failed)
         ready['containers'][0]['state'] = {'running': {}}
-        pod = {'metadata': {'labels': {'nightscout.org/run-id': 'run'}},
-               'status': {'conditions': [{'type': 'Ready', 'status': 'True'}]}}
+        pod = {'metadata': {'uid':'pod-id','name':'pod','labels': {'nightscout.org/run-id': 'run'}},
+               'spec': {'nodeName':'worker'}, 'status': {'conditions': [{'type': 'Ready', 'status': 'True'}]}}
         waiting = {**pod, 'status': {'conditions': []}}
         globals_ = {
             'ProgressWindow': ProgressWindow, 'application_topology': application_topology, 'intent': {}, 'frozen': frozen,
             'time': clock, 'work': 30, 'phase_cutoff': None, 'rid': 'run', 'ns': 'synthetic',
-            'producer_startup': startup, 'rpc': ['kubectl'], 'subprocess': subprocess,
+            'producer_startup': startup, 'rpc': ['kubectl'], 'subprocess': subprocess, 'scheduling': scheduling,
             'hashlib':hashlib,'os':os,'live':Path(directory.name),
             'owned': lambda: None, 'step': lambda _name: None,
             'pods': lambda _: [waiting] if clock.now < 2 else [pod],

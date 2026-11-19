@@ -14,10 +14,11 @@ import lifecycle_config
 from kube_adapter import frozen
 from primer_progress import ProgressWindow
 import producer_startup
+import scheduling
 
 
 def scope(**values):
-    values["ProgressWindow"] = ProgressWindow
+    values.update(ProgressWindow=ProgressWindow, scheduling=scheduling, subprocess=subprocess)
     source = Path(__file__).with_name('lifecycle.py')
     names = {'release_job', 'ready', 'provisioned_count'}
     body = [node for node in ast.parse(source.read_text()).body
@@ -133,7 +134,8 @@ class ProvisionProgress(unittest.TestCase):
                         if elapsed>=4:status['conditions'].append({'type':'PodScheduled','status':'True'})
                         if elapsed>=8:status['initContainerStatuses'].append({'state':{'terminated':{'exitCode':0}}})
                         if elapsed>=12:status['conditions'].append({'type':'Ready','status':'True'})
-                        return [{'metadata':{'labels':{'nightscout.org/run-id':'run'}},'status':status}]
+                        return [{'metadata':{'uid':'pod','name':name+'-xyz','labels':{'nightscout.org/run-id':'run'}},
+                                 'spec':{'nodeName':'worker'} if elapsed>=4 else {},'status':status}]
                     target=scope(time=clock,work=24,phase_cutoff=None,rid='run',owned=lambda:None,
                         pods=pods,step=lambda *_:None,summary=lambda _:{'uid':'pod','containers':[]},
                         producer_startup=producer_startup,application_topology=application_topology,
