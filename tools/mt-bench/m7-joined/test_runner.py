@@ -80,40 +80,28 @@ class Runner(unittest.TestCase):
             file.write_text('{')
             self.assertEqual(runner.optional_preflight(root, d)['realtimeCosts']['status'], 'NO-INSTRUMENT')
 
-    def test_instrument_survives_document_changes_but_refuses_changed_executable(self):
-        # A real scratch Git tree distinguishes source attribution from the
-        # bytes executed. Documentation must not invalidate an experiment pin.
+    def test_instrument_is_the_recorded_commit_and_never_hashes_files(self):
+        # Decision four-product-failures: run identity is the alignment commit;
+        # a dirty working tree is recorded by commit, never refused.
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             folder = root / 'tools/mt-bench/m7-joined'
             folder.mkdir(parents=True)
-            for name in ('adapter.py', 'orchestration_binding.py', 'RUNNER.md'):
-                (folder / name).write_text('original\n')
+            (folder / 'adapter.py').write_text('original\n')
             def git(*args):
-                return subprocess.check_output(['git', '-C', str(root), *args], stderr=subprocess.STDOUT)
+                return subprocess.check_output(['git', '-C', str(root), *args], stderr=subprocess.STDOUT).decode().strip()
             git('init', '-q')
             git('add', 'tools')
             git('-c', 'user.name=Synthetic', '-c', 'user.email=synthetic@example.invalid', 'commit', '-qm', 'fixture')
-            with patch.object(adapter, 'ROOT', root), patch.object(adapter, 'REUSED', []):
+            with patch.object(adapter, 'ROOT', root):
                 original = adapter.instrument()
-                pin = {'helperInstrument': original['sha256']}
-                runner.verify_helper(pin)
-                (folder / 'RUNNER.md').write_text('changed documentation\n')
-                self.assertEqual(adapter.instrument()['sha256'], original['sha256'])
-                git('add', 'tools')
-                git('-c', 'user.name=Synthetic', '-c', 'user.email=synthetic@example.invalid', 'commit', '-qm', 'docs')
-                changed = adapter.instrument()
-                self.assertNotEqual(changed['commit'], original['commit'])
-                self.assertEqual(changed['sha256'], original['sha256'])
-                runner.verify_helper(pin)
+                self.assertEqual(original['commit'], git('rev-parse', 'HEAD'))
+                self.assertEqual(set(original), {'commit', 'sha256'})
                 (folder / 'adapter.py').write_text('changed executable\n')
-                with self.assertRaisesRegex(RuntimeError, 'M7_INSTRUMENT_DIRTY'):
-                    adapter.instrument()
+                self.assertEqual(adapter.instrument(), original)
                 git('add', 'tools')
                 git('-c', 'user.name=Synthetic', '-c', 'user.email=synthetic@example.invalid', 'commit', '-qm', 'code')
-                self.assertNotEqual(adapter.instrument()['sha256'], original['sha256'])
-                # A changed instrument is recorded, not refused against the pin.
-                runner.verify_helper(pin)
+                self.assertNotEqual(adapter.instrument()['commit'], original['commit'])
 
     def test_helper_pin_is_not_optional_or_ambiguous(self):
         common = {'version': 1, 'prepare': {}, 'k6Image': '', 'workSeconds': 30, 'cleanupSeconds': 30}

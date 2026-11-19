@@ -6,7 +6,6 @@ from pathlib import Path
 from contract import require, discovery_api_replicas, discovery_workers
 import workload_inputs
 import role_instances
-from orchestration_binding import verified_serving
 
 CORE = 'ce96241b390cd5397d808417b353161eed83e564'
 DEPLOY = '160ca4d62002746c9b1401dc4784ba30b8543711'
@@ -102,7 +101,7 @@ def verify_config(manifest, config):
         require('socket-edge' not in config.get('services', {}), 'M7_STATIC_SELECTION_REQUIRED')
         return None
     if 'tenants' in manifest:
-        seed_service = 'primer' if verified_serving(config) else 'bootstrap'
+        seed_service = 'primer' if 'NS_DEMO_TENANTS' in config['services'].get('primer', {}).get('environment', {}) else 'bootstrap'
         require(workload_inputs.tenants(manifest['tenants'])
                 and config['services'].get(seed_service, {}).get('environment', {}).get('NS_DEMO_TENANTS') == str(manifest['tenants']),
                 'M7_STATIC_SEED_COUNT')

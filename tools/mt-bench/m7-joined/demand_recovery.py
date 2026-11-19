@@ -211,9 +211,7 @@ def run(a,d,m,out,work,record,stop_load):
             # All rendered evaluator services, and no API/realtime/foreign role.
             require(services==a.progress_services(d),'M7_DEMAND_RECOVERY_ROLE_CHANGED')
             live(future);a.assert_owned(m)
-            restart_argv=a.orchestration_binding.fixture_argv(d,['restart',*services])
-            a.orchestration_binding.fixture_mutation_preflight(d,restart_argv,a.command)
-            compose_args=a.orchestration_binding.fixture_argv(d,[])[1:]
+            compose_args=a.compose_prefix(d)[1:]
             script="const x=JSON.parse(process.argv[1]);require(process.argv[2]).restart(x).then(v=>console.log(JSON.stringify(v))).catch(e=>{console.error(e.code);process.exit(1)});"
             result['faultExercised']=True
             result['restartStartedAtMs']=int(time.time()*1000)

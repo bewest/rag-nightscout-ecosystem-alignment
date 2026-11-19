@@ -101,7 +101,7 @@ class DemandRecovery(unittest.TestCase):
     if n[0]==2:finished.set()
     return next(captures),{}
    collect.binding=BINDING
-   fake=SimpleNamespace(document=a.document,write=a.write,progress_services=Mock(side_effect=[['evaluator'],['foreign']] if broken=='roles' else None,return_value=['evaluator']),opportunity_collector=lambda *args:collect,progress_attribution=lambda m:{},_COMMAND_DEADLINE=a._COMMAND_DEADLINE,assert_owned=Mock(),progress_fetch=Mock(),orchestration_binding=SimpleNamespace(fixture_argv=lambda *args:['docker','compose','-p','owned'],fixture_mutation_preflight=Mock()),HERE=Path(tmp),remaining_seconds=a.remaining_seconds)
+   fake=SimpleNamespace(document=a.document,write=a.write,progress_services=Mock(side_effect=[['evaluator'],['foreign']] if broken=='roles' else None,return_value=['evaluator']),opportunity_collector=lambda *args:collect,progress_attribution=lambda m:{},_COMMAND_DEADLINE=a._COMMAND_DEADLINE,assert_owned=Mock(),progress_fetch=Mock(),compose_prefix=(lambda *args:['docker','compose','-p','owned']),HERE=Path(tmp),remaining_seconds=a.remaining_seconds)
    def command(*args,**kw):
     events.append('restart');self.assertFalse(finished.is_set());self.assertIn('scenario-first-iteration',(out/'k6.log').read_text())
     if broken=='no-change':raise RuntimeError('M7_RESTART_NOT_OBSERVED')

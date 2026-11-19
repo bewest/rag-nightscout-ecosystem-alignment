@@ -106,14 +106,10 @@ def clean_source_preflight(parsed):
         a.image({'pair': {'core': parsed.core_commit, 'deploy': parsed.deploy_commit},
                  'image': parsed.image, 'imageId': parsed.image_id or parsed.image})
         return
-    # Discovery builds image inputs here: check the build sources once, at build.
+    # Discovery builds image inputs from the selected commits (git archive);
+    # the checkout's HEAD and working tree are not compared.
     for role in ('core', 'deploy'):
-        repo = getattr(parsed, role + '_repo')
-        selected = a.commit(repo, getattr(parsed, role + '_commit'))
-        label = role.upper()
-        require(a.git(repo, 'rev-parse', 'HEAD') == selected, 'M7_SOURCE_' + label + '_HEAD')
-        require(not a.git(repo, 'status', '--porcelain', '--untracked-files=normal'),
-                'M7_SOURCE_' + label + '_DIRTY')
+        a.commit(getattr(parsed, role + '_repo'), getattr(parsed, role + '_commit'))
     a.prepare_image_inputs(parsed)
 
 

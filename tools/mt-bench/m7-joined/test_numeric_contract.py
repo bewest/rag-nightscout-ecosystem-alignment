@@ -84,7 +84,6 @@ load(ledger); ledger.close(); console.log(JSON.stringify(ledger.snapshot()));
         for _,_,options in plan:
             if '--wait-timeout' in options:
                 self.assertEqual(options[options.index('--wait-timeout')+1],'2400')
-                self.assertEqual(a.orchestration_binding._options('up',['--wait-timeout','2400']),['--wait-timeout','2400'])
 
     def selected(self):
         value = config()

@@ -145,58 +145,12 @@ Host inventories include container IDs/labels, image IDs, load, RAM, Docker/cont
 kernel and process names/CPU/RSS, never command arguments/environments. Only local
 Unix-socket Docker contexts are supported: host metrics must describe that daemon.
 
-### Shared Compose namespace and epoch custody
+### Compose project and cleanup
 
-`orchestration_binding.py` is the shared command boundary for existing-fixture
-upgrades and resumes. It does not schedule a run or replace the existing finite
-GO, host ownership, PID/birth checks or guard. Artifact stages import this source
-module instead of copying a `COMPOSE` shell array. The tracked instrument inventory
-requires this module. Remote source packs must retain the complete tracked
-`tools/mt-bench/m7-joined/` prefix, including this module; a prefix import and
-manifest digest check belong before any provider allocation.
-
-The command factory requires the immutable project, raw frozen Compose `name`,
-`NS_DEMO_PROJECT` and current owner record to agree. `adapter.compose` uses this
-cheap check and the frozen file hashes on every call. It renders actual Compose
-configuration only for container lifecycle mutations; private SQL and inspector
-polls do not acquire a new Docker-config measurement cost. Missing anchors refuse;
-there is no fallback to the owner record alone.
-
-Before the first effect, the integration owner:
-
-1. Uses `stamp_candidate` to add the single `org.nightscout.m7.attempt` nonce to
-   **new** candidate declarations only. Historical fixture declarations and owner
-   labels remain unchanged. A later resume can retain a prior attempt's labels
-   as its recorded original epoch; it does not recreate resources to retag them.
-2. Uses read-only `image_metadata` and `make_binding` to freeze original and
-   candidate epochs, exact source/image identities, state roots, environment and
-   Compose hashes. An absent/null Compose command is resolved from the exact
-   pinned image's OCI command, not inferred from a running container. Preserve
-   historical `configFiles` when original containers used another frozen path.
-3. Writes a unique `begin_journal` with actual full inspected original IDs. Bind
-   `binding['sha256']` and its attempt nonce into the existing root GO. The
-   supplied `authorize` callback must revalidate that authority before effects.
-4. Calls `checked_run` for Compose creation/replacement. It builds the only
-   project/env/config prefix, checks actual expanded configuration, writes intent
-   before effect, and records created IDs even when the command fails. No shell
-   namespace override is accepted. Calls `checked_ids` for exact existing
-   container start/restart/stop; these retain the recorded epoch's declaration.
-5. Calls `cleanup_recorded` from the existing guard/finally path. It inspects
-   recorded full IDs directly and validates each against its **own** epoch.
-   Discovery admits only the current attempt label plus owner, project, source,
-   config-file, creation and exact command/mount/environment proofs. Foreign or
-   unknown IDs are refused while proven owned IDs still stop. A declaration,
-   capture, log or journal-write failure is never authority for a broad project
-   stop. Cleanup preserves volumes and does not read mutable project/env/config
-   files; a metadata failure remains explicit even when owned stopping succeeds.
-
-Use the new journal API for an upgrade/resume integration; do not fall back to a
-project-wide `down` or reinterpret old containers using new candidate declarations.
-The focused `test_orchestration_binding.py` controls exercise wrong project,
-source, owner, state mount, missing/swapped attempt, original/candidate epoch,
-failed capture/stdout/journal persistence and foreign-ID refusal before effects.
-All mutation calls in those controls are injected. Actual stopped-fixture
-qualification uses only `ps`, `inspect`, image inspection and `compose config`.
+Every Compose call is `docker compose -p <project> --env-file <run>/env -f <run>/frozen.compose.json`,
+built by `adapter.compose_prefix`. The project name is unique to the run; cleanup is `down -v` on that project
+and one absence check on its label (decision `simple-run-cleanup`). The run records the alignment commit and image
+digest; no file, binding or epoch hashing precedes a Compose call (decision `four-product-failures`).
 
 ## JWT setup concurrency
 
