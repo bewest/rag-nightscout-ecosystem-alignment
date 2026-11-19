@@ -1,5 +1,6 @@
 """Publish a standard point from the runner's existing raw evidence."""
 import json
+import math
 import os
 from pathlib import Path
 
@@ -28,18 +29,51 @@ def available_memory():
     return None
 
 
+def ordinary_rates(summary, seconds, writer_lost):
+    """Time-weight configured demand and phase-tagged completions over the authored load window."""
+    rates = {'windowSeconds': seconds, 'targetRps': 'UNMEASURED', 'achievedRps': 'UNMEASURED',
+             'targetBasis': 'Sum of per-executor target RPS times active seconds, divided by the configured ordinary load window.',
+             'achievedBasis': 'Sum of ordinary completions tagged steady by each executor across all shards, divided by that same window. Includes transport failures. Excludes JWT setup and drain.'}
+    if type(seconds) is not int or seconds <= 0 or summary.get('kind') != 'm7-configured-driver-accounting':
+        return rates
+    # The configured driver already reconciles every shard and weights each
+    # scenario's fractional offer by its own authored active duration.
+    totals = summary.get('totals')
+    if isinstance(totals, dict):
+        offered = totals.get('offered')
+        steady = totals.get('steadyCompletions')
+        if type(offered) in (float, int) and math.isfinite(offered) and offered >= 0:
+            rates['targetRps'] = offered / seconds
+        if not writer_lost and type(steady) is int and steady >= 0:
+            rates['achievedRps'] = steady / seconds
+    return rates
+
+
 def load_report(load, accounting):
     gate = read(load/'outcome-gate.json')
     actors = read(load/'native-load.json')
     summary = (read(load/'driver-accounting.json') or read(load/'load-functional.json').get('configuredDriver')
                or read(load/'driver-vu-assessment.json') or {})
+    source = read(load.parent/'run.json') or read(load.parent/'owner.json')
+    cadence = summary.get('cadence') or source.get('cadence') or source.get('workload')
+    cadence = cadence if isinstance(cadence, dict) else {}
+    provisioned = source.get('tenants', 'UNMEASURED')
+    ordinary = summary.get('population', source.get('ordinaryRosterTenants', provisioned))
+    viewers = cadence.get('logicalPollingClients', 'UNMEASURED')
+    if viewers == 'UNMEASURED' and type(provisioned) is int and type(cadence.get('socketsPerTenant')) is int:
+        viewers = provisioned * cadence['socketsPerTenant']
+    lost = actors.get('writerContinuity') == 'UNMEASURED'
+    latency = gate.get('httpLatencyAllShards') or read(load/'result.json').get('httpLatencyAllShards')
     components = gate.get('components')
     components = components if isinstance(components, dict) else {}
     shards = summary.get('shards')
     by_shard = [{'byShape': shard['byScenario'], 'executorWindows': shard.get('phases', {}).get('executorWindows', {})}
                 for shard in shards or [] if isinstance(shard, dict) and isinstance(shard.get('byScenario'), dict)]
     census = [read(load/name).get('actorTransitions', []) for name in ('before.json', 'after.json')]
-    report = {'outcomeGate': gate.get('verdict', 'UNMEASURED'),
+    report = {'provisionedTenants': provisioned, 'ordinaryTenants': ordinary, 'selectedViewers': viewers,
+              'ordinaryRate': ordinary_rates(summary, cadence.get('loadSeconds', 'UNMEASURED'), lost),
+              'httpLatencyAllShardsMs': latency if isinstance(latency, dict) and not lost else 'UNMEASURED',
+              'outcomeGate': gate.get('verdict', 'UNMEASURED'),
               'components': {key: {field: row[field] for field in ('verdict', 'codes', 'witnesses') if field in row}
                              for key, row in components.items() if isinstance(row, dict)},
               'http': accounting.get('httpVerdict', 'UNMEASURED'),
@@ -48,7 +82,7 @@ def load_report(load, accounting):
               'byShard': by_shard or 'UNMEASURED',
               'actorTransitions': [event for rows in (*census, actors.get('actorTransitions', [])) for event in rows],
               'writerContinuity': actors.get('writerContinuity', 'UNMEASURED')}
-    if actors.get('writerContinuity') == 'UNMEASURED':
+    if lost:
         report.update(terminalActorOfferedWork=report['offeredWork'], offeredWork='UNMEASURED',
                       countScope='terminal writer only')
     return report
