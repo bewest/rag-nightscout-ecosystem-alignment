@@ -24,9 +24,11 @@ def selected(c):
     if value is None:
         return None
     k.need(c.get('tier','discovery') == 'discovery' and isinstance(value,dict)
-           and set(value) == {'version','mode','image','shellContract','resources','exporterResources',
+           and set(value) - {'inputCodec'} == {'version','mode','image','shellContract','resources','exporterResources',
                              'nodeName','deadlineSeconds','imagePullSecrets'}
            and value.get('version') == 1 and value.get('mode') == 'job-v1', 'NATIVE_LOAD_SELECTION')
+    import native_input
+    k.need(value.get('inputCodec', 'raw-v1') in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
     k.need(isinstance(value['nodeName'],str) and k.NAME.fullmatch(value['nodeName'])
            and type(value['deadlineSeconds']) is int and value['deadlineSeconds'] > 1
            and isinstance(value['imagePullSecrets'],list)
@@ -82,7 +84,8 @@ def declarations(c):
         path=Path(scratch)/'workload.js';workload.generate(k.ROOT,path)
         job,_,_=native_load.package(c,base_job(c),path.read_bytes(),[], planning=True,
              runid=stage_runid(c),seconds=s['deadlineSeconds'],run_start_ms=1,setup_seconds=1,
-             exporter_resources=s['exporterResources'],shell_contract=s['shellContract'])
+             exporter_resources=s['exporterResources'],shell_contract=s['shellContract'],
+             input_codec=s.get('inputCodec','raw-v1'))
     job['spec']['suspend']=True
     meta={'namespace':c['namespace'],'labels':{c['ownerLabel']:c['runId']}}
     return [job,
@@ -211,7 +214,8 @@ def run(d,out,c,objects,client,tenants,*,runid,setup,failures):
     return native_load.run(Kube(c,client),c,base_job(c),(d/'workload.js').read_bytes(),tenants,out,
         predeclared={'uid':baseline['objects'][JOB]['uid']},failures=failures,runid=runid,
         seconds=s['deadlineSeconds'],run_start_ms=int(time.time()*1000),setup_seconds=setup,
-        exporter_resources=s['exporterResources'],shell_contract=s['shellContract'])
+        exporter_resources=s['exporterResources'],shell_contract=s['shellContract'],
+        input_codec=s.get('inputCodec','raw-v1'))
 
 
 def prepare_case(case, selection):

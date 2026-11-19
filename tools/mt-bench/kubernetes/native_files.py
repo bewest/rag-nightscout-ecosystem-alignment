@@ -81,7 +81,6 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     # This is disposable local Pod storage; requests/limits and the full new Pod
     # must still enter the operating owner's fit/quota admission.
     pod['volumes'].append({'name': 'artifacts', 'emptyDir': {'sizeLimit': str(sum(files.values()) + 4096)}})
-    k.need(len(json.dumps(secret).encode()) <= n.MAX_INPUT_BYTES, 'NATIVE_LOAD_INPUT_SECRET_BOUND', 'UNMEASURED')
     receipt.update(captureMode='owned-exec-files', files=files, fileLimitBytes=limit,
                    shellContract=shell_contract, driverWrapperSha256=n.sha(wrapper),
                    adaptedSha256=n.sha(wrapper), jobSha256=k.hashed(job), driverManifest=manifest,

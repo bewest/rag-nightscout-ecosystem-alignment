@@ -6,6 +6,7 @@ cached image's extracted binaries, never a Kubernetes or Docker actor.
 import copy
 import gzip
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import base64
 import json
 import os
 from pathlib import Path
@@ -120,6 +121,14 @@ class NativeFiles(unittest.TestCase):
     @unittest.skipUnless(os.environ.get('NS_NATIVE_K6_IMAGE_BINARY') and os.environ.get('NS_NATIVE_IMAGE_BUSYBOX')
                          and os.environ.get('NS_NATIVE_IMAGE_LOADER'), 'selected image binaries required')
     def test_real_seven_shape_scheduling_wrapper_raw_csv_and_existing_reducer(self):
+        self.real_scheduling_control('raw-v1')
+
+    @unittest.skipUnless(os.environ.get('NS_NATIVE_K6_IMAGE_BINARY') and os.environ.get('NS_NATIVE_IMAGE_BUSYBOX')
+                         and os.environ.get('NS_NATIVE_IMAGE_LOADER'), 'selected image binaries required')
+    def test_gzip_roster_preserves_seven_shape_scheduling_csv_and_existing_reducer(self):
+        self.real_scheduling_control('gzip-v1')
+
+    def real_scheduling_control(self, input_codec):
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *_): pass
             def do_GET(self):
@@ -138,11 +147,13 @@ class NativeFiles(unittest.TestCase):
         c, job, options = configured()
         with tempfile.TemporaryDirectory() as scratch:
             root = Path(scratch); inputs = root/'inputs'; inputs.mkdir(); output = root/'native'; output.mkdir()
+            roster = root/'roster'; roster.mkdir()
             stage = root/'load'; stage.mkdir()
             workload.generate(k.ROOT, root/'workload.js')
             script = (root/'workload.js').read_bytes()
             env = dict(os.environ, NS_NATIVE_OUTPUT=str(output), NS_NATIVE_EXPORT_CONFIG=str(inputs/'export.json'))
             exporter_script = k.HERE/'native-artifacts.cjs'
+            node = os.environ.get('NS_NATIVE_NODE_IMAGE_BINARY', 'node')
             class Kube:
                 def __init__(self): self.created = []; self.k6 = self.exporter = None; self.acked = False
                 def call(self, args, **kw):
@@ -150,24 +161,30 @@ class NativeFiles(unittest.TestCase):
                         value = json.loads(kw['data']); self.created.append(value)
                         if value['kind'] == 'Secret':
                             for name, data in value['stringData'].items(): (inputs/name).write_text(data)
+                            for name, data in value.get('data', {}).items():
+                                (inputs/name).write_bytes(base64.b64decode(data, validate=True))
                         else:
+                            for actor in value['spec']['template']['spec'].get('initContainers', []):
+                                if actor['name'] == 'unpack-roster':
+                                    command = [node, k.HERE/'native-input-unpack.cjs', inputs, roster, str(c['tenants'])]
+                                    subprocess.run(command, check=True, capture_output=True, timeout=10)
                             main = value['spec']['template']['spec']['containers'][0]
                             selected = {row['name']:row['value'] for row in main['env']}
                             selected.update(BASE_URL='http://127.0.0.1:'+str(server.server_port),
-                                            TENANTS_FILE=str(inputs/'tenants.json'))
+                                            TENANTS_FILE=str((roster if input_codec == 'gzip-v1' else inputs)/'tenants.json'))
                             command = main['command'][2].replace('/usr/bin/k6', os.environ['NS_NATIVE_K6_IMAGE_BINARY'])
                             command = command.replace('/out/', str(output)+'/').replace('/inputs/', str(inputs)+'/')
                             # Disable the local REST listener; the fixture only needs its loopback HTTP server.
                             command = command.replace('--address=127.0.0.1:0', '--address=')
                             self.k6 = subprocess.Popen([os.environ['NS_NATIVE_IMAGE_LOADER'], os.environ['NS_NATIVE_IMAGE_BUSYBOX'],
                                                         'sh', '-c', command], env=dict(env, **selected))
-                            self.exporter = subprocess.Popen(['node', exporter_script, 'hold'], env=env,
+                            self.exporter = subprocess.Popen([node, exporter_script, 'hold'], env=env,
                                                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         value = copy.deepcopy(value); value['metadata']['uid'] = 'owned-job'
                         return json.dumps(value)
                     if args[0] == 'exec':
                         mode = args[args.index('--')+3:]
-                        result = subprocess.run(['node', exporter_script, *mode], env=env,
+                        result = subprocess.run([node, exporter_script, *mode], env=env,
                                                 capture_output=True, timeout=kw.get('timeout', 10))
                         if result.returncode: raise RuntimeError(result.stderr.decode())
                         if mode[0] == 'ack': self.acked = True
@@ -206,7 +223,7 @@ class NativeFiles(unittest.TestCase):
             kube = Kube()
             try:
                 try:
-                    receipt = n.run(kube,c,job,script,TENANTS,stage,**options)
+                    receipt = n.run(kube,c,job,script,TENANTS,stage,input_codec=input_codec,**options)
                 except Exception:
                     if kube.exporter and kube.exporter.poll() is not None:
                         print('EXPORTER_CONTROL', kube.exporter.stderr.read().decode())

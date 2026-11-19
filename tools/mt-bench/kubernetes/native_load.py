@@ -125,7 +125,7 @@ def decode(raw, runid, source_sha):
 
 
 def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seconds,
-            exporter_resources=None, shell_contract=None, planning=False):
+            exporter_resources=None, shell_contract=None, planning=False, input_codec='raw-v1'):
     """Adapt the existing lane K Job. The caller must account the returned Pod.
 
     This does not render a second deployment or alter application resources.
@@ -133,6 +133,8 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
     lane K's renderer. Service addressing replaces only the load actor's URL.
     """
     w = selection(c)
+    import native_input
+    k.need(input_codec in native_input.CODECS, 'NATIVE_LOAD_INPUT_CODEC')
     k.need(k.NAME.fullmatch(c['namespace']) and c['namespace'].startswith('ns-synth-')
            and re.fullmatch(r'[a-z0-9-]{1,100}', runid), 'NATIVE_LOAD_SCOPE')
     k.need(type(seconds) is int and seconds > 0 and type(run_start_ms) is int
@@ -210,8 +212,6 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
               'metadata': {'name': 'ns-k6-inputs', 'namespace': c['namespace'],
                            'labels': {c['ownerLabel']: c['runId']}},
               'stringData': {'workload.js': wrapped.decode(), 'tenants.json': tenant_text}}
-    k.need(len(json.dumps(inputs).encode()) <= MAX_INPUT_BYTES,
-           'NATIVE_LOAD_INPUT_SECRET_BOUND', 'UNMEASURED')
     receipt = {'kind': 'm7-kubernetes-k6-job-v1', 'runId': runid, 'fixtureRunId': c['runId'],
                'namespace': c['namespace'], 'pins': c['pins'], 'sourceSha256': sha(script),
                'adaptedSha256': sha(wrapped), 'rosterSha256': sha(tenant_text.encode()),
@@ -223,8 +223,12 @@ def package(c, job, script, tenants, *, runid, seconds, run_start_ms, setup_seco
                              'all-writer post-stop WAL/ACK coverage UNMEASURED']}
     if 'driverPlan' in w:
         import native_files
-        return native_files.decorate(c, rendered, inputs, receipt, script,
-                                     exporter_resources=exporter_resources, shell_contract=shell_contract)
+        rendered, inputs, receipt = native_files.decorate(c, rendered, inputs, receipt, script,
+                                  exporter_resources=exporter_resources, shell_contract=shell_contract)
+    rendered, inputs, receipt = native_input.decorate(c, rendered, inputs, receipt,
+                                   codec=input_codec, resources=exporter_resources)
+    k.need(len(json.dumps(inputs).encode()) <= MAX_INPUT_BYTES,
+           'NATIVE_LOAD_INPUT_SECRET_BOUND', 'UNMEASURED')
     return rendered, inputs, receipt
 
 

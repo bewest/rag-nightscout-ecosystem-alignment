@@ -831,8 +831,37 @@ k6 `image`, measured `shellContract`, explicit `resources` and
 `exporterResources`, existing `nodeName`, `deadlineSeconds`, and
 `imagePullSecrets`. No resource default is chosen. The Job deadline must cover
 the authored setup, load, graceful stop and export margin, and still fit the
-remaining work budget at launch. A large roster that exceeds the bounded input
-Secret explicitly refuses; 10,000-tenant input transport is not qualified.
+remaining work budget at launch. Optional `inputCodec` selects `raw-v1` (the
+unchanged default) or `gzip-v1`. Raw mode explicitly refuses a large roster that
+exceeds the 900 KiB serialized input Secret bound.
+
+`gzip-v1` transports the exact synthetic DATA `id`/`host`/`token` JSON, without
+changing the workload or using a summary fallback. It caps the roster at 10,000
+rows, decompressed bytes at 4 MiB and gzip bytes at 600 KiB; the complete Secret,
+including base64 and script overhead, must still fit 900 KiB. The immutable
+Secret binds both byte lengths, both SHA256 hashes and the exact tenant count.
+A tokenless `unpack-roster` init container uses the pinned application image's
+Node builtins. It checks bounds before reading/inflating/parsing, uses a hard
+inflate output limit, verifies hashes/count/unique synthetic IDs, and writes
+the original bytes once with mode 0400. Changed, truncated, ambiguous or
+overbound input refuses before k6 starts. It neither retries the workload nor
+rewrites a roster that already exists.
+
+The init phase follows the existing namespace waiter, reuses the explicit
+`exporterResources` request/limit envelope and enters the same complete Pod
+quota/fit calculation. Its memory request must be at least 64 MiB and ephemeral
+storage request at least 4 MiB. A disk-backed `roster` emptyDir is capped at
+4 MiB, writable only by unpacking and mounted read-only in k6 as
+`TENANTS_FILE=/roster/tenants.json`. The unpacker, k6 and exporter have no API
+token mount; only the original waiter receives its scoped projected token.
+Planning and launch declare the same Pod regardless of roster bytes. A codec
+change requires a fresh uncaptured case and complete current admission.
+
+Offline controls reproduce exact 10,000-row restoration with synthetic
+27-character DATA tokens, the original cached k6 workload SharedArray decoder,
+and small raw/gzip seven-shape scheduling CSV/reducer runs. These establish
+input transport only. Live native compatibility, clinical/product outcomes and
+operating capacity remain UNMEASURED; every existing oracle remains required.
 
 The offline preparer appends only a suspended test Job and namespace-local
 waiter RBAC. It keeps every application workload unchanged, adjusts the exact
@@ -864,12 +893,16 @@ belong to the current binding and must cover the complete owned point. Keep
 owned namespace/trust cleanup even after Job completion. Fresh native live
 compatibility and capacity qualification remain UNMEASURED.
 
-Focused offline controls: `python3 -B -m unittest -v test_native_load test_native_files test_native_join` from this
+Focused offline controls: `python3 -B -m unittest -v test_native_input test_native_load test_native_files test_native_join` from this
 directory. Set `NS_NATIVE_K6_TEST_BINARY` to an existing pinned local k6 binary
 to execute the real summary/event export control; it opens no network listener.
 Set `NS_NATIVE_K6_IMAGE_BINARY`, `NS_NATIVE_IMAGE_BUSYBOX` and
 `NS_NATIVE_IMAGE_LOADER` to the inspected cached image's extracted binaries for
 the real configured-wrapper/CSV and hard-file-limit controls. The former uses a
 synthetic loopback HTTP fixture and the original accounting reducer.
+Set `NS_NATIVE_NODE_IMAGE_BINARY` to the inspected application image's Node
+binary (or its own loader/library wrapper) to check restore/export with that
+runtime. The 10,000-row decoder control imports the original driver/workload and
+checks its original named SharedArray; it issues no HTTP requests or setup.
 These controls qualify the adapter boundary, not Kubernetes/application behavior
 or capacity.
