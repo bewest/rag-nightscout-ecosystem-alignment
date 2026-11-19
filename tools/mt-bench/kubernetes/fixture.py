@@ -1,114 +1,88 @@
-"""Prepare disposable synthetic DATA credentials through the deployment's own lab client."""
-from contextlib import contextmanager
+"""Collect synthetic DATA credentials using the rendered deployment and its private Services."""
 import json
-import os
+import math
 from pathlib import Path
-import re
 import subprocess
 import time
 
 
-@contextmanager
-def forward(kubectl, target, port, log, deadline):
-    with Path(log).open('xb') as stream:
-        process = subprocess.Popen([*kubectl, 'port-forward', '--address', '127.0.0.1',
-                                    target, ':' + str(port)], stdout=stream, stderr=subprocess.STDOUT)
-        try:
-            while time.time() < deadline and process.poll() is None:
-                match = re.search(r'Forwarding from 127\.0\.0\.1:(\d+) -> ' + str(port),
-                                  Path(log).read_text(errors='replace'))
-                if match:
-                    yield 'http://127.0.0.1:' + match[1]
-                    return
-                time.sleep(.1)
-            raise RuntimeError('K8S_FIXTURE_FORWARD_UNAVAILABLE')
-        finally:
-            if process.poll() is None:
-                process.terminate()
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait()
+def reader_pod(job, inventory, location, seconds):
+    template = job['spec']['template']
+    spec = template['spec']
+    primer, = spec['containers']
+    state = next(v for v in spec['volumes'] if v['name'] == 'client-state')
+    results = inventory['results']['primer']
+    if results['file'] != 'tenants.json' or primer['name'] != 'primer':
+        raise RuntimeError('K8S_FIXTURE_RESULTS_CHANGED')
+    reader = {key: primer[key] for key in ('image', 'imagePullPolicy', 'securityContext', 'resources')}
+    reader.update(name='reader', command=['node', '-e', 'setTimeout(() => {}, 120000)'],
+                  volumeMounts=[{'name': 'client-state', 'mountPath': '/results', 'readOnly': True}])
+    pod = {'apiVersion': 'v1', 'kind': 'Pod',
+           'metadata': {**template['metadata'], 'generateName': 'fixture-reader-', 'namespace': inventory['namespace']},
+           'spec': {**spec, 'containers': [reader], 'activeDeadlineSeconds': seconds}}
+    if location == 'claim':
+        claim = results.get('claim')
+        if not claim or state.get('persistentVolumeClaim', {}).get('claimName') != claim:
+            raise RuntimeError('K8S_FIXTURE_CLAIM_REQUIRED')
+        # Restores read the already commissioned roster without seeding again.
+        pod['spec'].pop('initContainers', None)
+        pod['spec']['volumes'] = [{'name': 'client-state', 'persistentVolumeClaim': {'claimName': claim, 'readOnly': True}}]
+    elif location == 'pod' and 'emptyDir' in state and not results.get('claim'):
+        # A disposable results volume lives for one Pod. Kubernetes orders the
+        # shipping primer before the DATA reader and owns both containers' cleanup.
+        pod['spec']['initContainers'] = [*spec.get('initContainers', []), primer]
+    else:
+        raise RuntimeError('K8S_FIXTURE_STORAGE_MISMATCH')
+    return pod
 
 
-def controller_roster(kubectl, image, core, state, count, concurrency, cutoff):
+def read_roster(kubectl, job, inventory, directory, count, cutoff, location):
     from contract import tenant_projection
-    import adapter
-    state.mkdir(mode=0o700, parents=True, exist_ok=False)
-    with forward(kubectl, 'service/admin', 1342, state/'admin-forward.log', cutoff) as admin, \
-         forward(kubectl, 'service/api', 1337, state/'api-forward.log', cutoff) as api:
-        # The public owner consumer id is part of the shipping role contract.
-        consumer = subprocess.check_output(
-            ['node', '-p', "require('./lib/server/serve/deployment-settings').IDENTITY.managementConsumer"],
-            cwd=core, text=True, timeout=10).strip()
-        config = state/'config.json'
-        adapter.write(config, dict(version=1, adminOrigin=admin, apiOrigin=api, ownerConsumer=consumer))
-        client = ['docker', 'run', '--rm', '--pull=never', '--network=host', '--user', f'{os.getuid()}:{os.getgid()}',
-                  '--mount', 'type=bind,src='+str(state)+',dst=/run/ns-primer', '--workdir', '/opt/app',
-                  '--entrypoint', 'node']
-        for args in (['provision', '--tenant-count', str(count)], ['prime', '--concurrency', str(concurrency)]):
-            seconds = cutoff - time.time()
-            if seconds <= 0:
-                raise RuntimeError('K8S_FIXTURE_DEADLINE')
-            cidfile = state/(args[0]+'.cid')
-            try:
-                with (state/(args[0]+'.log')).open('xb') as log:
-                    subprocess.run([*client,'--cidfile',cidfile,image,'deploy/multitenant/prime.js',*args],
-                                   stdout=log, stderr=log, check=True, timeout=seconds)
-            finally:
-                if cidfile.is_file():
-                    cid = cidfile.read_text().strip()
-                    if re.fullmatch('[0-9a-f]{64}', cid):
-                        subprocess.run(['docker','rm','--force',cid], capture_output=True, timeout=12)
-    return tenant_projection(json.loads((state/'tenants.json').read_bytes()), count)
+    directory.mkdir(mode=0o700, parents=True, exist_ok=False)
 
-
-def claim_roster(kubectl, spec, inventory, state, count, cutoff):
-    """Mount the existing results claim read-only. Transfer only DATA projection through exec."""
-    state.mkdir(mode=0o700, parents=True, exist_ok=False)
-    info = inventory['results']['primer']
-    claim = info.get('claim')
-    if not claim or info['file'] != 'tenants.json':
-        raise RuntimeError('K8S_FIXTURE_CLAIM_REQUIRED')
-    actor = {'name':'reader', 'image':inventory['images']['app'],
-             'command':['node','-e','setTimeout(() => {}, 120000)'],
-             'volumeMounts':[{'name':'results','mountPath':'/results','readOnly':True}],
-             'securityContext':{'allowPrivilegeEscalation':False,'readOnlyRootFilesystem':True,
-                                'capabilities':{'drop':['ALL']}}}
-    # Reuse the lab client's scheduling and resource settings.
-    primer = spec['spec']['template']['spec']
-    actor['resources'] = next(c['resources'] for c in primer['containers'] if c['name']=='primer')
-    pod = {'apiVersion':'v1','kind':'Pod',
-           'metadata':{'name':'fixture-reader','namespace':inventory['namespace'],'labels':inventory['ownership']['label']},
-           'spec':{key:primer[key] for key in ('imagePullSecrets','tolerations','securityContext') if key in primer}}
-    pod['spec'].update(restartPolicy='Never',automountServiceAccountToken=False,activeDeadlineSeconds=120,
-                       containers=[actor],volumes=[{'name':'results','persistentVolumeClaim':{'claimName':claim,'readOnly':True}}])
     def run(args, **kwargs):
         remaining = cutoff - time.time()
         if remaining <= 0:
             raise RuntimeError('K8S_FIXTURE_DEADLINE')
-        return subprocess.run([*kubectl,*args], check=True, timeout=min(remaining, 125), capture_output=True, **kwargs)
-    run(['create','-f','-'], input=json.dumps(pod).encode())
+        return subprocess.run([*kubectl, *args], check=True, capture_output=True, timeout=min(remaining, 30), **kwargs)
+
+    seconds = min(job['spec']['activeDeadlineSeconds'], max(1, math.ceil(cutoff - time.time())))
+    pod = reader_pod(job, inventory, location, seconds)
+    created = json.loads(run(['create', '-f', '-', '-o', 'json'], input=json.dumps(pod).encode()).stdout)
+    name = created['metadata']['name']
     try:
-        run(['wait','--for=condition=Ready','--timeout=110s','pod/fixture-reader'])
-        js = "const r=require('/results/tenants.json');console.log(JSON.stringify(r.tenants.map(t=>({id:t.id,host:t.host,token:t.dataToken}))));"
-        rows = json.loads(run(['exec','fixture-reader','--','node','-e',js]).stdout)
-        if len(rows) != count:
-            raise RuntimeError('K8S_FIXTURE_ROSTER_CHANGED')
+        while True:
+            observed = json.loads(run(['get', 'pod', name, '-o', 'json']).stdout)
+            if observed['metadata']['uid'] != created['metadata']['uid']:
+                raise RuntimeError('K8S_FIXTURE_POD_CHANGED')
+            status = observed.get('status', {})
+            if any(c['type'] == 'Ready' and c['status'] == 'True' for c in status.get('conditions', [])):
+                break
+            if status.get('phase') in ('Failed', 'Succeeded'):
+                raise RuntimeError('K8S_FIXTURE_POD_TERMINATED')
+            time.sleep(1)
+        # Keep management credentials inside the Pod, including on failure.
+        project = """const r = require('/results/tenants.json');
+const tenants = r.tenants.map(({id, host, dataToken}) => ({id, host, dataToken}));
+process.stdout.write(JSON.stringify({version: r.version, tenants}));"""
+        result = run(['exec', name, '-c', 'reader', '--', 'node', '-e', project])
+        rows = tenant_projection(json.loads(result.stdout), count)
+        if location == 'pod':
+            return rows, 'fresh'
         claims = inventory['storage'].get('claims', {})
-        parts = ('postgres','vault','provisionState','primerResults')
+        parts = ('postgres', 'vault', 'provisionState', 'primerResults')
         reuse = 'UNMEASURED'
         if all(claims.get(part) for part in parts):
-            response = json.loads(run(['get','pvc',*(claims[part] for part in parts),'-o','json']).stdout)
+            response = json.loads(run(['get', 'pvc', *(claims[part] for part in parts), '-o', 'json']).stdout)
             volumes = response['items']
-            if len(volumes) == len(parts) and all(v.get('status',{}).get('phase') == 'Bound' and
-                    (v['spec'].get('dataSource') or {}).get('kind') in ('VolumeSnapshot','PersistentVolumeClaim') for v in volumes):
+            if len(volumes) == len(parts) and all(v.get('status', {}).get('phase') == 'Bound' and
+                    (v['spec'].get('dataSource') or {}).get('kind') in ('VolumeSnapshot', 'PersistentVolumeClaim') for v in volumes):
                 reuse = 'reused'
         return rows, reuse
     finally:
-        # The ordinary namespace cleanup also owns this read-only client.
-        subprocess.run([*kubectl,'delete','pod','fixture-reader','--ignore-not-found','--wait','--timeout=15s'],
+        # Kubernetes allocated this name for this reader. The owned namespace
+        # cleanup remains the backstop if the API is unavailable.
+        subprocess.run([*kubectl, 'delete', 'pod', name, '--ignore-not-found', '--wait', '--timeout=15s'],
                        timeout=18, capture_output=True)
 
 
@@ -134,7 +108,7 @@ def existing(c, inventory, objects, directory, cutoff):
         return ns['uid']
     uid = namespace()
     primer = objects['Job/primer']
-    rows, reuse = claim_roster(kubectl,primer,inventory,directory,c['tenants'],cutoff)
+    rows, reuse = read_roster(kubectl, primer, inventory, directory, c['tenants'], cutoff, location='claim')
     observed = completion(kubectl,c['roles'],c['pins']['pair'],c['pins']['appImageId'],c['pins']['instrument'])
     k.need(namespace() == uid, 'FIXTURE_NAMESPACE_CHANGED')
     path = directory/'data-roster.private.json'

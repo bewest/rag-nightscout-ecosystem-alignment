@@ -12,6 +12,36 @@ import unittest
 import kube_adapter as k
 
 
+class StandardFixture(unittest.TestCase):
+    def test_private_service_primer_runs_in_disposable_pod_and_restored_claim_only_reads(self):
+        from fixture import reader_pod
+        primer = {'name': 'primer', 'image': 'synthetic', 'imagePullPolicy': 'IfNotPresent',
+                  'command': ['node', 'shipping-primer.js'], 'resources': {}, 'securityContext': {},
+                  'volumeMounts': [{'name': 'secret-primer', 'mountPath': '/run/ns-primer'}]}
+        template = {'metadata': {'labels': {'app.kubernetes.io/component': 'operator'}},
+                    'spec': {'containers': [primer], 'automountServiceAccountToken': False,
+                             'volumes': [{'name': 'client-state', 'emptyDir': {}},
+                                         {'name': 'secret-primer', 'secret': {'secretName': 'synthetic'}}]}}
+        job = {'spec': {'template': template}}
+        inventory = {'namespace': 'synthetic', 'results': {'primer': {'claim': None, 'file': 'tenants.json'}}}
+        pod = reader_pod(job, inventory, 'pod', 60)
+        self.assertEqual(pod['spec']['initContainers'], [primer])
+        self.assertEqual(pod['metadata']['labels'], template['metadata']['labels'])
+        self.assertFalse(pod['spec']['automountServiceAccountToken'])
+        self.assertEqual(pod['spec']['containers'][0]['volumeMounts'],
+                         [{'name': 'client-state', 'mountPath': '/results', 'readOnly': True}])
+        with self.assertRaisesRegex(RuntimeError, 'CLAIM_REQUIRED'):
+            reader_pod(job, inventory, 'claim', 60)
+        inventory['results']['primer']['claim'] = 'restored'
+        template['spec']['volumes'][0] = {'name': 'client-state', 'persistentVolumeClaim': {'claimName': 'restored'}}
+        restored = reader_pod(job, inventory, 'claim', 60)
+        self.assertNotIn('initContainers', restored['spec'])
+        self.assertEqual(restored['spec']['volumes'], [{'name': 'client-state', 'persistentVolumeClaim':
+                                                       {'claimName': 'restored', 'readOnly': True}}])
+        with self.assertRaisesRegex(RuntimeError, 'STORAGE_MISMATCH'):
+            reader_pod(job, inventory, 'pod', 60)
+
+
 class CandidateParameters(unittest.TestCase):
     def test_candidate_is_resolved_from_image_parameters_not_receipts(self):
         import standard_case

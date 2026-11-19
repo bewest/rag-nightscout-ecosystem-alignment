@@ -24,7 +24,7 @@ POLICY = 'NetworkPolicy/native-load-to-edge'
 def waiting_jobs(c):
     # In the split binding, primer readiness only proves client export is ready;
     # the independent verification Job must have completed as well.
-    if c.get('primerLocation') == 'controller':
+    if c.get('primerLocation') in ('pod', 'controller'):
         return ['provision']
     if c.get('primerLocation') == 'claim':
         return ['provision', 'primer']

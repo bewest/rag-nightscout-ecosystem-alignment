@@ -139,7 +139,7 @@ def _materialize(template_case, binding, profile_path, output, core, taint,
                        'admin':'private-admin', 'primer':'primer'}
     for document in (run, intent):
         document.pop('applicationTopology', None)
-        document['primerLocation'] = 'claim' if storage.get('claims', {}).get('primerResults') else 'controller'
+        document['primerLocation'] = 'claim' if inventory['results']['primer'].get('claim') else 'pod'
     for target in run['roles'].values():
         name = target['workload'].split('/', 1)[1]
         target['workload'] = inventory['workloads'][name]['kind'] + '/' + name
