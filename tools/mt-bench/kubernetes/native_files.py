@@ -92,6 +92,31 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     return job, secret, receipt
 
 
+def terminal_process(c, wanted, job, pod, final_job, final_pod):
+    """Verify the same admitted actors completed the export after acknowledgement."""
+    import native_load as n
+    k.need(final_pod is not None and final_job['metadata']['uid'] == job['metadata']['uid']
+           and final_pod['metadata']['uid'] == pod['metadata']['uid'], 'NATIVE_LOAD_ACTOR_REPLACED')
+    _, process = n._terminal(c, wanted, final_job, {'items':[final_pod]})
+    # Both sides are server readbacks. Preserve the resources admission actually
+    # assigned, including its canonical quantities and LimitRange defaults.
+    observed = k.resource_budget.observed
+    k.need(observed(pod['spec']) == observed(final_pod['spec']) and
+           observed(job['spec']['template']['spec']) == observed(final_job['spec']['template']['spec']),
+           'NATIVE_LOAD_RESOURCES_CHANGED')
+    earlier = {s['name']: s for s in pod.get('status', {}).get('containerStatuses', [])}
+    final_states = {s['name']: s for s in final_pod.get('status', {}).get('containerStatuses', [])}
+    for name in ('k6', 'artifact-exporter'):
+        for field in ('containerID', 'imageID'):
+            prior = earlier.get(name, {}).get(field)
+            k.need(prior, 'NATIVE_LOAD_ACTOR_IDENTITY_UNMEASURED', 'UNMEASURED')
+            k.need(prior == final_states.get(name, {}).get(field), 'NATIVE_LOAD_ACTOR_REPLACED')
+    exporter = final_states.get('artifact-exporter', {})
+    k.need(exporter.get('state', {}).get('terminated', {}).get('exitCode') == 0
+           and exporter.get('restartCount') == 0, 'NATIVE_LOAD_EXPORTER_FAILED', 'UNMEASURED')
+    return process
+
+
 def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private_data=None):
     """Writer exit -> bounded exec read/hash -> ack -> Job completion.
 
@@ -205,21 +230,21 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     limits = (out / 'file-limits.txt').read_text()
     match = re.search(r'^Max file size\s+([0-9]+)\s+([0-9]+)\s+bytes\s*$', limits, re.M)
     k.need(match and int(match[1]) == int(match[2]) == receipt['fileLimitBytes'], 'NATIVE_LOAD_FILE_LIMIT_UNPROVEN')
-    current = kube.json(['get', 'pod', name], namespace=ns, timeout=min(20, remaining()))
-    k.need(current['metadata']['uid'] == pod_uid and k.controller(current) == k.controller(pod), 'NATIVE_LOAD_POD_REPLACED')
+    current = pod_read()
+    k.need(current is not None and current['metadata']['uid'] == pod_uid
+           and k.controller(current) == k.controller(pod), 'NATIVE_LOAD_POD_REPLACED')
+    k.need(k.resource_budget.observed(current['spec']) == k.resource_budget.observed(pod['spec']),
+           'NATIVE_LOAD_RESOURCES_CHANGED')
     check_namespace()
     kube.call(command + ['ack', n.sha(raw)], namespace=ns, timeout=min(20, remaining()))
     kube.call(['wait', '--for=condition=complete', 'job/k6', '--timeout=%ds' % max(1, math.ceil(remaining()))],
               namespace=ns, timeout=remaining())
     final_job = kube.json(['get', 'job', 'k6'], namespace=ns, timeout=min(20, remaining()))
-    final_pod = kube.json(['get', 'pod', name], namespace=ns, timeout=min(20, remaining()))
-    k.need(final_job['metadata']['uid'] == job['metadata']['uid'] and final_pod['metadata']['uid'] == pod_uid,
-           'NATIVE_LOAD_ACTOR_REPLACED')
-    _, process = n._terminal(c, wanted, final_job, {'items': [final_pod]})
-    states = {s['name']: s for s in final_pod.get('status', {}).get('containerStatuses', [])}
-    k.need(states.get('artifact-exporter', {}).get('state', {}).get('terminated', {}).get('exitCode') == 0
-           and states.get('artifact-exporter', {}).get('restartCount') == 0,
-           'NATIVE_LOAD_EXPORTER_FAILED', 'UNMEASURED')
+    # The owned Job census resolves declaration references under the existing
+    # guard. A named Pod display can contain masked fields even at completion.
+    final_pod = pod_read()
+    process = terminal_process(c, wanted, job, current, final_job, final_pod)
+    check_namespace()
     k.write(out / 'k6-process.json', process)
     k.need(process['complete'] and meta.get('exitCode') == 0, 'NATIVE_LOAD_JOB_FAILED', 'UNMEASURED')
     manifest = receipt['driverManifest']

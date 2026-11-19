@@ -22,7 +22,7 @@ import native_files as f
 import kube_adapter as k
 import workload
 import workload_runtime
-from test_native_load import control, TENANTS, OPTIONS
+from test_native_load import control, Kube, TENANTS, OPTIONS
 
 
 def configured():
@@ -41,6 +41,45 @@ def configured():
 
 
 class NativeFiles(unittest.TestCase):
+    def test_terminal_export_requires_same_admitted_actor_and_declaration(self):
+        c, base, options = configured()
+        wanted, _, _ = n.package(c, base, b'// synthetic driver\n', TENANTS, **options)
+        kube = Kube(c)
+        kube.created.append(wanted)
+        job, pod = kube.readback()
+        exporter = copy.deepcopy(pod['status']['containerStatuses'][0])
+        exporter.update(name='artifact-exporter', containerID='containerd://exporter')
+        pod['status']['containerStatuses'].append(exporter)
+        # Both bookends see the same server-assigned canonical quantity.
+        for spec in (pod['spec'], job['spec']['template']['spec']):
+            requests = spec['containers'][0]['resources']['requests']
+            requests['memory'] = str(k.resource_budget.quantity(requests['memory'], False, k.need))
+        self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
+        changes = [
+            ('job', ('metadata', 'uid'), 'different-job', 'ACTOR_REPLACED'),
+            ('pod', ('metadata', 'uid'), 'different-pod', 'ACTOR_REPLACED'),
+            ('pod', ('metadata', 'ownerReferences', 0, 'uid'), 'peer', 'POD_CONTROLLER'),
+            ('pod', ('spec', 'containers', 0, 'image'), 'changed-image', 'POD_CHANGED'),
+            ('pod', ('spec', 'containers', 0, 'command'), ['false'], 'POD_CHANGED'),
+            ('pod', ('spec', 'containers', 0, 'resources', 'requests', 'memory'), '1Gi', 'RESOURCES_CHANGED'),
+            ('job', ('spec', 'template', 'spec', 'containers', 0, 'resources', 'requests', 'cpu'), '2', 'RESOURCES_CHANGED'),
+            ('pod', ('status', 'containerStatuses', 0, 'containerID'), 'changed-id', 'ACTOR_REPLACED'),
+            ('pod', ('status', 'containerStatuses', 1, 'imageID'), 'changed-image-id', 'ACTOR_REPLACED'),
+            ('pod', ('status', 'containerStatuses', 1, 'state', 'terminated', 'exitCode'), 8, 'EXPORTER_FAILED'),
+        ]
+        for actor, path, value, code in changes:
+            with self.subTest(actor=actor, path=path):
+                final_job, final_pod = copy.deepcopy(job), copy.deepcopy(pod)
+                target = final_job if actor == 'job' else final_pod
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] = value
+                with self.assertRaisesRegex(k.Refused, code):
+                    f.terminal_process(c, wanted, job, pod, final_job, final_pod)
+        with self.assertRaisesRegex(k.Refused, 'ACTOR_REPLACED'):
+            f.terminal_process(c, wanted, job, pod, job, None)
+        self.assertTrue(f.terminal_process(c, wanted, job, pod, job, pod)['complete'])
+
     def test_real_exporter_hash_acknowledgement_bounds_and_deadline_controls(self):
         script = k.HERE/'native-artifacts.cjs'
         with tempfile.TemporaryDirectory() as scratch:
@@ -234,7 +273,13 @@ class NativeFiles(unittest.TestCase):
                             {'kind':'Job','name':'k6','uid':'owned-job','controller':True}]},
                         'spec':copy.deepcopy(actual['spec']['template']['spec']),
                         'status':{'phase':'Succeeded' if done == 0 and rc == 0 else 'Running','containerStatuses':statuses}}
-                    return {'items':[pod]} if args[:2] == ['get','pods'] else pod
+                    if args[:2] == ['get','pods']:
+                        return {'items':[pod]}
+                    # The named display read masks private reference fields;
+                    # the owned one-Pod Job census supplies the exact declaration.
+                    if args[:2] == ['get','pod']:
+                        next(v for v in pod['spec']['volumes'] if 'secret' in v)['secret']['secretName']='<redacted>'
+                    return pod
                 def close(self):
                     for process in (self.k6,self.exporter):
                         if process and process.poll() is None: process.terminate(); process.wait(timeout=5)
