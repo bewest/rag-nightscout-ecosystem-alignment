@@ -30,6 +30,7 @@ from probe import generate
 from workload import REALISTIC_CADENCE_MS, REALISTIC_MIX, realistic_cycle_ms, generate as generate_workload
 import profile_provenance
 import orchestration_binding
+from orchestration_binding import verified_serving
 import evaluator_progress
 import outcome_gate
 import api_cause
@@ -1187,13 +1188,6 @@ def deployment_plan(config,pgstream=False,primer_concurrency_value=1,platform_ve
         return [stages[name] for name in ('infrastructure', 'bootstrap', 'admin-feed', 'platform-verify',
                                           'apis', 'remaining-roles', 'provision', 'commission', 'prime', 'publish-primer')]
     return plan
-
-
-def verified_serving(config):
-    services = config['services']
-    return ('NS_DEMO_TENANTS' in services.get('primer', {}).get('environment', {}) and
-            'NS_DEMO_TENANTS' not in services.get('bootstrap', {}).get('environment', {}))
-
 
 
 def generator_tools():

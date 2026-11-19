@@ -29,6 +29,12 @@ def _environment_project(path):
  if len(value)>1 and value[0]==value[-1] and value[0]in("'",'"'):value=value[1:-1]
  require(NAME.fullmatch(value) is not None,'M7_BINDING_ENV_PROJECT_REQUIRED');return value
 
+def verified_serving(config):
+    services = config['services']
+    return ('NS_DEMO_TENANTS' in services.get('primer', {}).get('environment', {}) and
+            'NS_DEMO_TENANTS' not in services.get('bootstrap', {}).get('environment', {}))
+
+
 def canonical_project(owner,env_file,config_file,expected=None):
  """Never derive namespace from mutable owner alone, and never fall back."""
  project=owner.get('project');config=load(config_file)

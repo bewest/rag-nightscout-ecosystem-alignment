@@ -30,6 +30,20 @@ class SeedCount(unittest.TestCase):
         value['services']['bootstrap']['environment']['NS_DEMO_TENANTS']='4'
         with self.assertRaisesRegex(RuntimeError,'M7_STATIC_EDGE_COMMAND|M7_STATIC_PLATFORM_RESTART'):s.verify_config(manifest(),value)
 
+    def test_primer_owned_seed_count(self):
+        from test_role_instances import config as role_config
+        value = role_config()
+        environment = {}
+        value['services']['primer'] = {'environment': environment}
+        for supplied in (None, '2', '4'):
+            with self.subTest(count=supplied):
+                if supplied is not None:
+                    environment['NS_DEMO_TENANTS'] = supplied
+                expected = ('M7_STATIC_EDGE_COMMAND|M7_STATIC_PLATFORM_RESTART'
+                            if supplied == '4' else 'M7_STATIC_SEED_COUNT')
+                with self.assertRaisesRegex(RuntimeError, expected):
+                    s.verify_config(manifest(), value)
+
     @unittest.skipUnless(CORE and COMMIT,'owned selected source fixture required')
     def test_actual_ordinary_seed_count_red_restored(self):
         self.assertIn((COMMIT,manifest()['pair']['deploy']),s.SOURCE_PAIRS)
