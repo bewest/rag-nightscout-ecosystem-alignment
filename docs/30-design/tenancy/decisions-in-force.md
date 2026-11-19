@@ -22,11 +22,12 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [exclusive-application-postgres-ownership](multitenancy-decisions.md#exclusive-application-postgres-ownership) — Nightscout owns its PostgreSQL namespaces; other direct database writers are unsupported.
 - [view-reads-total-order](multitenancy-decisions.md#view-reads-total-order) — Sort-key ties break on the per-tenant insertion ordinal, in SQL and in process.
 - [write-clock-history-arms](multitenancy-decisions.md#write-clock-history-arms) — The write clock serves only v3 history no-missed-write (arms settled by [multitenant-requires-write-clock](multitenancy-decisions.md#multitenant-requires-write-clock)).
-- [multitenant-requires-write-clock](multitenancy-decisions.md#multitenant-requires-write-clock) — Arm (a) per-tenant clock row is kept; multitenant requires `writeClock`; floor checks move to `admin`.
+- [multitenant-requires-write-clock](multitenancy-decisions.md#multitenant-requires-write-clock) — Arm (a) per-tenant clock row is kept; multitenant requires `writeClock`; floor checks move to `admin` (narrowed by [platform-verification-removal](multitenancy-decisions.md#platform-verification-removal): floors are operation postconditions).
 - [stream-native-coverage-direction](multitenancy-decisions.md#stream-native-coverage-direction) — Evaluate committed-stream transaction coverage instead of the clock seal; replacement is proposed, unqualified.
 
 ### Roles, listeners and horizontal shape
 
+- [statefulset-ordinal-scaling](multitenancy-decisions.md#statefulset-ordinal-scaling) — Evaluator and realtime are StatefulSets, slice = ordinal, K = replicas; api is a Deployment; cohort and participant manifest deleted.
 - [d5](multitenancy-decisions.md#d5) — One core; stateless `api`, change-driven `evaluator`, fan-out `realtime`, connector `vcpool`; `single` keeps its server.
 - [d16](multitenancy-decisions.md#d16) — Separate data, owner and operator sockets, multiplexed by tenant, not duplicated per tenant.
 - [d21](multitenancy-decisions.md#d21) — One executable: `single`, `multitenant <role>[,<role>…]` and operator tools.
@@ -48,14 +49,17 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 
 ### Platform/application boundary, startup and simplification
 
+- [platform-verification-removal](multitenancy-decisions.md#platform-verification-removal) — No configuration-digest certificate and no per-tenant verified floor; migration Job plus schema check; a range of single-concern health endpoints.
+- [config-few-dozen-env](multitenancy-decisions.md#config-few-dozen-env) — A few dozen environment settings plus minimal PostgreSQL bookkeeping; per-role JSON documents retire.
+- [metrics-endpoint-deferred](multitenancy-decisions.md#metrics-endpoint-deferred) — **deferred**: no `/metrics` work now; Prometheus when it makes a run easier.
 - [platform-application-boundary](multitenancy-decisions.md#platform-application-boundary) — Application assumes a verified platform and fails closed; it never re-verifies the platform while serving.
 - [brittle-check-removal](multitenancy-decisions.md#brittle-check-removal) — Checks that refuse for anything other than a product property are removed; run identity is image digest plus run configuration.
 - [unclear-rows-resolved](multitenancy-decisions.md#unclear-rows-resolved) — The six Unclear questions resolved toward removal (desired count, writer census, revision wake, cost step A, idle witness, move readiness).
 - [architecture-justified-removal](multitenancy-decisions.md#architecture-justified-removal) — Machinery from an obsolete design is removed on architecture grounds with correctness controls, no measurement.
 - [serial-machinery-retirement](multitenancy-decisions.md#serial-machinery-retirement) — Remove serial machinery the streaming design no longer needs, rather than tune it.
 - [operable-architecture-first](multitenancy-decisions.md#operable-architecture-first) — Simplified, runnable, operable architecture first; performance work is lower priority meanwhile.
-- [boot-independent-of-tenants](multitenancy-decisions.md#boot-independent-of-tenants) — Serving boot is independent of tenant count; expensive platform verification runs on `admin`.
-- [catalogue-verification-admin-owned](multitenancy-decisions.md#catalogue-verification-admin-owned) — Admin verifies the catalogue once per deployment; serving keeps one cheap fail-closed check.
+- [boot-independent-of-tenants](multitenancy-decisions.md#boot-independent-of-tenants) — Serving boot is independent of tenant count; expensive platform verification runs on `admin` (narrowed by [platform-verification-removal](multitenancy-decisions.md#platform-verification-removal): no verification record or proof).
+- [catalogue-verification-admin-owned](multitenancy-decisions.md#catalogue-verification-admin-owned) — Admin verifies the catalogue once per deployment; serving keeps one cheap fail-closed check (narrowed by [platform-verification-removal](multitenancy-decisions.md#platform-verification-removal): migration Job plus schema-version check).
 - [vcpool-proof-role](multitenancy-decisions.md#vcpool-proof-role) — `vcpool` checks the platform proof at start like the other serving roles.
 - [stable-evaluator-runtime](multitenancy-decisions.md#stable-evaluator-runtime) — Evaluator runs on a stable schema; relevant DDL after startup stops it with a typed code.
 - [migration-rehearsal-separate](multitenancy-decisions.md#migration-rehearsal-separate) — Migrations are rehearsed as scheduled maintenance, separate from performance and acceptance runs.
@@ -78,7 +82,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [deployment-plan-contract](multitenancy-decisions.md#deployment-plan-contract) — One deployment plan in deploy, checked against a contract core publishes.
 - [core-static-plan-retired](multitenancy-decisions.md#core-static-plan-retired) — Core's static Compose plan retires; core tests use a small registry-mode fixture plan.
 - [deploy-repo-readme](multitenancy-decisions.md#deploy-repo-readme) — The deploy README addresses operators: what runs, how to run it, the pinned core commit.
-- [k1-per-role-deployments](multitenancy-decisions.md#k1-per-role-deployments) — Kubernetes: one Deployment per role, `Recreate`, per-role Services; migrations as Jobs before serving.
+- [k1-per-role-deployments](multitenancy-decisions.md#k1-per-role-deployments) — Kubernetes: one Deployment per role, `Recreate`, per-role Services; migrations as Jobs before serving (narrowed by [statefulset-ordinal-scaling](multitenancy-decisions.md#statefulset-ordinal-scaling): evaluator and realtime are StatefulSets).
 - [kubernetes-idiomatic-operations](multitenancy-decisions.md#kubernetes-idiomatic-operations) — Use Kubernetes ordering, digests, quotas, probes and in-cluster Jobs instead of re-proving guarantees.
 - [k8s-platform-proofs-to-deploy](multitenancy-decisions.md#k8s-platform-proofs-to-deploy) — Kubernetes runs stop selecting opt-in platform proofs; one fit check and image publication move to deploy.
 - [tanka-binding-parallel](multitenancy-decisions.md#tanka-binding-parallel) — The Kubernetes binding is a Tanka-style Jsonnet environment in `nightscout-deploy`.
