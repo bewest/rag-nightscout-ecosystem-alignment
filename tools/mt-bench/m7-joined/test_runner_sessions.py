@@ -70,6 +70,44 @@ class Sessions(unittest.TestCase):
         self.assertEqual(attached[attached.index('--opportunity-observation')+1],serialized)
         self.assertNotIn('--fixture-project',attached)
 
+    def test_rate_observations_materialize_their_own_configured_receipts(self):
+        from test_run_configuration import config as runner_config
+        from run_configuration import sha
+        base = runner_config()
+        base['tier'] = 'discovery'
+        base['prepare'].pop('receipt')
+        a.write(self.root / 'config.json', base)
+        for rate in (2, 4):
+            config = copy.deepcopy(base)
+            config['prepare']['offered-rps'] = rate
+            with patch.object(a, 'instrument', return_value={'sha256': base['helperInstrument']}):
+                _, args = r.validate_config(config)
+                with patch.object(r, 'load_config', return_value=(config, args)):
+                    self.observe('rate-' + str(rate))
+                attached = self.calls[-3][1]
+                receipt = Path(attached[attached.index('--receipt') + 1])
+                self.assertEqual(receipt.parent, self.root / 'observations' / ('rate-' + str(rate)))
+                effective = r.tier_plan(config)['effective']
+                self.assertEqual(a.document(receipt)['configurationSha256'], sha(effective))
+
+    def test_change_write_plan_on_same_seed(self):
+        self.config['prepare']['driver-plan'] = {'writeRateScale': 2}
+        self.observe('higher-writes')
+        self.config['prepare']['tenants'] = 1000
+        with self.assertRaisesRegex(RuntimeError, 'RUNTIME_CONFIG_CHANGED'):
+            self.observe('different-roster')
+
+    def test_session_without_explicit_allocation(self):
+        self.config['prepare'].pop('diagnostic-resource-profile')
+        a.write(self.root / 'config.json', self.config)
+        self.owner.pop('diagnosticResources')
+        a.write(self.d / 'owner.json', self.owner)
+        (self.root / 'observations').rmdir()
+        with patch.object(r, 'prepare', return_value=self.root), patch.object(a, 'load', return_value=(self.d, self.owner)):
+            session = r.session_start('config', self.root)
+        self.assertIsNone(session['resourceCeiling'])
+        self.observe()
+
     def test_failed_collection_retains_partial_and_can_collect_again(self):
         def failure(root,name,args):
             self.perform(root,name,args)

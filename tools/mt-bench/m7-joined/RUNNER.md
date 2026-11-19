@@ -667,8 +667,8 @@ metadata retain unknown continuity; this does not repair old captures.
 
 ### Reuse a bounded local fixture
 
-`session-start` uses the existing runner configuration, explicit diagnostic
-resource profile, prepare and deploy paths. It seeds once and prints the session
+`session-start` uses the existing runner configuration and its prepare and
+deploy paths. It retains any explicitly selected resources. It seeds once and prints the session
 owner token and original cutoffs. Preparation consumes the same `workSeconds`.
 The original independent guard remains responsible for cleanup; retain its helper
 worktree unchanged until exact absence. An existing point, foreign fixture or
@@ -693,8 +693,14 @@ results remain separate under `observations/NAME/`; names cannot be reused.
 No counters, clocks, caches, clinical state, leases or slots are reset or copied.
 If the question needs fresh history, use a separate default point or session.
 
-A later observation can select an explicitly pinned newer collector and receipt,
-workload timing/rate, viewer count or existing TIME/recovery observation options.
+A later observation can select a newer collector and receipt,
+workload timing, a configured driver plan, viewer count or existing TIME/recovery
+observation options. Discovery and smoke tiers generate each observation's receipt
+from its own configuration. To measure a write-rate change on the same roster,
+change `driver-plan.writeRateScale` in a realistic-v1 observation. To compare
+tenant counts, start a session with the new roster and match the per-shape
+aggregate read and write rates across sessions. Each observation has a distinct
+run ID for storage and probe accounting.
 All other preparation options, the application image, source/deployment pair,
 dependency roots, topology, configuration and resource ceiling must stay compatible.
 The existing attach and preflight paths check the physical resources and current

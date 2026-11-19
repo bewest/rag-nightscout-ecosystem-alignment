@@ -227,6 +227,23 @@ def preflight_receipt(config, argv):
         a.receipt_scope({**resolved,'instrument':{'sha256':resolved['instrument']},'runConfiguration':resolved},receipt,'deploy')
 
 
+def materialize_tier_receipt(directory, config, argv):
+    """Resolve the selected workload once for this new point or observation."""
+    if config.get('tier') in ('smoke', 'discovery'):
+        for option in ('--receipt', '--freeze'):
+            if option not in argv:
+                continue
+            index = argv.index(option) + 1
+            if argv[index] == GENERATED_RECEIPT:
+                from run_configuration import resolve
+                receipt = resolve(config)['diagnosticReceiptTemplate']
+                receipt['status'] = 'AUTHORIZED_DIAGNOSTIC'
+                path = directory / GENERATED_RECEIPT
+                write(path, receipt)
+                argv[index] = str(path)
+            break
+
+
 def prepare(config_file, directory, *, one_shot=False):
     config = a.document(config_file)
     tier = config.get('tier')
@@ -246,12 +263,7 @@ def prepare(config_file, directory, *, one_shot=False):
             parsed = a.parser().parse_args(['prepare', '--directory', str(root / 'fixture'), *argv])
             phase = 'source-input'
             clean_source_preflight(parsed)
-            if parsed.freeze == GENERATED_RECEIPT:
-                from run_configuration import resolve
-                receipt = resolve(config)['diagnosticReceiptTemplate']
-                receipt['status'] = 'AUTHORIZED_DIAGNOSTIC'
-                write(root / GENERATED_RECEIPT, receipt)
-                argv[argv.index('--receipt') + 1] = str(root / GENERATED_RECEIPT)
+            materialize_tier_receipt(root, config, argv)
             phase = 'receipt'
             preflight_receipt(config, argv)
         phase = 'prepare'
@@ -654,7 +666,7 @@ def execute(directory, rehearsal=False):
 SESSION_VARIABLE_OPTIONS = frozenset(('freeze', 'receipt', 'warmup-seconds', 'idle-seconds',
     'load-seconds', 'offered-rps', 'hot-factor', 'probe-every-ms', 'sockets-per-tenant',
     'logical-polling-clients', 'viewer-setup', 'workload-mix', 'workload-scale', 'sampler-interval', 'quiet-load', 'jwt-setup-concurrency',
-    'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic'))
+    'evaluator-catchup', 'evaluator-opportunities', 'opportunity-observation', 'restart-during-load-after-seconds', 'driver-shards', 'driver-vu-diagnostic', 'driver-plan'))
 SESSION_PREPARE_ONLY = frozenset(('fixture-project', 'backend-subnet', 'edge-subnet', 'commissioning-slot-wal-mib', 'tenant-readiness',
     'diagnostic-resource-profile', 'diagnostic-resource-allocation', 'generator-dependencies', 'generator-dependency-receipt',
     'generator-dependency-receipt-sha256', 'generator-dependency-preparation',
@@ -665,10 +677,6 @@ def session_start(config_file, directory):
     root = prepare(config_file, directory)
     config = a.document(root/'config.json')
     try:
-        selected=config['prepare'].get('diagnostic-resource-profile')
-        if config['prepare'].get('diagnostic-resource-allocation') is not None:selected=json.loads(config['prepare']['diagnostic-resource-allocation'])
-        require(a.diagnostic_resources.selection(selected) is not None,
-                'M7_SESSION_RESOURCE_CEILING_REQUIRED')
         stage(root, 'deploy', ['deploy', str(root/'fixture')])
         d, m = a.load(root/'fixture', resource_limits=False)
         require(not m.get('attached'), 'M7_SESSION_ORIGINAL_OWNER_REQUIRED')
@@ -677,7 +685,7 @@ def session_start(config_file, directory):
         value = {'version':1, 'owner':state['owner'], 'startedAt':state['startedAt'],
             'stopWorkAt':state['stopWorkAt'], 'cleanupAt':state['cleanupAt'],
             'runtimeOwnerSha256':a.digest(d/'owner.json'), 'runtimeOwner':m['owner'],
-            'resourceCeiling':m['diagnosticResources'], 'cleanupRunner':str(Path(__file__).resolve()),
+            'resourceCeiling':m.get('diagnosticResources'), 'cleanupRunner':str(Path(__file__).resolve()),
             'seedHistory':'Original deployment and seeding retained; subsequent observations are reused history.'}
         with custody(root):
             execution_window(root,config)
@@ -740,12 +748,15 @@ def session_observe(directory, owner, name, config_file, history_file):
         try:
             try:
                 with a.command_deadline(session['stopWorkAt']):
-                    a.diagnostic_resources.configure(session['resourceCeiling']['profile'],
-                        a.document(d/'frozen.compose.json'),session['resourceCeiling'],
-                        observe=lambda:a.diagnostic_resource_rows(m), driver_scope=d)
+                    resources = session['resourceCeiling']
+                    if resources is not None:
+                        a.diagnostic_resources.configure(resources['profile'],
+                            a.document(d/'frozen.compose.json'), resources,
+                            observe=lambda:a.diagnostic_resource_rows(m), driver_scope=d)
                     a.verify(d,m);a.image(m)
                     write(ob/'runtime-before.json',a.resources(m))
             finally:a.diagnostic_resources.configure()
+            materialize_tier_receipt(ob, config, prepared_argv)
             argv = ['attach','--directory',str(ob/'fixture')]
             # Reuse the validated tier defaults and JSON serialization for the
             # attached observer just as for a newly prepared fixture.
