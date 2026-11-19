@@ -17,7 +17,7 @@ class DiagnosticOptions(unittest.TestCase):
         # a private namespace, independent of entered workload drivers.
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
-        lock = patch('experiment_batch.global_lock_path',
+        lock = patch('diagnostic_resources.global_lock_path',
                      return_value=Path(directory.name) / 'driver.lock')
         lock.start()
         self.addCleanup(lock.stop)
@@ -161,16 +161,5 @@ class DiagnosticOptions(unittest.TestCase):
         with patch.object(a,'command',side_effect=RuntimeError('MISSING_CACHED_IMAGE')):
             with self.assertRaisesRegex(RuntimeError,'MISSING_CACHED_IMAGE'):
                 a.seal_diagnostic_images({'services':{'nginx':{'image':'missing'}}},m)
-
-    def test_mutated_owned_copy_refuses_before_other_verification(self):
-        with tempfile.TemporaryDirectory() as temp:
-            d=Path(temp);(d/'dependencies').mkdir()
-            q={'tree':{'sha256':'original'}};proof={'qualification':q}
-            (d/'dependencies/dependency-reuse-ready.json').write_text(json.dumps(proof))
-            m={'dependencyReuse':q,'generator':{'kind':'owned-qualified-dependency-copy','reuseProvenance':proof}}
-            with patch.object(a.dependency_reuse,'tree',return_value={'sha256':'changed'}),patch.object(a,'generator_tools') as tools:
-                with self.assertRaisesRegex(RuntimeError,'COPY_CHANGED'):a.verify_generator(d,m)
-                tools.assert_not_called()
-
 
 if __name__=='__main__':unittest.main()

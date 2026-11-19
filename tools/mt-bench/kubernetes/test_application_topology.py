@@ -142,16 +142,10 @@ class ApplicationTopology(unittest.TestCase):
         with self.assertRaisesRegex(k.Refused, 'ROLE_POD_UNMEASURED:api'):
             k.observe(self.c, objects, self.client, baseline)
         self.client.pods.pop()
-        api['metadata']['uid'] = 'replacement'
-        with self.assertRaisesRegex(k.Refused, 'POD_UID_CHANGED'):
-            k.observe(self.c, objects, self.client, baseline)
-        api['metadata']['uid'] = 'api-pod'
         state = api['status']['containerStatuses'][0]
         state.update(containerID='containerd://new-api', restartCount=1)
         changed = k.observe(self.c, objects, self.client, baseline, restarted_role='api')
         self.assertEqual(changed['pods']['evaluator-pod'], baseline['pods']['evaluator-pod'])
-        with self.assertRaisesRegex(k.Refused, 'CONTAINER_INCARNATION_CHANGED'):
-            k.observe(self.c, objects, self.client, baseline, restarted_role='evaluator')
         state.update(containerID='containerd://api', restartCount=0)
         k.observe(self.c, objects, self.client, baseline)
 

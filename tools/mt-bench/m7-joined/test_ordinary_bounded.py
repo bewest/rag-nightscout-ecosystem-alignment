@@ -31,7 +31,7 @@ class OrdinaryBounded(unittest.TestCase):
             options={'core-repo':'/synthetic/core','core-commit':'a'*40,'deploy-repo':'/synthetic/deploy','deploy-commit':'b'*40,
                      'image':'sha256:'+'c'*64,'receipt':'/synthetic/receipt','tenants':2,'replicas':1,'profile':'pgstream-sample','run-purpose':'discovery',
                      'fixture-project':'synthetic','backend-subnet':'10.248.226.0/24','edge-subnet':'10.248.227.0/24',
-                     'diagnostic-resource-profile':r.NAME,'vault-refusal-control':'api-policy-deny-v1','load-seconds':30,
+                     'diagnostic-resource-profile':r.NAME,'load-seconds':30,
                      'generator-dependencies':'/synthetic/deps','generator-dependency-receipt':'/synthetic/original.json',
                      'generator-dependency-receipt-sha256':'d'*64,'generator-dependency-preparation':'/synthetic/preparation.json',
                      'generator-dependency-preparation-sha256':'e'*64,'generator-dependency-preparation-head':'f'*40}
@@ -63,7 +63,7 @@ class OrdinaryBounded(unittest.TestCase):
             d=Path(tmp)
             args=SimpleNamespace(core_repo='/synthetic/core',deploy_repo='/synthetic/deploy',core_commit='a'*40,deploy_commit='b'*40,
                 image='image',tenants=2,replicas=1,quiet_load=3,freeze='/synthetic/receipt',profile='pgstream-sample',run_purpose='discovery',
-                dependency_qualification={'qualified':'original-provenance'},vault_refusal_control='api-policy-deny-v1')
+                dependency_qualification={'qualified':'original-provenance'})
             def git(repo,*argv):
                 self.assertEqual(argv[:3],('worktree','add','--detach'))
                 (d/'core/deploy/multitenant').mkdir(parents=True)
@@ -73,7 +73,6 @@ class OrdinaryBounded(unittest.TestCase):
                 return b''
             def setup(directory,m):
                 self.assertEqual(m['dependencyReuse'],args.dependency_qualification)
-                self.assertEqual(m['vaultRefusalControl'],'api-policy-deny-v1')
                 self.assertEqual(a.document(d/'owner.json')['dependencyReuse'],args.dependency_qualification)
                 raise RuntimeError('STOP_BEFORE_PRODUCT_PREPARATION')
             with patch.object(a,'fixture_project',return_value='synthetic'),patch.object(a,'port',return_value=1234),patch.object(a,'cadence_options',return_value={}),patch.object(a,'frozen'),patch.object(a,'inventory',return_value={}),patch.object(a,'host_identity',return_value='synthetic'),patch.object(a,'resources',return_value=[]),patch.object(a,'git',side_effect=git),patch.object(a,'command',side_effect=command),patch.object(a,'setup_generator',side_effect=setup):
@@ -145,33 +144,6 @@ class OrdinaryBounded(unittest.TestCase):
             with patch.object(runner,'load_config',return_value=({'k6Image':'image'},[])),patch.object(a,'instrument',return_value={'sha256':'same'}),patch.object(runner,'execution_window',return_value={}),patch.object(runner,'stage',side_effect=stage),patch.object(runner,'cleanup'),patch.object(runner,'guard_alive',return_value=False),patch.object(runner,'partial',return_value={'adapterStatus':'MEASURED'}):
                 runner.execute(root)
             self.assertEqual(calls,['deploy','preflight','run'])
-
-    def test_vault_control_refuses_preexisting_api_before_policy_effect(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            d=Path(tmp);config={'services':{'vault':{'image':'vaultimage'}}}
-            a.write(d/'frozen.compose.json',config)
-            rows=[{'Image':'vaultimage','State':{'Running':True},'Config':{'Labels':{'com.docker.compose.service':'vault'}}},
-                  {'Config':{'Labels':{'com.docker.compose.service':'api'}}}]
-            with patch.object(a,'verify'),patch.object(a,'diagnostic_resource_rows',return_value=rows),patch.object(a.vault_refusal,'apply') as effect:
-                with self.assertRaisesRegex(RuntimeError,'API_ALREADY_BORN'):
-                    a.vault_control(d,{'vaultRefusalControl':'api-policy-deny-v1'},'deny')
-                effect.assert_not_called()
-
-    def test_failed_restore_still_cleans_and_does_not_replace_cleanup_failure(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            d=Path(tmp);original=d/'state/bootstrap/m7-api-vault-policy.original.private.json'
-            original.parent.mkdir(parents=True);original.write_text('{}')
-            m={'vaultRefusalControl':'api-policy-deny-v1','diagnosticResources':{}}
-            for primary in (None,RuntimeError('ORIGINAL_CLEANUP_FAILURE')):
-                with patch.object(a,'vault_control',side_effect=RuntimeError('RESTORE_FAILED')),patch.object(a,'_down',side_effect=primary) as cleanup:
-                    with self.assertRaisesRegex(RuntimeError,'ORIGINAL_CLEANUP_FAILURE' if primary else 'RESTORE_FAILED'):a.down(d,m)
-                    cleanup.assert_called_once()
-                    self.assertTrue((d/'vault-refusal/restore-failure.json').is_file())
-
-    def test_native_vault_cli_dispatches_auth_refusal_check(self):
-        with patch.object(sys,'argv',['adapter.py','vault-check','/synthetic']),patch.object(a,'load',return_value=(Path('/synthetic'),{})),patch.object(a,'vault_control') as control:
-            a.main()
-        control.assert_called_once_with(Path('/synthetic'),{},'auth-check')
 
     def test_existing_completed_oracle_has_admitted_generator_heap(self):
         calls=[]

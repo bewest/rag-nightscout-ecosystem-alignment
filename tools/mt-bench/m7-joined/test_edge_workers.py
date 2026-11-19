@@ -15,7 +15,7 @@ TEXT="worker_processes 1;\nworker_rlimit_nofile 65536;\nevents { worker_connecti
 
 def setUpModule():
  global _unit_directory,_unit_lock_patch
- import experiment_batch
+ import diagnostic_resources as experiment_batch
  _unit_directory=tempfile.TemporaryDirectory(prefix='m7-edge-unit-')
  _unit_lock_patch=patch.object(experiment_batch,'global_lock_path',return_value=Path(_unit_directory.name)/'heap.lock')
  _unit_lock_patch.start()
@@ -97,7 +97,7 @@ class EdgeWorkers(unittest.TestCase):
    finally:r.configure()
  def test_actual_prepare_records_projected_explicit_fields(self):
   from test_resource_allocation import allocation
-  import experiment_batch
+  import diagnostic_resources as experiment_batch
   selected=allocation();selected['edge']={'workerProcesses':65,'workerConnections':65536}
   with tempfile.TemporaryDirectory() as folder,patch.object(experiment_batch,'global_lock_path',return_value=Path(folder)/'unit-heap.lock'),patch.object(r,'QUALIFICATION_NAME',selected):
    self.test_actual_prepare_forwards_and_records_generated_workers()

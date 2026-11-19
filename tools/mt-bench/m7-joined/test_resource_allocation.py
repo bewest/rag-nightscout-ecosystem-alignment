@@ -72,7 +72,7 @@ def matched_source(selected):
 
 def prepare_stage_control(selected, observation, source=None):
     """Actual owned preparer with inert source/Compose ports; no native actors."""
-    import experiment_batch
+    import diagnostic_resources as experiment_batch
     from test_edge_workers import TEXT
     with tempfile.TemporaryDirectory() as folder:
         d=Path(folder)/'fixture';d.mkdir();render=copy.deepcopy(source or matched_source(selected))
@@ -129,8 +129,7 @@ class ExplicitAllocation(unittest.TestCase):
             output=io.StringIO()
             def document(path):return owner if Path(path).name=='owner.json'else config
             with patch.object(r,'_ACTIVE',runtime),patch.object(a,'document',side_effect=document), \
-                 patch.object(a.orchestration_binding,'fixture_argv',return_value=['docker','compose','run',role]), \
-                 patch.object(a.orchestration_binding,'fixture_mutation_preflight'), \
+                 patch.object(a,'compose_prefix',return_value=['docker','compose']), \
                  patch.object(a,'command') as launch, \
                  contextlib.redirect_stdout(output):
                 with self.assertRaisesRegex(RuntimeError,'CPU_UNREPRESENTABLE:services.'+role+'.millicpus'):
@@ -201,7 +200,7 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
         self.assertEqual(evidence['diagnostic']['millicpus'],65001)
 
     def test_fresh_owner_records_pass_and_unmeasured_runtime_observation(self):
-        import experiment_batch
+        import diagnostic_resources as experiment_batch
         import test_edge_workers as edge
         for observation in (r.fresh_cpu_preflight(supported_allocation(),runtime_reader()),
                             r.fresh_cpu_preflight(supported_allocation())):
@@ -398,7 +397,7 @@ exec(compile(ast.Module(body=footer.body,type_ignores=[]),a.__file__,'exec'),a._
 
     def test_actual_prepare_records_explicit_workers_and_allocation(self):
         from test_edge_workers import EdgeWorkers
-        import experiment_batch
+        import diagnostic_resources as experiment_batch
         with tempfile.TemporaryDirectory() as folder,patch.object(experiment_batch,'global_lock_path',return_value=Path(folder)/'unit-heap.lock'),patch.object(r,'QUALIFICATION_NAME',allocation()):
             EdgeWorkers().test_actual_prepare_forwards_and_records_generated_workers()
 
@@ -525,8 +524,7 @@ class FixtureDriverLocks(unittest.TestCase):
     def criterion(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary)
-            from experiment_batch import global_lock_path
-            with patch('experiment_batch.global_lock_path', return_value=root/'driver.lock'):
+            with patch('diagnostic_resources.global_lock_path', return_value=root/'driver.lock'):
                 first=r.Runtime(driver_scope=root/'first')
                 same=r.Runtime(driver_scope=root/'first')
                 independent=r.Runtime(driver_scope=root/'second')

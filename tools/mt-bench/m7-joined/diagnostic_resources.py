@@ -170,16 +170,14 @@ def fresh_cpu_preflight(profile, read=None, *, roles=None, observation=None):
 
 def compose_actor_roles(args, config):
     """Use the existing argv authority, then select exact targets/dependencies."""
-    import orchestration_binding as binding
     services=config['services'];values=list(map(str,args))
-    action=binding._action(values,services)
-    if action not in ('up','run','create','start','restart'):return []
     index=0;profiles=set()
-    while values[index]=='--profile':profiles.add(values[index+1]);index+=2
+    while index<len(values) and values[index]=='--profile':profiles.add(values[index+1]);index+=2
+    action=values[index] if index<len(values) else None
+    if action not in ('up','run','create','start','restart'):return []
     tail=values[index+1:]
     first=next((i for i,value in enumerate(tail) if value in services),len(tail))
     options=tail[:first]
-    if action in ('up','run','create'):binding._options(action,options)
     if action=='run':
         need(first<len(tail),'COMPOSE_ROLE_REQUIRED');chosen={tail[first]}
     elif first<len(tail):
@@ -565,17 +563,15 @@ class Runtime:
         # One driver per fixture across CLI processes. A killed driver leaves its
         # nonempty heap-lease marker; a successor refuses until exact-owned
         # orphan cleanup is verified externally. Never expire a lease by time.
-        from experiment_batch import child_lock, global_lock_path
-        reserved = child_lock()
-        need(not (reserved and lock_file), 'BATCH_LOCK_OVERRIDE')
+        base = global_lock_path()
         scope = self.driver_scope
         if scope is not None:
             need(Path(scope).is_absolute(), 'DRIVER_SCOPE_PATH')
             key = hashlib.sha256(str(Path(scope).resolve()).encode()).hexdigest()[:32]
-            scoped = global_lock_path().with_name(global_lock_path().stem + '-' + key + '.lock')
+            scoped = base.with_name(base.stem + '-' + key + '.lock')
         else:
-            scoped = global_lock_path()  # legacy/batch callers keep their original custody
-        path = Path(reserved or lock_file or scoped)
+            scoped = base
+        path = Path(lock_file or scoped)
         need(path.is_absolute(), 'DRIVER_LOCK_PATH')
         fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
         try:
@@ -705,6 +701,10 @@ class Runtime:
 
 # One selection per fixture-driving process. Default calls preserve old behavior.
 # Shared between threads so asynchronous launch cannot silently lose a ContextVar.
+
+def global_lock_path():
+    return Path('/tmp/nightscout-m7-diagnostic-heap-' + str(os.getuid()) + '.lock')
+
 _ACTIVE = None
 
 

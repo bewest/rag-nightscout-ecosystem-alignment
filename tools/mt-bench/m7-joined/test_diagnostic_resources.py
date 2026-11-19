@@ -24,7 +24,7 @@ def config():
 def patched_files():
     """Apply delivered unified patch in memory to actual, unchanged modules."""
     if 'import diagnostic_resources\n' in (HERE/'adapter.py').read_text():
-        return {name:(HERE/name).read_text() for name in ('adapter.py','discovery.py','orchestration_binding.py')}
+        return {name:(HERE/name).read_text() for name in ('adapter.py','discovery.py')}
     lines=(HERE/'diagnostic_resources.integration.patch').read_text().splitlines(True)
     result={}; i=0
     while i<len(lines):
@@ -59,7 +59,7 @@ def load_patched(name,text):
 def setUpModule():
     global _unit_directory, _unit_lock_patch
     _unit_directory=tempfile.TemporaryDirectory(prefix='m7-resource-unit-')
-    _unit_lock_patch=patch('experiment_batch.global_lock_path',return_value=Path(_unit_directory.name)/'heap.lock')
+    _unit_lock_patch=patch('diagnostic_resources.global_lock_path',return_value=Path(_unit_directory.name)/'heap.lock')
     _unit_lock_patch.start()
 
 
@@ -75,7 +75,6 @@ class Resources(unittest.TestCase):
         cls.sources=patched_files()
         cls.a=load_patched('resource_adapter_control',cls.sources['adapter.py'])
         cls.d=load_patched('resource_discovery_control',cls.sources['discovery.py'])
-        cls.b=load_patched('resource_binding_control',cls.sources['orchestration_binding.py'])
 
     def setUp(self):
         r.configure(); self.config=r.overlay(config(),r.NAME)
@@ -145,7 +144,7 @@ class Resources(unittest.TestCase):
 
     def test_actual_compose_callsite_refuses_before_actor(self):
         a=self.a; effects=[]
-        with patch.object(a.orchestration_binding,'fixture_argv',return_value=['docker','compose','run','bootstrap']),patch.object(a.orchestration_binding,'fixture_mutation_preflight'),patch.object(a,'document',return_value=self.config),patch.object(a,'command',side_effect=lambda *x,**kw:effects.append(x)):
+        with patch.object(a,'compose_prefix',return_value=['docker','compose']),patch.object(a,'document',return_value=self.config),patch.object(a,'command',side_effect=lambda *x,**kw:effects.append(x)):
             a.compose(Path('/synthetic'),'--profile','ops','run','--rm','bootstrap')
             self.assertEqual(len(effects),1)
             broken=copy.deepcopy(self.config); del broken['services']['bootstrap']['cpus']
@@ -260,7 +259,7 @@ class Resources(unittest.TestCase):
                         process=eval(compile(ast.Expression(node),filename,'eval'),namespace)
                         self.assertEqual(recorded[-1][0][:2],['/qualified/node','--max-heap-size=512'])
                         process.wait();found+=1
-        self.assertEqual(found,4)
+        self.assertEqual(found,3)  # serial-exchange launcher removed 2026-11-19
         self.assertFalse(any(self.runtime.host.values()))
 
     def test_red_restored_aggregate_undercount(self):
@@ -285,39 +284,6 @@ class Resources(unittest.TestCase):
         with patch.object(r,'bounded_standalone',side_effect=lambda argv:argv):
             with self.assertRaisesRegex(AssertionError,'STANDALONE_LIMITS_OMITTED'): check()
         check()
-
-    def test_actual_oneoff_parser_preserves_pins_and_checks_native_limits(self):
-        b=self.b; image='sha256:'+'c'*64; observed=[]
-        with tempfile.TemporaryDirectory() as root:
-            root=Path(root); attached=root/'attachment'; attached.mkdir()
-            (attached/'owner.json').write_text(json.dumps({'owner':'a'*32,'project':'synthetic','attached':True}))
-            binding={'project':'synthetic','oneoffRoot':str(root),'oneoffImages':{'k6':image},'attempt':'b'*32}
-            scope={'directory':str(attached),'owner':'a'*32,'imageId':image}
-            original=['docker','run','--rm','--network','none','--label',b.OWNER+'='+scope['owner'],'--label',b.PROJECT+'=synthetic',image,'version']
-            owner=json.loads((attached/'owner.json').read_text())
-            owner['diagnosticResources']=self.runtime.budget.record()
-            (attached/'owner.json').write_text(json.dumps(owner))
-            (attached/'frozen.compose.json').write_text(json.dumps(self.config))
-            argv=self.a.bounded_k6_argv(original)
-            def meta(args):
-                observed.append(args)
-                return json.dumps([{'Id':image,'Config':{'Entrypoint':['k6'],'Env':[],'User':''}}])
-            intent=b._oneoff_intent(binding,'k6-version',argv,scope,meta,root/'exclusive.cid')
-            limits=intent['layout']['resourceLimits']
-            self.assertEqual(limits,{'NanoCpus':500000000,'Memory':1024*r.MIB,'MemorySwap':1024*r.MIB})
-            row={'Id':'e'*64,'Image':image,'Config':{'Image':image,'Cmd':['version'],'Entrypoint':['k6'],'Env':[],'User':'','Labels':intent['layout']['labels']},'HostConfig':{'NetworkMode':'none','Tmpfs':{},'Privileged':False,**limits},'Mounts':[]}
-            b.qualify_oneoff(binding,row,intent)
-            for key in limits:
-                bad=copy.deepcopy(row);bad['HostConfig'][key]=0
-                with self.assertRaisesRegex(RuntimeError,'RESOURCE_LIMITS_CHANGED'): b.qualify_oneoff(binding,bad,intent)
-            bad=copy.deepcopy(row);bad['Image']='sha256:'+'f'*64
-            with self.assertRaisesRegex(RuntimeError,'COMMAND_IMAGE_CHANGED'): b.qualify_oneoff(binding,bad,intent)
-            wrong=argv.copy();wrong[4]='4';observed.clear()
-            with self.assertRaisesRegex(RuntimeError,'RESOURCE_LIMITS_CHANGED'): b._oneoff_intent(binding,'k6-version',wrong,scope,meta,root/'none.cid')
-            self.assertEqual(observed,[],'WRONG_LIMIT_REACHED_IMAGE_READER')
-            owner.pop('diagnosticResources');(attached/'owner.json').write_text(json.dumps(owner))
-            legacy=b._oneoff_intent(binding,'k6-version',original,scope,meta,root/'legacy.cid')
-            self.assertNotIn('resourceLimits',legacy['layout'])
 
     def test_retained_actual_service_roster_when_explicitly_supplied(self):
         import os

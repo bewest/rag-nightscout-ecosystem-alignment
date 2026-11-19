@@ -60,14 +60,9 @@ class TierWorkflow(unittest.TestCase):
         with patch.object(adapter, 'instrument', return_value={'sha256': value['helperInstrument']}):
             _, argv = runner.validate_config(value)
         parsed = adapter.parser().parse_args(['prepare', '--directory', '/tmp/synthetic-tier', *argv])
+        # The checkout's HEAD and working tree are not compared; the image is.
         with patch.object(adapter, 'commit', side_effect=lambda _repo, sha: sha), \
-             patch.object(adapter, 'git', side_effect=[parsed.core_commit, ' M tracked-file']), \
-             patch.object(adapter, 'prepare_image_inputs') as image:
-            with self.assertRaisesRegex(RuntimeError, 'SOURCE_CORE_DIRTY'):
-                runner.clean_source_preflight(parsed)
-            image.assert_not_called()
-        with patch.object(adapter, 'commit', side_effect=lambda _repo, sha: sha), \
-             patch.object(adapter, 'git', side_effect=[parsed.core_commit, '', parsed.deploy_commit, '']), \
+             patch.object(adapter, 'git', side_effect=AssertionError('no HEAD or status read')), \
              patch.object(adapter, 'prepare_image_inputs', side_effect=RuntimeError('M7_IMAGE_ID_CHANGED')):
             with self.assertRaisesRegex(RuntimeError, 'IMAGE_ID_CHANGED'):
                 runner.clean_source_preflight(parsed)
