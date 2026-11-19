@@ -54,6 +54,20 @@ it to a clean copy of the indicated private base and install this release's
 placement, quota, headroom, cost and UID-conditioned cleanup checks apply.
 Private admin verification precedes serving roles.
 
+A binding with `Job/verification` publishes the admin proof in its completion
+log. Put that Job in `stages/verification.json` when preparing the case. The
+lifecycle waits for it before installing serving workloads and then launches the
+lab provisioning client. The attach phase reuses the captured proof and
+checks the native database source independently. The primer's private results
+live on its `/run/ns-client` volume. Set its size with the renderer's
+`primerStorage` input, such as `64Mi`.
+
+Serving startup and load setup have separate results. This runner's ordinary
+traffic uses every tenant in `population.ordinaryRosterTenants`, so the load
+stage requires DATA credentials for that roster. Evaluator preload convergence
+is a recorded signal by default. Set `readiness: require-all` in the selected
+preload phase to require full convergence in experiments that depend on it.
+
 The optional `bootstrapHelper` manifest entry selects the reviewed deploy source
 commit and SHA-256 of `bootstrap.js`. The constructor verifies the original
 image file, extracts the corrected file from Git and installs it in an immutable

@@ -34,7 +34,7 @@ def configuration(value):
     """One phase-options resolver, independent of execution transport/custody."""
     base = {'contract', 'seconds', 'intervalSeconds'}
     require(isinstance(value, dict) and set(value) in (base, base | {'readiness'})
-            and value['contract'] == CONTRACT and value.get('readiness', STRICT) == STRICT, 'M7_PRELOAD_SELECTION')
+            and value['contract'] == CONTRACT and value.get('readiness', 'signal') in ('signal', STRICT), 'M7_PRELOAD_SELECTION')
     require(all(type(value[key]) is int and 1 <= value[key] <= phase_windows.MAX_SECONDS
                 for key in ('seconds', 'intervalSeconds'))
             and value['intervalSeconds'] < value['seconds'], 'M7_PRELOAD_WINDOW')

@@ -94,10 +94,20 @@ def materialize(manifest, binding_repo, deploy_repo, out):
     # The deploy checkout supplies the captured contract; its head is recorded,
     # not compared. Image identity is the selected digest.
     deploy_head = git(deploy_repo, 'rev-parse', 'HEAD').decode().strip()
-    prime_source = git(deploy_repo, 'show', selected['deployCommit']+':'+primer_options.SOURCE_PATH)
+    archive = git(binding_repo, 'archive', manifest['bindingCommit'], 'bindings/kubernetes')
+    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
+        schema = 'bindings/kubernetes/inputs.schema.json'
+        inputs = json.load(tar.extractfile(schema)) if schema in tar.getnames() else {}
+    split = inputs.get('properties', {}).get('primerStorage', {}).get('type') == 'string'
+    if split:
+        k.need(population_ceiling.FIELD not in selected, 'POPULATION_CEILING_UNSUPPORTED_BY_BINDING')
+        k.need(frozen.PRIMER_STORAGE not in selected, 'USE_BINDING_PRIMER_STORAGE_INPUT')
     options = selected.get(primer_options.FIELD, {})
-    protocol = primer_options.source_protocol(prime_source)
-    primer_options.require_source(options, protocol, k.need)
+    protocol = None
+    if not split or primer_options.requires_extended(options):
+        prime_source = git(deploy_repo, 'show', selected['deployCommit']+':'+primer_options.SOURCE_PATH)
+        protocol = primer_options.source_protocol(prime_source)
+        primer_options.require_source(options, protocol, k.need)
     population=selected.get(population_ceiling.FIELD)
     population_files=None
     population_support=None
@@ -117,7 +127,6 @@ def materialize(manifest, binding_repo, deploy_repo, out):
         k.need(population_support.get('protocol')==population_ceiling.PROTOCOL and
                all(population_support.get('sourceFilesSha256',{}).get(name)==value for name,value in hashes.items()),
                'POPULATION_BINDING_SOURCE_CHANGED')
-    archive = git(binding_repo, 'archive', manifest['bindingCommit'], 'bindings/kubernetes')
     out.mkdir(mode=0o700, parents=True, exist_ok=False)
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
         tar.extractall(out, filter='data')
@@ -134,11 +143,14 @@ def materialize(manifest, binding_repo, deploy_repo, out):
                     '--compose', Path(deploy_repo).resolve()/'bindings/compose',
                     '--image', selected['localImageId']], check=True)
     measured = k.document(asset)
+    if split:
+        k.need(all(measured[key] == selected[key] for key in ('coreCommit', 'deployCommit', 'localImageId')),
+               'CANDIDATE_SOURCE_IMAGE_CHANGED')
     if native_inputs:
         k.need(measured.get('bindingInputsVersion') == 1, 'BINDING_INPUT_PROTOCOL_CHANGED')
     # The binding can only create the commands and database identities it knows.
     for key in ('commands', 'postgresIdentities'):
-        k.need(measured[key] == supported[key], 'UNSUPPORTED_BINDING_CAPABILITY:' + key)
+        k.need(split or measured[key] == supported[key], 'UNSUPPORTED_BINDING_CAPABILITY:' + key)
     measured['capturedDeployHead'] = deploy_head
     if protocol:
         measured[primer_options.PROTOCOL_FIELD] = protocol
@@ -208,12 +220,31 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     k.need(delivery['app'] == inventory['images']['app'] and delivery['postgres'] == inventory['images']['postgres'],
            'DELIVERY_IMAGE_CHANGED')
     selected = frozen.source(m)
+    split = 'verification' in inventory.get('workloads', {})
+    if split:
+        receipt = frozen.read_ref(instance['bindingReceipt'])
+        asset = Path(instance['bindingReceipt']['path']).parent/'bindings/kubernetes/assets/source-contract.json'
+        k.need(k.digest(asset) == receipt['sourceContractSha256'] ==
+               receipt['files']['assets/source-contract.json'], 'CANDIDATE_SOURCE_IMAGE_CHANGED')
+        source_contract = k.document(asset)
+        k.need(source_contract['platformVerification'] in k.candidate.STARTUP_PROTOCOLS and
+               frozen.PRIMER_STORAGE not in selected and population_ceiling.FIELD not in selected,
+               'VERIFIED_SERVING_BINDING_OPTIONS')
+        candidate_pin = {key: source_contract[key] for key in
+                         ('platformVerification', 'sourceAcceptance', 'nativeCatalogueSha256')}
+        candidate_pin.update({key:source_contract[key] for key in
+                              (primer_options.FIELD, primer_options.PROTOCOL_FIELD, frozen.ACK_BUDGET)
+                              if key in source_contract})
+        candidate_pin.update(verificationJob='verification', imageConfigId=source_contract['localImageId'],
+                             sourceContractSha256=receipt['sourceContractSha256'])
+    else:
+        candidate_pin = inventory['candidateContract']
     pins = dict(pair=dict(core=selected['coreCommit'], deploy=selected['deployCommit']),
                 bindingCommit=m['bindingCommit'], instrument=k.instrument()['sha256'],
                 appImage=delivery['app'], appImageId=delivery['appImageId'],
                 postgresImage=delivery['postgres'], postgresImageId=delivery['postgresImageId'],
                 inventorySha256=k.digest(instance['inventory']), renderSha256=k.digest(instance['render']),
-                candidate=inventory['candidateContract'])
+                candidate=candidate_pin)
     k.need(config.get('pins', pins) == pins, 'INSTANCE_PINS_CHANGED')
     tier = m.get('tier', 'discovery')
     k.need(config.get('tier', tier) == tier, 'INSTANCE_TIER_CHANGED')
@@ -242,7 +273,10 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
     k.need(all(pins['candidate'].get(key) == selected.get(key) for key in
                ('runtimeBootstrapHelper', 'imageSourceAcceptance', 'sourceAcceptance')), 'BOOTSTRAP_HELPER_SCOPE')
     contract = objects['ConfigMap/provision-scripts']['data']['source-contract.json']
-    frozen.rendered_contract(m, contract, instance['bindingReceipt'])
+    if split:
+        frozen.rendered_contract(m, asset.read_bytes(), instance['bindingReceipt'])
+    else:
+        frozen.rendered_contract(m, contract, instance['bindingReceipt'])
     k.need(pins['candidate']['sourceAcceptance'] == selected['sourceAcceptance'], 'CANDIDATE_IMAGE_STATUS')
     checks = render_checks(instance)
     expected_roles = application_topology.role_mapping(application_topology.selection(c, k.need))
@@ -250,6 +284,13 @@ def prepare(manifest_path, instance, out, *, await_primer=False):
            and c['roles'].get('pgstream') == dict(workload='Deployment/pgstream', container='pgstream'),
            'UNSUPPORTED_ROLE_TOPOLOGY')
     k.need(c['storageMode'] == 'disposable', 'EXPERIMENT_STORAGE')
+    k.need('verificationProof' not in config, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
+    if 'verificationProof' in instance:
+        k.need(split, 'CANDIDATE_VERIFICATION_PROOF_SCOPE')
+        captured = frozen.read_ref(instance['verificationProof'])
+        k.need(set(captured) == {'proof','jobUid','podUid','containerId'}, 'CANDIDATE_FIXTURE_CHANGED')
+        k.candidate.proof(k, c, captured['proof'])
+        c['verificationProof'] = captured
     if 'roleDocuments' in instance:
         docs = instance['roleDocuments']
         measured = k.completion_source(c, docs['evaluator'], docs['realtime'], **({'native_receipt':docs['nativeReceipt']} if 'nativeReceipt' in docs else {}))
