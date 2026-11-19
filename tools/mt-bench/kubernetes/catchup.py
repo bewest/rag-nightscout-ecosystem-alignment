@@ -2,17 +2,20 @@
 import time
 
 import kube_adapter as k
+import clinical_sql
 
 
 def observer(d, c, objects, client, runid, ids):
     import accepted_inputs
 
     baseline = k.active_baseline(d)
+    def postgres():
+        return clinical_sql.observe(c, objects, client, baseline, continuity_verdict='UNMEASURED')
+
     def fetch(query, timeout):
         # The observation cutoff covers both ownership checks and the SQL read.
         with k.observation_deadline(time.time() + timeout):
-            before = k.observe(c, objects, client, baseline)
-            pod, container = k.selected_pod(c, before, 'postgres')
+            pod, container = postgres()
             remaining = k.deadline(c)
             statement_ms = max(1, int(remaining * 1000))
             try:
@@ -20,7 +23,7 @@ def observer(d, c, objects, client, runid, ids):
                                          f'SET LOCAL statement_timeout={statement_ms};\n' + query,
                                          timeout=remaining)
             finally:
-                k.observe(c, objects, client, baseline)
+                postgres()
             k.deadline(c)
             return result
 

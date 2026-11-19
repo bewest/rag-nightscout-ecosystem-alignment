@@ -65,6 +65,7 @@ def fixture():
             if kind=='namespace':return copy.deepcopy(self.objects['Namespace/'+name])
             if kind=='replicasets':return {'items':[]}
             if kind=='pods':return {'items':copy.deepcopy(self.pods)}
+            if kind=='pod':return copy.deepcopy(next(pod for pod in self.pods if pod['metadata']['name']==name))
             return copy.deepcopy(self.objects[kind+'/'+name])
     return c,inv,rendered,Replies()
 

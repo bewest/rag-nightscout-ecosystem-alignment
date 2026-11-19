@@ -1,4 +1,4 @@
-"""Clinical-only PostgreSQL observation bracket; no campaign census replacement.
+"""PostgreSQL process and ownership bracket for clinical and accepted-input SQL.
 
 The run is fully loaded/validated by adapter.main before entry. The selected
 PostgreSQL workload, Pod and process stay pinned to its full campaign baseline.
@@ -11,7 +11,7 @@ import time
 import kube_adapter as k
 
 
-def observe(c, objects, client, baseline):
+def observe(c, objects, client, baseline, *, continuity_verdict='FAIL'):
     k.need(all(baseline[key] == c[key] for key in ('context','runId','pins')), 'SOURCE_IMAGE_BINDING_CHANGED')
     selection = c['roles']['postgres']
     workload = selection['workload']
@@ -31,7 +31,7 @@ def observe(c, objects, client, baseline):
     pod = client.get('pod', pod_name)
     k.owned(c, pod)
     k.need(pod['kind'] == 'Pod' and pod['metadata']['name'] == pod_name and
-           pod['metadata']['uid'] == previous['uid'] and not pod['metadata'].get('deletionTimestamp'), 'POD_UID_CHANGED')
+           pod['metadata']['uid'] == previous['uid'] and not pod['metadata'].get('deletionTimestamp'), 'POD_UID_CHANGED', continuity_verdict)
     owner = k.controller(pod)
     if owner['kind'] == 'ReplicaSet':
         replica = client.get('ReplicaSet', owner['name'])
@@ -40,7 +40,7 @@ def observe(c, objects, client, baseline):
         owner = k.controller(replica)
     k.need(owner['kind']+'/'+owner['name'] == workload and
            owner['uid'] == parent['metadata']['uid'] == previous['controllerUid'], 'POD_CONTROLLER')
-    k.need(pod['spec'].get('nodeName') == previous['nodeName'], 'PLACEMENT_RESOURCE_CHANGED')
+    k.need(pod['spec'].get('nodeName') == previous['nodeName'], 'PLACEMENT_RESOURCE_CHANGED', continuity_verdict)
     expected_spec = k.template(expected)['spec']
     for current in (k.template(parent)['spec'], pod['spec']):
         k.helper_pod(expected_spec, current)
@@ -52,8 +52,8 @@ def observe(c, objects, client, baseline):
     rows = [row for row in pod.get('status', {}).get('containerStatuses', []) if row['name'] == container]
     k.need(len(rows) == 1, 'CONTAINER_IDENTITY_UNMEASURED', 'UNMEASURED')
     row, old = rows[0], previous['containers'][container]
-    k.need(row.get('imageID') == old['imageID'], 'ACTUAL_IMAGE_CHANGED')
-    k.need(row.get('containerID') == old['containerID'] and row.get('restartCount') == old['restartCount'], 'CONTAINER_INCARNATION_CHANGED')
+    k.need(row.get('imageID') == old['imageID'], 'ACTUAL_IMAGE_CHANGED', continuity_verdict)
+    k.need(row.get('containerID') == old['containerID'] and row.get('restartCount') == old['restartCount'], 'CONTAINER_INCARNATION_CHANGED', continuity_verdict)
     k.need(row.get('ready') is True and 'running' in (row.get('state') or {}) and
            pod.get('status', {}).get('phase') == 'Running' and
            any(value.get('type') == 'Ready' and value.get('status') == 'True'
