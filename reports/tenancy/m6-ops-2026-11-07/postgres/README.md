@@ -13,7 +13,7 @@ The coordinator accepted the bounded SQL result with a precise offline process-a
 | `a7f5cbf71ab9016855976fae74730727d0a78024` | Actual OLD catalogue/binary used by upgrade, unknown-new-ledger refusal and fresh OLD rollback. |
 | `ec0f4afdcef235a3ea3717a076ca6e36a0ef81af` | Subsequent source-only collector repair with ten pure regression checks. This is not the native measurement head. |
 
-The [plan](plan.json) pins each head/tree, causal file bytes, exact controlled patches, selected candidate digests, table sets, separate OLD/CURRENT grant contexts, phase protocol and opaque process-identity expectations. The [projection](projection.json) retains the recorded physical observations and original-result hashes. Missing app objects fail the gate; it never fetches or checks out a peer tree.
+The [plan](plan.json) pins each head/tree, causal file bytes, exact controlled patches, selected candidate digests, table sets, separate OLD/CURRENT grant contexts, phase protocol and opaque process-identity expectations. The archived projection of the physical observations and original-result hashes is Git blob `524e21690b8753b7ffe13839241bed99537eaf84` in alignment commit `4264afbad54f8e013fc20812cf97a4b99d4c7931`.
 
 Prior6a17 C1/C2 successes and the C3 `RESTORE_ACL_SEQUENCE_INVALID` setup refusal remain in their separate private capsule. That failed run is not relabelled as this complete result. Its repair expanded actual consumer grant SQL against separate exact OLD and CURRENT inventories: OLD profile has no identity sequence, so its source `ALL SEQUENCES` expansion is empty. Product sequence/column guards remain strict. Fixture CURRENT grants are explicitly applied after successful schema upgrade; the product upgrade module does not migrate permissions.
 
@@ -47,17 +47,17 @@ The exporter verifies every indexed private input before selecting fields. Unkno
 
 ## Run the archival gate
 
-With the pinned app objects present in the usual workspace object repository:
+For an optional replay of the historical SQL measurement, pass the location of a retained projection. The pinned app objects must be available locally.
 
 ```bash
-node tools/queue/gates/m6-ops-recorded.js
+node tools/queue/gates/m6-ops-recorded.js --projection "$ARCHIVED_PROJECTION"
 ```
 
-An existing alternate object repository can be selected without a checkout:
+If the projection is already present beside `plan.json`, the gate reads it by default. To select an alternate app object repository for the replay:
 
 ```bash
 NS_M6_OPS_RECORDED_REPO="$APP_OBJECT_REPOSITORY" \
-  node tools/queue/gates/m6-ops-recorded.js
+  node tools/queue/gates/m6-ops-recorded.js --projection "$ARCHIVED_PROJECTION"
 ```
 
 The gate uses builtin Node modules and read-only `git show`/`git rev-parse`. It imports only the pinned independent oracle's pure comparison functions and replays all11 physical control predicates through the bound adapter. It never starts Docker, PostgreSQL, app jobs or provider sends, installs dependencies, fetches sources or writes a shipping tree.
