@@ -12,6 +12,31 @@ import population_ceiling
 ROLES = ['api', 'evaluator', 'realtime']
 FIELDS = ('diagnosticSha256', 'producerBinarySha256', 'nativeCatalogueSha256')
 STARTUP_PROTOCOLS = ('startup-v2', 'startup-v3')
+VERIFICATION_JOB = 'Job/verification'
+
+
+def verified_serving(c):
+    return c['pins'].get('candidate', {}).get('verificationJob') == 'verification'
+
+
+def job_condition(job):
+    terminal = {row['type'] for row in job.get('status', {}).get('conditions', [])
+                if row.get('status') == 'True'}
+    if terminal & {'Failed', 'FailureTarget'}:
+        return 'Failed'
+    if 'Complete' in terminal:
+        return 'Complete'
+    return None
+
+
+def verification_log(k, c, raw):
+    try:
+        value = json.loads(raw)
+    except ValueError:
+        raise k.Refused('K8S_CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED') from None
+    k.need(isinstance(value, dict) and value.get('status') == 'verified', 'CANDIDATE_ADMIN_PROOF_REQUIRED')
+    proof(k, c, value)
+    return value
 
 
 def pins(k, c, inventory, objects):
@@ -19,10 +44,16 @@ def pins(k, c, inventory, objects):
     selected = inventory.get('candidateContract')
     runtime = c['pins']
     overlay = objects.get('ConfigMap/provision-scripts', {}).get('data', {})
+    split = verified_serving(c)
+    k.need(split == (VERIFICATION_JOB in objects), 'CANDIDATE_VERIFICATION_JOB_CHANGED')
     if selected is None and 'candidate' not in runtime and 'candidate-documents.cjs' not in overlay:
         k.need(primer_options.FIELD not in c, 'PRIMER_OPTION_SOURCE_UNSUPPORTED')
         k.need(population_ceiling.FIELD not in c, 'POPULATION_SOURCE_UNSUPPORTED')
         return
+    if split:
+        k.need(selected is None and objects[VERIFICATION_JOB]['spec'].get('suspend') is True,
+               'CANDIDATE_CONTRACT_CHANGED')
+        selected = runtime['candidate']
     k.need(selected == runtime.get('candidate') and isinstance(selected, dict), 'CANDIDATE_CONTRACT_CHANGED')
     # Identity is the image digest. Source commits and helper hashes are
     # recorded provenance, not per-run refusals.
@@ -31,9 +62,14 @@ def pins(k, c, inventory, objects):
         contract = json.loads(overlay['source-contract.json'])
     except (ValueError, KeyError):
         raise k.Refused('K8S_CANDIDATE_CONTRACT_REQUIRED') from None
-    k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS) and
-           selected.get('platformVerification') == contract.get('platformVerification'),
-           'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
+    if split:
+        k.need(contract == {'coreCommit':runtime['pair']['core'], 'deployCommit':runtime['pair']['deploy']} and
+               selected.get('platformVerification') in STARTUP_PROTOCOLS, 'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
+        contract = selected
+    else:
+        k.need(selected.get('platformVerification') in (None, *STARTUP_PROTOCOLS) and
+               selected.get('platformVerification') == contract.get('platformVerification'),
+               'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
     k.need((ACK_BUDGET in contract) == ('producerAckReadback' in c), 'PGSTREAM_ACK_READBACK_SCOPE')
     k.need(contract.get(primer_storage.FIELD)==c.get(primer_storage.FIELD) and
            (primer_storage.FIELD in contract)==('primerStorageReceipt' in c), 'PRIMER_STORAGE_PUBLISH_SCOPE')
@@ -57,7 +93,7 @@ def pins(k, c, inventory, objects):
         receipt = c['producerAckReadback']
         k.need(isinstance(receipt, dict) and valid_timeout(contract[ACK_BUDGET])
                and valid_timeout(receipt.get('sourceTimeoutMs'))
-               and receipt.get('sourceContractSha256') == hashlib.sha256(overlay['source-contract.json'].encode()).hexdigest()
+               and receipt.get('sourceContractSha256') == (selected['sourceContractSha256'] if split else hashlib.sha256(overlay['source-contract.json'].encode()).hexdigest())
                and receipt.get('effectiveTimeoutMs') == contract[ACK_BUDGET]
                and all(isinstance(receipt.get(key), str) and k.HEX.fullmatch(receipt[key])
                        for key in ('sourceWireSha256', 'effectiveWireSha256'))
@@ -100,6 +136,8 @@ def proof(k, c, value, now=None):
            'CANDIDATE_PLATFORM_VERIFICATION_CHANGED')
     k.need(isinstance(value, dict) and value.get('version') == 1 and
            value.get('credentialBoundary') == 'admin-private-api', 'CANDIDATE_ADMIN_PROOF_REQUIRED')
+    if verified_serving(c):
+        k.need(value.get('status') == 'verified', 'CANDIDATE_ADMIN_PROOF_REQUIRED')
     k.need(value.get('fixture') == {'namespace': c['namespace'], 'runId': c['runId']}, 'CANDIDATE_FIXTURE_CHANGED')
     k.need(k.HEX.fullmatch(value.get('nativeSelectionSha256', '')) and
            k.HEX.fullmatch(value.get('selectionSha256', '')), 'CANDIDATE_GENERATION_CHANGED')
@@ -127,21 +165,42 @@ def proof(k, c, value, now=None):
 def observe(k, d, c, objects, client):
     file = d / 'candidate-verification.json'
     k.need('candidate' in c['pins'] and not file.exists(), 'CANDIDATE_PROOF_CAPTURE_REQUIRED')
-    before = k.observe(c, objects, client, k.active_baseline(d))
+    baseline = k.active_baseline(d)
+    reused = verified_serving(c) and c.get('verificationProof') is not None
+    before = baseline if reused else k.observe(c, objects, client, baseline)
     if 'producerAckReadback' in c:
         name, container = verify_ack_owner(k, c, before)
         wire = WIRE_DIRECTORY + '/' + WIRE_NAME
         digest = client.call(['exec', name, '-c', container, '--', 'sha256sum', wire], read=False)
         expected = [c['producerAckReadback']['effectiveWireSha256'].encode(), wire.encode()]
         k.need(digest.split() == expected, 'PGSTREAM_ACK_WIRE_CHANGED')
-    primer = [p for p in before['pods'].values() if p['workload'] == 'Job/primer' and p['containers'].get('done', {}).get('ready')]
-    k.need(len(primer) == 1, 'CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED')
-    pod = primer[0]
-    raw = client.call(['exec', pod['name'], '-c', 'done', '--', 'cat', '/run/ns-primer/verified.json'], read=False)
-    try:
-        value = json.loads(raw)
-    except ValueError:
-        raise k.Refused('K8S_CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED') from None
+    split = verified_serving(c)
+    workload = VERIFICATION_JOB if split else 'Job/primer'
+    witnesses = [p for p in before['pods'].values() if p['workload'] == workload]
+    k.need(len(witnesses) == 1, 'CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED')
+    pod = witnesses[0]
+    if split:
+        done = pod['containers']['done']
+        k.need((done.get('state') or {}).get('terminated', {}).get('exitCode') == 0,
+               'CANDIDATE_ADMIN_PROOF_REQUIRED')
+        captured = c.get('verificationProof')
+        if captured is None:
+            job = client.get('Job', 'verification')
+            k.need(job['metadata']['uid'] == before['objects'][workload]['uid'] and job_condition(job) == 'Complete',
+                   'CANDIDATE_ADMIN_PROOF_REQUIRED')
+            raw = client.call(['logs', pod['name'], '-c', 'done', '--limit-bytes=65536'], read=False)
+            value = verification_log(k, c, raw)
+        else:
+            k.need(captured['jobUid'] == before['objects'][workload]['uid'] and captured['podUid'] == pod['uid']
+                   and captured['containerId'] == done['containerID'], 'CANDIDATE_FIXTURE_CHANGED')
+            value = captured['proof']
+    else:
+        k.need(pod['containers'].get('done', {}).get('ready'), 'CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED')
+        raw = client.call(['exec', pod['name'], '-c', 'done', '--', 'cat', '/run/ns-primer/verified.json'], read=False)
+        try:
+            value = json.loads(raw)
+        except ValueError:
+            raise k.Refused('K8S_CANDIDATE_ADMIN_PROOF_REQUIRED', 'UNMEASURED') from None
     checked_at = time.time()
     proof(k, c, value, now=checked_at)
     population_readback=population_ceiling.capture(k,c,before,client)
@@ -150,10 +209,15 @@ def observe(k, d, c, objects, client):
       FROM pg_catalog.pg_control_system() s CROSS JOIN pg_catalog.pg_control_checkpoint() c;''', client).strip().split('	')
     native = value['nativeSource']
     k.need(source == [native['system_id'], str(native['timeline']), native['database'], 't'], 'CANDIDATE_NATIVE_SOURCE_CHANGED')
-    k.observe(c, objects, client, before)
+    if not reused:
+        k.observe(c, objects, client, before)
     row = {'version': 1, 'proof': value, 'capturedAt': datetime.fromtimestamp(checked_at, timezone.utc).isoformat().replace('+00:00', 'Z'),
-           'runSha256': k.digest(d / 'run.json'), 'namespaceUid': before['namespace']['uid'], 'primerPodUid': pod['uid'],
-           'primerContainerId': pod['containers']['done']['containerID'], 'adminServiceUid': before['objects']['Service/admin']['uid']}
+           'runSha256': k.digest(d / 'run.json'), 'namespaceUid': before['namespace']['uid'], 'adminServiceUid': before['objects']['Service/admin']['uid']}
+    if split:
+        row.update(verificationJobUid=before['objects'][workload]['uid'], verificationPodUid=pod['uid'],
+                   verificationContainerId=pod['containers']['done']['containerID'])
+    else:
+        row.update(primerPodUid=pod['uid'], primerContainerId=pod['containers']['done']['containerID'])
     if population_readback is not None:row['populationCeilingReadback']=population_readback
     k.write(file, row)
     return row
@@ -168,10 +232,15 @@ def require(k, d, c):
     baseline = k.active_baseline(d)
     population_ceiling.verify_capture(k,c,baseline,value.get('populationCeilingReadback'))
     verify_ack_owner(k, c, baseline)
-    prim = [p for p in baseline['pods'].values() if p['workload'] == 'Job/primer']
-    k.need(len(prim) == 1 and value.get('namespaceUid') == baseline['namespace']['uid'] and
-           value.get('runSha256') == k.digest(d / 'run.json') and value.get('primerPodUid') == prim[0]['uid'] and
-           value.get('primerContainerId') == prim[0]['containers']['done']['containerID'] and
+    split = verified_serving(c)
+    workload = VERIFICATION_JOB if split else 'Job/primer'
+    prefix = 'verification' if split else 'primer'
+    witnesses = [p for p in baseline['pods'].values() if p['workload'] == workload]
+    if split:
+        k.need(value.get('verificationJobUid') == baseline['objects'][workload]['uid'], 'CANDIDATE_FIXTURE_CHANGED')
+    k.need(len(witnesses) == 1 and value.get('namespaceUid') == baseline['namespace']['uid'] and
+           value.get('runSha256') == k.digest(d / 'run.json') and value.get(prefix+'PodUid') == witnesses[0]['uid'] and
+           value.get(prefix+'ContainerId') == witnesses[0]['containers']['done']['containerID'] and
            value.get('adminServiceUid') == baseline['objects']['Service/admin']['uid'], 'CANDIDATE_FIXTURE_CHANGED')
     proof(k, c, value.get('proof'), now=k.timestamp(value.get('capturedAt', '')))
 

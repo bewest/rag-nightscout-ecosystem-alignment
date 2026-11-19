@@ -267,7 +267,12 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
             for container in t['spec'].get('containers', []) + t['spec'].get('initContainers', []):
                 resource_budget.validate_container(container, accounting, need)
     need(workload_inputs.tenants(c.get('tenants', 2)) and c.get('tenants', 2) >= 2, 'DIAGNOSTIC_TENANT_ROSTER')
-    if c.get('tenants', 2) != 2:
+    if 'Job/verification' in by_key:
+        actors = template(by_key['Job/primer'])['spec'].get('initContainers', [])
+        primer = [actor for actor in actors if actor['name'] == 'primer']
+        need(len(primer) == 1 and primer[0].get('args') == ['--tenant-count', str(c.get('tenants', 2))],
+             'DIAGNOSTIC_TENANTS_CHANGED')
+    elif c.get('tenants', 2) != 2:
         count = c['tenants']
         provision = by_key.get('Job/provision')
         need(workload_inputs.tenants(count) and count >= 2 and provision is not None, 'DIAGNOSTIC_TENANT_ROSTER')
@@ -373,7 +378,7 @@ def controller(obj):
     return refs[0]
 
 
-SETUP_JOBS = {'Job/primer', 'Job/provision'}
+SETUP_JOBS = {'Job/primer', 'Job/provision', 'Job/verification'}
 
 
 def job_terminal(job):

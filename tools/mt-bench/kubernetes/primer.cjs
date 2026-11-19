@@ -46,24 +46,15 @@ function diagnostic(error, source) {
   return output;
 }
 
-async function commission({ app, dir, contractFile, env, args }) {
-  const [namespace, runId, contractHash, proofHash, cutoff, count, concurrency, maxTenants] = args;
-  const stop = Number(cutoff), expectedCount = Number(count);
-  const remaining = stop - Date.now();
-  if (!Number.isSafeInteger(stop) || remaining <= 0 || remaining > 2147483647) fail('K8S_PRIMER_DEADLINE');
-  if (![7,8].includes(args.length) || !/^[1-9][0-9]*$/.test(count) || !Number.isSafeInteger(expectedCount) ||
-      env.NS_FIXTURE_NAMESPACE !== namespace || env.NS_FIXTURE_RUN_ID !== runId ||
-      fs.existsSync(path.join(dir, '.exported'))) fail('K8S_PRIMER_FIXTURE_CHANGED');
+function verifyLegacy({ dir, contractFile, contractHash, proofHash, namespace, runId, concurrency, maxTenants, source }) {
   const contractBytes = fs.readFileSync(contractFile);
   const proofBytes = fs.readFileSync(path.join(dir, 'verified.json'));
   if (sha(contractBytes) !== contractHash || sha(proofBytes) !== proofHash) fail('K8S_PRIMER_FIXTURE_CHANGED');
   const contract = JSON.parse(contractBytes), proof = JSON.parse(proofBytes);
-  const primePath = path.join(app, 'deploy/multitenant/prime.js');
   // Image identity is the digest Kubernetes runs; only the fixture and the
   // admin credential boundary are checked here.
   if (proof.fixture?.namespace !== namespace || proof.fixture?.runId !== runId ||
       proof.credentialBoundary !== 'admin-private-api') fail('K8S_PRIMER_SOURCE_CHANGED');
-  const source = require(primePath);
   const declared = contract.primerOptions;
   if (declared === undefined) {
     if (maxTenants !== undefined || Number(concurrency) > 32) fail('K8S_PRIMER_OPTIONS_CHANGED');
@@ -80,12 +71,32 @@ async function commission({ app, dir, contractFile, env, args }) {
   if (Number(concurrency) > 32 && contract.primerOptionProtocol === undefined) {
     fail('K8S_PRIMER_OPTION_SOURCE_UNSUPPORTED');
   }
+}
+
+async function commission({ app, dir, configDirectory = dir, contractFile, env, args }) {
+  const split = args[0] === '--verified-serving';
+  const [namespace, runId, cutoff, count, concurrency, maxTenants] = split ?
+    args.slice(1) : [...args.slice(0, 2), ...args.slice(4)];
+  const [contractHash, proofHash] = args.slice(2, 4);
+  const stop = Number(cutoff), expectedCount = Number(count);
+  const remaining = stop - Date.now();
+  if (!Number.isSafeInteger(stop) || remaining <= 0 || remaining > 2147483647) fail('K8S_PRIMER_DEADLINE');
+  if (!(split ? args.length === 7 : [7,8].includes(args.length)) || !/^[1-9][0-9]*$/.test(count) || !Number.isSafeInteger(expectedCount) ||
+      env.NS_FIXTURE_NAMESPACE !== namespace || env.NS_FIXTURE_RUN_ID !== runId ||
+      fs.existsSync(path.join(dir, '.exported'))) fail('K8S_PRIMER_FIXTURE_CHANGED');
+  const source = require(path.join(app, 'deploy/multitenant/prime.js'));
+  if (!split) verifyLegacy({ dir, contractFile, contractHash, proofHash, namespace, runId, concurrency, maxTenants, source });
   const options = source.parsePrimeOptions(['--concurrency', concurrency, ...(maxTenants === undefined ? [] : ['--max-tenants', maxTenants])]);
-  const config = source.load(path.join(dir, 'config.json'));
+  const config = source.load(path.join(configDirectory, 'config.json'));
   if (config.apiOrigin !== 'http://api:1337' || config.adminOrigin !== 'http://admin:1342') fail('PRIMER_ORIGIN_INVALID');
   const saved = read(dir, 'provisioned.json');
-  const expected = new Map(config.seed.map(row => [row.id, row.hosts?.[0]]));
-  if (expected.size !== expectedCount || config.seed.length !== expectedCount || !Array.isArray(saved) ||
+  let seed = config.seed;
+  if (split) {
+    const demo = require(path.join(app, 'deploy/multitenant/demo-tenants.js'));
+    seed = demo.tenantIds(expectedCount).map((id, index) => ({ id, hosts: [demo.tenantAlias(index)] }));
+  }
+  const expected = new Map(seed.map(row => [row.id, row.hosts?.[0]]));
+  if (expected.size !== expectedCount || seed.length !== expectedCount || !Array.isArray(saved) ||
       saved.length !== expectedCount || new Set(saved.map(row => row.id)).size !== expectedCount ||
       saved.some(row => !row.hosts?.[0] || expected.get(row.id) !== row.hosts[0])) fail('K8S_PRIMER_ROSTER_CHANGED');
   const signal = new AbortController();
@@ -122,8 +133,8 @@ async function commission({ app, dir, contractFile, env, args }) {
 }
 
 async function main() {
-  const result = await commission({ app: process.cwd(), dir: '/run/ns-primer',
-    contractFile: '/run/ns-overlay/source-contract.json', env: process.env, args: process.argv.slice(2) })
+  const result = await commission({ app: process.cwd(), dir: process.argv[2] === '--verified-serving' ? '/run/ns-client' : '/run/ns-primer',
+    configDirectory: '/run/ns-primer', contractFile: '/run/ns-overlay/source-contract.json', env: process.env, args: process.argv.slice(2) })
     .catch(error => diagnostic(error));
   process.stdout.write(JSON.stringify(result) + '\n');
   process.exitCode = result.error ? 1 : result.state === 'synthetic-data-primed' ? 0 : 2;
