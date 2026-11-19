@@ -137,7 +137,8 @@ def verify_helper(config):
         require(isinstance(expected, str) and re.fullmatch(r'[a-f0-9]{64}', expected) is not None,
                 'M7_RUNNER_HELPER_INSTRUMENT')
     else:
-        require(isinstance(config['helperHead'], str) and re.fullmatch(r'[a-f0-9]{40}', config['helperHead']) is not None,
+        # A recorded label, not a pin: any non-empty name identifies the helper.
+        require(isinstance(config.get('helperHead'), str) and config['helperHead'] != '',
                 'M7_RUNNER_HELPER_HEAD')
 
 

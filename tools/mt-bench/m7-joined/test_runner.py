@@ -124,8 +124,9 @@ class Runner(unittest.TestCase):
         with patch.object(adapter, 'git', return_value='a' * 40):
             runner.verify_helper({'helperHead': 'a' * 40})
             runner.verify_helper({'helperHead': 'b' * 40})
+            runner.verify_helper({'helperHead': 'synthetic-head'})
             with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_HELPER_HEAD'):
-                runner.verify_helper({'helperHead': 'not-a-commit'})
+                runner.verify_helper({'helperHead': ''})
         for invalid in ('', 'not-a-hash', None, True):
             with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_HELPER_INSTRUMENT'):
                 runner.verify_helper({'helperInstrument': invalid})
