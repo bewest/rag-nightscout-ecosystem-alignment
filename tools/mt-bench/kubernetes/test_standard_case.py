@@ -59,7 +59,25 @@ class StandardCase(unittest.TestCase):
                 self.assertEqual(final['profile']['proposedEnvelope']['nativeLimits'],
                                  k.document(template/'lifecycle-input.json')['nativeLimits'])
                 objs = k.manifests(k.document(output/'render.json'))
-                self.assertTrue({'ResourceQuota', 'LimitRange'}.isdisjoint(obj['kind'] for obj in objs))
+                quota, = [obj for obj in objs if obj['kind']=='ResourceQuota']
+                limits, = [obj for obj in objs if obj['kind']=='LimitRange']
+                floor, = limits['spec']['limits']
+                self.assertTrue(floor['defaultRequest'])
+                self.assertNotIn('default', floor)
+                totals = dict.fromkeys(('millicpus','memoryBytes','ephemeralBytes'), 0)
+                replicas = 0
+                for obj in objs:
+                    if obj['kind'] in k.WORKLOADS:
+                        count = obj['spec'].get('replicas',obj['spec'].get('parallelism',1))
+                        replicas += count
+                        budget = k.resource_budget.pod_budget(k.template(obj)['spec'],'requests-v1',k.need)
+                        for key in totals:
+                            totals[key] += count*budget[key]
+                hard = quota['spec']['hard']
+                self.assertGreaterEqual(int(hard['pods']), 2*replicas)
+                for key, field in [('millicpus','cpu'),('memoryBytes','memory'),('ephemeralBytes','ephemeral-storage')]:
+                    self.assertGreaterEqual(k.resource_budget.quantity(hard['requests.'+field],field=='cpu',k.need),
+                                            2*totals[key])
                 for obj in objs:
                     if obj['kind'] in k.WORKLOADS:
                         pod = k.template(obj)['spec']
@@ -67,6 +85,18 @@ class StandardCase(unittest.TestCase):
                         self.assertEqual(pod.get('tolerations',[]), [{'key':'worker','value':'reserved',
                                          'operator':'Equal','effect':'NoSchedule'}] if taint else [])
                 job, = [o for o in objs if o['kind']=='Job' and o['metadata']['name']=='k6']
+                load_actor, = [a for a in job['spec']['template']['spec']['containers'] if a['name']=='k6']
+                target, = [x['value'] for x in load_actor['env'] if x['name']=='BASE_URL']
+                edge, = [o for o in objs if o['kind']=='Service' and o['metadata']['name']=='edge']
+                self.assertIn(target, ['http://edge:'+str(port['port']) for port in edge['spec']['ports']])
+                for obj in objs:
+                    if obj['kind']=='Deployment':
+                        pod = k.template(obj)['spec']
+                        self.assertNotIn('wait-for-jobs',[actor['name'] for actor in pod.get('initContainers',[])])
+                        for actor in pod['containers']:
+                            if actor['name'] in ('api','evaluator','realtime','tenant-admin'):
+                                self.assertEqual(actor['readinessProbe']['exec'],actor['livenessProbe']['exec'])
+                                self.assertEqual(actor['readinessProbe']['exec'],actor['startupProbe']['exec'])
                 declared = k.document(paths['BINDING']/'bindings/kubernetes/lib/ns/typical-requests.json')
                 for actor in job['spec']['template']['spec']['containers']+job['spec']['template']['spec']['initContainers']:
                     self.assertEqual(actor['resources'], {'requests':declared[actor['name']]})

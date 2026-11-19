@@ -355,13 +355,15 @@ def prepare_case(case, selection):
     quotas = [obj for obj in before if obj['kind']=='ResourceQuota']
     k.need(len(quotas)<=1, 'NATIVE_LOAD_QUOTA_REQUIRED')
     request=k.resource_budget.pod_budget(k.template(declared[JOB])['spec'],'requests-v1',k.need)
-    # Older cases can explicitly budget the namespace. The standard run has
-    # no namespace quota, so a replacement Pod can also reach the scheduler.
+    # Match the binding's room for each controller to overlap a replacement.
     if quotas:
         hard=quotas[0]['spec']['hard']
-        hard['requests.cpu']=str(k.resource_budget.quantity(hard['requests.cpu'],True,k.need)+request['millicpus'])+'m'
-        hard['requests.memory']=str(k.resource_budget.quantity(hard['requests.memory'],False,k.need)+request['memoryBytes'])
-        hard['pods']=str(int(hard['pods'])+1)
+        for name, dimension in [('cpu','millicpus'), ('memory','memoryBytes'), ('ephemeral-storage','ephemeralBytes')]:
+            field = 'requests.'+name
+            if field in hard:
+                prior = k.resource_budget.quantity(hard[field], name=='cpu', k.need)
+                hard[field] = str(prior + 2*request[dimension]) + ('m' if name=='cpu' else '')
+        hard['pods']=str(int(hard['pods'])+2)
     render['nativeLoadResources']=extra
     inventory[FIELD]=copy.deepcopy(selection);manifest[FIELD]=copy.deepcopy(selection);template[FIELD]=copy.deepcopy(selection)
     for name,value in request.items():
