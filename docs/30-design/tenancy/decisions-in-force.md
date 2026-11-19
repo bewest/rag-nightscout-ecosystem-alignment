@@ -100,7 +100,7 @@ Rows marked **deferred** or **proposed** record a direction that is not yet adop
 - [static-mode-lab-flag](multitenancy-decisions.md#static-mode-lab-flag) — A role refuses a `tenants` list unless `MULTITENANT_STATIC_TENANTS=lab`; static mode then retires.
 - [tenant-live-add](multitenancy-decisions.md#tenant-live-add) — Running evaluator and realtime pick up newly provisioned tenants without restart (separate lane).
 - [registry-connector-definitions](multitenancy-decisions.md#registry-connector-definitions) — Connector definitions are durable tenant configuration; endpoint and credential values stay in tenant secrets.
-- [tenant-ensure-and-factory-reset](multitenancy-decisions.md#tenant-ensure-and-factory-reset) — Audited `ensure` and `factory reset` operations; reset never erases clinical data or credentials.
+- [operator-repair-scope](multitenancy-decisions.md#operator-repair-scope) — Use provision for creation, inspect for diagnosis and known-good backups for exceptional recovery. Factory reset preserves clinical data and credentials.
 - [deployment-ingress-peer-list-trust](multitenancy-decisions.md#deployment-ingress-peer-list-trust) — One explicit peer list serves tenant selection and `TRUST_PROXY`; empty refuses startup.
 - [edge-forwarded-headers-left](multitenancy-decisions.md#edge-forwarded-headers-left) — The edge keeps forwarding its headers; core's selector refusal is the control.
 - [failed-login-delay-core](multitenancy-decisions.md#failed-login-delay-core) — Failed authentication delays the next request as on a single site, keyed on the real client address.
