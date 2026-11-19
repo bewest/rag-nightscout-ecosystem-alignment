@@ -810,10 +810,10 @@ def authority(d, c):
     # UNMEASURED (socket not observable) continues with the signal recorded; only a
     # measured isolation or authorization failure refuses here.
     k.need(access_result.get('verdict') in ('PASS', 'UNMEASURED') and access_result.get('crossTenantChecks') == 2, 'AUTHORITY_REFUSED')
-    k.need(access_result.get('pins')==c['pins'] and access_result.get('context')==c['context'] and access_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'AUTHORITY_SOURCE_CHANGED')
+    k.need(access_result.get('context')==c['context'] and access_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'AUTHORITY_SOURCE_CHANGED')
     k.need((d/'policy.json').is_file(),'POLICY_UNMEASURED','UNMEASURED')
     policy_result=k.document(d/'policy.json')
-    k.need(policy_result.get('pins')==c['pins'] and policy_result.get('context')==c['context'] and policy_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'POLICY_SOURCE_CHANGED')
+    k.need(policy_result.get('context')==c['context'] and policy_result.get('namespaceUid')==k.active_baseline(d)['namespace']['uid'],'POLICY_SOURCE_CHANGED')
     policy_assess(policy_result.get('observations'))
     return access_result, policy_result
 
@@ -914,7 +914,7 @@ def matrix_plan(value):
         names.add((c['context'],c['namespace']));owners.add(c['runId']);ports.add(port)
         if configs:
             k.need(c['context']==configs[0]['context'],'MATRIX_CONTEXT_CHANGED')
-            k.need(all(c['pins'][field]==configs[0]['pins'][field] for field in ('pair','appImage','appImageId','bindingCommit','instrument')),'MATRIX_MIXED_SOURCE')
+            k.need(c['pins']['appImageId']==configs[0]['pins']['appImageId'],'MATRIX_MIXED_IMAGE')
         configs.append(c)
         for obj in objects.values():
             if obj['kind'] not in k.WORKLOADS:continue

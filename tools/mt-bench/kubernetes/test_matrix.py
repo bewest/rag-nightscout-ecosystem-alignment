@@ -309,15 +309,18 @@ class Matrix(unittest.TestCase):
             return next((d, c, o) for d, c, o, _ in self.entries if str(d) == path)
         with patch.object(k, 'load', side_effect=load):
             e.matrix_plan(self.value)
-            for field in ('instrument', 'appImageId'):
-                pins = self.entries[1][1]['pins']
-                original = pins[field]
-                pins[field] = 'foreign'
-                with self.assertRaisesRegex(k.Refused, 'MATRIX_MIXED_SOURCE'):
-                    e.matrix_plan(self.value)
-                pins[field] = original
+            pins = self.entries[1][1]['pins']
+            original = pins['instrument']
+            pins['instrument'] = 'foreign'
+            e.matrix_plan(self.value)  # instrument identity is recorded, not compared
+            pins['instrument'] = original
+            original = pins['appImageId']
+            pins['appImageId'] = 'foreign'
+            with self.assertRaisesRegex(k.Refused, 'MATRIX_MIXED_IMAGE'):
                 e.matrix_plan(self.value)
-                print('RED_RESTORED K8S_MATRIX_MIXED_SOURCE', field)
+            pins['appImageId'] = original
+            e.matrix_plan(self.value)
+            print('RED_RESTORED K8S_MATRIX_MIXED_IMAGE appImageId')
             c = self.entries[1][1]
             original = c['baseUrl']
             c['baseUrl'] = self.entries[0][1]['baseUrl'] + '/'

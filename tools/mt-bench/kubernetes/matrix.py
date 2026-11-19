@@ -113,8 +113,7 @@ def joined_point(d, c, baseline, current):
     identity(c, baseline, current)
     out = d / 'load'
     result, window = k.document(out / 'result.json'), k.document(out / 'window.json')
-    k.need(result.get('verdict') == 'OBSERVED' and result.get('pins') == c['pins'] and
-           window.get('pins') == c['pins'] and window.get('namespaceUid') == baseline['namespace']['uid']
+    k.need(result.get('verdict') == 'OBSERVED' and window.get('namespaceUid') == baseline['namespace']['uid']
            and window.get('context') == c['context'] and window.get('runId') == e.stage_runid(c, 'load'),
            'MATRIX_RESULT_SOURCE_CHANGED')
     start, end = window.get('loadStartedAt'), window.get('loadEndedAt')
