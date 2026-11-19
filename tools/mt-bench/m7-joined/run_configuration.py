@@ -24,7 +24,6 @@ def validate_prepare(args):
     static = a.static_topology.option(args)
     commissioning_wal.option(args)
     a.stream_topology.ack_option(args)
-    a.preload_convergence.option(args)
     require(args.measurement_mode=='accepted','M7_CONFIG_DISCOVERY_MEASUREMENT_MODE')
     require(workload_inputs.tenants(args.tenants)
             and (discovery_api_replicas(args.replicas) if args.run_purpose=='discovery'
@@ -63,7 +62,7 @@ def from_args(args, instrument):
     cadence = validate_prepare(args)
     profile = a.selected_resources_profile(args)
     resources = resource_projection(a.diagnostic_resources, profile)
-    return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **a.preload_convergence.option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **a.node_observation.option(args), **a.api_warm_cause.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
+    return {**commissioning_wal.option(args), **a.stream_topology.ack_option(args), **({'tenantReadiness':args.tenant_readiness} if getattr(args,'tenant_readiness',None) else {}), **a.static_topology.option(args), **a.node_observation.option(args), **a.api_warm_cause.option(args), **({'apiCauseObservation':'on'} if getattr(args,'api_cause_observation','off')=='on' else {}),'version': 1, 'pair': {'core': args.core_commit, 'deploy': args.deploy_commit},
             'imageId': args.image_id or args.image, 'instrument': instrument,
             'postgresImageId': args.postgres_image, 'profile': args.profile,
             'runPurpose': args.run_purpose, 'tenants': args.tenants, 'replicas': args.replicas,
@@ -82,7 +81,7 @@ def from_manifest(m):
     node = m.get('nodeObservation')
     warm = m.get('apiWarmCause')
     return {**({'staticBuildReceiptSha256': m['staticBuildReceiptSha256']} if m.get('staticBuildReceiptSha256') else {}),
-            **commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **a.preload_convergence.selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),**({'nodeObservationMode':node['mode']} if node else {}),
+            **commissioning_wal.from_manifest(m), **a.stream_topology.ack_selection(m), **({'tenantReadiness':m['tenantReadiness']} if m.get('tenantReadiness') else {}), **({'staticTopology':m['staticTopology']} if m.get('staticTopology') else {}),**({'nodeObservationMode':node['mode']} if node else {}),
             **({'apiWarmCauseMode':warm['mode']} if warm else {}),
             **({'apiCauseObservation':'on'} if m.get('apiCause') else {}),'version': 1, **{k: m.get(k) for k in ('pair','imageId','profile','runPurpose','tenants','replicas','cadence','completionContract')},
             'instrument': m['instrument']['sha256'], 'postgresImageId': m.get('postgresImageId'),

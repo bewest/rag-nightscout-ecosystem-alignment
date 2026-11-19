@@ -22,9 +22,9 @@ class OfflineResolver(unittest.TestCase):
 
     def test_catchup_without_drain_window_fails_at_plan_time_before_any_actor(self):
         with patch.object(a, 'command', side_effect=AssertionError('actor started')):
-            with self.assertRaisesRegex(RuntimeError, 'M7_DRAIN_WORK_DEADLINE_REQUIRED'):
+            with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED'):
                 runner.validate_config(self.to_completion())
-            with self.assertRaisesRegex(RuntimeError, 'M7_DRAIN_WORK_DEADLINE_REQUIRED'):
+            with self.assertRaisesRegex(RuntimeError, 'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED'):
                 runner.tier_plan(self.to_completion())
 
     def test_cleanup_600_is_accepted_and_explained_while_non_finite_is_refused(self):

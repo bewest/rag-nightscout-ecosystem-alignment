@@ -195,15 +195,9 @@ def validate_config(config):
     validate_prepare(parsed)
     require(0 <= parsed.quiet_load <= (os.cpu_count() or 1), 'M7_QUIET_BOUND_INVALID')
     cadence = a.cadence_options(parsed)
-    require(not a.preload_convergence.option(parsed) or local_to_completion,
-            'M7_PRELOAD_LOCAL_OWNED_TO_COMPLETION_REQUIRED')
-    # The run stage gets no work deadline in a to-completion run, so a catch-up
-    # drain needs its own authored window. Refused here, before any actor exists.
-    require(parsed.evaluator_catchup is None or not local_to_completion or 'drainSeconds' in cadence,
-            'M7_DRAIN_WORK_DEADLINE_REQUIRED')
     require(not local_to_completion or {'setupSeconds', 'drainSeconds'} <= cadence.keys(),
             'M7_RUNNER_TO_COMPLETION_PHASE_BUDGETS_REQUIRED')
-    authored_windows = ('warmupSeconds', 'idleSeconds', 'loadSeconds', 'setupSeconds', 'drainSeconds')
+    authored_windows = ('loadSeconds', 'setupSeconds', 'drainSeconds')
     require(local_to_completion or work > sum(cadence.get(key, 0) for key in authored_windows),
             'M7_RUNNER_WORK_WINDOW')
     return config, argv
@@ -691,8 +685,7 @@ def session_start(config_file, directory):
         value = {'version':1, 'owner':state['owner'], 'startedAt':state['startedAt'],
             'stopWorkAt':state['stopWorkAt'], 'cleanupAt':state['cleanupAt'],
             'runtimeOwnerSha256':a.digest(d/'owner.json'), 'runtimeOwner':m['owner'],
-            'resourceCeiling':m.get('diagnosticResources'), 'cleanupRunner':str(Path(__file__).resolve()),
-            'seedHistory':'Original deployment and seeding retained; subsequent observations are reused history.'}
+            'resourceCeiling':m.get('diagnosticResources'), 'cleanupRunner':str(Path(__file__).resolve())}
         with custody(root):
             execution_window(root,config)
             write(root/'session.json', value)
@@ -727,7 +720,7 @@ def session_observation_lock(root):
         yield
 
 
-def session_observe(directory, owner, name, config_file, history_file):
+def session_observe(directory, owner, name, config_file, history_file=None):
     root = Path(directory).resolve()
     require(re.fullmatch(r'[a-z][a-z0-9-]{0,47}', name) is not None, 'M7_SESSION_OBSERVATION_NAME')
     with session_observation_lock(root):
@@ -737,20 +730,15 @@ def session_observe(directory, owner, name, config_file, history_file):
         require(config['k6Image'] == original['k6Image'], 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
         stable = lambda options:{k:v for k,v in options.items() if k not in SESSION_VARIABLE_OPTIONS}
         require(stable(config['prepare']) == stable(original['prepare']), 'M7_SESSION_RUNTIME_CONFIG_CHANGED')
-        history = a.document(history_file)
-        require(isinstance(history,dict) and all(k in history for k in
-            ('warmCache','seedHistory','previousWrites','restarts','activeViewers','elapsedAges')),
-            'M7_SESSION_HISTORY_REQUIRED')
         ob = root/'observations'/name
         require(not ob.exists(), 'M7_SESSION_OBSERVATION_EXISTS')
         ob.mkdir(mode=0o700)
         entry_memory = point_results.available_memory()
         write(ob/'config.json',config)
-        write(ob/'history.json',{'declared':history, 'runtime':'REUSED',
-            'elapsedSessionSeconds':time.time()-session['startedAt'],
-            'previousObservations':sorted(p.name for p in ob.parent.iterdir() if p != ob),
-            'runtimeOwnerSha256':session['runtimeOwnerSha256'], 'collector':a.instrument(),
-            'clocksAndCounters':'UNCHANGED; no implicit reset or retry'})
+        reuse = {'runtime': 'REUSED'}
+        if history_file is not None:
+            reuse['declared'] = a.document(history_file)
+        write(ob/'history.json', reuse)
         failure = None
         try:
             try:
@@ -973,7 +961,7 @@ def main():
         sub.add_parser(name).add_argument('directory')
     start = sub.add_parser('session-start');start.add_argument('config');start.add_argument('directory')
     observe = sub.add_parser('session-observe');observe.add_argument('directory');observe.add_argument('--owner',required=True)
-    observe.add_argument('--name',required=True);observe.add_argument('--config',required=True);observe.add_argument('--history',required=True)
+    observe.add_argument('--name',required=True);observe.add_argument('--config',required=True);observe.add_argument('--history', help='Optional legacy observation metadata')
     close = sub.add_parser('session-close');close.add_argument('directory');close.add_argument('--owner',required=True)
     args = parser.parse_args()
     if args.action in ('prepare', 'execute', 'rehearse', 'run', 'session-start', 'session-observe'):

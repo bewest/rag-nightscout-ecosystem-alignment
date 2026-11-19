@@ -228,15 +228,8 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
         validate_workload(c['workload'], need, driver_count(c, need))
         need('probeLedger' not in c['workload'] or c.get('tier','discovery')=='discovery', 'PROBE_LEDGER_DISCOVERY_ONLY')
         need('evaluatorProgressBudget' not in c['workload'] or c.get('tier','discovery')=='discovery', 'EVALUATOR_PROGRESS_BUDGET_DISCOVERY_ONLY')
-    if 'accessSetupSeconds' in c:
-        from workload_inputs import seconds
-        need(seconds(c['accessSetupSeconds']), 'ACCESS_SETUP_WINDOW')
     if 'dataPrimerSeconds' in c:
         need(workload_inputs.seconds(c['dataPrimerSeconds']), 'DATA_PRIMER_WINDOW')
-    if 'preloadConvergence' in c:
-        import preload
-        need(c.get('tier', 'discovery') == 'discovery', 'PRELOAD_DISCOVERY_ONLY')
-        preload.selection(c['preloadConvergence'])
     objs = manifests(rendered)
     primer_storage.check_render(c, objs)
     if 'edgeConfiguration' in inventory or 'edgeConfiguration' in c:
@@ -888,7 +881,7 @@ def generate_probe(target):
     anchor = "const at = Date.now(); s.frames.push(at);"
     need(source.count(anchor) == 1, 'PROBE_FRAME_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "\n    if(kubernetesFrames.rows.length<4096){const ids=(frame?.sgvs||[]).slice(0,1024).map(v=>String(v._id));if((frame?.sgvs||[]).length>1024)kubernetesFrames.overflow=true;kubernetesFrames.rows.push({tenant:t.id,socket:sockets.indexOf(s),ids,at});}else kubernetesFrames.overflow=true;")
-    anchor = "e.completion=withinDeadline?result:{...result,ready:false,code:'M7_COMPLETION_DEADLINE',assessedCode:result.code,...(result.clientFailure?{assessedClientFailure:result.clientFailure}:{})};"
+    anchor = "e.completion=result;"
     need(source.count(anchor) == 1, 'PROBE_CLINICAL_ANCHOR_CHANGED')
     source = source.replace(anchor, anchor + "e.rawRow=row;")
     anchor = "requestStartedAt:e.sent,...e.completion"

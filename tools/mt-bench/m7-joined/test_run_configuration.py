@@ -129,6 +129,13 @@ class Configuration(unittest.TestCase):
                     with self.assertRaisesRegex(RuntimeError,'CONFIGURATION_MISMATCH|LIMIT_INVALID|SOURCE_MISMATCH'):runner.prepare(file,target)
                     self.assertFalse(target.exists());guard.assert_not_called();effects.assert_not_called()
 
+    def test_legacy_preload_options_do_not_add_a_run_phase(self):
+        cfg=config()
+        before=rc.from_args(parsed(cfg),'d'*64)
+        cfg['prepare'].update({'preload-convergence-seconds':900,'preload-convergence-interval-seconds':15,
+                               'preload-readiness':'require-all','evaluator-opportunities':'received-input-v1'})
+        self.assertEqual(rc.from_args(parsed(cfg),'d'*64),before)
+
     def test_invalid_bounds_and_cross_fields_before_output(self):
         # Discovery reference sizes are overridable; array representation
         # overflow remains invalid instead of the former 10000/80000 examples.
@@ -138,7 +145,7 @@ class Configuration(unittest.TestCase):
                         {'diagnostic-resource-profile':a.diagnostic_resources.EXTERNAL_NAME}):
             cfg=config();cfg['prepare'].update(changes)
             with self.subTest(changes=changes),self.assertRaises((RuntimeError,ValueError)):runner.validate_config(cfg)
-        cfg=config();cfg['workSeconds']=38
+        cfg=config();cfg['workSeconds']=cfg['prepare']['load-seconds']
         with self.assertRaisesRegex(RuntimeError,'WORK_WINDOW'):runner.validate_config(cfg)
 
     def test_remote_realistic_shards_derive_exact_shared_dependency_hashes(self):

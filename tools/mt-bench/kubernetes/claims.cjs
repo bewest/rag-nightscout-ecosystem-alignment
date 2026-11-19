@@ -7,9 +7,18 @@ function assess(v){
   if(!Array.isArray(rows)||!rows.length)fail('K8S_CLINICAL_UNMEASURED');
   const counts=new Map(ids.map((id,i)=>[id,Math.floor(v.clients/ids.length)+(i<v.clients%ids.length?1:0)]));
   const byId=new Map(),results=[];
+  let timingUnmeasured=false;
   for(const witness of rows){
     if(!counts.has(witness.tenant)||!witness.rawRow||!Array.isArray(witness.clientObservations))fail('K8S_CLINICAL_UNMEASURED');
-    if(witness.clientProofVersion===3 && witness.clinicalTiming?.verdict!=='PASS')fail('K8S_CLINICAL_DEADLINE_UNCONFIRMED');
+    if(witness.clientProofVersion===3){
+      const timing=witness.clinicalTiming;
+      if(timing?.acceptanceToCompletionLowerMs>=120000 ||
+         witness.clientObservations.some(frame=>frame.atMono-timing?.acceptedMono>=120000))
+        fail('K8S_CLINICAL_DEADLINE');
+      if(timing?.verdict!=='PASS' || !Number.isFinite(timing.acceptedMono) ||
+         !Number.isFinite(timing.acceptanceToCompletionMs) || timing.acceptanceToCompletionMs<0 ||
+         timing.acceptanceToCompletionMs>=120000) timingUnmeasured=true;
+    }
     const result=o.assess(witness.rawRow,witness,witness.clientObservations,counts.get(witness.tenant),v.completion);
     if(!result.ready)fail(result.code);
     const previous=byId.get(result.storedId);if(previous&&previous!==witness.tenant)fail('K8S_STORED_ID_TENANT_COLLISION');
@@ -21,7 +30,7 @@ function assess(v){
     if(!counts.has(frame.tenant)||!Array.isArray(frame.ids))fail('K8S_ISOLATION_UNMEASURED');
     if(frame.ids.some(id=>byId.has(id)&&byId.get(id)!==frame.tenant))fail('K8S_CROSS_TENANT_FRAME');
   }
-  return {verdict:'PASS',witnesses:results.length,witnessTenants:new Set(results.map(r=>r.tenant)).size,
+  return {verdict:timingUnmeasured?'UNMEASURED':'PASS',witnesses:results.length,witnessTenants:new Set(results.map(r=>r.tenant)).size,
     clientFrameCoverage:{plannedStockViewers:v.clients,witnessesWithViewers:results.filter(r=>r.clients>0).length,witnessesWithoutViewers:results.filter(r=>r.clients===0).length,scope:'client frames required only for the declared viewers; unviewed tenants retain stored and selected clinical checks'},
     clinicalScope:'existing selected BG-now bucket mean/last plus durable typed output and exact stored row/client frame',
     isolationScope:'no other witnessed synthetic tenant stored ID in retained stock-client frames; access refusal separate',

@@ -33,7 +33,6 @@ import orchestration_binding
 from orchestration_binding import verified_serving
 import evaluator_progress
 import outcome_gate
-import clinical_warm
 import api_cause
 import driver_vu_diagnostic
 import api_warm_cause
@@ -43,8 +42,6 @@ import discovery_rest
 import evaluator_idle
 import evaluator_opportunities
 import observation_rows
-import evaluator_catchup
-import preload_convergence
 import sql_attribution
 import cost_companion
 import realtime_costs
@@ -467,12 +464,6 @@ def cadence_options(args):
         require(args.profile=='pgstream-sample' and discovery_inputs,'M7_STARTUP_WINDOWS_DISCOVERY_ONLY')
         workload_inputs.startup_windows(startup,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)
         value['startupWindows']=startup
-    opportunity_budget = getattr(args, 'opportunity_observation', None)
-    if opportunity_budget is not None:
-        require(discovery_inputs and args.profile == 'pgstream-sample' and
-                getattr(args,'completion_contract',None) == 'evaluator-work-v2', 'M7_OPPORTUNITY_PROFILE_UNSUPPORTED')
-        evaluator_opportunities.round_budget(args.tenants, opportunity_budget)
-        value['opportunityObservation'] = opportunity_budget
     progress_budget=getattr(args,'evaluator_progress_budget',None)
     if progress_budget is not None:
         require(args.profile=='pgstream-sample' and discovery_inputs,'M7_EVALUATOR_PROGRESS_BUDGET_DISCOVERY_ONLY')
@@ -488,7 +479,7 @@ def cadence_options(args):
                         'M7_SAMPLE_KNOB_RANGE:' + knobs[key])
             value[knobs[key]] = number
         require(value['samplerIntervalSeconds'] <= 60 and sum(value.get(key, 0) for key in
-                ('warmupSeconds','idleSeconds','loadSeconds','setupSeconds','drainSeconds')) <=
+                ('loadSeconds','setupSeconds','drainSeconds')) <=
                 phase_limit, 'M7_SAMPLE_DURATION_RANGE')
         require(workload_inputs.population_fits(getattr(args,'tenants',1), value['hotFactor']),
                 'M7_WORKLOAD_POPULATION_ARRAY_LIMIT')
@@ -530,14 +521,6 @@ def cadence_options(args):
         require(mix == REALISTIC_MIX, 'M7_WORKLOAD_SCALE_CONFIGURATION')
         realistic_cycle_ms(scale)
         value['workloadScale'] = scale
-    observation = getattr(args, 'drain_observation', None)
-    if observation is not None:
-        require(args.profile == 'pgstream-sample' and args.run_purpose == 'discovery'
-                and 'drainSeconds' in value
-                and (args.evaluator_catchup == 'fixed-target-v1' or
-                     args.evaluator_catchup is None and getattr(args, 'completion_contract', None) == 'evaluator-work-v2'),
-                'M7_DRAIN_OBSERVATION_SCOPE')
-        value['drainObservation'] = observation
     phase_windows.selection(value)
     value.update(driver_vu_diagnostic.selection(args, value))
     return value
@@ -579,7 +562,6 @@ def attach(args):
     require(not static_selection or getattr(args,'runtime_owner',None),'M7_STATIC_ATTACH_OWNER_REQUIRED')
     require(not commissioning_wal.option(args) and getattr(args,'tenant_readiness',None) is None,'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     stream_topology.ack_option(args)
-    preload_convergence.option(args)
     require(not api_warm_cause.option(args),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     require(not selected_resources_profile(args) and getattr(args,'api_cause_observation','off')=='off' and not getattr(args,'generator_dependencies',None) and not getattr(args,'vault_refusal_control',None),'M7_DIAGNOSTIC_OPTIONS_FRESH_PREPARE_ONLY')
     diagnostic_resources.configure()
@@ -597,8 +579,6 @@ def attach(args):
     m.update(static_selection)
     selection=serial_exchange_selection(args)
     if selection is not None:m['serialExchangeDiagnostic']=selection
-    select_opportunities(args,m)
-    evaluator_catchup.select(args,m)
     require(re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,62}',args.project) and workload_inputs.tenants(args.tenants) and (args.replicas==1 or static_selection),'M7_ATTACH_SCOPE')
     # Current receipts bind semantic configuration before attachment admission.
     # This is provisional read-only metadata; canonical owner/dependency/resource
@@ -824,7 +804,6 @@ def prepare(args):
     commissioning_wal.option(args)
     fixture_project(args,'0'*32)
     ack_budget=stream_topology.ack_option(args)
-    preload=preload_convergence.option(args)
     profile_provenance.selection(getattr(args,'diagnostics','off'),getattr(args,'diagnostics_interval_ms',5000))
     require(bool(getattr(args,"backend_subnet",None))==bool(getattr(args,"edge_subnet",None)),"M7_EXPLICIT_SUBNET_PAIR_REQUIRED")
     require(os.getuid()==1000 and os.getgid()==1000,"M7_HOST_RUNTIME_UID_REQUIRED")
@@ -851,9 +830,6 @@ def prepare(args):
                    'primerConcurrency':options['concurrency'],**({'primerMaxTenants':options['maxTenants']} if 'maxTenants' in options else {})}
         candidate.update(commissioning_wal.option(args))
         candidate.update(ack_budget)
-        candidate.update(preload)
-        if preload:
-            candidate['completionContract'] = args.completion_contract
         if ack_budget:
             candidate['pgstreamTopology']=args.pgstream_topology
         selection=serial_exchange_selection(args)
@@ -903,11 +879,8 @@ def prepare_staged(args,target,pinned):
     if 'maxTenants' in options:m['primerMaxTenants']=options['maxTenants']
     m.update(commissioning_wal.option(args))
     m.update(stream_topology.ack_option(args))
-    m.update(preload_convergence.option(args))
     if getattr(args,'image_input_preflight',None):m['imageInputPreflight']=args.image_input_preflight
     if getattr(args,"run_purpose","acceptance")=="discovery":m["runPurpose"]="discovery"
-    select_opportunities(args,m)
-    evaluator_catchup.select(args,m)
     m["diagnostics"]=profile_provenance.selection(getattr(args,"diagnostics","off"),getattr(args,"diagnostics_interval_ms",5000))
     m['measurementMode']=getattr(args,'measurement_mode','accepted')
     if args.profile=='pgstream-sample' and m.get('runPurpose')=='discovery':
@@ -1085,6 +1058,82 @@ def verify(d, m, teardown=False):
 
 def psql(d, sql, database="postgres", *, timeout=None, rows=None):
     return compose(d, "exec", "-T", "postgres", "psql", "-X", *(["-v", "FETCH_COUNT=64"] if rows else []), "-q", "-At", "-F", "\t", "-v", "ON_ERROR_STOP=1", "-U", "postgres", "-d", database, input=sql.encode(),**({'rows':rows} if rows else {}),**({'timeout':timeout} if timeout is not None else {}))
+
+
+@contextlib.contextmanager
+def accepted_input_observation(d, m, runid, completion):
+    """Observe only the bound evaluator-work source, from before the first writer."""
+    if m.get('completionContract') == 'evaluator-work-v2':
+        require(completion.get('kind') == 'evaluator-work-v2','M7_INPUT_SOURCE_BINDING')
+    if completion.get('kind') != 'evaluator-work-v2':
+        yield None
+        return
+    import accepted_inputs
+    ids = [row['id'] for row in document(d/'tenants.private.json')]
+    assert_owned(m)
+    database = application_database(d)
+    outer = _COMMAND_DEADLINE.get()
+    def fetch(sql, timeout):
+        with command_deadline(outer):
+            seconds = remaining_seconds(timeout)
+            ms = max(1, min(2147483647, int(seconds * 1000)))
+            query = f"BEGIN READ ONLY; SET LOCAL statement_timeout='{ms}ms';\n{sql}\n;ROLLBACK;"
+            return psql(d, query, database, timeout=seconds)
+    observer = accepted_inputs.Observer(config=completion, run_id=runid, ids=ids, fetch=fetch)
+    try:
+        observer.start()
+        yield observer
+    except Exception:
+        # A failed probe or storage check can still leave accepted writes and
+        # valid observations. Keep the original failure as the run's exception.
+        out = d/'load'
+        phase = out/'phase-windows.json'
+        try:
+            windows = document(phase) if phase.is_file() else {}
+            if 'drainStartedMonoNs' in windows and not (out/'evaluator-catchup.json').exists():
+                assert_owned(m)
+                counts = out/'oracle-findings.json'
+                if not counts.is_file():
+                    from discovery_counts import observe
+                    metrics = out/'k6-summary.json'
+                    try:
+                        observe(sys.modules[__name__],d,out,runid,document(metrics)['metrics'] if metrics.is_file() else {},
+                                probe_ledger=m['cadence'].get('probeLedger'))
+                    except Exception:
+                        # The storage reducer publishes its own mismatch detail.
+                        pass
+                observer.finish(out, drain_end=drain_boundary(windows,outer),
+                                storage=document(counts) if counts.is_file() else None)
+            if (out/'evaluator-catchup.json').is_file() and not (out/'outcome-gate.json').is_file():
+                try:
+                    if not any((out/'evaluator-progress-raw').glob('drain-*.private.jsonl')):
+                        assert_owned(m)
+                        terminal_progress(d,m,out)
+                finally:
+                    write(out/'outcome-gate.json',outcome_gate.judge_compose_run(d,ids))
+        except Exception as error:
+            with contextlib.suppress(OSError):
+                write(out/'partial-outcome-error.json',{'verdict':'UNMEASURED','code':collection_segments.code(error)})
+        raise
+    finally:
+        observer.close()
+
+
+def drain_boundary(windows, outer):
+    end = windows['drainStartedMonoNs']/1e9 + windows['drainSeconds']
+    return min(end, time.monotonic()+outer-time.time()) if outer is not None else end
+
+
+def terminal_progress(d, m, out):
+    """Retain end-of-drain source pages even when the strict decoder refuses."""
+    ids = sorted(row['id'] for row in document(d/'tenants.private.json'))
+    services = progress_services(d)
+    policy = evaluator_progress.roster_policy(m['cadence'].get('evaluatorProgressBudget'), len(ids), len(services))
+    until = _COMMAND_DEADLINE.get()
+    def fetch(*args):
+        with command_deadline(until):
+            return progress_fetch(d, *args)
+    evaluator_progress.round_view(services, ids, retain_raw(out, 'drain', fetch), policy=policy, demand_driven=True)
 
 
 def service_roster(config):
@@ -1501,8 +1550,6 @@ def deploy(d, m):
     stages=[]
     for name,scope,args in deployment_plan(config,pgstream=m.get("profile")=="pgstream-sample",primer_concurrency_value=m.get("primerConcurrency",1),platform_verification=bool(m.get("platformStartup")),compose_ready_seconds=startup['composeReadySeconds'],primer_max_tenants=m.get('primerMaxTenants')):
         with deployment_stage(d, stages, name) as stage:
-            if name in ('serving', 'remaining-roles') and m.get('profile') == 'pgstream-sample':
-                clinical_warm.start(d/clinical_warm.FILE, clinical_warm.now_ms(), 'evaluator role start invocation')
             waiter = None
             if name in ('provision', 'prime'):
                 waiter = ComposePrimerWait(d/'state/primer', name, startup['stageSeconds'], stage)
@@ -1874,6 +1921,8 @@ def count_oracle(d, strict=True, allow_empty=False):
     probes = document(out / "fanout.json")["probeWrites"]["byTenant"]
     values = stored(d, (out / "runid").read_text().strip())
     write(out / "stored-counts.json", values)
+    if document(d/"owner.json").get("completionContract") == "evaluator-work-v2":
+        strict = False  # Idle tenants have no stored-write or completion obligation.
     result = oracle(values, metrics, probes, document(d / "tenants.private.json"), strict=strict,allow_empty=allow_empty)
     write(out / "oracle.json", result)
     return result
@@ -2022,41 +2071,20 @@ def observe_progress(d,m,out,phase):
     ids=sorted(row['id'] for row in document(d/'tenants.private.json'))
     until=_COMMAND_DEADLINE.get()
     def fetch(*args):
-        # Executor threads do not inherit ContextVars. Keep the original cutoff.
+        # Executor threads do not inherit the caller's work cutoff.
         with command_deadline(until):
-            if 'evaluatorOpportunities' in m and phase in ('idle','load'):
-                seconds = allocation['effective']['roundSeconds']
-                return progress_fetch(d,*args,timeout=(args[2]+1)*seconds,stall_seconds=seconds)
             return progress_fetch(d,*args)
     fetch=retain_raw(out,phase,fetch)
-    fetch=clinical_warm.observing(fetch,d/clinical_warm.FILE,progress_services(d),ids)
     args=(progress_services(d),ids,fetch,m['cadence'][phase+'Seconds'],phase,lambda value:write_progress(out,value,m))
     observer={'midpoint_judge':midpoint_judge(ids),'signal_write':lambda value:write(out/'evaluator-midpoint-signal.json',{**value,'instrument':outcome_gate.instrument()})}
     policy=evaluator_progress.capture_policy(m['cadence'].get('evaluatorProgressBudget'))
-    if 'evaluatorOpportunities' in m:
-        opportunity_contract(m)
-        if phase in ('idle','load'):
-            allocation=evaluator_opportunities.round_budget(len(ids),m['cadence'].get('opportunityObservation'))
-            policy=evaluator_progress.roster_policy(m['cadence'].get('evaluatorProgressBudget'), len(ids), len(args[0]))
-            collector=opportunity_collector(d,m,ids,byte_limit=allocation['effective']['sqlMaxBytes'],
-                                            round_seconds=allocation['effective']['roundSeconds'])
-            observer=evaluator_opportunities.Observer(*args,durable_fetch=collector,binding=collector.binding,preparation_cost=collector.preparation_cost,source_sha256=collector.source_sha256,query_sha256=collector.query_sha256,round_allocation=allocation,policy=policy,**observer)
-            observer.rest_only=discovery_rest.permitted(sys.modules[__name__],d,m)
-            return observer
     if phase=='idle':return evaluator_idle.Observer(*args,tail_fetch=fetch,policy=policy,failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY,**observer)
-    value=evaluator_progress.Observer(*args,policy=policy,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
+    value=evaluator_progress.Observer(*args,policy=policy,demand_driven=True,**observer);value.failure_policy=evaluator_progress.OUTCOME_FAILURE_POLICY
     return value
 
 
 def opportunity_contract(m):
-    require(m.get('evaluatorOpportunities')=='received-input-v1' and m.get('profile')=='pgstream-sample' and m.get('completionContract')=='evaluator-work-v2' and m.get('runPurpose')=='discovery','M7_OPPORTUNITY_PROFILE_UNSUPPORTED')
-
-
-def select_opportunities(args,m):
-    selected=getattr(args,'evaluator_opportunities',None)
-    if selected is None and m.get('runPurpose')=='discovery' and m.get('profile')=='pgstream-sample' and m.get('completionContract')=='evaluator-work-v2':
-        selected='received-input-v1'
-    if selected is not None:m['evaluatorOpportunities']=selected;opportunity_contract(m)
+    require(m.get('profile')=='pgstream-sample' and m.get('completionContract')=='evaluator-work-v2' and m.get('runPurpose')=='discovery','M7_OPPORTUNITY_PROFILE_UNSUPPORTED')
 
 
 def opportunity_collector(d,m,ids,*,byte_limit=None,round_seconds=None):
@@ -2137,22 +2165,16 @@ def readiness(d, m, *, clock=time):
     seconds=workload_inputs.startup_windows(authored,workload_inputs.COMPOSE_STARTUP_DEFAULTS,require)['evaluatorReadySeconds']
     effective=remaining_seconds(seconds)
     started=clock.monotonic()
-    work_left=remaining_seconds(float('inf'))
-    work_until=started+work_left
-    stall=ProgressWindow(seconds,now=clock.monotonic)
-    deadline=min(work_until,stall.deadline)
-    window={'selectedSeconds':seconds,'effectiveSeconds':effective,'stallSeconds':seconds}
+    deadline=started+effective
+    window={'selectedSeconds':seconds,'effectiveSeconds':effective}
     progress_budget=cadence.get('evaluatorProgressBudget')
     policy=evaluator_progress.capture_policy(progress_budget)
-    discovery=m.get('runPurpose')=='discovery'
-    clinical_stall=discovery_rest.selected(m)
     interval=15
     limits={'attempts':policy['readinessMaxRounds'],'queries':policy['readinessMaxQueries'],'bytes':policy['readinessMaxBytes']}
     if 'evaluatorReadySeconds' in authored or progress_budget is not None:
         attempts=math.ceil(effective/interval)
-        captures=attempts*(2 if discovery else 1)
         pages=len(services)*math.ceil(len(ids)/policy['selectorRows'])
-        limits={'attempts':attempts,'queries':captures*pages,'bytes':captures*(policy['maxBytesPerPhase']//policy['roundsPerPhase'])}
+        limits={'attempts':attempts,'queries':attempts*pages,'bytes':attempts*(policy['maxBytesPerPhase']//policy['roundsPerPhase'])}
     used={'attempts':0,'queries':0,'bytes':0}
     observations=[]
     result={'policy':policy,'observations':observations,'window':window,'capture':{'limits':limits,'used':used}}
@@ -2171,16 +2193,23 @@ def readiness(d, m, *, clock=time):
         return raw
 
     def capture():
-        measured=clinical_warm.observing(fetch,d/clinical_warm.FILE,services,ids)
+        pages = {}
+        def read(service, *args):
+            raw = fetch(service, *args)
+            pages[service] = raw
+            return raw
         try:
-            value=evaluator_progress.round_view(services,ids,measured,warming=True,allow_unavailable=discovery,
-                                                allow_clinical_stall=clinical_stall,policy=policy)
+            value=evaluator_progress.round_view(services,ids,read,warming=True,demand_driven=True,
+                                                 allow_clinical_stall=discovery_rest.selected(m),policy=policy)
         except evaluator_progress.Refused as error:
             for key in ('queries','bytes'):
                 used[key]+=getattr(error,'collection',{}).get(key,0)
             raise
         for key in ('queries','bytes'):
             used[key]+=value[key]
+        classification = outcome_gate.classify_point(outcome_gate.from_pages(pages), ids, final=False)
+        if classification['verdict'] != 'PASS':
+            raise evaluator_progress.Refused(classification['codes'][0], classification['verdict'])
         return value
 
     def publish(verdict, **fields):
@@ -2194,28 +2223,17 @@ def readiness(d, m, *, clock=time):
         try:
             value=capture()
             evaluator_progress.need(all(used[key]<=limits[key] for key in ('queries','bytes')),exhausted)
-            if discovery:
-                clock.sleep(min(.25,max(0,deadline-clock.monotonic())))
-                confirmed=capture()
-                evaluator_progress.need(all(used[key]<=limits[key] for key in ('queries','bytes')),exhausted)
-                admission=evaluator_progress.stable_discovery_baseline(value,confirmed,ids,allow_clinical_stall=clinical_stall)
-                write(d/'readiness-stable-baseline.private.json',evaluator_progress.pack({'rounds':[value,confirmed]}))
-                observations.append({'verdict':admission['availability']['verdict'],**admission})
-                verdict=admission['availability']['verdict']
-            else:
-                evaluator_progress.need(all(row['completedAcquisitions']>0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_WARMING')
-                evaluator_progress.need(all(row['failedCompletions']==0 for row in value['owners'].values()),'M7_EVALUATOR_PROGRESS_ERROR','FAIL')
-                verdict='PASS'
+            if discovery_rest.selected(m) and any(evaluator_progress.clinical_stall(row) for row in value['owners'].values()):
+                return publish('FAIL', clinicalVerdict='FAIL', clinicalCode=discovery_rest.CODE,
+                               restCollectionPermitted=True, capacityAcceptance='NOT_GRANTED', sourceBinding=discovery_rest.binding(m))
             observations.append({'verdict':'PASS','queries':value['queries'],'bytes':value['bytes'],'wallSeconds':value['wallSeconds']})
-            if verdict=='FAIL' and clinical_stall:
-                result.update(clinicalVerdict='FAIL',clinicalCode=discovery_rest.CODE,restCollectionPermitted=True,capacityAcceptance='NOT_GRANTED',sourceBinding=discovery_rest.binding(m))
-            return publish(verdict,meaning='sampled evaluator availability; UNMEASURED availability does not stop discovery REST; durable completion is separate')
+            return publish('PASS',meaning='Evaluator is reachable with complete owner and scope evidence.')
         except evaluator_progress.Refused as error:
             cost=getattr(error,'collection',{})
             if not cost and value is not None:
                 cost={k:value[k] for k in ('queries','bytes','wallSeconds')}
             observations.append({'verdict':error.verdict,'code':str(error),'collection':cost,
-                                 'diagnostic':getattr(error,'diagnostic',None) or ({'predicate':'COMPLETED_ACQUISITION_REQUIRED','field':'completedAcquisitions'} if str(error)=='M7_EVALUATOR_PROGRESS_WARMING' else None)})
+                                 'diagnostic':getattr(error,'diagnostic',None)})
             if error.verdict=='FAIL':
                 publish(error.verdict,code=str(error))
                 raise
@@ -2223,21 +2241,8 @@ def readiness(d, m, *, clock=time):
                 publish('UNMEASURED',code=exhausted)
                 raise evaluator_progress.Refused(exhausted) from error
             publish(error.verdict,code=str(error))
-            if str(error) not in ('M7_EVALUATOR_PROGRESS_WARMING','M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_GATE','M7_EVALUATOR_PROGRESS_COVERAGE'):
+            if str(error) not in ('M7_EVALUATOR_PROGRESS_ERROR','M7_EVALUATOR_PROGRESS_GATE','M7_EVALUATOR_PROGRESS_COVERAGE'):
                 raise
-        # Source-validated first warm observations can arrive across several
-        # retries. Only a new tenant renews the inactivity window. Add the
-        # per-attempt observation budget for the additional elapsed intervals.
-        warm = clinical_warm.coverage(d/clinical_warm.FILE, ids)['coverage']['WARM']
-        if stall.observe(warm):
-            previous = deadline
-            deadline = min(stall.deadline, work_until)
-            extra = math.ceil((deadline-started)/interval) - math.ceil((previous-started)/interval)
-            captures = extra * (2 if discovery else 1)
-            limits['attempts'] += extra
-            limits['queries'] += captures * len(services) * math.ceil(len(ids)/policy['selectorRows'])
-            limits['bytes'] += captures * (policy['maxBytesPerPhase']//policy['roundsPerPhase'])
-            window.update(warmTenants=warm, effectiveSeconds=deadline-started)
         clock.sleep(min(interval,max(0,deadline-clock.monotonic())))
     code=not_ready if clock.monotonic()>=deadline else exhausted
     publish('UNMEASURED',code=code)
@@ -2419,7 +2424,7 @@ def sample_preflight(d,m,k6_id,oneoff=None):
 def sample_results(d,probe,sql_roles):
     result = {}
     errors = []
-    for name in ('idle-disabled', 'idle', 'load'):
+    for name in ('load',):
         try:
             result[name] = sql_attribution.assess(sql_attribution.statements(d/name/'before-pg-statements.tsv'),
                                                   sql_attribution.statements(d/name/'after-pg-statements.tsv'), sql_roles)
@@ -2428,7 +2433,7 @@ def sample_results(d,probe,sql_roles):
             errors.append(error)
     write(d/'sql-attribution.json',result)
     companion={}
-    for phase in ('idle-disabled','idle','load'):
+    for phase in ('load',):
         sql=[d/phase/(side+'-pg-costs.json') for side in ('before','after')]
         rt=[d/phase/(side+'-realtime-costs.json') for side in ('before','after')]
         companion[phase]={'sql':cost_companion.assess(*(document(p) for p in sql)) if all(p.is_file() for p in sql) else {'status':'NO-INSTRUMENT','reason':'M7_COST_BOOKEND_UNAVAILABLE'},
@@ -2448,19 +2453,17 @@ def run_cell(d, m, k6_image):
     k6_id = json.loads(command(["docker", "image", "inspect", k6_image]))[0]["Id"]
     write(d / "loadgen-image.json", {"k6": k6_id, "generator": m["generator"]})
     completion,sql_roles=sample_preflight(d,m,k6_id) if m['profile']=='pgstream-sample' else ({},None)
-    # Sparse once-per-phase cgroups/PG snapshots plus a sampler-disabled idle
-    # window make collection overhead observable independently of tenant work.
-    out = d / "idle-disabled";out.mkdir()
-    psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before");time.sleep(m["cadence"].get("warmupSeconds",60));phase_snapshot(d, out, "after")
-    for name, seconds in (("idle", m["cadence"]["idleSeconds"]),):
-        out = d / name;out.mkdir();quiet(d, m, name + "-before", check_load=False)
-        psql(d, "SELECT pg_stat_statements_reset();")
-        idle_progress=enabled_idle(d,m,out,seconds)
     out = d / "load";out.mkdir()
     runid = "m7-" + m["owner"][:12];(out / "runid").write_text(runid)
+    with accepted_input_observation(d, m, runid, completion) as accepted:
+        return run_cell_load(d, m, k6_id, completion, sql_roles, runid, out, accepted)
+
+
+def run_cell_load(d, m, k6_id, completion, sql_roles, runid, out, accepted):
     spec = m["project"] + "|" + str(d / "env") + "|" + str(d / "frozen.compose.json")
     probe_env = runtime_env({"M7_GENERATOR_ROOT": str(d / "dependencies"), "M7_RESTART_ROLES": json.dumps(m["restartRoles"]), "M7_EVALUATOR_SERVICES": json.dumps(progress_services(d)), "M7_PROGRESS_PYTHON": sys.executable, "M7_PROGRESS_ATTRIBUTION":json.dumps(progress_attribution(m)), "STOCK_MS": "300000", "RECOVERY_MS": "120000", **({"M7_COMPLETION_SOURCE":json.dumps(completion)} if completion else {})})
-    if completion: probe_env["M7_CLINICAL_WARM_PATH"] = str(d / clinical_warm.FILE)
+    if accepted is not None:
+        probe_env['M7_INPUT_ACCOUNTING'] = '1'
     psql(d, "SELECT pg_stat_statements_reset();");phase_snapshot(d, out, "before-prime")
     probe_log = (out / "probe.log").open("wb")
     with sampling(d, out):
@@ -2482,9 +2485,13 @@ def run_cell(d, m, k6_image):
                     "-e", "BASE_URL=http://127.0.0.1:" + str(m["port"]), "-e", "TENANTS_FILE=/tenants.private.json", "-e", "RUN_ID=" + runid,
                     "-e", "RUN_START=" + str(int(time.time()*1000)), "-e", "DURATION=" + str(m["cadence"]["loadSeconds"]), "-e", "ACCEL="+str(m["cadence"]["accel"]), "-e", "HOT_FACTOR="+str(m["cadence"]["hotFactor"]), "-e", jwt_setup_env(m),
                     *(["-e","OFFERED_RPS="+str(m["cadence"]["offeredRps"])] if "offeredRps" in m["cadence"] else []), "-e", "SHAPES=w_sgv,w_devicestatus,w_treatments_v3,r_sgv,r_devicestatus,r_treatments,r_status", k6_id, "run", "--quiet", "--summary-export", "/out/k6-summary.json", "/scripts/workload.js"], file=output, timeout=m["cadence"]["loadSeconds"]+600)
+                windows = {'drainStartedMonoNs':time.monotonic_ns(),'drainSeconds':m['cadence'].get('drainSeconds',1500)}
+                if accepted is not None:
+                    write(out/'phase-windows.json',windows)
+            drain_end = drain_boundary(windows,_COMMAND_DEADLINE.get())
             phase_snapshot(d, out, "after")
             (out / ".restart").touch()
-            probe_status = clinical_warm.wait_compose(sys.modules[__name__],d,m,probe_process,remaining_seconds(1500)) if completion else probe_process.wait(timeout=1500)
+            probe_status = probe_process.wait(timeout=max(0, drain_end-time.monotonic()))
             require(probe_status == 0, "M7_PROBE_FAILED")
         finally:
             stop_job(out/"probe-job.json",m["owner"])
@@ -2493,6 +2500,15 @@ def run_cell(d, m, k6_image):
             probe_log.close()
     phase_snapshot(d, out, "after-reconnect")
     result = count_oracle(d)
+    if accepted is not None:
+        from discovery_counts import observe
+        metrics = document(out/'k6-summary.json')['metrics']
+        findings, _ = observe(sys.modules[__name__],d,out,runid,metrics)
+        accepted.finish(out, drain_end=drain_end, storage=findings)
+        terminal_progress(d,m,out)
+        outcome = outcome_gate.judge_compose_run(d,[row['id'] for row in document(d/'tenants.private.json')])
+        write(out/'outcome-gate.json',outcome)
+        require(outcome['verdict'] == 'PASS','M7_OUTCOME_GATE_' + outcome['verdict'])
     control(d, m)
     host = fixture_inventory(m);write(d / "run-after-host.json", host)
     result_probe = document(out / "probe.json")
@@ -2508,14 +2524,14 @@ def run_cell(d, m, k6_image):
                    metric(document(out / "k6-summary.json")["metrics"], "writes_refused") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "http_req_failed", "rate") == 0,
                    metric(document(out / "k6-summary.json")["metrics"], "dropped_iterations") == 0,
-                   result_probe["window"]["writes"]["failed"] == 0, idle_progress.result["verdict"]=="PASS", load_progress.result["verdict"]=="PASS"]
+                   result_probe["window"]["writes"]["failed"] == 0, load_progress.result["verdict"]=="PASS"]
     summary = {"pair": m["pair"], "hostIdentity":m["hostIdentity"], "profile":m["profile"], "instrument": m["instrument"]["sha256"], "tenants": m["tenants"], "replicas": m["replicas"],
                "imageId":m["imageId"], "verdict": "PASS" if all(correctness) else "FAIL", "correctness": correctness, "cadence": m["cadence"],
                "viewerFrames":viewer_result, "completedOutput":completed_output or "NOT_SELECTED", "sqlAttribution":attributed if completion else "NOT_SELECTED",
                "oracle": {key: value for key, value in result.items() if key != "rows"}, "probe": result_probe,
                "profileSelection":m["profileSelection"],
-               "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("idle","load")},"idleTail":document(d/"idle/evaluator-tail-publication.json") if (d/"idle/evaluator-tail-publication.json").is_file() else None,"recovery":document(out/"evaluator-recovery.private.json.publication.json") if m["cadence"].get("restart",True) else "NOT_RUN"},
-               "evaluatorProgress":{**{phase:progress_summary(d/phase) for phase in ("idle","load")},"recovery":{**{k:v for k,v in result_probe["restart"]["runtimeAcquisitionObservation"].items() if k not in ("baselineObservation","evidence")},**result_probe["restart"]["runtimeAcquisitionObservation"]["evidence"]} if m["cadence"].get("restart",True) else "NOT_RUN"},
+               "evaluatorProgressCollectionCosts":{**{phase:document(d/phase/"evaluator-progress-publication.json") for phase in ("load",)},"recovery":document(out/"evaluator-recovery.private.json.publication.json") if m["cadence"].get("restart",True) else "NOT_RUN"},
+               "evaluatorProgress":{**{phase:progress_summary(d/phase) for phase in ("load",)},"recovery":{**{k:v for k,v in result_probe["restart"]["runtimeAcquisitionObservation"].items() if k not in ("baselineObservation","evidence")},**result_probe["restart"]["runtimeAcquisitionObservation"]["evidence"]} if m["cadence"].get("restart",True) else "NOT_RUN"},
                "performanceThresholds": "none invented; raw latency/CPU/RSS/PG metrics are measurements, not predeclared capacity limits"}
     from reduce import measurements
     summary["measurements"] = measurements(d, m)
@@ -2632,13 +2648,13 @@ def parser():
                       help='Private correlated warm refusal class for the owned 10000-tenant primer')
     prep.add_argument('--api-cause-observation',choices=('off','on'),default='off',help='Source-pinned private setup-diagnostic observer; file-I/O overhead is separate')
     prep.add_argument('--completion-contract',choices=('evaluator-work-v1','evaluator-work-v2'),help='Explicit source-bound pgstream completion reader; mandatory at sample preflight')
-    prep.add_argument('--opportunity-observation', type=json.loads, help='Local all-roster idle/load observer overrides: sqlMaxBytes, roundSeconds')
-    prep.add_argument('--drain-observation', type=json.loads, help='Optional bounded post-writer catchup observer budget')
+    prep.add_argument('--opportunity-observation', type=json.loads, help='Legacy option accepted for compatibility')
+    prep.add_argument('--drain-observation', type=json.loads, help='Legacy option accepted for compatibility')
     prep.add_argument('--probe-ledger', type=json.loads, help='Discovery probe accounting budgets maxWrites and maxBytes')
     prep.add_argument('--startup-windows', type=json.loads, help='Prospective Compose deployment and evaluator readiness windows')
     prep.add_argument('--evaluator-progress-budget', type=json.loads, help='Discovery progress phase query and byte budgets')
-    prep.add_argument('--evaluator-catchup',choices=('fixed-target-v1',),help='Read-only post-write drain within existing work deadline; discovery without restart only')
-    prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='NEXT explicit trusted SQL opportunity observer; unselected pgstream v2 discovery idle/load')
+    prep.add_argument('--evaluator-catchup',choices=('fixed-target-v1',),help='Legacy option accepted for compatibility')
+    prep.add_argument('--evaluator-opportunities',choices=('received-input-v1',),help='Legacy option accepted for compatibility')
     prep.add_argument('--fixture-project',help='Owner-selected new Compose project; existing containers, volumes or networks refuse')
     for knob in ('warmup-seconds','idle-seconds','load-seconds','setup-seconds','drain-seconds','accel','hot-factor','sampler-interval'):
         prep.add_argument('--'+knob,type=int,help='Explicit pgstream-sample workload knob; retained in manifest')
@@ -2679,11 +2695,11 @@ def parser():
     prep.add_argument('--pgstream-notifier-ack-timeout-ms', type=int,
                       help='Explicit acknowledgment budget for a fresh external pgstream Compose discovery run')
     prep.add_argument('--preload-convergence-seconds', type=int,
-                      help='Opt-in finite pre-load source convergence before unchanged normal readiness; local owned-to-completion discovery only')
+                      help='Legacy option accepted for compatibility')
     prep.add_argument('--preload-convergence-interval-seconds', type=int,
-                      help='Interval between original strict pre-load source snapshots')
+                      help='Legacy option accepted for compatibility')
     prep.add_argument('--preload-readiness', choices=('signal', 'require-all'),
-                      help='Opt in to refusing traffic until every tenant is ready; omitted, convergence is a recorded signal')
+                      help='Legacy option accepted for compatibility')
     prep.add_argument("--tenant-readiness",choices=("serve","all"),help="Explicit selected platform startup readiness, bound into the receipt and serving environment")
     prep.add_argument("--primer-concurrency",type=int,default=1,help="Native DATA primer worker limit; default serial")
     prep.add_argument("--primer-max-tenants",type=int,help="Native DATA primer maximum pending tenants per invocation")
@@ -2748,7 +2764,7 @@ def main():
             preflight(d,m,args.k6_image);print('M7_SAMPLE_INSTRUMENTS_CHECKED_NOT_ACCEPTANCE')
     elif args.command == "run":
         until = args.work_deadline
-        if m.get('evaluatorCatchup') is not None:
+        if m.get('completionContract') == 'evaluator-work-v2' and m.get('runPurpose')=='discovery':
             require(until is not None or 'drainSeconds' in phase_windows.selection(m.get('cadence', {})),
                     'M7_DRAIN_WORK_DEADLINE_REQUIRED')
         if until is not None:require(math.isfinite(until) and 0<until-time.time()<=deadline_limit,'M7_COMMAND_DEADLINE')

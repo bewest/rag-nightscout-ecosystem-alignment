@@ -43,7 +43,7 @@ class SerialDiagnostic(unittest.TestCase):
    fake=types.SimpleNamespace(SERIAL_EXCHANGE_DIAGNOSTIC=SELECTION,frozen=Mock(),verify=Mock(),image=Mock(),verify_generator=Mock(),assert_owned=Mock(),document=a.document,digest=a.digest,write=a.write,runtime_env=lambda x:x,sys=sys,progress_services=lambda d:['evaluator'],progress_attribution=lambda m:{},diagnostic_resources=types.SimpleNamespace(popen=lambda launcher,argv,**kwargs:launcher(argv,**kwargs)),subprocess=types.SimpleNamespace(Popen=spawn,STDOUT=-2),sampling=lambda *x:contextlib.nullcontext(),phase_snapshot=Mock(),job_record=Mock(),loadgen_process=lambda *x:contextlib.nullcontext(),stop_job=Mock())
    discovery.serial_exchange_diagnostic(fake,d,m,record)
    self.assertEqual(record.value['serialExchangeDiagnostic']['after']['status'],'HTTP_REFUSED');self.assertEqual(record.value['serialExchangeDiagnostic']['ordinaryTraffic'],'NOT_RUN');fake.stop_job.assert_called_once_with(d/'load/probe-job.json',m['owner']);self.assertFalse((d/'load/.window').exists());self.assertFalse((d/'load/k6-summary.json').exists())
- def test_selected_discovery_branches_after_idle_and_never_calls_ordinary_load(self):
+ def test_selected_discovery_branches_after_readiness_and_never_calls_ordinary_load(self):
   import discovery
   from unittest.mock import Mock
   with tempfile.TemporaryDirectory()as tmp:
@@ -55,11 +55,10 @@ class SerialDiagnostic(unittest.TestCase):
     def observe(self,name,fn):events.append(name);return fn()
     def failure(self,*args):raise AssertionError('unexpected failure')
    fake=types.SimpleNamespace(frozen=Mock(),quiet=Mock(),verify=Mock(),image=Mock(),verify_generator=Mock(),readiness=Mock(),command=lambda *args: '[{"Id":"synthetic-k6"}]',write=a.write,sample_preflight=lambda *args:({},{}),psql=Mock(),phase_snapshot=Mock(),time=types.SimpleNamespace(sleep=lambda *args:None),enabled_idle=Mock(),diagnostic_resources=types.SimpleNamespace(discovery_driver=Mock(side_effect=lambda m:contextlib.nullcontext())))
-   fake.preload_convergence=a.preload_convergence
    with patch.object(discovery,'Record',Record),patch.object(discovery,'serial_exchange_diagnostic',side_effect=lambda *args:events.append('paired')),patch.object(discovery,'discovery_load',side_effect=AssertionError('ordinary load released')),patch.object(discovery,'check_discovery',return_value=True):
     result=discovery.run_discovery(fake,d,m,'synthetic-k6')
    fake.diagnostic_resources.discovery_driver.assert_called_once_with(m)
-   self.assertEqual(events,['readiness','idle','paired']);self.assertEqual(result['status'],'PARTIAL');self.assertTrue(result['diagnosticOnly']);self.assertEqual(result['ordinaryTraffic'],'NOT_RUN');self.assertFalse(result['measurements']['complete'])
+   self.assertEqual(events,['readiness','paired']);self.assertEqual(result['status'],'PARTIAL');self.assertTrue(result['diagnosticOnly']);self.assertEqual(result['ordinaryTraffic'],'NOT_RUN');self.assertFalse(result['measurements']['complete'])
  def run_generated(self,mode,broken=False):
   with tempfile.TemporaryDirectory()as tmp:
    d=Path(tmp);target=d/'probe.js';probe.generate(ROOT,target,serial_exchange=True)

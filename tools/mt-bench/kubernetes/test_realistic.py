@@ -82,14 +82,9 @@ class Realistic(unittest.TestCase):
         self.assertEqual(c['workload']['offeredRps'],18)
         self.assertAlmostEqual(sum(profiles.describe(p)['shapeRequestsPerSecond'].values()),500/72)
 
-    def test_authored_access_setup_reserves_its_own_phase(self):
-        profile=profiles.read(profiles.HERE/'small.json')
-        profile['phases']['accessSetupSeconds']=60
-        profile['phases']['workSeconds']=10000
-        phase=profiles.describe(profile)['effectivePhaseWindows']['accessSetupSeconds']
-        self.assertEqual(phase,{'seconds':60,'origin':'authored'})
-        profile['phases']['accessSetupSeconds']=None
-        with self.assertRaisesRegex(ValueError,'ACCESS_SETUP_WINDOW'):
-            profiles.validate(profile)
+    def test_legacy_access_setup_does_not_create_a_load_phase(self):
+        profile = profiles.read(profiles.HERE/'small.json')
+        profile['phases']['accessSetupSeconds'] = 18000
+        self.assertNotIn('accessSetupSeconds', profiles.describe(profile)['effectivePhaseWindows'])
 
 if __name__=='__main__':unittest.main()

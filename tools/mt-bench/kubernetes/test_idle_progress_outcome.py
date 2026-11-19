@@ -50,8 +50,8 @@ class IdleProgressOutcome(unittest.TestCase):
             judge=stack.enter_context(patch('outcome_gate.judge_kubernetes_load',return_value={
                 'verdict':outcome,'instrument':{'contract':'authored-outcome-control'},
                 'components':{'catchup':{'verdict':outcome,'codes':[]}}}))
-            if outcome=='FAIL':
-                with self.assertRaisesRegex(k.Refused,'OUTCOME_GATE_FAIL'):
+            if outcome != 'PASS':
+                with self.assertRaisesRegex(k.Refused,'OUTCOME_GATE_' + outcome):
                     execute.assess_stage(d,out,c,{},None)
                 result=k.document(out/'result.json')
             elif clinical == 'UNMEASURED':
@@ -73,17 +73,13 @@ class IdleProgressOutcome(unittest.TestCase):
             self.assertEqual(result['loadFunctionalChecks']['http']['httpVerdict'], 'PASS')
             self.assertEqual(result['capacityAcceptance'], 'NOT_GRANTED')
 
-    def test_idle_tenant_metric_remains_unmeasured_and_outcome_runs(self):
+    def test_idle_tenant_requires_only_counter_stability(self):
         rounds=self.rounds(); saved=copy.deepcopy(rounds)
-        with self.assertRaisesRegex(k.evaluator_progress.Refused,'PROGRESS_NOT_OBSERVED'):
-            k.evaluator_progress.assess(rounds,[A,B],'load')
         value=self.assess(rounds)
         progress=value['evaluatorProgress']
-        self.assertEqual(progress['verdict'],'UNMEASURED')
-        self.assertEqual(progress['code'],'M7_EVALUATOR_PROGRESS_NOT_OBSERVED')
+        self.assertEqual(progress['verdict'],'PASS')
         self.assertEqual(progress['counterStability'],'PASS')
-        self.assertEqual(progress['tenantsWithObservedWork'],1)
-        self.assertEqual(progress['tenantsWithoutObservedWork'],1)
+        self.assertEqual(progress['minimumCompletedWorkDelta'],0)
         self.assertEqual(progress['completedWorkDelta'],4)
         self.assertEqual(value['outcomeGate']['verdict'],'PASS')
         self.assertEqual(rounds,saved,'idle completion credit was invented')
@@ -97,7 +93,11 @@ class IdleProgressOutcome(unittest.TestCase):
     def test_native_outcome_failure_remains_failure_with_idle_work(self):
         result=self.assess(self.rounds(),outcome='FAIL')
         self.assertEqual(result['outcomeGate']['verdict'],'FAIL')
-        self.assertEqual(result['evaluatorProgress']['verdict'],'UNMEASURED')
+        self.assertEqual(result['evaluatorProgress']['verdict'],'PASS')
+
+    def test_unmeasured_catchup_leaves_stage_unmeasured(self):
+        result = self.assess(self.rounds(), outcome='UNMEASURED')
+        self.assertEqual(result['verdict'], 'UNMEASURED')
 
     def test_runtime_reset_still_refuses_before_outcome(self):
         rounds=self.rounds();rounds[1]['instances']['evaluator']['runtimeId']=S

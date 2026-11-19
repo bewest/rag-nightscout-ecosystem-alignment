@@ -14,7 +14,6 @@ class SqlObservationDiagnostics(unittest.TestCase):
             probe = root / 'probe.cjs'
             k.generate_probe(probe)
             source = probe.read_text()
-            self.assertIn('performance.now()-e.sentMono<120000',source)
             bridge = source[source.index('const psqlAsync ='):source.index('const pct =')]
             harness = r'''
 const fs=require('node:fs'),path=require('node:path');
