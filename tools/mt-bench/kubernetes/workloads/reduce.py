@@ -406,7 +406,10 @@ def reduce_stage(stage, output, fixture=None):
         'recordedSampledOracle': sampled, 'semanticAssessment': 'UNMEASURED'}
     import execute
     catchup = observed('evaluator-catchup.json')
-    result['catchup'] = section('catchup', lambda: outcome_gate.catchup(catchup, ids, config=execute.gate_config(run_config or {})))
+    findings = observed('oracle-findings.json')
+    result['catchup'] = section('catchup', lambda: outcome_gate.catchup(
+        catchup, ids, folder=stage, storage_findings=findings,
+        config=execute.gate_config(run_config or {})))
     if catchup.get('code'):
         result['catchup'].update(readerVerdict=catchup.get('verdict'), readerCode=catchup['code'])
     result['evaluatorProgress'] = assessment.get('evaluatorProgress') or result.get('finalEvaluatorProgress') or {

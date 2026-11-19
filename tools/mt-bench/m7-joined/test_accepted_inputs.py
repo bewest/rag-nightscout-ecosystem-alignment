@@ -18,7 +18,7 @@ ACK = (A, *ENTRY)
 def snapshot(*keys, floor=2, completed=2, events=None):
     events = list(keys) if events is None else events
     return dict(tenant=A, inputs=list(keys), events=events, latest=events[-1] if events else None,
-                sourceOK=True, stateOK=True, outputOK=completed is not None, outputAbsent=False,
+                sourceOK=True, stateOK=True, outputOK=completed is not None, outputAbsent=completed is None,
                 inputFloor=floor, completed=completed, generation=1, revision=int(completed is not None),
                 outputTenant=A if completed is not None else None, identity=None,
                 tailHead=len(events), tailBase=0, snapshotPosition='0/0')
@@ -70,6 +70,7 @@ class Acceptance(unittest.TestCase):
             folder = Path(tmp)
             load = folder/'load'
             load.mkdir()
+            (load/'runid').write_text(RUN)
             raw = load/'evaluator-progress-raw'
             raw.mkdir()
             pages = page([row(A), *(row(t, ready=False, code='EVALUATOR_ACQUISITION_REQUIRED') for t in idle)])
@@ -83,9 +84,35 @@ class Acceptance(unittest.TestCase):
                      'witnesses':[{'clinicalTiming':{'verdict':'PASS'}}]}
             (load/'probe.json').write_text(json.dumps({'completedOutput':probe}))
             for packet, expected in ((result,'PASS'), (incomplete.assess(acks,10),'FAIL'), (result,'PASS')):
-                (load/'evaluator-catchup.json').write_text(json.dumps(packet))
+                (load/'evaluator-catchup.json').write_text(json.dumps(dict(packet, runId=RUN, ackCoverage='COMPLETE')))
                 for actual in (gate.judge_compose_run(folder,[A,*idle]), gate.judge_kubernetes_load(load,[A,*idle])):
                     self.assertEqual(actual['verdict'], expected, actual['components'])
+
+    def test_replay_requires_current_distinct_writer_keys_and_preserves_proven_miss(self):
+        c = self.cover()
+        probe = ('entries', RUN+'-probe', '88')
+        c.capture([snapshot(ENTRY, probe)], 1, 2)
+        packet = dict(c.assess({ACK:5, (A,*probe):10}, 20), runId=RUN, ackCoverage='COMPLETE')
+        storage = {'rows':[{'tenant':A, 'accepted':1, 'probeAccepted':1}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder/'runid').write_text(RUN)
+            msg = json.dumps(dict(event='m7-input-accepted', tenant=A, domain='entries', key='42',
+                                  run=RUN, requestToAcceptanceMs=5))
+            (folder/'k6.log').write_text(json.dumps({'msg':msg})+'\n')
+            def verdict(**changes):
+                return gate.catchup(dict(packet, **changes), [A], folder=folder, storage_findings=storage)['verdict']
+            self.assertEqual(verdict(), 'PASS')
+            ordinary, sampled = sorted(packet['inputs'], key=lambda r:r['marker'])
+            self.assertEqual(verdict(inputs=[sampled, sampled]), 'UNMEASURED')
+            self.assertEqual(verdict(inputs=[dict(ordinary,key='unused'), sampled]), 'UNMEASURED')
+            self.assertEqual(verdict(inputs=[ordinary, dict(sampled,marker=RUN)]), 'UNMEASURED')
+            self.assertEqual(verdict(runId='previous'), 'UNMEASURED')
+            self.assertEqual(verdict(ackCoverage='PARTIAL'), 'UNMEASURED')
+            self.assertEqual(verdict(acceptedInputs=1, inputs=[dict(ordinary,status='LATE')]), 'FAIL')
+            self.assertEqual(verdict(acceptedInputs=1, inputs=[dict(ordinary,status='LATE'),
+                                                               dict(sampled,marker='previous-probe')]), 'FAIL')
+            self.assertEqual(verdict(), 'PASS')
 
     def test_foreign_output_and_missing_storage_are_independent(self):
         c = self.cover()

@@ -22,7 +22,13 @@ SELECT json_build_object(
                    AND (i.projection->1->'events'->-1->>'sequence')::bigint = (i.projection->1->>'head')::bigint
                    THEN events.latest END,
   'snapshotPosition', i.projection->0->'stream'->>'snapshot_position',
-  'outputAbsent', o.tenant_id IS NULL,
+  -- Admission can persist an empty evaluator checkpoint before native intake.
+  'outputAbsent', o.tenant_id IS NULL OR (
+    o.work_version = 2 AND o.contract_digest = '@digest@' AND o.work_enabled
+    AND o.projection->0->>'kind' = 'evaluator-work-v2' AND o.projection->0->'output' = 'null'::jsonb
+    AND o.output_revision = 0 AND o.output_restore_generation IS NULL
+    AND o.output_identity IS NULL AND o.output_digest IS NULL
+    AND o.work_completed = array_fill(NULL::bigint, ARRAY[6])),
   'tailBase', i.projection->1->'base', 'tailHead', i.projection->1->'head',
   'inputFloor', i.checkpoint, 'generation', l.generation,
   'identity', i.projection->0->'stream'->'source_identity',
@@ -41,7 +47,8 @@ SELECT json_build_object(
   'completed', o.work_completed[6],
   'revision', o.output_revision,
   'outputTenant', o.projection->0->'output'->>'tenant',
-  'outputOK', o.output_restore_generation = l.generation AND o.output_revision > 0
+  'outputOK', o.projection->0->'output'->>'tenant' = a.tenant_id::text
+    AND o.output_restore_generation = l.generation AND o.output_revision > 0
     AND o.output_identity ~ '^[a-f0-9]{64}$' AND o.output_digest ~ '^[a-f0-9]{64}$'
     AND jsonb_typeof(o.projection->0->'output'->'result'->'properties') = 'object'
     AND jsonb_typeof(o.projection->0->'output'->'frame') = 'object'

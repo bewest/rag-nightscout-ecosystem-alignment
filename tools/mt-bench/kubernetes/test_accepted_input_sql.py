@@ -71,6 +71,35 @@ CREATE TABLE checkpoint.tenant_consumer_checkpoint (
         raw = self.run_sql(f'COPY ({query}) TO STDOUT;')
         return [json.loads(line) for line in raw.replace('backend> ', '').splitlines() if line.startswith('{')]
 
+    def test_empty_evaluator_checkpoint_before_intake_projection(self):
+        table = 'checkpoint.tenant_consumer_checkpoint'
+        self.run_sql(f"""
+INSERT INTO nsdemo_entries.entries VALUES ('{TENANT}', '{{"device":"{RUN}","date":100}}');
+INSERT INTO lifecycle.tenant_lifecycle_windows VALUES ('{TENANT}',1,'active');
+INSERT INTO {table}(tenant_id,consumer,checkpoint) VALUES ('{TENANT}','{CONSUMER}',0);
+INSERT INTO {table} VALUES ('{TENANT}','{CONSUMER}-completed',0,
+ '[{{"kind":"evaluator-work-v2","output":null}}]',2,'{self.digest}',true,
+ ARRAY[NULL,NULL,NULL,NULL,4,1]::bigint[], array_fill(NULL::bigint, ARRAY[6]),NULL,NULL,NULL,0);
+""")
+        def assess():
+            rows = self.copy(self.query)
+            self.assertIsNone(rows[0]['sourceOK'])
+            coverage = accepted_inputs.Coverage(RUN, [TENANT], 0, source=self.identity)
+            coverage.capture(rows, 1, 2)
+            coverage.capture(rows, 124, 125)
+            return coverage.assess({(TENANT,'entries',RUN,'100'):1}, 124)['classifications']
+
+        self.assertEqual(assess(), {'LATE':1})
+        # Losing the body field or conflicting metadata makes absence uncertain.
+        for change in ("projection=projection #- '{0,output}'", "output_identity=repeat('a',64)",
+                       'work_completed[5]=0'):
+            with self.subTest(change=change):
+                self.run_sql(f"UPDATE {table} SET {change} WHERE consumer='{CONSUMER}-completed';")
+                self.assertEqual(assess(), {'UNMEASURED':1})
+                self.run_sql(f"""UPDATE {table} SET projection='[{{"kind":"evaluator-work-v2","output":null}}]',
+ output_identity=NULL,work_completed[5]=NULL WHERE consumer='{CONSUMER}-completed';""")
+                self.assertEqual(assess(), {'LATE':1})
+
     def test_accepted_rows_absent_late_prior_activity_and_durable_output(self):
         self.assertEqual(self.copy(self.query), [])
         rows = [('entries', {'date': 100, 'device': RUN}),
@@ -117,6 +146,9 @@ CREATE TABLE checkpoint.tenant_consumer_checkpoint (
         ready = self.copy(self.query)
         self.assertTrue(ready[0]['stateOK'])
         self.assertEqual(assess(ready)['classifications'], {'ON_TIME':4})
+        self.run_sql(f"""UPDATE {checkpoint} SET projection=projection #- '{{0,output,tenant}}'
+ WHERE consumer='{CONSUMER}-completed';""")
+        self.assertEqual(assess(self.copy(self.query))['classifications'], {'UNMEASURED':4})
         # typed-checkpoint.complete can retain an identical older body while
         # atomically advancing its completed work and checkpoint.
         self.run_sql(f"""UPDATE {checkpoint} SET projection={projected(1)}

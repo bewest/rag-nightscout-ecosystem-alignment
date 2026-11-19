@@ -5,9 +5,9 @@ an accepted write not stored or uncertain; an accepted input without durable
 evaluated output inside the clinical deadline (sampled oracle plus an
 end-of-drain catch-up over every accepted input); wrong, foreign or stale output; an
 isolation failure; or any failed completion whose reason is untyped, unknown
-or hard. A failed completion with a declared transient reason that completed
-inside the deadline is counted by reason, not failed. Missing evidence is
-UNMEASURED, never PASS.
+or hard. Resolved transient failures contribute reason counts. Their process
+maximum is diagnostic. The per-input observer measures the clinical deadline.
+Missing evidence is UNMEASURED.
 
 This module only reads. It never triggers evaluator work, never edits a
 retained capture, and never relabels an original verdict. Its verdict is a
@@ -187,8 +187,6 @@ def tenant_failure(row, *, final, deadline_ms):
     if unresolved is not None and not (isinstance(unresolved, dict) and _finite(unresolved.get('ageMs'))
                                        and unresolved.get('reason') in reasons):
         return 'REASON_MISSING', 'UNMEASURED', 'M7_OUTCOME_RESOLUTION_MISSING', reasons
-    if resolution is not None and resolution > deadline_ms:
-        return 'TRANSIENT_LATE', 'FAIL', 'M7_OUTCOME_TRANSIENT_DEADLINE', reasons
     if unresolved is not None:
         if unresolved['ageMs'] > deadline_ms:
             return 'TRANSIENT_LATE', 'FAIL', 'M7_OUTCOME_TRANSIENT_DEADLINE', reasons
@@ -198,6 +196,10 @@ def tenant_failure(row, *, final, deadline_ms):
     if resolution is None:
         # Failed, typed transient, none unresolved, yet no resolution recorded.
         return 'REASON_MISSING', 'UNMEASURED', 'M7_OUTCOME_RESOLUTION_MISSING', reasons
+    # The maximum belongs to the process lifetime. Only current-run input
+    # and output observations can date a resolved interval to an HTTP ACK.
+    if resolution > deadline_ms:
+        return 'TRANSIENT_HISTORICAL_MAX', 'PASS', None, reasons
     return 'TRANSIENT_COMPLETED', 'PASS', None, reasons
 
 
@@ -293,26 +295,82 @@ def foreign_and_reset(first, last):
 
 # ------------------------------------------------------- end-of-run components
 
-def catchup(value, ids, *, config=None):
+def run_marker(folder):
+    try:
+        return (folder/'runid').read_text().strip()
+    except (OSError, UnicodeError):
+        return None
+
+
+def catchup(value, ids, *, run_id=None, storage_findings=None, config=None, folder=None):
     """Read the input-keyed drain evidence; older tenant floors do not cover HTTP ACKs."""
     if not isinstance(value, dict) or value.get('kind') != accepted_inputs.KIND:
         return {'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_CATCHUP_NOT_CAPTURED']}
+    if folder is not None:
+        run_id = run_marker(folder)
+    if not run_id or value.get('runId') != run_id:
+        return {'verdict': 'UNMEASURED', 'codes': ['M7_INPUT_RUN_BINDING']}
     verdict = value.get('verdict')
     rows = value.get('inputs')
     codes = set(value.get('codes') or [])
-    if verdict not in ORDER or not isinstance(rows, list) or value.get('acceptedInputs') != len(rows):
+    if verdict not in ORDER or not isinstance(rows, list):
         return {'verdict': 'FAIL' if verdict == 'FAIL' else 'UNMEASURED',
-                'codes': sorted(codes or {'M7_INPUT_ACK_COVERAGE'})}
+                'codes': sorted(codes | {'M7_INPUT_ACK_COVERAGE'})}
     cohort = set(ids)
-    if any(not isinstance(row, dict) or not isinstance(row.get('tenant'), str)
-           or row.get('status') not in ('LATE', 'MISSING_AT_DRAIN', 'ON_TIME', 'UNMEASURED') for row in rows):
-        return {'verdict': worst(verdict, 'UNMEASURED'), 'codes': ['M7_INPUT_ACK_COVERAGE']}
-    if any(row['tenant'] not in cohort for row in rows):
-        return {'verdict': 'FAIL', 'codes': ['M7_INPUT_FOREIGN_ACK']}
-    counts = Counter(row['status'] for row in rows)
+    identities = set()
+    by_writer = Counter()
+    counts = Counter()
+    for row in rows:
+        if not isinstance(row, dict) or not isinstance(row.get('tenant'), str):
+            codes.add('M7_INPUT_ACK_COVERAGE')
+            continue
+        tenant = row['tenant']
+        if tenant not in cohort:
+            return {'verdict': 'FAIL', 'codes': ['M7_INPUT_FOREIGN_ACK']}
+        domain, marker, key = (row.get(field) for field in ('domain', 'marker', 'key'))
+        if marker not in (run_id, run_id+'-probe'):
+            codes.add('M7_INPUT_RUN_BINDING')
+            continue
+        if (not isinstance(key, str) or not key or domain not in ('entries', 'devicestatus', 'treatments')
+                or marker == run_id+'-probe' and domain != 'entries'):
+            codes.add('M7_INPUT_ACK_COVERAGE')
+            continue
+        identity = (tenant, domain, marker, key)
+        identities.add(identity)
+        by_writer[tenant, marker] += 1
+        status = row.get('status')
+        if status in ('ON_TIME', 'LATE', 'MISSING_AT_DRAIN', 'UNMEASURED'):
+            counts[status] += 1
+        else:
+            codes.add('M7_INPUT_ACK_COVERAGE')
+        if status == 'ON_TIME' and row.get('endOfDrain') != 'DURABLE':
+            codes.add('M7_INPUT_ACK_COVERAGE')
     if counts['LATE'] or counts['MISSING_AT_DRAIN']:
         verdict = 'FAIL'
     elif counts['ON_TIME'] != len(rows) or value.get('deadlineMs') != accepted_inputs.DEADLINE_MS:
+        verdict = worst(verdict, 'UNMEASURED')
+    expected = (storage_findings or {}).get('rows')
+    if (value.get('acceptedInputs') != len(rows) or len(identities) != len(rows)
+            or value.get('ackCoverage') != 'COMPLETE' or not isinstance(expected, list)
+            or len(expected) != len(cohort)
+            or not all(isinstance(r, dict) and isinstance(r.get('tenant'), str) for r in expected)
+            or {r['tenant'] for r in expected} != cohort
+            or any(not _nonneg(r.get(field)) or r[field] != by_writer[r['tenant'], marker]
+                   for r in expected for field, marker in (('accepted', run_id), ('probeAccepted', run_id+'-probe')))):
+        codes.add('M7_INPUT_ACK_COVERAGE')
+    if folder is not None:
+        # Where individual writer logs survive, compare keys as well as totals.
+        acks = {}
+        try:
+            writers = accepted_inputs.read_acks(folder, run_id, cohort, acks)
+            if set(acks) != {key for key in identities if key[2] in writers}:
+                codes.add('M7_INPUT_ACK_COVERAGE')
+        except accepted_inputs.EvidenceError as error:
+            verdict = worst(verdict, error.verdict)
+            codes.add(str(error))
+        except (OSError, ValueError, TypeError, KeyError):
+            codes.add('M7_INPUT_ACK_COVERAGE')
+    if codes:
         verdict = worst(verdict, 'UNMEASURED')
     return {'verdict': verdict, 'codes': sorted(codes), 'acceptedInputs': len(rows),
             'classifications': dict(counts), 'endOfDrain': value.get('endOfDrain'), 'scope': 'all acknowledged inputs through end of drain'}
@@ -352,7 +410,7 @@ def sampled_oracle(completed_output):
 
 
 def judge(*, ids, points, storage_findings, completed_output, catchup_value,
-          authority=None, config=None, attribution=None):
+          authority=None, config=None, attribution=None, run_id=None, folder=None):
     """Combine the components. Any FAIL fails; any UNMEASURED is UNMEASURED.
 
     `points` maps 'before'/'midpoint'/'after' to a read point or None. The
@@ -385,15 +443,7 @@ def judge(*, ids, points, storage_findings, completed_output, catchup_value,
         'verdict': 'UNMEASURED', 'codes': ['M7_OUTCOME_END_NOT_CAPTURED']}
     components['storage'] = storage(storage_findings)
     components['sampledOracle'] = sampled_oracle(completed_output)
-    components['catchup'] = catchup(catchup_value, ids, config=config)
-    if components['catchup']['verdict'] == 'PASS':
-        expected = (storage_findings or {}).get('rows')
-        observed = Counter(r['tenant'] for r in catchup_value['inputs'])
-        if (not isinstance(expected, list) or len(expected) != len(set(ids))
-                or {r.get('tenant') for r in expected} != set(ids)
-                or any(not _nonneg(r.get('accepted')) or not _nonneg(r.get('probeAccepted'))
-                       or r['accepted'] + r['probeAccepted'] != observed[r['tenant']] for r in expected)):
-            components['catchup'].update(verdict='UNMEASURED', codes=['M7_INPUT_ACK_COVERAGE'])
+    components['catchup'] = catchup(catchup_value, ids, run_id=run_id, folder=folder, storage_findings=storage_findings, config=config)
     if authority is not None:
         components['authority'] = authority
     verdict = worst(*(c['verdict'] for c in components.values()))
@@ -485,7 +535,7 @@ def judge_kubernetes_load(folder, ids, *, config=None, attribution=None):
                                   'midpoint': load_point(folder, 'progress-stop') or load_point(folder, 'progress-midpoint'), 'after': after},
                  storage_findings=_document(folder / 'oracle-findings.json'),
                  completed_output=probe.get('completedOutput'),
-                 catchup_value=_document(folder / 'evaluator-catchup.json'),
+                 catchup_value=_document(folder / 'evaluator-catchup.json'), folder=folder,
                  config=config, attribution=attribution)
     verdict['endPoint'] = 'terminal progress after drain' if after else None
     return verdict
@@ -526,7 +576,7 @@ def judge_compose_run(directory, ids, *, config=None, attribution=None):
     verdict = judge(ids=ids, points=points,
                     storage_findings=_document(load / 'oracle-findings.json'),
                     completed_output=probe.get('completedOutput'),
-                    catchup_value=_document(load / 'evaluator-catchup.json'),
+                    catchup_value=_document(load / 'evaluator-catchup.json'), folder=load,
                     config=config, attribution=attribution)
     verdict['endPoint'] = end_label
     return verdict
