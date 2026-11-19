@@ -1,5 +1,7 @@
 """Pure input and launch controls complement the native loopback qualification."""
 import copy
+import csv
+import gzip
 import json
 from pathlib import Path
 import subprocess
@@ -29,6 +31,59 @@ class DriverConfiguration(unittest.TestCase):
             self.assertEqual(plans[0]['population'],count)
             self.assertEqual(plans[0]['scenarios']['r_sgv']['durationSeconds'],seconds)
             self.assertAlmostEqual(plans[0]['scenarios']['r_sgv']['perSecond'],rate,delta=.01)
+
+    def test_executor_windows_use_the_actual_start_of_each_scenario(self):
+        row = {'startTimeSeconds': 0, 'durationSeconds': 120, 'gracefulStopSeconds': 30,
+               'rate': 10, 'timeUnit': '3000ms'}
+        plans = {'read': row, 'write': row, 'later': row | {'startTimeSeconds': 5, 'durationSeconds': 1}}
+        starts = {'read': 10012, 'write': 10030, 'later': 15020}
+        got = d.executor_windows(starts, plans, setup_end=10000, end=130195)
+        self.assertEqual((got['scheduleStartMs'], got['scheduleEndMs'], got['drainMs']),
+                         (10012, 130030, 165))
+        self.assertEqual(got['executorWindows']['later']['steadyEndMs'], 16020)
+        self.assertEqual(got['executorWindows']['write']['launchLagFromEarliestOriginMs'], 18)
+
+        for changed, teardown in [(starts | {'later': 14020}, 130195),
+                                  (starts, 129990), (starts, 163100)]:
+            with self.subTest(starts=changed, teardown=teardown):
+                with self.assertRaisesRegex(RuntimeError, 'M7_DRIVER_PHASE'):
+                    d.executor_windows(changed, plans, setup_end=10000, end=teardown)
+
+    def test_planned_extent_for_an_executor_with_no_observed_start(self):
+        row = {'startTimeSeconds': 2, 'durationSeconds': 1, 'gracefulStopSeconds': 0,
+               'rate': 1, 'timeUnit': '5000ms'}
+        plans = {'late': row, 'unobserved': row | {'startTimeSeconds': 4}}
+        got = d.executor_windows({'late': 12007}, plans, setup_end=10000, end=15040)
+        self.assertEqual(got['scheduleEndMs'], 15007)
+        self.assertEqual(set(got['executorWindows']), {'late'})
+        delayed = d.executor_windows({'late': 12007, 'unobserved': 15007}, plans, 10000, 16040)
+        self.assertEqual(delayed['executorWindows']['unobserved']['launchLagFromEarliestOriginMs'], 1000)
+
+    def test_high_rate_dispatch_lag_preserves_traffic_and_measures_common_window(self):
+        row = {'startTimeSeconds': 0, 'durationSeconds': 1, 'gracefulStopSeconds': 0,
+               'rate': 1000, 'timeUnit': '1000ms'}
+        scenarios = {'baseline': row | {'rate': 1}, 'busy': row}
+        starts = {'baseline': 1000, 'busy': 1018}
+        phases = d.executor_windows(starts, scenarios, setup_end=990, end=2023)
+        counts = {}
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp) / 'trace.csv.gz'
+            with gzip.open(trace, 'wt', newline='') as stream:
+                writer = csv.writer(stream)
+                writer.writerow(['metric_name', 'timestamp', 'metric_value', 'scenario', 'driver_phase'])
+                for name, start in starts.items():
+                    n = scenarios[name]['rate']
+                    counts[name] = dict(planned=n, issued=n, responses=n, completed=n, dropped=0,
+                                        transportFailures=0, steadyStarts=n, steadyCompletions=n,
+                                        drainStarts=0, drainCompletions=0)
+                    for i in range(n):
+                        for metric in ('m7_driver_started', 'scenario_request_attempts',
+                                       'scenario_http_responses', 'm7_driver_finished'):
+                            writer.writerow([metric, start+i, 1, name, 'steady'])
+            bins = d.trace_assess(trace, counts, starts, {'scenarios': scenarios},
+                                  {'maxTraceBytes': 1000000, 'maxTraceRows': 5000}, phases['scheduleStartMs'])
+        self.assertEqual(phases['scheduleEndMs'], 2018)
+        self.assertEqual(bins['busy'], {'before': 0, 'during': 982, 'after': 18, 'minimumStartShortfall': 18})
 
     def test_large_population_low_rate_time_unit_is_not_a_case_filter(self):
         cfg={'version':1,'observer':'summary-v1','maxAggregateVUs':7,
