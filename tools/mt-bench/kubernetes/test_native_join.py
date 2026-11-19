@@ -148,13 +148,16 @@ class NativeJoin(unittest.TestCase):
         from test_native_load import TENANTS, SCRIPT
         c,base,options=configured();c['deadlines']['cleanupUntil']='2099-01-01T00:30:00Z'
         wanted,_,_=n.package(c,base,SCRIPT,TENANTS,**options)
+        failures=[]
         class Cube:
             def __init__(self):self.suspended=True;self.patches=[];self.rounds=0
             def call(self,args,**kw):
                 if args[0]=='create':return ''  # input Secret only; the Job already exists
                 if args[0]=='patch':
                     value=json.loads(args[-1]);self.patches.append(value)
-                    self.suspended=value[-1]['value'];return ''
+                    self.suspended=value[-1]['value']
+                    if not self.suspended:failures.append(k.Refused('M7_OUTCOME_MIDPOINT_HARD','FAIL'))
+                    return ''
                 raise AssertionError(args)
             def json(self,args,**kw):
                 if args[:2]==['get','namespace']:
@@ -172,13 +175,19 @@ class NativeJoin(unittest.TestCase):
             out=Path(scratch)/'load';out.mkdir()
             with self.assertRaisesRegex(k.Refused,'MIDPOINT_HARD'):
                 n.run(cube,c,base,SCRIPT,TENANTS,out,predeclared={'uid':'owned-job'},
-                      failures=[k.Refused('M7_OUTCOME_MIDPOINT_HARD','FAIL')],**options)
+                      failures=failures,**options)
             self.assertEqual(len(cube.patches),2)  # one start, one stop; no replay
             self.assertEqual(cube.patches[-1][0],{'op':'test','path':'/metadata/uid','value':'owned-job'})
             self.assertTrue(k.document(out/'native-cancel.json')['writersStopped'])
             self.assertEqual(k.document(out/'native-first-failure.json')['verdict'],'FAIL')
             self.assertFalse((out/'driver-accounting.json').exists())
             self.assertFalse((out/'outcome-gate.json').exists())
+        with tempfile.TemporaryDirectory() as scratch:
+            never_started=Cube()
+            with self.assertRaisesRegex(k.Refused,'MIDPOINT_HARD'):
+                n.run(never_started,c,base,SCRIPT,TENANTS,scratch,predeclared={'uid':'owned-job'},
+                      failures=failures,**options)
+            self.assertFalse(never_started.patches)
 
     def test_scheduler_fit_adds_suspended_test_pod_before_any_actor_starts(self):
         import scheduler_placement as placement

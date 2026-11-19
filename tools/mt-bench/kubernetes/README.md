@@ -791,7 +791,8 @@ within existing authority need no new approval. Do not change an entered fixture
 `native_load.py` is a bounded evidence adapter for lane K's existing rendered
 k6 Job and `fanout.Kube` client interface. `package()` keeps the rendered image,
 placement, resources and init ordering, selects `http://edge:<port>`, and supplies
-an immutable synthetic input Secret. `run()` creates each Job/Secret once,
+an immutable synthetic input Secret. The standalone `run()` creates its Job/Secret once;
+the opt-in execution releases the predeclared suspended Job without replay,
 retains raw stdout before decoding, checks namespace/Job/Pod identity and exit
 custody, and emits the existing `k6.log` and `k6-summary.json` reducer inputs.
 Its appended `handleSummary` exports k6's actual counters/trends in framed

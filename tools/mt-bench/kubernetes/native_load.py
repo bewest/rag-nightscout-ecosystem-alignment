@@ -267,6 +267,8 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
     Only create is used: an existing Job/Secret is an explicit refusal, never
     an apply/replay. Job deadlines bound traffic if the workstation disappears.
     """
+    if failures:
+        raise failures[0]
     wanted, secret, receipt = package(c, job, script, tenants, **options)
     out = Path(out)
     k.need(out.is_dir() and not any((out / name).exists() for name in
@@ -291,6 +293,8 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
             k.write(out/'native-cancel-failure.json',{'code':str(secondary),
                     'verdict':'UNMEASURED','writersStopped':'UNMEASURED','firstFailure':str(error)})
     # Preflight above has completed before these first actor mutations.
+    if failures:
+        raise failures[0]
     kube.call(['create', '-f', '-'], data=json.dumps(secret), namespace=ns)
     if predeclared is None:
         created = kube.call(['create', '-f', '-', '-o', 'json'], data=json.dumps(wanted), namespace=ns)
@@ -304,6 +308,8 @@ def run(kube, c, job, script, tenants, out, *, predeclared=None, failures=None, 
                  {'op':'test','path':'/spec/suspend','value':True},
                  {'op':'replace','path':'/spec/suspend','value':False}]
         receipt['jobUid']=predeclared['uid'];k.write(out/'native-load.json',receipt)
+        if failures:
+            raise failures[0]
         try:
             kube.call(['patch','job','k6','--type=json','-p',json.dumps(patch)], namespace=ns)
         except Exception as error:
