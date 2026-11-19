@@ -45,9 +45,8 @@ const writesUncertain = new Counter('writes_uncertain');
 const writesRefused = new Counter('writes_refused');
 
 // Weighted tenant wheel: the hot tenant appears HOT times.
-const wheel = [];
-TENANTS.forEach((t, i) => { for (let k = 0; k < (i === 0 ? HOT : 1); k++) wheel.push(i); });
-const weight = wheel.length;
+// Arithmetic, not a per-VU array: slots 0..HOT-1 are tenant 0, then one slot per other tenant.
+const weight = TENANTS.length - 1 + HOT;
 
 const ALL_SHAPES = {
   w_sgv: 1, w_devicestatus: 1, w_treatments_v3: 1,
@@ -86,7 +85,8 @@ function pick () {
   if (exec.scenario.iterationInTest === 0) {
     console.log(JSON.stringify({ event: 'scenario-first-iteration', shape: exec.scenario.name, atMs: Date.now() }));
   }
-  const i = wheel[exec.scenario.iterationInTest % weight];
+  const r = exec.scenario.iterationInTest % weight;
+  const i = r < HOT ? 0 : r - HOT + 1;
   return { i, t: TENANTS[i] };
 }
 const q = t => (t ? '&' : '?');
