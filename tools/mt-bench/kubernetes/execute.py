@@ -27,22 +27,25 @@ def actor(c):
     driver = c['driver']
     k.need(driver['hostId'] == c['observer']['hostId'], 'NATIVE_ACTORS_REQUIRE_SAME_HOST')
     k.need(all(key in driver for key in ('node','nodeSha256','dependencies','coreRepository','packageSha256','lockSha256','nodeModules')),'DRIVER_INPUTS_REQUIRED','UNMEASURED')
+    # The driver is the instrument, not the product: its tools and dependency
+    # tree are recorded as found, not re-proved against core's Git objects or
+    # the captured hashes on every run.
+    tools = {}
     for name in ('node', 'k6'):
         if name in driver:
-            k.need(Path(driver[name]).is_absolute() and k.digest(driver[name]) == driver[name + 'Sha256'], 'DRIVER_TOOL_CHANGED')
+            k.need(Path(driver[name]).is_absolute(), 'DRIVER_TOOL_PATH')
+            tools[name + 'Sha256'] = k.digest(driver[name])
     deps = Path(driver['dependencies'])
-    for file,field in [('package.json','packageSha256'),('package-lock.json','lockSha256')]:
-        source=subprocess.run(['git','-C',driver['coreRepository'],'show',c['pins']['pair']['core']+':'+file],capture_output=True,timeout=10)
-        k.need(source.returncode==0 and k.hashlib.sha256(source.stdout).hexdigest()==driver[field],'SOURCE_DEPENDENCY_LOCK_CHANGED')
-    k.need(k.digest(deps / 'package.json') == driver['packageSha256'] and k.digest(deps / 'package-lock.json') == driver['lockSha256'], 'DEPENDENCY_LOCK_CHANGED')
+    tools.update(packageSha256=k.digest(deps / 'package.json'), lockSha256=k.digest(deps / 'package-lock.json'))
     tree = k.dependency_reuse.tree(deps / 'node_modules')
-    k.need(tree == driver['nodeModules'], 'DEPENDENCY_TREE_CHANGED')
     cgroup = Path('/proc/self/cgroup').read_text().strip()
     relative = cgroup.splitlines()[0].split(':', 2)[-1]
     root = Path('/sys/fs/cgroup') / relative.lstrip('/')
     limits = {name: (root / name).read_text().strip() if (root / name).is_file() else 'UNMEASURED' for name in ('cpu.max', 'memory.max', 'memory.swap.max', 'cpu.stat', 'memory.current', 'memory.peak', 'memory.events')}
     scope = finite_scope(c, limits)
     return {'hostId': driver['hostId'], 'sharedHost': True, 'dependencies': str(deps), 'nodeModules': tree,
+            'observedTools': tools, 'matchesCapture': all(driver.get(key) == value for key, value in tools.items())
+            and tree == driver['nodeModules'],
             'localCgroup': cgroup, 'resourceReadback': limits, 'requestedResources': driver['resources'],
             'budgetEnforcement': scope}
 

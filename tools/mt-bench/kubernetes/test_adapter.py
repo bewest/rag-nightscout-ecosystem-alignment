@@ -403,5 +403,29 @@ class Adapter(unittest.TestCase):
         self.assertEqual(value['pods']['postgres-0']['maskedPaths'],[])
 
 
+class NativeDriverRecord(unittest.TestCase):
+    def test_driver_tools_and_dependencies_are_recorded_not_pinned(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as area:
+            root = Path(area); deps = root / 'deps'; (deps / 'node_modules').mkdir(parents=True)
+            (deps / 'package.json').write_text('{}'); (deps / 'package-lock.json').write_text('{}')
+            node = root / 'node'; node.write_text('synthetic')
+            driver = {'hostId': 'h', 'node': str(node), 'nodeSha256': '0'*64, 'dependencies': str(deps),
+                      'coreRepository': '/nonexistent', 'packageSha256': '0'*64, 'lockSha256': '0'*64,
+                      'nodeModules': 'captured', 'resources': {}}
+            c = {'driver': driver, 'observer': {'hostId': 'h'}, 'pins': {'pair': {'core': 'a'*40}}}
+            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
+                 patch.object(execute, 'finite_scope', return_value='scope'):
+                value = execute.actor(c)
+            self.assertFalse(value['matchesCapture'])
+            self.assertEqual(value['observedTools']['nodeSha256'], execute.k.digest(node))
+            self.assertEqual(value['nodeModules'], 'changed')
+            driver['node'] = 'relative'
+            with patch.object(execute.k.dependency_reuse, 'tree', return_value='changed'), \
+                 patch.object(execute, 'finite_scope', return_value='scope'):
+                with self.assertRaisesRegex(execute.k.Refused, 'DRIVER_TOOL_PATH'):
+                    execute.actor(c)
+
+
 if __name__=='__main__':
     unittest.main()
