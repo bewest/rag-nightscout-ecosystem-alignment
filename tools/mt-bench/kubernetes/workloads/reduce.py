@@ -430,8 +430,9 @@ def reduce_stage(stage, output, fixture=None):
     result['outcomeGate'] = gate or {'verdict':'UNMEASURED'}
     result.setdefault('offeredWork', {'verdict':'UNMEASURED'})
     if actors.get('writerContinuity') == 'UNMEASURED':
-        result['offeredWork'] = {'verdict': 'UNMEASURED', 'terminalActor': result['offeredWork']}
-        result['issuedScope'] = 'terminal writer only'
+        result['offeredWork'] = {'verdict': 'UNMEASURED', 'capturedWriter': result['offeredWork']}
+        result['issuedScope'] = 'exported writer only; whole-run counts unmeasured'
+        result['countsSource'] = actors.get('artifactSource', 'UNMEASURED')
     components = section('componentCounters', lambda: component_counters(stage, result['identityReadback'].get('before.json', {}), files))
     result['componentCounters'] = components or {'verdict':'UNMEASURED'}
     if input_errors:

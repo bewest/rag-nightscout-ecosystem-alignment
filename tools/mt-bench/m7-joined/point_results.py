@@ -49,11 +49,26 @@ def ordinary_rates(summary, seconds, writer_lost):
     return rates
 
 
-def load_report(load, accounting):
-    gate = read(load/'outcome-gate.json')
+def load_report(load, accounting, reduced_gate=None):
+    gate = read(load/'outcome-gate.json') or reduced_gate or {}
     actors = read(load/'native-load.json')
     summary = (read(load/'driver-accounting.json') or read(load/'load-functional.json').get('configuredDriver')
                or read(load/'driver-vu-assessment.json') or {})
+    counts = accounting.get('sourceCounts') or {}
+    if not summary and accounting.get('offeredWorkVerdict') == 'PASS' and 'iterations' not in counts:
+        # Older HTTP receipts inferred PASS from zero drops alone. Re-read the
+        # retained counters when possible; an old zero can also mean missing.
+        import http_accounting
+        metrics = read(load/'k6-summary.json').get('metrics')
+        if isinstance(metrics, dict):
+            try:
+                accounting = http_accounting.assess(metrics)
+            except (AttributeError, TypeError, ValueError):
+                metrics = None
+        if not isinstance(metrics, dict):
+            accounting = {**accounting, 'offeredWorkVerdict': 'UNMEASURED',
+                          'sourceCounts': {key: value if key == 'dropped_iterations' or value != 0 else 'UNMEASURED'
+                                           for key, value in counts.items()}}
     source = read(load.parent/'run.json') or read(load.parent/'owner.json')
     cadence = summary.get('cadence') or source.get('cadence') or source.get('workload')
     cadence = cadence if isinstance(cadence, dict) else {}
@@ -82,9 +97,13 @@ def load_report(load, accounting):
               'byShard': by_shard or 'UNMEASURED',
               'actorTransitions': [event for rows in (*census, actors.get('actorTransitions', [])) for event in rows],
               'writerContinuity': actors.get('writerContinuity', 'UNMEASURED')}
+    if actors:
+        process = actors.get('process', {})
+        report['countsSource'] = actors.get('artifactSource', 'UNMEASURED')
+        report['terminalWriter'] = {key: process.get(key) for key in ('jobUid', 'podUid', 'containerId', 'complete')}
     if lost:
-        report.update(terminalActorOfferedWork=report['offeredWork'], offeredWork='UNMEASURED',
-                      countScope='terminal writer only')
+        report.update(capturedWriterOfferedWork=report['offeredWork'], offeredWork='UNMEASURED',
+                      countScope='exported writer only; whole-run counts unmeasured')
     return report
 
 
@@ -108,8 +127,9 @@ def publish_native(case):
     failure = read(runtime/'first-failure.json') or attempt.get('firstFailure')
     functional = read(load/'load-functional.json')
     accounting = functional.get('http', {})
+    reduced = attempt.get('observations', {})
     result = {'case': case.name, 'stageVerdict': attempt.get('verdict', 'UNMEASURED'),
-              'firstFailure': failure, 'measurements': load_report(load, accounting),
+              'firstFailure': failure, 'measurements': load_report(load, accounting, reduced.get('outcomeGate')),
               'capacityAcceptance': 'NOT_GRANTED'}
     absence = read(runtime/'absence.json')
     cleanup_failure = read(runtime/'cleanup-failure.json')

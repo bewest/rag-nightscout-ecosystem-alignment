@@ -124,6 +124,16 @@ def observe_actors(receipt, pod):
             actors[name] = identity
 
 
+def artifact_source(pod):
+    states = {row['name']: row for row in pod.get('status', {}).get('containerStatuses', [])}
+    def identity(name):
+        row = states.get(name, {})
+        return {'containerId': row.get('containerID'), 'imageId': row.get('imageID'),
+                'restartCount': row.get('restartCount')}
+    return {'podUid': pod['metadata']['uid'], 'writer': identity('k6'),
+            'exporter': identity('artifact-exporter')}
+
+
 def terminal_process(c, wanted, job, pod, final_job, final_pod):
     """Verify terminal execution and record lifetime changes under the same Job."""
     import native_load as n
@@ -143,7 +153,7 @@ def terminal_process(c, wanted, job, pod, final_job, final_pod):
     history = {}
     observe_actors(history, pod)
     observe_actors(history, final_pod)
-    process.update(history)
+    process.update(history, artifactSource=artifact_source(pod))
     exporter = final_states.get('artifact-exporter', {})
     k.need(exporter.get('state', {}).get('terminated', {}).get('exitCode') == 0,
            'NATIVE_LOAD_EXPORTER_FAILED', 'UNMEASURED')
@@ -277,10 +287,24 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     match = re.search(r'^Max file size\s+([0-9]+)\s+([0-9]+)\s+bytes\s*$', limits, re.M)
     k.need(match and int(match[1]) == int(match[2]) == receipt['fileLimitBytes'], 'NATIVE_LOAD_FILE_LIMIT_UNPROVEN')
     current = pod_read()
-    k.need(current is not None and current['metadata']['uid'] == pod_uid
-           and k.controller(current) == k.controller(pod), 'NATIVE_LOAD_EXPORT_LIFETIME_UNMEASURED', 'UNMEASURED')
+    if current is None or current['metadata']['uid'] != pod_uid:
+        receipt.update(writerContinuity='UNMEASURED', artifactSource='UNMEASURED')
+        k.write(out/'native-load.json', receipt)
+        raise k.Refused('K8S_NATIVE_LOAD_EXPORT_LIFETIME_UNMEASURED', 'UNMEASURED')
+    k.owned(c, current)
+    k.need(k.controller(current) == k.controller(pod), 'NATIVE_LOAD_POD_CONTROLLER')
     k.need(k.resource_budget.observed(current['spec']) == k.resource_budget.observed(pod['spec']),
            'NATIVE_LOAD_RESOURCES_CHANGED')
+    source = artifact_source(pod)
+    after_export = artifact_source(current)
+    if not source['writer']['containerId'] or source['writer'] != after_export['writer']:
+        receipt.update(writerContinuity='UNMEASURED', artifactSource='UNMEASURED')
+        k.write(out/'native-load.json', receipt)
+        raise k.Refused('K8S_NATIVE_LOAD_EXPORT_LIFETIME_UNMEASURED', 'UNMEASURED')
+    if source['exporter'] != after_export['exporter']:
+        source['exporter'] = {'before': source['exporter'], 'after': after_export['exporter']}
+    receipt['artifactSource'] = source
+    k.write(out/'native-load.json', receipt)
     check_namespace()
     kube.call(command + ['ack', n.sha(raw)], namespace=ns, timeout=min(20, remaining()))
     kube.call(['wait', '--for=condition=complete', 'job/k6', '--timeout=%ds' % max(1, math.ceil(remaining()))],
@@ -290,7 +314,10 @@ def capture(kube, c, wanted, out, receipt, *, clock=time, failures=None, private
     # guard. A named Pod display can contain masked fields even at completion.
     final_pod = pod_read()
     process = terminal_process(c, wanted, job, current, final_job, final_pod)
+    process['artifactSource'] = source
     observe_actors(receipt, final_pod)
+    receipt['process'] = process
+    k.write(out/'native-load.json', receipt)
     check_namespace()
     k.write(out / 'k6-process.json', process)
     k.need(process['complete'] and meta.get('exitCode') == 0, 'NATIVE_LOAD_JOB_FAILED', 'UNMEASURED')

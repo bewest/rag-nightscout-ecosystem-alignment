@@ -796,7 +796,7 @@ def load_checks(out, c=None):
         measured = driver.retain(out.parent, workload_runtime.driver_manifest(c))
         value['configuredDriver'] = measured
         k.write(out / 'load-functional.json', value)
-    k.need(all(http['shapes'][shape]['attempts'] > 0 for shape in ('jwt_setup', *http_accounting.SHAPES)),
+    k.need(all(type(row['attempts']) is int and row['attempts'] > 0 for row in http['shapes'].values()),
            'SCENARIO_SHAPE_UNMEASURED', 'UNMEASURED')
     k.need(http['httpVerdict'] == 'PASS' and all(row['httpVerdict'] == 'PASS' for row in http['shapes'].values()),
            'SCENARIO_HTTP_FAILED', 'FAIL' if http['httpVerdict'] == 'FAIL' else 'UNMEASURED')

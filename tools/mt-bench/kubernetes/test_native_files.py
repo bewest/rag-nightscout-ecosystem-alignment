@@ -75,9 +75,15 @@ class NativeFiles(unittest.TestCase):
                     f.terminal_process(c, wanted, job, pod, final_job, final_pod)
         changed = copy.deepcopy(pod)
         changed['metadata']['uid'] = 'later-pod'
+        changed['status']['containerStatuses'][0]['containerID'] = 'later-k6'
         measured = f.terminal_process(c, wanted, job, pod, job, changed)
         self.assertEqual(measured['writerContinuity'], 'UNMEASURED')
         self.assertTrue(measured['complete'])
+        self.assertEqual(measured['artifactSource']['podUid'], pod['metadata']['uid'])
+        self.assertEqual(measured['artifactSource']['writer']['containerId'], pod['status']['containerStatuses'][0]['containerID'])
+        self.assertEqual(measured['artifactSource']['exporter']['containerId'], 'containerd://exporter')
+        self.assertEqual(measured['podUid'], 'later-pod')
+        self.assertEqual(measured['containerId'], 'later-k6')
         self.assertEqual(measured['actorTransitions'][0]['to'], 'later-pod')
         exporter_restart = copy.deepcopy(pod)
         exporter_restart['status']['containerStatuses'][1].update(containerID='new-exporter', restartCount=1)

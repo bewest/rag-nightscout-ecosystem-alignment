@@ -90,6 +90,46 @@ class StandardPoint(unittest.TestCase):
             rate = points.load_report(load, {})['ordinaryRate']
             self.assertEqual((rate['targetRps'], rate['achievedRps']), ('UNMEASURED', 'UNMEASURED'))
 
+    def test_published_sparse_counters_and_export_lifetime(self):
+        import http_accounting
+        with TemporaryDirectory() as temp:
+            load = Path(temp)
+            http = http_accounting.assess({'dropped_iterations': {'count': 0}})
+            summary = points.load_report(load, http)
+            self.assertEqual(summary['offeredWork'], 'UNMEASURED')
+            self.assertEqual(summary['counts']['dropped_iterations'], 0)
+            self.assertEqual(summary['counts']['scenario_request_attempts'], 'UNMEASURED')
+            old = {'offeredWorkVerdict':'PASS', 'sourceReconciliation':'UNMEASURED',
+                   'sourceCounts':{'dropped_iterations':0, 'scenario_request_attempts':0}}
+            historical = points.load_report(load, old)
+            self.assertEqual(historical['offeredWork'], 'UNMEASURED')
+            self.assertEqual(historical['counts']['scenario_request_attempts'], 'UNMEASURED')
+            points.write(load/'k6-summary.json', {'metrics': {'dropped_iterations': {'count': 0}}})
+            self.assertEqual(points.load_report(load, old)['counts'], http['sourceCounts'])
+            origin = {'podUid':'before', 'writer':{'containerId':'original'}}
+            final = {'podUid':'after', 'containerId':'replacement', 'complete':True}
+            points.write(load/'native-load.json', {'writerContinuity':'UNMEASURED', 'artifactSource':origin, 'process':final})
+            summary = points.load_report(load, http)
+            self.assertEqual(summary['countsSource'], origin)
+            self.assertEqual(summary['terminalWriter']['containerId'], 'replacement')
+            self.assertEqual(summary['countScope'], 'exported writer only; whole-run counts unmeasured')
+
+    def test_retained_reducer_product_failure_survives_live_gate_loss(self):
+        with TemporaryDirectory() as temp:
+            case = Path(temp)
+            packet = case/'runtime'/'packet'
+            experiment = packet/'experiment'
+            experiment.mkdir(parents=True)
+            gate = {'verdict': 'FAIL', 'components': {'sampledOracle': {'verdict':'FAIL', 'codes':['CLINICAL_LATE']}}}
+            failure = {'code':'MISSING_OBSERVATION', 'verdict':'UNMEASURED'}
+            points.write(experiment/'result.json', {'verdict':'UNMEASURED','firstFailure':failure,
+                                                    'observations': {'outcomeGate':gate}})
+            points.publish_native(case)
+            result = points.read(case/'result.json')
+            self.assertEqual(result['firstFailure'], failure)
+            self.assertEqual(result['measurements']['outcomeGate'], 'FAIL')
+            self.assertEqual(result['measurements']['components'], gate['components'])
+
     def test_native_failure_and_unconfirmed_host_unit(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)/'point'
