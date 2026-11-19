@@ -3,6 +3,7 @@
 import argparse
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -408,20 +409,45 @@ def failure(exc):
                 verdict=getattr(exc, 'verdict', 'UNMEASURED'))
 
 
+def launch(path, prepare_only):
+    """Dispatch the existing lifecycle from the helper selected for this case."""
+    from lifecycle_config import helper_directory
+    config = k.document(path)
+    directory = helper_directory(config)
+    case = Path(config['caseDirectory'])
+    command = [sys.executable, '-B']
+    if 'inputs' in config:
+        bound = path.resolve()
+        if prepare_only:
+            subprocess.run([*command, directory/'lifecycle_config.py', 'check', bound],
+                           check=True, stdout=subprocess.DEVNULL)
+    else:
+        bound = case/'lifecycle-bound.json'
+        subprocess.run([*command, directory/'lifecycle_config.py', 'capture', path.resolve(), bound],
+                       check=True, stdout=subprocess.DEVNULL)
+    if prepare_only:
+        return {'configuration': str(bound), 'helper': str(directory), 'runtimeStarted': False}
+    os.execv(sys.executable, [*command, directory/'lifecycle.py', bound])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='action', required=True)
     for name, fields in {'binding': ('manifest','binding_repo','deploy_repo','output'),
                          'describe': ('manifest',), 'prepare': ('manifest','instance','output'),
-                         'run': ('packet','allocation','sha256')}.items():
+                         'run': ('packet','allocation','sha256'), 'launch': ('config',)}.items():
         command = commands.add_parser(name)
         for field in fields:
             command.add_argument(field, type=str if field == 'sha256' else Path)
+        if name == 'launch':
+            command.add_argument('--prepare-only', action='store_true', help='capture or check the case without starting actors')
         if name == 'prepare':
             command.add_argument('--await-primer', action='store_true', help='bind DATA credentials after verified in-Pod priming')
         if name == 'run':
             command.add_argument('--matrix', type=Path)
     a = parser.parse_args()
+    if a.action == 'launch':
+        return launch(a.config, a.prepare_only)
     if a.action == 'binding':
         return str(materialize(k.document(a.manifest), a.binding_repo, a.deploy_repo, a.output.resolve()))
     if a.action == 'describe':

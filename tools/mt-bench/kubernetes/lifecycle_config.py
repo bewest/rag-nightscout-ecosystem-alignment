@@ -7,7 +7,7 @@ import re
 import subprocess
 import sys
 from producer_startup import cohort_ready_seconds
-sys.path.append(str(Path(__file__).resolve().parent.parent/'m7-joined'))
+sys.path.insert(1, str(Path(__file__).resolve().parent.parent/'m7-joined'))
 import workload_inputs
 import primer_options
 import population_ceiling
@@ -64,6 +64,12 @@ def startup_preflight(intent, environment, objects):
             'selectedSeconds':selected,'authoredFields':sorted(set(authored)|({'cohortReadySeconds'} if 'cohortReadySeconds' in phases else set())),
             'workDeadlineSeconds':environment['workDeadlineSeconds'],'native':native}
 
+def helper_directory(config):
+    root = Path(config['instrumentDirectory'])
+    need(root.is_absolute(), 'INSTRUMENT_DIRECTORY')
+    return root.resolve() / 'tools/mt-bench/kubernetes'
+
+
 def fixture_config(path, capture=False):
     c=read(path)
     need(c.get('version')==1 and set(c)<=FIELDS, 'CONFIGURATION')
@@ -71,6 +77,11 @@ def fixture_config(path, capture=False):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_dir(), 'DIRECTORY')
     for key in ('k6','readonlyGuard','observerScript'):
         need(Path(c[key]).is_absolute() and Path(c[key]).is_file(), 'TOOL')
+    need(helper_directory(c) == Path(__file__).resolve().parent, 'INSTRUMENT_DIRECTORY_MISMATCH')
+    from kube_adapter import instrument
+    identity = instrument()['sha256']
+    need(c.get('instrumentSha256', identity if capture else None) == identity, 'INSTRUMENT_CHANGED')
+    c['instrumentSha256'] = identity
     limits=c['nativeLimits'];need(set(limits)=={'millicpus','memoryBytes'} and all(type(x)is int and x>0 for x in limits.values()), 'FINITE_NATIVE_LIMITS')
     need(type(c.get('edgePort',8080))is int and 1<=c.get('edgePort',8080)<=65535,'EDGE_PORT')
     if c.get('pullSecretCommand') is not None:
@@ -111,8 +122,7 @@ def fixture_config(path, capture=False):
     need(template['driver']['hostId']==template['observer']['hostId'], 'NATIVE_HOST')
     need(e['workDeadlineSeconds']>0 and e['cleanupDeadlineSeconds']>e['workDeadlineSeconds'] and e['provisionDeadlineSeconds']>0,'DEADLINES')
     # Run identity is the image digest plus this configuration. Source heads,
-    # the instrument hash and input hashes are recorded at capture, not
-    # re-proved at every check.
+    # tools and binding file hashes are recorded at capture.
     package=Path(c['bindingDirectory']);binding=read(package/'binding.json')
     authored_startup=m['profile'].get('phases',{}).get('startupWindows',{}).get('kubernetes',{})
     if 'verification' in inventory.get('workloads', {}) or 'pgstreamNotifierAckTimeoutMs' in m or 'primerStorage' in m or 'jobCompleteSeconds' in authored_startup or primer is not None or population is not None:
@@ -175,9 +185,12 @@ def fixture_config(path, capture=False):
     files += [Path(__file__).with_name(n) for n in ('lifecycle_config.py','lifecycle.py','attach.py')]
     if scheduler:
         files.append(Path(__file__).with_name('scheduler_placement.py'))
-    expected={str(p.resolve()):sha(p) for p in files}
     if capture:
-        c['inputs']=expected
+        from experiment import workload
+        workload(m)
+        intent_hash = pre['experiment'].get('experimentSha256')
+        need(intent_hash is None or sha(d/'intent.json') == intent_hash, 'EXPERIMENT_CHANGED')
+        c['inputs']={str(p.resolve()):sha(p) for p in files}
         c['capturedSourceCommit']=subprocess.check_output(['git','-C',c['coreRepository'],'rev-parse','HEAD'],text=True).strip()
         c['startupWindowPreflight']=startup
         if primer_preflight is not None:c['primerOptionsPreflight']=primer_preflight
@@ -187,6 +200,8 @@ def fixture_config(path, capture=False):
              'startupWindowPreflight' not in c and not startup['authoredFields'],'STARTUP_PREFLIGHT_CHANGED')
         need(c.get('primerOptionsPreflight')==primer_preflight,'PRIMER_OPTIONS_PREFLIGHT_CHANGED')
         need(c.get('populationCeilingPreflight')==population_preflight,'POPULATION_PREFLIGHT_CHANGED')
+        intent_path = str((d/'intent.json').resolve())
+        need(c['inputs'].get(intent_path) == sha(intent_path), 'EXPERIMENT_CHANGED')
     return c
 
 if __name__=='__main__':

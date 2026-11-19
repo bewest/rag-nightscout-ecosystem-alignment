@@ -16,7 +16,7 @@ import run_cleanup
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "m7-joined"))
 from auto_catalog import auto_catalog
 cfg=fixture_config(Path(sys.argv[1]))
-d=Path(cfg['caseDirectory']); inst=Path(cfg['instrumentDirectory']); tool=Path(cfg['toolsDirectory'])
+d=Path(cfg['caseDirectory']); tool=Path(cfg['toolsDirectory'])
 read=lambda p:json.loads(p.read_bytes())
 os.umask(0o077);sys.dont_write_bytecode=True
 e=read(d/'environment.json'); ns=e['namespace'];ctx=e['context'];rid=e['runId']
@@ -371,7 +371,7 @@ try:
             (live/'primer-config.private.json').write_bytes(execpod(provision,'done',['cat','/state/primer/config.json']))
         for role in ('evaluator','realtime'):
             (live/(role+'-config.private.json')).write_bytes(execpod(provision,'done',['cat','/state/'+role+'/config.json']))
-        receipt_code=(inst/'tools/mt-bench/m7-joined/native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.captureFiles('/opt/app','/state')));"
+        receipt_code=(Path(__file__).resolve().parent.parent/'m7-joined/native-receipt-source.cjs').read_text()+"\nconsole.log(JSON.stringify(module.exports.captureFiles('/opt/app','/state')));"
         (live/'native-receipt-source.private.json').write_bytes(execpod(provision,'done',['node','-e',receipt_code]))
     with startup_window('secret-publish',waits['secretPublishSeconds']):
         published=command(['bash',secret_script,'publish',ns,'unused'],timeout=waits['secretPublishSeconds'],private=True)

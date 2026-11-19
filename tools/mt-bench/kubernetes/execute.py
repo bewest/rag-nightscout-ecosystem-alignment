@@ -149,7 +149,7 @@ def native_k6(c, out, script, *, env, seconds, failures=None, shard=None, option
                outcome=out / f'k6-process{suffix}.json')
 
 
-def configured_load(d, out, c, env, setup):
+def configured_load(d, out, c, env, setup, ordinary):
     """Use the local generator, wrapper, roster splitter and accounting natively."""
     from concurrent.futures import ThreadPoolExecutor, as_completed
     import driver_shards
@@ -160,10 +160,10 @@ def configured_load(d, out, c, env, setup):
     k.need(k.digest(d / driver.SCRIPT) == k.document(d / 'packet.json')['workload']['driverWrapperSha256'],
            'DRIVER_WRAPPER_CHANGED')
     n = len(plans)
-    rows = (driver_shards.plan(c['tenants'], m['cadence']['hotFactor'], m['cadence'].get('offeredRps'), n)
-            if n > 1 else [dict(index=0, start=0, end=c['tenants'], tenants=c['tenants'],
+    rows = (driver_shards.plan(len(ordinary), m['cadence']['hotFactor'], m['cadence'].get('offeredRps'), n)
+            if n > 1 else [dict(index=0, start=0, end=len(ordinary), tenants=len(ordinary),
                                hotFactor=m['cadence']['hotFactor'], offeredRps=m['cadence'].get('offeredRps'))])
-    folder = driver_shards.write_rosters(out / 'shards', roster(c), rows)
+    folder = driver_shards.write_rosters(out / 'shards', ordinary, rows)
     if n > 1:
         k.write(out / 'k6-shard-plan.json', {'shards': rows})
     k.write(out / 'driver-plans.json', {'plans': plans, 'transport': 'kubernetes-native',
@@ -204,6 +204,16 @@ def configured_load(d, out, c, env, setup):
     k.write(out / 'driver-accounting.json', observation)
     if errors: raise errors[0]
     return observation
+
+
+def ordinary_driver_inputs(c, tenants, out, env):
+    """Project the verified roster only at the k6 boundary."""
+    ordinary = tenants[:workload_runtime.driver_count(c, k.need)]
+    if 'driverPlan' not in c['workload'] and len(ordinary) < len(tenants):
+        path = out / 'ordinary-tenants.private.json'
+        k.write(path, ordinary)
+        env['TENANTS_FILE'] = str(path)
+    return ordinary
 
 
 def roster(c):
@@ -488,7 +498,8 @@ def execute(d, c, objects, client, load=False, recovery=False):
     if load:
         k.need('k6' in c['driver'] and 'k6Sha256' in c['driver'],'LOAD_INPUTS_REQUIRED','UNMEASURED')
     gate_mode(c)  # the outcome gate always requires fixed-target catch-up
-    settings = workload_runtime.validate(c['workload'], k.need, c['tenants'])
+    ordinary_count = workload_runtime.driver_count(c, k.need)
+    settings = workload_runtime.validate(c['workload'], k.need, ordinary_count)
     env = workload_runtime.environment(settings, environment(c, d), k.need)
     completion(c)
     tenants = roster(c)
@@ -581,14 +592,15 @@ def execute(d, c, objects, client, load=False, recovery=False):
                 env['M7_SETUP_UNTIL_MS'] = str(int(prime_until * 1000))
                 k.write(out/'setup-window.json', {'configuredSeconds': settings['setupSeconds'],
                         'remainingSecondsAtDriverLaunch': setup, 'setupUntilUnixMs': int(prime_until * 1000)})
+            ordinary = ordinary_driver_inputs(c, tenants, out, env)
             load_process_started = time.time()
             if 'driverPlan' in settings:
                 if c.get('nativeLoad') is not None:
                     import native_join
-                    native_join.run(d,out,c,objects,client,tenants,runid=runid,setup=setup,failures=midpoint_failure)
+                    native_join.run(d,out,c,objects,client,ordinary,runid=runid,setup=setup,failures=midpoint_failure)
                     accounting = k.document(out/'driver-accounting.json')
                 else:
-                    accounting = configured_load(d, out, c, env, setup)
+                    accounting = configured_load(d, out, c, env, setup, ordinary)
                 load_process_ended = time.time()
                 phases = [s['phases'] for s in accounting['shards']]
                 k.need(all('scheduleStartMs' in p and 'scheduleEndMs' in p for p in phases),

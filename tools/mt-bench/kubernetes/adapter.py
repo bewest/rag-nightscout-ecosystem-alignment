@@ -93,13 +93,12 @@ def hashed(value):
 
 
 def instrument():
-    paths = [p for p in HERE.iterdir() if p.suffix in ('.py', '.cjs') and not p.name.startswith('test_')]
-    paths += [p for p in (HERE / 'workloads').iterdir() if p.suffix in ('.py', '.cjs') and not p.name.startswith('test_')]
-    paths += list(M7.glob('*.py')) + list(M7.glob('*.cjs')) + list(M7.glob('*.js'))
+    paths = [p for folder in (HERE, HERE / 'workloads', M7) for p in folder.iterdir()
+             if p.suffix in ('.py', '.cjs', '.js', '.patch')
+             and not p.name.startswith(('test_', 'test-', 'control_')) and '.test.' not in p.name
+             and not p.stem.endswith(('-control', '_control'))]
     paths += [ROOT / 'tools/mt-bench/capacity/probe.js', ROOT / 'tools/mt-bench/capacity/k6/workload.js']
     files = {str(p.relative_to(ROOT)): digest(p) for p in sorted(paths)}
-    path = HERE / 'binding-input.patch'
-    files[str(path.relative_to(ROOT))] = digest(path)
     return {'sha256': hashed(files), 'files': files}
 
 
@@ -225,8 +224,8 @@ def validate(c, inventory, rendered, now=None, cleanup=False):
     deadline(c, cleanup=cleanup, now=now)
     need(isinstance(c.get('roles'), dict) and {'postgres', 'api', 'realtime', 'evaluator'} <= set(c['roles']), 'ROLE_ROSTER')
     if 'workload' in c:
-        from workload_runtime import validate as validate_workload
-        validate_workload(c['workload'], need, c['tenants'])
+        from workload_runtime import driver_count, validate as validate_workload
+        validate_workload(c['workload'], need, driver_count(c, need))
         need('probeLedger' not in c['workload'] or c.get('tier','discovery')=='discovery', 'PROBE_LEDGER_DISCOVERY_ONLY')
         need('evaluatorProgressBudget' not in c['workload'] or c.get('tier','discovery')=='discovery', 'EVALUATOR_PROGRESS_BUDGET_DISCOVERY_ONLY')
     if 'accessSetupSeconds' in c:

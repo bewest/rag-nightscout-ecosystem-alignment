@@ -62,9 +62,14 @@ checks the native database source independently. The primer's private results
 live on its `/run/ns-client` volume. Set its size with the renderer's
 `primerStorage` input, such as `64Mi`.
 
-Serving startup and load setup have separate results. This runner's ordinary
-traffic uses every tenant in `population.ordinaryRosterTenants`, so the load
-stage requires DATA credentials for that roster. Evaluator preload convergence
+The primer verifies DATA credentials for the full `population.provisionedTenants`
+roster. Set `population.ordinaryRosterTenants` to the number of consecutive entries
+from the start of that roster that should receive ordinary k6 traffic. Select
+`workload.offeredRps` for an aggregate rate or `workloadMix: realistic-v1` and
+`workloadScale` for per-tenant cadence. Both host k6 and the optional k6 Job use
+this selection. The stock probe assigns `workload.logicalPollingClients` across
+the full roster. Its probes, access checks and tenant-wide observers can reach
+tenants outside the ordinary subset. Evaluator preload convergence
 is a recorded signal by default. Set `readiness: require-all` in the selected
 preload phase to require full convergence in experiments that depend on it.
 
@@ -760,14 +765,25 @@ another source or changes PENDING to PASS.
 | Observation | Per-write clinical/client proof retains its strict 120-second contract. A longer finite drain is admitted and reported PARTIAL for that observer. Accepted/stored ordinary writes, witnesses, frames and independent rows retain their own results. No all-writer clinical drain is inferred. |
 | Resource capture | Native driver/controller/observer cgroup CPU, memory/events and lifetime peak are captured before scope exit. Stage controller retains all surviving init/steady container states and resources before exact UID cleanup. Missing/retired counters remain UNMEASURED; independent cluster sampling is still needed for actual init/steady phase peaks. |
 
-`lifecycle_config.py capture INPUT NEW_BOUND` freezes a prepared instance's
-files, exact released instrument, source, tools, binding, native allocation and
-controller bytes. `check NEW_BOUND` rechecks them. `lifecycle.py NEW_BOUND`
-executes the existing stage order, calls `attach.py` under the configured finite
-native scope and records the first classified failure before independent
-UID-conditioned namespace/trust cleanup. Snapshot freshness and actual fit are
-still checked at entry. No case-name list or inherited tiny allocation is used.
-The operating owner supplies aggregate host/cluster admission and live custody.
+Launch a freshly commissioned case with its lifecycle input. The input names
+the selected alignment checkout in `instrumentDirectory`, the current
+`caseDirectory` (intent, environment, inventory, render, preflight and stages),
+and the operator's binding, run template, snapshot, tools, delivery and finite
+allocation. All paths come from these inputs. Set `instrumentDirectory` once.
+Capture records the runtime digest. An explicit `instrumentSha256` pins a
+particular runtime. Test source edits leave that digest stable.
+
+```bash
+python3 -B "$K/experiment.py" launch "$CASE/lifecycle-input.json"
+```
+
+For offline preparation, add `--prepare-only`. This writes
+`$CASE/lifecycle-bound.json` with exclusive creation. Pass the bound file to
+the same command to enter it, or add `--prepare-only` again to check it. The
+selected checkout performs capture, lifecycle, native-scope attach, packet
+preparation and scheduler readback. The operating owner supplies current fit
+and custody at entry. The controller keeps the existing UID-conditioned
+cleanup on failure.
 
 When the stock probe's SQL transport fails, `sql-observation-failure.json`
 retains the first child's exit/timeout/output-bound classification, reported

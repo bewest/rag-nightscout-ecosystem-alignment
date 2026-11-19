@@ -230,7 +230,9 @@ def prepare_case(case, selection):
     control=k.document(case/'lifecycle-input.json')
     k.need(Path(control['caseDirectory']).resolve()==case,'NATIVE_LOAD_CASE_DIRECTORY_CHANGED')
     k.need('inputs' not in control,'NATIVE_LOAD_ALREADY_CAPTURED')
-    manifest=k.document(case/'intent.json');template=k.document(case/'native-run-template.json')
+    from lifecycle_config import helper_directory
+    k.need(helper_directory(control) == k.HERE, 'INSTRUMENT_DIRECTORY_MISMATCH')
+    manifest=k.document(case/'intent.json');template=frozen.read_ref(control['runTemplate'])
     inventory=k.document(case/'inventory.json');render=k.document(case/'render.json')
     k.need(not any(value.get(FIELD) for value in (manifest,template,inventory)), 'NATIVE_LOAD_ALREADY_DECLARED')
     delivery=frozen.read_ref(control['delivery']);source=frozen.source(manifest)
@@ -272,8 +274,6 @@ def prepare_case(case, selection):
     for name,value in [('render.json',render),('inventory.json',inventory),('intent.json',manifest),
                        ('native-run-template.json',template),('stages/foundation.json',foundation)]:k.write(case/name,value)
     control['runTemplate']={'path':str(case/'native-run-template.json'),'sha256':k.digest(case/'native-run-template.json')}
-    control['instrumentDirectory']=str(k.ROOT)
-    control['instrumentSha256']=k.instrument()['sha256']
     k.write(case/'lifecycle-input.json',control)
     pre=k.document(case/'preflight.json')
     pre['experiment'].update(experimentSha256=k.digest(case/'intent.json'),renderSha256=k.digest(case/'render.json'))

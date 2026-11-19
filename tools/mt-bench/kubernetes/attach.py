@@ -4,7 +4,7 @@ from pathlib import Path
 from lifecycle_config import fixture_config
 control=fixture_config(Path(sys.argv[1]))
 d=Path(control['caseDirectory']); live=d/'runtime'
-src=Path(control['instrumentDirectory'])/'tools/mt-bench'; K=src/'kubernetes'
+K=Path(__file__).resolve().parent
 read=lambda f:json.loads(f.read_bytes())
 sha=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
 def write(p,v):p.write_text(json.dumps(v,indent=2)+'\n');p.chmod(0o600)
@@ -14,7 +14,7 @@ dl=read(live/'deadlines.json');until=dt.datetime.fromisoformat(dl['workUntil']).
 os.umask(0o077)
 base=Path(control['runTemplate']['path'])
 cfg=read(base)
-for key in ('pins','completion','workload'):cfg.pop(key,None)
+for key in ('pins','completion','workload','ordinaryRosterTenants'):cfg.pop(key,None)
 core=Path(control['coreRepository'])
 cfg['driver']['coreRepository']=str(core)
 k6=Path(control['k6'])

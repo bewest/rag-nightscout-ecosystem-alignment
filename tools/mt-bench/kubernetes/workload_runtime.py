@@ -7,6 +7,16 @@ SHAPES = dict(w_sgv=1, w_devicestatus=1, w_treatments_v3=1,
 SELECTORS = ('OFFERED_RPS', 'M7_WORKLOAD_MIX', 'M7_WORKLOAD_SCALE', 'JWT_SETUP_CONCURRENCY')
 
 
+def ordinary_count(provisioned, selected, need):
+    need(workload_inputs.tenants(provisioned) and workload_inputs.tenants(selected)
+         and selected <= provisioned, 'ORDINARY_ROSTER_TENANTS')
+    return selected
+
+
+def driver_count(c, need):
+    return ordinary_count(c['tenants'], c.get('ordinaryRosterTenants', c['tenants']), need)
+
+
 def validate(w, need, tenants=None):
     need(isinstance(w, dict) and set(w) <= {'loadSeconds', 'offeredRps', 'workloadMix',
          'workloadScale', 'logicalPollingClients', 'probeEveryMs', 'hotFactor', 'pointId', 'setupSeconds', 'drainSeconds',
@@ -55,7 +65,7 @@ def driver_manifest(c):
     cadence = dict(c['workload'], accel=1, hotFactor=c['workload'].get('hotFactor', 1),
                    driverVuDiagnostic=driver.CONFIGURED)
     cadence['driverPlan'] = driver.configuration(cadence['driverPlan'], cadence)
-    m = dict(tenants=c['tenants'], replicas=sum(r == 'api' or r.startswith('api-') for r in c['roles']),
+    m = dict(tenants=c.get('ordinaryRosterTenants', c['tenants']), replicas=sum(r == 'api' or r.startswith('api-') for r in c['roles']),
              cadence=cadence, pair=c['pins']['pair'], imageId=c['pins']['appImageId'],
              instrument=c['pins']['instrument'], runPurpose='discovery', transport='kubernetes-native')
     driver.expected_plans(m)
