@@ -52,6 +52,10 @@ def decorate(c, job, secret, receipt, script, *, exporter_resources, shell_contr
     launch = {name: env.pop(name) for name in ('RUN_START','M7_SETUP_SECONDS','M7_SETUP_UNTIL_MS')}
     secret['stringData']['launch.env'] = ''.join('export '+name+'='+value+'\n' for name,value in sorted(launch.items()))
     env.update(driver.configured_environment(manifest))
+    # Persisted configuration sorts object keys. Keep this JSON-valued env
+    # byte-identical across reloads so exact Job declaration checks remain valid.
+    env['M7_DRIVER_PLAN'] = json.dumps(json.loads(env['M7_DRIVER_PLAN']),
+                                       sort_keys=True, separators=(',', ':'))
     container['env'] = [{'name': name, 'value': value} for name, value in sorted(env.items())]
     output = '--out csv=/out/k6-scheduling.csv.gz ' if cfg['observer'] == 'scheduling-v1' else ''
     # Shell only supervises its own test child; no workload mutation is retried.

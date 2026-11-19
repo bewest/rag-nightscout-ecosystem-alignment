@@ -49,6 +49,18 @@ def fixture():
 
 
 class NativeJoin(unittest.TestCase):
+    def test_persisted_configuration_keeps_exact_native_declaration(self):
+        c,_,_,_=fixture()
+        restored=json.loads(json.dumps(c,sort_keys=True))
+        original=j.declarations(c)
+        self.assertEqual(original,j.declarations(restored))
+        plan=next(row['value'] for row in original[0]['spec']['template']['spec']['containers'][0]['env']
+                  if row['name']=='M7_DRIVER_PLAN')
+        import driver_vu_diagnostic as driver
+        import workload_runtime
+        expected=driver.configured_environment(workload_runtime.driver_manifest(c))['M7_DRIVER_PLAN']
+        self.assertEqual(json.loads(plan),json.loads(expected))
+
     @unittest.skipUnless(os.environ.get('NS_NATIVE_QUALIFIED_RENDER'),'qualified binding render required')
     def test_load_label_has_edge_access_without_private_operator_plane_access(self):
         c,_,_,_=fixture();job=j.declarations(c)[0]
