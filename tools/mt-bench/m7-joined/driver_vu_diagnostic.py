@@ -349,6 +349,7 @@ def reduce_shard(load, expected, cfg, suffix=''):
     require(raw['sourceReconciliation'] == 'PASS', 'M7_DRIVER_HTTP_RECONCILIATION')
     counts = {}; starts = {}; total = Counter()
     phase_starts = [v for v in events if v['event'] == 'driver-scenario-start']
+    require(all(v.get('scenario') in expected['scenarios'] for v in phase_starts), 'M7_DRIVER_PHASE_MARKERS')
     for name, row in expected['scenarios'].items():
         def count(metric, extra=''):
             return counter(metrics, metric + '{scenario:' + name + extra + '}')
@@ -386,23 +387,49 @@ def reduce_shard(load, expected, cfg, suffix=''):
     phase = {'jwtSetupMs': setup_end - setup_start, 'jwtSetupRequests': raw['setup']['attempts'],
              'setupStartMs': setup_start, 'setupEndMs': setup_end, 'drainEndMs': end}
     if starts:
-        origins = [t - expected['scenarios'][name]['startTimeSeconds'] * 1000 for name, t in starts.items()]
-        require(max(origins) - min(origins) <= 10, 'M7_DRIVER_PHASE')
-        schedule_end = min(origins) + max(r['startTimeSeconds'] + r['durationSeconds'] for r in expected['scenarios'].values()) * 1000
-        require(setup_end <= min(origins) and schedule_end <= end + 10 and end - schedule_end <= 62000,
-                'M7_DRIVER_PHASE')
-        phase.update(scheduleStartMs=min(origins), scheduleEndMs=schedule_end, drainMs=max(0, end-schedule_end))
+        phase.update(executor_windows(starts, expected['scenarios'], setup_end, end))
     if cfg['observer'] == 'scheduling-v1':
         trace = load / ('k6-scheduling-' + suffix + '.csv.gz' if suffix else 'k6-scheduling.csv.gz')
-        trace_assess(trace, counts, starts, expected, cfg)
+        bins = trace_assess(trace, counts, starts, expected, cfg, phase.get('scheduleStartMs'))
+        if starts:
+            phase['commonWindowStarts'] = {
+                'basis': 'CSV start timestamps in [earliest observed origin + authored offset, start + duration)',
+                'status': 'OBSERVED',
+                'byScenario': bins}
     return {'plan': expected, 'byScenario': counts, 'totals': dict(total), 'phases': phase,
             'httpVerdict': raw['httpVerdict'],
             'offeredWorkVerdict': 'PASS' if all(v['offeredWorkVerdict'] == 'PASS' for v in counts.values()) else 'FAIL'}
 
 
-def trace_assess(path, counts, starts, expected, cfg):
+def executor_windows(starts, scenarios, setup_end, end):
+    # k6 starts each executor separately. exec.scenario.startTime is its own
+    # clock, also used by the actor to tag steady and drain observations.
+    origin = min(t - scenarios[name]['startTimeSeconds'] * 1000 for name, t in starts.items())
+    require(setup_end <= origin, 'M7_DRIVER_PHASE')
+    windows = {}
+    schedule_end = grace_end = origin
+    for name, row in scenarios.items():
+        scheduled = origin + row['startTimeSeconds'] * 1000
+        # Without an issued iteration only the authored extent is known.
+        start = starts.get(name, scheduled)
+        steady_end = start + row['durationSeconds'] * 1000
+        latest = steady_end + row['gracefulStopSeconds'] * 1000
+        schedule_end = max(schedule_end, steady_end)
+        grace_end = max(grace_end, latest)
+        if name in starts:
+            windows[name] = {'executorStartMs': start, 'steadyEndMs': steady_end,
+                             'graceEndMs': latest, 'launchLagFromEarliestOriginMs': start-scheduled}
+    # Preserve the teardown timestamp allowance separately from the selected graceful stop.
+    require(schedule_end <= end + 10 and end <= grace_end + 2000, 'M7_DRIVER_PHASE')
+    return {'scheduleStartMs': origin, 'scheduleEndMs': schedule_end, 'drainMs': max(0, end-schedule_end),
+            'postSetupLaunchMs': origin-setup_end, 'executorWindows': windows,
+            'commonWindowStarts': {'status': 'UNMEASURED', 'basis': 'Requires scheduling CSV'}}
+
+
+def trace_assess(path, counts, starts, expected, cfg, origin):
     require(path.is_file() and 0 < path.stat().st_size <= cfg['maxTraceBytes'], 'M7_DRIVER_TRACE_BOUND')
     tallies = defaultdict(Counter); decoded = 0
+    common = {name: {'before': 0, 'during': 0, 'after': 0} for name in counts}
     with gzip.open(path, 'rt', newline='') as source:
         def bounded_lines():
             nonlocal decoded
@@ -427,6 +454,12 @@ def trace_assess(path, counts, starts, expected, cfg):
             require(math.isfinite(value) and value.is_integer() and value >= 0 and math.isfinite(at),
                     'M7_DRIVER_TRACE_VALUE')
             tallies[name][metric] += int(value)
+            if metric == 'm7_driver_started' and origin is not None:
+                scenario = expected['scenarios'][name]
+                planned_start = origin + scenario['startTimeSeconds'] * 1000
+                planned_end = planned_start + scenario['durationSeconds'] * 1000
+                bucket = 'before' if at < planned_start else 'during' if at < planned_end else 'after'
+                common[name][bucket] += int(value)
             if name in starts:
                 start = starts[name]; stop = start + expected['scenarios'][name]['durationSeconds'] * 1000
                 require(start - 2 <= at <= stop + expected['scenarios'][name]['gracefulStopSeconds'] * 1000 + 10,
@@ -443,6 +476,8 @@ def trace_assess(path, counts, starts, expected, cfg):
                             ('m7_driver_started','issued'), ('m7_driver_finished','completed'),
                             ('finished_steady','steadyCompletions'), ('finished_drain','drainCompletions'), ('started_steady','steadyStarts'), ('started_drain','drainStarts')):
             require(tallies[name][metric] == row[key], 'M7_DRIVER_TRACE_RECONCILIATION')
+        common[name]['minimumStartShortfall'] = max(0, row['planned'] - common[name]['during'])
+    return common
 
 
 def retain_configured(d, m):
