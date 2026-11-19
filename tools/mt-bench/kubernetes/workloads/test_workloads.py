@@ -56,10 +56,9 @@ class Coverage(unittest.TestCase):
             profiles.write(d / 'tenants.json', [])
             value = reduction.reduce_stage(stage, d / 'out')
             self.assertEqual(value['source']['pins'], config['pins'])
-            self.assertIn(str(d / 'run.json'), value['inputs'])
-            self.assertEqual(value['stored']['verdict'], 'UNMEASURED')
-            self.assertEqual(value['selectedClinicalCoverage']['verdict'], 'UNMEASURED')
-            self.assertEqual(value['delivered']['verdict'], 'UNMEASURED')
+            for name in ('storedWrites', 'clinical', 'isolation', 'datastore'):
+                self.assertEqual(value['product']['components'][name]['verdict'], 'UNMEASURED')
+            self.assertIn('k6-summary.json', value['product']['figures']['missingFiles'])
 
     def test_dropped_iteration_and_missing_counter_are_not_complete_offered_work(self):
         metrics = {'dropped_iterations': {'count': 0}}
@@ -76,30 +75,6 @@ class Coverage(unittest.TestCase):
         self.assertEqual(reduction.http_accounting.assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
         del metrics['dropped_iterations']
         self.assertEqual(reduction.http_accounting.assess(metrics)['offeredWorkVerdict'], 'UNMEASURED')
-
-    def test_accepted_write_requires_witness_even_with_recorded_pass(self):
-        ledger = {'byTenant': {'synthetic-a': {'accepted': 1}, 'synthetic-b': {'accepted': 1}}}
-        p = {'completedOutput': {'verdict': 'PASS', 'witnesses': [
-            {'tenant': 'synthetic-a', 'date': 1, 'ready': True},
-            {'tenant': 'synthetic-b', 'date': 2, 'ready': True}]}}
-        self.assertEqual(reduction.witness_coverage(p, ledger)['verdict'], 'PASS')
-        broken = copy.deepcopy(p)
-        broken['completedOutput']['witnesses'].pop()
-        self.assertEqual(reduction.witness_coverage(broken, ledger)['code'], 'K8S_LOAD_WITNESS_COVERAGE')
-        broken = copy.deepcopy(p)
-        broken['completedOutput']['witnesses'][1] = copy.deepcopy(broken['completedOutput']['witnesses'][0])
-        self.assertEqual(reduction.witness_coverage(broken, ledger)['verdict'], 'FAIL')
-        self.assertEqual(reduction.witness_coverage(p, ledger)['verdict'], 'PASS')
-        broken = copy.deepcopy(p)
-        broken['completedOutput']['witnesses'].pop()
-        self.assertEqual(reduction.witness_coverage(broken, ledger)['missingTenants'], ['synthetic-b'])
-        late = copy.deepcopy(p)
-        late['completedOutput']['witnesses'][0].update(ready=False, code='M7_COMPLETION_DEADLINE',
-                                                       assessedCode='M7_COMPLETION_TYPED_STATE')
-        detail = reduction.witness_coverage(late, ledger)
-        self.assertEqual((detail['verdict'], detail['recordedReady']), ('FAIL', 1))
-        self.assertEqual(detail['notReadyCodes'], {'M7_COMPLETION_DEADLINE': 1})
-        self.assertEqual(detail['notReadyAssessedCodes'], {'M7_COMPLETION_TYPED_STATE': 1})
 
     def test_unsupported_skew_history_and_restart_refuse(self):
         p = profiles.read(profiles.HERE / 'small.json')

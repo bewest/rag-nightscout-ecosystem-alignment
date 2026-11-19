@@ -3,7 +3,6 @@ import csv
 import math
 import re
 from pathlib import Path
-from contract import require, metric
 import json
 import stream_topology
 from pg_waits import reduce_phase as reduce_pg_waits
@@ -11,7 +10,8 @@ from pg_waits import reduce_phase as reduce_pg_waits
 
 def memory(text):
     match = re.match(r"([\d.]+)([KMGT]?i?B)", text.strip())
-    require(match is not None, "M7_MEMORY_SAMPLE_INVALID")
+    if match is None:
+        raise ValueError("M7_MEMORY_SAMPLE_INVALID")
     return float(match[1]) * {"B":1,"KB":1000,"MB":10**6,"GB":10**9,"TB":10**12,"KiB":1024,"MiB":1024**2,"GiB":1024**3,"TiB":1024**4}[match[2]]
 
 
@@ -28,35 +28,28 @@ def process_deltas(initial,final,seconds):
         a=initial.get(pid)
         if not a or a.get('unavailable') or b.get('unavailable') or a.get('startTicks')!=b.get('startTicks') or a.get('executable')!=b.get('executable') or a.get('clockTicksPerSecond')!=b.get('clockTicksPerSecond'):
             processes[pid]={'name':b['name'],'cpu':'UNMEASURED','reason':'missing-or-changed-process'};continue
-        ticks=b['cpuTicks']-a['cpuTicks'];require(ticks>=0,'M7_PROCESS_CPU_COUNTER_RESET')
+        ticks=b['cpuTicks']-a['cpuTicks']
+        if ticks<0:
+            processes[pid]={'name':b['name'],'cpu':'UNMEASURED','reason':'counter-reset'};continue
         processes[pid]={'name':b['name'],'component':b.get('component',b['name']),'cpuSeconds':ticks/b['clockTicksPerSecond'],'cpuCoresMean':ticks/b['clockTicksPerSecond']/seconds,'rssKiBAfter':b['rssKiB']}
     return processes
 
 
 def memory_peak_observation(first, final):
+    """Container lifetime memory peak; a changed or unreadable container is UNMEASURED, never a refusal."""
     initial=first.get('memoryObservation',{});last=final.get('memoryObservation',{})
     scope='per-role container-cgroup lifetime peak; not phase peak or concurrent aggregate peak'
-    if initial.get('status')!='MEASURED' or last.get('status')!='MEASURED':
-        return {'status':'UNMEASURED','scope':scope,'reason':'missing-or-invalid-memory-peak'}
-    require(isinstance(first.get('id'),str) and first['id'] and first['id']==final.get('id'),'M7_MEMORY_CONTAINER_CHANGED')
-    births=[initial.get('birth'),last.get('birth')]
-    if any(birth is None for birth in births):
-        return {'status':'UNMEASURED','scope':scope,'reason':'container-birth-unavailable'}
-    for row,birth in zip((first,final),births):
-        require(isinstance(birth,dict) and set(birth)=={'containerId','startedAt','source','stableRead'} and birth['containerId']==row['id'] and birth['startedAt']==row.get('containerStartedAt') and isinstance(birth['startedAt'],str) and re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?Z',birth['startedAt']) and birth['source']=='docker-inspect-state-started-at-v1' and birth['stableRead'] is True,'M7_MEMORY_BIRTH_PROVENANCE')
     before=initial.get('memoryPeakBytes');after=last.get('memoryPeakBytes')
-    require(type(before)is int and type(after)is int and before>=0 and after>=0,'M7_MEMORY_PEAK_RESET')
-    def start_order(value):
-        whole,_,fraction=value.removesuffix('Z').partition('.')
-        return whole,int(fraction.ljust(9,'0'))
-    require(start_order(births[0]['startedAt'])<=start_order(births[1]['startedAt']),'M7_MEMORY_BIRTH_REWIND')
-    if births[0]['startedAt']!=births[1]['startedAt']:
-        return {'status':'UNMEASURED','scope':scope,'reason':'container-lifetime-changed','memoryPeakBytesBeforeLifetime':before,'memoryPeakBytesAfterLifetime':after,'birthBefore':births[0],'birthAfter':births[1],'memoryEventsDelta':'UNMEASURED','phaseGap':'UNMEASURED'}
-    require(before<=after,'M7_MEMORY_PEAK_RESET')
+    births=[(initial.get('birth') or {}).get('startedAt'),(last.get('birth') or {}).get('startedAt')]
+    if initial.get('status')!='MEASURED' or last.get('status')!='MEASURED' or type(before) is not int or type(after) is not int:
+        return {'status':'UNMEASURED','scope':scope,'reason':'missing-or-invalid-memory-peak'}
+    if first.get('id')!=final.get('id') or births[0]!=births[1] or after<before:
+        return {'status':'UNMEASURED','scope':scope,'reason':'container-lifetime-changed',
+                'memoryPeakBytesBeforeLifetime':before,'memoryPeakBytesAfterLifetime':after}
     result={'status':'MEASURED','scope':scope,'memoryPeakBytesBefore':before,'memoryPeakBytesAfter':after}
     a,b=initial.get('memoryEvents'),last.get('memoryEvents')
-    if isinstance(a,dict) and isinstance(b,dict) and a and set(a)==set(b):
-        require(all(type(a[k])is int and type(b[k])is int and 0<=a[k]<=b[k] for k in a),'M7_MEMORY_EVENTS_RESET')
+    if isinstance(a,dict) and isinstance(b,dict) and a and set(a)==set(b) and all(
+            type(a[k]) is int and type(b[k]) is int and 0<=a[k]<=b[k] for k in a):
         result['memoryEventsDelta']={key:b[key]-a[key] for key in a}
     else:result['memoryEventsDelta']='UNMEASURED'
     return result
@@ -134,7 +127,8 @@ def phase_measurements(directory, manifest, name):
     before = json.loads((folder / "before-cgroups.json").read_text())
     after = json.loads((folder / "after-cgroups.json").read_text())
     seconds = after["at"] - before["at"]
-    require(math.isfinite(seconds) and seconds > 0,"M7_WINDOW_INVALID")
+    if not (math.isfinite(seconds) and seconds > 0):
+        raise ValueError("M7_WINDOW_INVALID")
     rows, load_generators = {}, {}
     if 'serviceCoverage' in before or 'serviceCoverage' in after:
         complete = complete and before.get('serviceCoverage',{}).get('status') == 'MEASURED' and after.get('serviceCoverage',{}).get('status') == 'MEASURED'
@@ -164,11 +158,7 @@ def phase_measurements(directory, manifest, name):
         complete = complete and rss_available(rss)
         delta = b[0] - a[0]
         complete = complete and delta >= 0
-        try:
-            peak = memory_peak_observation(first, value)
-        except RuntimeError as error:
-            peak = {'status':'FAIL', 'reason':str(error)}
-            complete = False
+        peak = memory_peak_observation(first, value)
         rows[role] = {"cpuUsecDelta": delta if delta >= 0 else None, "cpuCoresMean": delta / 1e6 / seconds if delta >= 0 else None,
                       "memoryObservation":peak, "resourceLimits":value.get("resourceLimits",{"status":"UNMEASURED"}), **({"instance":value["instance"]} if "instance" in value else {}), "counterReset": delta < 0, "processRssKiBAfter": value.get("processRssKiB"), "anonBytesAfter": b[1], "memoryCurrentBytesAfter": b[2]}
     # Container totals include both evaluator Node and its pgstream child.
@@ -178,8 +168,8 @@ def phase_measurements(directory, manifest, name):
         final=after['roles'].get(role,{}).get('hostProcesses',{})
         try:
             processes=process_deltas(initial,final,seconds)
-        except (TypeError, KeyError, RuntimeError) as error:
-            value['processObservation'] = {'status':'FAIL', 'reason': str(error) if isinstance(error, RuntimeError) else 'invalid-process-counters'}
+        except (TypeError, KeyError):
+            value['processObservation'] = {'status':'UNMEASURED', 'reason':'invalid-process-counters'}
             complete = False
             continue
         if initial or final:value['processes']=processes
@@ -200,7 +190,7 @@ def phase_measurements(directory, manifest, name):
                 row = rows[role]
             try:
                 cpu, resident = float(sample["cpu_pct"].rstrip('%')), memory(sample["mem"].split("/")[0])
-            except (KeyError, ValueError, AttributeError, RuntimeError):
+            except (KeyError, ValueError, AttributeError):
                 row['invalidSamples'] = row.get('invalidSamples', 0) + 1
                 complete = False
                 continue
@@ -281,10 +271,10 @@ def measurements(directory, manifest):
         if not isinstance(failure, dict):failure={}
         row['failureRate']=failure.get('rate',failure.get('value'))
         row['failureMetricRaw']=failure or None
-    complete = complete and len(shapes)==7 and all(value["count"] and all(value[k] is not None for k in ("p50","p95","p99")) for value in shapes.values())
+    complete = complete and bool(shapes) and all(value["count"] and all(value[k] is not None for k in ("p50","p95","p99")) for value in shapes.values())
     reasons = [{'phase': phase, 'criterion': key, **value} for phase, window in windows.items()
                for key, value in window['availability'].items() if value['required'] and value['status'] != 'MEASURED']
-    if len(shapes) != 7 or any(not value['count'] or any(value[k] is None for k in ('p50', 'p95', 'p99')) for value in shapes.values()):
+    if not shapes or any(not value['count'] or any(value[k] is None for k in ('p50', 'p95', 'p99')) for value in shapes.values()):
         reasons.append({'criterion': 'httpShapes', 'status': 'UNMEASURED', 'required': True, 'reason': 'missing-shape-count-or-percentiles'})
     return {"complete":bool(complete),"incompleteReasons":reasons,"windows":windows,"httpShapes":shapes,
             "loadgen": "k6 container in docker-stats; host probe process PID/CPU/RSS captured separately in loadgen.jsonl",

@@ -1,7 +1,6 @@
-"""Controls for the read-only Kubernetes transport used by the accepted-input observer."""
+"""The Kubernetes transport for the shared accepted-input collector."""
 from contextlib import ExitStack
 import sys
-import time
 import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
@@ -15,66 +14,37 @@ class AcceptedInputTransport(unittest.TestCase):
     def reader(self, read):
         c, _, _, _ = fixture()
         c['completion'] = {'binding': 'synthetic'}
-        client = object()
-        scope = {'namespace': {'uid': 'private-synthetic'}}
         calls = ExitStack()
         self.addCleanup(calls.close)
         observer = Mock()
         calls.enter_context(patch.dict(sys.modules, {'accepted_inputs': SimpleNamespace(Observer=observer)}))
-        calls.enter_context(patch.object(k, 'active_baseline', return_value=scope))
-        check = calls.enter_context(patch.object(catchup.clinical_sql, 'observe', return_value=('postgres-pod', 'postgres')))
+        calls.enter_context(patch.object(k, 'active_baseline', return_value={}))
+        locate = calls.enter_context(patch.object(catchup.clinical_sql, 'observe', return_value=('postgres-pod', 'postgres')))
         sql = calls.enter_context(patch.object(k, 'postgres_read', side_effect=read))
-        catchup.observer(None, c, {}, client, 'accepted-input-test', [A, B])
+        catchup.observer(None, c, {}, object(), 'accepted-input-test', [A, B])
         args = observer.call_args.kwargs
         self.assertEqual((args['run_id'], args['ids'], args['config']), ('accepted-input-test', [A, B], c['completion']))
-        return args['fetch'], check, sql
+        return args['fetch'], locate, sql
 
-    def test_sql_reads_owned_postgres_within_both_deadlines(self):
-        ticks = []
-        def read(*_, **options):
-            ticks.append(k._OBSERVATION_DEADLINE.get())
-            self.assertGreater(options['timeout'], 0)
-            self.assertLessEqual(options['timeout'], 1)
-            return '{"tenant":"synthetic"}\n'
-        fetch, check, sql = self.reader(read)
+    def test_read_is_bounded_by_the_request_and_the_work_deadline(self):
+        fetch, locate, sql = self.reader(lambda *_, **options: '{"tenant":"synthetic"}\n')
         self.assertEqual(fetch('SELECT 1', 1), '{"tenant":"synthetic"}\n')
-        self.assertEqual(check.call_count, 2)
-        self.assertEqual(check.call_args_list[0], check.call_args_list[1])
-        self.assertIn('SELECT 1', sql.call_args.args[3])
+        self.assertEqual(locate.call_count, 1)
         self.assertIn('SET LOCAL statement_timeout=', sql.call_args.args[3])
-        self.assertLessEqual(ticks[0], time.time() + 1)
-        self.assertIsNone(k._OBSERVATION_DEADLINE.get())
+        self.assertLessEqual(sql.call_args.kwargs['timeout'], 1)
 
-    def test_changed_source_fails_after_sql(self):
-        fetch, check, sql = self.reader(lambda *_, **__: '')
-        check.side_effect = [('postgres-pod', 'postgres'), k.Refused('K8S_POD_UID_CHANGED', 'UNMEASURED')]
-        with self.assertRaisesRegex(k.Refused, 'POD_UID_CHANGED'):
-            fetch('SELECT 1', 1)
-        sql.assert_called_once()
+    def test_postgres_restart_is_not_refused_by_the_reader(self):
+        # Datastore health is judged from the Pod bookends by assessor.py.
+        fetch, locate, _ = self.reader(lambda *_, **__: 'sample')
+        locate.side_effect = [('postgres-0', 'postgres'), ('postgres-0', 'postgres')]
+        self.assertEqual(fetch('SELECT 1', 1), 'sample')
+        self.assertEqual(fetch('SELECT 1', 1), 'sample')
 
-    def test_unrelated_restart_and_owned_postgres_discontinuity(self):
-        c, inventory, rendered, client = fixture()
-        c['completion'] = {'binding':'synthetic'}
-        objects = k.validate(c, inventory, rendered)
-        baseline = k.observe(c, objects, client)
-        with patch.object(k, 'active_baseline', return_value=baseline), patch.object(k, 'postgres_read', return_value='sample') as sql:
-            sample = catchup.observer(None, c, objects, client, 'owned', [A, B]).fetch
-            statuses = {s['name']:s for p in client.pods for s in p['status']['containerStatuses']}
-            statuses['api']['containerID'] = 'replacement-api'
-            self.assertEqual(sample('SELECT 1', 5), 'sample')
-            # A PostgreSQL container restart is a recorded figure, not a refusal
-            # (decision four-product-failures); an unhealthy datastore fails on its own.
-            statuses['postgres']['containerID'] = 'replacement-postgres'
-            self.assertEqual(sample('SELECT 1', 5), 'sample')
-            postgres = next(p for p in client.pods if p['status']['containerStatuses'][0]['name'] == 'postgres')
-            postgres['metadata']['labels'][c['ownerLabel']] = 'peer'
-            with self.assertRaisesRegex(k.Refused, 'PEER_RESOURCE_REFUSED') as foreign:
-                sample('SELECT 1', 5)
-            self.assertEqual(foreign.exception.verdict, 'FAIL')
-            self.assertEqual(sql.call_count, 2)
-
-    def test_failed_read_still_checks_identity(self):
-        fetch, check, _ = self.reader(k.Refused('K8S_OBSERVATION_LOST', 'UNMEASURED'))
+    def test_failed_read_propagates_to_the_collector(self):
+        fetch, _, _ = self.reader(k.Refused('K8S_OBSERVATION_LOST', 'UNMEASURED'))
         with self.assertRaisesRegex(k.Refused, 'OBSERVATION_LOST'):
             fetch('SELECT 1', 1)
-        self.assertEqual(check.call_count, 2)
+
+
+if __name__ == '__main__':
+    unittest.main()

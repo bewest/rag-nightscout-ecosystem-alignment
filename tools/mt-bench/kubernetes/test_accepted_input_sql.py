@@ -12,6 +12,7 @@ import unittest
 
 import kube_adapter as k
 import accepted_inputs
+import assessor
 
 PG_BIN = os.environ.get('C1_PG_BINDIR')
 TENANT = '00000000-0000-4000-8000-000000000001'
@@ -57,7 +58,7 @@ CREATE TABLE checkpoint.tenant_consumer_checkpoint (
                            receipt={'contractDigest': self.digest, 'selection': {'binding': {'source': identity}}})
         config = dict(kind='evaluator-work-v2', entries='nsdemo_entries', checkpoint='checkpoint',
                       consumer=CONSUMER+'-completed', native=self.native,
-                      binding={'nativeConfigurationSha256': k.hashed(self.native)})
+                      binding={'kind': 'evaluator-work-v2'})
         self.query = accepted_inputs.query(config, RUN).rstrip().removesuffix(';')
 
     def run_sql(self, text):
@@ -87,7 +88,8 @@ INSERT INTO {table} VALUES ('{TENANT}','{CONSUMER}-completed',0,
             coverage = accepted_inputs.Coverage(RUN, [TENANT], 0, source=self.identity)
             coverage.capture(rows, 1, 2)
             coverage.capture(rows, 124, 125)
-            return coverage.assess({(TENANT,'entries',RUN,'100'):1}, 124)['classifications']
+            events = coverage.events({(TENANT,'entries',RUN,'100'):1}, 124)
+            return assessor.assess(events, [TENANT])['components']['clinical']['classifications']
 
         self.assertEqual(assess(), {'LATE':1})
         # Losing the body field or conflicting metadata makes absence uncertain.
@@ -122,13 +124,13 @@ INSERT INTO {table} VALUES ('{TENANT}','{CONSUMER}-completed',0,
             coverage = accepted_inputs.Coverage(RUN, [TENANT, FOREIGN], 0, source=self.identity)
             coverage.capture(current, 1, 2)
             coverage.capture(current, end, end+1)
-            return coverage.assess(acks, end)
+            return assessor.assess(coverage.events(acks, end), [TENANT, FOREIGN])
         missing = self.copy(self.query)
         self.assertEqual(len(missing), 1)
         self.assertTrue(missing[0]['sourceOK'])
         self.assertTrue(missing[0]['outputAbsent'])
-        self.assertEqual(assess(missing)['classifications'], {'LATE':4})
-        self.assertEqual(assess(missing, end=10)['classifications'], {'MISSING_AT_DRAIN':4})
+        self.assertEqual(assess(missing)['components']['clinical']['classifications'], {'LATE':4})
+        self.assertEqual(assess(missing, end=10)['components']['clinical']['classifications'], {'MISSING_AT_DRAIN':4})
         # A previous output covers only the earlier floor. The last event at the
         # new floor gives a definite negative even when older events coalesced.
         def projected(floor, tenant=TENANT):
@@ -145,20 +147,20 @@ INSERT INTO {table} VALUES ('{TENANT}','{CONSUMER}-completed',0,
  projection={projected(4)} WHERE consumer='{CONSUMER}-completed';""")
         ready = self.copy(self.query)
         self.assertTrue(ready[0]['stateOK'])
-        self.assertEqual(assess(ready)['classifications'], {'ON_TIME':4})
+        self.assertEqual(assess(ready)['components']['clinical']['classifications'], {'ON_TIME':4})
         self.run_sql(f"""UPDATE {checkpoint} SET projection=projection #- '{{0,output,tenant}}'
  WHERE consumer='{CONSUMER}-completed';""")
-        self.assertEqual(assess(self.copy(self.query))['classifications'], {'UNMEASURED':4})
+        self.assertEqual(assess(self.copy(self.query))['components']['clinical']['classifications'], {'UNMEASURED':4})
         # typed-checkpoint.complete can retain an identical older body while
         # atomically advancing its completed work and checkpoint.
         self.run_sql(f"""UPDATE {checkpoint} SET projection={projected(1)}
  WHERE consumer='{CONSUMER}-completed';""")
-        self.assertEqual(assess(self.copy(self.query))['classifications'], {'ON_TIME':4})
+        self.assertEqual(assess(self.copy(self.query))['components']['clinical']['classifications'], {'ON_TIME':4})
         self.run_sql(f"""UPDATE {checkpoint} SET output_digest='invalid'
  WHERE consumer='{CONSUMER}-completed';""")
-        with self.assertRaisesRegex(accepted_inputs.EvidenceError, 'M7_INPUT_INVALID_OUTPUT'):
-            assess(self.copy(self.query))
+        # An output failing its own digest never covers an input: it is missing at drain.
+        self.assertEqual(assess(self.copy(self.query))['components']['clinical']['verdict'], 'FAIL')
         self.run_sql(f"""UPDATE {checkpoint} SET output_digest=repeat('b',64),projection={projected(4, FOREIGN)}
  WHERE consumer='{CONSUMER}-completed';""")
-        with self.assertRaisesRegex(accepted_inputs.EvidenceError, 'M7_INPUT_FOREIGN_OUTPUT'):
-            assess(self.copy(self.query))
+        foreign = assess(self.copy(self.query))['components']['isolation']
+        self.assertEqual((foreign['verdict'], foreign['codes']), ('FAIL', ['FOREIGN_OUTPUT']))

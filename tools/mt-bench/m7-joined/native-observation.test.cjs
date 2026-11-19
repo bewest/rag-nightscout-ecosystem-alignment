@@ -51,7 +51,7 @@ for(const [name,change,code]of [
  ['unsafe floor',r=>r.native.inputFloor=r.native.persistedFloor='9007199254740992','NATIVE_STATE'],['bad native position',r=>r.native.stream.accepted_position='9007199254740993','NATIVE_POSITION'],
  ['raw coverage loss',r=>r.native.raw.base='5','NATIVE_RAW'],['old clinical coverage',r=>{r.state.completed={bootstrap:'1'};r.typed.completed=[null,null,null,null,null,'1'];},'PENDING'],
  ['old completed row',r=>r.typed.inputFloor='1','OUTPUT_CLOCK'],['wrong retained floor pair',r=>r.state.output.result.checkpoint=0,'OUTPUT_CLOCK'],['output ahead',r=>{r.state.output.result.checkpoint=3;r.state.output.inputCheckpoint=3;},'OUTPUT_CLOCK'],
- ['stale output restore',r=>{r.state.output.restoreGeneration='2';r.typed.generation='2';},'NATIVE_FENCE'],['wrong reader config',r=>r.reader.nativeConfigurationSha256='0'.repeat(64),'READER_MISMATCH'],
+ ['stale output restore',r=>{r.state.output.restoreGeneration='2';r.typed.generation='2';},'NATIVE_FENCE'],['wrong reader kind',r=>r.reader.kind='evaluator-work-v1','READER_MISMATCH'],
  ['missing marker',r=>r.stored=[],'STORED'],['wrong clinical frame',r=>r.state.output.frame.sgvs[0].mgdl=99,'FRAME']
 ])test(name+' refuses; restoration passes',()=>{const bad=structuredClone(row);change(bad);assert.equal(assess(bad).code,'M7_COMPLETION_'+code);green();});
 test('explicit invalidation supplies no accepted coverage until identity returns',()=>{const invalid=structuredClone(row);invalid.native.stream=null;assert.equal(assess(invalid).code,'M7_COMPLETION_NATIVE_INVALIDATED');assert.throws(()=>oracle.progressSnapshot([invalid],config,[tenant]),/NATIVE_INVALIDATED/);green();});

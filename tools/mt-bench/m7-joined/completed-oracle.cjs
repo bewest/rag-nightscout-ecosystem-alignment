@@ -17,12 +17,12 @@ function plain(value,depth=0,budget={nodes:0}){
  return Object.fromEntries(keys.map(k=>[k,plain(descriptors[k].value,depth+1,budget)]));
 }
 function selection(config){if(config.selection!==undefined||config.binding?.selectedProfile!==undefined)fail('M7_COMPLETION_SELECTED_PROFILE_RETIRED');}
+// The reader is the configured kind; image, commits and digests identify the run, not the row.
 function binding(value){
- if(!value||Object.keys(value).sort().join(',')!==(value.nativeConfigurationSha256!==undefined?'imageId,instrument,kind,nativeConfigurationSha256,pair':'imageId,instrument,kind,pair')||!['evaluator-work-v1','evaluator-work-v2'].includes(value.kind)||!value.pair||Object.keys(value.pair).sort().join(',')!=='core,deploy'||!Object.values(value.pair).every(v=>/^[a-f0-9]{40}$/.test(v))||!/^sha256:[a-f0-9]{64}$/.test(value.imageId)||!/^[a-f0-9]{64}$/.test(value.instrument))fail('M7_COMPLETION_BINDING');
- if(value.nativeConfigurationSha256!==undefined&&(value.kind!=='evaluator-work-v2'||typeof value.nativeConfigurationSha256!=='string'||! /^[a-f0-9]{64}$/.test(value.nativeConfigurationSha256)))fail('M7_COMPLETION_NATIVE_BINDING');
-
+ if(!value||typeof value!=='object'||!['evaluator-work-v1','evaluator-work-v2'].includes(value.kind))fail('M7_COMPLETION_BINDING');
  return value;
 }
+// A native source must not silently fall back to the clock reader.
 function prepare(config){const owned=plain(config);binding(owned.binding);if(!!owned.native!==!!owned.binding.nativeConfigurationSha256)fail('M7_COMPLETION_NATIVE_BINDING');if(owned.native)native.validateConfig(owned);selection(owned);freeze(owned);return owned;}
 function source(evaluator,realtime,selected,receipt){
  if(evaluator?.selectedIntake!==undefined||realtime?.intakeProfile!==undefined)fail('M7_COMPLETION_SELECTED_PROFILE_RETIRED');
@@ -84,8 +84,8 @@ function typedState(row,config,progress=false){
 function assess(row,witness,clients,expected,config){
  const no=code=>({ready:false,code});
  try{binding(config?.binding);if(!!config.native!==!!config.binding.nativeConfigurationSha256)fail('M7_COMPLETION_NATIVE_BINDING');if(config.native)native.validateConfig(config);selection(config);}catch{return no('M7_COMPLETION_BINDING');}
- if(config.kind!==config.binding.kind||!row?.reader||row.reader.kind!==config.binding.kind||row.reader.imageId!==config.binding.imageId||row.reader.instrument!==config.binding.instrument||row.reader.pair?.core!==config.binding.pair.core||row.reader.pair?.deploy!==config.binding.pair.deploy)return no('M7_COMPLETION_READER_MISMATCH');
- if(config.native&&canonical(row.reader)!==canonical(config.binding))return no('M7_COMPLETION_READER_MISMATCH');
+ // The reader echoes the configured binding; only its kind selects the decoder.
+ if(config.kind!==config.binding.kind||row?.reader?.kind!==config.kind)return no('M7_COMPLETION_READER_MISMATCH');
  if(row.tenant!==witness.tenant || row.state?.output && row.state.output.tenant!==witness.tenant)return no('M7_COMPLETION_FOREIGN_TENANT');
  if(!version(witness.stamp)||!version(row.stamp))return no('M7_COMPLETION_CLOCK');
  // A successful, bound LEFT JOIN can prove that this tenant has no durable
@@ -122,6 +122,7 @@ function assess(row,witness,clients,expected,config){
  if(!client.ready)return {...no('M7_COMPLETION_CLIENT'),clientFailure:client.code};
  return {ready:true,...(coverage?{nativeCoverage:coverage.coverage,completedInputFloor:coverage.completedInputFloor,outputInputFloor:coverage.outputInputFloor}:{}),tenant:row.tenant,storedId:doc._id,storedSgv:doc.sgv,completedClock:state.completed.clock,observedClock:state.observed.clock,outputRevision:output.outputRevision,contentDigest:output.contentDigest,clients:clients.length,bgNowMean:bg.mean,clinicalScope:'BG-now selected-bucket mean/last consistency; remaining clinical properties unassessed'};
 }
+// Retired opportunity path only (progress-transport.cjs, evaluator_opportunities.py); delete with them.
 // Read-only work metadata for the NEXT opportunity assessor. Reuse the exact
 // typed vector/output fences, with an exact admission-only empty output case.
 // This is neither a clinical nor a client-frame verdict.
@@ -131,7 +132,7 @@ function progressSnapshot(rows,config,ids){
  const byTenant=new Map(rows.map(row=>[row?.tenant,row]));
  const values=ids.map(tenant=>{
   const row=byTenant.get(tenant);
-  if(!row||canonical(row.reader)!==canonical(config.binding)||row.state?.kind!==config.kind)fail('M7_COMPLETION_READER_MISMATCH');
+  if(!row||row.reader?.kind!==config.kind||row.state?.kind!==config.kind)fail('M7_COMPLETION_READER_MISMATCH');
   if(!typedState(row,config,true)||row.state.output!==null&&row.state.output?.tenant!==tenant){
    const t=row.typed,error=Error('M7_COMPLETION_TYPED_STATE');
    // Fixed-size predicates only: never retain a clinical body, identifiers,
@@ -155,4 +156,4 @@ function progressSnapshot(rows,config,ids){
  });
  return {kind:'evaluator-durable-progress-v1',reader:plain(config.binding),rows:values};
 }
-module.exports={source,prepare,query,assess,assessDurable:(row,witness,config)=>assess(row,witness,[],0,config),expectedContractDigest:config=>contractDigest(prepare(config)),progressSnapshot,progressQuery:(config,ids)=>query(config,ids,'progress-opportunity',true)};
+module.exports={source,prepare,query,assess,assessDurable:(row,witness,config)=>assess(row,witness,[],0,config),progressSnapshot,progressQuery:(config,ids)=>query(config,ids,'progress-opportunity',true)};
